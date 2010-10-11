@@ -1,0 +1,47 @@
+{% extends "staff/ml_base.html" %}
+
+{% block style %}
+nav #todo-tab { background: #FBD850; color: black; }
+#content td { white-space:nowrap; }
+{% endblock %}
+
+{% block sub-title %}Task List | {% endblock %}
+
+{% block content %}
+<h2>Onboard Task List:</h2>
+<table>
+   <tr>
+      <th>Task</th>
+      <th>Number remaining</th>
+      <th></th>
+   </tr>
+
+   {% for task, remaining in onboard_tasks %}
+      <tr class="{% cycle 'row-even' 'row-odd' %}">
+         <td align="left">
+            <a href="{% url staff.views.onboard_task task.id %}">{{ task.name }}</a>
+         </td>
+         <td>{{ remaining }}</td>
+         <td>{% if task.monthly_only %}monthly only{% endif %}</td>
+      </tr>
+   {% endfor %}
+</table>
+
+<h2>Exit Task List:</h2>
+<table>
+   <tr>
+      <th>Task</th>
+      <th>Number remaining</th>
+   </tr>
+   {% for task, remaining in exit_tasks %}
+      <tr class="{% cycle 'row-even' 'row-odd' %}">
+         <td align="left">
+            <a href="{% url staff.views.exit_task task.id %}">{{ task.name }}</a>
+         </td>
+         <td>{{ remaining }}</td>
+         <td></td>
+      </tr>
+   {% endfor %}
+</table>
+
+{% endblock %}

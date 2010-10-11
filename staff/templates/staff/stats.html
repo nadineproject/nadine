@@ -1,0 +1,43 @@
+{% extends "staff/ml_base.html" %}
+{% block style %} 
+nav #stats-tab { background: #FBD850; color: black; }
+
+{% endblock %}
+
+{% block sub-title %}Stats | {% endblock %}
+
+{% block content %}
+<h2>Stats - Daily logs by month</h2>
+
+<div class="columns">
+{% include "staff/stats_menu.frag" %}  
+</div>
+
+
+<!-- Daily Logs By Month -->
+<div id="daily-logs-by-month">
+   <table border="1" width="100%">
+      <tr>
+         <th>Month</th>
+         <th>Trial</th>
+         <th>Waved</th>
+         <th>Billable</th>
+         <th>Total</th>
+      </tr>
+
+      {% for numbers in daily_logs_by_month %}
+         <tr class="{% cycle 'row-even' 'row-odd' %}">
+            <td align="center">{{ numbers.month }}</td>
+            <td align="center">{{ numbers.Trial }}</td>
+            <td align="center">{{ numbers.Waved }}</td>
+            <td align="center">{{ numbers.Bill }}</td>
+            <td align="center">{{ numbers.total }}</td>
+         </tr>
+      {% endfor %}
+   </table>
+   {{ daily_logs_by_month.length }}
+</div>
+
+
+</div>
+{% endblock %}

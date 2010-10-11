@@ -1,0 +1,247 @@
+{% extends "staff/ml_base.html" %}
+{% load imagetags %}
+
+{% block sub-title %}{{ member.first_name }} {{ member.last_name }} | {% endblock %}
+
+{% block style%}
+#nav-tabs #members-tab { background-color: #EEE; }
+#quick-links { text-align: center; }
+caption { font-weight: bold; font-size: 1.4em; margin-bottom: 10px; }
+#right-floater { margin-top: 30px; float: right; width: 180px; min-height: 200px;  }
+.member-photo { width: 170px; text-align: center; margin: 10px 5px; }
+#content td, #content th { padding-left: 20px; }
+
+#onboard-form, #exit-form { margin-bottom: 60px; width: 400px; }
+#onboard-form td, #exit-form td { white-space: nowrap; }
+#onboard-form th, #exit-form th { text-align: left; }
+
+{% endblock %}
+
+{% block sub-head %}
+<script>
+function gotoEmailReset(emailAddress){
+   try {
+   	$.ajax({
+   		type: 'POST',
+   		url: '',
+   		data: ({'email':emailAddress}),
+   		success: function(data) { },
+   		error: function(request, status, error) { }
+   	});
+   }catch(e) {
+      alert(e);
+   }
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<h2>{{ member.first_name }} {{ member.last_name }}</h2>
+
+<div id="quick-links">
+	<a href="{% url staff.views.member_activity member.id %}">activities</a> |
+	<a href="{% url staff.views.member_transactions member.id %}">transactions</a> |
+	<a href="{% url staff.views.member_bills member.id %}">bills</a> |
+	<a href="{% url front.views.password_reset %}?email={{ member.email }}">pw reset</a> |
+	<a href="{% url members.views.user member.user.username %}">profile</a> |
+	<a href="{% url admin:auth_user_change member.user.id %}">edit member</a></div>
+
+   <div class="member-photo">
+      {% if member.photo %}
+         <a href="{{ member.photo.url }}"><img src="{{ member.photo.url|fit_image:"170x170" }}" /></a>
+      {% endif %}
+   </div>
+
+<!-- Member Detail -->    
+<div id="member-detail">
+  <h2>Member Detail</h2>
+	<table>
+	   <tr>
+	      <td>Membership Type</td>
+	      <td>{{ member.membership_type }}
+            {% if member.last_monthly_log %}{% if not member.last_monthly_log.end_date %}
+               [<a href="{% url admin:staff_monthlylog_change member.last_monthly_log.id %}">edit</a>]
+            {% endif %}{% endif %}
+         </td>
+	   </tr>
+	   {% if member.last_monthly_log %}
+	   <tr>
+	      <td>Plan Start</td>
+	      <td>{{ member.last_monthly_log.start_date|date:"Y-m-d" }}</td>
+	   </tr>
+	   {% endif %}
+	   <tr>
+	      <td>Paid Visits</td>
+	      <td>{{ member.paid_count }}</td>
+	   </tr>
+	   <tr>
+	      <td>First Visit</td>
+	      <td>{{ member.first_visit }}</td>
+	   </tr>
+	   <tr>
+	      <td>Last Visit</td>
+	      <td>{{ member.last_visit }}</td>
+	   </tr>
+	
+	   <!-- Company Name -->
+	   {% if member.company_name %}
+	      <tr>
+	         <td>Company Name</td>
+	         <td>{{ member.company_name }}</td>
+	      </tr>
+	   {% endif %}
+	
+	   <!-- Website -->
+	   {% if member.website %}
+	      <tr>
+	         <td>Website</td>
+	         <td><a href="{{ member.website }}">{{ member.website }}</a></td>
+	      </tr>
+	   {% endif %}
+	
+	   <!-- Gender -->
+	   {% if member.gender %}
+	      <tr>
+	         <td>Gender</td>
+	         <td>{{ member.gender }}</td>
+	      </tr>
+	   {% endif %}
+	 
+	   <!-- Email -->
+	   {% if member.email %}
+	      <tr>
+	         <td>Email</td>
+	         <td>{{ member.email }}</td>
+	      </tr>
+	   {% endif %}
+	
+	   <!-- Email2 -->
+	   {% if member.email2 %}
+	      <tr>
+	         <td>Alternate Email</td>
+	         <td>{{ member.email2 }}</td>
+	      </tr>
+	   {% endif %}
+	
+	   <!-- Phone -->
+	   {% if member.phone %}
+	      <tr>
+	         <td>Phone</td>
+	         <td>{{ member.phone }}</td>
+	      </tr>
+	   {% endif %}
+	
+	   <!-- Phone2 -->
+	   {% if member.phone2 %}
+	      <tr>
+	         <td>Alternate Phone</td>
+	         <td>{{ member. }}</td>
+	      </tr>
+	   {% endif %}
+	
+	   <!-- How Heard -->
+	   {% if member.howHeard %}
+	      <tr>
+	         <td>How Heard</td>
+	         <td>{{ member.howHeard }}</td>
+	      </tr>
+	   {% endif %}
+	
+	   <!-- Industry -->
+	   {% if member.industry %}
+	      <tr>
+	         <td>Industry</td>
+	         <td>{{ member.industry }}</td>
+	      </tr>
+	   {% endif %}
+	
+	   <!-- Neighborhood -->
+	   {% if member.neighborhood %}
+	      <tr>
+	         <td>Neighborhood</td>
+	         <td>{{ member.neighborhood }}</td>
+	      </tr>
+	   {% endif %}
+	
+	   <!-- Has Kids -->
+	   {% if member.has_kids %}
+	      <tr>
+	         <td>Has Kids?</td>
+	         <td>{{ member.has_kids }}</td>
+	      </tr>
+	   {% endif %}
+	
+	   <!-- Self Employed -->
+	   {% if member.self_employed %}
+	      <tr>
+	         <td>Self Employed?</td>
+	         <td>{{ member.self_employed }}</td>
+	      </tr>
+	   {% endif %}
+	
+	   <!-- Promised Followup -->
+	   {% if member.promised_followup %}
+	      <tr>
+	         <td>Promised Followup</td>
+	         <td>{{ member.promised_followup }}</td>
+	      </tr>
+	   {% endif %}
+	
+	   <tr>
+	      <td>Notes</td>
+	      <td>{{ member.notes }}</td>
+	   </tr>
+	</table>
+</div>
+
+<h2>Onboard Tasks</h2>
+{% if member.onboard_tasks_to_complete %}
+	<table id="onboard-form">
+		<tr><th>Task</th><th>Completed</th></tr>
+		{% for task, completed in member.onboard_tasks_status %}
+		<tr>
+			<td>{{ task.name }}</td>
+			<td>
+				{% if completed %}
+					{{ completed.completed_date }}
+				{% else %}
+					<form action="." method="POST">
+						<input name="task_id" value="{{ task.id }}" type="hidden" />
+						<input name="save_onboard_task" type="submit" Value="Done" />
+					</form>
+				{% endif %}
+			</td>
+		</tr>
+		{% endfor %}
+	</table>
+{% else %}
+	<p>No onboard tasks remain.</p>
+{% endif %}
+
+{% if member.qualifies_for_exit_tasks %}
+	<h2>Exit Tasks</h2>
+	{% if member.exit_tasks_to_complete %}
+		<table id="exit-form">
+			<tr><th>Task</th><th>Completed</th></tr>
+			{% for task, completed in member.exit_tasks_status %}
+			<tr>
+				<td>{{ task.name }}</td>
+				<td>
+					{% if completed %}
+						{{ completed.completed_date }}
+					{% else %}
+						<form  action="." method="POST">
+							<input name="task_id" value="{{ task.id }}" type="hidden" />
+							<input name="save_exit_task" type="submit" Value="Done" />
+						</form>
+					{% endif %}
+				</td>
+			</tr>
+			{% endfor %}
+		</table>
+	{% else %}
+		<p>No exit tasks remain.</p>
+	{% endif %}
+{% endif %}
+
+{% endblock %}

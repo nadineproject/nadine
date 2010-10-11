@@ -1,0 +1,174 @@
+{% extends "members/u_base.html" %}
+{% load imagetags %}
+{% load list_tags %}
+
+{% block sub-title %}{{ user.get_full_name }} | {% endblock %}
+
+{% block content %}
+      {% if user.profile.photo %}
+      <div class="member-photo">      
+         <a href="{{ user.profile.photo.url }}"><img src="{{ user.profile.photo.url|fit_image:"170x170" }}"></a>
+       </div>         
+      {% endif %}
+
+{% if user.get_full_name %}
+   <h2>{{ user.get_full_name }}</h2>
+{% endif %}
+{% if user.username == request.user.username or request.user.is_staff %}
+	<dl>
+    <dt>Membership status:</dt><dd>{{ user.profile.membership_type }}{% if user.profile.is_monthly %} at ${{ user.profile.last_monthly_log.rate }}/month{% endif %}</dd>
+		{% if user.profile.is_monthly %}
+		<dt>Anniversary date:</dt><dd>{{ user.profile.last_monthly_log.start_date|date:"M d, Y" }}</dd>
+		{% endif %}
+    {% if request.user.is_staff %}
+         <dt>Quicklinks:</dt>
+         <dd><a href="{% url staff.views.member_detail user.profile.id %}">edit</a></dd>
+      </tr>
+      {% endif %}
+	</dl>
+  <div class="clearfix"></div>
+	<h2>Transactions</h2>
+   {% if user.profile.transaction_set.all %}
+   <table>
+     <thead>
+   		<tr>
+   			<th>Date</th>
+   			<th>Amount</th>
+   			<th>Bills</th>
+   		</tr>      
+     </thead>
+     <tbody>
+   		{% for transaction in user.profile.transaction_set.all %}
+   		<tr class="{% cycle 'row-even' 'row-odd' %}">
+   			<td>{{ transaction.created|date:"m/d/y" }}</td>
+   			<td>${{ transaction.amount }}</td>
+   			<td>
+   			   {% for bill in transaction.bills.all %}
+                  {{ bill.created|date:"M d, Y" }} (${{ bill.amount }}){% loop_comma %}
+               {% endfor %}
+   			</td>
+   		</tr>
+         {% endfor %}      
+     </tbody>
+   </table>
+   {% else %}
+   <p>No transactions yet!</p>
+   {% endif %}
+
+	<h2>Bills</h2>
+	{% if user.profile.all_bills %}
+   	<table>
+   	  <thead>
+     		<tr>
+     			<th>Date</th>
+     			<th>Amount</th>
+     			<th>Plan</th>
+     			<th>Details</th>
+     		</tr>   	    
+   	  </thead>
+   	  <tbody>
+       	{% for bill in user.profile.all_bills %}
+       		<tr class="{% cycle 'row-even' 'row-odd' %}">
+       			<td>{{ bill.created|date:"M d, Y" }}</td>
+       			<td>${{ bill.amount }}</td>
+       			<td>{% if bill.monthly_log %}{{ bill.monthly_log.plan }}{% endif %}</td>
+       			<td>
+
+       				{% if bill.paid_by %}
+       				<b>For {{ bill.member.full_name }}</b>
+       				{% endif %}
+       				{% if bill.new_member_deposit %}
+       				<b class="bill-info">Deposit: ${{ bill.new_member_deposit }}</b>
+       				{% endif %}
+       				{% if bill.dropins.all %}
+       				<b class="bill-info">Drop-ins:
+       					{% for dropin in bill.dropins.all %}
+       						{{ dropin.visit_date|date:"m/d" }}{% loop_comma %}
+       					{% endfor %}
+       				</b>
+       				{% endif %}
+       				{% if bill.guest_dropins.all %}
+       				<b class="bill-info">Guest Drop-ins:
+       					{% for dropin in bill.guest_dropins.all %}
+       						{{dropin.member.full_name}} on {{ dropin.visit_date|date:"m/d" }}{% loop_comma %}
+       					{% endfor %}
+       				</b>
+       				{% endif %}
+       			</td>
+       		</tr>
+       	{% endfor %}
+   	    
+   	  </tbody>
+   	</table>
+   {% else %}
+      <p>No bills yet!</p>
+   {% endif %}
+   
+	{% if user.profile.monthly_logs.all %}
+	   <h2>Monthly plans</h2>
+		<table>		  
+		  <thead>
+ 		   <tr>
+ 		      <th>Plan</th>
+ 		      <th>Start Date</th>
+ 		      <th>End Date</th>
+ 		   </tr>		    
+		  </thead>
+		  <tbody>
+ 		   {% for log in user.profile.monthly_logs.all reversed %}
+ 		      <tr class="{% cycle 'row-even' 'row-odd' %}">
+ 		         <td>{{ log.plan }}</td>
+ 		         <td>{{ log.start_date|date:"M d, Y" }}</td>
+ 		         <td>{% if log.end_date %}{{ log.end_date|date:"M d, Y" }}{% endif %}</td>
+ 		      </tr>
+ 		   {% endfor %}		    
+		  </tbody>
+		</table>
+	{% endif %}
+
+	{% if user.profile.daily_logs.all %}
+		<h2>Drop-ins</h2>
+		<table> 
+		  <thead>
+ 		   <tr>
+ 		      <th>Date</th>
+ 		      <th>Payment</th>
+ 		      <th>Guest of</th>
+ 		   </tr>		    
+		  </thead>
+		  <tbody>
+ 		   {% for log in user.profile.daily_logs.all %}
+ 		      <tr class="{% cycle 'row-even' 'row-odd' %}">
+ 		         <td class="date-cell">{{ log.visit_date|date:"M d, Y" }}</td>
+ 		         <td>{{ log.payment }}</td>
+ 		         <td>{% if log.guest_of %}{{ log.guest_of }}{% endif %}</td>
+ 		      </tr>
+ 		   {% endfor %}		    
+		  </tbody>
+		</table>
+	{% endif %}
+
+	{% if user.profile.host_daily_logs.all %}
+		<h2>Guests' Drop-ins</h2>
+		<table> 
+		  <thead>
+ 		   <tr>
+ 		      <th>Date</th>
+ 		      <th>Guest</th>			
+ 		      <th>Payment</th>
+ 		   </tr>		    
+		  </thead>
+		  <tbody>
+ 		   {% for log in user.profile.host_daily_logs.all %}
+ 		      <tr class="{% cycle 'row-even' 'row-odd' %}">
+ 		         <td>{{ log.visit_date|date:"M d, Y" }}</td>
+ 				     <td>{{ log.member.full_name }}</td>
+ 		         <td>{{ log.payment }}</td>
+ 		      </tr>
+ 		   {% endfor %}		    
+		  </tbody>
+		</table>
+	{% endif %}
+	
+{% endif %}
+{% endblock %}

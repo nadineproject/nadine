@@ -1,0 +1,36 @@
+{% extends "staff/ml_base.html" %}
+
+{% block sub-title %}Member Search | {% endblock %}
+
+{% block style%}
+#nav-tabs #members-tab { background-color: #EEE; }
+#member-search-form { width: 100%; text-align: center; }
+#content table { width: 100%; }
+{% endblock %}
+
+{% block content %}
+	<form id="member-search-form" action="." method="post">
+		Find:
+		{% for field in member_search_form %}{{ field }}{% endfor %}
+		<input type="submit" value="search" />
+	</form>
+
+	<h1>Search results</h1>
+	{% if search_results %}
+		<table>
+			<tr><th>Name</th><th>First visit</th><th>Duration</th><th>Quicklinks</th></tr>
+			{% for member in search_results %}
+			<tr class="{% cycle 'row-even' 'row-odd' %}">
+				<th><a href="{% url staff.views.member_detail member.id %}">{{ member.first_name }} {{ member.last_name }}</a></th>
+				<td>{{ member.first_visit|date:"M y" }}</td>
+				<td>{{ member.first_visit|timesince }}</td>
+				<td>	
+					<a href="{% url staff.views.member_activity member.id %}">activity log</a> |
+					<a href="{% url staff.views.member_transactions member.id %}">transaction log</a>
+				</td>
+			</tr>
+			{% endfor %}
+		</table>
+	{% else %}
+	{% endif %}
+{% endblock %}

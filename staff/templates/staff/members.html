@@ -1,0 +1,57 @@
+{% extends "staff/ml_base.html" %}
+
+{% block sub-title %}Members | {% endblock %}
+
+{% block style%}
+{% endblock %}
+
+{% block content %}
+<h2>Member List</h2>  
+<div class="columns clearfix">
+  <form class="c1" id="member-search-form" action="{% url staff.views.member_search %}" method="post">
+  	Find member:
+  	{% for field in member_search_form %}{{ field }}{% endfor %}
+  	<input type="submit" value="search" />
+  </form>
+
+  <div class="c2" id="quick-links">
+  	Quicklinks:
+  	<a href="{% url members.views.index %}">members</a> |
+  	<a href="{% url admin:staff_dailylog_add %}">add daily log</a> |
+  	<a href="{% url admin:staff_monthlylog_add %}">add monthly log</a> |
+  	<a href="{% url staff.views.signup %}">add member</a>
+  </div>  
+</div>
+
+{% if search_results %}
+	{% for result in search_results %}
+	<div class="plan-section">
+		<h1>Search results</h1>
+		{% with search_results as members %}
+         {% include "staff/member_table.frag" %}
+      {% endwith %}
+	</div>
+	{% endfor %}
+{% else %}
+  <div id="tabs">
+    <ul> 
+    {% for plan in plans %}
+  		{% ifnotequal plan.count 0 %}      
+    	<li><a href="#tabs-{{forloop.counter}}">{{ plan.name }}</a></li>
+    	{% endifnotequal %}
+    {% endfor%}
+    </ul>
+  	{% for plan in plans %}	
+  		{% ifnotequal plan.count 0 %}
+  		<div id="tabs-{{forloop.counter}}" class="plan-section">      
+  			<h3>{{ plan.name }}: <em>{{ plan.count }} member{{ plan.count|pluralize }}</em></h3>
+  		{% with plan.members as members %}
+           {% include "staff/member_table.frag" %}
+        {% endwith %}
+  		</div>
+  		{% endifnotequal %}
+  	{% endfor%}    
+  </div>
+{% endif %}
+
+{% endblock %}

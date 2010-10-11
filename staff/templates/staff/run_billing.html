@@ -1,0 +1,43 @@
+{% extends "staff/ml_base.html" %}
+{% load list_tags %}
+
+{% block sub-title %}Run Billing | {% endblock %}
+
+{% block style %}
+nav #billing-tab { background: #FBD850; color: black; }
+.bl-failure { background-color: #F99; }
+{% endblock %}
+
+{% block content %}
+<h2>Run Billing:</h2>
+
+{% if page_message %}
+	<p>{{ page_message|safe }}</p>
+{% endif %}
+
+<form action="." method="post">
+	{{ run_billing_form }}
+	<input type="submit" value="Run Billing " />
+</form>
+
+<h2>Billing Logs:</h2>
+<table id="billing-logs-table">
+   <tr>
+      <th>Start time</th>
+      <th>End time</th>
+      <th>Note</th>
+   </tr>
+{% for billing_log in billing_logs %}
+   <tr class="{% if billing_log.successful %}bl-success{% else %}bl-failure{% endif %}">
+      <td class="bl-date">{{ billing_log.started }}</td>
+      <td class="bl-date">{% if billing_log.ended %}{{ billing_log.ended }}{% endif %}</td>
+      <td>
+         {% if billing_log.note %}{{ billing_log.note }}{% endif %}
+      </td>
+   </tr>
+{% endfor %}
+</ul>
+{% if not billing_logs %}
+   <p>There are no billing logs!<br />Weird.</p>
+{% endif %}
+{% endblock %}

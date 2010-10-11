@@ -1,0 +1,86 @@
+{% extends "staff/ml_base.html" %}
+{% load list_tags %}
+
+{% block sub-title %}Transactions for {{ member.first_name }} {{ member.last_name }} | {% endblock %}
+
+{% block style %}
+nav #billing-tab { background: #FBD850; color: black; }
+{% endblock %}
+
+{% block content %}
+<h2>Transactions for <a href="{% url staff.views.member_detail member.id %}">{{ member.first_name }} {{ member.last_name }}</a>:</h2>
+{% if not member.transaction_set.all %}
+<p>There are no transactions!</p>
+{% endif%}
+
+<table id="transaction-list">
+	{% for transaction in member.transaction_set.all %}
+		<tr class="{% cycle 'row-even' 'row-odd' %}">
+			<td><a href="{{ transaction.get_absolute_url }}">{{ transaction.created|date:"m/d/y" }}</a>
+			   for bill{{ transaction.bills.all|pluralize }}
+			   {% for bill in transaction.bills.all %}
+               <a href="{{ bill.get_absolute_url }}">{{ bill.created|date:"m/d/y" }}</a>{% loop_comma %}
+            {% endfor %}
+			</td>
+			<td>${{ transaction.amount }}</td>
+			<td>{% if transaction.note %}{{ transaction.note }}{% endif %}</td>
+		</tr>
+	{% endfor %}
+</table>
+
+{% if member.open_bills %}
+<h2>Open Bills:</h2>
+{% endif %}
+<table id="open-bills-list">
+      {% for bill in member.open_bills %}
+		<tr class="{% cycle 'row-even' 'row-odd' %}">
+		   <td><a href="{{ bill.get_absolute_url }}">{{ bill.created|date:"m/d/y" }}</a></td>
+		   <td>${{ bill.amount }}</td>
+		   <td></td>
+		</tr>
+      {% endfor %}
+</table>
+
+{% if member.monthly_logs.all %}
+	<h2>Monthly logs:</h2>
+	   <table>
+	      <tr>
+	         <th>Plan</th>
+	         <th>Start Date</th>
+	         <th>End Date</th>
+	         <th>Notes</th> 
+	      </tr>
+   
+	      {% for log in member.monthly_logs.all reversed %}
+	         <tr class="{% cycle 'row-even' 'row-odd' %}">
+	            <td>{{ log.plan }}</td>
+	            <td><a href="{{ log.get_admin_url }}">{{ log.start_date|date:"m/d/y" }}</a></td>
+	            <td>{% if log.end_date %}{{ log.end_date|date:"m/d/y" }}{% endif %}</td>
+	            <td>{{ log.note }}</td>
+	         </tr>
+	      {% endfor %}
+	   </table>
+{% endif %}
+
+{% if member.daily_logs.all %}
+	<h2>Daily logs:</h2>
+	<table>
+	   <tr>
+	      <th>Date</th>
+	      <th>Payment</th>
+	      <th>Guest of</th>
+	      <th>Notes</th> 
+	   </tr>
+	   {% for log in member.daily_logs.all %}
+	      <tr class="{% cycle 'row-even' 'row-odd' %}">
+	         <td><a href="{{ log.get_admin_url }}">{{ log.visit_date|date:"m/d/y" }}</a></td>
+	         <td>{{ log.payment }}</td>
+	         <td>{% if log.guest_of %}{{ log.guest_of }}{% endif %}</td>
+	         <td class="log-note">{{ log.note }}</td>
+	      </tr>
+	   {% endfor %}
+	</table>
+{% endif %}
+
+
+{% endblock %}

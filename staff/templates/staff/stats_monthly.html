@@ -1,0 +1,42 @@
+{% extends "staff/ml_base.html" %}
+
+{% block sub-title %}Stats | Monthly Members | {% endblock %}
+
+{% block style %}
+nav #stats-tab { background: #FBD850; color: black; }
+.note-cell { width: 160px; }
+{% endblock %}
+
+{% block content %}
+<h2>Stats - Monthly members:</h2>
+
+{% include "staff/stats_menu.frag" %}
+
+<div style="margin: 10px 0;">
+	<strong>Total Monthly Members:</strong> {{ monthly_logs.count }} &nbsp;&nbsp; 
+	<strong>Total Monthly Income:</strong>  ${{ total_income }}
+</div>
+
+<div id="monthly-members">
+	<table border="1">
+      <tr>
+         <th>Member</th>
+         <th>Start Date</th>
+         <th>Plan</th>
+         <th>Rate</th>
+         <th>Note</th>
+      </tr>
+   
+      {% for log in monthly_logs %}
+	      <tr class="{% cycle 'row-even' 'row-odd' %}">
+	         <td><a href="{{ log.member.get_absolute_url }}">{{ log.member }}</a></td>
+	         <td>{{ log.start_date }}</td>
+	         <td>{{ log.plan }}</td>
+	         <td>${{ log.rate }}</td>
+	         <td class="note-cell">{{ log.note }}</td>
+	      </tr>
+	   {% endfor %}
+	   
+	</table>
+</div>
+{% endblock %}

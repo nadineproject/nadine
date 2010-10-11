@@ -1,0 +1,29 @@
+{% extends "staff/ml_base.html" %}
+
+{% block sub-title %}Transaction | {% endblock %}
+
+{% block style %}
+nav #billing-tab { background: #FBD850; color: black; }
+{% endblock %}
+
+{% block content %}
+<h2><a href="{{ transaction.member.get_absolute_url }}">{{ transaction.member.first_name }} {{ transaction.member.last_name }}</a>'s Transaction:</h2>
+
+<dl id="transaction-metadata">
+		<dt>Created:</dt><dd>{{ transaction.created }}</dd>
+		<dt>Amount:</dt><td>${{ transaction.amount }}</td>
+	{% if transaction.note %}
+  <th>Note:</th><td>{{ transaction.note }}</td>
+	{% endif %}
+</table>
+
+<h2>Bills covered by this transaction:</h2>
+<ul>
+{% for bill in transaction.bills.all %}
+<li><a href="{{ bill.get_absolute_url }}">Bill on {{ bill.created }}</a> for ${{ bill.amount }}</li>
+{% endfor %}
+</ul>
+
+[<a href="{{ transaction.get_admin_url }}">edit this transaction</a>]
+
+{% endblock %}

@@ -1,0 +1,4 @@
+Member, Type, Email, Phone, First Visit, Last Visit, Paid Count
+{% for member in member_list %}{{ member }},{{ member.membership_type }},{{member.email}},{{member.phone}},{{ member.first_visit }},{{ member.last_visit }},{{ member.paid_count }}
+{% endfor %}
+

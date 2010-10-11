@@ -1,0 +1,34 @@
+{% extends "staff/ml_base.html" %}
+
+{% block sub-title %}Stats | Members By Type | {% endblock %}
+
+{% block style %}
+nav #stats-tab { background: #FBD850; color: black; }
+{% endblock %}
+
+{% block content %}
+<h2>Stats - Members by type:</h2>
+
+{% include "staff/stats_menu.frag" %}
+
+<div style="margin: 10px 0;">
+	<strong>Total members:</strong> {{ member_count }}
+</div>
+
+<div id="member-by-type">
+	<table width="100%" border="1">
+	   <tr>
+	      <th>Membership Type</th>
+	      <th>Count</th>
+	   </tr>
+	
+	   {% for key,value in types_dict.items %}
+	      <tr class="{% cycle 'row-even' 'row-odd' %}">
+	         <td align="left">{{ key }}</td>
+	         <td>{{ value }}</td>
+	      </tr>
+	   {% endfor %}
+	</table>
+</div>
+<br>
+{% endblock %}

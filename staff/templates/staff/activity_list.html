@@ -1,0 +1,42 @@
+{% extends "staff/ml_base.html" %}
+
+{% block sub-title %}Activity List | {% endblock %}
+
+{% block style%}
+#nav-tabs #activity-tab { background-color: #EEE; }
+#content table { width: 100%; }
+.log-note { width: 100px; } 
+#date-controls { text-align: center; margin-bottom: 20px; font-size: 1.4em; font-weight: bold; }
+#date-controls a { text-decoration: none; }
+{% endblock %}
+
+{% block content %}
+
+<h1>Activity List</h1>
+{% url staff.views.activity_list as date_range_form_action %}
+{% include "staff/date_range_form.frag"%}
+
+{% if daily_logs %}
+   <table>
+      <tr>
+         <th>Member</th>
+         <th>Date</th>
+         <th>Payment</th>
+         <th>Guest of</th>
+         <th>Notes</th> 
+      </tr>
+      {% for log in daily_logs %}
+         <tr class="{% cycle 'row-even' 'row-odd' %}">
+            <td><a href="{% url staff.views.member_activity log.member.id %}">{{ log.member }}</a></td>
+            <td>{{ log.visit_date|date:"M d, Y" }}</td>
+            <td>{{ log.payment }}</td>
+            <td>{% if log.guest_of %}<a href="{% url staff.views.member_detail log.guest_of.id %}">{{ log.guest_of }}</a>{% endif %}</td>
+            <td class="log-note">{{ log.note }}</td>
+         </tr>
+      {% endfor %}
+   </table>
+{% else %}
+   <p>There are no recorded activity for this period.</p>
+{% endif %}
+
+{% endblock %}

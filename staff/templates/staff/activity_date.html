@@ -1,0 +1,41 @@
+{% extends "staff/ml_base.html" %}
+
+{% block sub-title %}Activity on {{ activity_date|date:"M d, Y" }} | {% endblock %}
+
+{% block style%}
+#nav-tabs #activity-tab { background-color: #EEE; }
+#content table { width: 100%; }
+.log-note { width: 100px; } 
+#date-controls { text-align: center; margin-bottom: 20px; font-size: 1.4em; font-weight: bold; }
+#date-controls a { text-decoration: none; }
+{% endblock %}
+
+{% block content %}
+
+<div id="date-controls">
+   <a href="{% url staff.views.activity_date previous_date.year previous_date.month previous_date.day %}">&laquo;</a>
+   <strong>Part time and drop-ins for {{ activity_date|date:"M d, Y" }}</strong>
+   <a href="{% url staff.views.activity_date next_date.year next_date.month next_date.day %}">&raquo;</a>
+</div>
+{% if daily_logs %}
+   <table>
+      <tr>
+         <th>Member</th>
+         <th>Payment</th>
+         <th>Guest of</th>
+         <th>Notes</th> 
+      </tr>
+      {% for log in daily_logs %}
+         <tr class="{% cycle 'row-even' 'row-odd' %}">
+            <td><a href="{% url staff.views.member_activity log.member.id %}">{{ log.member }}</a></td>
+            <td>{{ log.payment }}</td>
+            <td>{% if log.guest_of %}<a href="{% url staff.views.member_detail log.guest_of.id %}">{{ log.guest_of }}</a>{% endif %}</td>
+            <td class="log-note">{{ log.note }}</td>
+         </tr>
+      {% endfor %}
+   </table>
+{% else %}
+   <p>There are no recorded drop-ins for this day.</p>
+{% endif %}
+
+{% endblock %}

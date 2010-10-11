@@ -1,0 +1,53 @@
+{% extends "staff/ml_base.html" %}
+
+{% block sub-title %}Activity for {{ member.first_name }} {{ member.last_name }} | {% endblock %}
+
+{% block style%}
+nav #activity-tab { background: #FBD850; color: black; }
+.log-note { width: 160px; } 
+{% endblock %}
+
+{% block content %}
+<h2>Activity for <a href="{% url staff.views.member_detail member.id %}">{{ member.first_name }} {{ member.last_name }}</a>:</h2>
+
+{% if member.monthly_logs.all %}
+	<h2>Monthly logs:</h2>
+	   <table>
+	      <tr>
+	         <th>Plan</th>
+	         <th>Start Date</th>
+	         <th>End Date</th>
+	         <th>Notes</th> 
+	      </tr>
+   
+	      {% for log in member.monthly_logs.all reversed %}
+	         <tr class="{% cycle 'row-even' 'row-odd' %}">
+	            <td>{{ log.plan }}</td>
+	            <td><a href="{{ log.get_admin_url }}">{{ log.start_date }}</a></td>
+	            <td>{% if log.end_date %}{{ log.end_date }}{% endif %}</td>
+	            <td>{{ log.note }}</td>
+	         </tr>
+	      {% endfor %}
+	   </table>
+{% endif %}
+
+{% if member.daily_logs.all %}
+	<h2>Daily logs:</h2>
+	<table>
+	   <tr>
+	      <th>Date</th>
+	      <th>Payment</th>
+	      <th>Guest of</th>
+	      <th>Notes</th> 
+	   </tr>
+	   {% for log in member.daily_logs.all %}
+	      <tr class="{% cycle 'row-even' 'row-odd' %}">
+	         <td><a href="{{ log.get_admin_url }}">{{ log.visit_date }}</a></td>
+	         <td>{{ log.payment }}</td>
+	         <td>{% if log.guest_of %}{{ log.guest_of }}{% endif %}</td>
+	         <td class="log-note">{{ log.note }}</td>
+	      </tr>
+	   {% endfor %}
+	</table>
+{% endif %}
+{% endblock %}

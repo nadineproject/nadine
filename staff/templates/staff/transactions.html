@@ -1,0 +1,33 @@
+{% extends "staff/ml_base.html" %}
+
+{% block sub-title %}Transactions | {% endblock %}
+
+{% block style %}
+nav #billing-tab { background: #FBD850; color: black; }
+{% endblock %}
+
+{% block content %}
+<h2>Transactions:</h2>
+
+{% if page_message%}<p id="page-message">{{ page_message }}</p>{% endif %}
+
+{% if not transactions %}
+<p>There are no transactions!</p>
+{% endif%}
+
+<div class="columns">
+{% include "staff/date_range_form.frag"%}  
+</div>
+
+
+<table id="transaction-list">
+	{% for transaction in transactions %}
+		<tr class="{% cycle 'row-even' 'row-odd' %}">
+			<td><a href="{{ transaction.get_absolute_url }}">{{ transaction.created|date:"Y-m-d" }}</a></td>
+			<td><a href="{{ transaction.member.get_absolute_url }}">{{ transaction.member.first_name }} {{ transaction.member.last_name }}</a></td>
+			<td>${{ transaction.amount }}</td>
+		</tr>
+	{% endfor %}
+</table>
+
+{% endblock %}

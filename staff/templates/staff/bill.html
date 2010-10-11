@@ -1,0 +1,16 @@
+{% extends "staff/ml_base.html" %}
+{% load list_tags %}
+
+{% block sub-title %}Bill | {{bill.created }} | {{ bill.member.first_name }} {{ bill.member.last_name }} | {% endblock %}
+
+{% block style %}
+nav #billing-tab { background: #FBD850; color: black; }
+{% endblock %}
+
+{% block content %}
+<h2><a href="{{ bill.member.get_absolute_url }}">{{ bill.member.first_name }} {{ bill.member.last_name }}</a>'s Bill:</h2>
+{% include "staff/bill_table.frag" %}
+
+
+[<a href="{{ bill.get_admin_url }}">edit this bill</a>]
+{% endblock %}

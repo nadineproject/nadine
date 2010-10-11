@@ -1,0 +1,38 @@
+{% extends "staff/ml_base.html" %}
+
+{% block sub-title %}Onboard Task View | {% endblock %}
+
+{% block style%}
+nav #todo-tab { background: #FBD850; color: black; }
+{% endblock %}
+
+{% block content %}
+<h2>Onboard Task: {{ task.name }}</h2>
+
+<p>{{ task.description }}</p>    
+<p>This task only applies to monthly members</p>
+
+{% if task.uncompleted_members %}
+	<table>
+		<tr>
+		   <th>Name</th>
+		   <th>Phone</th>
+		   <th>Email</th>
+		</tr>
+		{% for member in task.uncompleted_members %}
+		<tr class="{% cycle 'row-even' 'row-odd' %}">
+			<td nowrap><a href="{% url staff.views.member_detail member.id %}">{{ member }}</a></td>
+			<td nowrap>{{ member.phone }}</td>
+			<td nowrap>{{ member.email }}</td>
+		</tr>
+		{% endfor %}
+	</table>
+
+	<form action="." method="POST">
+		<input name="Mark All" type="Submit" Value="Mark All Members Completed" onclick="return confirm('Are you sure?');">
+	</form>	
+{% else %}
+	<p style="font-size: 1.4em; font-weight: bold;">No pending tasks!  Yay!</p>
+{% endif %}
+
+{% endblock %}
