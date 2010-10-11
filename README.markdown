@@ -13,10 +13,6 @@ Most of the action is in the staff application, where you'll find a member track
 - feedparser
 - PIL
 
-You may install the python packages via this command:
-
-pip install django south pil mysql-python
-
 ## Vague but Helpful Installation Instructions
 
 Set up your Django environment then test that it's up by creating a scratch project and running the Django development server.
