@@ -8,13 +8,14 @@ ADMINS = (
 )
 MANAGERS = ADMINS
 
-# Database Settings
-DATABASE_ENGINE = 'postgresql_psycopg2' 
-DATABASE_NAME = 'nadine'
-DATABASE_USER = 'XXX'
-DATABASE_PASSWORD = 'YYY'
-DATABASE_HOST = ''
-DATABASE_PORT = ''
+DATABASES = {
+    'default': {
+		'ENGINE':'django.db.backends.postgresql_psycopg2',
+		'USER':'postgres',
+		'NAME':'nadine',
+		'PASSWORD':'1234'
+    }
+}
 
 #CACHE_BACKEND = 'dummy:///'
 CACHE_BACKEND = 'locmem:///'

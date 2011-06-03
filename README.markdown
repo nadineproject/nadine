@@ -4,20 +4,15 @@ This is the Django web project which runs behinds the scenes of coworking spaces
 
 Most of the action is in the staff application, where you'll find a member tracking and billing system.
 
-## Requirements
-
-- Django
-- South
-- MySQL
-- mysql-python
-- feedparser
-- PIL
-
 ## Vague but Helpful Installation Instructions
 
 Set up your Django environment then test that it's up by creating a scratch project and running the Django development server.
 
-Set up MySQL, create a blank database and grant all permissions to whatever account/password combination you want to use for the app.
+Set up PostgreSQL, create a blank database and grant all permissions to whatever account/password combination you want to use for the app.
+
+	git clone git://github.com/nadineproject/nadine.git
+	cd nadine
+	pip install -r requirements.txt
 
 Copy local_settings.dist to local_settings.py and edit it to reflect your local settings.
 
@@ -31,7 +26,11 @@ Run Django's syncdb and then South's migrate commands.  Both Django and South ha
  - If you are using a 32bit MySQL python will have problems because it defaults to running in 64 bit mode.  
    The error will look like:  blah blah blah "mysql.so: mach-o, but wrong architecture"
    You'll need to get python running in 32 bit mode for this to work.  Run the following:
-   export VERSIONER_PYTHON_PREFER_32_BIT=yes
+   export VERSIONER_PYTHON_PREFER_32_BIT=yes 
+
+ - In a virtualenv, you should simply remove the 64 python altogether like so:
+   $ mv .../virtualenvs/nadine/bin/python .../virtualenvs/nadine/bin/python.old
+   $ lipo -remove x86_64 .../virtualenvs/nadine/bin/python.old -output .../virtualenvs/nadine/bin/python
 
 ## License & Copyright
 

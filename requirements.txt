@@ -1,0 +1,5 @@
+django
+south
+psycopg2
+pil
+feedparser

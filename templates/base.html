@@ -4,13 +4,13 @@
 	<meta charset="utf-8">
 	<meta name="DC.title" content="{{ site.name }}" />
 	<title>{% block title %}{% block sub-title %}{% endblock %}{{ site.name }}{% endblock %}</title>
-	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}/base.css" />
-		<link type="text/css" href="{{ MEDIA_URL }}/jquery-ui-1.8.4.custom.css" rel="stylesheet" />	
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}base.css" />
+		<link type="text/css" href="{{ STATIC_URL }}/jquery-ui-1.8.4.custom.css" rel="stylesheet" />	
 <!--[if IE]>
-	<script src="{{ MEDIA_URL }}html5.js"></script>
+	<script src="{{ STATIC_URL }}html5.js"></script>
 <![endif]-->
-	<script src="{{ MEDIA_URL }}jquery-1.4.2.min.js"></script> 
-	<script src="{{ MEDIA_URL }}jquery-ui-1.8.4.custom.min.js"></script> 
+	<script src="{{ STATIC_URL }}jquery-1.4.2.min.js"></script> 
+	<script src="{{ STATIC_URL }}jquery-ui-1.8.4.custom.min.js"></script> 
   <script>
   $(function(){
     jQuery('#tabs').tabs();     
@@ -34,9 +34,9 @@
   <a id="admin-tab" href="{% url admin:index %}">Admin</a>
   {% if request.user.is_authenticated %}
   <a id="log-tab" href="{% url django.contrib.auth.views.logout_then_login %}">Logout</a>
-  	{% else %}
+  {% else %}
   <a id="log-tab" href="{% url django.contrib.auth.views.login %}">Login</a>
-  	{% endif %}
+  {% endif %}
   </nav>
 {% block header-title %}{% endblock %}
 </header>{% endblock %}

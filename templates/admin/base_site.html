@@ -1,13 +1,15 @@
 {% extends "admin/base.html" %}
-{% load i18n %}
 
-{% block title %}{{ title }} | {% trans 'Django site admin' %}{% endblock %}
+{% block title %}{{ title }} | {{ site.name }} administration{% endblock %}
 
-{% block extrahead %}
+{% block extrastyle %}
+<link rel="stylesheet" type="text/css" href="{{STATIC_URL }}admin/css/base.css" />
+<style type="text/css">
+#header { background-color: #FFF; color: rgb(102, 102, 102); }
+#header, #header h1, #header a:link, #header a:visited { color: rgb(102, 102, 102); font-weight: bold; }
+</style>
 {% endblock %}
 
 {% block branding %}
-<h1 id="site-name"><a href="/">{{ site.name }}</a></h1>
+<h1 id="site-name"><a href="/">Site</a> › {{site.name}} administration</h1>
 {% endblock %}
-
-{% block nav-global %}{% endblock %}

@@ -5,7 +5,18 @@ PROJECT_ROOT = os.path.realpath(os.path.dirname(__file__))
 TEMPLATE_DIRS = ( PROJECT_ROOT + '/templates/', )
 MEDIA_ROOT = PROJECT_ROOT + '/media/'
 BACKUP_ROOT = PROJECT_ROOT + '/backups/'
-DYNAMIC_MEDIA_DIRS = ['member_photo', 'resized_image']
+
+STATIC_URL = '/static/'
+STATIC_ROOT = ''
+
+STATICFILES_DIRS = (
+)
+
+STATICFILES_FINDERS = (
+	'django.contrib.staticfiles.finders.FileSystemFinder',
+	'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+	#'django.contrib.staticfiles.finders.DefaultStorageFinder',
+)
 
 SOUTH_AUTO_FREEZE_APP = True
 
@@ -17,7 +28,7 @@ DEBUG = False
 # although not all variations may be possible on all operating systems.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = 'America/Seattle'
+TIME_ZONE = 'America/Vancouver'
 
 # Language code for this installation. All choices can be found here:
 # http://www.w3.org/TR/REC-html40/struct/dirlang.html#langcodes
@@ -42,44 +53,49 @@ LOGIN_URL='/login/'
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
 #ADMIN_MEDIA_PREFIX = 'https://secure.officenomads.com/staff/media/admin/'
-ADMIN_MEDIA_PREFIX = '/media/admin/'
+ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.load_template_source',
-    'django.template.loaders.app_directories.load_template_source',
-#     'django.template.loaders.eggs.load_template_source',
+    'django.template.loaders.filesystem.Loader',
+	'django.template.loaders.app_directories.Loader',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.core.context_processors.auth',
-    'django.core.context_processors.debug',
-    'django.core.context_processors.i18n',
-    'django.core.context_processors.media',
+	"django.contrib.auth.context_processors.auth",
+	"django.core.context_processors.debug",
+	"django.core.context_processors.i18n",
+	"django.core.context_processors.media",
+	"django.core.context_processors.static",
     'django.core.context_processors.request',
+	"django.contrib.messages.context_processors.messages",
     'context_processors.site',
     'context_processors.nav_context',
 )
 
 MIDDLEWARE_CLASSES = (
-    'django.middleware.common.CommonMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.middleware.doc.XViewMiddleware',
+	'django.middleware.common.CommonMiddleware',
+	'django.contrib.sessions.middleware.SessionMiddleware',
+	'django.middleware.csrf.CsrfViewMiddleware',
+	'django.contrib.auth.middleware.AuthenticationMiddleware',
+	'django.contrib.messages.middleware.MessageMiddleware',
 )
+
 
 ROOT_URLCONF = 'urls'
 
 INSTALLED_APPS = (
-   'django.contrib.auth',
-   'django.contrib.contenttypes',
-   'django.contrib.sessions',
-   'django.contrib.sites',
-   'django.contrib.admin',
-   'south',
-   'front',
-   'staff',
-   'members',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.sites',
+	'django.contrib.admin',
+	'django.contrib.humanize',
+	'django.contrib.staticfiles',
+	'south',
+	'front',
+	'staff',
+	'members',
 )
 
 from local_settings import *

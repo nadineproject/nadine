@@ -6,6 +6,8 @@
 #content { border: none; }
 #content form { margin-bottom: 40px; width: 200px; }
 #content input[type=submit] { float: right; }
+#content h1 { font-size: 1.8em; margin: 0.5em 0; }
+#content table td { border-bottom: none; }
 {% endblock %}
 
 {% block header %}{%endblock %}
@@ -20,10 +22,13 @@
 <table>
 <tr><td>{{ form.username.label_tag }}</td><td>{{ form.username }}</td></tr>
 <tr><td>{{ form.password.label_tag }}</td><td>{{ form.password }}</td></tr>
+<tr><td colspan=2>
+		<input type="submit" value="login" />
+		<input type="hidden" name="next" value="{{ next }}" />
+	</td>
+</tr>
 </table>
 
-<input type="submit" value="login" />
-<input type="hidden" name="next" value="{{ next }}" />
 {% csrf_token %}
 </form>
 
