@@ -3,36 +3,13 @@
 {% block sub-title %}Members | {% endblock %}
 
 {% block style%}
+nav #members-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {% block content %}
 <h2>Member List</h2>  
-<div class="columns clearfix">
-  <form class="c1" id="member-search-form" action="{% url staff.views.member_search %}" method="post">
-  	Find member:
-  	{% for field in member_search_form %}{{ field }}{% endfor %}
-  	<input type="submit" value="search" />
-  </form>
+  {% include "staff/search_and_quicklinks.frag" %}
 
-  <div class="c2" id="quick-links">
-  	Quicklinks:
-  	<a href="{% url members.views.index %}">members</a> |
-  	<a href="{% url admin:staff_dailylog_add %}">add daily log</a> |
-  	<a href="{% url admin:staff_monthlylog_add %}">add monthly log</a> |
-  	<a href="{% url staff.views.signup %}">add member</a>
-  </div>  
-</div>
-
-{% if search_results %}
-	{% for result in search_results %}
-	<div class="plan-section">
-		<h1>Search results</h1>
-		{% with search_results as members %}
-         {% include "staff/member_table.frag" %}
-      {% endwith %}
-	</div>
-	{% endfor %}
-{% else %}
   <div id="tabs">
     <ul> 
     {% for plan in plans %}
@@ -52,6 +29,5 @@
   		{% endifnotequal %}
   	{% endfor%}    
   </div>
-{% endif %}
 
 {% endblock %}

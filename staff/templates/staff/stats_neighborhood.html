@@ -43,6 +43,7 @@ nav #stats-tab { background: #FBD850; color: black; }
 	   {% else %}
 	      <input type="submit" name="ActiveOnly" value="Show Active Members Only">
 	   {% endif %}
+	   {% csrf_token %}
 	</form></p>
 </div>
 

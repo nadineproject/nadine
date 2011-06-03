@@ -19,15 +19,12 @@ START_DATE_PARAM = 'start'
 END_DATE_PARAM = 'end'
 
 @login_required
-def index(request):
+def members(request):
    if not request.user.is_staff: return HttpResponseRedirect(reverse('members.views.user', args=[], kwargs={'username':request.user.username}))
-   search_results = None
-   member_search_form = MemberSearchForm()
-      
    plans = []
    for plan_id, plan_name  in MONTHLY_PLAN_CHOICES:
       plans.append({ 'name':plan_name, 'id':plan_id, 'members':Member.objects.members_by_monthly_log_type(plan_id), 'count':len(Member.objects.members_by_monthly_log_type(plan_id))})
-   return render_to_response('staff/members.html', { 'plans': plans, 'member_search_form':member_search_form, 'search_results':search_results }, context_instance=RequestContext(request))
+   return render_to_response('staff/members.html', { 'plans': plans, 'member_search_form':MemberSearchForm() }, context_instance=RequestContext(request))
 
 @staff_member_required
 def export_members(request):
@@ -41,7 +38,7 @@ def signup(request):
       member_signup_form = MemberSignupForm(request.POST, request.FILES)
       if member_signup_form.is_valid():
          user = member_signup_form.save()
-         page_message = 'The user was successfully created. [<a href="%s">detail</a>]' % user.get_absolute_url()
+         page_message = 'The user was successfully created: [<a href="%s">see detail</a>], [<a href="%s">add daily log</a>] or [<a href="%s">add monthly log</a>]' % (user.get_absolute_url(), reverse('admin:staff_dailylog_add'), reverse('admin:staff_monthlylog_add'))
          member_signup_form = MemberSignupForm()
    else:
       member_signup_form = MemberSignupForm()
@@ -117,17 +114,31 @@ def bill(request, id):
 @staff_member_required
 def exit_task(request, id):
    task = get_object_or_404(ExitTask, pk=id)
-   if request.method == 'POST' and 'Mark All' in request.POST:
-      for member in task.uncompleted_members():
-         update = ExitTaskCompleted.objects.create(member=member, task=task)
+   if request.method == 'POST':
+      if 'save_exit_task' in request.POST:
+         task = ExitTask.objects.get(pk=request.POST.get('task_id'))
+         member = Member.objects.get(user__username=request.POST.get('username'))
+         ExitTaskCompleted.objects.create(member=member, task=task)
+         return HttpResponseRedirect(reverse('staff.views.exit_task', kwargs={ 'id':id }))
+      elif 'Mark All' in request.POST:
+         for member in task.uncompleted_members():
+            update = ExitTaskCompleted.objects.create(member=member, task=task)
+         return HttpResponseRedirect(reverse('staff.views.exit_task', kwargs={ 'id':id }))
    return render_to_response('staff/exit_task.html', {'task': task }, context_instance=RequestContext(request))
 
 @staff_member_required
 def onboard_task(request, id):
    task = get_object_or_404(Onboard_Task, pk=id)
-   if request.method == 'POST' and 'Mark All' in request.POST:
-      for member in task.uncompleted_members():
-         update = Onboard_Task_Completed.objects.create(member=member, task=task)
+   if request.method == 'POST':
+      if 'save_onboard_task' in request.POST:
+         task = Onboard_Task.objects.get(pk=request.POST.get('task_id'))
+         member = Member.objects.get(user__username=request.POST.get('username'))
+         Onboard_Task_Completed.objects.create(member=member, task=task)
+         return HttpResponseRedirect(reverse('staff.views.onboard_task', kwargs={ 'id':id }))
+      elif 'Mark All' in request.POST:
+         for member in task.uncompleted_members():
+            update = Onboard_Task_Completed.objects.create(member=member, task=task)
+         return HttpResponseRedirect(reverse('staff.views.onboard_task', kwargs={ 'id':id }))
    return render_to_response('staff/onboard_task.html', {'task': task}, context_instance=RequestContext(request))
 
 @staff_member_required
@@ -141,7 +152,7 @@ def todo(request) :
    for task in ExitTask.objects.all().order_by('order'):
       exit_tasks.append((task, len(task.uncompleted_members())))
    
-   return render_to_response('staff/todo.html', {'onboard_tasks':onboard_tasks, 'exit_tasks':exit_tasks }, context_instance=RequestContext(request))
+   return render_to_response('staff/todo.html', {'onboard_tasks':onboard_tasks, 'exit_tasks':exit_tasks, 'member_search_form':MemberSearchForm() }, context_instance=RequestContext(request))
 
 @staff_member_required
 def stats(request):      

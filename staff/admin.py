@@ -38,7 +38,7 @@ class UserWithProfileAdmin(UserAdmin):
 admin.site.register(User, UserWithProfileAdmin)
 
 class DailyLogAdmin(StyledAdmin):
-   list_display = ('visit_date', 'member', 'guest_of')
+   list_display = ('visit_date', 'member', 'guest_of', 'created')
    search_fields = ('member__user__first_name', 'member__user__last_name', 'guest_of__user__first_name', 'guest_of__user__last_name')
 admin.site.register(DailyLog, DailyLogAdmin)
 

@@ -11,29 +11,30 @@ nav #billing-tab { background: #FBD850; color: black; }
 <h2>Member Signup:</h2>
 
 {% if page_message %}
-<p id="page-message">{{ page_message|safe }}</p>
+	<p id="page-message">{{ page_message|safe }}</p>
+{% else %}
+	<form enctype="multipart/form-data" action='.' method='post'>
+	   <table id="signup">
+	      {% for field in member_signup_form %}
+	         <tr class="{% cycle 'row-even' 'row-odd' %}">
+	            <td>{{ field.label_tag }}</td>
+	            <td>
+	               {{ field }}
+	               {% if field.label == 'How heard' %}<a href="{% url admin:staff_howheard_add %}">+</a>{% endif %}
+	               {% if field.label == 'Industry' %}<a href="{% url admin:staff_industry_add %}">+</a>{% endif %}
+	               {% if field.label == 'Neighborhood' %}<a href="{% url admin:staff_neighborhood_add %}">+</a>{% endif %}
+	            </td>
+	            {% if field.errors %}
+	            <td>
+	               {{ field.errors }}
+	            </td>
+	            {% endif %}
+	         </tr>
+	      {% endfor %}
+	      <tr><td></td><td><input type="submit" value="Create!" /></td></tr>
+	   </table>
+	   {% csrf_token %}
+	</form>
+	<p>* this field is required</p>
 {% endif %}
-
-<form enctype="multipart/form-data" action='.' method='post'>
-   <table id="signup">
-      {% for field in member_signup_form %}
-         <tr class="{% cycle 'row-even' 'row-odd' %}">
-            <td>{{ field.label_tag }}</td>
-            <td>
-               {{ field }}
-               {% if field.label == 'How heard' %}<a href="{% url admin:staff_howheard_add %}">+</a>{% endif %}
-               {% if field.label == 'Industry' %}<a href="{% url admin:staff_industry_add %}">+</a>{% endif %}
-               {% if field.label == 'Neighborhood' %}<a href="{% url admin:staff_neighborhood_add %}">+</a>{% endif %}
-            </td>
-            {% if field.errors %}
-            <td>
-               {{ field.errors }}
-            </td>
-            {% endif %}
-         </tr>
-      {% endfor %}
-      <tr><td></td><td><input type="submit" value="Create!" /></td></tr>
-   </table>
-</form>
-<p>* this field is required</p>
 {% endblock %}

@@ -13,6 +13,7 @@
 		Find:
 		{% for field in member_search_form %}{{ field }}{% endfor %}
 		<input type="submit" value="search" />
+		{% csrf_token %}
 	</form>
 
 	<h1>Search results</h1>

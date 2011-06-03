@@ -323,6 +323,8 @@ class DailyLog(models.Model):
    payment = models.CharField("Payment", max_length=5, choices=PAYMENT_CHOICES)
    guest_of = models.ForeignKey(Member, verbose_name="Guest Of", related_name="guest_of", blank=True, null=True)
    note = models.CharField("Note", max_length=128, blank="True")
+   
+   created = models.DateTimeField(auto_now_add=True, default=datetime.now())
 
    def __str__(self):
       return '%s - %s' % (self.visit_date, self.member)
@@ -332,7 +334,7 @@ class DailyLog(models.Model):
 
    class Meta:
       verbose_name = "Daily Log"
-      ordering = ['-visit_date']
+      ordering = ['-visit_date', '-created']
 
 class MonthlyLog_Manager(models.Manager):
    def by_date(self, target_date):

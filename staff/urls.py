@@ -1,7 +1,8 @@
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns('staff.views',
-    (r'^$', 'index'),
+    (r'^$', 'todo'),
+    (r'^member/$', 'members'),
     (r'^export/$', 'export_members'),
     (r'^search/$', 'member_search'),
     (r'^activity/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', 'activity_date'),
@@ -16,7 +17,6 @@ urlpatterns = patterns('staff.views',
     (r'^stats/member-types/$', 'stats_member_types'),
     (r'^stats/monthly/$', 'stats_monthly'),
     (r'^stats/neighborhood/$', 'stats_neighborhood'),
-    (r'^todo/$', 'todo'),
     (r'^todo/onboard/(?P<id>\d+)/$', 'onboard_task'),
     (r'^todo/exit/(?P<id>\d+)/$', 'exit_task'),
     (r'^signup/$', 'signup'),

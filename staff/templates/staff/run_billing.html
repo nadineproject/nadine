@@ -18,6 +18,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 <form action="." method="post">
 	{{ run_billing_form }}
 	<input type="submit" value="Run Billing " />
+	{% csrf_token %}
 </form>
 
 <h2>Billing Logs:</h2>

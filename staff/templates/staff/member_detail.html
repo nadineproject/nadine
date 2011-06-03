@@ -208,6 +208,7 @@ function gotoEmailReset(emailAddress){
 					<form action="." method="POST">
 						<input name="task_id" value="{{ task.id }}" type="hidden" />
 						<input name="save_onboard_task" type="submit" Value="Done" />
+						{% csrf_token %}
 					</form>
 				{% endif %}
 			</td>
@@ -233,6 +234,7 @@ function gotoEmailReset(emailAddress){
 						<form  action="." method="POST">
 							<input name="task_id" value="{{ task.id }}" type="hidden" />
 							<input name="save_exit_task" type="submit" Value="Done" />
+							{% csrf_token %}
 						</form>
 					{% endif %}
 				</td>
