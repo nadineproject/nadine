@@ -8,6 +8,19 @@ from django.contrib.auth.models import User
 import settings
 from staff.models import Bill, Transaction, Member, MonthlyLog, DailyLog, Onboard_Task, Onboard_Task_Completed, ExitTask, ExitTaskCompleted, Neighborhood
 import staff.billing as billing
+from staff.views import beginning_of_next_month, first_days_in_months
+
+class UtilsTest(TestCase):
+   
+   def testMonthlyRanges(self):
+      self.assertEqual(beginning_of_next_month(date(2010, 1, 1)), date(2010, 2, 1))
+      self.assertEqual(beginning_of_next_month(date(2010, 6, 30)), date(2010, 7, 1))
+      self.assertEqual(beginning_of_next_month(date(2010, 12, 1)), date(2011, 1, 1))
+      self.assertEqual(first_days_in_months(date(2010, 1, 3), date(2010, 4, 4)), [date(2010, 1, 1), date(2010, 2, 1), date(2010, 3, 1), date(2010, 4, 1)])
+      self.assertEqual(first_days_in_months(date(2009, 12, 3), date(2010, 4, 4)), [date(2009, 12, 1), date(2010, 1, 1), date(2010, 2, 1), date(2010, 3, 1), date(2010, 4, 1)])
+      self.assertEqual(first_days_in_months(date(2010, 1, 3), date(2010, 1, 3)), [date(2010, 1, 1)])
+      self.assertEqual(first_days_in_months(date(2010, 1, 3), date(2010, 1, 14)), [date(2010, 1, 1)])
+      self.assertEqual(first_days_in_months(date(2009, 12, 3), date(2010, 1, 14)), [date(2009, 12, 1), date(2010, 1, 1)])
 
 class TasksTestCase(TestCase):
 

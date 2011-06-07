@@ -173,6 +173,40 @@ def stats(request):
 
    return render_to_response('staff/stats.html', {'daily_logs_by_month':daily_logs_by_month}, context_instance=RequestContext(request))
 
+def beginning_of_next_month(the_date):
+   if the_date.month == 12:
+      result = date(the_date.year + 1, 1, 1)
+   else:
+      result = date(the_date.year, the_date.month + 1, 1)
+   return result
+
+def first_days_in_months(start_date, end_date):
+   """Returns an array of dates which are the first day in each month starting at start_date's month and ending with the month after end_date's month"""
+   if start_date.year == end_date.year and start_date.month == end_date.month: return [date(start_date.year, start_date.month, 1)]
+
+   first_date = date(start_date.year, start_date.month, 1)
+   
+   results = [first_date]
+   while beginning_of_next_month(results[-1]) < end_date: results.append(beginning_of_next_month(results[-1]))
+   return results
+
+@staff_member_required
+def stats_history(request):      
+   logs = [log for log in MonthlyLog.objects.all()]
+   end_date = date.today()
+   if len(logs) > 0:
+      start_date = logs[0].start_date
+   else:
+      start_date = end_date
+      
+   monthly_stats = [{'start_date':d, 'end_date':beginning_of_next_month(d) - timedelta(days=1)} for d in first_days_in_months(start_date, end_date)]
+   for stat in monthly_stats:
+      stat['monthly_total'] = MonthlyLog.objects.by_date(stat['end_date']).count()
+      stat['started'] = MonthlyLog.objects.filter(start_date__range=(stat['start_date'], stat['end_date'])).count()
+      stat['ended'] = MonthlyLog.objects.filter(end_date__range=(stat['start_date'], stat['end_date'])).count()
+   monthly_stats.reverse()
+   return render_to_response('staff/stats_history.html', { 'monthly_stats':monthly_stats }, context_instance=RequestContext(request))
+
 @staff_member_required
 def stats_monthly(request):      
    # Pull all the monthly members
