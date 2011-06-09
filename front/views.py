@@ -30,7 +30,9 @@ from django.views.decorators.csrf import csrf_protect
 from models import *
 
 def index(request):
-	return HttpResponseRedirect(reverse('staff.views.todo'))
+    if not request.user.is_authenticated(): return HttpResponseRedirect(reverse('django.contrib.auth.views.login'))
+    if request.user.is_staff: return HttpResponseRedirect(reverse('staff.views.todo'))
+    return HttpResponseRedirect(reverse('members.views.index'))
 
 @csrf_protect
 def password_reset(request, is_admin_site=False, template_name='registration/password_reset_form.html', email_template_name='registration/password_reset_email.html', password_reset_form=PasswordResetForm, token_generator=default_token_generator,post_reset_redirect=None):
