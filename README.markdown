@@ -32,6 +32,10 @@ Run Django's syncdb and then South's migrate commands.  Both Django and South ha
    $ mv .../virtualenvs/nadine/bin/python .../virtualenvs/nadine/bin/python.old
    $ lipo -remove x86_64 .../virtualenvs/nadine/bin/python.old -output .../virtualenvs/nadine/bin/python
 
+ - If you are getting a "flat namespace" error when you try to do a syncdb then you most likely are running OS X 10.6
+   and it's trying to run python in 64bit mode.  Do the following:
+   $ defaults write com.apple.versioner.python Prefer-32-Bit -bool yes
+
 ## License & Copyright
 
 Copyright 2010 Office Nomads LLC ([http://www.officenomads.com/](http://www.officenomads.com/)) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
