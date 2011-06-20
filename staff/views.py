@@ -45,6 +45,19 @@ def signup(request):
       
    return render_to_response('staff/signup.html', { 'member_signup_form':member_signup_form, 'page_message':page_message }, context_instance=RequestContext(request))
 
+def daily_log(request):
+   page_message = None
+   if request.method == 'POST':
+      daily_log_form = DailyLogForm(request.POST, request.FILES)
+      if daily_log_form.is_valid():
+         page_message = 'The daily log was created!'
+         daily_log_form.save()
+         daily_log_form = DailyLogForm()
+   else:
+      daily_log_form = DailyLogForm()
+
+   return render_to_response('staff/dailylog.html', { 'daily_log_form':daily_log_form, 'page_message':page_message }, context_instance=RequestContext(request))
+
 @staff_member_required
 def member_search(request):
    search_results = None
