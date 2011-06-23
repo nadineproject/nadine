@@ -8,8 +8,8 @@
 
   <div class="c2" id="quick-links">
   	Quicklinks:
-  	<a href="{% url members.views.index %}">members</a> |
-  	<a href="{% url admin:staff_dailylog_add %}">add daily log</a> |
+  	<!--<a href="{% url members.views.index %}">members</a> | -->
+  	<a href="{% url staff.views.activity_today %}">record activity</a> |
   	<a href="{% url admin:staff_monthlylog_add %}">add monthly log</a> |
   	<a href="{% url staff.views.signup %}">add member</a>
   </div>  

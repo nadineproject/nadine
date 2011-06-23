@@ -65,10 +65,10 @@ class MemberSignupForm(forms.Form):
 
 class DailyLogForm(forms.Form):
    member_list = Member.objects.all();
-   member = forms.ModelChoiceField(label="Member *", queryset=member_list, required=True)
-   visit_date = forms.DateField(label="Date *", initial=datetime.date.today, required=True)
-   payment = forms.ChoiceField(label="Payment *", choices=PAYMENT_CHOICES, required=True)
-   guest_of = forms.ModelChoiceField(label="Guest Of", queryset=member_list, required=False)
+   visit_date = forms.DateField(widget=forms.HiddenInput())
+   member = forms.ModelChoiceField(queryset=member_list, required=True)
+   payment = forms.ChoiceField(choices=PAYMENT_CHOICES, required=True)
+   guest_of = forms.ModelChoiceField(queryset=member_list, required=False)
    notes = forms.CharField(required=False)
 
    def save(self):

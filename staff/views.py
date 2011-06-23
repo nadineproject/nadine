@@ -45,19 +45,6 @@ def signup(request):
       
    return render_to_response('staff/signup.html', { 'member_signup_form':member_signup_form, 'page_message':page_message }, context_instance=RequestContext(request))
 
-def daily_log(request):
-   page_message = None
-   if request.method == 'POST':
-      daily_log_form = DailyLogForm(request.POST, request.FILES)
-      if daily_log_form.is_valid():
-         page_message = 'The daily log was created!'
-         daily_log_form.save()
-         daily_log_form = DailyLogForm()
-   else:
-      daily_log_form = DailyLogForm()
-
-   return render_to_response('staff/dailylog.html', { 'daily_log_form':daily_log_form, 'page_message':page_message }, context_instance=RequestContext(request))
-
 @staff_member_required
 def member_search(request):
    search_results = None
@@ -353,8 +340,25 @@ def activity_list(request):
 @staff_member_required
 def activity_date(request, year, month, day):
    activity_date = date(year=int(year), month=int(month), day=int(day))
-   daily_logs = DailyLog.objects.filter(visit_date=activity_date)
-   return render_to_response('staff/activity_date.html', {'daily_logs':daily_logs, 'activity_date':activity_date, 'next_date':activity_date + timedelta(days=1), 'previous_date':activity_date - timedelta(days=1) }, context_instance=RequestContext(request))
+   return activity_for_date(request, activity_date)
+
+@staff_member_required
+def activity_today(request):
+   return activity_for_date(request, datetime.date.today())
+
+@staff_member_required
+def activity_for_date(request, activity_date):
+   daily_logs = DailyLog.objects.filter(visit_date=activity_date).reverse()
+
+   page_message = None
+   if request.method == 'POST':
+      daily_log_form = DailyLogForm(request.POST, request.FILES)
+      if daily_log_form.is_valid():
+         page_message = 'Activity was recorded!'
+         daily_log_form.save()
+  
+   daily_log_form = DailyLogForm(initial={'visit_date': activity_date})
+   return render_to_response('staff/activity_date.html', {'daily_logs':daily_logs, 'daily_log_form':daily_log_form, 'page_message':page_message, 'activity_date':activity_date, 'next_date':activity_date + timedelta(days=1), 'previous_date':activity_date - timedelta(days=1),  }, context_instance=RequestContext(request))
 
 @staff_member_required
 def member_transactions(request, member_id):
