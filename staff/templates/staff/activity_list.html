@@ -3,7 +3,7 @@
 {% block sub-title %}Activity List | {% endblock %}
 
 {% block style%}
-#nav-tabs #activity-tab { background-color: #EEE; }
+nav #activity-tab { background: #FBD850; color: black; }
 #content table { width: 100%; }
 .log-note { width: 100px; } 
 #date-controls { text-align: center; margin-bottom: 20px; font-size: 1.4em; font-weight: bold; }
@@ -12,7 +12,7 @@
 
 {% block content %}
 
-<h1>Activity List</h1>
+<h2>Activity List</h2>
 {% url staff.views.activity_list as date_range_form_action %}
 {% include "staff/date_range_form.frag"%}
 
