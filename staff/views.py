@@ -38,7 +38,7 @@ def signup(request):
       member_signup_form = MemberSignupForm(request.POST, request.FILES)
       if member_signup_form.is_valid():
          user = member_signup_form.save()
-         page_message = 'The user was successfully created: [<a href="%s">see detail</a>], [<a href="%s">add daily log</a>] or [<a href="%s">add monthly log</a>]' % (user.get_absolute_url(), reverse('admin:staff_dailylog_add'), reverse('admin:staff_monthlylog_add'))
+         page_message = 'The user was successfully created: [<a href="%s">see detail</a>]' % (user.get_absolute_url())
          member_signup_form = MemberSignupForm()
    else:
       member_signup_form = MemberSignupForm()
@@ -356,8 +356,9 @@ def activity_for_date(request, activity_date):
       if daily_log_form.is_valid():
          page_message = 'Activity was recorded!'
          daily_log_form.save()
-  
-   daily_log_form = DailyLogForm(initial={'visit_date': activity_date})
+   else:
+      daily_log_form = DailyLogForm(initial={'visit_date': activity_date})
+   
    return render_to_response('staff/activity_date.html', {'daily_logs':daily_logs, 'daily_log_form':daily_log_form, 'page_message':page_message, 'activity_date':activity_date, 'next_date':activity_date + timedelta(days=1), 'previous_date':activity_date - timedelta(days=1),  }, context_instance=RequestContext(request))
 
 @staff_member_required

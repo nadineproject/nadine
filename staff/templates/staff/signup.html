@@ -12,12 +12,14 @@
 <div id="quick-links">
 	Quicklinks:
 	<a href="{% url staff.views.activity_today %}">record activity</a> |
-	<a href="{% url staff.views.activity_list %}">activity list</a>
+	<a href="{% url admin:staff_monthlylog_add %}">add monthly log</a>
 </div>
 
 {% if page_message %}
 	<p id="page-message">{{ page_message|safe }}</p>
-{% else %}
+{% endif %}
+
+<div id="signup_form">
 	<form enctype="multipart/form-data" action='.' method='post'>
 	   <table id="signup">
 	      {% for field in member_signup_form %}
@@ -41,5 +43,6 @@
 	   {% csrf_token %}
 	</form>
 	<p>* this field is required</p>
-{% endif %}
+</div>
+
 {% endblock %}
