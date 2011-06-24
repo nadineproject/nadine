@@ -6,18 +6,25 @@
 nav #activity-tab { background: #FBD850; color: black; }
 #content table { width: 100%; }
 .log-note { width: 100px; } 
-#date-controls { text-align: center; margin-bottom: 20px; font-size: 1.4em; font-weight: bold; }
-#date-controls a { text-decoration: none; }
+#quick-links { text-align: right; margin-bottom: 20px;}
+
 {% endblock %}
 
 {% block content %}
 
-<div id="date-controls">
-   <a href="{% url staff.views.activity_date previous_date.year previous_date.month previous_date.day %}">&laquo;</a>
-   <strong>Daily Activity for {{ activity_date|date:"M d, Y" }}</strong>
-   <a href="{% url staff.views.activity_date next_date.year next_date.month next_date.day %}">&raquo;</a>
+<h2>
+	{{ activity_date|date:"M d, Y" }}
+	<a href="{% url staff.views.activity_date previous_date.year previous_date.month previous_date.day %}">&laquo;</a>
+	<a href="{% url staff.views.activity_date next_date.year next_date.month next_date.day %}">&raquo;</a>
+</h2>
+
+<div id="quick-links">
+	Quicklinks:
+	<a href="{% url staff.views.activity_list %}">list by date range</a> |
+	<a href="{% url staff.views.signup %}">add member</a>
 </div>
 
+<div id="activity_list">
    <table>
       <!-- Display all the daily logs first -->
       <tr>
@@ -49,14 +56,15 @@ nav #activity-tab { background: #FBD850; color: black; }
       {% csrf_token %}
       </form>
   </table>
+</div>
 
-   <!-- Display form errors if there are some -->
-   <div id="form_errors">
-   {% for field in daily_log_form %}
-      {% if field.errors %}
-         {{ field.label_tag }}: {{ field.errors }}
-      {% endif %}
-   {% endfor %}
-   </div>
+<!-- Display form errors if there are some -->
+<div id="form_errors">
+{% for field in daily_log_form %}
+   {% if field.errors %}
+      {{ field.label_tag }}: {{ field.errors }}
+   {% endif %}
+{% endfor %}
+</div>
 
 {% endblock %}
