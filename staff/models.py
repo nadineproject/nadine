@@ -16,7 +16,6 @@ GENDER_CHOICES = (
 
 PAYMENT_CHOICES = (
     ('Bill', 'Billable'),
-    ('Visit', 'Stopped By'),
     ('Trial', 'Free Trial'),
     ('Waved', 'Payment Waved'),
 )
