@@ -149,7 +149,7 @@ class Member(models.Model):
    email2 = models.EmailField("Alternate Email", blank=True, null=True)
    phone = PhoneNumberField(blank=True, null=True)
    phone2 = PhoneNumberField("Alternate Phone", blank=True, null=True)
-   website = models.URLField(blank=True, null=True)
+   website = models.URLField(blank=True, null=True, verify_exists=False)
    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True, null=True)
    howHeard = models.ForeignKey(HowHeard, blank=True, null=True)
    industry = models.ForeignKey(Industry, blank=True, null=True)
