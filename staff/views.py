@@ -1,6 +1,7 @@
 import traceback
 import time as timeo
 from datetime import date, datetime, timedelta
+import calendar
 from decimal import Decimal
 
 from django.shortcuts import render_to_response, get_object_or_404
@@ -189,6 +190,67 @@ def first_days_in_months(start_date, end_date):
    results = [first_date]
    while beginning_of_next_month(results[-1]) < end_date: results.append(beginning_of_next_month(results[-1]))
    return results
+
+class MonthHistory:
+   def __init__(self, year, month):
+      self.year = year
+      self.month = month
+      self.title = '%s-%s' % (self.month, self.year)
+      self.start_date = date(year=year, month=month, day=1)
+      start_day, self.days_in_month = calendar.monthrange(year, month)
+      self.end_date = self.start_date + timedelta(self.days_in_month - 1)
+
+      self.data = {} # str:str key:values for the month
+
+@staff_member_required
+def stats_membership_history(request):
+   start_month = min(DailyLog.objects.all().order_by('visit_date')[0].visit_date, MonthlyLog.objects.all().order_by('start_date')[0].start_date)
+   start_month = date(year=start_month.year, month=start_month.month, day=1)
+   end_month = date.today()
+   end_month = date(year=end_month.year, month=end_month.month, day=1)
+
+   working_month = start_month
+   month_histories = []
+   while working_month <= end_month:
+      month_history = MonthHistory(working_month.year, working_month.month)
+      month_histories.append(month_history)
+      working_month = working_month + timedelta(days=month_history.days_in_month)
+
+   for month in month_histories:
+      dates = [date(month.year, month.month, i) for i in range(1, month.days_in_month + 1)]
+
+      month.data['Resident'] = '%s - %s' % calculate_monthly_low_high('Resident', dates)
+      month.data['Basic'] = '%s - %s' % calculate_monthly_low_high('Basic', dates)
+      month.data['Regular'] = '%s - %s' % calculate_monthly_low_high('Regular', dates)
+      month.data['Part Time 15'] = '%s - %s' % calculate_monthly_low_high('PT15', dates)
+      month.data['Part Time 10'] = '%s - %s' % calculate_monthly_low_high('PT10', dates)
+      month.data['Part Time 5'] = '%s - %s' % calculate_monthly_low_high('PT5', dates)
+      month.data['visits'], month.data['trial'], month.data['waved'], month.data['billed'] = calculate_dropins(month.start_date, month.end_date)
+
+      year_histories = []
+      current_year = -1
+      for month in month_histories:         
+         if month.year != current_year:
+            year_histories.append([])
+            current_year = month.year
+         year_histories[-1].append(month)
+
+   return render_to_response('staff/stats_membership_history.html', { 'history_types':sorted(month_histories[0].data.keys()), 'year_histories':year_histories
+ }, context_instance=RequestContext(request))
+
+def calculate_dropins(start_date, end_date):
+   all_logs = DailyLog.objects.filter(visit_date__gte=start_date, visit_date__lte=end_date)
+   return (all_logs.filter(payment='Visit').distinct().count(), all_logs.filter(payment='Trial').distinct().count(), all_logs.filter(payment='Waved').distinct().count(), all_logs.filter(payment='Bill').distinct().count())
+
+def calculate_monthly_low_high(plan_name, dates):
+   """returns a tuple of (min, max) for number of monthly_logs in the date range of dates"""
+   high = 0
+   low = 100000000
+   for working_date in dates:
+      num_residents = MonthlyLog.objects.by_date(working_date).filter(plan=plan_name).count()
+      high = max(high, num_residents)
+      low = min(low, num_residents)
+   return (low, high)
 
 @staff_member_required
 def stats_history(request):      

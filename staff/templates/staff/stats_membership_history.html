@@ -1,0 +1,37 @@
+{% extends "staff/ml_base.html" %}
+{% load stats_tags %}
+
+{% block sub-title %}Stats | Membership History | {% endblock %}
+
+{% block style %}
+nav #stats-tab { background: #FBD850; color: black; }
+#content table { width: auto; margin-bottom: 40px; }
+#content td { border-bottom: none; width: 50px; }
+#content th { width: 100px;}
+{% endblock %}
+
+{% block content %}
+<h2>Stats - Membership History:</h2>
+
+{% include "staff/stats_menu.frag" %}
+
+{% for month_histories in year_histories %}
+<table class="membership-history">
+	<tr>
+		<td></td>
+	{% for month in month_histories %}
+		<th>{{ month.start_date|date:"M 'y" }}</th>
+	{% endfor %}
+	</tr>
+	{% for type in history_types %}
+	<tr class="{% cycle 'row-even' 'row-odd' %}">
+		<th>{{ type.title }}</th>
+		{% for month in month_histories %}
+			<td>{% month_history_datum %}</td>
+		{% endfor %}
+	</tr>
+	{% endfor %}
+</table>
+{% endfor %}
+
+{% endblock %}
