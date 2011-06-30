@@ -20,7 +20,7 @@ PAYMENT_CHOICES = (
     ('Waved', 'Payment Waved'),
 )
 
-MONTHLY_PLAN_CHOICES = (
+MEMBERSHIP_CHOICES = (
     ('Basic', 'Basic'),
     ('PT5', 'Part Time 5'),
     ('PT10', 'Part Time 10'),
@@ -50,7 +50,7 @@ class Bill(models.Model):
    member = models.ForeignKey('Member', blank=False, null=False, related_name="bills")
    amount = models.DecimalField(max_digits=7, decimal_places=2)
    created = models.DateField(blank=False, null=False)
-   monthly_log = models.ForeignKey('MonthlyLog', blank=True, null=True)
+   membership = models.ForeignKey('Membership', blank=True, null=True)
    dropins = models.ManyToManyField('DailyLog', blank=True, null=True, related_name='bills')
    guest_dropins = models.ManyToManyField('DailyLog', blank=True, null=True, related_name='guest_bills')
    new_member_deposit = models.BooleanField(default=False, blank=False, null=False)
@@ -111,21 +111,21 @@ class Neighborhood(models.Model):
 class MemberManager(models.Manager):
    def member_count(self, active_only):
       if active_only:
-         return Member.objects.filter(monthly_logs__start_date__isnull=False, monthly_logs__end_date__isnull=True).count();
+         return Member.objects.filter(memberships__start_date__isnull=False, memberships__end_date__isnull=True).count();
       else:
          return Member.objects.all().count()
    
    def active_members(self):
-      unending = Q(monthly_logs__end_date__isnull=True)
-      future_ending = Q(monthly_logs__end_date__gt=date.today())
-      return Member.objects.exclude(monthly_logs__isnull=True).filter(unending | future_ending).distinct()
+      unending = Q(memberships__end_date__isnull=True)
+      future_ending = Q(memberships__end_date__gt=date.today())
+      return Member.objects.exclude(memberships__isnull=True).filter(unending | future_ending).distinct()
    
-   def members_by_monthly_log_type(self, monthly_log_type):
-      return [log.member for log in MonthlyLog.objects.filter(plan=monthly_log_type).filter(Q(end_date__isnull=True) | Q(end_date__gt=date.today())).distinct().order_by('member__user__first_name')]
+   def members_by_membership_type(self, membership_type):
+      return [log.member for log in Membership.objects.filter(plan=membership_type).filter(Q(end_date__isnull=True) | Q(end_date__gt=date.today())).distinct().order_by('member__user__first_name')]
 
    def members_by_neighborhood(self, hood, active_only=True):
       if active_only:
-         return Member.objects.filter(neighborhood=hood).filter(monthly_logs__isnull=False).filter(Q(monthly_logs__end_date__isnull=True) | Q(monthly_logs__end_date__gt=date.today())).distinct()
+         return Member.objects.filter(neighborhood=hood).filter(memberships__isnull=False).filter(Q(memberships__end_date__isnull=True) | Q(memberships__end_date__gt=date.today())).distinct()
       else:
          return Member.objects.filter(neighborhood=hood)
          
@@ -200,11 +200,11 @@ class Member(models.Model):
       if len(bills) == 0: return None
       return bills[0]
 
-   def last_monthly_log(self):
-      """Returns the latest monthly log, even if it has an end date, or None if none exists"""
-      monthly_logs = MonthlyLog.objects.filter(member=self).order_by('-start_date', 'end_date')[0:]
-      if monthly_logs == None or len(monthly_logs) == 0: return None
-      return monthly_logs[0]
+   def last_membership(self):
+      """Returns the latest membership, even if it has an end date, or None if none exists"""
+      memberships = Membership.objects.filter(member=self).order_by('-start_date', 'end_date')[0:]
+      if memberships == None or len(memberships) == 0: return None
+      return memberships[0]
       
    def paid_count(self):
       return DailyLog.objects.filter(member=self, payment='Bill').count()
@@ -213,8 +213,8 @@ class Member(models.Model):
       if DailyLog.objects.filter(member=self).count() > 0:
          return DailyLog.objects.filter(member=self).order_by('visit_date')[0].visit_date
       else:
-         if MonthlyLog.objects.filter(member=self).count() > 0:
-            return MonthlyLog.objects.filter(member=self).order_by('start_date')[0].start_date
+         if Membership.objects.filter(member=self).count() > 0:
+            return Membership.objects.filter(member=self).order_by('start_date')[0].start_date
          else:
             return None
 
@@ -230,16 +230,16 @@ class Member(models.Model):
       if DailyLog.objects.filter(member=self).count() > 0:
          return DailyLog.objects.filter(member=self).latest('visit_date').visit_date
       else:
-         if MonthlyLog.objects.filter(member=self, end_date__isnull=False).count() > 0:
-            return MonthlyLog.objects.filter(member=self, end_date__isnull=False).latest('end_date').end_date
+         if Membership.objects.filter(member=self, end_date__isnull=False).count() > 0:
+            return Membership.objects.filter(member=self, end_date__isnull=False).latest('end_date').end_date
          else:
             return None
 
    def membership_type(self):
       # First check for existing monthly
-      monthly_logs = MonthlyLog.objects.filter(member=self)
-      if monthly_logs.count() > 0:
-         last_monthly = self.last_monthly_log()
+      memberships = Membership.objects.filter(member=self)
+      if memberships.count() > 0:
+         last_monthly = self.last_membership()
          if last_monthly.end_date == None or last_monthly.end_date > date.today():
             return last_monthly.plan
          else:
@@ -260,7 +260,7 @@ class Member(models.Model):
          return "No drop-ins"
 
    def is_monthly(self):
-      last_log = self.last_monthly_log()
+      last_log = self.last_membership()
       if  not last_log: return False
       return last_log.end_date == None or last_log.end_date >= date.today()
    
@@ -275,7 +275,7 @@ class Member(models.Model):
       return Onboard_Task.objects.count() - Onboard_Task_Completed.objects.filter(member=self).count()
 
    def qualifies_for_exit_tasks(self):
-      last_log = self.last_monthly_log()
+      last_log = self.last_membership()
       if not last_log or last_log.end_date == None: return False
       return last_log.end_date < date.today()
 
@@ -335,14 +335,14 @@ class DailyLog(models.Model):
       verbose_name = "Daily Log"
       ordering = ['-visit_date', '-created']
 
-class MonthlyLog_Manager(models.Manager):
+class Membership_Manager(models.Manager):
    def by_date(self, target_date):
       return self.filter(start_date__lte=target_date).filter(Q(end_date__isnull=True) | Q(end_date__gte=target_date))
 
-class MonthlyLog(models.Model):
+class Membership(models.Model):
    """A membership level which is billed monthly"""
-   member = models.ForeignKey(Member, related_name="monthly_logs")
-   plan = models.CharField(max_length=8, choices=MONTHLY_PLAN_CHOICES)
+   member = models.ForeignKey(Member, related_name="memberships")
+   plan = models.CharField(max_length=8, choices=MEMBERSHIP_CHOICES)
    start_date = models.DateField()
    end_date = models.DateField(blank=True, null=True)
    rate = models.IntegerField(default=0)
@@ -350,16 +350,16 @@ class MonthlyLog(models.Model):
    guest_dropins = models.IntegerField(default=0)
    guest_of = models.ForeignKey(Member, blank=True, null=True, related_name="monthly_guests")
 
-   objects = MonthlyLog_Manager()
+   objects = Membership_Manager()
 
    def save(self, *args, **kwargs):
-      if MonthlyLog.objects.by_date(self.start_date).exclude(pk=self.pk).filter(member=self.member).count() != 0:
-         raise Exception('Already have a Monthly Log for that start date')
-      if self.end_date and MonthlyLog.objects.by_date(self.end_date).exclude(pk=self.pk).filter(member=self.member).count() != 0:
-         raise Exception('Already have a Monthly Log for that end date: %s' % MonthlyLog.objects.by_date(self.end_date).exclude(pk=self.pk).filter(member=self.member))
+      if Membership.objects.by_date(self.start_date).exclude(pk=self.pk).filter(member=self.member).count() != 0:
+         raise Exception('Already have a Membership for that start date')
+      if self.end_date and Membership.objects.by_date(self.end_date).exclude(pk=self.pk).filter(member=self.member).count() != 0:
+         raise Exception('Already have a Membership for that end date: %s' % Membership.objects.by_date(self.end_date).exclude(pk=self.pk).filter(member=self.member))
       if self.end_date and self.start_date > self.end_date:
-         raise Exception('A Monthly Log cannot start after it ends')
-      super(MonthlyLog, self).save(*args, **kwargs)
+         raise Exception('A Membership cannot start after it ends')
+      super(Membership, self).save(*args, **kwargs)
 
    def is_anniversary_day(self, test_date):
       # Do something smarter if we're at the end of February
@@ -375,24 +375,24 @@ class MonthlyLog(models.Model):
       return '%s - %s' % (self.start_date, self.member)
 
    def get_admin_url(self):
-      return urlresolvers.reverse('admin:staff_monthlylog_change', args=[self.id])
+      return urlresolvers.reverse('admin:staff_membership_change', args=[self.id])
 
    class Meta:
-      verbose_name = "Monthly Log"
-      verbose_name_plural = "Monthly Logs"
+      verbose_name = "Membership"
+      verbose_name_plural = "Memberships"
       ordering = ['start_date'];
 
 class ExitTask(models.Model):
-   """Tasks which are to be completed when a monthly member ends their monthly logs."""
+   """Tasks which are to be completed when a monthly member ends their memberships."""
    name = models.CharField(max_length=64)
    description = models.CharField(max_length=512)
    order = models.SmallIntegerField()
 
    def uncompleted_members(self):
-      return [member for member in Member.objects.filter(monthly_logs__isnull=False).exclude(exittaskcompleted__task=self).distinct() if not member.is_monthly()]
+      return [member for member in Member.objects.filter(memberships__isnull=False).exclude(exittaskcompleted__task=self).distinct() if not member.is_monthly()]
 
    def completed_members(self):
-      return Member.objects.filter(monthly_logs__end_date__gt=date.today()).filter(exittaskcompleted__task=self).distinct()
+      return Member.objects.filter(memberships__end_date__gt=date.today()).filter(exittaskcompleted__task=self).distinct()
 
    def __str__(self): return self.name
 
@@ -424,7 +424,7 @@ class Onboard_Task(models.Model):
 
    def uncompleted_members(self):
       if self.monthly_only:
-         eligable_members = Member.objects.filter(monthly_logs__start_date__isnull=False).filter(Q(monthly_logs__end_date__gt=date.today()) | Q(monthly_logs__end_date__isnull=True))
+         eligable_members = Member.objects.filter(memberships__start_date__isnull=False).filter(Q(memberships__end_date__gt=date.today()) | Q(memberships__end_date__isnull=True))
       else:
          eligable_members = Member.objects.all()
       return eligable_members.exclude(onboard_task_completed__task=self).distinct()

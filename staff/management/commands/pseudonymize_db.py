@@ -49,11 +49,11 @@ class Command(NoArgsCommand):
 
 
    def handle_noargs(self, **options):
-      from staff.models import Member, Transaction, DailyLog, MonthlyLog
+      from staff.models import Member, Transaction, DailyLog, Membership
       from django.core.files import File
       pseudonymous_image = open('media/BlankIcon150x150.jpg', 'r')
 
-      for log in MonthlyLog.objects.all():
+      for log in Membership.objects.all():
          if log.note != None and len(log.note) > 0:
             log.note = 'Some admin note here.'
             log.save()

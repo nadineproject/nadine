@@ -26,7 +26,7 @@ admin.site.register(Transaction, TransactionAdmin)
 class BillAdmin(StyledAdmin):
    list_display = ('created', 'member', 'amount')
    search_fields = ('member__user__first_name', 'member__user__last_name')
-   raw_id_fields = ('monthly_log', 'dropins', 'guest_dropins')
+   raw_id_fields = ('membership', 'dropins', 'guest_dropins')
 admin.site.register(Bill, BillAdmin)
 
 admin.site.unregister(User)
@@ -42,10 +42,10 @@ class DailyLogAdmin(StyledAdmin):
    search_fields = ('member__user__first_name', 'member__user__last_name', 'guest_of__user__first_name', 'guest_of__user__last_name')
 admin.site.register(DailyLog, DailyLogAdmin)
 
-class MonthlyLogAdmin(StyledAdmin):
+class MembershipAdmin(StyledAdmin):
    list_display = ('member', 'start_date', 'end_date')
    search_fields = ('member__user__first_name', 'member__user__last_name')
-admin.site.register(MonthlyLog, MonthlyLogAdmin)
+admin.site.register(Membership, MembershipAdmin)
 
 # Copyright 2010 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 

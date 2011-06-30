@@ -3,22 +3,22 @@ from datetime import datetime, timedelta, date
 import traceback
 
 import settings
-from models import Bill, BillingLog, Member, MonthlyLog, DailyLog
+from models import Bill, BillingLog, Member, Membership, DailyLog
 from django.db.models import Count
 from django.core.exceptions import ObjectDoesNotExist
 
 class Day:
-   """All of the daily_logs, monthly_logs, and (optionally) a bill associated with this day of a Run."""
+   """All of the daily_logs, memberships, and (optionally) a bill associated with this day of a Run."""
    def __init__(self, date):
       self.date = date
-      self.monthly_log = None
+      self.membership = None
       self.daily_log = None
       self.guest_daily_logs = []
       self.bill = None
 
-   def is_monthly_log_end_date(self): return self.monthly_log and self.monthly_log.end_date and self.monthly_log.end_date == self.date
+   def is_membership_end_date(self): return self.membership and self.membership.end_date and self.membership.end_date == self.date
 
-   def is_monthly_log_anniversary(self): return self.monthly_log and self.monthly_log.is_anniversary_day(self.date)
+   def is_membership_anniversary(self): return self.membership and self.membership.is_anniversary_day(self.date)
 
    def __repr__(self):
       return 'Day %s' % self.date
@@ -35,16 +35,16 @@ class Run:
       self.populate_days()
       self.populate_daily_logs()
       self.populate_guest_daily_logs()
-      self.populate_monthly_logs()
+      self.populate_memberships()
 
    def non_member_daily_logs(self):
-      """Returns a tuple (daily_logs, guest_daily_logs) [each sorted ascending by date] in this run which are not covered by a monthly log, including guest daily logs"""
+      """Returns a tuple (daily_logs, guest_daily_logs) [each sorted ascending by date] in this run which are not covered by a membership, including guest daily logs"""
       reversed_days = [day for day in self.days]
       reversed_days.reverse()
       daily_logs = []
       guest_daily_logs = []
       for day in reversed_days:
-         if day.monthly_log: break # assume that this and the days before this are covered by the monthly log
+         if day.membership: break # assume that this and the days before this are covered by the membership
          if day.daily_log != None: daily_logs.append(day.daily_log)
          for gdl in day.guest_daily_logs: guest_daily_logs.append(gdl)
             
@@ -57,15 +57,15 @@ class Run:
          if len(day.guest_daily_logs) > 0: return True
       return False
    
-   def populate_monthly_logs(self):
-      for log in MonthlyLog.objects.filter(member=self.member).order_by('start_date'):
+   def populate_memberships(self):
+      for log in Membership.objects.filter(member=self.member).order_by('start_date'):
          if log.end_date and log.end_date < self.start_date: continue
          if log.start_date > self.end_date: continue
          for i in range(0, len(self.days)):
             if self.days[i].date >= log.start_date:
                if log.end_date == None or self.days[i].date <= log.end_date:
-                  if self.days[i].monthly_log: print 'Duplicate monthly log! %s' % log
-                  self.days[i].monthly_log = log
+                  if self.days[i].membership: print 'Duplicate membership! %s' % log
+                  self.days[i].membership = log
 
    def populate_guest_daily_logs(self):
       daily_logs = DailyLog.objects.filter(guest_of=self.member, payment="Bill").filter(visit_date__gte=self.start_date).filter(visit_date__lte=self.end_date)
@@ -95,10 +95,10 @@ class Run:
 
    def print_info(self):
       for day in self.days:
-         if day.daily_log or day.is_monthly_log_end_date() or day.is_monthly_log_anniversary() or len(day.guest_daily_logs) > 0:
+         if day.daily_log or day.is_membership_end_date() or day.is_membership_anniversary() or len(day.guest_daily_logs) > 0:
             if day.daily_log: print '\tDaily log: %s' % day.daily_log.visit_date
-            if day.is_monthly_log_end_date(): print '\t%s end: %s' % (day.monthly_log.plan, day.date)
-            if day.is_monthly_log_anniversary(): print '\t%s monthly anniversary: %s' % (day.monthly_log.plan, day.date)
+            if day.is_membership_end_date(): print '\t%s end: %s' % (day.membership.plan, day.date)
+            if day.is_membership_anniversary(): print '\t%s monthly anniversary: %s' % (day.membership.plan, day.date)
             if len(day.guest_daily_logs) > 0: print '\tGuest logs: %s' % day.guest_daily_logs
 
    def __repr__(self):
@@ -128,9 +128,9 @@ def run_billing(bill_time=datetime.now()):
                start_date = bill_date - timedelta(days=62)
                if start_date < settings.BILLING_START_DATE: start_date = settings.BILLING_START_DATE
             run = Run(member, start_date, bill_date)
-            for day_index in range(0, len(run.days)): # look for days on which we should bill for a monthly log
+            for day_index in range(0, len(run.days)): # look for days on which we should bill for a membership
                day = run.days[day_index]
-               if day.is_monthly_log_anniversary() or day.is_monthly_log_end_date(): # calculate a member bill
+               if day.is_membership_anniversary() or day.is_membership_end_date(): # calculate a member bill
                   bill_dropins = []
                   bill_guest_dropins = []
                   recent_days = run.days[0:day_index + 1]
@@ -142,30 +142,30 @@ def run_billing(bill_time=datetime.now()):
                      for guest_daily_log in recent_day.guest_daily_logs: bill_guest_dropins.append(guest_daily_log)
                   # now calculate the bill amount
                   bill_amount = 0
-                  monthly_fee = day.monthly_log.rate
-                  if day.is_monthly_log_end_date(): monthly_fee = 0
+                  monthly_fee = day.membership.rate
+                  if day.is_membership_end_date(): monthly_fee = 0
          
-                  if day.monthly_log.plan == 'Basic':
+                  if day.membership.plan == 'Basic':
                      billable_dropin_count = max(0, len(bill_dropins) - settings.BASIC_DROPIN_COUNT)
                      bill_amount = monthly_fee + (billable_dropin_count * settings.BASIC_DROPIN_FEE) + (len(bill_guest_dropins) * settings.BASIC_DROPIN_FEE)
-                  elif day.monthly_log.plan == 'PT5':
+                  elif day.membership.plan == 'PT5':
                      billable_dropin_count = max(0, len(bill_dropins) - settings.PT5_DROPIN_COUNT)
                      bill_amount = monthly_fee + (billable_dropin_count * settings.PT5_DROPIN_FEE) + (len(bill_guest_dropins) * settings.PT5_DROPIN_FEE)
-                  elif day.monthly_log.plan == 'PT10':
+                  elif day.membership.plan == 'PT10':
                      billable_dropin_count = max(0, len(bill_dropins) - settings.PT10_DROPIN_COUNT)
                      bill_amount = monthly_fee + (billable_dropin_count * settings.PT10_DROPIN_FEE) + (len(bill_guest_dropins) * settings.PT10_DROPIN_FEE)
-                  elif day.monthly_log.plan == 'PT15':
+                  elif day.membership.plan == 'PT15':
                      billable_dropin_count = max(0, len(bill_dropins) - settings.PT15_DROPIN_COUNT)
                      bill_amount = monthly_fee + (billable_dropin_count * settings.PT15_DROPIN_FEE) + (len(bill_guest_dropins) * settings.PT15_DROPIN_FEE)
-                  elif day.monthly_log.plan == 'Regular':
+                  elif day.membership.plan == 'Regular':
                      bill_amount = monthly_fee + (len(bill_guest_dropins) * settings.REGULAR_GUEST_DROPIN_FEE)
-                  elif day.monthly_log.plan == 'Resident':
-                     billable_guest_dropin_count = max(0, len(bill_guest_dropins) - max(settings.RESIDENT_GUEST_DROPIN_COUNT, day.monthly_log.guest_dropins))
+                  elif day.membership.plan == 'Resident':
+                     billable_guest_dropin_count = max(0, len(bill_guest_dropins) - max(settings.RESIDENT_GUEST_DROPIN_COUNT, day.membership.guest_dropins))
                      bill_amount = monthly_fee + (billable_guest_dropin_count * settings.RESIDENT_GUEST_DROPIN_FEE)
 
                   if bill_amount == 0: continue
 
-                  day.bill = Bill(created=day.date, amount=bill_amount, member=member, paid_by=day.monthly_log.guest_of, monthly_log=day.monthly_log)
+                  day.bill = Bill(created=day.date, amount=bill_amount, member=member, paid_by=day.membership.guest_of, membership=day.membership)
                   day.bill.save()
                   bill_count += 1
                   day.bill.dropins = [dropin.id for dropin in bill_dropins]

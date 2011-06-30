@@ -59,15 +59,15 @@ function gotoEmailReset(emailAddress){
 	   <tr>
 	      <td>Membership Type</td>
 	      <td>{{ member.membership_type }}
-            {% if member.last_monthly_log %}{% if not member.last_monthly_log.end_date %}
-               [<a href="{% url admin:staff_monthlylog_change member.last_monthly_log.id %}">edit</a>]
+            {% if member.last_membership %}{% if not member.last_membership.end_date %}
+               [<a href="{% url admin:staff_membership_change member.last_membership.id %}">edit</a>]
             {% endif %}{% endif %}
          </td>
 	   </tr>
-	   {% if member.last_monthly_log %}
+	   {% if member.last_membership %}
 	   <tr>
 	      <td>Plan Start</td>
-	      <td>{{ member.last_monthly_log.start_date|date:"Y-m-d" }}</td>
+	      <td>{{ member.last_membership.start_date|date:"Y-m-d" }}</td>
 	   </tr>
 	   {% endif %}
 	   <tr>

@@ -13,7 +13,7 @@ nav #stats-tab { background: #FBD850; color: black; }
 {% include "staff/stats_menu.frag" %}
 
 <div style="margin: 10px 0;">
-	<strong>Total Monthly Members:</strong> {{ monthly_logs.count }} &nbsp;&nbsp; 
+	<strong>Total Monthly Members:</strong> {{ memberships.count }} &nbsp;&nbsp; 
 	<strong>Total Monthly Income:</strong>  ${{ total_income }}
 </div>
 
@@ -27,7 +27,7 @@ nav #stats-tab { background: #FBD850; color: black; }
          <th>Note</th>
       </tr>
    
-      {% for log in monthly_logs %}
+      {% for log in memberships %}
 	      <tr class="{% cycle 'row-even' 'row-odd' %}">
 	         <td><a href="{{ log.member.get_absolute_url }}">{{ log.member }}</a></td>
 	         <td>{{ log.start_date }}</td>

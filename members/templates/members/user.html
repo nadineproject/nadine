@@ -16,9 +16,9 @@
 {% endif %}
 {% if user.username == request.user.username or request.user.is_staff %}
 	<dl>
-    <dt>Membership status:</dt><dd>{{ user.profile.membership_type }}{% if user.profile.is_monthly %} at ${{ user.profile.last_monthly_log.rate }}/month{% endif %}</dd>
+    <dt>Membership status:</dt><dd>{{ user.profile.membership_type }}{% if user.profile.is_monthly %} at ${{ user.profile.last_membership.rate }}/month{% endif %}</dd>
 		{% if user.profile.is_monthly %}
-		<dt>Anniversary date:</dt><dd>{{ user.profile.last_monthly_log.start_date|date:"M d, Y" }}</dd>
+		<dt>Anniversary date:</dt><dd>{{ user.profile.last_membership.start_date|date:"M d, Y" }}</dd>
 		{% endif %}
     {% if request.user.is_staff %}
          <dt>Quicklinks:</dt>
@@ -71,7 +71,7 @@
        		<tr class="{% cycle 'row-even' 'row-odd' %}">
        			<td>{{ bill.created|date:"M d, Y" }}</td>
        			<td>${{ bill.amount }}</td>
-       			<td>{% if bill.monthly_log %}{{ bill.monthly_log.plan }}{% endif %}</td>
+       			<td>{% if bill.membership %}{{ bill.membership.plan }}{% endif %}</td>
        			<td>
 
        				{% if bill.paid_by %}
@@ -104,7 +104,7 @@
       <p>No bills yet!</p>
    {% endif %}
    
-	{% if user.profile.monthly_logs.all %}
+	{% if user.profile.memberships.all %}
 	   <h2>Monthly plans</h2>
 		<table>		  
 		  <thead>
@@ -115,7 +115,7 @@
  		   </tr>		    
 		  </thead>
 		  <tbody>
- 		   {% for log in user.profile.monthly_logs.all reversed %}
+ 		   {% for log in user.profile.memberships.all reversed %}
  		      <tr class="{% cycle 'row-even' 'row-odd' %}">
  		         <td>{{ log.plan }}</td>
  		         <td>{{ log.start_date|date:"M d, Y" }}</td>

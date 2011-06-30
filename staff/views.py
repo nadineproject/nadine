@@ -23,8 +23,8 @@ END_DATE_PARAM = 'end'
 def members(request):
    if not request.user.is_staff: return HttpResponseRedirect(reverse('members.views.user', args=[], kwargs={'username':request.user.username}))
    plans = []
-   for plan_id, plan_name  in MONTHLY_PLAN_CHOICES:
-      plans.append({ 'name':plan_name, 'id':plan_id, 'members':Member.objects.members_by_monthly_log_type(plan_id), 'count':len(Member.objects.members_by_monthly_log_type(plan_id))})
+   for plan_id, plan_name  in MEMBERSHIP_CHOICES:
+      plans.append({ 'name':plan_name, 'id':plan_id, 'members':Member.objects.members_by_membership_type(plan_id), 'count':len(Member.objects.members_by_membership_type(plan_id))})
    return render_to_response('staff/members.html', { 'plans': plans, 'member_search_form':MemberSearchForm() }, context_instance=RequestContext(request))
 
 @staff_member_required
@@ -204,7 +204,7 @@ class MonthHistory:
 
 @staff_member_required
 def stats_membership_history(request):
-   start_month = min(DailyLog.objects.all().order_by('visit_date')[0].visit_date, MonthlyLog.objects.all().order_by('start_date')[0].start_date)
+   start_month = min(DailyLog.objects.all().order_by('visit_date')[0].visit_date, Membership.objects.all().order_by('start_date')[0].start_date)
    start_month = date(year=start_month.year, month=start_month.month, day=1)
    end_month = date.today()
    end_month = date(year=end_month.year, month=end_month.month, day=1)
@@ -243,18 +243,18 @@ def calculate_dropins(start_date, end_date):
    return (all_logs.filter(payment='Visit').distinct().count(), all_logs.filter(payment='Trial').distinct().count(), all_logs.filter(payment='Waved').distinct().count(), all_logs.filter(payment='Bill').distinct().count())
 
 def calculate_monthly_low_high(plan_name, dates):
-   """returns a tuple of (min, max) for number of monthly_logs in the date range of dates"""
+   """returns a tuple of (min, max) for number of memberships in the date range of dates"""
    high = 0
    low = 100000000
    for working_date in dates:
-      num_residents = MonthlyLog.objects.by_date(working_date).filter(plan=plan_name).count()
+      num_residents = Membership.objects.by_date(working_date).filter(plan=plan_name).count()
       high = max(high, num_residents)
       low = min(low, num_residents)
    return (low, high)
 
 @staff_member_required
 def stats_history(request):      
-   logs = [log for log in MonthlyLog.objects.all()]
+   logs = [log for log in Membership.objects.all()]
    end_date = date.today()
    if len(logs) > 0:
       start_date = logs[0].start_date
@@ -263,28 +263,28 @@ def stats_history(request):
       
    monthly_stats = [{'start_date':d, 'end_date':beginning_of_next_month(d) - timedelta(days=1)} for d in first_days_in_months(start_date, end_date)]
    for stat in monthly_stats:
-      stat['monthly_total'] = MonthlyLog.objects.by_date(stat['end_date']).count()
-      stat['started'] = MonthlyLog.objects.filter(start_date__range=(stat['start_date'], stat['end_date'])).count()
-      stat['ended'] = MonthlyLog.objects.filter(end_date__range=(stat['start_date'], stat['end_date'])).count()
+      stat['monthly_total'] = Membership.objects.by_date(stat['end_date']).count()
+      stat['started'] = Membership.objects.filter(start_date__range=(stat['start_date'], stat['end_date'])).count()
+      stat['ended'] = Membership.objects.filter(end_date__range=(stat['start_date'], stat['end_date'])).count()
    monthly_stats.reverse()
    return render_to_response('staff/stats_history.html', { 'monthly_stats':monthly_stats }, context_instance=RequestContext(request))
 
 @staff_member_required
 def stats_monthly(request):      
    # Pull all the monthly members
-   monthly_logs = MonthlyLog.objects.filter(end_date__isnull=True).order_by('start_date')
+   memberships = Membership.objects.filter(end_date__isnull=True).order_by('start_date')
    total_income = 0
-   for log in monthly_logs:
+   for log in memberships:
       total_income = total_income + log.rate
-   return render_to_response('staff/stats_monthly.html', {'monthly_logs':monthly_logs, 'total_income': total_income}, context_instance=RequestContext(request))
+   return render_to_response('staff/stats_monthly.html', {'memberships':memberships, 'total_income': total_income}, context_instance=RequestContext(request))
 
 @staff_member_required
 def stats_member_types(request):
    types_dict = {}
-   for plan_id, plan_name in MONTHLY_PLAN_CHOICES:
-      types_dict[plan_id] = len(Member.objects.members_by_monthly_log_type(plan_id))
+   for plan_id, plan_name in MEMBERSHIP_CHOICES:
+      types_dict[plan_id] = len(Member.objects.members_by_membership_type(plan_id))
 
-   plan_ids = [t[0] for t in MONTHLY_PLAN_CHOICES]
+   plan_ids = [t[0] for t in MEMBERSHIP_CHOICES]
    for member in Member.objects.all():
       type_id = member.membership_type()
       if type_id in plan_ids: continue
@@ -317,7 +317,7 @@ def stats_neighborhood(request):
 def member_detail(request, member_id):
    member = get_object_or_404(Member, pk=member_id)
    daily_logs = DailyLog.objects.filter(member=member).order_by('visit_date').reverse()
-   monthly_logs = MonthlyLog.objects.filter(member=member).order_by('start_date').reverse()
+   memberships = Membership.objects.filter(member=member).order_by('start_date').reverse()
 
    if request.method == 'POST':
       if 'save_onboard_task' in request.POST:
@@ -355,8 +355,8 @@ def activity(request):
    days = [{'date':start_date + timedelta(days=i)} for i in range((end_date - start_date).days) ]
    for day in days:
       day['daily_logs'] = DailyLog.objects.filter(visit_date=day['date']).count()
-      day['membership'] = MonthlyLog.objects.by_date(day['date']).count()
-      day['residents'] = MonthlyLog.objects.by_date(day['date']).filter(plan='Resident').count()
+      day['membership'] = Membership.objects.by_date(day['date']).count()
+      day['residents'] = Membership.objects.by_date(day['date']).filter(plan='Resident').count()
       day['occupancy'] = day['daily_logs'] + day['residents']
 
    max_membership = 0

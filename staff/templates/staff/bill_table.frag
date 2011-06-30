@@ -24,12 +24,12 @@
 			</tr>
 		{% endif %}
 	{% endif %}
-	{% if bill.monthly_log %}
+	{% if bill.membership %}
 		<tr>
 			<th>Monthly:</th>
 				<td>
-					<a href="{{ bill.monthly_log.get_admin_url }}">{{ bill.monthly_log.plan }} @ ${{ bill.monthly_log.rate }}</a>:
-					started {{ bill.monthly_log.start_date|date:"m/d/y"}}{% if bill.monthly_log.end_date %}, ended {{ bill.monthly_log.end_date|date:"m/d/y"}}{% endif %}
+					<a href="{{ bill.membership.get_admin_url }}">{{ bill.membership.plan }} @ ${{ bill.membership.rate }}</a>:
+					started {{ bill.membership.start_date|date:"m/d/y"}}{% if bill.membership.end_date %}, ended {{ bill.membership.end_date|date:"m/d/y"}}{% endif %}
 				</td>
 		</tr>
 		{% if bill.new_member_deposit %}
