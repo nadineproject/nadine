@@ -96,6 +96,7 @@ INSTALLED_APPS = (
 	'front',
 	'staff',
 	'members',
+	'interlink',
 )
 
 from local_settings import *

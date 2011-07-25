@@ -8,6 +8,7 @@ urlpatterns = patterns('',
    (r'^admin/', include(admin.site.urls)),
    (r'^staff/', include('staff.urls', app_name='staff')),
    (r'^member/', include('members.urls', app_name='members')),
+   (r'^interlink/', include('interlink.urls', app_name='interlink')),
 
    (r'^login/$', 'django.contrib.auth.views.login', {'template_name': 'login.html'}),
    (r'^logout/$', 'django.contrib.auth.views.logout_then_login'),
