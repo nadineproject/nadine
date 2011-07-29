@@ -1,5 +1,6 @@
 # Django settings for django_apps project.
 import os
+import sys
 
 PROJECT_ROOT = os.path.realpath(os.path.dirname(__file__))
 TEMPLATE_DIRS = ( PROJECT_ROOT + '/templates/', )
@@ -21,7 +22,7 @@ STATICFILES_FINDERS = (
 SOUTH_AUTO_FREEZE_APP = True
 
 DEBUG = False
-#TEMPLATE_DEBUG = DEBUG
+IS_TEST = len(sys.argv) > 1 and sys.argv[0].endswith('manage.py') and 'test' == sys.argv[1]
 
 # Local time zone for this installation. Choices can be found here:
 # http://www.postgresql.org/docs/8.1/static/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE

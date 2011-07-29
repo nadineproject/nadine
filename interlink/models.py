@@ -11,12 +11,21 @@ from django.db import models
 from django.db.models import Q
 from django.conf import settings
 from django.db.models import signals
-from django.core.mail import send_mail, send_mass_mail
 from django.dispatch import dispatcher
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.utils.encoding import force_unicode
 from django.template.loader import render_to_string
+from django.core.mail import send_mail, send_mass_mail
+
+class MailingListManager(models.Manager):
+   def fetch_all_mail(self):
+      """Fetches mail for all mailing lists and returns an array of mailing_lists which reported failures"""
+      failures = []
+      for mailing_list in self.all():
+         if not mailing_list.fetch_mail():
+            failures.append(mailing_list)
+      return failures
 
 class MailingList(models.Model):
    """Represents both the user facing information about a mailing list and how to fetch the mail"""
@@ -38,6 +47,19 @@ class MailingList(models.Model):
 
    subscribers = models.ManyToManyField(User, blank=True, related_name='subscribed_mailing_lists')
    moderators = models.ManyToManyField(User, blank=True, related_name='moderated_mailing_lists', help_text='Users who will be sent moderation emails')
+   
+   objects = MailingListManager()
+   
+   def fetch_mail(self):
+      """Fetches mailing and returns True if successful and False if it failed"""
+      from interlink import DEFAULT_MAIL_CHECKER
+      checker = DEFAULT_MAIL_CHECKER(self)
+      try:
+         checker.fetch_mail()
+         return True
+      except:
+         traceback.print_exc()
+         return False
 
    @property
    def moderator_addresses(self):
@@ -53,8 +75,12 @@ class IncomingMail(models.Model):
    """An email as popped for a mailing list"""
    mailing_list = models.ForeignKey(MailingList, related_name='incoming_mails')
    origin_address = models.EmailField()
+   sent_time = models.DateTimeField()
    subject = models.TextField(blank=True)
    body = models.TextField(blank=True)
+
+   STATES = (('raw', 'raw'), ('moderate', 'moderate'), ('send', 'send'), ('sent', 'sent'), ('reject', 'reject'))
+   state = models.CharField(max_length=10, choices=STATES, default='raw')
 
    created = models.DateTimeField(auto_now_add=True)
 
