@@ -14,9 +14,33 @@ Set up PostgreSQL, create a blank database and grant all permissions to whatever
 	cd nadine
 	pip install -r requirements.txt
 
-Copy local_settings.dist to local_settings.py and edit it to reflect your local settings.
+Copy local_settings.dist to local_settings.py and edit it to reflect your local settings. 
 
-Run Django's syncdb and then South's migrate commands.  Both Django and South have excellent documentation, so check there if you run into trouble.
+Run Django's syncdb and then South's migrate commands.  
+
+$ python manage.py syncdb
+$ pythoh manage.py migrate
+
+Both Django and South have excellent documentation, so check there if you run into trouble.
+
+At this point you will need to populate the django_sites database. We will assume you only have Nadine in the database you have created.
+
+$ python manage.py shell
+>>> from django.contrib.sites.models import Site
+>>> newsite = Site(name="Nadine",domain="nadine.com")
+>>> newsite.save()
+Ctrl+D
+
+You can double check that that populate correctly the django_sites table by going to psql:
+
+$ psql NADINE_DB
+=> SELECT * FROM django_sites;
+
+At this point you can run the server
+
+$ python manage.py runserver
+
+And visit your installation of Nadine at http://localhost:8000
 
 ## Installation Notes
 
