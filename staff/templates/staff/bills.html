@@ -74,7 +74,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 				
 						{% if bill.membership %}
 						<div class="bill-info">
-							Monthly: <a href="{{ bill.membership.get_admin_url }}">${{ bill.membership.rate }}</a>
+							Monthly: <a href="{{ bill.membership.get_admin_url }}">${{ bill.membership.monthly_rate }}</a>
 						</div>
 						{% endif %}
 						{% if bill.new_member_deposit %}

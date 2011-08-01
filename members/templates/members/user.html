@@ -16,7 +16,7 @@
 {% endif %}
 {% if user.username == request.user.username or request.user.is_staff %}
 	<dl>
-    <dt>Membership status:</dt><dd>{{ user.profile.membership_type }}{% if user.profile.is_monthly %} at ${{ user.profile.last_membership.rate }}/month{% endif %}</dd>
+    <dt>Membership status:</dt><dd>{{ user.profile.membership_type }}{% if user.profile.is_monthly %} at ${{ user.profile.last_membership.monthly_rate }}/month{% endif %}</dd>
 		{% if user.profile.is_monthly %}
 		<dt>Anniversary date:</dt><dd>{{ user.profile.last_membership.start_date|date:"M d, Y" }}</dd>
 		{% endif %}
@@ -71,7 +71,7 @@
        		<tr class="{% cycle 'row-even' 'row-odd' %}">
        			<td>{{ bill.created|date:"M d, Y" }}</td>
        			<td>${{ bill.amount }}</td>
-       			<td>{% if bill.membership %}{{ bill.membership.plan }}{% endif %}</td>
+       			<td>{% if bill.membership %}{{ bill.membership.membership_plan }}{% endif %}</td>
        			<td>
 
        				{% if bill.paid_by %}
@@ -115,11 +115,11 @@
  		   </tr>		    
 		  </thead>
 		  <tbody>
- 		   {% for log in user.profile.memberships.all reversed %}
+ 		   {% for membership in user.profile.memberships.all reversed %}
  		      <tr class="{% cycle 'row-even' 'row-odd' %}">
- 		         <td>{{ log.plan }}</td>
- 		         <td>{{ log.start_date|date:"M d, Y" }}</td>
- 		         <td>{% if log.end_date %}{{ log.end_date|date:"M d, Y" }}{% endif %}</td>
+ 		         <td>{{ membership.membership_plan }}</td>
+ 		         <td>{{ membership.start_date|date:"M d, Y" }}</td>
+ 		         <td>{% if membership.end_date %}{{ membership.end_date|date:"M d, Y" }}{% endif %}</td>
  		      </tr>
  		   {% endfor %}		    
 		  </tbody>

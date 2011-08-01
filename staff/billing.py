@@ -97,8 +97,8 @@ class Run:
       for day in self.days:
          if day.daily_log or day.is_membership_end_date() or day.is_membership_anniversary() or len(day.guest_daily_logs) > 0:
             if day.daily_log: print '\tDaily log: %s' % day.daily_log.visit_date
-            if day.is_membership_end_date(): print '\t%s end: %s' % (day.membership.plan, day.date)
-            if day.is_membership_anniversary(): print '\t%s monthly anniversary: %s' % (day.membership.plan, day.date)
+            if day.is_membership_end_date(): print '\t%s end: %s' % (day.membership.membership_plan, day.date)
+            if day.is_membership_anniversary(): print '\t%s monthly anniversary: %s' % (day.membership.membership_plan, day.date)
             if len(day.guest_daily_logs) > 0: print '\tGuest logs: %s' % day.guest_daily_logs
 
    def __repr__(self):
@@ -142,26 +142,32 @@ def run_billing(bill_time=datetime.now()):
                      for guest_daily_log in recent_day.guest_daily_logs: bill_guest_dropins.append(guest_daily_log)
                   # now calculate the bill amount
                   bill_amount = 0
-                  monthly_fee = day.membership.rate
+                  monthly_fee = day.membership.monthly_rate
                   if day.is_membership_end_date(): monthly_fee = 0
+                  
+                  # -- The New Way --
+                  plan = day.membership.membership_plan
+                  billable_dropin_count = max(0, len(bill_dropins) + len(bill_guest_dropins) - plan.dropin_allowance)
+                  bill_amount = monthly_fee + (billable_dropin_count * plan.daily_rate)
          
-                  if day.membership.plan == 'Basic':
-                     billable_dropin_count = max(0, len(bill_dropins) - settings.BASIC_DROPIN_COUNT)
-                     bill_amount = monthly_fee + (billable_dropin_count * settings.BASIC_DROPIN_FEE) + (len(bill_guest_dropins) * settings.BASIC_DROPIN_FEE)
-                  elif day.membership.plan == 'PT5':
-                     billable_dropin_count = max(0, len(bill_dropins) - settings.PT5_DROPIN_COUNT)
-                     bill_amount = monthly_fee + (billable_dropin_count * settings.PT5_DROPIN_FEE) + (len(bill_guest_dropins) * settings.PT5_DROPIN_FEE)
-                  elif day.membership.plan == 'PT10':
-                     billable_dropin_count = max(0, len(bill_dropins) - settings.PT10_DROPIN_COUNT)
-                     bill_amount = monthly_fee + (billable_dropin_count * settings.PT10_DROPIN_FEE) + (len(bill_guest_dropins) * settings.PT10_DROPIN_FEE)
-                  elif day.membership.plan == 'PT15':
-                     billable_dropin_count = max(0, len(bill_dropins) - settings.PT15_DROPIN_COUNT)
-                     bill_amount = monthly_fee + (billable_dropin_count * settings.PT15_DROPIN_FEE) + (len(bill_guest_dropins) * settings.PT15_DROPIN_FEE)
-                  elif day.membership.plan == 'Regular':
-                     bill_amount = monthly_fee + (len(bill_guest_dropins) * settings.REGULAR_GUEST_DROPIN_FEE)
-                  elif day.membership.plan == 'Resident':
-                     billable_guest_dropin_count = max(0, len(bill_guest_dropins) - max(settings.RESIDENT_GUEST_DROPIN_COUNT, day.membership.guest_dropins))
-                     bill_amount = monthly_fee + (billable_guest_dropin_count * settings.RESIDENT_GUEST_DROPIN_FEE)
+                 # -- The Old Way --
+                 # if day.membership.plan == 'Basic':
+                 #    billable_dropin_count = max(0, len(bill_dropins) - settings.BASIC_DROPIN_COUNT)
+                 #    bill_amount = monthly_fee + (billable_dropin_count * settings.BASIC_DROPIN_FEE) + (len(bill_guest_dropins) * settings.BASIC_DROPIN_FEE)
+                 # elif day.membership.plan == 'PT5':
+                 #    billable_dropin_count = max(0, len(bill_dropins) - settings.PT5_DROPIN_COUNT)
+                 #    bill_amount = monthly_fee + (billable_dropin_count * settings.PT5_DROPIN_FEE) + (len(bill_guest_dropins) * settings.PT5_DROPIN_FEE)
+                 # elif day.membership.plan == 'PT10':
+                 #    billable_dropin_count = max(0, len(bill_dropins) - settings.PT10_DROPIN_COUNT)
+                 #    bill_amount = monthly_fee + (billable_dropin_count * settings.PT10_DROPIN_FEE) + (len(bill_guest_dropins) * settings.PT10_DROPIN_FEE)
+                 # elif day.membership.plan == 'PT15':
+                 #    billable_dropin_count = max(0, len(bill_dropins) - settings.PT15_DROPIN_COUNT)
+                 #    bill_amount = monthly_fee + (billable_dropin_count * settings.PT15_DROPIN_FEE) + (len(bill_guest_dropins) * settings.PT15_DROPIN_FEE)
+                 # elif day.membership.plan == 'Regular':
+                 #    bill_amount = monthly_fee + (len(bill_guest_dropins) * settings.REGULAR_GUEST_DROPIN_FEE)
+                 # elif day.membership.plan == 'Resident':
+                 #    billable_guest_dropin_count = max(0, len(bill_guest_dropins) - max(settings.RESIDENT_GUEST_DROPIN_COUNT, day.membership.dropin_allowance))
+                 #    bill_amount = monthly_fee + (billable_guest_dropin_count * settings.RESIDENT_GUEST_DROPIN_FEE)
 
                   if bill_amount == 0: continue
 

@@ -28,7 +28,7 @@
 		<tr>
 			<th>Monthly:</th>
 				<td>
-					<a href="{{ bill.membership.get_admin_url }}">{{ bill.membership.plan }} @ ${{ bill.membership.rate }}</a>:
+					<a href="{{ bill.membership.get_admin_url }}">{{ bill.membership.membership_plan }} @ ${{ bill.membership.monthly_rate }}</a>:
 					started {{ bill.membership.start_date|date:"m/d/y"}}{% if bill.membership.end_date %}, ended {{ bill.membership.end_date|date:"m/d/y"}}{% endif %}
 				</td>
 		</tr>

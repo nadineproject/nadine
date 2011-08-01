@@ -51,12 +51,12 @@ nav #billing-tab { background: #FBD850; color: black; }
 	         <th>Notes</th> 
 	      </tr>
    
-	      {% for log in member.memberships.all reversed %}
+	      {% for membership in member.memberships.all reversed %}
 	         <tr class="{% cycle 'row-even' 'row-odd' %}">
-	            <td>{{ log.plan }}</td>
-	            <td><a href="{{ log.get_admin_url }}">{{ log.start_date|date:"m/d/y" }}</a></td>
-	            <td>{% if log.end_date %}{{ log.end_date|date:"m/d/y" }}{% endif %}</td>
-	            <td>{{ log.note }}</td>
+	            <td>{{ membership.membership_plan }}</td>
+	            <td><a href="{{ membership.get_admin_url }}">{{ membership.start_date|date:"m/d/y" }}</a></td>
+	            <td>{% if membership.end_date %}{{ membership.end_date|date:"m/d/y" }}{% endif %}</td>
+	            <td>{{ membership.note }}</td>
 	         </tr>
 	      {% endfor %}
 	   </table>

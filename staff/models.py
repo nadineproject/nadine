@@ -21,16 +21,6 @@ PAYMENT_CHOICES = (
 	('Waved', 'Payment Waved'),
 )
 
-MEMBERSHIP_CHOICES = (
-	('Basic', 'Basic'),
-	('PT5', 'Part Time 5'),
-	('PT10', 'Part Time 10'),
-	('PT15', 'Part Time 15'),
-	('Regular', 'Regular'),
-	('Resident', 'Resident'),
-	('ISP', 'Internet Service'),
-)
-
 class BillingLog(models.Model):
 	"""A record of when the billing was last calculated and whether it was successful"""
 	started = models.DateTimeField(auto_now_add=True)
@@ -121,8 +111,8 @@ class MemberManager(models.Manager):
 		future_ending = Q(memberships__end_date__gt=date.today())
 		return Member.objects.exclude(memberships__isnull=True).filter(unending | future_ending).distinct()
 
-	def members_by_membership_type(self, membership_type):
-		return [log.member for log in Membership.objects.filter(plan=membership_type).filter(Q(end_date__isnull=True) | Q(end_date__gt=date.today())).distinct().order_by('member__user__first_name')]
+	def members_by_membership_type(self, membership_plan_id):
+		return [log.member for log in Membership.objects.filter(membership_plan=membership_plan_id).filter(Q(end_date__isnull=True) | Q(end_date__gt=date.today())).distinct().order_by('member__user__first_name')]
 
 	def members_by_neighborhood(self, hood, active_only=True):
 		if active_only:
@@ -242,9 +232,9 @@ class Member(models.Model):
 		if memberships.count() > 0:
 			last_monthly = self.last_membership()
 			if last_monthly.end_date == None or last_monthly.end_date > date.today():
-				return last_monthly.plan
+				return last_monthly.membership_plan
 			else:
-				return "Ex" + last_monthly.plan
+				return "Ex" + last_monthly.membership_plan
             
 		# Now check daily logs
 		if DailyLog.objects.filter(member=self).count() > 0:
@@ -340,26 +330,39 @@ class Membership_Manager(models.Manager):
 	def by_date(self, target_date):
 		return self.filter(start_date__lte=target_date).filter(Q(end_date__isnull=True) | Q(end_date__gte=target_date))
 
-'''
-class MembershipPlans(models.Model):
+class MembershipPlan(models.Model):
 	"""Options for monthly membership"""
-	name = models.CharField(max_length=16, choices=MEMBERSHIP_CHOICES)
+	name = models.CharField(max_length=16)
+	description = models.CharField(max_length=128, blank=True, null=True)
 	monthly_rate = models.IntegerField(default=0)
-	dropin_allowance = models.IntegerField(default=0)
 	daily_rate = models.IntegerField(default=0)
+	dropin_allowance = models.IntegerField(default=0)
 	deposit_amount = models.IntegerField(default=0)
-'''
+	has_desk = models.NullBooleanField(default=False)
+
+	def __str__(self): return self.name
+
+	def get_admin_url(self):
+		return urlresolvers.reverse('admin:staff_membershipplan_change', args=[self.id])
+
+	class Meta:
+		verbose_name = "Membership Plan"
+		verbose_name_plural = "Membership Plans"
 
 class Membership(models.Model):
 	"""A membership level which is billed monthly"""
 	member = models.ForeignKey(Member, related_name="memberships")
-	plan = models.CharField(max_length=8, choices=MEMBERSHIP_CHOICES)
+	#plan = models.CharField(max_length=8, choices=MEMBERSHIP_CHOICES)
+	membership_plan = models.ForeignKey(MembershipPlan, null=True)
 	start_date = models.DateField()
 	end_date = models.DateField(blank=True, null=True)
-	rate = models.IntegerField(default=0)
-	note = models.CharField(max_length=128, blank=True, null=True)
-	guest_dropins = models.IntegerField(default=0)
+	monthly_rate = models.IntegerField(default=0)
+	dropin_allowance = models.IntegerField(default=0)
+	daily_rate = models.IntegerField(default=0)
+	deposit_amount = models.IntegerField(default=0)
+	has_desk = models.NullBooleanField(default=False)
 	guest_of = models.ForeignKey(Member, blank=True, null=True, related_name="monthly_guests")
+	note = models.CharField(max_length=128, blank=True, null=True)
 
 	objects = Membership_Manager()
 

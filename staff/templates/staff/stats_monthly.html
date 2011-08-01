@@ -27,13 +27,13 @@ nav #stats-tab { background: #FBD850; color: black; }
          <th>Note</th>
       </tr>
    
-      {% for log in memberships %}
+      {% for membership in memberships %}
 	      <tr class="{% cycle 'row-even' 'row-odd' %}">
-	         <td><a href="{{ log.member.get_absolute_url }}">{{ log.member }}</a></td>
-	         <td>{{ log.start_date }}</td>
-	         <td>{{ log.plan }}</td>
-	         <td>${{ log.rate }}</td>
-	         <td class="note-cell">{{ log.note }}</td>
+	         <td><a href="{{ log.member.get_absolute_url }}">{{ membership.member }}</a></td>
+	         <td>{{ membership.start_date }}</td>
+	         <td>{{ membership.membership_plan }}</td>
+	         <td>${{ membership.monthly_rate }}</td>
+	         <td class="note-cell">{{ membership.note }}</td>
 	      </tr>
 	   {% endfor %}
 	   

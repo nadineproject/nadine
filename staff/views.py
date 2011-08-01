@@ -23,8 +23,8 @@ END_DATE_PARAM = 'end'
 def members(request):
    if not request.user.is_staff: return HttpResponseRedirect(reverse('members.views.user', args=[], kwargs={'username':request.user.username}))
    plans = []
-   for plan_id, plan_name  in MEMBERSHIP_CHOICES:
-      plans.append({ 'name':plan_name, 'id':plan_id, 'members':Member.objects.members_by_membership_type(plan_id), 'count':len(Member.objects.members_by_membership_type(plan_id))})
+   for plan in MembershipPlan.objects.all():
+      plans.append({ 'name':plan.name, 'id':plan.id, 'members':Member.objects.members_by_membership_type(plan.id), 'count':len(Member.objects.members_by_membership_type(plan.id))})
    return render_to_response('staff/members.html', { 'plans': plans, 'member_search_form':MemberSearchForm() }, context_instance=RequestContext(request))
 
 @staff_member_required
@@ -274,24 +274,24 @@ def stats_monthly(request):
    # Pull all the monthly members
    memberships = Membership.objects.filter(end_date__isnull=True).order_by('start_date')
    total_income = 0
-   for log in memberships:
-      total_income = total_income + log.rate
+   for membership in memberships:
+      total_income = total_income + membership.monthly_rate
    return render_to_response('staff/stats_monthly.html', {'memberships':memberships, 'total_income': total_income}, context_instance=RequestContext(request))
 
 @staff_member_required
 def stats_member_types(request):
    types_dict = {}
-   for plan_id, plan_name in MEMBERSHIP_CHOICES:
-      types_dict[plan_id] = len(Member.objects.members_by_membership_type(plan_id))
-
-   plan_ids = [t[0] for t in MEMBERSHIP_CHOICES]
-   for member in Member.objects.all():
-      type_id = member.membership_type()
-      if type_id in plan_ids: continue
-      if types_dict.has_key(type_id):
-         types_dict[type_id] = types_dict[type_id] + 1
-      else:
-         types_dict[type_id] = 1
+   for plan in MembershipPlan.objects.all():
+      types_dict[plan.id] = len(Member.objects.members_by_membership_type(plan.id))
+# Old stats page that isn't used anymore... to be removed -- JLS      
+#   plan_ids = [t[0] for t in MEMBERSHIP_CHOICES]
+#   for member in Member.objects.all():
+#      type_id = member.membership_type()
+#      if type_id in plan_ids: continue
+#      if types_dict.has_key(type_id):
+#         types_dict[type_id] = types_dict[type_id] + 1
+#      else:
+#         types_dict[type_id] = 1         
    return render_to_response('staff/stats_member_types.html', {'types_dict': types_dict, 'member_count': Member.objects.all().count()}, context_instance=RequestContext(request))
 
 @staff_member_required

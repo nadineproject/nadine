@@ -120,7 +120,7 @@ class BillingTestCase(TestCase):
       self.assertTrue(orig_log.is_anniversary_day(date(2010, 4, 10)))
       orig_log.end_date = orig_log.start_date + timedelta(days=31)
       orig_log.save()
-      new_log = Membership(start_date=orig_log.end_date, member=orig_log.member, plan=orig_log.plan, rate=orig_log.rate)
+      new_log = Membership(start_date=orig_log.end_date, member=orig_log.member, plan=orig_log.membership_plan, rate=orig_log.rate)
       self.assertRaises(Exception, new_log.save) # the start date is the same as the previous plan's end date, which is an error
       new_log.start_date = orig_log.end_date + timedelta(days=1)
       new_log.save()
