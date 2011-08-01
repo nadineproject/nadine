@@ -279,22 +279,6 @@ def stats_monthly(request):
    return render_to_response('staff/stats_monthly.html', {'memberships':memberships, 'total_income': total_income}, context_instance=RequestContext(request))
 
 @staff_member_required
-def stats_member_types(request):
-   types_dict = {}
-   for plan in MembershipPlan.objects.all():
-      types_dict[plan.id] = len(Member.objects.members_by_membership_type(plan.id))
-# Old stats page that isn't used anymore... to be removed -- JLS      
-#   plan_ids = [t[0] for t in MEMBERSHIP_CHOICES]
-#   for member in Member.objects.all():
-#      type_id = member.membership_type()
-#      if type_id in plan_ids: continue
-#      if types_dict.has_key(type_id):
-#         types_dict[type_id] = types_dict[type_id] + 1
-#      else:
-#         types_dict[type_id] = 1         
-   return render_to_response('staff/stats_member_types.html', {'types_dict': types_dict, 'member_count': Member.objects.all().count()}, context_instance=RequestContext(request))
-
-@staff_member_required
 def stats_neighborhood(request):
    active_only = 'ActiveOnly' in request.POST
    
