@@ -336,11 +336,12 @@ def activity(request):
    start_date = date(year=starteo.tm_year, month=starteo.tm_mon, day=starteo.tm_mday)
    endeo = timeo.strptime(end, "%Y-%m-%d")
    end_date = date(year=endeo.tm_year, month=endeo.tm_mon, day=endeo.tm_mday)
+   resident_plan = MembershipPlan.objects.all().filter(name='Resident')
    days = [{'date':start_date + timedelta(days=i)} for i in range((end_date - start_date).days) ]
    for day in days:
       day['daily_logs'] = DailyLog.objects.filter(visit_date=day['date']).count()
       day['membership'] = Membership.objects.by_date(day['date']).count()
-      day['residents'] = Membership.objects.by_date(day['date']).filter(plan='Resident').count()
+      day['residents'] = Membership.objects.by_date(day['date']).filter(membership_plan=resident_plan).count()
       day['occupancy'] = day['daily_logs'] + day['residents']
 
    max_membership = 0
