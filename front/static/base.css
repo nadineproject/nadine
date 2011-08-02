@@ -157,7 +157,7 @@ table tr.row-even td { background: #eee; }
 #color-key { margin: 2em 0; }
 #color-key b { margin-right: 1em; padding: 0px 5px; }
 #membership-key {  background-color: #9F9; }
-#residents-key { background-color: #F99; }
+#has-desk-key { background-color: #F99; }
 #daily-logs-key { background-color: #99F; }  
 .membership-bar { float: right; margin: 5px 0px; background-color: #9F9; padding-left: 5px; }  
 .residents-bar { margin: 5px 0px; background-color: #F99; padding-right: 5px; display:inline-block; text-align: right; }
