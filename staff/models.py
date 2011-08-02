@@ -111,8 +111,8 @@ class MemberManager(models.Manager):
 		future_ending = Q(memberships__end_date__gt=date.today())
 		return Member.objects.exclude(memberships__isnull=True).filter(unending | future_ending).distinct()
 
-	def members_by_membership_type(self, membership_plan_id):
-		return [log.member for log in Membership.objects.filter(membership_plan=membership_plan_id).filter(Q(end_date__isnull=True) | Q(end_date__gt=date.today())).distinct().order_by('member__user__first_name')]
+	def members_by_plan_id(self, plan_id):
+		return [log.member for log in Membership.objects.filter(membership_plan=plan_id).filter(Q(end_date__isnull=True) | Q(end_date__gt=date.today())).distinct().order_by('member__user__first_name')]
 
 	def members_by_neighborhood(self, hood, active_only=True):
 		if active_only:
