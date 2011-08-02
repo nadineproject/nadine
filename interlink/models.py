@@ -70,7 +70,9 @@ class MailingList(models.Model):
    def subscriber_addresses(self):
       """Returns a tuple of email address strings, one for each subscribed address"""
       return tuple([sub.email for sub in self.subscribers.all()])
-      
+   
+   def __unicode__(self): return '%s: %i' % (self.name, self.id)
+   
 class IncomingMail(models.Model):
    """An email as popped for a mailing list"""
    mailing_list = models.ForeignKey(MailingList, related_name='incoming_mails')
@@ -83,6 +85,8 @@ class IncomingMail(models.Model):
    state = models.CharField(max_length=10, choices=STATES, default='raw')
 
    created = models.DateTimeField(auto_now_add=True)
+
+   def __unicode__(self): return '%s: %s' % (self.origin_address, self.subject)
 
 class OutgoingMail(models.Model):
    """Emails which are consumed by the front.tasks.EmailTask"""

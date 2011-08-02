@@ -1,5 +1,6 @@
 """A django app for providing mailing lists."""
-import poplib
+import time
+import poplib, email
 from datetime import datetime, date, timedelta
 
 from django.conf import settings
@@ -48,18 +49,43 @@ class PopMailChecker(MailChecker):
    
    def fetch_mail(self):
       """Pops mail from the pop server and writes them as IncomingMail"""
-      #TODO actually fetch the mail and write IncomingMails
-      raise NotImplementedError
-
       pop_client = poplib.POP3_SSL(self.mailing_list.pop_host, self.mailing_list.pop_port)
       response = pop_client.user(self.mailing_list.username)
-      print 'user response:', response
+      if not response.startswith('+OK'): raise Exception('Username not accepted: %s' % response)
       response = pop_client.pass_(self.mailing_list.password)
-      print 'pass response:', response
-      response = pop_client.stat()
-      print 'stat', response
+      if not response.startswith('+OK Logged in'): raise Exception('Password not accepted: %s' % response)
+      stats = pop_client.stat()
+      if stats[0] == 0: return []
+
+      results = []
+      for i in range(stats[0]):
+         response, mail, size = pop_client.retr(i+1)
+         parser = email.FeedParser.FeedParser()
+         parser.feed('\n'.join(mail))
+         message = parser.close()
+         if message['Auto-Submitted'] == None or message['Auto-Submitted'] == 'no':
+            name, origin_address = email.utils.parseaddr(message['From'])
+            time_struct = email.utils.parsedate(message['Date'])
+            sent_time = datetime(*time_struct[:-2])
+            if message.is_multipart():
+               for bod in  message.get_payload():
+                  body = bod.get_payload()
+                  if body: break
+            else:
+               body = message.get_payload()
+            results.append(IncomingMail.objects.create(mailing_list=self.mailing_list, origin_address=origin_address, subject=message['Subject'], body=body, sent_time=sent_time))
+         pop_client.dele(i+1)
+        
       pop_client.quit()
 
+   def parse_mail_array(self, mail_array):
+      """Iterates through the mail array and returns a tuple containing a map of headers and the body"""
+      headers = {}
+      for header in mail_array[:-3]:
+         name, sep, val = header.partition(':')
+         headers[name] = val.strip()
+      return (headers, mail_array[-1])
+   
 if settings.IS_TEST:
    DEFAULT_MAIL_CHECKER = TestMailChecker
 else:
