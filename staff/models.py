@@ -326,10 +326,6 @@ class DailyLog(models.Model):
 		verbose_name = "Daily Log"
 		ordering = ['-visit_date', '-created']
 
-class Membership_Manager(models.Manager):
-	def by_date(self, target_date):
-		return self.filter(start_date__lte=target_date).filter(Q(end_date__isnull=True) | Q(end_date__gte=target_date))
-
 class MembershipPlan(models.Model):
 	"""Options for monthly membership"""
 	name = models.CharField(max_length=16)
@@ -349,6 +345,16 @@ class MembershipPlan(models.Model):
 		verbose_name = "Membership Plan"
 		verbose_name_plural = "Membership Plans"
 
+class MembershipManager(models.Manager):
+	
+	def by_date(self, target_date):
+		return self.filter(start_date__lte=target_date).filter(Q(end_date__isnull=True) | Q(end_date__gte=target_date))
+
+	def create_with_plan(self, member, start_date, end_date, membership_plan):
+		self.create(member=member, start_date=start_date, end_date=end_date, membership_plan=membership_plan, 
+			monthly_rate=membership_plan.monthly_rate, daily_rate=membership_plan.daily_rate, dropin_allowance=membership_plan.dropin_allowance,
+			deposit_amount=membership_plan.deposit_amount, has_desk=membership_plan.has_desk)
+
 class Membership(models.Model):
 	"""A membership level which is billed monthly"""
 	member = models.ForeignKey(Member, related_name="memberships")
@@ -363,7 +369,7 @@ class Membership(models.Model):
 	guest_of = models.ForeignKey(Member, blank=True, null=True, related_name="monthly_guests")
 	note = models.CharField(max_length=128, blank=True, null=True)
 
-	objects = Membership_Manager()
+	objects = MembershipManager()
 
 	def save(self, *args, **kwargs):
 		if Membership.objects.by_date(self.start_date).exclude(pk=self.pk).filter(member=self.member).count() != 0:

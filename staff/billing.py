@@ -146,7 +146,7 @@ def run_billing(bill_time=datetime.now()):
                   if day.is_membership_end_date(): monthly_fee = 0
                   billable_dropin_count = max(0, len(bill_dropins) + len(bill_guest_dropins) - day.membership.dropin_allowance)
                   bill_amount = monthly_fee + (billable_dropin_count * day.membership.daily_rate)
-         
+
                  # -- The Old Way --
                  # if day.membership.plan == 'Basic':
                  #    billable_dropin_count = max(0, len(bill_dropins) - settings.BASIC_DROPIN_COUNT)
@@ -169,6 +169,7 @@ def run_billing(bill_time=datetime.now()):
                   if bill_amount == 0: continue
 
                   day.bill = Bill(created=day.date, amount=bill_amount, member=member, paid_by=day.membership.guest_of, membership=day.membership)
+                  #print 'saving bill: %s - %s' % (day.bill, day)
                   day.bill.save()
                   bill_count += 1
                   day.bill.dropins = [dropin.id for dropin in bill_dropins]
@@ -198,6 +199,6 @@ def run_billing(bill_time=datetime.now()):
    billing_log.successful = billing_success
    billing_log.save()
    #print 'Completed billing %s' % billing_success
-   #if not billing_success: print billing_log.note
+   if not billing_success: print billing_log.note
 
 # Copyright 2010 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

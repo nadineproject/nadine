@@ -59,9 +59,9 @@ class TasksTestCase(TestCase):
 class MemberTestCase(TestCase):
 	def setUp(self):
 		self.neighborhood1 = Neighborhood.objects.create(name="Beggar's Gulch")
-		self.basicPlan = MembershipPlan(name="Basic",monthly_rate="50",dropin_allowance="3",daily_rate="20",deposit_amount="0",has_desk=False)
-		self.pt5Plan = MembershipPlan(name="PT5",monthly_rate="75",dropin_allowance="5",daily_rate="20",deposit_amount="0",has_desk=False)
-		self.residentPlan = MembershipPlan(name="Resident",monthly_rate="475",dropin_allowance="5",daily_rate="20",deposit_amount="500",has_desk=True)
+		self.basicPlan = MembershipPlan.objects.create(name="Basic",monthly_rate=50,dropin_allowance=3,daily_rate=20,deposit_amount=0,has_desk=False)
+		self.pt5Plan = MembershipPlan.objects.create(name="PT5",monthly_rate=75,dropin_allowance=5,daily_rate=20,deposit_amount=0,has_desk=False)
+		self.residentPlan = MembershipPlan.objects.create(name="Resident",monthly_rate=475,dropin_allowance=5,daily_rate=20,deposit_amount=500,has_desk=True)
 
 		self.user1 = User.objects.create(username='member_one', first_name='Member', last_name='One')
 		self.profile1 = self.user1.profile
@@ -102,26 +102,26 @@ class MemberTestCase(TestCase):
 class BillingTestCase(TestCase):
 
 	def setUp(self):
-		self.basicPlan = MembershipPlan(name="Basic",monthly_rate="50",dropin_allowance="3",daily_rate="20",deposit_amount="0",has_desk=False)
-		self.pt5Plan = MembershipPlan(name="PT5",monthly_rate="75",dropin_allowance="5",daily_rate="20",deposit_amount="0",has_desk=False)
-		self.pt15Plan = MembershipPlan(name="PT15",monthly_rate="225",dropin_allowance="15",daily_rate="20",deposit_amount="0",has_desk=False)
-		self.residentPlan = MembershipPlan(name="Resident",monthly_rate="475",dropin_allowance="5",daily_rate="20",deposit_amount="500",has_desk=True)
-	
+		self.basicPlan = MembershipPlan.objects.create(name="Basic",monthly_rate=50,dropin_allowance=3,daily_rate=20,deposit_amount=0,has_desk=False)
+		self.pt5Plan = MembershipPlan.objects.create(name="PT5",monthly_rate=75,dropin_allowance=5,daily_rate=20,deposit_amount=0,has_desk=False)
+		self.pt15Plan = MembershipPlan.objects.create(name="PT15",monthly_rate=225,dropin_allowance=15,daily_rate=20,deposit_amount=0,has_desk=False)
+		self.residentPlan = MembershipPlan.objects.create(name="Resident",monthly_rate=475,dropin_allowance=5,daily_rate=20,deposit_amount=500,has_desk=True)
+
 		self.user1 = User.objects.create(username='member_one', first_name='Member', last_name='One')
 		self.user2 = User.objects.create(username='member_two', first_name='Member', last_name='Two')
 		self.user3 = User.objects.create(username='member_three', first_name='Member', last_name='Three')
 		self.user4 = User.objects.create(username='member_four', first_name='Member', last_name='Four')		  
 
-		Membership.objects.create(member=self.user1.get_profile(), membership_plan=self.residentPlan, start_date=date(2008, 6, 26), monthly_rate=self.residentPlan.monthly_rate)
+		Membership.objects.create_with_plan(member=self.user1.get_profile(), start_date=date(2008, 6, 26), end_date=None, membership_plan=self.residentPlan)
 		
-		Membership.objects.create(member=self.user2.get_profile(), membership_plan=self.residentPlan, start_date=date(2008, 1, 31), monthly_rate=self.residentPlan.monthly_rate)
+		Membership.objects.create_with_plan(member=self.user2.get_profile(), start_date=date(2008, 1, 31), end_date=None, membership_plan=self.residentPlan)
 
-		Membership.objects.create(member=self.user3.get_profile(), membership_plan=self.pt15Plan, start_date=date(2008, 2, 1), end_date=date(2010, 6, 20), monthly_rate=self.pt15Plan.monthly_rate)
-		Membership.objects.create(member=self.user3.get_profile(), membership_plan=self.basicPlan, start_date=date(2010, 6, 21), monthly_rate=self.basicPlan.monthly_rate)
+		Membership.objects.create_with_plan(member=self.user3.get_profile(), start_date=date(2008, 2, 1), end_date=date(2010, 6, 20), membership_plan=self.pt15Plan)
+		Membership.objects.create_with_plan(member=self.user3.get_profile(), start_date=date(2010, 6, 21), end_date=None, membership_plan=self.basicPlan)
 		for day in range(2,19): DailyLog.objects.create(member=self.user3.get_profile(), visit_date=date(2010, 6, day), payment='Bill')
 
-		Membership.objects.create(member=self.user4.get_profile(), membership_plan=self.pt5Plan, start_date=date(2008, 2, 1), end_date=date(2010, 6, 10), monthly_rate=self.pt5Plan.monthly_rate)
-		Membership.objects.create(member=self.user4.get_profile(), membership_plan=self.residentPlan, start_date=date(2010, 6, 11), monthly_rate=self.residentPlan.monthly_rate)
+		Membership.objects.create_with_plan(member=self.user4.get_profile(), start_date=date(2008, 2, 1), end_date=date(2010, 6, 10), membership_plan=self.pt5Plan)
+		Membership.objects.create_with_plan(member=self.user4.get_profile(), start_date=date(2010, 6, 11), end_date=None, membership_plan=self.residentPlan)
 		for day in range(2,11): DailyLog.objects.create(member=self.user4.get_profile(), visit_date=date(2010, 6, day), payment='Bill')
 
 	def testMembership(self):
@@ -149,29 +149,28 @@ class BillingTestCase(TestCase):
 		days = [end_time - timedelta(days=i) for i in day_range]
 		# 2010-05-31 through 2010-07-01
 		for day in days:
+			#print 'Testing: %s' % (day)
 			billing.run_billing(day)
 			if day.month == 6 and day.day == 10:
 				self.assertTrue(member4.last_bill() != None)
-				self.assertTrue(member4.last_bill().created.month == day.month and member4.last_bill().created.day == day.day)
-				self.assertEqual(member4.last_bill().membership, Membership.objects.get(member=member4, membership_plan=self.pt5Plan))
+				self.assertTrue(member4.last_bill().created.month == day.month)
+				self.assertTrue(member4.last_bill().created.day == day.day)
+				self.assertEqual(member4.last_bill().membership, Membership.objects.get(member=member4, membership_plan=self.pt5Plan.id))
 				self.assertEqual(member4.last_bill().dropins.count(), 9) # dropins on 6/2 - 6/10
 				self.assertEqual(member4.last_bill().amount, (member4.last_bill().dropins.count() - 5) * self.pt5Plan.daily_rate)
 			if day.month == 6 and day.day == 11:
 				self.assertTrue(member4.last_bill() != None)
 				self.assertTrue(member4.last_bill().created.month == day.month and member4.last_bill().created.day == day.day)
-				self.assertEqual(member4.last_bill().membership, Membership.objects.get(member=member4, membership_plan=self.residentPlan))
+				self.assertEqual(member4.last_bill().membership, Membership.objects.get(member=member4, membership_plan=self.residentPlan.id))
 				self.assertEqual(member4.last_bill().dropins.count(), 0)
-
 			if day.month == 6 and day.day == 20:
 				self.assertTrue(member3.last_bill() != None)
 				self.assertTrue(member3.last_bill().created.month == day.month and member3.last_bill().created.day == day.day)
 				self.assertEqual(member3.last_bill().dropins.count(), 17)
-				
 			if day.month == 6 and day.day == 21:
 				self.assertTrue(member3.last_bill() != None)
 				self.assertTrue(member3.last_bill().created.month == day.month and member3.last_bill().created.day == day.day)
 				self.assertEqual(member3.last_bill().dropins.count(), 0)
-
 			if day.day == 26:
 				self.assertTrue(member1.last_membership().is_anniversary_day(day))
 				member_bills = member1.bills.all().order_by('-created')
