@@ -144,11 +144,8 @@ def run_billing(bill_time=datetime.now()):
                   bill_amount = 0
                   monthly_fee = day.membership.monthly_rate
                   if day.is_membership_end_date(): monthly_fee = 0
-                  
-                  # -- The New Way --
-                  plan = day.membership.membership_plan
-                  billable_dropin_count = max(0, len(bill_dropins) + len(bill_guest_dropins) - plan.dropin_allowance)
-                  bill_amount = monthly_fee + (billable_dropin_count * plan.daily_rate)
+                  billable_dropin_count = max(0, len(bill_dropins) + len(bill_guest_dropins) - day.membership.dropin_allowance)
+                  bill_amount = monthly_fee + (billable_dropin_count * day.membership.daily_rate)
          
                  # -- The Old Way --
                  # if day.membership.plan == 'Basic':
