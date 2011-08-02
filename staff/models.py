@@ -112,7 +112,7 @@ class MemberManager(models.Manager):
 		return Member.objects.exclude(memberships__isnull=True).filter(unending | future_ending).distinct()
 
 	def members_by_plan_id(self, plan_id):
-		return [log.member for log in Membership.objects.filter(membership_plan=plan_id).filter(Q(end_date__isnull=True) | Q(end_date__gt=date.today())).distinct().order_by('member__user__first_name')]
+		return [m.member for m in Membership.objects.filter(membership_plan=plan_id).filter(Q(end_date__isnull=True) | Q(end_date__gt=date.today())).distinct().order_by('member__user__first_name')]
 
 	def members_by_neighborhood(self, hood, active_only=True):
 		if active_only:
@@ -352,7 +352,6 @@ class MembershipPlan(models.Model):
 class Membership(models.Model):
 	"""A membership level which is billed monthly"""
 	member = models.ForeignKey(Member, related_name="memberships")
-	#plan = models.CharField(max_length=8, choices=MEMBERSHIP_CHOICES)
 	membership_plan = models.ForeignKey(MembershipPlan, null=True)
 	start_date = models.DateField()
 	end_date = models.DateField(blank=True, null=True)
