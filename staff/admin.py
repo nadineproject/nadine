@@ -12,6 +12,7 @@ admin.site.register(ExitTask)
 admin.site.register(Neighborhood)
 admin.site.register(Industry)
 admin.site.register(HowHeard)
+admin.site.register(MembershipPlan)
 
 class StyledAdmin(admin.ModelAdmin):
    class Media:
