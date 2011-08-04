@@ -429,4 +429,11 @@ def member_activity(request, member_id):
    payment_types = ['Visit', 'Trial', 'Waved', 'Bill']
    return render_to_response('staff/member_activity.html', {'payment_types':payment_types, 'member':member}, context_instance=RequestContext(request))
 
+@staff_member_required
+def membership(request, member_id):
+   member = get_object_or_404(Member, pk=member_id)
+   membership = Membership.objects.filter(member=member).filter(Q(end_date__isnull=True) | Q(end_date__gt=date.today())).distinct()
+   membership_plans = MembershipPlan.objects.all()
+   return render_to_response('staff/membership.html', {'member':member, 'membership': membership, 'membership_plans':membership_plans}, context_instance=RequestContext(request))
+
 # Copyright 2009, 2010 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

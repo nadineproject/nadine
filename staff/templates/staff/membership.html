@@ -1,0 +1,46 @@
+{% extends "staff/ml_base.html" %}
+
+{% block sub-title %}Membership | {% endblock %}
+
+{% block style %}
+nav #members-tab { background: #FBD850; color: black; }
+#page-message { font-size: 1.5em; color: #933; margin: 20px 0px; }
+#quick-links { text-align: right; margin-bottom: 20px;}
+{% endblock %}
+
+{% block content %}
+{% include "staff/member_menu.frag" %}  
+
+<h2>{% if membership %} Update {% else %} Add {% endif %} Membership for {{ member }}</h2>
+
+{% if page_message %}
+	<p id="page-message">{{ page_message|safe }}</p>
+{% endif %}
+
+<div id="signup_form">
+	<form enctype="multipart/form-data" action='.' method='post'>
+	   <table id="signup">
+	      {% for field in member_signup_form %}
+	         <tr class="{% cycle 'row-even' 'row-odd' %}">
+	            <td>{{ field.label_tag }}</td>
+	            <td>
+	               {{ field }}
+	               {% if field.label == 'How heard' %}<a href="{% url admin:staff_howheard_add %}">+</a>{% endif %}
+	               {% if field.label == 'Industry' %}<a href="{% url admin:staff_industry_add %}">+</a>{% endif %}
+	               {% if field.label == 'Neighborhood' %}<a href="{% url admin:staff_neighborhood_add %}">+</a>{% endif %}
+	            </td>
+	            {% if field.errors %}
+	            <td>
+	               {{ field.errors }}
+	            </td>
+	            {% endif %}
+	         </tr>
+	      {% endfor %}
+	      <tr><td></td><td><input type="submit" value="Create!" /></td></tr>
+	   </table>
+	   {% csrf_token %}
+	</form>
+	<p>* this field is required</p>
+</div>
+
+{% endblock %}

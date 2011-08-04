@@ -21,15 +21,16 @@ nav #members-tab { background: #FBD850; color: black; }
 	<h2>Search results</h2>
 	{% if search_results %}
 		<table>
-			<tr><th>Name</th><th>First visit</th><th>Duration</th><th>Quicklinks</th></tr>
+			<tr><th>Name</th><th>First visit</th><th>Duration</th><th align="left">Quicklinks</th></tr>
 			{% for member in search_results %}
 			<tr class="{% cycle 'row-even' 'row-odd' %}">
-				<th><a href="{% url staff.views.member_detail member.id %}">{{ member.first_name }} {{ member.last_name }}</a></th>
+				<td nowrap><a href="{% url staff.views.member_detail member.id %}">{{ member.first_name }} {{ member.last_name }}</a></td>
 				<td>{{ member.first_visit|date:"M y" }}</td>
 				<td>{{ member.first_visit|timesince }}</td>
 				<td>	
 					<a href="{% url staff.views.member_activity member.id %}">activity log</a> |
-					<a href="{% url staff.views.member_transactions member.id %}">transaction log</a>
+					<a href="{% url staff.views.member_transactions member.id %}">transaction log |</a>
+					<a href="{% url staff.views.membership member.id %}">membership</a>
 				</td>
 			</tr>
 			{% endfor %}
