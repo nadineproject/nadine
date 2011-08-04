@@ -33,6 +33,15 @@ def export_members(request):
    return render_to_response('staff/memberList.csv', { 'member_list': members }, context_instance=RequestContext(request))
 
 @staff_member_required
+def security_deposits(request):
+   members = []
+   total_deposits = 0;
+   for membership in Membership.objects.filter(deposit_amount__gt=0):
+      members.append({'id':membership.member.id, 'name':membership.member, 'deposit':membership.deposit_amount})
+      total_deposits = total_deposits + membership.deposit_amount
+   return render_to_response('staff/security_deposits.html', { 'member_list': members, 'total_deposits':total_deposits}, context_instance=RequestContext(request))
+
+@staff_member_required
 def signup(request):
    page_message = None
    if request.method == 'POST':

@@ -1,0 +1,28 @@
+{% extends "staff/ml_base.html" %}
+
+{% block sub-title %}Security Deposits | {% endblock %}
+
+{% block style%}
+nav #members-tab { background: #FBD850; color: black; }
+
+#deposit_table { text-align:right; background: #FBD850;}
+
+{% endblock %}
+
+{% block content %}
+{% include "staff/member_menu.frag" %}  
+
+<h2>Security Deposits</h2>  
+<table>
+	<tr><th>Name</th><th align="left">Amount</th></tr>
+	{% for member in member_list %}
+	<tr class="{% cycle 'row-even' 'row-odd' %}">
+		<td nowrap ><a href="{% url staff.views.member_detail member.id %}">{{ member.name }}</a></td>
+		<td>${{ member.deposit }}</td>
+	</tr>
+	{% endfor %}
+	<tr><th><strong>Total Deposits</strong><th align="left">${{total_deposits}}</th></tr>
+</table>
+
+
+{% endblock %}
