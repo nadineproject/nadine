@@ -7,9 +7,9 @@ nav #members-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {% block content %}
-<h2>Member List</h2>  
-  {% include "staff/search_and_quicklinks.frag" %}
+{% include "staff/member_menu.frag" %}  
 
+<h2>Member List</h2>  
   <div id="tabs">
     <ul> 
     {% for plan in plans %}

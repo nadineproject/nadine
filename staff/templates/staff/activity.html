@@ -7,17 +7,11 @@ nav #activity-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {% block content %} 
+{% include "staff/activity_menu.frag" %}  
+
 <h2>Activity</h2>
 <div class="columns clearfix date-range">
-  <div class="c1">
-{% include "staff/date_range_form.frag"%}    
-  </div>                                      
-  <div class="c2">
-    <div id="quicklinks">Quicklinks: 
-      <a href="{% url staff.views.activity_today %}">record activity</a> |
-      <a href="{% url staff.views.activity_list %}">activity list</a>
-    </div>
-  </div>
+	{% include "staff/date_range_form.frag"%}    
 </div>
 
 <div id="color-key">

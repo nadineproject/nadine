@@ -7,6 +7,8 @@ nav #billing-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {% block content %}
+{% include "staff/billing_menu.frag" %}  
+
 <h2><a href="{{ transaction.member.get_absolute_url }}">{{ transaction.member.first_name }} {{ transaction.member.last_name }}</a>'s Transaction:</h2>
 
 <dl id="transaction-metadata">

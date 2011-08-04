@@ -4,7 +4,7 @@
 {% block sub-title %}{{ member.first_name }} {{ member.last_name }} | {% endblock %}
 
 {% block style%}
-#nav-tabs #members-tab { background-color: #EEE; }
+nav #members-tab { background: #FBD850; color: black; }
 #quick-links { text-align: center; }
 caption { font-weight: bold; font-size: 1.4em; margin-bottom: 10px; }
 #right-floater { margin-top: 30px; float: right; width: 180px; min-height: 200px;  }
@@ -36,6 +36,8 @@ function gotoEmailReset(emailAddress){
 {% endblock %}
 
 {% block content %}
+{% include "staff/member_menu.frag" %}  
+
 <h2>{{ member.first_name }} {{ member.last_name }}</h2>
 
 <div id="quick-links">

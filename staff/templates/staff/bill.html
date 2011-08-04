@@ -8,6 +8,8 @@ nav #billing-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {% block content %}
+{% include "staff/billing_menu.frag" %}  
+
 <h2><a href="{{ bill.member.get_absolute_url }}">{{ bill.member.first_name }} {{ bill.member.last_name }}</a>'s Bill:</h2>
 {% include "staff/bill_table.frag" %}
 

@@ -3,17 +3,15 @@
 {% block sub-title %}Member Signup | {% endblock %}
 
 {% block style %}
+nav #members-tab { background: #FBD850; color: black; }
 #page-message { font-size: 1.5em; color: #933; margin: 20px 0px; }
 #quick-links { text-align: right; margin-bottom: 20px;}
 {% endblock %}
 
 {% block content %}
+{% include "staff/member_menu.frag" %}  
+
 <h2>Member Signup:</h2>
-<div id="quick-links">
-	Quicklinks:
-	<a href="{% url staff.views.activity_today %}">record activity</a> |
-	<a href="{% url admin:staff_membership_add %}">add membership</a>
-</div>
 
 {% if page_message %}
 	<p id="page-message">{{ page_message|safe }}</p>

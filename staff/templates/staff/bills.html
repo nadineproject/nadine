@@ -39,15 +39,14 @@ nav #billing-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {% block content %}
+{% include "staff/billing_menu.frag" %}  
 
+<h2>Outstanding Bills</h2>
 {% if page_message%}<p id="page-message">{{ page_message|safe }}</p>{% endif %}
 
 {% if not members %}
 <p>There are no open bills!</p>
 {% endif%}
-<div class="columns clearfix">
-  <div id="quick-links">Quicklinks: <a href="{% url staff.views.transactions %}">transactions</a> | <a href="{% url staff.views.run_billing %}">run billing</a></div>  
-</div>
 
 <ul id="bill-list">
 	{% for member in members %}

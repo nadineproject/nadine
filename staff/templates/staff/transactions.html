@@ -7,6 +7,8 @@ nav #billing-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {% block content %}
+{% include "staff/billing_menu.frag" %}  
+
 <h2>Transactions:</h2>
 
 {% if page_message%}<p id="page-message">{{ page_message }}</p>{% endif %}

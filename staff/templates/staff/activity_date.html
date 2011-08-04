@@ -11,18 +11,13 @@ nav #activity-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {% block content %}
+{% include "staff/activity_menu.frag" %}  
 
 <h2>
 	Daily Activity - {{ activity_date|date:"M d, Y" }}
 	<a href="{% url staff.views.activity_date previous_date.year previous_date.month previous_date.day %}">&laquo;</a>
 	<a href="{% url staff.views.activity_date next_date.year next_date.month next_date.day %}">&raquo;</a>
 </h2>
-
-<div id="quick-links">
-	Quicklinks:
-	<a href="{% url staff.views.activity_list %}">list by date range</a> |
-	<a href="{% url staff.views.signup %}">add member</a>
-</div>
 
 <div id="activity_list">
    <table>

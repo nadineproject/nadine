@@ -3,20 +3,22 @@
 {% block sub-title %}Member Search | {% endblock %}
 
 {% block style%}
-#nav-tabs #members-tab { background-color: #EEE; }
-#member-search-form { width: 100%; text-align: center; }
+nav #members-tab { background: #FBD850; color: black; }
+#member-search-form { font-weight: bold; font-size: 1.4em; margin-top: 1.4em;; }
 #content table { width: 100%; }
 {% endblock %}
 
 {% block content %}
+{% include "staff/member_menu.frag" %}  
+
 	<form id="member-search-form" action="." method="post">
-		Find:
+		<strong>Find Member</strong>:
 		{% for field in member_search_form %}{{ field }}{% endfor %}
 		<input type="submit" value="search" />
 		{% csrf_token %}
 	</form>
 
-	<h1>Search results</h1>
+	<h2>Search results</h2>
 	{% if search_results %}
 		<table>
 			<tr><th>Name</th><th>First visit</th><th>Duration</th><th>Quicklinks</th></tr>

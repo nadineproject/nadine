@@ -8,8 +8,9 @@ nav #todo-tab { background: #FBD850; color: black; }
 {% block sub-title %}Task List | {% endblock %}
 
 {% block content %}
+{% include "staff/todo_menu.frag" %}  
+
 <h2>Onboard Task List:</h2>
-{% include "staff/search_and_quicklinks.frag" %}
 <table>
    <tr>
       <th>Task</th>
