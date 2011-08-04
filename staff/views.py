@@ -219,12 +219,9 @@ def stats_membership_history(request):
    for month in month_histories:
       dates = [date(month.year, month.month, i) for i in range(1, month.days_in_month + 1)]
 
-      month.data['Resident'] = '%s - %s' % calculate_monthly_low_high('Resident', dates)
-      month.data['Basic'] = '%s - %s' % calculate_monthly_low_high('Basic', dates)
-      month.data['Regular'] = '%s - %s' % calculate_monthly_low_high('Regular', dates)
-      month.data['Part Time 15'] = '%s - %s' % calculate_monthly_low_high('PT15', dates)
-      month.data['Part Time 10'] = '%s - %s' % calculate_monthly_low_high('PT10', dates)
-      month.data['Part Time 5'] = '%s - %s' % calculate_monthly_low_high('PT5', dates)
+      for plan in MembershipPlan.objects.all():
+         month.data[plan.name] = '%s - %s' % calculate_monthly_low_high(plan.id, dates)
+
       month.data['visits'], month.data['trial'], month.data['waved'], month.data['billed'] = calculate_dropins(month.start_date, month.end_date)
 
       year_histories = []
@@ -242,12 +239,12 @@ def calculate_dropins(start_date, end_date):
    all_logs = DailyLog.objects.filter(visit_date__gte=start_date, visit_date__lte=end_date)
    return (all_logs.filter(payment='Visit').distinct().count(), all_logs.filter(payment='Trial').distinct().count(), all_logs.filter(payment='Waved').distinct().count(), all_logs.filter(payment='Bill').distinct().count())
 
-def calculate_monthly_low_high(plan_name, dates):
+def calculate_monthly_low_high(plan_id, dates):
    """returns a tuple of (min, max) for number of memberships in the date range of dates"""
    high = 0
    low = 100000000
    for working_date in dates:
-      num_residents = Membership.objects.by_date(working_date).filter(plan=plan_name).count()
+      num_residents = Membership.objects.by_date(working_date).filter(membership_plan=plan_id).count()
       high = max(high, num_residents)
       low = min(low, num_residents)
    return (low, high)
