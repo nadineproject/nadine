@@ -7,6 +7,8 @@ from django.core import urlresolvers
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
+from django.utils.encoding import smart_str, smart_unicode
+
 
 GENDER_CHOICES = (
 	('U', 'Unknown'),
@@ -154,17 +156,17 @@ class Member(models.Model):
 	photo = models.ImageField(upload_to='member_photo', blank=True, null=True)
 
 	@property
-	def first_name(self): return self.user.first_name
+	def first_name(self): return smart_str(self.user.first_name)
 
 	@property
-	def last_name(self): return self.user.last_name
+	def last_name(self): return smart_str(self.user.last_name)
 
 	@property
 	def email(self): return self.user.email
 
 	@property
 	def full_name(self):
-		return '%s %s' % (self.user.first_name, self.user.last_name)
+		return '%s %s' % (smart_str(self.user.first_name), smart_str(self.user.last_name))
 
 	def natural_key(self): return [self.user.id]
 
@@ -282,7 +284,7 @@ class Member(models.Model):
 		if not self.qualifies_for_exit_tasks(): return 0
 		return ExitTask.objects.count() - ExitTaskCompleted.objects.filter(member=self).count()
 
-	def __str__(self): return '%s %s' % (self.user.first_name, self.user.last_name)
+	def __str__(self): return '%s %s' % (smart_str(self.user.first_name), smart_str(self.user.last_name))
 
 	@models.permalink
 	def get_absolute_url(self):
