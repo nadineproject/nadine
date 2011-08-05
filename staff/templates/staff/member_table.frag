@@ -3,7 +3,7 @@
 	<tr><th>Name</th><th>First visit</th><th>Duration</th><th>Photo</th></tr>
 	{% for member in members %}
 	<tr class="{% cycle 'row-even' 'row-odd' %}">
-		<td><a href="{% url staff.views.member_detail member.id %}">{{ member.first_name }} {{ member.last_name }}</a></td>
+		<td nowrap><a href="{% url staff.views.member_detail member.id %}">{{ member.first_name }} {{ member.last_name }}</a></td>
 		<td><a href="{% url staff.views.member_activity member.id %}">{{ member.first_visit|date:"M y" }}</a></td>
 		<td>{{ member.first_visit|timesince }}</td>
 		<td>
