@@ -83,4 +83,48 @@ class DailyLogForm(forms.Form):
 		daily_log.save()
 		return daily_log
 
+class MembershipForm(forms.Form):
+	member_list = Member.objects.all();
+	plan_list = MembershipPlan.objects.all();
+	membership_id = forms.IntegerField(required=False, min_value=0, widget=forms.HiddenInput)
+	member = forms.IntegerField(required=True, min_value=0, widget=forms.HiddenInput)
+	membership_plan = forms.ModelChoiceField(queryset=plan_list, required=True)
+	start_date = forms.DateField(initial=datetime.date.today)
+	end_date = forms.DateField(required=False)
+	monthly_rate = forms.IntegerField(required=True, min_value=0)
+	dropin_allowance = forms.IntegerField(required=True, min_value=0)
+	daily_rate = forms.IntegerField(required=True, min_value=0)
+	deposit_amount = forms.IntegerField(required=True, min_value=0)
+	has_desk = forms.BooleanField(initial=False, required=False)
+	guest_of = forms.ModelChoiceField(queryset=member_list, required=False)
+	note = forms.CharField(required=False, widget=forms.Textarea)
+
+	def save(self):
+		if not self.is_valid(): raise Exception('The form must be valid in order to save')
+		membership_id = self.cleaned_data['membership_id']
+		
+		membership = None
+		if membership_id:
+			membership = Membership.objects.get(id=membership_id)
+		else:
+			print 'Adding!'
+			membership = Membership()
+
+		# Is this right?  Do I really need a DB call so I have the object?	
+		membership.member = Member.objects.get(id=self.cleaned_data['member'])
+
+		membership.membership_plan = self.cleaned_data['membership_plan']		
+		membership.start_date = self.cleaned_data['start_date']
+		membership.end_date = self.cleaned_data['end_date']
+		membership.monthly_rate = self.cleaned_data['monthly_rate']
+		membership.dropin_allowance = self.cleaned_data['dropin_allowance']
+		membership.daily_rate = self.cleaned_data['daily_rate']
+		membership.deposit_amount = self.cleaned_data['deposit_amount']
+		membership.has_desk = self.cleaned_data['has_desk']
+		membership.guest_of = self.cleaned_data['guest_of']
+		membership.note = self.cleaned_data['note']
+		membership.save()
+		return membership
+		
+
 # Copyright 2010 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

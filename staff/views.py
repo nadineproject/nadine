@@ -432,8 +432,31 @@ def member_activity(request, member_id):
 @staff_member_required
 def membership(request, member_id):
    member = get_object_or_404(Member, pk=member_id)
-   membership = Membership.objects.filter(member=member).filter(Q(end_date__isnull=True) | Q(end_date__gt=date.today())).distinct()
+   membership = None
+   open_memberships = Membership.objects.filter(member=member).filter(Q(end_date__isnull=True) | Q(end_date__gt=date.today())).distinct()
+   if open_memberships: membership = open_memberships[0]
    membership_plans = MembershipPlan.objects.all()
-   return render_to_response('staff/membership.html', {'member':member, 'membership': membership, 'membership_plans':membership_plans}, context_instance=RequestContext(request))
+
+   # TODO - Handle these better!
+   today = date.today().isoformat()
+   anniversary_date = (date.today() + datetime.timedelta(days=30)).isoformat()
+
+   if request.method == 'POST':
+      membership_form = MembershipForm(request.POST, request.FILES)
+      if membership_form.is_valid():
+         membership_form.save()
+         return HttpResponseRedirect(reverse('staff.views.member_detail', args=[], kwargs={'member_id':member_id}))
+   else:
+      if membership:
+         membership_form = MembershipForm(initial={'membership_id':membership.id, 'member':member_id, 'membership_plan':membership.membership_plan, 
+            'start_date':membership.start_date, 'end_date':membership.end_date, 'monthly_rate':membership.monthly_rate, 'dropin_allowance':membership.dropin_allowance, 
+            'daily_rate':membership.daily_rate, 'deposit_amount':membership.deposit_amount, 'has_desk':membership.has_desk, 'guest_of':membership.guest_of, 'note':membership.note})
+         # TODO - move up to NEXT anniversery
+         anniversary_date = (member.last_membership().start_date + datetime.timedelta(days=30)).isoformat()
+      else:
+         membership_form = MembershipForm(initial={'member':member_id})
+
+   return render_to_response('staff/membership.html', {'member':member, 'membership': membership, 'membership_plans':membership_plans, 
+		'membership_form':membership_form, 'anniversary_date':anniversary_date, 'today':today}, context_instance=RequestContext(request))
 
 # Copyright 2009, 2010 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

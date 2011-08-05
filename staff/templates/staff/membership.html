@@ -5,11 +5,48 @@
 {% block style %}
 nav #members-tab { background: #FBD850; color: black; }
 #page-message { font-size: 1.5em; color: #933; margin: 20px 0px; }
-#quick-links { text-align: right; margin-bottom: 20px;}
 {% endblock %}
+
 
 {% block content %}
 {% include "staff/member_menu.frag" %}  
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+	 var formData = {
+		 {% for plan in membership_plans %}
+		  '{{plan.id}}':{ 'monthly_rate':{{plan.monthly_rate}}, 'dropin_allowance':{{plan.dropin_allowance}}, 'daily_rate':{{plan.daily_rate}}, 
+								'deposit_amount':{{plan.deposit_amount}}, 'has_desk':'{{plan.has_desk}}' },
+		 {% endfor %}
+	 }
+
+	 $('#id_membership_plan').change(function() {
+		  var value = $(this).val();
+		  var new_values = formData[value];
+		  $('#id_monthly_rate').val(new_values['monthly_rate']);
+		  $('#id_dropin_allowance').val(new_values['dropin_allowance']);
+		  $('#id_daily_rate').val(new_values['daily_rate']);
+		  $('#id_deposit_amount').val(new_values['deposit_amount']);
+		  if (new_values['has_desk']=='True') {
+			  $('#id_has_desk').attr('checked', 'checked');
+		  } else {
+			  $('#id_has_desk').removeAttr('checked');
+		  }
+	 });
+
+	$('#start_today').click(function() {
+		$('#id_start_date').val('{{today}}');
+	});
+	$('#end_today').click(function() {
+		$('#id_end_date').val('{{today}}');
+	});
+	$('#end_anniv').click(function() {
+		$('#id_end_date').val('{{anniversary_date}}');
+	});
+
+})
+</script>
 
 <h2>{% if membership %} Update {% else %} Add {% endif %} Membership for {{ member }}</h2>
 
@@ -17,30 +54,78 @@ nav #members-tab { background: #FBD850; color: black; }
 	<p id="page-message">{{ page_message|safe }}</p>
 {% endif %}
 
-<div id="signup_form">
-	<form enctype="multipart/form-data" action='.' method='post'>
-	   <table id="signup">
-	      {% for field in member_signup_form %}
-	         <tr class="{% cycle 'row-even' 'row-odd' %}">
-	            <td>{{ field.label_tag }}</td>
-	            <td>
-	               {{ field }}
-	               {% if field.label == 'How heard' %}<a href="{% url admin:staff_howheard_add %}">+</a>{% endif %}
-	               {% if field.label == 'Industry' %}<a href="{% url admin:staff_industry_add %}">+</a>{% endif %}
-	               {% if field.label == 'Neighborhood' %}<a href="{% url admin:staff_neighborhood_add %}">+</a>{% endif %}
-	            </td>
-	            {% if field.errors %}
-	            <td>
-	               {{ field.errors }}
-	            </td>
-	            {% endif %}
-	         </tr>
-	      {% endfor %}
-	      <tr><td></td><td><input type="submit" value="Create!" /></td></tr>
+<div id="membership_form">
+	<form name="membership_form" enctype="multipart/form-data" action='.' method='post'>
+		{% if membership %}{{ membership_form.membership_id }}{% endif %}
+		{{ membership_form.member }}
+		<table id="membership">
+			<tr class="row-odd">
+				<td>Membership Plan</td>
+				<td>
+					{% if membership %}
+						{{membership.membership_plan}} 
+						{{ membership_form.membership_plan.as_hidden }}
+					{% else %}
+						{{ membership_form.membership_plan }}
+					{% endif %}
+				</td>
+			</tr>
+			<tr class="row-even">
+				<td>Start Date</td>
+				<td>
+					{% if membership %}
+						{{membership.start_date}}
+						{{ membership_form.start_date.as_hidden }}
+					{% else %}
+						{{ membership_form.start_date }} <!--[ <a id="start_today">today</a> ]-->
+					{% endif %}
+				</td>
+			</tr>
+			<tr class="row-odd">
+				<td>End Date</td>
+				<td>{{ membership_form.end_date }} [ <a id="end_today">today</a> <!--| <a id="end_anniv">anniversary</a>--> ]</td>
+			</tr>
+			<tr class="row-even">
+				<td>Monthly Rate</td>
+				<td>{{ membership_form.monthly_rate }}</td>
+			</tr>
+			<tr class="row-odd">
+				<td>Drop-in Allowance</td>
+				<td>{{ membership_form.dropin_allowance }}</td>
+			</tr>
+			<tr class="row-even">
+				<td>Daily Rate</td>
+				<td>{{ membership_form.daily_rate }}</td>
+			</tr>
+			<tr class="row-odd">
+				<td>Deposit Amount</td>
+				<td>{{ membership_form.deposit_amount }}</td>
+			</tr>
+			<tr class="row-even">
+				<td>Has Desk?</td>
+				<td>{{ membership_form.has_desk }}</td>
+			</tr>
+			<tr class="row-odd">
+				<td>Guest Of</td>
+				<td>{{ membership_form.guest_of }}</td>
+			</tr>
+			<tr class="row-even">
+				<td>Note</td>
+				<td>{{ membership_form.note }}</td>
+			</tr>
+	      <tr><td></td><td><input type="submit" value="Submit" /></td></tr>
 	   </table>
 	   {% csrf_token %}
 	</form>
-	<p>* this field is required</p>
+</div>
+
+<!-- Display form errors if there are some -->
+<div id="form_errors">
+{% for field in membership_form %}
+   {% if field.errors %}
+      {{ field.label_tag }}: {{ field.errors }}
+   {% endif %}
+{% endfor %}
 </div>
 
 {% endblock %}

@@ -60,10 +60,9 @@ function gotoEmailReset(emailAddress){
 	<table>
 	   <tr>
 	      <td>Membership Type</td>
-	      <td>{{ member.membership_type }}
-            {% if member.last_membership %}{% if not member.last_membership.end_date %}
-               [<a href="{% url admin:staff_membership_change member.last_membership.id %}">edit</a>]
-            {% endif %}{% endif %}
+	      <td>
+				{{ member.membership_type }}
+				[<a href="{% url staff.views.membership member.id %}">edit</a>]
          </td>
 	   </tr>
 	   {% if member.last_membership %}
