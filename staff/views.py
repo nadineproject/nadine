@@ -23,9 +23,12 @@ END_DATE_PARAM = 'end'
 def members(request):
    if not request.user.is_staff: return HttpResponseRedirect(reverse('members.views.user', args=[], kwargs={'username':request.user.username}))
    plans = []
+   member_count = 0
    for plan in MembershipPlan.objects.all():
-      plans.append({ 'name':plan.name, 'id':plan.id, 'members':Member.objects.members_by_plan_id(plan.id), 'count':len(Member.objects.members_by_plan_id(plan.id))})
-   return render_to_response('staff/members.html', { 'plans': plans, 'member_search_form':MemberSearchForm() }, context_instance=RequestContext(request))
+      member_list = Member.objects.members_by_plan_id(plan.id);
+      member_count = member_count + len(member_list)
+      plans.append({ 'name':plan.name, 'id':plan.id, 'members':member_list, 'count':len(Member.objects.members_by_plan_id(plan.id))})
+   return render_to_response('staff/members.html', { 'plans': plans, 'member_count':member_count }, context_instance=RequestContext(request))
 
 @staff_member_required
 def export_members(request):
