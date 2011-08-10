@@ -40,6 +40,8 @@ class Migration(DataMigration):
                 membership.membership_plan = pt15Plan
             elif membership.plan == 'Resident':
                 membership.membership_plan = residentPlan
+                if not membership.end_date:
+                   membership.deposit_amount = residentPlan.deposit_amount
             elif membership.plan == 'Regular':
                 "Special case that needs to be pulled out and handled seperately"
                 membership.membership_plan = otherPlan
@@ -51,7 +53,6 @@ class Migration(DataMigration):
                 membership.membership_plan = otherPlan
             membership.daily_rate = membership.membership_plan.daily_rate
             membership.dropin_allowance = membership.membership_plan.dropin_allowance
-            membership.deposit_amount = membership.membership_plan.deposit_amount
             membership.has_desk = membership.membership_plan.has_desk
             membership.save()
 
