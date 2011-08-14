@@ -18,6 +18,16 @@ from django.utils.encoding import force_unicode
 from django.template.loader import render_to_string
 from django.core.mail import send_mail, send_mass_mail
 
+from staff.models import Member
+
+def user_by_email(email):
+   users = User.objects.filter(email=email)
+   if len(users) > 0: return users[0]
+   members = Member.objects.filter(email2=email)
+   if len(members) > 0: return members[0]
+   return None
+User.objects.find_by_email = user_by_email
+
 class MailingListManager(models.Manager):
    def fetch_all_mail(self):
       """Fetches mail for all mailing lists and returns an array of mailing_lists which reported failures"""
@@ -72,7 +82,27 @@ class MailingList(models.Model):
       return tuple([sub.email for sub in self.subscribers.all()])
    
    def __unicode__(self): return '%s: %i' % (self.name, self.id)
-   
+
+class IncomingMailManager(models.Manager):
+   def process_incoming(self):
+      for incoming in self.filter(state='raw'):
+         sender = User.objects.find_by_email(incoming.origin_address)
+         if sender == None or not sender in incoming.mailing_list.subscribers.all():
+            subject = 'Moderation Request: %s: %s' % (incoming.mailing_list.name, incoming.subject)
+            body = 'Moderation email here: unknown origin email: %s' % incoming.origin_address
+            OutgoingMail.objects.create(mailing_list=incoming.mailing_list, moderators_only=True, original_mail=incoming, subject=subject, body=body)
+            incoming.state = 'moderate'
+            incoming.save()
+            continue
+         if incoming.mailing_list.subject_prefix:
+            subject = '%s %s' % (incoming.mailing_list.subject_prefix, incoming.subject)
+         else:
+            subject = incoming.subject
+         body = incoming.body
+         OutgoingMail.objects.create(mailing_list=incoming.mailing_list, original_mail=incoming, subject=subject, body=body)
+         incoming.state = 'send'
+         incoming.save()
+
 class IncomingMail(models.Model):
    """An email as popped for a mailing list"""
    mailing_list = models.ForeignKey(MailingList, related_name='incoming_mails')
@@ -86,11 +116,18 @@ class IncomingMail(models.Model):
 
    created = models.DateTimeField(auto_now_add=True)
 
+   objects = IncomingMailManager()
+
    def __unicode__(self): return '%s: %s' % (self.origin_address, self.subject)
+
+class OutgoingMailManager(models.Manager):
+   def send_outgoing(self):
+      pass
 
 class OutgoingMail(models.Model):
    """Emails which are consumed by the front.tasks.EmailTask"""
    mailing_list = models.ForeignKey(MailingList, related_name='outgoing_mails')
+   moderators_only = models.BooleanField(default=False)
    original_mail = models.ForeignKey(IncomingMail, blank=True, help_text='The incoming mail which caused this mail to be sent')
    subject = models.TextField(blank=True)
    body = models.TextField(blank=True)
@@ -100,6 +137,8 @@ class OutgoingMail(models.Model):
    sent = models.DateTimeField(blank=True, null=True)
 
    created = models.DateTimeField(auto_now_add=True)
+
+   objects = OutgoingMailManager()
 
    def send(self):
       if self.sent: return False
@@ -120,6 +159,7 @@ class OutgoingMail(models.Model):
          return False
 
    class Meta:
+      ordering = ['-created']
       verbose_name_plural = 'outgoing mails'
 
 # Copyright 2011 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

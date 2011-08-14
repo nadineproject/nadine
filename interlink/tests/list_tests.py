@@ -14,14 +14,54 @@ from interlink import DEFAULT_MAIL_CHECKER, TestMailChecker, TEST_INCOMING_MAIL,
 class ListTest(TestCase):
 
    def setUp(self):
-      self.user1, self.client1 = create_user('alice', 'Alice', 'Dodgson', is_staff=True)
-      self.user2, self.client2 = create_user('bob', 'Bob', 'Albert')
+      self.user1, self.client1 = create_user('alice', 'Alice', 'Dodgson', email='alice@example.com', is_staff=True)
+      self.user2, self.client2 = create_user('bob', 'Bob', 'Albert', email='bob@example.com')
       self.mlist1 = MailingList.objects.create(
          name='Hat Styles', description='All about les chapeau', subject_prefix='hat',
          email_address='hats@example.com', username='hat', password='1234',
          pop_host='localhost', smtp_host='localhost'
       )
+   
+   def test_incoming_processing(self):
+      self.assertEqual(OutgoingMail.objects.all().count(), 0)
+      checker = DEFAULT_MAIL_CHECKER(self.mlist1)
       
+      # send an email from an unknown address
+      add_test_incoming(self.mlist1, 'bogus@example.com', 'ahoi 1', 'I like traffic lights.', sent_time=datetime.now() - timedelta(minutes=15))
+      incoming = checker.fetch_mail()
+      self.assertEqual(len(incoming), 1)
+      self.assertEqual(incoming[0].state, 'raw')
+      IncomingMail.objects.process_incoming()
+      self.assertEqual(OutgoingMail.objects.all().count(), 1)
+      incoming = IncomingMail.objects.get(pk=incoming[0].id)
+      self.assertEqual(incoming.state, 'moderate')
+      outgoing = OutgoingMail.objects.all()[0]
+      self.assertEqual(outgoing.original_mail, incoming)
+      self.assertTrue(outgoing.subject.startswith('Moderation Request'))
+
+      # send an email from a known address, but not a subscriber
+      add_test_incoming(self.mlist1, 'alice@example.com', 'ahoi 2', 'I like traffic lights.', sent_time=datetime.now() - timedelta(minutes=15))
+      incoming = checker.fetch_mail()
+      self.assertEqual(len(incoming), 1)
+      self.assertEqual(incoming[0].state, 'raw')
+      IncomingMail.objects.process_incoming()
+      self.assertEqual(OutgoingMail.objects.all().count(), 2)
+      incoming = IncomingMail.objects.get(pk=incoming[0].id)
+      self.assertEqual(incoming.state, 'moderate')
+      
+      # send an email from a subscriber
+      self.mlist1.subscribers.add(self.user2)
+      add_test_incoming(self.mlist1, 'bob@example.com', 'ahoi 3', 'I like traffic lights.', sent_time=datetime.now() - timedelta(minutes=15))
+      incoming = checker.fetch_mail()
+      self.assertEqual(len(incoming), 1)
+      self.assertEqual(incoming[0].state, 'raw')
+      IncomingMail.objects.process_incoming()
+      self.assertEqual(OutgoingMail.objects.all().count(), 3)
+      incoming = IncomingMail.objects.get(pk=incoming[0].id)
+      self.assertEqual(incoming.state, 'send')
+      outgoing = OutgoingMail.objects.all()[0]
+      self.assertTrue(outgoing.subject.startswith(self.mlist1.subject_prefix), outgoing.subject)
+
    def test_recipients(self):
       self.assertEqual(len(self.mlist1.subscriber_addresses), 0)
       self.assertEqual(len(self.mlist1.moderator_addresses), 0)
