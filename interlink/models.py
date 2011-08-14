@@ -3,8 +3,10 @@ import re
 import time
 import random
 import logging
+import smtplib
 import traceback
 import unicodedata
+from email.mime.text import MIMEText
 from datetime import datetime, timedelta, date
 
 from django.db import models
@@ -122,7 +124,9 @@ class IncomingMail(models.Model):
 
 class OutgoingMailManager(models.Manager):
    def send_outgoing(self):
-      pass
+      for mail in self.filter(sent=None):
+         if mail.last_attempt and mail.last_attempt > datetime.now() - timedelta(minutes=10): continue
+         mail.send()
 
 class OutgoingMail(models.Model):
    """Emails which are consumed by the front.tasks.EmailTask"""
@@ -146,11 +150,28 @@ class OutgoingMail(models.Model):
       self.attempts = self.attempts + 1
       self.save()
       try:
-         if self.mailing_list.subject_prefix:
-            sub = '[%s] %s' % (self.mailing_list.subject_prefix, self.subject)
+         msg = MIMEText(self.body)
+         msg['Subject'] = self.subject
+         msg['From'] = self.original_mail.origin_address
+         
+         if self.moderators_only:
+            recipient_addresses = self.mailing_list.moderator_addresses
          else:
-            sub = self.subject
-         send_mass_mail((sub, self.body, self.mailing_list.email_address, self.mailing_list.subscriber_addresses))
+            recipient_addresses = self.mailing_list.subscriber_addresses
+         msg['To'] = ', '.join(recipient_addresses)
+
+         if not settings.IS_TEST and not msg['To'] == '':
+            try:
+               smtp_server = smtplib.SMTP(self.mailing_list.smtp_host, self.mailing_list.smtp_port)
+               smtp_server.login(self.mailing_list.username, self.mailing_list.password)
+               smtp_server.sendmail(self.original_mail.origin_address, recipient_addresses, msg.as_string())
+               smtp_server.quit()
+            except:
+               traceback.print_exc()
+               return False
+
+         self.original_mail.state = 'sent'
+         self.original_mail.save()
          self.sent = datetime.now()
          self.save()
          return True

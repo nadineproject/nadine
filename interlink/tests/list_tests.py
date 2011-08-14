@@ -22,10 +22,25 @@ class ListTest(TestCase):
          pop_host='localhost', smtp_host='localhost'
       )
    
-   def test_incoming_processing(self):
+   def test_outgoing_processing(self):
       self.assertEqual(OutgoingMail.objects.all().count(), 0)
+      OutgoingMail.objects.send_outgoing()
       checker = DEFAULT_MAIL_CHECKER(self.mlist1)
-      
+
+      self.mlist1.subscribers.add(self.user2)
+      add_test_incoming(self.mlist1, 'bob@example.com', 'ahoi 3', 'I like traffic lights.', sent_time=datetime.now() - timedelta(minutes=15))
+      incoming = checker.fetch_mail()
+      IncomingMail.objects.process_incoming()
+      outgoing = OutgoingMail.objects.all()[0]
+      self.assertEqual(outgoing.sent, None)
+      OutgoingMail.objects.send_outgoing()
+      incoming = IncomingMail.objects.get(pk=incoming[0].id)
+      outgoing = OutgoingMail.objects.all()[0]
+      self.assertNotEqual(outgoing.sent, None)
+      self.assertEqual(incoming.state, 'sent')
+   
+   def test_incoming_processing(self):
+      checker = DEFAULT_MAIL_CHECKER(self.mlist1)
       # send an email from an unknown address
       add_test_incoming(self.mlist1, 'bogus@example.com', 'ahoi 1', 'I like traffic lights.', sent_time=datetime.now() - timedelta(minutes=15))
       incoming = checker.fetch_mail()
