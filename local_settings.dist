@@ -32,7 +32,7 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_SUBJECT_PREFIX = "[COWORKING] " # or None if you want no subject prefix
 
-from front.tasks import EmailTask
+from interlink.tasks import EmailTask
 SCHEDULED_TASKS = [EmailTask()]
 
 import datetime

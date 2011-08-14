@@ -78,14 +78,6 @@ class PopMailChecker(MailChecker):
         
       pop_client.quit()
 
-   def parse_mail_array(self, mail_array):
-      """Iterates through the mail array and returns a tuple containing a map of headers and the body"""
-      headers = {}
-      for header in mail_array[:-3]:
-         name, sep, val = header.partition(':')
-         headers[name] = val.strip()
-      return (headers, mail_array[-1])
-   
 if settings.IS_TEST:
    DEFAULT_MAIL_CHECKER = TestMailChecker
 else:
