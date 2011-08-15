@@ -349,27 +349,27 @@ def activity(request):
 	for day in days:
 		day['daily_logs'] = DailyLog.objects.filter(visit_date=day['date']).count()
 		day['membership'] = Membership.objects.by_date(day['date']).count()
-		day['residents'] = Membership.objects.by_date(day['date']).filter(has_desk=True).count()
-		day['occupancy'] = day['daily_logs'] + day['residents']
+		day['has_desk'] = Membership.objects.by_date(day['date']).filter(has_desk=True).count()
+		day['occupancy'] = day['daily_logs'] + day['has_desk']
 
 	max_membership = 0
-	max_residents = 0
+	max_has_desk = 0
 	max_daily_logs = 0
 	max_total = 0
 	total_daily_logs = 0
 	for day in days:
 		max_membership = max(max_membership, day['membership'])
-		max_residents = max(max_residents, day['residents'])
+		max_has_desk = max(max_has_desk, day['has_desk'])
 		max_daily_logs = max(max_daily_logs, day['daily_logs'])
 		max_total = max(max_total, day['membership'] + day['daily_logs'])
 		total_daily_logs = total_daily_logs + day['daily_logs']
 		
 	graph_size = 200 # this is lame, but damn easy
 	for day in days:
-		if max_residents > 0:
-			day['residents_percentage'] = int(day['residents'] / float(max_residents) * 100)
-			day['residents_size'] = int(graph_size * day['residents'] / float(max_residents + max_daily_logs))
-			day['residents_size_negative'] = graph_size - day['residents_size']
+		if max_has_desk > 0:
+			day['has_desk_percentage'] = int(day['has_desk'] / float(max_has_desk) * 100)
+			day['has_desk_size'] = int(graph_size * day['has_desk'] / float(max_has_desk + max_daily_logs))
+			day['has_desk_size_negative'] = graph_size - day['has_desk_size']
 		if max_membership > 0:
 			day['membership_percentage'] = int(day['membership'] / float(max_membership) * 100)
 			day['membership_size'] = int(graph_size * day['membership'] / float(max_membership))
@@ -378,7 +378,7 @@ def activity(request):
 			day['daily_logs_percentage'] = int(day['daily_logs'] / float(max_daily_logs) * 100)
 			day['daily_logs_size'] = int(graph_size * day['daily_logs'] / float(max_daily_logs))
 			day['daily_logs_size_negative'] = graph_size - day['daily_logs_size']
-	return render_to_response('staff/activity.html', {'days':days, 'graph_size':graph_size, 'max_residents':max_residents, 'max_membership':max_membership, 'max_daily_logs':max_daily_logs, 'max_total':max_total, 'total_daily_logs': total_daily_logs, 'date_range_form':date_range_form, 'start':start, 'end':end }, context_instance=RequestContext(request))
+	return render_to_response('staff/activity.html', {'days':days, 'graph_size':graph_size, 'max_has_desk':max_has_desk, 'max_membership':max_membership, 'max_daily_logs':max_daily_logs, 'max_total':max_total, 'total_daily_logs': total_daily_logs, 'date_range_form':date_range_form, 'start':start, 'end':end }, context_instance=RequestContext(request))
 
 
 @staff_member_required
