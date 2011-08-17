@@ -29,7 +29,7 @@ nav #stats-tab { background: #FBD850; color: black; }
    
       {% for membership in memberships %}
 	      <tr class="{% cycle 'row-even' 'row-odd' %}">
-	         <td><a href="{{ log.member.get_absolute_url }}">{{ membership.member }}</a></td>
+	         <td><a href="{{ membership.member.get_absolute_url }}">{{ membership.member }}</a></td>
 	         <td>{{ membership.start_date }}</td>
 	         <td>{{ membership.membership_plan }}</td>
 	         <td>${{ membership.monthly_rate }}</td>
