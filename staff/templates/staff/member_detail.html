@@ -48,29 +48,30 @@ function gotoEmailReset(emailAddress){
 
 <!-- Member Detail -->    
 <div id="member-detail">
-	<h2>{{ member.first_name }} {{ member.last_name }}</h2>
+	<h2>{{ member.first_name }} {{ member.last_name }} {% if member.is_monthly %} - <i>{{ member.membership_type }}</i> {% endif %}</h2>
 	<div id="quick-links">
-		<a href="{% url staff.views.member_activity member.id %}">activities</a> |
-		<a href="{% url staff.views.member_transactions member.id %}">transactions</a> |
+		<a href="{% url staff.views.member_activity member.id %}">activity</a> |
 		<a href="{% url staff.views.member_bills member.id %}">bills</a> |
+		<a href="{% url staff.views.member_transactions member.id %}">transactions</a> |
 		<a href="{% url front.views.password_reset %}?email={{ member.email }}">pw reset</a> |
 		<a href="{% url members.views.user member.user.username %}">profile</a> |
-		<a href="{% url admin:auth_user_change member.user.id %}">edit member</a>
+		<a href="{% url admin:auth_user_change member.user.id %}">edit member</a> |
+		{% if member.is_monthly %}
+			<a href="{% url staff.views.membership member.last_membership.id %}">update membership</a>
+		{% else %}	
+			<a href="{% url staff.views.member_membership member.id %}">add membership</a>
+		{% endif %}
 	</div>
 	<table>
-	   <tr>
-	      <td>Membership Type</td>
-	      <td>
-				{{ member.membership_type }}
-				[<a href="{% url staff.views.membership member.id %}">edit</a>]
-         </td>
-	   </tr>
+		<!-- Plan Start -->
 	   {% if member.last_membership %}
 	   <tr>
 	      <td>Plan Start</td>
 	      <td>{{ member.last_membership.start_date|date:"Y-m-d" }}</td>
 	   </tr>
 	   {% endif %}
+	
+		<!-- Stats -->
 	   <tr>
 	      <td>Paid Visits</td>
 	      <td>{{ member.paid_count }}</td>
@@ -195,6 +196,39 @@ function gotoEmailReset(emailAddress){
 	</table>
 </div>
 
+<!-- Memberships -->
+<h2>Memberships:</h2>
+	<table>
+		<tr>
+			<th>Plan</th>
+			<th>Start Date</th>
+			<th>End Date</th>
+			<th>Notes</th> 
+		</tr>
+
+		{% for membership in member.memberships.all reversed %}
+			<tr class="{% cycle 'row-even' 'row-odd' %}">
+				<td>{{ membership.membership_plan }}</td>
+				<td><a href="{{ membership.get_admin_url }}">{{ membership.start_date }}</a></td>
+				<td>{% if membership.end_date %}{{ membership.end_date }}{% endif %}</td>
+				<td>{{ membership.note }}</td>
+				<td>
+					{% if membership == member.last_membership %}
+						[<a href="{% url staff.views.membership membership.id %}">edit</a>]
+					{% endif %}
+				&nbsp;</td>
+			</tr>
+		{% endfor %}
+		
+		{% if member.last_membership.end_date %}
+		<tr class="{% cycle 'row-even' 'row-odd' %}">
+			<td colspan="4">&nbsp;</td>
+			<td>[<a href="{% url staff.views.member_membership member.id %}">add membership</a>]</td>
+		</tr>			
+		{% endif %}
+	</table>
+
+<!-- Onboarding Tasks -->
 <h2>Onboard Tasks</h2>
 {% if member.onboard_tasks_to_complete %}
 	<table id="onboard-form">
@@ -220,6 +254,7 @@ function gotoEmailReset(emailAddress){
 	<p>No onboard tasks remain.</p>
 {% endif %}
 
+<!-- Exit Tasks -->
 {% if member.qualifies_for_exit_tasks %}
 	<h2>Exit Tasks</h2>
 	{% if member.exit_tasks_to_complete %}

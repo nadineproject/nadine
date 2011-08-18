@@ -63,7 +63,7 @@ $(document).ready(function() {
 				<td>Membership Plan</td>
 				<td>
 					{% if membership %}
-						{{membership.membership_plan}} 
+						{{ membership.membership_plan }} 
 						{{ membership_form.membership_plan.as_hidden }}
 					{% else %}
 						{{ membership_form.membership_plan }}
@@ -74,7 +74,7 @@ $(document).ready(function() {
 				<td>Start Date</td>
 				<td>
 					{% if membership %}
-						{{membership.start_date}}
+						{{ membership.start_date }}
 						{{ membership_form.start_date.as_hidden }}
 					{% else %}
 						{{ membership_form.start_date }} <!--[ <a id="start_today">today</a> ]-->

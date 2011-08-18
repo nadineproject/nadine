@@ -12,7 +12,11 @@
 			<a href="{% url staff.views.member_activity member.id %}">activity</a> |
 			<a href="{% url staff.views.member_bills member.id %}">bills </a> |
 			<a href="{% url staff.views.member_transactions member.id %}">transactions </a> |
-			<a href="{% url staff.views.membership member.id %}">membership</a>
+			{% if member.is_monthly %}
+				<a href="{% url staff.views.membership member.last_membership.id %}">membership</a>
+			{% else %}	
+				<a href="{% url staff.views.member_membership member.id %}">membership</a>
+			{% endif %}
 		</td>
 	</tr>
 	{% endfor %}
