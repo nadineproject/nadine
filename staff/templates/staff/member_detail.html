@@ -5,10 +5,10 @@
 
 {% block style%}
 nav #members-tab { background: #FBD850; color: black; }
-#quick-links { text-align: center; }
+#quick-links { text-align: left; }
 caption { font-weight: bold; font-size: 1.4em; margin-bottom: 10px; }
 #right-floater { margin-top: 30px; float: right; width: 180px; min-height: 200px;  }
-.member-photo { width: 170px; text-align: center; margin: 10px 5px; }
+.member-photo { width: 170px; text-align: center; margin: 10px 10px; padding-top: 10px;}
 #content td, #content th { padding-left: 20px; }
 
 #onboard-form, #exit-form { margin-bottom: 60px; width: 400px; }
@@ -38,25 +38,25 @@ function gotoEmailReset(emailAddress){
 {% block content %}
 {% include "staff/member_menu.frag" %}  
 
-<h2>{{ member.first_name }} {{ member.last_name }}</h2>
-
-<div id="quick-links">
-	<a href="{% url staff.views.member_activity member.id %}">activities</a> |
-	<a href="{% url staff.views.member_transactions member.id %}">transactions</a> |
-	<a href="{% url staff.views.member_bills member.id %}">bills</a> |
-	<a href="{% url front.views.password_reset %}?email={{ member.email }}">pw reset</a> |
-	<a href="{% url members.views.user member.user.username %}">profile</a> |
-	<a href="{% url admin:auth_user_change member.user.id %}">edit member</a></div>
-
-   <div class="member-photo">
-      {% if member.photo %}
-         <a href="{{ member.photo.url }}"><img src="{{ member.photo.url|fit_image:"170x170" }}" /></a>
-      {% endif %}
-   </div>
+<div class="member-photo">
+	{% if member.photo %}
+		<a href="{{ member.photo.url }}"><img src="{{ member.photo.url|fit_image:"170x170" }}" /></a>
+	{% else %}
+		<img src="{{ STATIC_URL }}/BlankIcon150x150.jpg">
+	{% endif %}
+</div>
 
 <!-- Member Detail -->    
 <div id="member-detail">
-  <h2>Member Detail</h2>
+	<h2>{{ member.first_name }} {{ member.last_name }}</h2>
+	<div id="quick-links">
+		<a href="{% url staff.views.member_activity member.id %}">activities</a> |
+		<a href="{% url staff.views.member_transactions member.id %}">transactions</a> |
+		<a href="{% url staff.views.member_bills member.id %}">bills</a> |
+		<a href="{% url front.views.password_reset %}?email={{ member.email }}">pw reset</a> |
+		<a href="{% url members.views.user member.user.username %}">profile</a> |
+		<a href="{% url admin:auth_user_change member.user.id %}">edit member</a>
+	</div>
 	<table>
 	   <tr>
 	      <td>Membership Type</td>
