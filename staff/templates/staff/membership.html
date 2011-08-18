@@ -48,7 +48,7 @@ $(document).ready(function() {
 })
 </script>
 
-<h2>{% if membership %} Update {% else %} Add {% endif %} Membership for {{ member }}</h2>
+<h2>{% if membership %} Update {% else %} Add {% endif %} Membership for <a href="{% url staff.views.member_detail member.id %}">{{ member }}</a></h2>
 
 {% if page_message %}
 	<p id="page-message">{{ page_message|safe }}</p>
@@ -117,6 +117,9 @@ $(document).ready(function() {
 	   </table>
 	   {% csrf_token %}
 	</form>
+</div>
+
+<div id="membership_list">
 </div>
 
 <!-- Display form errors if there are some -->
