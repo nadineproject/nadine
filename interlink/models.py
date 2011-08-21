@@ -85,6 +85,11 @@ class MailingList(models.Model):
    
    def __unicode__(self): return '%s: %i' % (self.name, self.id)
 
+def user_mailing_list_memberships(user):
+	"""Returns an array of tuples of <MailingList, is_subscriber> for a User"""
+	return [(ml, user in ml.subscribers.all()) for ml in MailingList.objects.all()]
+User.mailing_list_memberships = user_mailing_list_memberships
+
 class IncomingMailManager(models.Manager):
    def process_incoming(self):
       for incoming in self.filter(state='raw'):

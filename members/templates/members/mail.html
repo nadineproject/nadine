@@ -1,0 +1,55 @@
+{% extends "members/u_base.html" %}
+
+{% block sub-title %}Mail | {{ user.get_full_name }} | {% endblock %}
+
+{% block style %}
+#content ul { margin-left: 0; }
+#content ul li {
+	list-style: none;
+	margin-bottom: 2em;
+}
+#content h2 { margin-bottom: 1em; }
+
+#mailing-list-subscription-form { display: none; }
+{% endblock %}
+
+{%block sub-head %}
+<script>
+function subscribe(mlID){
+	$('#id_subscribe').val(true);
+	$('#id_mailing_list_id').val(mlID);
+	$('#mailing-list-subscription-form').submit();
+}
+
+function unsubscribe(mlID){
+	$('#id_subscribe').val(false);
+	$('#id_mailing_list_id').val(mlID);
+	$('#mailing-list-subscription-form').submit();
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<h2>Mailing lists:</h2>
+<ul>
+{% for mailing_list, is_subscriber in user.mailing_list_memberships %}
+	<li>
+		<h3>
+			{{mailing_list.name}}
+			{% if is_subscriber %}
+			<a href="." onclick="unsubscribe({{mailing_list.id}}); return false;">unsubscribe</a>
+			{% else %}
+			<a href="." onclick="subscribe({{mailing_list.id}}); return false;">subscribe</a>
+			{% endif %}
+		</h3>
+		{{ mailing_list.description }}
+	</li>
+{% endfor %}
+</ul>
+
+{% if not user.mailing_list_memberships %}
+<h3>There are no mailing lists configured for this site.</h3>
+{% endif %}
+
+<form action="." method='post' id="mailing-list-subscription-form">{{ mailing_list_subscription_form }}{% csrf_token %}</form>
+{% endblock %}

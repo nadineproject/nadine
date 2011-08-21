@@ -20,6 +20,7 @@
 		{% if user.profile.is_monthly %}
 		<dt>Anniversary date:</dt><dd>{{ user.profile.last_membership.start_date|date:"M d, Y" }}</dd>
 		{% endif %}
+		<dt>Mailing lists:</dt><dd><a href="{% url members.views.mail user.username %}">config</a></dd>
     {% if request.user.is_staff %}
          <dt>Quicklinks:</dt>
          <dd><a href="{% url staff.views.member_detail user.profile.id %}">edit</a></dd>
