@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from interlink.tests.test_utils import create_user
 
 from interlink.models import MailingList, IncomingMail, OutgoingMail
-from interlink import DEFAULT_MAIL_CHECKER, TestMailChecker, TEST_INCOMING_MAIL, add_test_incoming
+from interlink.mail import DEFAULT_MAIL_CHECKER, TestMailChecker, TEST_INCOMING_MAIL, add_test_incoming
 
 class ListTest(TestCase):
 

@@ -18,6 +18,11 @@ def index(request):
 	return render_to_response('members/index.html',{  'members':Member.objects.active_members().order_by('user__first_name') }, context_instance=RequestContext(request))
 
 @login_required
+def profile_redirect(request):
+    print 'redirecting'
+    return HttpResponseRedirect(reverse('members.views.user', kwargs={'username':request.user.username}))
+
+@login_required
 def user(request, username):
 	user = get_object_or_404(User, username=username)
 	return render_to_response('members/user.html',{'user':user}, context_instance=RequestContext(request))
@@ -25,7 +30,7 @@ def user(request, username):
 @login_required
 def mail(request, username):
 	user = get_object_or_404(User, username=username)
-	if not user == request.user or request.user.is_staff: return HttpResponseRedirect(reverse('members.views.mail', kwargs={'username':request.user.username}))
+	if not user == request.user or not request.user.is_staff: return HttpResponseRedirect(reverse('members.views.mail', kwargs={'username':request.user.username}))
 	if request.method == 'POST':
 		sub_form = MailingListSubscriptionForm(request.POST)
 		if sub_form.is_valid():

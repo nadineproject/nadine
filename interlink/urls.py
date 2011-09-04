@@ -4,6 +4,7 @@ from django.conf import settings
 from models import *
 
 urlpatterns = patterns('',
+   (r'^list/(?P<id>[^/]+)/$', 'interlink.views.list'),
 	(r'^$', 'interlink.views.index'),
 )
 

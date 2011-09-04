@@ -1,6 +1,7 @@
 import os
 import re
 import time
+import email
 import random
 import logging
 import smtplib
@@ -64,7 +65,7 @@ class MailingList(models.Model):
    
    def fetch_mail(self):
       """Fetches mailing and returns True if successful and False if it failed"""
-      from interlink import DEFAULT_MAIL_CHECKER
+      from interlink.mail import DEFAULT_MAIL_CHECKER
       checker = DEFAULT_MAIL_CHECKER(self)
       try:
          checker.fetch_mail()
@@ -73,6 +74,11 @@ class MailingList(models.Model):
          traceback.print_exc()
          return False
 
+   @property
+   def list_id(self):
+      """Used for List-ID mail headers"""
+      return '%s <%s-%s>' % (self.name, Site.objects.get_current().domain, self.id)
+      
    @property
    def moderator_addresses(self):
       """Returns a tuple of email address strings, one for each moderator address"""
@@ -83,7 +89,10 @@ class MailingList(models.Model):
       """Returns a tuple of email address strings, one for each subscribed address"""
       return tuple([sub.email for sub in self.subscribers.all()])
    
-   def __unicode__(self): return '%s: %i' % (self.name, self.id)
+   def __unicode__(self): return '%s' % self.name
+
+   @models.permalink
+   def get_absolute_url(self): return ('interlink.views.list', (), { 'id':self.id })
 
 def user_mailing_list_memberships(user):
 	"""Returns an array of tuples of <MailingList, is_subscriber> for a User"""
@@ -93,8 +102,8 @@ User.mailing_list_memberships = user_mailing_list_memberships
 class IncomingMailManager(models.Manager):
    def process_incoming(self):
       for incoming in self.filter(state='raw'):
-         sender = User.objects.find_by_email(incoming.origin_address)
-         if sender == None or not sender in incoming.mailing_list.subscribers.all():
+         incoming.owner = User.objects.find_by_email(incoming.origin_address)
+         if incoming.owner == None or not incoming.owner in incoming.mailing_list.subscribers.all():
             subject = 'Moderation Request: %s: %s' % (incoming.mailing_list.name, incoming.subject)
             body = 'Moderation email here: unknown origin email: %s' % incoming.origin_address
             OutgoingMail.objects.create(mailing_list=incoming.mailing_list, moderators_only=True, original_mail=incoming, subject=subject, body=body)
@@ -117,6 +126,8 @@ class IncomingMail(models.Model):
    sent_time = models.DateTimeField()
    subject = models.TextField(blank=True)
    body = models.TextField(blank=True)
+
+   owner = models.ForeignKey(User, blank=True, null=True, default=None)
 
    STATES = (('raw', 'raw'), ('moderate', 'moderate'), ('send', 'send'), ('sent', 'sent'), ('reject', 'reject'))
    state = models.CharField(max_length=10, choices=STATES, default='raw')
@@ -156,20 +167,28 @@ class OutgoingMail(models.Model):
       self.save()
       try:
          msg = MIMEText(self.body)
+         msg['To'] = self.mailing_list.email_address
+         if self.original_mail.owner:
+            msg['From'] = '"%s" <%s>' % (self.original_mail.owner.get_full_name(), self.mailing_list.email_address)
+         else:
+            msg['From'] = self.mailing_list.email_address
          msg['Subject'] = self.subject
-         msg['From'] = self.original_mail.origin_address
+         msg['Date'] = email.utils.formatdate()
+         msg['Reply-To'] = self.original_mail.origin_address
+         msg['List-ID'] = self.mailing_list.list_id
+         msg['X-CAN-SPAM-1'] = 'This message may be a solicitation or advertisement within the specific meaning of the CAN-SPAM Act of 2003.'
          
          if self.moderators_only:
             recipient_addresses = self.mailing_list.moderator_addresses
          else:
             recipient_addresses = self.mailing_list.subscriber_addresses
-         msg['To'] = ', '.join(recipient_addresses)
+         msg['BCC'] = ', '.join(recipient_addresses)
 
          if not settings.IS_TEST and not msg['To'] == '':
             try:
                smtp_server = smtplib.SMTP(self.mailing_list.smtp_host, self.mailing_list.smtp_port)
                smtp_server.login(self.mailing_list.username, self.mailing_list.password)
-               smtp_server.sendmail(self.original_mail.origin_address, recipient_addresses, msg.as_string())
+               smtp_server.sendmail(self.original_mail.origin_address, [self.mailing_list.email_address], msg.as_string())
                smtp_server.quit()
             except:
                traceback.print_exc()

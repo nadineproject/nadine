@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block sub-title %}{{ mailing_list.name }} Log | {% endblock %}
+
+{% block style %}
+#content td, #content th { text-align: left; padding-right: 2em; }
+#content td:first-child, #content th:first-child { width: 15em; }
+.last-attempt { color: #F44; }
+{% endblock %}
+
+{% block content%}
+
+<h2>{{ mailing_list.name }} Log:</h2>
+
+<h3>Incoming Mail:</h3>
+<table>
+	<tr>
+		<th>Sent Time</th>
+		<th>Origin</th>
+		<th>Subject</th>
+	</tr>
+{% for incoming_mail in mailing_list.incoming_mails.all|slice:"0:15" %}
+	<tr>
+		<td>{{ incoming_mail.sent_time }}</td>
+		<td>{{ incoming_mail.origin_address }}</td>
+		<td>{{ incoming_mail.subject }}</td>
+	</tr>
+{% endfor %}
+</table>
+
+<h3>Outgoing Mail:</h3>
+<table>
+	<tr>
+		<th>Sent Time</th>
+		<th>Origin</th>
+		<th>Subject</th>
+		<th>Moderators only?</th>
+	</tr>
+{% for outgoing_mail in mailing_list.outgoing_mails.all|slice:"0:15" %}
+	<tr>
+		<td>
+			{% if outgoing_mail.sent %}
+				{{ outgoing_mail.sent }}
+			{% else %}
+				{% if outgoing_mail.last_attempt %}
+					<span class="last-attempt">{{ outgoing_mail.last_attempt}}</span><br/>
+					{{ outgoing_mail.attempts }} attempt{{ outgoing_mail.attempts|pluralize }}
+				{% endif %}
+			{% endif %}
+		</td>
+		<td>{{ outgoing_mail.original_mail.origin_address }}</td>
+		<td>{{ outgoing_mail.subject }}</td>
+		<td>{{ outgoing_mail.moderators_only }}</td>
+	</tr>
+{% endfor %}
+</table>
+
+{% endblock %}

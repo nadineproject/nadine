@@ -2,6 +2,7 @@ from django.conf.urls.defaults import *
 
 urlpatterns = patterns('members.views',
     (r'^$', 'index'),
+    (r'^profile/$', 'profile_redirect'),
     (r'^u/(?P<username>[^/]+)/$', 'user'),
     (r'^u/(?P<username>[^/]+)/mail/$', 'mail'),
 )
