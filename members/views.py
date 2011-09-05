@@ -30,7 +30,7 @@ def user(request, username):
 @login_required
 def mail(request, username):
 	user = get_object_or_404(User, username=username)
-	if not user == request.user or not request.user.is_staff: return HttpResponseRedirect(reverse('members.views.mail', kwargs={'username':request.user.username}))
+	if not user == request.user and not request.user.is_staff: return HttpResponseRedirect(reverse('members.views.user', kwargs={'username':request.user.username}))
 	if request.method == 'POST':
 		sub_form = MailingListSubscriptionForm(request.POST)
 		if sub_form.is_valid():

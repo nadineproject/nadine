@@ -182,7 +182,6 @@ class OutgoingMail(models.Model):
             recipient_addresses = self.mailing_list.moderator_addresses
          else:
             recipient_addresses = self.mailing_list.subscriber_addresses
-         msg['Bcc'] = ', '.join(recipient_addresses)
 
          if not settings.IS_TEST and not msg['To'] == '':
             try:
