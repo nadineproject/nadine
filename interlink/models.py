@@ -182,13 +182,13 @@ class OutgoingMail(models.Model):
             recipient_addresses = self.mailing_list.moderator_addresses
          else:
             recipient_addresses = self.mailing_list.subscriber_addresses
-         msg['BCC'] = ', '.join(recipient_addresses)
+         msg['Bcc'] = ', '.join(recipient_addresses)
 
          if not settings.IS_TEST and not msg['To'] == '':
             try:
                smtp_server = smtplib.SMTP(self.mailing_list.smtp_host, self.mailing_list.smtp_port)
                smtp_server.login(self.mailing_list.username, self.mailing_list.password)
-               smtp_server.sendmail(self.original_mail.origin_address, [self.mailing_list.email_address], msg.as_string())
+               smtp_server.sendmail(self.original_mail.origin_address, recipient_addresses + (self.mailing_list.email_address,), msg.as_string())
                smtp_server.quit()
             except:
                traceback.print_exc()
