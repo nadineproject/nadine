@@ -11,7 +11,7 @@ class MailingListAdmin(admin.ModelAdmin):
 admin.site.register(MailingList, MailingListAdmin)
 
 class IncomingMailAdmin(admin.ModelAdmin):
-   list_display = ('sent_time', 'origin_address', 'subject')
+   list_display = ('sent_time', 'origin_address', 'subject', 'state')
 admin.site.register(IncomingMail, IncomingMailAdmin)
 
 class OutgoingMailAdmin(admin.ModelAdmin):

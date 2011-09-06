@@ -51,9 +51,9 @@ def moderator_approve(request, id):
       return HttpResponseRedirect(reverse('interlink.views.moderator_list'))
 
    if incoming_mail.state != 'moderate': 
-      print 'Tried to moderate an email which needs no moderation.'
+      print 'Tried to moderate an email which needs no moderation:', incoming_mail, incoming_mail.state
       return HttpResponseRedirect(reverse('interlink.views.moderator_list'))
-
+   print 'accepting'
    incoming_mail.create_outgoing()
    return HttpResponseRedirect(reverse('interlink.views.moderator_list'))
 
@@ -68,6 +68,7 @@ def moderator_reject(request, id):
       print 'Tried to moderate an email which needs no moderation.'
       return HttpResponseRedirect(reverse('interlink.views.moderator_list'))
 
+   print 'rejecting'
    incoming_mail.reject()
    return HttpResponseRedirect(reverse('interlink.views.moderator_list'))
 

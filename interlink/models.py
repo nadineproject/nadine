@@ -222,8 +222,10 @@ class OutgoingMail(models.Model):
                traceback.print_exc()
                return False
 
-         self.original_mail.state = 'sent'
-         self.original_mail.save()
+         if self.original_mail.state != 'moderate':
+            self.original_mail.state = 'sent'
+            self.original_mail.save()
+
          self.sent = datetime.now()
          self.save()
          return True
