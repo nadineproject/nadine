@@ -82,12 +82,18 @@ class PopMailChecker(MailChecker):
          else:
             sent_time = datetime.now()
          if message.is_multipart():
+            body = None
+            html_body = None
             for bod in  message.get_payload():
-               body = bod.get_payload()
-               if body: break
+               payload = bod.get_payload()
+               if bod.get_content_type() == 'text/plain' and not body:
+                  body = payload
+               elif bod.get_content_type() == 'text/html' and not html_body:
+                  html_body = payload
          else:
             body = message.get_payload()
-         results.append(IncomingMail.objects.create(mailing_list=self.mailing_list, origin_address=origin_address, subject=message['Subject'], body=body, sent_time=sent_time))
+            html_body = None
+         results.append(IncomingMail.objects.create(mailing_list=self.mailing_list, origin_address=origin_address, subject=message['Subject'], body=body, html_body=html_body, sent_time=sent_time))
          pop_client.dele(i+1)
         
       pop_client.quit()

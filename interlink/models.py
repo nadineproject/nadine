@@ -8,6 +8,7 @@ import smtplib
 import traceback
 import unicodedata
 from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta, date
 
 from django.db import models
@@ -115,7 +116,7 @@ class IncomingMailManager(models.Manager):
          else:
             subject = incoming.subject
          body = incoming.body
-         OutgoingMail.objects.create(mailing_list=incoming.mailing_list, original_mail=incoming, subject=subject, body=body)
+         OutgoingMail.objects.create(mailing_list=incoming.mailing_list, original_mail=incoming, subject=subject, body=incoming.body, html_body=incoming.html_body)
          incoming.state = 'send'
          incoming.save()
 
@@ -125,7 +126,8 @@ class IncomingMail(models.Model):
    origin_address = models.EmailField()
    sent_time = models.DateTimeField()
    subject = models.TextField(blank=True)
-   body = models.TextField(blank=True)
+   body = models.TextField(blank=True, null=True)
+   html_body = models.TextField(blank=True, null=True)
 
    owner = models.ForeignKey(User, blank=True, null=True, default=None)
 
@@ -150,7 +152,8 @@ class OutgoingMail(models.Model):
    moderators_only = models.BooleanField(default=False)
    original_mail = models.ForeignKey(IncomingMail, blank=True, help_text='The incoming mail which caused this mail to be sent')
    subject = models.TextField(blank=True)
-   body = models.TextField(blank=True)
+   body = models.TextField(blank=True, null=True)
+   html_body = models.TextField(blank=True, null=True)
 
    attempts = models.IntegerField(blank=False, null=False, default=0)
    last_attempt = models.DateTimeField(blank=True, null=True)
@@ -166,7 +169,10 @@ class OutgoingMail(models.Model):
       self.attempts = self.attempts + 1
       self.save()
       try:
-         msg = MIMEText(self.body)
+         msg = MIMEMultipart('alternative')
+         if self.body: msg.attach(MIMEText(self.body, 'plain'))
+         if self.html_body: msg.attach(MIMEText(self.html_body, 'html'))
+            
          msg['To'] = self.mailing_list.email_address
          if self.original_mail.owner:
             msg['From'] = '"%s" <%s>' % (self.original_mail.owner.get_full_name(), self.mailing_list.email_address)
