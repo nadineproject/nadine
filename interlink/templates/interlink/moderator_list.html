@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block sub-title %}Moderation List | {% endblock %}
+
+{% block style %}
+#content td, #content th { text-align: left; padding-right: 2em; }
+#content td:first-child, #content th:first-child { width: 15em; }
+#content h3 { text-align: center; }
+{% endblock %}
+
+{% block content%}
+
+<h2>Moderation List:</h2>
+
+{% if not request.user.mail_awaiting_moderation %}
+	<h3>You have no more email to moderate.</h3>
+	<h3>Go, team!</h3>
+{% else %}
+	<table>
+		<tr>
+			<th>Sent Time</th>
+			<th>Origin</th>
+			<th>Subject</th>
+			<th></th>
+		</tr>
+	{% for incoming_mail in request.user.mail_awaiting_moderation %}
+		<tr>
+			<td><a href="{% url interlink.views.moderator_inspect incoming_mail.id %}">{{ incoming_mail.sent_time }}</a></td>
+			<td>{{ incoming_mail.origin_address }}</td>
+			<td>{{ incoming_mail.subject }}</td>
+			<td>{% include "interlink/incoming_mail_controls.frag" %}</td>
+		</tr>
+	{% endfor %}
+	</table>
+{% endif %}
+
+{% endblock %}
+
+

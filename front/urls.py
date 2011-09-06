@@ -1,8 +1,6 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
 
-from models import *
-
 urlpatterns = patterns('',
 	(r'^$', 'front.views.index'),
 )

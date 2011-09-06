@@ -31,6 +31,11 @@ function unsubscribe(mlID){
 
 {% block content %}
 <h2>Mailing lists:</h2>
+
+{% if request.user.is_staff %}
+Admin: <a href="{% url interlink.views.moderator_list %}">moderate</a>
+{% endif %}
+
 <ul>
 {% for mailing_list, is_subscriber in user.mailing_list_memberships %}
 	<li>

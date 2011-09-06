@@ -7,7 +7,7 @@ import datetime
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
-from interlink.scheduler import Scheduler
+from front.scheduler import Scheduler
 
 class Command(BaseCommand):
    help = "Runs the process which schedules Tasks from settings.SCHEDULED_TASKS."

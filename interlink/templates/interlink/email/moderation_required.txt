@@ -1,0 +1,16 @@
+##################
+
+Moderation Needed for {{ incoming_mail.mailing_list.name }}:
+
+Approve: {{ incoming_mail.approve_url }}
+
+Reject:  {{ incoming_mail.reject_url }}
+
+Inspect: {{ incoming_mail.inspect_url }}
+
+###################
+
+To:      {{ incoming_mail.mailing_list.email_address }}
+Subject: {{ incoming_mail.origin_address }}
+  
+{{ incoming_mail.body }}

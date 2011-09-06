@@ -18,6 +18,7 @@ from django.db.models import signals
 from django.dispatch import dispatcher
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
+from django.core.urlresolvers import reverse
 from django.utils.encoding import force_unicode
 from django.template.loader import render_to_string
 from django.core.mail import send_mail, send_mass_mail
@@ -31,6 +32,11 @@ def user_by_email(email):
    if len(members) > 0: return members[0]
    return None
 User.objects.find_by_email = user_by_email
+
+def awaiting_moderation(user):
+   """Returns an array of IncomingMail objects which await moderation by this user"""
+   return IncomingMail.objects.filter(state='moderate').filter(mailing_list__moderators__username=user.username)
+User.mail_awaiting_moderation = awaiting_moderation
 
 class MailingListManager(models.Manager):
    def fetch_all_mail(self):
@@ -106,19 +112,13 @@ class IncomingMailManager(models.Manager):
          incoming.owner = User.objects.find_by_email(incoming.origin_address)
          if incoming.owner == None or not incoming.owner in incoming.mailing_list.subscribers.all():
             subject = 'Moderation Request: %s: %s' % (incoming.mailing_list.name, incoming.subject)
-            body = 'Moderation email here: unknown origin email: %s' % incoming.origin_address
+            body = render_to_string('interlink/email/moderation_required.txt', { 'incoming_mail': incoming })
             OutgoingMail.objects.create(mailing_list=incoming.mailing_list, moderators_only=True, original_mail=incoming, subject=subject, body=body)
             incoming.state = 'moderate'
             incoming.save()
             continue
-         if incoming.mailing_list.subject_prefix:
-            subject = '%s %s' % (incoming.mailing_list.subject_prefix, incoming.subject)
          else:
-            subject = incoming.subject
-         body = incoming.body
-         OutgoingMail.objects.create(mailing_list=incoming.mailing_list, original_mail=incoming, subject=subject, body=incoming.body, html_body=incoming.html_body)
-         incoming.state = 'send'
-         incoming.save()
+            incoming.create_outgoing()
 
 class IncomingMail(models.Model):
    """An email as popped for a mailing list"""
@@ -138,6 +138,29 @@ class IncomingMail(models.Model):
 
    objects = IncomingMailManager()
 
+   def reject(self):
+      self.state = 'reject'
+      self.save()
+
+   def create_outgoing(self):
+      if self.mailing_list.subject_prefix:
+         subject = '%s %s' % (self.mailing_list.subject_prefix, self.subject)
+      else:
+         subject = self.subject
+      outgoing = OutgoingMail.objects.create(mailing_list=self.mailing_list, original_mail=self, subject=subject, body=self.body, html_body=self.html_body)
+      self.state = 'send'
+      self.save()
+      return outgoing
+
+   @property
+   def approve_url(self): return 'http://%s%s' % (Site.objects.get_current().domain, reverse('interlink.views.moderator_approve', kwargs={'id':self.id}, current_app='interlink'))
+
+   @property
+   def reject_url(self): return 'http://%s%s' % (Site.objects.get_current().domain, reverse('interlink.views.moderator_reject', kwargs={'id':self.id}))
+
+   @property
+   def inspect_url(self): return 'http://%s%s' % (Site.objects.get_current().domain, reverse('interlink.views.moderator_inspect', kwargs={'id':self.id}))
+
    def __unicode__(self): return '%s: %s' % (self.origin_address, self.subject)
 
 class OutgoingMailManager(models.Manager):
@@ -147,7 +170,7 @@ class OutgoingMailManager(models.Manager):
          mail.send()
 
 class OutgoingMail(models.Model):
-   """Emails which are consumed by the front.tasks.EmailTask"""
+   """Emails which are consumed by the interlink.tasks.EmailTask"""
    mailing_list = models.ForeignKey(MailingList, related_name='outgoing_mails')
    moderators_only = models.BooleanField(default=False)
    original_mail = models.ForeignKey(IncomingMail, blank=True, help_text='The incoming mail which caused this mail to be sent')
