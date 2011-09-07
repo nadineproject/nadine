@@ -203,11 +203,11 @@ class Member(models.Model):
 		return DailyLog.objects.filter(member=self, payment='Bill').count()
 
 	def first_visit(self):
-		if DailyLog.objects.filter(member=self).count() > 0:
-			return DailyLog.objects.filter(member=self).order_by('visit_date')[0].visit_date
+		if Membership.objects.filter(member=self).count() > 0:
+			return Membership.objects.filter(member=self).order_by('start_date')[0].start_date
 		else:
-			if Membership.objects.filter(member=self).count() > 0:
-				return Membership.objects.filter(member=self).order_by('start_date')[0].start_date
+			if DailyLog.objects.filter(member=self).count() > 0:
+				return DailyLog.objects.filter(member=self).order_by('visit_date')[0].visit_date
 			else:
 				return None
 
