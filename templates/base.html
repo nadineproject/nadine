@@ -24,6 +24,10 @@
 	</style>
 </head>
 <body>{% block body %}
+	<div id="branding">
+		<div style="float:right;"><a style="font-size:small; color:black;" href="http://nadineproject.org" target="_new">The Nadine Project</a></div>
+		<a href="/">{{ site.name}}</a>: Nadine Membership Console
+	</div>
 {% block header %}<header>	
   <nav>
   <a id="todo-tab" href="{% url staff.views.todo %}">Todo</a>
@@ -42,11 +46,13 @@
 </header>{% endblock %}
 
 <div id="content">
-  	<form id="site-search-form" action="{% url staff.views.member_search %}" method="post">
+	{% if request.user.is_authenticated %}
+	<form id="site-search-form" action="{% url staff.views.member_search %}" method="post">
 		{% for field in site_search_form %}{{ field }}{% endfor %}
 		<input type="submit" value="search" />
 		{% csrf_token %}
 	</form>
+	{% endif %}
 	{% block content %}{% endblock %}
 </div>
 {% block footer %}{% endblock %}
