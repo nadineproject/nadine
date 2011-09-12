@@ -24,8 +24,6 @@ footer, header, hgroup, menu, nav, section, summary {
     display:block;
 }
 
-nav ul { list-style:none; }
-
 #site-search-form { float: right; }
 
 blockquote, q { quotes:none; }
@@ -48,7 +46,14 @@ hr { display:block; height:1px; border:0; border-top:1px solid #ccc; margin:1em 
 
 input, select { vertical-align:middle; }
 
-body { font:13px/1.231 sans-serif; *font-size:small; margin-bottom: 20px; } 
+/*body { font:13px/1.231 sans-serif; *font-size:small; margin-bottom: 20px; } */
+body {
+   margin:0;
+   background:#fff;
+   color:#444;
+   font-size: 80%; /* Resets 1em to 10px */
+   font-family: 'Lucida Grande', Verdana, Arial, Sans-Serif;
+}
 table { font-size:inherit; font: 100%; }
 select, input, textarea, button { font:99% sans-serif; }
 pre, code, kbd, samp { font-family: monospace, sans-serif; }
@@ -117,9 +122,14 @@ button {  width: auto; overflow: visible; }
  /* Primary Styles
     Author: 
  */
+
+#branding { font-size: 1.3em; color:#e1e1e1; background: #5a7abd; padding: 0.5em;}
+#branding a { color:#e1e1e1; font-weight: bold;}
+
 nav { color: white; width: 800px; margin: 0 auto; }
-nav:before { position: absolute; top: 0; left: 0; width: 100%; background: black;  height: 2.2em; content: ""; z-index: -1;}
+nav:before { position: absolute; top: 2.7em; left: 0; width: 100%; background: black;  height: 30px; content: ""; z-index: -1;}
 nav a, nav a:active, nav a:visited { display: inline-block; padding: 0.5em; color: white; } 
+nav ul { list-style:none; }
 
 header { padding-bottom: 5px; }
 header h1 { }
