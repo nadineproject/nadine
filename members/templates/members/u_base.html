@@ -18,7 +18,11 @@
 	</style>
 </head>
 <body>{% block body %}
-{% block header %}<header>
+	<div id="branding">
+		<div style="float:right;"><a style="font-size:small; color:black;" href="http://nadineproject.org" target="_new">The Nadine Project</a></div>
+		<a href="/">{{ site.name}}</a>: Nadine Membership Console
+	</div>
+	{% block header %}<header>
 	<nav>
 		<a href="{% url members.views.index %}">Home</a>
 		{% if request.user.is_staff %}
@@ -33,7 +37,7 @@
 		{% endif %}
 	</nav>
 	{% block header-title %}<h1><a class="ir" href="{% url members.views.index %}">{{ site.name }}</a></h1>{% endblock %}
-</header>{% endblock %}
+	</header>{% endblock %}
 
 <div id="content" class="clearfix">{% block content %}{% endblock %}</div>
 {% block footer %}{% endblock %}
