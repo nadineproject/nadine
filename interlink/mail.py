@@ -3,6 +3,7 @@ import poplib, email
 from datetime import datetime, date, timedelta
 
 from django.conf import settings
+from django.utils.html import strip_tags
 from interlink.models import IncomingMail
 
 class MailChecker(object):
@@ -68,7 +69,7 @@ class PopMailChecker(MailChecker):
             pop_client.dele(i+1)
             continue
             
-         # Delete and ignore messages sent from any list
+         # Delete and ignore messages sent from any list to avoid loops
          if message['List-ID']:
             pop_client.dele(i+1)
             continue
@@ -81,23 +82,34 @@ class PopMailChecker(MailChecker):
             sent_time = datetime(*time_struct[:-2])
          else:
             sent_time = datetime.now()
-         if message.is_multipart():
-            body = None
-            html_body = None
-            for bod in  message.get_payload():
-               payload = bod.get_payload()
-               if bod.get_content_type() == 'text/plain' and not body:
-                  body = payload
-               elif bod.get_content_type() == 'text/html' and not html_body:
-                  html_body = payload
-         else:
-            body = message.get_payload()
-            html_body = None
+
+         body, html_body, file_names = self.find_bodies(message)
+         for file_name in file_names:
+            if body: body = '%s\n\n%s' % (body, '\nAn attachment has been dropped: %s' % strip_tags(file_name))
+            if html_body: html_body = '%s<br><br>%s' % (html_body, '<div>An attachment has been dropped: %s</div>' % strip_tags(file_name))
+
          results.append(IncomingMail.objects.create(mailing_list=self.mailing_list, origin_address=origin_address, subject=message['Subject'], body=body, html_body=html_body, sent_time=sent_time))
          pop_client.dele(i+1)
         
       pop_client.quit()
 
+   def find_bodies(self, message):
+      """Returns (body, html_body, file_names[]) for this payload, recursing into multipart/alternative payloads if necessary"""
+      if not message.is_multipart(): return (message.get_payload(), None, [])
+      body = None
+      html_body = None
+      file_names = []
+      for bod in message.get_payload():
+         if bod.get_content_type().startswith('text/plain') and not body:
+            body = bod.get_payload()
+         elif bod.get_content_type().startswith('text/html') and not html_body:
+            html_body = bod.get_payload()
+         elif bod.get_content_type().startswith('multipart/alternative') and not body and not html_body:
+            body, html_body, file_names = self.find_bodies(bod)
+         elif bod.has_key('Content-Disposition') and bod['Content-Disposition'].startswith('attachment; filename="'):
+            file_names.append(bod['Content-Disposition'][len('attachment; filename="'):-1])
+      return (body, html_body, file_names)
+         
 if settings.IS_TEST:
    DEFAULT_MAIL_CHECKER = TestMailChecker
 else:
