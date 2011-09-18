@@ -5,9 +5,11 @@ from django.conf import settings
 from django.test import TestCase
 from django.core import management
 from django.contrib.auth.models import User
+from django.core.management import call_command
+
+from staff.models import Member, MembershipPlan, Membership
 
 from interlink.tests.test_utils import create_user
-
 from interlink.models import MailingList, IncomingMail, OutgoingMail
 from interlink.mail import DEFAULT_MAIL_CHECKER, TestMailChecker, TEST_INCOMING_MAIL, add_test_incoming
 
@@ -21,7 +23,21 @@ class ListTest(TestCase):
          email_address='hats@example.com', username='hat', password='1234',
          pop_host='localhost', smtp_host='localhost'
       )
-   
+
+      self.basic_plan = MembershipPlan.objects.create(name='Basic', description='An occasional user', monthly_rate='50', daily_rate='25', dropin_allowance='5', deposit_amount='0')
+
+   def test_subscribe_command(self):
+      self.assertEqual(0, Member.objects.active_members().count())
+      self.assertEqual(0, self.mlist1.subscribers.count())
+
+      call_command('subscribe_members', '%s' % self.mlist1.id)
+      self.assertEqual(0, self.mlist1.subscribers.count())
+
+      Membership.objects.create(member=self.user2.get_profile(), membership_plan=self.basic_plan, start_date=date.today() - timedelta(days=10))
+      call_command('subscribe_members', '%s' % self.mlist1.id)
+      self.assertEqual(1, self.mlist1.subscribers.count())
+
+
    def test_outgoing_processing(self):
       self.assertEqual(OutgoingMail.objects.all().count(), 0)
       OutgoingMail.objects.send_outgoing()
