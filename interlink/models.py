@@ -80,7 +80,7 @@ class MailingList(models.Model):
    smtp_port = models.IntegerField(default=587)
 
    subscribers = models.ManyToManyField(User, blank=True, related_name='subscribed_mailing_lists')
-   moderators = models.ManyToManyField(User, blank=True, related_name='moderated_mailing_lists', help_text='Users who will be sent moderation emails')
+   moderators = models.ManyToManyField(User, blank=True, related_name='moderated_mailing_lists', help_text='Users who will be sent moderation emails', limit_choices_to={'is_staff': True})
    
    objects = MailingListManager()
    
