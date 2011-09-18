@@ -26,6 +26,14 @@ class ListTest(TestCase):
 
       self.basic_plan = MembershipPlan.objects.create(name='Basic', description='An occasional user', monthly_rate='50', daily_rate='25', dropin_allowance='5', deposit_amount='0')
 
+   def test_opt_out(self):
+      self.assertEqual(0, self.mlist1.subscribers.count())
+      self.mlist1.is_opt_out = True
+      self.mlist1.save()
+      user3, client3 = create_user('suz', 'Suz', 'Ebens', email='suz@example.com')
+      self.assertEqual(1, self.mlist1.subscribers.count())
+      self.assertTrue(user3 in self.mlist1.subscribers.all())
+
    def test_subscribe_command(self):
       self.assertEqual(0, Member.objects.active_members().count())
       self.assertEqual(0, self.mlist1.subscribers.count())

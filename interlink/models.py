@@ -19,11 +19,25 @@ from django.dispatch import dispatcher
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
+from django.db.models.signals import post_save
 from django.utils.encoding import force_unicode
 from django.template.loader import render_to_string
 from django.core.mail import send_mail, send_mass_mail
 
 from staff.models import Member
+
+
+def user_save_callback(sender, **kwargs):
+   """When a user is created, add them to any opt-out mailing lists"""
+   user = kwargs['instance']
+   created = kwargs['created']
+   if not created: return
+   mailing_lists = MailingList.objects.filter(is_opt_out=True)
+   if mailing_lists.count() == 0: return
+   for ml in mailing_lists: ml.subscribers.add(user)
+
+post_save.connect(user_save_callback, sender=User)
+
 
 def user_by_email(email):
    users = User.objects.filter(email=email)
