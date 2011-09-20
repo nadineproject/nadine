@@ -24,20 +24,7 @@ from django.utils.encoding import force_unicode
 from django.template.loader import render_to_string
 from django.core.mail import send_mail, send_mass_mail
 
-from staff.models import Member
-
-
-def user_save_callback(sender, **kwargs):
-   """When a user is created, add them to any opt-out mailing lists"""
-   user = kwargs['instance']
-   created = kwargs['created']
-   if not created: return
-   mailing_lists = MailingList.objects.filter(is_opt_out=True)
-   if mailing_lists.count() == 0: return
-   for ml in mailing_lists: ml.subscribers.add(user)
-
-post_save.connect(user_save_callback, sender=User)
-
+from staff.models import Member, Membership
 
 def user_by_email(email):
    users = User.objects.filter(email=email)
@@ -46,6 +33,16 @@ def user_by_email(email):
    if len(members) > 0: return members[0]
    return None
 User.objects.find_by_email = user_by_email
+
+def membership_save_callback(sender, **kwargs):
+	"""When a membership is created, add the user to any opt-out mailing lists"""
+	membership = kwargs['instance']
+	created = kwargs['created']
+	if not created: return 
+	mailing_lists = MailingList.objects.filter(is_opt_out=True)
+	for ml in mailing_lists: ml.subscribers.add(membership.member.user)
+post_save.connect(membership_save_callback, sender=Membership)
+
 
 def awaiting_moderation(user):
    """Returns an array of IncomingMail objects which await moderation by this user"""

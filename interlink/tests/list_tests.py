@@ -31,6 +31,8 @@ class ListTest(TestCase):
       self.mlist1.is_opt_out = True
       self.mlist1.save()
       user3, client3 = create_user('suz', 'Suz', 'Ebens', email='suz@example.com')
+      self.assertEqual(0, self.mlist1.subscribers.count())
+      membership = Membership.objects.create(member=user3.get_profile(), membership_plan=self.basic_plan, start_date=date.today() - timedelta(days=31))
       self.assertEqual(1, self.mlist1.subscribers.count())
       self.assertTrue(user3 in self.mlist1.subscribers.all())
 
