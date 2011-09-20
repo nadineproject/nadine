@@ -4,7 +4,7 @@ This is the Django web project which runs behinds the scenes of coworking spaces
 
 Most of the action is in the staff application, where you'll find a member tracking and billing system.
 
-## Vague but Helpful Installation Instructions
+## Handy Installation Instructions
 
 Set up your Django environment then test that it's up by creating a scratch project and running the Django development server.
 
@@ -18,29 +18,36 @@ Copy local_settings.dist to local_settings.py and edit it to reflect your local 
 
 Run Django's syncdb and then South's migrate commands.  
 
-$ python manage.py syncdb
-$ pythoh manage.py migrate
+    ./manage.py syncdb # when prompted, create an admin account
+    ./manage.py migrate
+
+Now run the tests to make certain that everthing is installed:
+
+    ./manage.py test staff interlink
 
 Both Django and South have excellent documentation, so check there if you run into trouble.
 
 At this point you will need to populate the django_sites database. We will assume you only have Nadine in the database you have created.
 
-$ python manage.py shell
+    ./manage.py shell
 >>> from django.contrib.sites.models import Site
 >>> newsite = Site(name="Nadine",domain="nadine.com")
 >>> newsite.save()
 Ctrl+D
 
-You can double check that that populate correctly the django_sites table by going to psql:
-
-$ psql NADINE_DB
-=> SELECT * FROM django_sites;
-
 At this point you can run the server
 
-$ python manage.py runserver
+    ./manage.py runserver 0.0.0.0:8000
 
-And visit your installation of Nadine at http://localhost:8000
+And visit your installation of Nadine at http://127.0.0.1:8000/
+
+### Running the scheduler
+
+In order to repeatedly execute tasks like checking and sending email, run this command:
+
+    ./manage.py scheduler
+
+You will need to run that command as a long lived process.  On linux and other unices, use something like the nohup command.
 
 ## Installation Notes
 
@@ -52,7 +59,7 @@ And visit your installation of Nadine at http://localhost:8000
    You'll need to get python running in 32 bit mode for this to work.  Run the following:
    export VERSIONER_PYTHON_PREFER_32_BIT=yes 
 
- - In a virtualenv, you should simply remove the 64 python altogether like so:
+ - On OS X versions *before* Lion when using a virtualenv, you should remove the 64 python altogether like so:
    $ mv .../virtualenvs/nadine/bin/python .../virtualenvs/nadine/bin/python.old
    $ lipo -remove x86_64 .../virtualenvs/nadine/bin/python.old -output .../virtualenvs/nadine/bin/python
 
