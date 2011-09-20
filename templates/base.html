@@ -37,6 +37,7 @@
   <a id="stats-tab" href="{% url staff.views.stats %}">Stats</a>
   <a id="admin-tab" href="{% url admin:index %}">Admin</a>
   {% if request.user.is_authenticated %}
+  <a id="profile-tab" href="{% url members.views.profile_redirect %}">Profile</a>
   <a id="log-tab" href="{% url django.contrib.auth.views.logout_then_login %}">Logout</a>
   {% else %}
   <a id="log-tab" href="{% url django.contrib.auth.views.login %}">Login</a>

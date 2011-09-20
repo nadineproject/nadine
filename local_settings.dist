@@ -32,7 +32,8 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_SUBJECT_PREFIX = "[COWORKING] " # or None if you want no subject prefix
 
-from front.tasks import EmailTask
+from interlink.tasks import EmailTask
+# You can set the frequency of any Task by passing loopdelay=<number of seconds>
 SCHEDULED_TASKS = [EmailTask()]
 
 import datetime

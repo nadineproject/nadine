@@ -13,27 +13,20 @@
 
 <h2>{{ user.get_full_name }}</h2>
 
-<dl>
-	<dt>Membership:</dt><dd>{{ user.profile.membership_type }}</dd>
-	<dt>Member Since:</dt><dd>{{ user.profile.first_visit|date:"M Y" }}</dd>
-</dl>
-
 {% if user.username == request.user.username or request.user.is_staff %}
-	{% if user.profile.is_monthly %}
-		<dl>
-			<dt>Monthly Rate:</dt><dd>${{ user.profile.last_membership.monthly_rate }}/month</dd>
-			<dt>Anniversary Date:</dt><dd>{{ user.profile.last_membership.start_date|date:"M d, Y" }}</dd>
-		</dl>
-	{% endif %}
-{% endif %}
-{% if request.user.is_staff %}
-	<dl><dt>Quicklinks:</dt><dd><a href="{% url staff.views.member_detail user.profile.id %}">edit</a></dd></dl>
-{% endif %}
-  
-<div class="clearfix"></div>
-
-{% if user.username == request.user.username or request.user.is_staff %}
-
+	<dl>
+    <dt>Membership status:</dt><dd>{{ user.profile.membership_type }}{% if user.profile.is_monthly %} at ${{ user.profile.last_membership.monthly_rate }}/month{% endif %}</dd>
+		{% if user.profile.is_monthly %}
+		<dt>Anniversary date:</dt><dd>{{ user.profile.last_membership.start_date|date:"M d, Y" }}</dd>
+		{% endif %}
+		<dt>Mailing lists:</dt><dd><a href="{% url members.views.mail user.username %}">config</a></dd>
+    {% if request.user.is_staff %}
+         <dt>Quicklinks:</dt>
+         <dd><a href="{% url staff.views.member_detail user.profile.id %}">edit</a></dd>
+      </tr>
+      {% endif %}
+	</dl>
+  <div class="clearfix"></div>
 	<h2>Transactions</h2>
    {% if user.profile.transaction_set.all %}
    <table>

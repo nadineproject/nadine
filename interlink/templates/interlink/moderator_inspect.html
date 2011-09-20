@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block sub-title %}Inspect {{ incoming_mail.subject }} | {% endblock %}
+
+{% block style %}
+{% endblock %}
+
+{% block content%}
+
+<h2>{{ incoming_mail.origin_address }}: {{ incoming_mail.subject }}</h2>
+
+{% include "interlink/incoming_mail_controls.frag" %}
+
+<pre>
+	{{ incoming_mail.body }}
+</pre>
+
+{% endblock %}
+
+

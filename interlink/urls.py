@@ -4,6 +4,11 @@ from django.conf import settings
 from models import *
 
 urlpatterns = patterns('',
+   (r'^list/(?P<id>[^/]+)/$', 'interlink.views.list'),
+   (r'^moderate/$', 'interlink.views.moderator_list'),
+   (r'^moderate/(?P<id>[\d]+)/$', 'interlink.views.moderator_inspect'),
+   (r'^moderate/(?P<id>[\d]+)/approve/$', 'interlink.views.moderator_approve'),
+   (r'^moderate/(?P<id>[\d]+)/reject/$', 'interlink.views.moderator_reject'),
 	(r'^$', 'interlink.views.index'),
 )
 
