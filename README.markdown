@@ -67,6 +67,18 @@ You will need to run that command as a long lived process.  On linux and other u
    and it's trying to run python in 64bit mode.  Do the following:
    $ defaults write com.apple.versioner.python Prefer-32-Bit -bool yes
 
+# Interlink (mailing lists) notes:
+
+In the interest of shipping more quickly, we have made certain assumptions about the interlink mailing lists which may or may not suit everyone's needs.
+
+- the reply-to address for mail from a list is the original sender, not the entire list
+- attachments are neither saved nor sent to the list, but a removal note is appended to the message
+- incoming messages are parsed for a single text message and a single html message (not multiple MIME messages)
+- you can set the frequency of mail fetching in the EmailTask in your local_settings.py
+- loops and bounces are silently dropped
+- any email sent to a list which is not in a subscriber's user or membership record is moderated
+- the sender of a message receives a copy of the message like any other subscriber
+
 ## License & Copyright
 
 Copyright 2010 Office Nomads LLC ([http://www.officenomads.com/](http://www.officenomads.com/)) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
