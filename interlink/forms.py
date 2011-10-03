@@ -10,7 +10,7 @@ class MailingListSubscriptionForm(forms.Form):
 	def save(self, user):
 		list = MailingList.objects.get(pk=self.cleaned_data['mailing_list_id'])
 		if list.moderator_controlled: return False
-		if self.cleaned_data['subscribe'] == 'true':
+		if self.cleaned_data['subscribe'] == 'true' and user.get_profile().is_monthly():
 			list.subscribers.add(user)
 		elif self.cleaned_data['subscribe'] == 'false' and user in list.subscribers.all():
 			list.subscribers.remove(user)

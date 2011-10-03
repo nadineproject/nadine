@@ -45,7 +45,9 @@ Admin: <a href="{% url interlink.views.moderator_list %}">moderate</a>
     			{% if is_subscriber %}
     			<a href="." onclick="unsubscribe({{mailing_list.id}}); return false;">unsubscribe</a>
     			{% else %}
-    			<a href="." onclick="subscribe({{mailing_list.id}}); return false;">subscribe</a>
+        			{% if request.user.get_profile.is_monthly %}
+        			    <a href="." onclick="subscribe({{mailing_list.id}}); return false;">subscribe</a>
+        			{% endif %}
     			{% endif %}
     		{% endif %}
 		</h3>
