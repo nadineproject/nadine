@@ -41,11 +41,13 @@ Admin: <a href="{% url interlink.views.moderator_list %}">moderate</a>
 	<li>
 		<h3>
 			{{mailing_list.name}}
-			{% if is_subscriber %}
-			<a href="." onclick="unsubscribe({{mailing_list.id}}); return false;">unsubscribe</a>
-			{% else %}
-			<a href="." onclick="subscribe({{mailing_list.id}}); return false;">subscribe</a>
-			{% endif %}
+			{% if not mailing_list.moderator_controlled %}
+    			{% if is_subscriber %}
+    			<a href="." onclick="unsubscribe({{mailing_list.id}}); return false;">unsubscribe</a>
+    			{% else %}
+    			<a href="." onclick="subscribe({{mailing_list.id}}); return false;">subscribe</a>
+    			{% endif %}
+    		{% endif %}
 		</h3>
 		{{ mailing_list.description }}
 	</li>

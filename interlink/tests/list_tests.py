@@ -26,6 +26,35 @@ class ListTest(TestCase):
 
       self.basic_plan = MembershipPlan.objects.create(name='Basic', description='An occasional user', monthly_rate='50', daily_rate='25', dropin_allowance='5', deposit_amount='0')
 
+   def test_moderator_controlled(self):
+      self.assertEqual(0, self.mlist1.subscribers.count())
+      self.mlist1.moderator_controlled = True
+      self.mlist1.save()
+      self.mlist1.moderators.add(self.user1)
+      self.mlist1.subscribers.add(self.user2)
+      self.assertEqual(1, self.mlist1.subscribers.count())
+
+      checker = DEFAULT_MAIL_CHECKER(self.mlist1)
+      
+      # check that non-moderator emails are rejected
+      add_test_incoming(self.mlist1, 'bob@example.com', 'ahoi 3', 'I like traffic lights.', sent_time=datetime.now() - timedelta(minutes=15))
+      incoming = checker.fetch_mail()
+      self.assertEqual(len(incoming), 1)
+      IncomingMail.objects.process_incoming()
+      outgoing = OutgoingMail.objects.all()
+      self.assertEqual(len(outgoing), 0)
+      income = IncomingMail.objects.get(pk=incoming[0].id)
+      self.assertEqual(income.state, 'reject')
+
+      add_test_incoming(self.mlist1, 'alice@example.com', 'ahoi 4', 'Who are you. Who who who who.', sent_time=datetime.now() - timedelta(minutes=10))
+      incoming = checker.fetch_mail()
+      self.assertEqual(len(incoming), 1)
+      IncomingMail.objects.process_incoming()
+      outgoing = OutgoingMail.objects.all()
+      self.assertEqual(len(outgoing), 1)
+      income = IncomingMail.objects.get(pk=incoming[0].id)
+      self.assertEqual(income.state, 'send')
+      
    def test_opt_out(self):
       self.assertEqual(0, self.mlist1.subscribers.count())
       self.mlist1.is_opt_out = True

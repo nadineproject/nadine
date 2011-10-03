@@ -65,6 +65,7 @@ class MailingList(models.Model):
    subject_prefix = models.CharField(max_length=1024, blank=True)
    
    is_opt_out = models.BooleanField(default=False, help_text='True if new users should be automatically enrolled')
+   moderator_controlled = models.BooleanField(default=False, help_text='True if only the moderators can send mail to the list and can unsubscribe users.')
 
    email_address = models.EmailField()
    
@@ -121,6 +122,15 @@ class IncomingMailManager(models.Manager):
    def process_incoming(self):
       for incoming in self.filter(state='raw'):
          incoming.owner = User.objects.find_by_email(incoming.origin_address)
+         
+         if incoming.mailing_list.moderator_controlled:
+            if incoming.owner in incoming.mailing_list.moderators.all():
+               incoming.create_outgoing()
+            else:
+               incoming.state = 'reject'
+               incoming.save()
+            continue
+         
          if incoming.owner == None or not incoming.owner in incoming.mailing_list.subscribers.all():
             subject = 'Moderation Request: %s: %s' % (incoming.mailing_list.name, incoming.subject)
             body = render_to_string('interlink/email/moderation_required.txt', { 'incoming_mail': incoming })
