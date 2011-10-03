@@ -194,7 +194,7 @@ class OutgoingMail(models.Model):
    """Emails which are consumed by the interlink.tasks.EmailTask"""
    mailing_list = models.ForeignKey(MailingList, related_name='outgoing_mails')
    moderators_only = models.BooleanField(default=False)
-   original_mail = models.ForeignKey(IncomingMail, blank=True, help_text='The incoming mail which caused this mail to be sent')
+   original_mail = models.ForeignKey(IncomingMail, blank=True, null=True, default=None, help_text='The incoming mail which caused this mail to be sent')
    subject = models.TextField(blank=True)
    body = models.TextField(blank=True, null=True)
    html_body = models.TextField(blank=True, null=True)
@@ -218,13 +218,16 @@ class OutgoingMail(models.Model):
          if self.html_body: msg.attach(MIMEText(self.html_body, 'html'))
             
          msg['To'] = self.mailing_list.email_address
-         if self.original_mail.owner:
+         if self.original_mail and self.original_mail.owner:
             msg['From'] = '"%s" <%s>' % (self.original_mail.owner.get_full_name(), self.mailing_list.email_address)
          else:
             msg['From'] = self.mailing_list.email_address
          msg['Subject'] = self.subject
          msg['Date'] = email.utils.formatdate()
-         msg['Reply-To'] = self.original_mail.origin_address
+         if self.original_mail:
+            msg['Reply-To'] = self.original_mail.origin_address
+         else:
+            msg['Reply-To'] = self.mailing_list.email_address
          msg['List-ID'] = self.mailing_list.list_id
          msg['X-CAN-SPAM-1'] = 'This message may be a solicitation or advertisement within the specific meaning of the CAN-SPAM Act of 2003.'
          
@@ -237,13 +240,13 @@ class OutgoingMail(models.Model):
             try:
                smtp_server = smtplib.SMTP(self.mailing_list.smtp_host, self.mailing_list.smtp_port)
                smtp_server.login(self.mailing_list.username, self.mailing_list.password)
-               smtp_server.sendmail(self.original_mail.origin_address, recipient_addresses + (self.mailing_list.email_address,), msg.as_string())
+               smtp_server.sendmail(msg['From'], recipient_addresses + (self.mailing_list.email_address,), msg.as_string())
                smtp_server.quit()
             except:
                traceback.print_exc()
                return False
 
-         if self.original_mail.state != 'moderate':
+         if self.original_mail and self.original_mail.state != 'moderate':
             self.original_mail.state = 'sent'
             self.original_mail.save()
 
