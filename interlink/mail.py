@@ -5,6 +5,7 @@ from datetime import datetime, date, timedelta
 from django.conf import settings
 from django.utils.html import strip_tags
 from interlink.models import IncomingMail
+from django.contrib.sites.models import Site
 
 class MailChecker(object):
    """An abstract class for fetching mail from something like a pop or IMAP server"""
@@ -87,6 +88,10 @@ class PopMailChecker(MailChecker):
          for file_name in file_names:
             if body: body = '%s\n\n%s' % (body, '\nAn attachment has been dropped: %s' % strip_tags(file_name))
             if html_body: html_body = '%s<br><br>%s' % (html_body, '<div>An attachment has been dropped: %s</div>' % strip_tags(file_name))
+
+         site = Site.objects.get_current()
+         if body: body += '\n\nEmail sent to the %s list at http://%s' % (self.mailing_list.name, site.domain)
+         if html_body: html_body += '<br/><div>Email sent to the %s list at <a href="http://%s">%s</a></div>' % (self.mailing_list.name, site.domain, site.name)
 
          results.append(IncomingMail.objects.create(mailing_list=self.mailing_list, origin_address=origin_address, subject=message['Subject'], body=body, html_body=html_body, sent_time=sent_time))
          pop_client.dele(i+1)
