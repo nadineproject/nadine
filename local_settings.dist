@@ -33,8 +33,9 @@ EMAIL_PORT = 587
 EMAIL_SUBJECT_PREFIX = "[COWORKING] " # or None if you want no subject prefix
 
 from interlink.tasks import EmailTask
+from staff.tasks import MailingListTask, BillingTask
 # You can set the frequency of any Task by passing loopdelay=<number of seconds>
-SCHEDULED_TASKS = [EmailTask()]
+SCHEDULED_TASKS = (EmailTask(), MailingListTask(), BillingTask())
 
 import datetime
 BILLING_START_DATE = datetime.date(2009, 11, 17)

@@ -10,6 +10,9 @@ import datetime
 import threading
 import traceback
 
+ONE_HOUR_SECONDS = 60 * 60
+ONE_DAY_SECONDS = ONE_HOUR_SECONDS * 24
+
 class Task(threading.Thread):
    def __init__(self, action, loopdelay, initdelay):
       """The action is a function which will be called in a new thread every loopdelay microseconds, starting after initdelay microseconds"""
