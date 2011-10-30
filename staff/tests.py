@@ -1,18 +1,49 @@
-from datetime import datetime, timedelta, date
 import traceback
+from datetime import datetime, timedelta, date
 
 from django.test import TestCase
 from django.core import management
 from django.contrib.auth.models import User
+from django.conf import settings
 
-import settings
-from staff.models import Bill, Transaction, Member, Membership, MembershipPlan, DailyLog, Onboard_Task, Onboard_Task_Completed, ExitTask, ExitTaskCompleted, Neighborhood
 import staff.billing as billing
+from interlink.models import MailingList
 from staff.views import beginning_of_next_month, first_days_in_months
+from staff.models import Bill, Transaction, Member, Membership, MembershipPlan, DailyLog, Onboard_Task, Onboard_Task_Completed, ExitTask, ExitTaskCompleted, Neighborhood
+
+class MailingListTest(TestCase):
+   
+	def setUp(self):
+		self.mlist1 = MailingList.objects.create(
+			name='Hat Styles', description='All about les chapeau', subject_prefix='hat',
+			email_address='hats@example.com', username='hat', password='1234',
+			pop_host='localhost', smtp_host='localhost'
+		)
+
+		resident_plan = MembershipPlan(name="Resident",monthly_rate="475",dropin_allowance="5",daily_rate="20",deposit_amount="500",has_desk=True)
+
+		self.user1 = User.objects.create(username='member_one', first_name='Member', last_name='One')
+		Membership.objects.create(member=self.user1.get_profile(), membership_plan=resident_plan, start_date=date(2008, 6, 26))
+
+		self.user2 = User.objects.create(username='member_two', first_name='Member', last_name='Two')
+		Membership.objects.create(member=self.user2.get_profile(), membership_plan=resident_plan, start_date=date(2008, 6, 26), end_date=(date.today() - timedelta(days=1)))
+
+		self.user3 = User.objects.create(username='member_three', first_name='Member', last_name='Three')
+		Membership.objects.create(member=self.user3.get_profile(), membership_plan=resident_plan, start_date=date(2008, 6, 26), end_date=(date.today() - timedelta(days=1)))
+		Membership.objects.create(member=self.user3.get_profile(), membership_plan=resident_plan, start_date=date.today())
+
+	def test_auto_unsubscribe(self):
+		self.mlist1.subscribers.add(self.user1)
+		self.mlist1.subscribers.add(self.user2)
+		self.mlist1.subscribers.add(self.user3)
+		Member.objects.unsubscribe_recent_dropouts()
+		self.assertTrue(self.user1 in self.mlist1.subscribers.all())
+		self.assertFalse(self.user2 in self.mlist1.subscribers.all())
+		self.assertTrue(self.user3 in self.mlist1.subscribers.all())
 
 class UtilsTest(TestCase):
 	
-	def testMonthlyRanges(self):
+	def test_monthly_ranges(self):
 		self.assertEqual(beginning_of_next_month(date(2010, 1, 1)), date(2010, 2, 1))
 		self.assertEqual(beginning_of_next_month(date(2010, 6, 30)), date(2010, 7, 1))
 		self.assertEqual(beginning_of_next_month(date(2010, 12, 1)), date(2011, 1, 1))

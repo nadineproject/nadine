@@ -50,6 +50,10 @@ def awaiting_moderation(user):
 User.mail_awaiting_moderation = awaiting_moderation
 
 class MailingListManager(models.Manager):
+   def unsubscribe_from_all(self, user):
+      for ml in self.all():
+         if user in ml.subscribers.all(): ml.subscribers.remove(user)
+   
    def fetch_all_mail(self):
       """Fetches mail for all mailing lists and returns an array of mailing_lists which reported failures"""
       failures = []

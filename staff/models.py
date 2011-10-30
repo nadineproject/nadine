@@ -1,14 +1,14 @@
-from datetime import datetime, time, date
 import pprint, traceback
+from datetime import datetime, time, date, timedelta
+
 from django.db import models
-from django.contrib.localflavor.us.models import USStateField, PhoneNumberField
+from django.db.models import Q
 from django.contrib import admin
 from django.core import urlresolvers
-from django.db.models import Q
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.utils.encoding import smart_str, smart_unicode
-
+from django.contrib.localflavor.us.models import USStateField, PhoneNumberField
 
 GENDER_CHOICES = (
 	('U', 'Unknown'),
@@ -121,7 +121,14 @@ class MemberManager(models.Manager):
 			return Member.objects.filter(neighborhood=hood).filter(memberships__isnull=False).filter(Q(memberships__end_date__isnull=True) | Q(memberships__end_date__gt=date.today())).distinct()
 		else:
 			return Member.objects.filter(neighborhood=hood)
-      
+
+	def unsubscribe_recent_dropouts(self):
+		"""Remove mailing list subscriptions from members whose memberships expired yesterday and they do not start a membership today"""
+		from interlink.models import MailingList
+		recently_expired = Member.objects.filter(memberships__end_date=date.today() - timedelta(days=1)).exclude(memberships__start_date=date.today())
+		for member in recently_expired:
+			MailingList.objects.unsubscribe_from_all(member.user)
+
 	def search(self, search_string):
 		terms = search_string.split()
 		if len(terms) == 0: return None;
