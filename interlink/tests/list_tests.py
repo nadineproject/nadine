@@ -81,6 +81,13 @@ class ListTest(TestCase):
       self.assertEqual(1, self.mlist1.subscribers.count())
       self.assertTrue(user3 in self.mlist1.subscribers.all())
    
+      # Now test that subscribership isn't changed if a member is just changing to a new plan
+      membership.end_date = date.today() - timedelta(days=1)
+      membership.save()
+      self.mlist1.subscribers.remove(user3)
+      membership2 = Membership.objects.create(member=user3.get_profile(), membership_plan=self.basic_plan, start_date=date.today())
+      self.assertFalse(user3 in self.mlist1.subscribers.all())
+
    def test_subscribe_command(self):
       self.assertEqual(0, Member.objects.active_members().count())
       self.assertEqual(0, self.mlist1.subscribers.count())
