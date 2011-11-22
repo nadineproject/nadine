@@ -27,21 +27,10 @@
 	<div id="tabs">
 		<ul>
 			<li><a href="#tabs-0">Member Details</a></li>
-			{% if user.profile.memberships.all %}
-	  			<li><a href="#tabs-1">Membership History</a></li>
-			{% endif %}
-			{% if user.profile.daily_logs.all %}
-	  			<li><a href="#tabs-2">Daily Activity</a></li>
-			{% endif %}
-			{% if user.profile.host_daily_logs.all %}
-				<li><a href="#tabs-3">Guest Activity</a></li>
-			{% endif %}
-			{% if user.profile.all_bills %}
-				<li><a href="#tabs-4">Bills</a></li>
-			{% endif %}
-			{% if user.profile.transaction_set.all %}
-				<li><a href="#tabs-5">Transactions</a></li>
-			{% endif %}
+	  		<li><a href="#tabs-1">Member Profile</a></li>
+	  		<li><a href="#tabs-2">Membership History</a></li>
+			<li><a href="#tabs-3">Daily Activity</a></li>
+			<li><a href="#tabs-4">Billing History</a></li>
 	</ul>
 	
 	<div id="tabs-0">
@@ -187,7 +176,13 @@
 	</div>
 
 	<div id="tabs-1">
+		<h3>Member Profile</h3>
+		{% include "members/profile.frag" %}
+	</div>
+	
+	<div id="tabs-2">
 		<h3>Membership History</h3>
+		{% if user.profile.memberships.all %}
 		<table>		  
 		  <thead>
  		   <tr>
@@ -208,10 +203,14 @@
  		   {% endfor %}		    
 		  </tbody>
 		</table>
+		{% else %}
+			No membership history...
+		{% endif %}		
 	</div>
 
-	<div id="tabs-2">
+	<div id="tabs-3">
 		<h3>Daily Activity</h3>
+		{% if user.profile.daily_logs.all %}		
 		<table> 
 		  <thead>
  		   <tr>
@@ -232,10 +231,12 @@
  		   {% endfor %}		    
 		  </tbody>
 		</table>
-	</div>
-	
-	<div id="tabs-3">
-		<h3>Guest Activity</h2>
+		{% else %}
+			No daily activity....
+		{% endif %}
+
+		<h3>Guest Activity</h3>
+		{% if user.profile.host_daily_logs.all %}
 		<table> 
 		  <thead>
  		   <tr>
@@ -256,56 +257,62 @@
  		   {% endfor %}		    
 		  </tbody>
 		</table>
+		{% else %}
+			No guest activity....
+		{% endif %}
   </div>
 
 	<div id="tabs-4">
 		<h3>Bills</h3>
-	   	<table>
-	   	  <thead>
-	     		<tr>
-	     			<th>Date</th>
-	     			<th>Amount</th>
-	     			<th>Plan</th>
-	     			<th align="left">Details</th>
-	     		</tr>   	    
-	   	  </thead>
-	   	  <tbody>
-	       	{% for bill in user.profile.all_bills %}
-	       		<tr class="{% cycle 'row-even' 'row-odd' %}">
-	       			<td>{{ bill.created|date:"M d, Y" }}</td>
-	       			<td>${{ bill.amount }}</td>
-	       			<td>{% if bill.membership %}{{ bill.membership.membership_plan }}{% endif %}</td>
-	       			<td>
+		{% if user.profile.all_bills %}
+   	<table>
+   	  <thead>
+     		<tr>
+     			<th>Date</th>
+     			<th>Amount</th>
+     			<th>Plan</th>
+     			<th align="left">Details</th>
+     		</tr>   	    
+   	  </thead>
+   	  <tbody>
+       	{% for bill in user.profile.all_bills %}
+       		<tr class="{% cycle 'row-even' 'row-odd' %}">
+       			<td>{{ bill.created|date:"M d, Y" }}</td>
+       			<td>${{ bill.amount }}</td>
+       			<td>{% if bill.membership %}{{ bill.membership.membership_plan }}{% endif %}</td>
+       			<td>
 
-	       				{% if bill.paid_by %}
-	       				<b>For {{ bill.member.full_name }}</b>
-	       				{% endif %}
-	       				{% if bill.new_member_deposit %}
-	       				<b class="bill-info">Deposit: ${{ bill.new_member_deposit }}</b>
-	       				{% endif %}
-	       				{% if bill.dropins.all %}
-	       				<b class="bill-info">Drop-ins:
-	       					{% for dropin in bill.dropins.all %}
-	       						{{ dropin.visit_date|date:"m/d" }}{% loop_comma %}
-	       					{% endfor %}
-	       				</b>
-	       				{% endif %}
-	       				{% if bill.guest_dropins.all %}
-	       				<b class="bill-info">Guest Drop-ins:
-	       					{% for dropin in bill.guest_dropins.all %}
-	       						{{dropin.member.full_name}} on {{ dropin.visit_date|date:"m/d" }}{% loop_comma %}
-	       					{% endfor %}
-	       				</b>
-	       				{% endif %}
-	       			</td>
-	       		</tr>
-	       	{% endfor %}
-	   	  </tbody>
-	   	</table>
-   </div>
+       				{% if bill.paid_by %}
+       				<b>For {{ bill.member.full_name }}</b>
+       				{% endif %}
+       				{% if bill.new_member_deposit %}
+       				<b class="bill-info">Deposit: ${{ bill.new_member_deposit }}</b>
+       				{% endif %}
+       				{% if bill.dropins.all %}
+       				<b class="bill-info">Drop-ins:
+       					{% for dropin in bill.dropins.all %}
+       						{{ dropin.visit_date|date:"m/d" }}{% loop_comma %}
+       					{% endfor %}
+       				</b>
+       				{% endif %}
+       				{% if bill.guest_dropins.all %}
+       				<b class="bill-info">Guest Drop-ins:
+       					{% for dropin in bill.guest_dropins.all %}
+       						{{dropin.member.full_name}} on {{ dropin.visit_date|date:"m/d" }}{% loop_comma %}
+       					{% endfor %}
+       				</b>
+       				{% endif %}
+       			</td>
+       		</tr>
+       	{% endfor %}
+   	  </tbody>
+   	</table>	
+		{% else %}
+			No bills...
+		{% endif %}	
 
-	<div id="tabs-5">
 		<h3>Transactions</h3>
+		{% if user.profile.transaction_set.all %}		
 	   <table>
 	     <thead>
 	   		<tr>
@@ -328,54 +335,17 @@
 	         {% endfor %}      
 	     </tbody>
 	   </table>
+		{% else %}
+			No bills...
+		{% endif %}	
     </div>
 </div>
 
+<!-- Not the signed in user or STAFF so just show profile -->
 {% else %}
 	<div class="clearfix"></div>
-	<div id="profile">
-		<h2>Member Profile</h2>
-		<table>
-		<tr>
-			<td>Membership status</td>
-			<td>{{ user.profile.membership_type }}</td>
-		</tr>
-		<tr>
-	      <td>Member Since</td>
-	      <td>{{ member.first_visit }}</td>
-	   </tr>
-	   {% if member.company_name %}
-	      <tr>
-	         <td>Company Name</td>
-	         <td>{{ member.company_name }}</td>
-	      </tr>
-	   {% endif %}
-	   {% if member.website %}
-	      <tr>
-	         <td>Website</td>
-	         <td><a href="{{ member.website }}">{{ member.website }}</a></td>
-	      </tr>
-	   {% endif %}
-	   {% if member.industry %}
-	      <tr>
-	         <td>Industry</td>
-	         <td>{{ member.industry }}</td>
-	      </tr>
-	   {% endif %}
-	   {% if member.neighborhood %}
-	      <tr>
-	         <td>Neighborhood</td>
-	         <td>{{ member.neighborhood }}</td>
-	      </tr>
-	   {% endif %}
-	   {% if member.has_kids %}
-	      <tr>
-	         <td>Has Kids?</td>
-	         <td>{{ member.has_kids }}</td>
-	      </tr>
-	   {% endif %} 
-		</table>
-	</div>
+	<h2>Member Profile</h2>
+	{% include "members/profile.frag" %}
 {% endif %}
 
 {% endblock %}
