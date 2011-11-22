@@ -24,7 +24,8 @@ def profile_redirect(request):
 @login_required
 def user(request, username):
 	user = get_object_or_404(User, username=username)
-	return render_to_response('members/user.html',{'user':user}, context_instance=RequestContext(request))
+	member = get_object_or_404(Member, user=user)
+	return render_to_response('members/user.html',{'user':user, 'member':member}, context_instance=RequestContext(request))
 
 @login_required
 def mail(request, username):

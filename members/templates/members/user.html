@@ -15,103 +15,186 @@
 
 {% if user.username == request.user.username or request.user.is_staff %}
 	<dl>
-    <dt>Membership status:</dt><dd>{{ user.profile.membership_type }}{% if user.profile.is_monthly %} at ${{ user.profile.last_membership.monthly_rate }}/month{% endif %}</dd>
-		{% if user.profile.is_monthly %}
-		<dt>Anniversary date:</dt><dd>{{ user.profile.last_membership.start_date|date:"M d, Y" }}</dd>
-		{% endif %}
-		<dt>Mailing lists:</dt><dd><a href="{% url members.views.mail user.username %}">config</a></dd>
-    {% if request.user.is_staff %}
-         <dt>Quicklinks:</dt>
-         <dd><a href="{% url staff.views.member_detail user.profile.id %}">edit</a></dd>
-      </tr>
-      {% endif %}
+		<dt>Quicklinks:</dt>    
+		<dd><a href="{% url members.views.mail user.username %}">mailing lists</a></dd>
+		{% if request.user.is_staff %}
+			<dd><a href="{% url staff.views.member_detail user.profile.id %}">edit member</a></dd>
+    	{% endif %}
 	</dl>
-  <div class="clearfix"></div>
-	<h2>Transactions</h2>
-   {% if user.profile.transaction_set.all %}
-   <table>
-     <thead>
-   		<tr>
-   			<th>Date</th>
-   			<th>Amount</th>
-   			<th>Bills</th>
-   		</tr>      
-     </thead>
-     <tbody>
-   		{% for transaction in user.profile.transaction_set.all %}
-   		<tr class="{% cycle 'row-even' 'row-odd' %}">
-   			<td>{{ transaction.created|date:"m/d/y" }}</td>
-   			<td>${{ transaction.amount }}</td>
-   			<td>
-   			   {% for bill in transaction.bills.all %}
-                  {{ bill.created|date:"M d, Y" }} (${{ bill.amount }}){% loop_comma %}
-               {% endfor %}
-   			</td>
-   		</tr>
-         {% endfor %}      
-     </tbody>
-   </table>
-   {% else %}
-   <p>No transactions yet!</p>
-   {% endif %}
 
-	<h2>Bills</h2>
-	{% if user.profile.all_bills %}
-   	<table>
-   	  <thead>
-     		<tr>
-     			<th>Date</th>
-     			<th>Amount</th>
-     			<th>Plan</th>
-     			<th>Details</th>
-     		</tr>   	    
-   	  </thead>
-   	  <tbody>
-       	{% for bill in user.profile.all_bills %}
-       		<tr class="{% cycle 'row-even' 'row-odd' %}">
-       			<td>{{ bill.created|date:"M d, Y" }}</td>
-       			<td>${{ bill.amount }}</td>
-       			<td>{% if bill.membership %}{{ bill.membership.membership_plan }}{% endif %}</td>
-       			<td>
+	<div class="clearfix"></div>
 
-       				{% if bill.paid_by %}
-       				<b>For {{ bill.member.full_name }}</b>
-       				{% endif %}
-       				{% if bill.new_member_deposit %}
-       				<b class="bill-info">Deposit: ${{ bill.new_member_deposit }}</b>
-       				{% endif %}
-       				{% if bill.dropins.all %}
-       				<b class="bill-info">Drop-ins:
-       					{% for dropin in bill.dropins.all %}
-       						{{ dropin.visit_date|date:"m/d" }}{% loop_comma %}
-       					{% endfor %}
-       				</b>
-       				{% endif %}
-       				{% if bill.guest_dropins.all %}
-       				<b class="bill-info">Guest Drop-ins:
-       					{% for dropin in bill.guest_dropins.all %}
-       						{{dropin.member.full_name}} on {{ dropin.visit_date|date:"m/d" }}{% loop_comma %}
-       					{% endfor %}
-       				</b>
-       				{% endif %}
-       			</td>
-       		</tr>
-       	{% endfor %}
-   	    
-   	  </tbody>
-   	</table>
-   {% else %}
-      <p>No bills yet!</p>
-   {% endif %}
-   
-	{% if user.profile.memberships.all %}
-	   <h2>Monthly plans</h2>
+	<div id="tabs">
+		<ul>
+			<li><a href="#tabs-0">Member Details</a></li>
+			{% if user.profile.memberships.all %}
+	  			<li><a href="#tabs-1">Membership History</a></li>
+			{% endif %}
+			{% if user.profile.daily_logs.all %}
+	  			<li><a href="#tabs-2">Daily Activity</a></li>
+			{% endif %}
+			{% if user.profile.host_daily_logs.all %}
+				<li><a href="#tabs-3">Guest Activity</a></li>
+			{% endif %}
+			{% if user.profile.all_bills %}
+				<li><a href="#tabs-4">Bills</a></li>
+			{% endif %}
+			{% if user.profile.transaction_set.all %}
+				<li><a href="#tabs-5">Transactions</a></li>
+			{% endif %}
+	</ul>
+	
+	<div id="tabs-0">
+		<h3>Member Details</h3>
+		<table>
+			<!-- Username -->
+		   <tr>
+		      <td>Username</td>
+		      <td>{{ user.username }}</td>
+		   </tr>
+
+			<!-- Status -->
+			<tr>
+				<td>Membership status</td>
+				<td>{{ user.profile.membership_type }}{% if user.profile.is_monthly %} at ${{ user.profile.last_membership.monthly_rate }}/month{% endif %}</td>
+			</tr>
+			
+			<!-- Anniversary Date -->
+			{% if user.profile.is_monthly %}
+			<tr>
+				<td>Anniversary date</td>
+				<td>{{ user.profile.last_membership.start_date|date:"M d, Y" }}</td>
+			</tr>
+			{% endif %}
+
+			<!-- Stats 
+		   {% if user.member.last_membership %}
+		   <tr>
+		      <td>Plan Start</td>
+		      <td>{{ user.member.last_membership.start_date|date:"Y-m-d" }}</td>
+		   </tr>
+		   {% endif %}
+		   <tr>
+		      <td>Paid Visits</td>
+		      <td>{{ member.paid_count }}</td>
+		   </tr>
+		   <tr>
+		      <td>First Visit</td>
+		      <td>{{ member.first_visit }}</td>
+		   </tr>
+		   <tr>
+		      <td>Last Visit</td>
+		      <td>{{ member.last_visit }}</td>
+		   </tr>
+			-->
+
+		   <!-- Company Name -->
+		   {% if member.company_name %}
+		      <tr>
+		         <td>Company Name</td>
+		         <td>{{ member.company_name }}</td>
+		      </tr>
+		   {% endif %}
+
+		   <!-- Website -->
+		   {% if member.website %}
+		      <tr>
+		         <td>Website</td>
+		         <td><a href="{{ member.website }}">{{ member.website }}</a></td>
+		      </tr>
+		   {% endif %}
+
+		   <!-- Gender -->
+		   {% if member.gender %}
+		      <tr>
+		         <td>Gender</td>
+		         <td>{{ member.gender }}</td>
+		      </tr>
+		   {% endif %}
+
+		   <!-- Email -->
+		   {% if member.email %}
+		      <tr>
+		         <td>Email</td>
+		         <td>{{ member.email }}</td>
+		      </tr>
+		   {% endif %}
+
+		   <!-- Email2 -->
+		   {% if member.email2 %}
+		      <tr>
+		         <td>Alternate Email</td>
+		         <td>{{ member.email2 }}</td>
+		      </tr>
+		   {% endif %}
+
+		   <!-- Phone -->
+		   {% if member.phone %}
+		      <tr>
+		         <td>Phone</td>
+		         <td>{{ member.phone }}</td>
+		      </tr>
+		   {% endif %}
+
+		   <!-- Phone2 -->
+		   {% if member.phone2 %}
+		      <tr>
+		         <td>Alternate Phone</td>
+		         <td>{{ member. }}</td>
+		      </tr>
+		   {% endif %}
+
+		   <!-- How Heard -->
+		   {% if member.howHeard %}
+		      <tr>
+		         <td>How Heard</td>
+		         <td>{{ member.howHeard }}</td>
+		      </tr>
+		   {% endif %}
+
+		   <!-- Industry -->
+		   {% if member.industry %}
+		      <tr>
+		         <td>Industry</td>
+		         <td>{{ member.industry }}</td>
+		      </tr>
+		   {% endif %}
+
+		   <!-- Neighborhood -->
+		   {% if member.neighborhood %}
+		      <tr>
+		         <td>Neighborhood</td>
+		         <td>{{ member.neighborhood }}</td>
+		      </tr>
+		   {% endif %}
+
+		   <!-- Has Kids -->
+		   {% if member.has_kids %}
+		      <tr>
+		         <td>Has Kids?</td>
+		         <td>{{ member.has_kids }}</td>
+		      </tr>
+		   {% endif %}
+
+		   <!-- Self Employed -->
+		   {% if member.self_employed %}
+		      <tr>
+		         <td>Self Employed?</td>
+		         <td>{{ member.self_employed }}</td>
+		      </tr>
+		   {% endif %}
+		</table>		
+	</div>
+
+	<div id="tabs-1">
+		<h3>Membership History</h3>
 		<table>		  
 		  <thead>
  		   <tr>
  		      <th>Plan</th>
  		      <th>Start Date</th>
  		      <th>End Date</th>
+				<td></td>
  		   </tr>		    
 		  </thead>
 		  <tbody>
@@ -120,20 +203,22 @@
  		         <td>{{ membership.membership_plan }}</td>
  		         <td>{{ membership.start_date|date:"M d, Y" }}</td>
  		         <td>{% if membership.end_date %}{{ membership.end_date|date:"M d, Y" }}{% endif %}</td>
+					<td></td>
  		      </tr>
  		   {% endfor %}		    
 		  </tbody>
 		</table>
-	{% endif %}
+	</div>
 
-	{% if user.profile.daily_logs.all %}
-		<h2>Drop-ins</h2>
+	<div id="tabs-2">
+		<h3>Daily Activity</h3>
 		<table> 
 		  <thead>
  		   <tr>
  		      <th>Date</th>
  		      <th>Payment</th>
  		      <th>Guest of</th>
+				<th></th>
  		   </tr>		    
 		  </thead>
 		  <tbody>
@@ -142,33 +227,109 @@
  		         <td class="date-cell">{{ log.visit_date|date:"M d, Y" }}</td>
  		         <td>{{ log.payment }}</td>
  		         <td>{% if log.guest_of %}{{ log.guest_of }}{% endif %}</td>
+					<td></td>
  		      </tr>
  		   {% endfor %}		    
 		  </tbody>
 		</table>
-	{% endif %}
-
-	{% if user.profile.host_daily_logs.all %}
-		<h2>Guests' Drop-ins</h2>
+	</div>
+	
+	<div id="tabs-3">
+		<h3>Guest Activity</h2>
 		<table> 
 		  <thead>
  		   <tr>
  		      <th>Date</th>
  		      <th>Guest</th>			
  		      <th>Payment</th>
+				<td></td>
  		   </tr>		    
 		  </thead>
 		  <tbody>
  		   {% for log in user.profile.host_daily_logs.all %}
  		      <tr class="{% cycle 'row-even' 'row-odd' %}">
  		         <td>{{ log.visit_date|date:"M d, Y" }}</td>
- 				     <td>{{ log.member.full_name }}</td>
+					<td>{{ log.member.full_name }}</td>
  		         <td>{{ log.payment }}</td>
+					<td></td>
  		      </tr>
  		   {% endfor %}		    
 		  </tbody>
 		</table>
-	{% endif %}
-	
+  </div>
+
+	<div id="tabs-4">
+		<h3>Bills</h3>
+	   	<table>
+	   	  <thead>
+	     		<tr>
+	     			<th>Date</th>
+	     			<th>Amount</th>
+	     			<th>Plan</th>
+	     			<th align="left">Details</th>
+	     		</tr>   	    
+	   	  </thead>
+	   	  <tbody>
+	       	{% for bill in user.profile.all_bills %}
+	       		<tr class="{% cycle 'row-even' 'row-odd' %}">
+	       			<td>{{ bill.created|date:"M d, Y" }}</td>
+	       			<td>${{ bill.amount }}</td>
+	       			<td>{% if bill.membership %}{{ bill.membership.membership_plan }}{% endif %}</td>
+	       			<td>
+
+	       				{% if bill.paid_by %}
+	       				<b>For {{ bill.member.full_name }}</b>
+	       				{% endif %}
+	       				{% if bill.new_member_deposit %}
+	       				<b class="bill-info">Deposit: ${{ bill.new_member_deposit }}</b>
+	       				{% endif %}
+	       				{% if bill.dropins.all %}
+	       				<b class="bill-info">Drop-ins:
+	       					{% for dropin in bill.dropins.all %}
+	       						{{ dropin.visit_date|date:"m/d" }}{% loop_comma %}
+	       					{% endfor %}
+	       				</b>
+	       				{% endif %}
+	       				{% if bill.guest_dropins.all %}
+	       				<b class="bill-info">Guest Drop-ins:
+	       					{% for dropin in bill.guest_dropins.all %}
+	       						{{dropin.member.full_name}} on {{ dropin.visit_date|date:"m/d" }}{% loop_comma %}
+	       					{% endfor %}
+	       				</b>
+	       				{% endif %}
+	       			</td>
+	       		</tr>
+	       	{% endfor %}
+	   	  </tbody>
+	   	</table>
+   </div>
+
+	<div id="tabs-5">
+		<h3>Transactions</h3>
+	   <table>
+	     <thead>
+	   		<tr>
+	   			<th>Date</th>
+	   			<th>Amount</th>
+	   			<th align="left">Bills</th>
+	   		</tr>      
+	     </thead>
+	     <tbody>
+	   		{% for transaction in user.profile.transaction_set.all %}
+	   		<tr class="{% cycle 'row-even' 'row-odd' %}">
+	   			<td>{{ transaction.created|date:"m/d/y" }}</td>
+	   			<td>${{ transaction.amount }}</td>
+	   			<td>
+	   			   {% for bill in transaction.bills.all %}
+	                  {{ bill.created|date:"M d, Y" }} (${{ bill.amount }}){% loop_comma %}
+	               {% endfor %}
+	   			</td>
+	   		</tr>
+	         {% endfor %}      
+	     </tbody>
+	   </table>
+    </div>
+</div>
+
 {% endif %}
 {% endblock %}

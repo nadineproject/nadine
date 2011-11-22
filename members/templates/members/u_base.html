@@ -5,11 +5,17 @@
 	<meta name="DC.title" content="{{ site.name }}" />
 	<title>{% block title %}{% block sub-title %}{% endblock %}{{ site.name }}{% endblock %}</title>
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}base.css" />
-
-<!--[if IE]>
-	<script src="{{ STATIC_URL }}html5.js"></script>
-<![endif]-->
-	<script src="{{ STATIC_URL }}jquery-1.4.2.min.js" type="text/javascript"></script>
+	<link type="text/css" href="{{ STATIC_URL }}/jquery-ui-1.8.4.custom.css" rel="stylesheet" />	
+	<!--[if IE]>
+		<script src="{{ STATIC_URL }}html5.js"></script>
+	<![endif]-->
+	<script src="{{ STATIC_URL }}jquery-1.4.2.min.js"></script> 
+	<script src="{{ STATIC_URL }}jquery-ui-1.8.4.custom.min.js"></script> 
+	<script>
+		$(function(){
+    		jQuery('#tabs').tabs();     
+  		});
+	</script>
 
 	{%block sub-head %}{% endblock %}
 	{% block feed-link %}{% endblock %}
