@@ -63,6 +63,12 @@ function gotoEmailReset(emailAddress){
 		{% endif %}
 	</div>
 	<table>
+		<!-- Username -->
+	   <tr>
+	      <td>Username</td>
+	      <td>{{ member.user }}</td>
+	   </tr>
+
 		<!-- Plan Start -->
 	   {% if member.last_membership %}
 	   <tr>
