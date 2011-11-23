@@ -1,22 +1,16 @@
+{% extends "tablet/t_base.html" %}
 {% load imagetags %}
 
-<!DOCTYPE html> 
-<html> 
-	<head> 
-	<title>Nadine Tablet</title> 
-	<meta name="viewport" content="width=768, initial-scale=1"> 
-	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.css" />
-	<script type="text/javascript" src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
-	<script type="text/javascript" src="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.js"></script>
-</head> 
-<body> 
+{% block style %}
+{% endblock %}
 
-<div data-role="page">
+{% block sub-title %}Nadine Tablet | {% endblock %}
 
-	<div data-role="header">
-		<h1>Nadine Tablet</h1>
-	</div><!-- /header -->
+{% block header %}
+	<h1>Nadine Tablet</h1>
+{% endblock %}
 
+{% block content %}
 	<div data-role="content">	
 		<ul data-role="listview" data-inset="true" data-filter="true">
 			{% for member in members %}
@@ -24,8 +18,4 @@
 			{% endfor %}
 		</ul>
 	</div><!-- /content -->
-
-</div><!-- /page -->
-
-</body>
-</html>
+{% endblock %}
