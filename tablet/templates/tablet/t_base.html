@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="DC.title" content="{{ site.name }}" />
+	<title>{% block title %}{% block sub-title %}{% endblock %}{{ site.name }}{% endblock %}</title>
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}base.css" />
+	<link type="text/css" href="{{ STATIC_URL }}/jquery-ui-1.8.4.custom.css" rel="stylesheet" />	
+	<!--[if IE]>
+		<script src="{{ STATIC_URL }}html5.js"></script>
+	<![endif]-->
+	<script src="{{ STATIC_URL }}jquery-1.4.2.min.js"></script> 
+	<script src="{{ STATIC_URL }}jquery-ui-1.8.4.custom.min.js"></script> 
+	{%block sub-head %}{% endblock %}
+	{% block feed-link %}{% endblock %}
+	<style>
+	{% block style %}{% endblock %}
+	</style>
+</head>
+<body>{% block body %}
+	{% block header %}<header></header>{% endblock %}
+	<div id="content" class="clearfix">{% block content %}{% endblock %}</div>
+{% block footer %}{% endblock %}
+{% endblock %}</body>
+</html>
