@@ -1,0 +1,3 @@
+.user-card { float: left; width: 500px; border: solid 3px #FFF; margin: 10px; text-align: center; }
+.user-card a { padding: 10px 0; display: block; }
+.user-card a.photo { height: 500px; background-color: #FFF; font-size: 150px; color: #DDD; text-decoration: none; }
