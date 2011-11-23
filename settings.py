@@ -98,6 +98,7 @@ INSTALLED_APPS = (
 	'staff',
 	'members',
 	'interlink',
+	'tablet',
 )
 
 from local_settings import *
