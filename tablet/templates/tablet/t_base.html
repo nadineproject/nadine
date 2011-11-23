@@ -27,7 +27,11 @@
 			{% block header %}{% endblock %}
 		</div>
 		<div data-role="content">{% block content %}{% endblock %}</div>
-		<div data-role="footer">{% block footer %}{% endblock %}</div>
+		<div data-role="footer" style="padding: 0.5em;">
+			{% block footer %}{% endblock %}
+			<div style="float:right">Office Nomads</div>
+			<div style="float:left">&copy; 2011 The Nadine Project</div>
+		</div>
 	</div>
 {% endblock %}</body>
 

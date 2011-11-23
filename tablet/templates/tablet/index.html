@@ -7,13 +7,15 @@
 {% block sub-title %}Nadine Tablet | {% endblock %}
 
 {% block header %}
-	<h1>Nadine Tablet</h1>
+	<h1>{{ site.name}}: Nadine Membership Console</h1>
 {% endblock %}
 
 {% block content %}
-	<ul data-role="listview" data-inset="true" data-filter="true">
-		{% for member in members %}
-			<li><a href="{% url tablet.views.user member.user.username %}" data-transition="slide">{{ member.full_name }}</a></li>
-		{% endfor %}
-	</ul>
+	<div>
+		<ul data-role="listview" data-inset="true" data-filter="true">
+			{% for member in members %}
+				<li style="padding: 0.5em;"><a href="{% url tablet.views.user member.user.username %}" data-transition="slide">{{ member.full_name }}</a></li>
+			{% endfor %}
+		</ul>
+	</div>
 {% endblock %}
