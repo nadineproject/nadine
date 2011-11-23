@@ -11,11 +11,9 @@
 {% endblock %}
 
 {% block content %}
-	<div data-role="content">	
-		<ul data-role="listview" data-inset="true" data-filter="true">
-			{% for member in members %}
-				<li><a href="">{% if member.photo %}<img src="{{ member.photo.url|fit_image:"170x170" }}" />  {% endif %} {{ member.full_name }}</a></li>
-			{% endfor %}
-		</ul>
-	</div><!-- /content -->
+	<ul data-role="listview" data-inset="true" data-filter="true">
+		{% for member in members %}
+			<li><a href="{% url tablet.views.user member.user.username %}" data-transition="slide">{{ member.full_name }}</a></li>
+		{% endfor %}
+	</ul>
 {% endblock %}
