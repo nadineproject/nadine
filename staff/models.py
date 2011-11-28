@@ -113,6 +113,13 @@ class MemberManager(models.Manager):
 		future_ending = Q(memberships__end_date__gt=date.today())
 		return Member.objects.exclude(memberships__isnull=True).filter(unending | future_ending).distinct()
 
+	def daily_members(self):
+		member_list = []
+		for active_member in self.active_members().order_by('user__first_name'):
+			if not active_member.last_membership().has_desk:
+				member_list.append(active_member)
+		return member_list
+
 	def members_by_plan_id(self, plan_id):
 		return [m.member for m in Membership.objects.filter(membership_plan=plan_id).filter(Q(end_date__isnull=True) | Q(end_date__gt=date.today())).distinct().order_by('member__user__first_name')]
 
