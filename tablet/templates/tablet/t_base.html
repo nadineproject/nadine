@@ -26,13 +26,18 @@
 <body>{% block body %}
 	<div data-role="page">
 		<div data-role="header" data-position="inline" style="margin-top: 20px;">
-			{% block header %}{% endblock %}
+			{% block header %}
+			{% endblock %}
 		</div>
-		<div data-role="content">{% block content %}{% endblock %}</div>
+		<div data-role="content">
+			{% block content %}
+			{% endblock %}
+		</div>
 		<div data-role="footer" style="padding-top: 0.5em; padding-bottom: 0.5em;">
-			{% block footer %}{% endblock %}
+			{% block footer %}
 			<div style="float:right; margin-right: 1em;">Office Nomads</div>
 			<div style="float:left; margin-left: 1em;">&copy; 2011 The Nadine Project</div>
+			{% endblock %}
 		</div>
 	</div>
 {% endblock %}</body>

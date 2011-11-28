@@ -11,10 +11,17 @@
 {% endblock %}
 
 {% block content %}
-	<div>
+	<div id="top-nav" data-role="navbar" >
+		<ul>
+			<li><a data-transition="pop" href="?view=daily" {% if view_daily %}class="ui-btn-active"{% endif %}>Daily Members</a></li>
+			<li><a data-transition="pop" href="?view=members" {% if view_members %}class="ui-btn-active"{% endif %}>All Members</a></li>
+			<li><a data-transition="pop" href="?view=users" {% if view_users %}class="ui-btn-active"{% endif %}>All Users</a></li>
+		</ul>
+	</div>
+	<div id="member-list">
 		<ul data-role="listview" data-inset="true" data-filter="true">
 			{% for member in members %}
-				<li style="padding: 0.5em;"><a href="{% url tablet.views.user member.user.username %}" data-transition="slide" data-prefetch>{{ member.full_name }}</a></li>
+				<li style="padding: 0.5em;"><a href="{% url tablet.views.user member.user %}" data-transition="slide">{{ member.full_name }}</a></li>
 			{% endfor %}
 		</ul>
 	</div>

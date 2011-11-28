@@ -12,9 +12,21 @@ from django.contrib.admin.views.decorators import staff_member_required
 
 from staff.models import Member, DailyLog
 
+
 @staff_member_required
 def index(request):
-	return render_to_response('tablet/index.html', {'members':Member.objects.active_members().order_by('user__first_name')}, context_instance=RequestContext(request))
+	view_daily = view_members = view_users = False
+	view = request.GET.get("view", "daily")
+	if view == "daily": 
+		view_daily = True 
+		members = Member.objects.daily_members();
+	if view == "members": 
+		view_members = True 
+		members = Member.objects.active_members().order_by('user__first_name');
+	if view == "users": 
+		view_users = True 
+		members = Member.objects.all().order_by('user__first_name');
+	return render_to_response('tablet/index.html', {'members':members, 'view_daily':view_daily, 'view_members':view_members, 'view_users':view_users}, context_instance=RequestContext(request))
 
 @staff_member_required
 def user(request, username):
