@@ -25,8 +25,18 @@
 </head>
 <body>{% block body %}
 	<div id="branding">
-		<div style="float:right;"><a style="font-size:small; color:black;" href="http://nadineproject.org" target="_new">The Nadine Project</a></div>
-		<a href="/">{{ site.name}}</a>: Nadine Membership Console
+		<div style="float:right;">
+			{% if request.user.is_authenticated %}
+				<span style="color:#e1e1e1">App:</span>
+				<a href="/member">member</a> |
+				<span style="color:#FBD850;">staff</span> |
+				<a href="/admin">admin</a> |
+				<a href="/tablet">tablet</a>
+			{% else %}
+				<a href="http://nadineproject.org" target="_new">The Nadine Project</a>
+			{% endif %}
+		</div>
+		<a href="/">{{ site.name}}</a>: <span style="color:#e1e1e1">Nadine Membership Console</span>
 	</div>
 {% block header %}<header>	
   <nav>
@@ -35,9 +45,7 @@
   <a id="activity-tab" href="{% url staff.views.activity %}">Activity</a>
   <a id="billing-tab" href="{% url staff.views.bills %}">Billing ({{ billing_count }})</a>
   <a id="stats-tab" href="{% url staff.views.stats %}">Stats</a>
-  <a id="admin-tab" href="{% url admin:index %}">Admin</a>
   {% if request.user.is_authenticated %}
-  <a id="profile-tab" href="{% url members.views.profile_redirect %}">Profile</a>
   <a id="log-tab" href="{% url django.contrib.auth.views.logout_then_login %}">Logout</a>
   {% else %}
   <a id="log-tab" href="{% url django.contrib.auth.views.login %}">Login</a>
@@ -56,6 +64,12 @@
 	{% endif %}
 	{% block content %}{% endblock %}
 </div>
-{% block footer %}{% endblock %}
+
+<!-- Footer -->
+<div id="footer">
+	{% block footer %}
+	&copy;2008-2012 <a href="http://nadineproject.org" target="_new">The Nadine Project</a> by <a href="http://officenomads.com">Office Nomads</a>
+	{% endblock %}
+</div>
 {% endblock %}</body>
 </html>
