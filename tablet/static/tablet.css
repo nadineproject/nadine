@@ -1,5 +1,10 @@
-#top-nav { margin-bottom: 20px; }
+#top-nav {  }
 
 table td:first-child, table td:last-child { text-align: left; }
 table td { vertical-align: top; text-align: left; border-bottom: 1px solid #ccc; padding: 0.5em; }
+
+.user-grid { text-align: center; }
+.user-card { float: left; width: 190px; border: solid 3px #FFF; margin: 10px; text-align: center; }
+.user-card a { padding: 10px 0; display: block; }
+.user-card a.photo { height: 170px; background-color: #EEE; font-size: 150px; color: #DDD; text-decoration: none; }
 

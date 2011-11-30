@@ -25,7 +25,15 @@
 
 <body>{% block body %}
 	<div data-role="page">
-		<div data-role="header" data-position="inline" style="margin-top: 20px;">
+		<div data-role="header" data-position="inline" style="padding-top: 20px;">
+			<h1>{{site.name}}: {{site.domain}}</h1>
+			<div id="top-nav" data-role="navbar" data-iconpos="left">
+				<ul>
+					<li><a data-transition="flip" href="{% url tablet.views.signin %}" {% block nav-signin %}{% endblock %} data-icon="check">Sign In</a></li>
+					<li><a data-transition="flip" href="{% url tablet.views.members %}" {% block nav-members %}{% endblock %} data-icon="grid">View All Members</a></li>
+					<li><a data-transition="flip" href="{% url tablet.views.search %}" {% block nav-search %}{% endblock %} data-icon="search">Member Search</a></li>
+				</ul>
+			</div>
 			{% block header %}
 			{% endblock %}
 		</div>

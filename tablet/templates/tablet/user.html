@@ -6,17 +6,6 @@
 
 {% block sub-title %}Nadine Tablet | {% endblock %}
 
-{%block sub-head %}
-	<script>
-		$('a').buttonMarkup({ inline: "true" });
-	</script>
-{% endblock %}
-
-{% block header %}
-	<a href="../" data-icon="arrow-l" data-direction="reverse">Back</a>
-	<h1>{{ member.full_name }}</h1>
-{% endblock %}
-
 {% block content %}
 	<div class="ui-grid-a">
 		<div class="ui-block-a">
@@ -27,10 +16,22 @@
 			{% endif %}							
 		</div>
 		<div class="ui-block-b">
+			<h2>{{ member.full_name }}</h2>
 			{% include "members/profile.frag" %}
+			{% if activity %}
+				<h3>Recent Activity</h3>
+				<ul>
+					{% for log in activity %}
+						<li>{{ log.visit_date }} - {{ log.payment }}</li>
+					{% endfor %}
+				</ul>
+			{% endif %}  
 		</div>
 	</div>
-	<div data-theme="a">
-		<a href="{% url tablet.views.signin user.username %}" data-role="button" data-theme="e" data-transition="slide">Sign In</a>  
-	</div>      
+
+	{% if can_signin %}
+		<div data-theme="a">
+			<a href="{% url tablet.views.user_signin user.username %}" data-role="button" data-theme="e" data-transition="slide">Sign In</a>  
+		</div>    
+	{% endif %}  
 {% endblock %}
