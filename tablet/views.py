@@ -46,9 +46,9 @@ def user(request, username):
 	member = get_object_or_404(Member, user=user)
 
 	can_signin = False
-	if not member.last_membership().has_desk:
-		if not DailyLog.objects.filter(member=member, visit_date=datetime.today().date()):
-		 	can_signin = True
+	if not member.last_membership() or not member.last_membership().has_desk:
+			if not DailyLog.objects.filter(member=member, visit_date=datetime.today().date()):
+			 	can_signin = True
 		
 	activity = DailyLog.objects.filter(member=member)[:10]
 
