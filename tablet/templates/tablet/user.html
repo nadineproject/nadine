@@ -6,6 +6,14 @@
 
 {% block sub-title %}Nadine Tablet | {% endblock %}
 
+{% block signin-back %}
+	{% if can_signin %}
+		Back
+	{% else %} 
+		Sign In
+	{% endif %} 
+{% endblock %}
+
 {% block content %}
 	<div class="ui-grid-a">
 		<div class="ui-block-a">
