@@ -50,7 +50,7 @@ def user(request, username):
 			if not DailyLog.objects.filter(member=member, visit_date=datetime.today().date()):
 			 	can_signin = True
 		
-	activity = DailyLog.objects.filter(member=member)[:10]
+	activity = DailyLog.objects.filter(member=member, payment='Bill')[:10]
 
 	return render_to_response('tablet/user.html',{'user':user, 'member':member, 'can_signin':can_signin, 'activity':activity}, context_instance=RequestContext(request))
 

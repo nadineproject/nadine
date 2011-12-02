@@ -19,10 +19,10 @@
 			<h2>{{ member.full_name }}</h2>
 			{% include "members/profile.frag" %}
 			{% if activity %}
-				<h3>Recent Activity</h3>
+				<h3>Last 10 Billable Visits</h3>
 				<ul>
 					{% for log in activity %}
-						<li>{{ log.visit_date }} - {{ log.payment }}</li>
+						<li>{{ log.visit_date }}</li>
 					{% endfor %}
 				</ul>
 			{% endif %}  
