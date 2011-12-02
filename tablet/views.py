@@ -13,7 +13,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from staff.models import Member, DailyLog
 from staff.forms import MemberSearchForm
 
-@staff_member_required
+@login_required
 def signin(request):
 	members = []
 	for member in Member.objects.active_members().order_by('user__first_name'):
@@ -24,12 +24,12 @@ def signin(request):
 	
 	return render_to_response('tablet/signin.html', {'members':members}, context_instance=RequestContext(request))
 
-@staff_member_required
+@login_required
 def members(request):
 	members = Member.objects.active_members().order_by('user__first_name')
 	return render_to_response('tablet/members.html', {'members':members}, context_instance=RequestContext(request))
 
-@staff_member_required
+@login_required
 def search(request):
 	search_results = None
 	if request.method == "POST":
@@ -40,7 +40,7 @@ def search(request):
 		member_search_form = MemberSearchForm()
 	return render_to_response('tablet/search.html', { 'member_search_form':member_search_form, 'search_results':search_results }, context_instance=RequestContext(request))
 
-@staff_member_required
+@login_required
 def user(request, username):
 	user = get_object_or_404(User, username=username)
 	member = get_object_or_404(Member, user=user)
@@ -54,7 +54,7 @@ def user(request, username):
 
 	return render_to_response('tablet/user.html',{'user':user, 'member':member, 'can_signin':can_signin, 'activity':activity}, context_instance=RequestContext(request))
 
-@staff_member_required
+@login_required
 def user_signin(request, username):
 	user = get_object_or_404(User, username=username)
 	member = get_object_or_404(Member, user=user)
