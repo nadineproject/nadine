@@ -1,0 +1,40 @@
+Things To Do
+============
+
+- Members enter/edit their profiles
+- Members change their membership
+  - Put membership on hold
+
+- Upgraded Member Profiles
+  - Bio TXT field
+  - Personal tag cloud
+  - Professional tag cloud
+  - Personal/Private flag
+
+- Activity RSS feed
+ - New member
+ - Profile updated
+ - Membership change
+ - Membership hold
+ - Declined card
+ - Member login
+
+- Finish integrating mailing list
+
+- Integrate billing
+ - user input CC info
+ - 
+
+- Auto checkin
+ - Import ARP logs
+ - register users machine
+ - foursquare
+
+- Full iPad checking
+ - New member FTD (name, email, phone)
+ - Who's Here list
+
+Bugs
+----
+
+- On membership change billing grabs the wrong membership to bill against
