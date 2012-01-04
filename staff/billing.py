@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, date
 import traceback
 
 import settings
-from models import Bill, BillingLog, Member, Membership, DailyLog
+from models import Bill, BillingLog, Transaction, Member, Membership, DailyLog
 from django.db.models import Count
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -147,16 +147,21 @@ def run_billing(bill_time=datetime.now()):
 						billable_dropin_count = max(0, len(bill_dropins) + len(bill_guest_dropins) - day.membership.dropin_allowance)
 						bill_amount = monthly_fee + (billable_dropin_count * day.membership.daily_rate)
 
-						if bill_amount == 0: continue
-
 						day.bill = Bill(created=day.date, amount=bill_amount, member=member, paid_by=day.membership.guest_of, membership=day.membership)
-						#print 'saving bill: %s - %s' % (day.bill, day)
+						#print 'saving bill: %s - %s - %s' % (day.bill, day, billable_dropin_count)
 						day.bill.save()
 						bill_count += 1
 						day.bill.dropins = [dropin.id for dropin in bill_dropins]
 						day.bill.guest_dropins = [dropin.id for dropin in bill_guest_dropins]
 						day.bill.save()
-				
+
+						# Close out the transaction if no money is due
+						if bill_amount == 0:
+							transaction = Transaction(member=member, amount=0, status='closed')
+							transaction.save()
+							transaction.bills = [day.bill]
+							transaction.save()
+
 				# Now calculate a bill for non-member drop-ins if they exist and it has been two weeks since we billed them
 				bill_dropins, guest_bill_dropins = run.non_member_daily_logs()
 				if len(bill_dropins) > 0 or len(guest_bill_dropins) > 0:
