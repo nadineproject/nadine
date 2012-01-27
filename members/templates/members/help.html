@@ -1,0 +1,15 @@
+{% extends "members/u_base.html" %}
+
+{% block content %}
+	<h2>Help Topics</h2>
+	{% if help_topics %}
+		<ul>
+			{% for topic in help_topics %}
+				<li><a href="{% url members.views.help_topic topic.id %}">{{ topic }}</a></li>
+			{% endfor %}
+		</ul>
+	{% else %}
+		<i>No Help Topics...</i>
+	{% endif %}
+	
+{% endblock %}
