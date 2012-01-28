@@ -41,7 +41,7 @@ def mail(request, username):
 	return render_to_response('members/mail.html',{'user':user, 'mailing_list_subscription_form':MailingListSubscriptionForm()}, context_instance=RequestContext(request))
 
 def help_all(request):
-	help_topics = HelpText.objects.all()
+	help_topics = HelpText.objects.all().order_by('title')
 	return render_to_response('members/help.html',{'help_topics':help_topics}, context_instance=RequestContext(request))
 
 def help_topic(request, id):

@@ -4,8 +4,10 @@
 {% endblock %}
 
 {% block content %}
-	<h2><a href="{% url members.views.help_all %}">Help Center</a> - {{ topic.title }}</h2>
+	<h2>{{ topic.title }}</h2>
 	{% autoescape off %}
 		{{ topic.text }}
 	{% endautoescape %}
+	
+	<p>[ <a href="{% url members.views.help_all %}">Back Help Center</a> ]</p>
 {% endblock %}
