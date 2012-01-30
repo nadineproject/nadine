@@ -14,14 +14,19 @@ Things To Do Before 1.0
 - Integrate billing
  - user input/edit CC info
  
+- Full iPad checking
+ - New member FTD (name, email, phone)
+ - Who's Here list
+ - Fix crashing problem
+
 - Email receipts
  - When a bill is marked paid, send the user a formatted receipt
  - User can download receipts in payment history
  - User can not have receipts mailed or have them mailed to someone else.
 
-- Full iPad checking
- - New member FTD (name, email, phone)
- - Who's Here list
+- Verify email
+ - Send welcome email upon new account creation
+ - Prompt the user to verify email address by logging in and setting the password
 
 - Finish integrating mailing list
 
