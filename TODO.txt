@@ -1,5 +1,5 @@
-Things To Do
-============
+Things To Do Before 1.0
+========================
 
 - Members enter/edit their profiles
 - Members change their membership
@@ -9,7 +9,33 @@ Things To Do
   - Bio TXT field
   - Personal tag cloud
   - Professional tag cloud
-  - Personal/Private flag
+  - Personal/Private flag?
+
+- Integrate billing
+ - user input/edit CC info
+ 
+- Email receipts
+ - When a bill is marked paid, send the user a formatted receipt
+ - User can download receipts in payment history
+ - User can not have receipts mailed or have them mailed to someone else.
+
+- Full iPad checking
+ - New member FTD (name, email, phone)
+ - Who's Here list
+
+- Finish integrating mailing list
+
+Bugs
+----
+ - User shows up twice in the member list when membership changed
+
+Nice To Have
+===========
+
+- Auto checkin/Enhanced activity
+ - Import ARP logs
+ - register users machine
+ - foursquare?
 
 - Activity RSS feed
  - New member
@@ -18,23 +44,3 @@ Things To Do
  - Membership hold
  - Declined card
  - Member login
-
-- Finish integrating mailing list
-
-- Integrate billing
- - user input CC info
- - 
-
-- Auto checkin
- - Import ARP logs
- - register users machine
- - foursquare
-
-- Full iPad checking
- - New member FTD (name, email, phone)
- - Who's Here list
-
-Bugs
-----
-
-- On membership change billing grabs the wrong membership to bill against
