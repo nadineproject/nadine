@@ -103,11 +103,14 @@ class MembershipForm(forms.Form):
 		if not self.is_valid(): raise Exception('The form must be valid in order to save')
 		membership_id = self.cleaned_data['membership_id']
 		
+		adding = False
 		membership = None
 		if membership_id:
+			# Editing
 			membership = Membership.objects.get(id=membership_id)
 		else:
-			print 'Adding!'
+			# Adding
+			adding = True
 			membership = Membership()
 
 		# Is this right?  Do I really need a DB call so I have the object?	
@@ -124,7 +127,16 @@ class MembershipForm(forms.Form):
 		membership.guest_of = self.cleaned_data['guest_of']
 		membership.note = self.cleaned_data['note']
 		membership.save()
-		return membership
 		
+		# If this is a new membership and they have an old membership that is at least 5 days old
+		# Then remove all the onboarding tasks and the exit tasks so they have a clean slate
+		if adding and membership.member.last_membership():
+			if membership.member.last_membership().end_date < date.today() - timedelta(5):
+				for completed_task in Onboard_Task_Completed.objects.filter(member=membership.member):
+					completed_task.delete()
+				for completed_task in ExitTaskCompleted.objects.filter(member=membership.member):
+					completed_task.delete()
+
+		return membership
 
 # Copyright 2010 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
