@@ -116,6 +116,10 @@ class MembershipForm(forms.Form):
 		# Is this right?  Do I really need a DB call so I have the object?	
 		membership.member = Member.objects.get(id=self.cleaned_data['member'])
 
+		# We need to look at their last membership but we'll wait until after the save
+		last_membership = membership.member.last_membership()
+		
+		# Save this membership
 		membership.membership_plan = self.cleaned_data['membership_plan']		
 		membership.start_date = self.cleaned_data['start_date']
 		membership.end_date = self.cleaned_data['end_date']
@@ -130,8 +134,8 @@ class MembershipForm(forms.Form):
 		
 		# If this is a new membership and they have an old membership that is at least 5 days old
 		# Then remove all the onboarding tasks and the exit tasks so they have a clean slate
-		if adding and membership.member.last_membership():
-			if membership.member.last_membership().end_date < date.today() - timedelta(5):
+		if adding and last_membership and last_membership.end_date:
+			if last_membership.end_date < date.today() - timedelta(5):
 				for completed_task in Onboard_Task_Completed.objects.filter(member=membership.member):
 					completed_task.delete()
 				for completed_task in ExitTaskCompleted.objects.filter(member=membership.member):
