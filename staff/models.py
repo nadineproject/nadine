@@ -121,7 +121,7 @@ class MemberManager(models.Manager):
 		return member_list
 
 	def members_by_plan_id(self, plan_id):
-		return [m.member for m in Membership.objects.filter(membership_plan=plan_id).filter(Q(end_date__isnull=True) | Q(end_date__gt=date.today())).distinct().order_by('member__user__first_name')]
+		return [m.member for m in Membership.objects.filter(membership_plan=plan_id).filter(Q(end_date__isnull=True, start_date__lte=date.today()) | Q(end_date__gt=date.today())).distinct().order_by('member__user__first_name')]
 
 	def members_by_neighborhood(self, hood, active_only=True):
 		if active_only:
