@@ -86,10 +86,10 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'urls'
 
 INSTALLED_APPS = (
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.sites',
+	'django.contrib.auth',
+	'django.contrib.contenttypes',
+	'django.contrib.sessions',
+	'django.contrib.sites',
 	'django.contrib.admin',
 	'django.contrib.humanize',
 	'django.contrib.staticfiles',
@@ -98,6 +98,7 @@ INSTALLED_APPS = (
 	'staff',
 	'members',
 	'interlink',
+	'pfwatch',
 	'tablet',
 )
 

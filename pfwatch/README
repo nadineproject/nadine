@@ -1,0 +1,15 @@
+Imports data from ARP logs gathered from:
+https://github.com/nadineproject/arplog
+
+Example ARP Table
+	? (172.16.5.1) at 0:19:5b:70:b9:df on en0 ifscope [ethernet]
+	? (172.16.5.109) at 78:a3:e4:75:5d:fb on en0 ifscope [ethernet]
+	? (172.16.5.129) at 0:26:b0:b8:87:22 on en0 ifscope [ethernet]
+	? (172.16.5.147) at cc:8:e0:22:fc:38 on en0 ifscope [ethernet]
+	? (172.16.5.190) at 0:16:44:b5:a5:a1 on en0 ifscope [ethernet]
+	? (172.16.5.199) at 0:24:21:57:3a:66 on en0 ifscope [ethernet]
+	? (172.16.5.218) at c0:cb:38:8d:fd:65 on en0 ifscope [ethernet]
+	? (172.16.5.222) at 5c:59:48:40:84:d0 on en0 ifscope [ethernet]
+	? (172.16.5.230) at 0:1e:64:3c:f1:26 on en0 ifscope [ethernet]
+	? (172.16.5.243) at d4:9a:20:d7:7b:1e on en0 ifscope [ethernet]
+	? (172.16.5.255) at ff:ff:ff:ff:ff:ff on en0 ifscope [ethernet]
