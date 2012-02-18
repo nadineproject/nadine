@@ -155,6 +155,7 @@ class IncomingMail(models.Model):
    subject = models.TextField(blank=True)
    body = models.TextField(blank=True, null=True)
    html_body = models.TextField(blank=True, null=True)
+   original_message = models.TextField(blank=True)
 
    owner = models.ForeignKey(User, blank=True, null=True, default=None)
 
@@ -220,8 +221,9 @@ class OutgoingMail(models.Model):
       self.save()
       try:
          msg = MIMEMultipart('alternative')
-         if self.body: msg.attach(MIMEText(self.body, 'plain'))
-         if self.html_body: msg.attach(MIMEText(self.html_body, 'html'))
+         if self.body: msg.attach(MIMEText(self.body, 'plain', 'utf-8'))
+         import pdb; pdb.set_trace()
+         if self.html_body: msg.attach(MIMEText(self.html_body, 'html', 'utf-8'))
             
          msg['To'] = self.mailing_list.email_address
          if self.original_mail and self.original_mail.owner:

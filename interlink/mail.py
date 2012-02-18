@@ -91,26 +91,26 @@ class PopMailChecker(MailChecker):
 
          site = Site.objects.get_current()
          if body: body += '\n\nEmail sent to the %s list at http://%s' % (self.mailing_list.name, site.domain)
-         if html_body: html_body += '<br/><div>Email sent to the %s list at <a href="http://%s">%s</a></div>' % (self.mailing_list.name, site.domain, site.name)
+         if html_body: html_body += u'<br/><div>Email sent to the %s list at <a href="http://%s">%s</a></div>' % (self.mailing_list.name, site.domain, site.name)
 
-         results.append(IncomingMail.objects.create(mailing_list=self.mailing_list, origin_address=origin_address, subject=message['Subject'], body=body, html_body=html_body, sent_time=sent_time))
+         results.append(IncomingMail.objects.create(mailing_list=self.mailing_list, origin_address=origin_address, subject=message['Subject'], body=body, html_body=html_body, sent_time=sent_time, original_message=message))
          pop_client.dele(i+1)
         
       pop_client.quit()
 
    def find_bodies(self, message):
       """Returns (body, html_body, file_names[]) for this payload, recursing into multipart/alternative payloads if necessary"""
-      if not message.is_multipart(): return (message.get_payload(), None, [])
+      #if not message.is_multipart(): return (message.get_payload(decode=True), None, [])
       body = None
       html_body = None
       file_names = []
-      for bod in message.get_payload():
+      for bod in message.walk():
          if bod.get_content_type().startswith('text/plain') and not body:
-            body = bod.get_payload()
+            body = bod.get_payload(decode=True)
+            body = body.decode(bod.get_content_charset())
          elif bod.get_content_type().startswith('text/html') and not html_body:
-            html_body = bod.get_payload()
-         elif bod.get_content_type().startswith('multipart/alternative') and not body and not html_body:
-            body, html_body, file_names = self.find_bodies(bod)
+            html_body = bod.get_payload(decode=True)
+            html_body = html_body.decode(bod.get_content_charset())
          elif bod.has_key('Content-Disposition') and bod['Content-Disposition'].startswith('attachment; filename="'):
             file_names.append(bod['Content-Disposition'][len('attachment; filename="'):-1])
       return (body, html_body, file_names)
