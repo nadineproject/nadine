@@ -222,7 +222,6 @@ class OutgoingMail(models.Model):
       try:
          msg = MIMEMultipart('alternative')
          if self.body: msg.attach(MIMEText(self.body, 'plain', 'utf-8'))
-         import pdb; pdb.set_trace()
          if self.html_body: msg.attach(MIMEText(self.html_body, 'html', 'utf-8'))
             
          msg['To'] = self.mailing_list.email_address
