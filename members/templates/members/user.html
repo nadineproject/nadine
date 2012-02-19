@@ -231,6 +231,34 @@
   </div>
 
 	<div id="tabs-4">
+		<h3>Payments</h3>
+		{% if user.profile.transaction_set.all %}		
+	   <table>
+	     <thead>
+	   		<tr>
+	   			<th>Date</th>
+	   			<th>Amount</th>
+	   			<th align="left">Bills</th>
+	   		</tr>      
+	     </thead>
+	     <tbody>
+	   		{% for transaction in user.profile.transaction_set.all %}
+	   		<tr class="{% cycle 'row-even' 'row-odd' %}">
+	   			<td><a href="{% url members.views.receipt user.username transaction.id %}">{{ transaction.created|date:"m/d/y" }}</a></td>
+	   			<td>${{ transaction.amount }}</td>
+	   			<td>
+	   			   {% for bill in transaction.bills.all %}
+	                  {{ bill.created|date:"M d, Y" }} (${{ bill.amount }}){% loop_comma %}
+	               {% endfor %}
+	   			</td>
+	   		</tr>
+	         {% endfor %}      
+	     </tbody>
+	   </table>
+		{% else %}
+			No bills...
+		{% endif %}	
+		
 		<h3>Bills</h3>
 		{% if user.profile.all_bills %}
    	<table>
@@ -278,35 +306,7 @@
 		{% else %}
 			No bills...
 		{% endif %}	
-
-		<h3>Transactions</h3>
-		{% if user.profile.transaction_set.all %}		
-	   <table>
-	     <thead>
-	   		<tr>
-	   			<th>Date</th>
-	   			<th>Amount</th>
-	   			<th align="left">Bills</th>
-	   		</tr>      
-	     </thead>
-	     <tbody>
-	   		{% for transaction in user.profile.transaction_set.all %}
-	   		<tr class="{% cycle 'row-even' 'row-odd' %}">
-	   			<td>{{ transaction.created|date:"m/d/y" }}</td>
-	   			<td>${{ transaction.amount }}</td>
-	   			<td>
-	   			   {% for bill in transaction.bills.all %}
-	                  {{ bill.created|date:"M d, Y" }} (${{ bill.amount }}){% loop_comma %}
-	               {% endfor %}
-	   			</td>
-	   		</tr>
-	         {% endfor %}      
-	     </tbody>
-	   </table>
-		{% else %}
-			No bills...
-		{% endif %}	
-    </div>
+	</div>
 </div>
 
 <!-- Not the signed in user or STAFF so just show profile -->

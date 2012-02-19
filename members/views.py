@@ -10,7 +10,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 
-from staff.models import Member
+from staff.models import Member, Transaction
 from interlink.forms import MailingListSubscriptionForm
 from models import HelpText
 
@@ -39,6 +39,17 @@ def mail(request, username):
 			sub_form.save(user)
 			return HttpResponseRedirect(reverse('members.views.mail', kwargs={'username':user.username}))
 	return render_to_response('members/mail.html',{'user':user, 'mailing_list_subscription_form':MailingListSubscriptionForm()}, context_instance=RequestContext(request))
+
+@login_required
+def receipt(request, username, id):
+	user = get_object_or_404(User, username=username)
+	if not user == request.user: 
+		if not request.user.is_staff: return HttpResponseRedirect(reverse('members.views.user', kwargs={'username':request.user.username}))
+	transaction = get_object_or_404(Transaction, id=id);
+	if not user.profile == transaction.member: 
+		if not request.user.is_staff: return HttpResponseRedirect(reverse('members.views.user', kwargs={'username':request.user.username}))
+	bills = transaction.bills.all()
+	return render_to_response('members/receipt.html',{'user':user, 'transaction':transaction, 'bills':bills}, context_instance=RequestContext(request))
 
 def help_all(request):
 	help_topics = HelpText.objects.all().order_by('title')
