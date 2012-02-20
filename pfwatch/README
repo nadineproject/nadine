@@ -13,3 +13,6 @@ Example ARP Table
 	? (172.16.5.230) at 0:1e:64:3c:f1:26 on en0 ifscope [ethernet]
 	? (172.16.5.243) at d4:9a:20:d7:7b:1e on en0 ifscope [ethernet]
 	? (172.16.5.255) at ff:ff:ff:ff:ff:ff on en0 ifscope [ethernet]
+
+SNMP ARP Data
+	snmpwalk -v 2c -c public 192.168.15.1 ipNetToMediaPhysAddress 
