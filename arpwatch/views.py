@@ -20,7 +20,9 @@ def index(request):
 		print("POST")
 		if form.is_valid():
 			print("VALID")
-			arp.handle_uploaded_file(request.FILES['file'])
+			file = request.FILES['file']
+			UploadLog.objects.create(user=request.user, file_name=file.name, file_size=file.size)
+			arp.handle_uploaded_file(file)
 			#return HttpResponseRedirect('/success/url/')
 	else:
 		 form = UploadFileForm()

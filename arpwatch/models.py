@@ -8,30 +8,31 @@ from django.contrib.auth.models import User
 
 from staff.models import Member, Membership
 
-class MACAddress(models.Model):
-	value = models.CharField(max_length=17, blank=False, null=False)
+class UserDevice(models.Model):
 	user = models.ForeignKey(User, null=True, unique=False)
-	computer_name = models.CharField(max_length=32, blank=True, null=True)
+	device_name = models.CharField(max_length=32, blank=True, null=True)
+	mac_address = models.CharField(max_length=17, blank=False, null=False, unique=True)
 	def __unicode__(self):
-	   return self.value
-	
-class IPAddress(models.Model):
-	value = models.CharField(max_length=15, blank=False, null=False, unique=True)
-	def __unicode__(self):
-	   return self.value
-	
+		if self.device_name: 
+			return self.device_name
+		return self.mac_address
+
 class ArpLog(models.Model):
-	"""A record of when the ARP table was pulled"""
-	runtime = models.DateTimeField(auto_now_add=True)
+	runtime = models.DateTimeField(blank=False)
+	device = models.ForeignKey(UserDevice, null=False)
+	ip_address = models.IPAddressField(blank=False, null=False)
 	class Meta:
 	   ordering = ['-runtime']
 	   get_latest_by = 'runtime'
 	def __unicode__(self):
-	   return 'ArpLog %s' % (self.runtime)
+	   return '%s: %s = %s' % (self.runtime, self.ip_address, self.device.mac_address)
 
-class ArpLogEntry(models.Model):
-	log = models.ForeignKey(ArpLog, null=False, unique=False)
-	mac = models.ForeignKey(MACAddress, null=False, unique=True)
-	ip = models.ForeignKey(IPAddress, null=True, unique=False)
-
+class UploadLog(models.Model):
+	loadtime = models.DateTimeField(auto_now_add=True, null=False)
+	user = models.ForeignKey(User, null=True, unique=False)
+	file_name = models.CharField(max_length=32, blank=False, null=False)
+	file_size = models.IntegerField(default=0)
+	def __unicode__(self):
+	   return '%s: %s = %s' % (self.loadtime, self.user, self.file_name)
+	
 # Copyright 2011 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
