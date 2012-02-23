@@ -9,16 +9,16 @@ from django.contrib.auth.models import User
 from staff.models import Member, Membership
 
 class MACAddress(models.Model):
-	value = models.CharField(max_length=12, blank=False, null=False)
+	value = models.CharField(max_length=17, blank=False, null=False)
 	user = models.ForeignKey(User, null=True, unique=False)
 	computer_name = models.CharField(max_length=32, blank=True, null=True)
 	def __unicode__(self):
-	   return '%s:%s:%s:%s:%s:%s' % (self.value[0-1], self.value[2-3], self.value[4-5], self.value[6-7], self.value[8-9], self.value[10-11])
+	   return self.value
 	
 class IPAddress(models.Model):
-	value = models.CharField(max_length=12, blank=False, null=False, unique=True)
+	value = models.CharField(max_length=15, blank=False, null=False, unique=True)
 	def __unicode__(self):
-	   return '%s.%s.%s.%s' % (self.value[0-2], self.value[3-5], self.value[6-8], self.value[9-11])
+	   return self.value
 	
 class ArpLog(models.Model):
 	"""A record of when the ARP table was pulled"""
