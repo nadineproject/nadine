@@ -98,7 +98,7 @@ INSTALLED_APPS = (
 	'staff',
 	'members',
 	'interlink',
-	'pfwatch',
+	'arpwatch',
 	'tablet',
 )
 

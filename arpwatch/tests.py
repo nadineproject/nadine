@@ -6,11 +6,11 @@ from django.core import management
 from django.contrib.auth.models import User
 from django.conf import settings
 
-from pfwatch.models import MACAddress, IPAddress, ArpLog, ArpLogEntry
+from arpwatch.models import MACAddress, IPAddress, ArpLog, ArpLogEntry
 
 class PFWatchTest(TestCase):
 
-	def test_pfwatch(self):
+	def test_arpwatch(self):
 		mac1 = MACAddress.objects.create(value='90A2DA00EE5D')
 		ip1 = IPAddress.objects.create(value='127000000001')
 		mac2 = MACAddress.objects.create(value='AAAAAAAAAAAA')
