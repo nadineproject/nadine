@@ -17,11 +17,14 @@ from staff.models import Member
 def index(request):
 	if request.method == 'POST':
 		form = UploadFileForm(request.POST, request.FILES)
-		print("POST")
 		if form.is_valid():
-			print("VALID")
 			file = request.FILES['file']
-			UploadLog.objects.create(user=request.user, file_name=file.name, file_size=file.size)
+			if (UploadLog.objects.filter(file_name=file.name).count() > 0):
+				raise Exception('File Already Loaded')
+			if request.user.is_authenticated():
+				UploadLog.objects.create(user=request.user, file_name=file.name, file_size=file.size)
+			else:
+				UploadLog.objects.create(file_name=file.name, file_size=file.size)
 			arp.handle_uploaded_file(file)
 			#return HttpResponseRedirect('/success/url/')
 	else:
