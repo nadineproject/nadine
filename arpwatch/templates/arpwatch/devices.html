@@ -1,0 +1,7 @@
+<h3>Devices</h3>
+
+<ul>
+	{% for device in devices %}
+		<li><a href="{% url arpwatch.views.device device.id %}">{{ device }}</a></li>
+	{% endfor %}
+</ul>

@@ -1,0 +1,29 @@
+<h3>Device Info</h3>
+<table border=1 cellpadding=2>
+	<tr>
+		<th>User</th>
+		<td>{{ device.user }}</td>
+	</tr>
+	<tr>
+		<th>Device Name</th>
+		<td>{{ device.device_name }}</td>
+	</tr>
+	<tr>
+		<th>MAC Address</th>
+		<td>{{ device.mac_address }}</td>
+	</tr>
+</table>
+
+<h3>Logs</h3>
+<table border=1 cellpadding=2>
+	<tr>
+		<th>Date/Time</th>
+		<th>IP Address</th>
+	</tr>
+	{% for log in arp_logs %}
+		<tr>
+			<td>{{ log.runtime }}</td>
+			<td>{{ log.ip_address }}</td>
+		</tr>
+	{% endfor %}
+</table>

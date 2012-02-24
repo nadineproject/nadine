@@ -7,7 +7,6 @@ def handle_uploaded_file(file):
 	print(file.name)
 	# Expects filename like: arp-111101-0006.txt
 	runtime = datetime.strptime(file.name.lstrip("arp-").rstrip(".txt"), "%y%m%d-%H%M")
-	print(runtime)
 
 	for chunk in file.chunks():
 		for line in chunk.splitlines():
