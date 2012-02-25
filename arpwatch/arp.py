@@ -1,12 +1,33 @@
 import time
 from datetime import datetime, timedelta, date
+from django.conf import settings
+from django.core.files.storage import default_storage
 
 from models import *
 
-def handle_uploaded_file(file):
-	print(file.name)
+def list_files():
+	print("listing:" )
+	print(settings.ARP_ROOT)
+	file_list = default_storage.listdir(settings.ARP_ROOT)[1]
+	return file_list
+
+def import_all():
+	file_list = default_storage.listdir(settings.ARP_ROOT)[1]
+	for file_name in file_list:
+		full_path = settings.ARP_ROOT + file_name
+		print(full_path)
+		file = default_storage.open(full_path)
+		import_file(file, file_name)
+
+def import_file(file):
+	import_file(file, file.name)
+
+def import_file(file, file_name):
 	# Expects filename like: arp-111101-0006.txt
-	runtime = datetime.strptime(file.name.lstrip("arp-").rstrip(".txt"), "%y%m%d-%H%M")
+	runtime_str = file_name.lstrip(settings.ARP_ROOT)
+	runtime_str = runtime_str.lstrip("arp-").rstrip(".txt")
+	print(runtime_str)
+	runtime = datetime.strptime(runtime_str, "%y%m%d-%H%M")
 
 	for chunk in file.chunks():
 		for line in chunk.splitlines():
@@ -28,3 +49,11 @@ def handle_uploaded_file(file):
 			# Create a log entry
 			log = ArpLog.objects.create(runtime=runtime, ip_address=ip, device=device)
 			print(log)
+
+def day_is_complete(day_str):
+	# Return true if there are evenly spaced logs throughout the day
+	day_start = datetime.strptime(day_str + " 00:00", "%Y-%m-%d %H:%M")
+	day_end = datetime.strptime(day_str + " 23:59", "%Y-%m-%d %H:%M")
+	arp_logs = ArpLog.objects.filter(runtime__gt=day_start, runtime__lt=day_end).order_by('runtime')
+	print(arp_logs.count())
+	return True

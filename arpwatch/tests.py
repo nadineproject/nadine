@@ -7,7 +7,9 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.db import IntegrityError
 
+import arp
 from arpwatch.models import *
+
 class ArpWatchTest(TestCase):
 
 	def test_user_device(self):
@@ -15,6 +17,10 @@ class ArpWatchTest(TestCase):
 		device1 = UserDevice.objects.create(mac_address=MAC)
 		with self.assertRaises(IntegrityError):
 			device2 = UserDevice.objects.create(mac_address=MAC)
+		
+	def test_day_is_complete(self):
+		device1 = UserDevice.objects.create(mac_address="90:A2:DA:00:EE:5D")
+		arp.day_is_complete("1976-05-03")
 		
 	#def test_arpwatch(self):
 		#mac1 = MACAddress.objects.create(value="90:A2:DA:00:EE:5D")

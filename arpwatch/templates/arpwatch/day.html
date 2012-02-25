@@ -1,0 +1,16 @@
+<h3>Logs for {{ day }} ({{ arp_logs.count }})</h3>
+
+<table border=1>
+	<tr>
+		<th>Device</th>
+		<th>Start</th>
+		<th>End</th>
+	</tr>
+	{% for device_log in device_list %}
+		<tr>
+			<td>{{ device_log.name }}</td>
+			<td>{{ device_log.start }}</td>
+			<td>{{ device_log.end }}</td>
+		</tr>
+	{% endfor %}
+</table>

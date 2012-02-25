@@ -47,6 +47,11 @@ USE_I18N = True
 # Example: "http://media.lawrence.com"
 MEDIA_URL = '/media/'
 
+# Arp Watch data directory
+ARP_ROOT = 'arp/'
+ARP_IMPORT_LOG = 'import.log'
+ARP_IMPORT_LOCK = 'importing.lock'
+
 # URL that handles login
 LOGIN_URL='/login/'
 
@@ -58,7 +63,7 @@ ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
+	'django.template.loaders.filesystem.Loader',
 	'django.template.loaders.app_directories.Loader',
 )
 
@@ -68,10 +73,10 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 	"django.core.context_processors.i18n",
 	"django.core.context_processors.media",
 	"django.core.context_processors.static",
-    'django.core.context_processors.request',
+	"django.core.context_processors.request",
 	"django.contrib.messages.context_processors.messages",
-    'context_processors.site',
-    'context_processors.nav_context',
+	"context_processors.site",
+	"context_processors.nav_context",
 )
 
 MIDDLEWARE_CLASSES = (
