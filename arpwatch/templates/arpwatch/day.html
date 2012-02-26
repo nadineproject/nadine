@@ -9,12 +9,14 @@
 		<th>Device</th>
 		<th>Start</th>
 		<th>End</th>
+		<th>Duration</th>
 	</tr>
 	{% for l in device_logs %}
 		<tr>
-			<td>{{ l.device }}</td>
+			<td><a href="{% url arpwatch.views.device l.device.id %}">{{ l.device }}</a></td>
 			<td>{{ l.start|date:"h:i a" }}</td>
 			<td>{{ l.end|date:"h:i a" }}</td>
+			<td>{{ l.diff }}</td>
 		</tr>
 	{% endfor %}
 </table>

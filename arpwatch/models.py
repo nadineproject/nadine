@@ -21,14 +21,25 @@ class UserDevice(models.Model):
 
 class ArpLog_Manager(models.Manager):
 	def for_range(self, day_start, day_end):
-		DeviceLog = namedtuple('DeviceLog', 'device, start, end')
+		DeviceLog = namedtuple('DeviceLog', 'device, start, end, diff')
 		sql = "select device_id, min(runtime), max(runtime) from arpwatch_arplog where runtime > '%s' and runtime < '%s' group by 1 order by 2;"
 		sql = sql % (day_start, day_end)
 		cursor = connection.cursor()
 		cursor.execute(sql)
 		device_logs = []
 		for row in cursor.fetchall():
-			device_logs.append(DeviceLog(UserDevice.objects.get(pk=row[0]), row[1], row[2]))
+			device_logs.append(DeviceLog(UserDevice.objects.get(pk=row[0]), row[1], row[2], row[2]-row[1]))
+		return device_logs
+
+	def for_device(self, device_id):
+		DeviceLog = namedtuple('DeviceLog', 'ip, day')
+		sql = "select ip_address, date_trunc('day', runtime) from arpwatch_arplog where device_id = %s group by 1, 2 order by 2;"
+		sql = sql % (device_id)
+		cursor = connection.cursor()
+		cursor.execute(sql)
+		device_logs = []
+		for row in cursor.fetchall():
+			device_logs.append(DeviceLog(row[0], row[1]))
 		return device_logs
 
 class ArpLog(models.Model):

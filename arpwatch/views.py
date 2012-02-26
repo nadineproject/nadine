@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta, date
 
-from django.db.models import Q
 from django.contrib import auth
 from django.conf import settings
 from django.template import RequestContext
@@ -42,8 +41,8 @@ def device_list(request):
 
 def device(request, id):
 	device = UserDevice.objects.get(pk=id)
-	logs = ArpLog.objects.filter(device=device).order_by('runtime')
-	return render_to_response('arpwatch/device.html', {'device': device, 'arp_logs': logs}, context_instance=RequestContext(request))
+	logs = ArpLog.objects.for_device(id)
+	return render_to_response('arpwatch/device.html', {'device': device, 'logs': logs}, context_instance=RequestContext(request))
 
 def logs_by_day(request, year, month, day):
 	log_date = date(year=int(year), month=int(month), day=int(day))
