@@ -14,7 +14,10 @@ class UserDevice(models.Model):
 	user = models.ForeignKey(User, null=True, unique=False)
 	device_name = models.CharField(max_length=32, blank=True, null=True)
 	mac_address = models.CharField(max_length=17, blank=False, null=False, unique=True)
+	ignore = models.BooleanField(default=False)
 	def __unicode__(self):
+		if self.user:
+			return self.user
 		if self.device_name: 
 			return self.device_name
 		return self.mac_address
