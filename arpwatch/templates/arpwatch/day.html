@@ -1,4 +1,8 @@
-<h3>Logs for {{ day }}</h3>
+<h2>
+	Logs for - {{ day|date:"M d, Y" }}
+	<a href="{% url arpwatch.views.logs_by_day previous_day.year previous_day.month previous_day.day %}">&laquo;</a>
+	<a href="{% url arpwatch.views.logs_by_day next_day.year next_day.month next_day.day %}">&raquo;</a>
+</h2>
 
 <table border=1>
 	<tr>
@@ -9,8 +13,8 @@
 	{% for l in device_logs %}
 		<tr>
 			<td>{{ l.device }}</td>
-			<td>{{ l.start }}</td>
-			<td>{{ l.end }}</td>
+			<td>{{ l.start|date:"h:i a" }}</td>
+			<td>{{ l.end|date:"h:i a" }}</td>
 		</tr>
 	{% endfor %}
 </table>

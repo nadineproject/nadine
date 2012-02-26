@@ -49,7 +49,7 @@ def logs_by_day(request, year, month, day):
 	log_date = date(year=int(year), month=int(month), day=int(day))
 	day_start = datetime.strptime(year + month + day + u" 00:00", "%Y%m%d %H:%M")
 	day_end = datetime.strptime(year + month + day + " 23:59", "%Y%m%d %H:%M")
-	device_logs = ArpLog.objects.for_range2(day_start, day_end)	
-	return render_to_response('arpwatch/day.html', {'day': log_date, 'device_logs':device_logs}, context_instance=RequestContext(request))
+	device_logs = ArpLog.objects.for_range(day_start, day_end)	
+	return render_to_response('arpwatch/day.html', {'device_logs':device_logs, 'day': log_date, 'next_day':log_date + timedelta(days=1), 'previous_day':log_date - timedelta(days=1)}, context_instance=RequestContext(request))
 
 # Copyright 2011 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
