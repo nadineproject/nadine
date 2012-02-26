@@ -18,10 +18,13 @@ class ArpWatchTest(TestCase):
 		with self.assertRaises(IntegrityError):
 			device2 = UserDevice.objects.create(mac_address=MAC)
 		
-	def test_day_is_complete(self):
-		device1 = UserDevice.objects.create(mac_address="90:A2:DA:00:EE:5D")
-		arp.day_is_complete("1976-05-03")
-		
+	def test_dir_lock(self):
+		self.assertFalse(arp.import_dir_locked())
+		arp.lock_import_dir()
+		self.assertTrue(arp.import_dir_locked())
+		arp.unlock_import_dir()
+		self.assertFalse(arp.import_dir_locked())
+
 	#def test_arpwatch(self):
 		#mac1 = MACAddress.objects.create(value="90:A2:DA:00:EE:5D")
 		#ip1 = IPAddress.objects.create(value="127.0.0.1")

@@ -6,7 +6,6 @@ from django.template import RequestContext
 from django.template import Context, loader
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponse, Http404, HttpResponseServerError, HttpResponseRedirect, HttpResponsePermanentRedirect
-from django.core.files.storage import default_storage
 
 from forms import *
 from models import *
@@ -26,16 +25,21 @@ def index(request):
 				UploadLog.objects.create(user=request.user, file_name=file.name, file_size=file.size)
 			else:
 				UploadLog.objects.create(file_name=file.name, file_size=file.size)
-
 			arp.import_file(file)
 			#return HttpResponseRedirect('/success/url/')
 	else:
 		 form = UploadFileForm()
-	
-	#arp.import_all()
-	
 	return render_to_response('arpwatch/index.html', {'form': form}, context_instance=RequestContext(request))
 
+def import_files(request):
+	page_message = "success"
+	try:
+	    arp.import_all()
+	except Exception as err:
+	    page_message = err
+		
+	return render_to_response('arpwatch/import.html', {'page_message': page_message}, context_instance=RequestContext(request))
+	
 def device_list(request):
 	return render_to_response('arpwatch/devices.html', {'devices': UserDevice.objects.all()}, context_instance=RequestContext(request))
 

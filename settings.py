@@ -50,7 +50,7 @@ MEDIA_URL = '/media/'
 # Arp Watch data directory
 ARP_ROOT = 'arp/'
 ARP_IMPORT_LOG = 'import.log'
-ARP_IMPORT_LOCK = 'importing.lock'
+ARP_IMPORT_LOCK = ARP_ROOT + 'importing.lock'
 
 # URL that handles login
 LOGIN_URL='/login/'

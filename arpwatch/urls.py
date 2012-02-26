@@ -6,6 +6,7 @@ from models import *
 urlpatterns = patterns('',
 	(r'^$', 'arpwatch.views.index'),
 	(r'^devices/$', 'arpwatch.views.device_list'),
+	(r'^import/$', 'arpwatch.views.import_files'),
 	(r'^device/(?P<id>[\d]+)/$', 'arpwatch.views.device'),
 	(r'^day/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', 'arpwatch.views.logs_by_day'),
 )
