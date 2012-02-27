@@ -4,6 +4,7 @@
 	<a href="{% url arpwatch.views.logs_by_day next_day.year next_day.month next_day.day %}">&raquo;</a>
 </h2>
 
+<strong>Found {{ device_logs|length }} Logs</strong>
 <table border=1>
 	<tr>
 		<th>Device</th>
