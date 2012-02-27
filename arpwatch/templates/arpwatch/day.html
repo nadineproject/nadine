@@ -1,8 +1,10 @@
-<h2>
-	Logs for - {{ day|date:"M d, Y" }}
-	<a href="{% url arpwatch.views.logs_by_day previous_day.year previous_day.month previous_day.day %}">&laquo;</a>
-	<a href="{% url arpwatch.views.logs_by_day next_day.year next_day.month next_day.day %}">&raquo;</a>
-</h2>
+<h2>Logs for - {{ day|date:"M d, Y" }}</h2>
+
+<h4>
+	<a href="{% url arpwatch.views.logs_by_day previous_day.year previous_day.month previous_day.day %}">&laquo; Prev</a>
+	[ <a href="{% url arpwatch.views.logs_today %}">Today</a> ]
+	<a href="{% url arpwatch.views.logs_by_day next_day.year next_day.month next_day.day %}">Next &raquo;</a>
+</h4>
 
 <strong>Found {{ device_logs|length }} Logs</strong>
 <table border=1>
