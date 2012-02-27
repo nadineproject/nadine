@@ -14,8 +14,9 @@ def register_user_ip(user, ip):
 	if UserDevice.objects.filter(user=user).count() == 0:
 		nowish = datetime.now() - timedelta(minutes=6)
 		for log in ArpLog.objects.filter(runtime__gt=nowish, ip_address=ip).order_by('runtime'):
-			log.device.user = user
-			log.save()
+			if not log.device.user:
+				log.device.user = user
+				log.save()
 			return
 
 def list_files():
