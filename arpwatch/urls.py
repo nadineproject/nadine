@@ -8,6 +8,7 @@ urlpatterns = patterns('',
 	(r'^devices/$', 'arpwatch.views.device_list'),
 	(r'^import/$', 'arpwatch.views.import_files'),
 	(r'^device/(?P<id>[\d]+)/$', 'arpwatch.views.device'),
+	(r'^day/$', 'arpwatch.views.logs_today'),
 	(r'^day/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', 'arpwatch.views.logs_by_day'),
 )
 
