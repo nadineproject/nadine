@@ -28,9 +28,11 @@ from django.contrib.auth.forms import PasswordResetForm
 from django.views.decorators.csrf import csrf_protect
 
 from models import *
+from arpwatch import arp
 
 def index(request):
     if not request.user.is_authenticated(): return HttpResponseRedirect(reverse('django.contrib.auth.views.login'))
+    arp.register_user_ip(request.user, request.META['REMOTE_ADDR'])
     if request.user.is_staff: return HttpResponseRedirect(reverse('staff.views.todo'))
     return HttpResponseRedirect(reverse('members.views.index'))
 

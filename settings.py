@@ -51,6 +51,7 @@ MEDIA_URL = '/media/'
 ARP_ROOT = 'arp/'
 ARP_IMPORT_LOG = ARP_ROOT + 'import.log'
 ARP_IMPORT_LOCK = ARP_ROOT + 'importing.lock'
+ARP_IP_PFX = '172.16.5.'
 
 # URL that handles login
 LOGIN_URL='/login/'
