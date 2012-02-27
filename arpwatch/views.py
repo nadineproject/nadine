@@ -54,17 +54,15 @@ def device(request, id):
 	return render_to_response('arpwatch/device.html', {'device': device, 'logs': logs}, context_instance=RequestContext(request))
 
 @staff_member_required
-def logs_today(request, year, month, day):
-	log_date = datetime.now()
-	day_start = datetime.strptime(year + month + day + u" 00:00", "%Y%m%d %H:%M")
-	day_end = datetime.strptime(year + month + day + " 23:59", "%Y%m%d %H:%M")
-	device_logs = ArpLog.objects.for_range(day_start, day_end)	
-	return render_to_response('arpwatch/day.html', {'device_logs':device_logs, 'day': log_date, 'next_day':log_date + timedelta(days=1), 'previous_day':log_date - timedelta(days=1)}, context_instance=RequestContext(request))
+def logs_today(request):
+	# Kinda clunky but it works
+	now = datetime.now()
+	return logs_by_day(request, str(now.year), str(now.month), str(now.day));
 
 @staff_member_required
 def logs_by_day(request, year, month, day):
 	log_date = date(year=int(year), month=int(month), day=int(day))
-	day_start = datetime.strptime(year + month + day + u" 00:00", "%Y%m%d %H:%M")
+	day_start = datetime.strptime(year + month + day + " 00:00", "%Y%m%d %H:%M")
 	day_end = datetime.strptime(year + month + day + " 23:59", "%Y%m%d %H:%M")
 	device_logs = ArpLog.objects.for_range(day_start, day_end)	
 	return render_to_response('arpwatch/day.html', {'device_logs':device_logs, 'day': log_date, 'next_day':log_date + timedelta(days=1), 'previous_day':log_date - timedelta(days=1)}, context_instance=RequestContext(request))
