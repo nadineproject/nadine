@@ -6,6 +6,7 @@ from django.template import RequestContext
 from django.template import Context, loader
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponse, Http404, HttpResponseServerError, HttpResponseRedirect, HttpResponsePermanentRedirect
+from django.contrib.admin.views.decorators import staff_member_required
 
 from forms import *
 from models import *
@@ -13,6 +14,7 @@ from models import *
 import arp
 from staff.models import Member
 
+@staff_member_required
 def index(request):
 	if request.method == 'POST':
 		form = UploadFileForm(request.POST, request.FILES)
@@ -39,15 +41,18 @@ def import_files(request):
 	    page_message = err
 		
 	return render_to_response('arpwatch/import.html', {'page_message': page_message}, context_instance=RequestContext(request))
-	
+
+@staff_member_required
 def device_list(request):
 	return render_to_response('arpwatch/devices.html', {'devices': UserDevice.objects.all()}, context_instance=RequestContext(request))
 
+@staff_member_required
 def device(request, id):
 	device = UserDevice.objects.get(pk=id)
 	logs = ArpLog.objects.for_device(id)
 	return render_to_response('arpwatch/device.html', {'device': device, 'logs': logs}, context_instance=RequestContext(request))
 
+@staff_member_required
 def logs_by_day(request, year, month, day):
 	log_date = date(year=int(year), month=int(month), day=int(day))
 	day_start = datetime.strptime(year + month + day + u" 00:00", "%Y%m%d %H:%M")
