@@ -44,7 +44,8 @@ def import_files(request):
 
 @staff_member_required
 def device_list(request):
-	return render_to_response('arpwatch/devices.html', {'devices': UserDevice.objects.all()}, context_instance=RequestContext(request))
+	devices = UserDevice.objects.filter(ignore=False)
+	return render_to_response('arpwatch/devices.html', {'devices': devices}, context_instance=RequestContext(request))
 
 @staff_member_required
 def device(request, id):

@@ -31,7 +31,9 @@ class ArpLog_Manager(models.Manager):
 		cursor.execute(sql)
 		device_logs = []
 		for row in cursor.fetchall():
-			device_logs.append(DeviceLog(UserDevice.objects.get(pk=row[0]), row[1], row[2], row[2]-row[1]))
+			device = UserDevice.objects.get(pk=row[0])
+			if not device.ignore:
+				device_logs.append(DeviceLog(device, row[1], row[2], row[2]-row[1]))
 		return device_logs
 
 	def for_device(self, device_id):
