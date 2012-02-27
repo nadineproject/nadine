@@ -35,7 +35,7 @@ def import_files(request):
 	page_message = "success"
 	try:
 	    arp.import_all()
-	except Exception as err:
+	except RuntimeError as err:
 	    page_message = err
 		
 	return render_to_response('arpwatch/import.html', {'page_message': page_message}, context_instance=RequestContext(request))

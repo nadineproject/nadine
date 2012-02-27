@@ -23,34 +23,42 @@ def lock_import_dir():
 def unlock_import_dir():
 	default_storage.delete(settings.ARP_IMPORT_LOCK)
 
+def log_message(msg):
+	log = "%s: %s\r\n" % (datetime.now(), msg)
+	if not default_storage.exists(settings.ARP_IMPORT_LOG):
+		log = "%s: Log Started\r\n%s" % (datetime.now(), log)
+	log_file = default_storage.open(settings.ARP_IMPORT_LOG, mode="wb")
+	log_file.write(log)
+	log_file.close()
+	
 def import_all():
 	if import_dir_locked():
-		raise Exception('Import Directory Locked')
+		raise RuntimeError('Import Directory Locked')
 
 	# Lock the import directory
-	arp.lock_import_dir()
+	lock_import_dir()
 	
 	file_list = default_storage.listdir(settings.ARP_ROOT)[1]
 	for file_name in file_list:
+		# Expects filename like: arp-111101-0006.txt
+		if file_name.find("arp-") < 0:
+			continue
+		runtime_str = file_name.lstrip(settings.ARP_ROOT)
+		runtime_str = runtime_str.lstrip("arp-").rstrip(".txt")
+		runtime = datetime.strptime(runtime_str, "%y%m%d-%H%M")
 		full_path = settings.ARP_ROOT + file_name
-		print(full_path)
 		file = default_storage.open(full_path)
-		import_file(file, file_name)
+		log_message("importing %s" % file_name)
+		import_file(file, runtime)
 		default_storage.delete(full_path)
 		
 	# Unlock the import directory
-	arp.unlock_import_dir()
+	unlock_import_dir()
 
 def import_file(file):
 	import_file(file, file.name)
 
-def import_file(file, file_name):
-	# Expects filename like: arp-111101-0006.txt
-	runtime_str = file_name.lstrip(settings.ARP_ROOT)
-	runtime_str = runtime_str.lstrip("arp-").rstrip(".txt")
-	print(runtime_str)
-	runtime = datetime.strptime(runtime_str, "%y%m%d-%H%M")
-
+def import_file(file, runtime):
 	for chunk in file.chunks():
 		for line in chunk.splitlines():
 			# Expect line like:
@@ -60,7 +68,7 @@ def import_file(file, file_name):
 
 			# Stop me if you think that you've heard this one before
 			if ArpLog.objects.filter(runtime=runtime, ip_address=ip).count() > 0:
-				raise Exception('Data Already Loaded')
+				raise RuntimeError('Data Already Loaded')
 
 			# User Device
 			if UserDevice.objects.filter(mac_address=mac).count() > 0:
@@ -70,7 +78,6 @@ def import_file(file, file_name):
 
 			# Create a log entry
 			log = ArpLog.objects.create(runtime=runtime, ip_address=ip, device=device)
-			print(log)
 
 def day_is_complete(day_str):
 	# Return true if there are evenly spaced logs throughout the day

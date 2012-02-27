@@ -25,6 +25,10 @@ class ArpWatchTest(TestCase):
 		arp.unlock_import_dir()
 		self.assertFalse(arp.import_dir_locked())
 
+	def test_log_message(self):
+		arp.log_message("testing")
+		#self.assertFalse(arp.import_dir_locked())
+		
 	#def test_arpwatch(self):
 		#mac1 = MACAddress.objects.create(value="90:A2:DA:00:EE:5D")
 		#ip1 = IPAddress.objects.create(value="127.0.0.1")
