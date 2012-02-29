@@ -25,13 +25,12 @@ from django.template.loader import render_to_string
 from django.core.mail import send_mail, send_mass_mail
 
 from staff.models import Member, Membership
-import staff
 
 def user_by_email(email):
-   users = User.objects.filter(email=email)
+   users = User.objects.filter(email__iexact=email)
    if len(users) > 0: return users[0]
-   members = Member.objects.filter(email2=email)
-   if len(members) > 0: return members[0]
+   members = Member.objects.filter(email2__iexact=email)
+   if len(members) > 0: return members[0].user
    return None
 User.objects.find_by_email = user_by_email
 
@@ -128,15 +127,7 @@ User.mailing_list_memberships = user_mailing_list_memberships
 class IncomingMailManager(models.Manager):
    def process_incoming(self):
       for incoming in self.filter(state='raw'):
-         incoming.owner = None
-         owner = User.objects.find_by_email(incoming.origin_address)
-         if owner:
-            # Sometimes this comes back as a User, sometimes a Member
-            # depending on if the user or alternate email is used
-            if type(owner) == staff.models.Member:
-               incoming.owner = owner.user
-            else:
-               incoming.owner = owner
+         incoming.owner = User.objects.find_by_email(incoming.origin_address)
 
          if incoming.mailing_list.moderator_controlled:
             if incoming.owner in incoming.mailing_list.moderators.all():
