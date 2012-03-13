@@ -22,6 +22,11 @@ class UserDevice(models.Model):
 			return self.device_name
 		return self.mac_address
 
+class UserRemoteHost(models.Model):
+	logintime = models.DateTimeField(auto_now_add=True, null=False)
+	user = models.ForeignKey(User, blank=False, null=False, unique=False)
+	ip_address = models.IPAddressField(blank=False, null=False)
+	
 class ArpLog_Manager(models.Manager):
 	def for_range(self, day_start, day_end):
 		DeviceLog = namedtuple('DeviceLog', 'device, start, end, diff')
