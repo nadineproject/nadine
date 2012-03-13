@@ -8,6 +8,7 @@ from django.core.files.base import ContentFile
 from models import *
 
 def register_user_ip(user, ip):
+	print("REMOTE_ADDR for %s: %s" % (user, ip))
 	if ip:
 		if ip.find(settings.ARP_IP_PFX) != 0:
 			return
