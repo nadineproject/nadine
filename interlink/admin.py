@@ -7,7 +7,7 @@ from django.contrib.auth.admin import UserAdmin
 from models import MailingList, IncomingMail, OutgoingMail
 
 class MailingListAdmin(admin.ModelAdmin):
-   pass
+   raw_id_fields = ['subscribers']
 admin.site.register(MailingList, MailingListAdmin)
 
 class IncomingMailAdmin(admin.ModelAdmin):
