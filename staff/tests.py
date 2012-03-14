@@ -180,6 +180,19 @@ class BillingTestCase(TestCase):
 		new_membership.start_date = new_membership.end_date + timedelta(days=12)
 		self.assertRaises(Exception, new_membership.save) # the start date can't be the same or later than the end date
 
+	def testTags (self):
+		member1 = self.user1.get_profile()
+		member1.tags.add("coworking", "books", "beer")
+		member2 = self.user2.get_profile()
+		member2.tags.add("beer", "cars", "women")
+		member3 = self.user3.get_profile()
+		member3.tags.add("knitting", "beer", "travel")
+		self.assertTrue(member1 in Member.objects.filter(tags__name__in=["beer"]))
+		self.assertTrue(member2 in Member.objects.filter(tags__name__in=["beer"]))
+		self.assertTrue(member3 in Member.objects.filter(tags__name__in=["beer"]))
+		self.assertFalse(member1 in Member.objects.filter(tags__name__in=["knitting"]))
+		self.assertFalse(member3 in Member.objects.filter(tags__name__in=["books"]))
+
 	def testRun(self):
 		member1 = self.user1.get_profile()
 		member2 = self.user2.get_profile()

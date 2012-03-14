@@ -79,7 +79,7 @@ class Command(NoArgsCommand):
          member.email2 = None
          member.phone = self.generate_phone_number()
          member.phone2 = ''
-         member.website = 'http://%s/' % DOMAINS[random.randint(0, len(DOMAINS) - 1)]
+         member.url_personal = 'http://%s/' % DOMAINS[random.randint(0, len(DOMAINS) - 1)]
          member.company_name = self.generate_company()
          member.notes = ''
          if member.photo: member.photo.save("PseudoPhoto.jpg", File(pseudonymous_image), save=False)

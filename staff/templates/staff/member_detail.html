@@ -100,10 +100,10 @@ function gotoEmailReset(emailAddress){
 	   {% endif %}
 	
 	   <!-- Website -->
-	   {% if member.website %}
+	   {% if member.url_personal %}
 	      <tr>
 	         <td>Website</td>
-	         <td><a href="{{ member.website }}">{{ member.website }}</a></td>
+	         <td><a href="{{ member.url_personal }}">{{ member.url_personal }}</a></td>
 	      </tr>
 	   {% endif %}
 	

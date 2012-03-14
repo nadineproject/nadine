@@ -14,10 +14,46 @@
          <td>{{ member.company_name }}</td>
       </tr>
    {% endif %}
-   {% if member.website %}
+   {% if member.url_personal %}
       <tr>
-         <td>Website</td>
-         <td><a href="{{ member.website }}">{{ member.website }}</a></td>
+         <td>Personal Website</td>
+         <td><a href="{{ member.url_personal }}">{{ member.url_personal }}</a></td>
+      </tr>
+   {% endif %}
+   {% if member.url_professional %}
+      <tr>
+         <td>Professional Website</td>
+         <td><a href="{{ member.url_professional }}">{{ member.url_professional }}</a></td>
+      </tr>
+   {% endif %}
+   {% if member.url_facebook %}
+      <tr>
+         <td>Facebook</td>
+         <td><a href="{{ member.url_facebook }}">{{ member.url_facebook }}</a></td>
+      </tr>
+   {% endif %}
+   {% if member.url_twitter %}
+      <tr>
+         <td>Twitter</td>
+         <td><a href="{{ member.url_twitter }}">{{ member.url_twitter }}</a></td>
+      </tr>
+   {% endif %}
+   {% if member.url_biznik %}
+      <tr>
+         <td>Biznik</td>
+         <td><a href="{{ member.url_biznik }}">{{ member.url_biznik }}</a></td>
+      </tr>
+   {% endif %}
+   {% if member.url_linkedin %}
+      <tr>
+         <td>Linkedin</td>
+         <td><a href="{{ member.url_linkedin }}">{{ member.url_linkedin }}</a></td>
+      </tr>
+   {% endif %}
+   {% if member.url_loosecubes %}
+      <tr>
+         <td>Loosecubes</td>
+         <td><a href="{{ member.url_loosecubes }}">{{ member.url_loosecubes }}</a></td>
       </tr>
    {% endif %}
    {% if member.industry %}

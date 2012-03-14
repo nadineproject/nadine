@@ -10,6 +10,9 @@ from django.db.models.signals import post_save
 from django.utils.encoding import smart_str, smart_unicode
 from django.contrib.localflavor.us.models import USStateField, PhoneNumberField
 
+from taggit.managers import TaggableManager
+from taggit.models import TaggedItemBase
+
 GENDER_CHOICES = (
 	('U', 'Unknown'),
 	('M', 'Male'),
@@ -156,7 +159,18 @@ class Member(models.Model):
 	email2 = models.EmailField("Alternate Email", blank=True, null=True)
 	phone = PhoneNumberField(blank=True, null=True)
 	phone2 = PhoneNumberField("Alternate Phone", blank=True, null=True)
-	website = models.URLField(blank=True, null=True, verify_exists=False)
+	address1 = models.CharField(max_length = 128, blank = True)
+	address2 = models.CharField(max_length = 128, blank = True)
+	city = models.CharField(max_length = 128, blank = True)
+	state = models.CharField(max_length = 2, blank = True)
+	zipcode = models.CharField(max_length = 5, blank = True)
+	url_personal = models.URLField(blank=True, null=True, verify_exists=False)
+	url_professional = models.URLField(blank=True, null=True, verify_exists=False)
+	url_facebook = models.URLField(blank=True, null=True, verify_exists=False)
+	url_twitter = models.URLField(blank=True, null=True, verify_exists=False)
+	url_biznik = models.URLField(blank=True, null=True, verify_exists=False)
+	url_linkedin = models.URLField(blank=True, null=True, verify_exists=False)
+	url_loosecubes = models.URLField(blank=True, null=True, verify_exists=False)
 	gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True, null=True)
 	howHeard = models.ForeignKey(HowHeard, blank=True, null=True)
 	industry = models.ForeignKey(Industry, blank=True, null=True)
@@ -168,6 +182,7 @@ class Member(models.Model):
 	last_modified = models.DateField(auto_now=True, editable=False)
 	notes = models.TextField(blank=True, null=True)
 	photo = models.ImageField(upload_to='member_photo', blank=True, null=True)
+	tags = TaggableManager(blank=True)
 
 	@property
 	def first_name(self): return smart_str(self.user.first_name)
