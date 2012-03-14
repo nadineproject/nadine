@@ -22,7 +22,7 @@ class UserDevice(models.Model):
 			return self.device_name
 		return self.mac_address
 
-class UserRemoteHost(models.Model):
+class UserRemoteAddr(models.Model):
 	logintime = models.DateTimeField(auto_now_add=True, null=False)
 	user = models.ForeignKey(User, blank=False, null=False, unique=False)
 	ip_address = models.IPAddressField(blank=False, null=False)
