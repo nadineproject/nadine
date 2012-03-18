@@ -1,0 +1,20 @@
+{% extends "members/u_base.html" %}
+{% load taggit_extras %}
+{% include_tagcloud 'staff.member' %}
+
+{% block content %}
+	<h2>Members Tagged with: {{ tag }}</h2>
+	<ul>
+	{% for member in members %}
+		<li>
+			<a href="{% url members.views.user member.user.username %}">{{ member }}</a>: 
+			{% for t in member.tags.all %}
+				<a href="{% url members.views.tag t %}">{{t}}</a> |
+			{% endfor %}
+		</li>
+	{% endfor %}
+	</ul>
+	<p>
+		<a href="{% url members.views.tags %}"><< Back to Tags</a>
+	</p>
+{% endblock %}

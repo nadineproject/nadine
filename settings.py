@@ -100,6 +100,7 @@ INSTALLED_APPS = (
 	'django.contrib.humanize',
 	'django.contrib.staticfiles',
 	'taggit',
+	'taggit_templatetags',
 	'south',
 	'front',
 	'staff',

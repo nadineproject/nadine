@@ -4,3 +4,4 @@ psycopg2==2.4.1
 pil
 feedparser
 django-taggit
+django-taggit-templatetags

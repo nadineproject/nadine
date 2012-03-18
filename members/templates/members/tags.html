@@ -1,0 +1,13 @@
+{% extends "members/u_base.html" %}
+{% load taggit_extras %}
+{% include_tagcloud 'staff.member' %}
+
+{% block content %}
+	<h2>Member Tag Cloud</h2>
+	{% get_tagcloud as tags for 'staff.member' %}
+	<ul>
+	{% for tag in tags %}
+	<li><a href="{% url members.views.tag tag %}">{{tag}}</a> ({{tag.num_times}})</li>
+	{% endfor %}
+	<ul>
+{% endblock %}

@@ -3,6 +3,8 @@ from django.conf.urls.defaults import *
 urlpatterns = patterns('members.views',
     (r'^$', 'index'),
     (r'^profile/$', 'profile_redirect'),
+    (r'^tags/$', 'tags'),
+    (r'^t/(?P<tag>[^/]+)/$', 'tag'),
     (r'^u/(?P<username>[^/]+)/$', 'user'),
     (r'^u/(?P<username>[^/]+)/mail/$', 'mail'),
     (r'^u/(?P<username>[^/]+)/edit/$', 'edit_profile'),
