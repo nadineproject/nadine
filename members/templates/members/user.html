@@ -16,10 +16,8 @@
 {% if user.username == request.user.username or request.user.is_staff %}
 	<dl>
 		<dt>Quicklinks:</dt>    
+		<dd><a href="{% url members.views.edit_profile user.username %}">edit profile</a></dd>
 		<dd><a href="{% url members.views.mail user.username %}">mailing lists</a></dd>
-		{% if request.user.is_staff %}
-			<dd><a href="{% url staff.views.member_detail user.profile.id %}">edit member</a></dd>
-    	{% endif %}
 	</dl>
 
 	<div class="clearfix"></div>

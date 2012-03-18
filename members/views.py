@@ -11,6 +11,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 
 from staff.models import Member, Transaction
+from forms import EditProfileForm
 from interlink.forms import MailingListSubscriptionForm
 from models import HelpText
 
@@ -39,6 +40,26 @@ def mail(request, username):
 			sub_form.save(user)
 			return HttpResponseRedirect(reverse('members.views.mail', kwargs={'username':user.username}))
 	return render_to_response('members/mail.html',{'user':user, 'mailing_list_subscription_form':MailingListSubscriptionForm()}, context_instance=RequestContext(request))
+
+@login_required
+def edit_profile(request, username):
+	user = get_object_or_404(User, username=username)
+	member = user.get_profile()
+
+	if request.method == 'POST':
+		profile_form = EditProfileForm(request.POST, request.FILES)
+		if profile_form.is_valid():
+			profile_form.save()
+			return HttpResponseRedirect(reverse('members.views.user', kwargs={'username':user.username}))
+	else:
+		profile_form = EditProfileForm(initial={'member_id':member.id, 'phone':member.phone, 'phone2':member.phone2,
+			'address1':member.address1, 'address2':member.address2, 'city':member.city, 'state':member.state, 'zipcode':member.zipcode,
+			'company_name':member.company_name, 'url_personal':member.url_personal, 'url_professional':member.url_professional, 
+			'url_facebook':member.url_facebook, 'url_twitter':member.url_twitter, 'url_biznik':member.url_biznik, 
+			'url_linkedin':member.url_linkedin, 'url_loosecubes':member.url_loosecubes, 'gender':member.gender, 'howHeard':member.howHeard,
+			'industry':member.industry, 'neighborhood':member.neighborhood, 'has_kids':member.has_kids, 'self_employed':member.self_employed})
+
+	return render_to_response('members/edit_profile.html',{'user':user, 'profile_form':profile_form}, context_instance=RequestContext(request))
 
 @login_required
 def receipt(request, username, id):
