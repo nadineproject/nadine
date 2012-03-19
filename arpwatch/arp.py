@@ -15,9 +15,9 @@ def map_ip_to_mac():
 	# For all the devices w/o a user that we are not ignoring
 	for device in UserDevice.objects.filter(user__exact=None, ignore=False):
 		# Pull the last ArpLog for this device.  We know there will be at least one.
-		last_arp_log = ArpLog.objects.filter(device=device).order_by('-runtime')[0]
-		# Pull any UserRemoteAddr logs with the same IP, within 12 minutes of this ArpLog
-		ip_logs = UserRemoteAddr.objects.filter(ip_address=last_arp_log.ip_address, logintime__gte=last_arp_log.runtime-timedelta(minutes=12))[:1]
+		a = ArpLog.objects.filter(device=device).order_by('-runtime')[0]
+		# Pull any UserRemoteAddr logs with the same IP, within 10 minutes of this ArpLog
+		ip_logs = UserRemoteAddr.objects.filter(ip_address=a.ip_address, logintime__gte=a.runtime-timedelta(minutes=10), logintime__lte=a.runtime+timedelta(minutes=10))[:1]
 		if ip_logs.count() > 0:
 			# We found one!  Assume this user belongs to this device.
 			device.user = ip_logs[0].user
