@@ -17,15 +17,18 @@ class UserDevice(models.Model):
 	ignore = models.BooleanField(default=False)
 	def __unicode__(self):
 		if self.user:
-			return self.user
+			return self.user.__unicode__()
 		if self.device_name: 
 			return self.device_name
 		return self.mac_address
 
 class UserRemoteAddr(models.Model):
-	logintime = models.DateTimeField(auto_now_add=True, null=False)
+	logintime = models.DateTimeField(blank=False)
 	user = models.ForeignKey(User, blank=False, null=False, unique=False)
 	ip_address = models.IPAddressField(blank=False, null=False)
+	class Meta:
+	   ordering = ['-logintime']
+	   get_latest_by = 'logintime'
 	def __unicode__(self):
 	   return '%s: %s = %s' % (self.logintime, self.user, self.ip_address)
 	
