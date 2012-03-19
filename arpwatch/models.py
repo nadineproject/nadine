@@ -26,6 +26,8 @@ class UserRemoteAddr(models.Model):
 	logintime = models.DateTimeField(auto_now_add=True, null=False)
 	user = models.ForeignKey(User, blank=False, null=False, unique=False)
 	ip_address = models.IPAddressField(blank=False, null=False)
+	def __unicode__(self):
+	   return '%s: %s = %s' % (self.logintime, self.user, self.ip_address)
 	
 class ArpLog_Manager(models.Manager):
 	def for_range(self, day_start, day_end):

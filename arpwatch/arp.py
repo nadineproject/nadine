@@ -9,16 +9,18 @@ from models import *
 
 def register_user_ip(user, ip):
 	print("REMOTE_ADDR for %s: %s" % (user, ip))
-	if ip:
-		if ip.find(settings.ARP_IP_PFX) != 0:
-			return
-	if UserDevice.objects.filter(user=user).count() == 0:
-		nowish = datetime.now() - timedelta(minutes=12)
-		for log in ArpLog.objects.filter(runtime__gt=nowish, ip_address=ip).order_by('runtime'):
-			if not log.device.user:
-				log.device.user = user
-				log.save()
-			return
+	ip_log = UserRemoteAddr.objects.create(logintime=datetime.now(), user=user, ip_address=ip)
+	
+#	if ip:
+#		if ip.find(settings.ARP_IP_PFX) != 0:
+#			return
+#	if UserDevice.objects.filter(user=user).count() == 0:
+#		nowish = datetime.now() - timedelta(minutes=12)
+#		for log in ArpLog.objects.filter(runtime__gt=nowish, ip_address=ip).order_by('runtime'):
+#			if not log.device.user:
+#				log.device.user = user
+#				log.save()
+#			return
 
 def list_files():
 	print("listing:" )
