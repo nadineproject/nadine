@@ -10,7 +10,8 @@ from models import *
 def register_user_ip(user, ip):
 	print("REMOTE_ADDR for %s: %s" % (user, ip))
 	ip_log = UserRemoteAddr.objects.create(logintime=datetime.now(), user=user, ip_address=ip)
-	
+
+#def map_ip_to_mac():	
 #	if ip:
 #		if ip.find(settings.ARP_IP_PFX) != 0:
 #			return
