@@ -1,5 +1,5 @@
 import time
-from datetime import datetime, timedelta, date
+from datetime import datetime, time, date, timedelta
 
 from django.conf import settings
 from django.core.files.storage import default_storage
@@ -11,17 +11,17 @@ def register_user_ip(user, ip):
 	print("REMOTE_ADDR for %s: %s" % (user, ip))
 	ip_log = UserRemoteAddr.objects.create(logintime=datetime.now(), user=user, ip_address=ip)
 
-#def map_ip_to_mac():	
-#	if ip:
-#		if ip.find(settings.ARP_IP_PFX) != 0:
-#			return
-#	if UserDevice.objects.filter(user=user).count() == 0:
-#		nowish = datetime.now() - timedelta(minutes=12)
-#		for log in ArpLog.objects.filter(runtime__gt=nowish, ip_address=ip).order_by('runtime'):
-#			if not log.device.user:
-#				log.device.user = user
-#				log.save()
-#			return
+def map_ip_to_mac():
+	# For all the devices w/o a user that we are not ignoring
+	for device in UserDevice.objects.filter(user__exact=None, ignore=False):
+		# Pull the last ArpLog for this device.  We know there will be at least one.
+		last_arp_log = ArpLog.objects.filter(device=device).order_by('-runtime')[0]
+		# Pull any UserRemoteAddr logs with the same IP, within 12 minutes of this ArpLog
+		ip_logs = UserRemoteAddr.objects.filter(ip_address=last_arp_log.ip_address, logintime__gte=last_arp_log.runtime-timedelta(minutes=12))[:1]
+		if ip_logs.count() > 0:
+			# We found one!  Assume this user belongs to this device.
+			device.user = ip_logs[0].user
+			device.save()
 
 def list_files():
 	print("listing:" )
@@ -43,7 +43,7 @@ def log_message(msg):
 	log = "%s: %s\r\n" % (datetime.now(), msg)
 	if not default_storage.exists(settings.ARP_IMPORT_LOG):
 		log = "%s: Log Started\r\n%s" % (datetime.now(), log)
-	log_file = default_storage.open(settings.ARP_IMPORT_LOG, mode="wb")
+	log_file = default_storage.open(settings.ARP_IMPORT_LOG, mode="w")
 	log_file.write(log)
 	log_file.close()
 	
