@@ -1,10 +1,13 @@
 from django.conf.urls.defaults import *
 from django.contrib import admin
 from django.conf import settings
+from django.http import HttpResponse
 
 admin.autodiscover()
 
 urlpatterns = patterns('',
+   (r'^robots\.txt$', lambda r: HttpResponse("User-agent: *\nDisallow: /", mimetype="text/plain")),
+   
    (r'^admin/', include(admin.site.urls)),
    (r'^staff/', include('staff.urls', app_name='staff')),
    (r'^member/', include('members.urls', app_name='members')),
