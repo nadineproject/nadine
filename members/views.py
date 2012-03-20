@@ -88,4 +88,24 @@ def tag(request, tag):
 	members = Member.objects.filter(tags__name__in=[tag])
 	return render_to_response('members/tag.html',{'tag':tag, 'members':members}, context_instance=RequestContext(request))
 
+def user_tags(request, username):
+	user = get_object_or_404(User, username=username)
+	if not user == request.user: 
+		if not request.user.is_staff: return HttpResponseRedirect(reverse('members.views.user', kwargs={'username':request.user.username}))
+	profile = user.get_profile()
+	tags = profile.tags.all()
+	
+	if request.method == 'POST':
+		tag = request.POST.get('tag')
+		profile.tags.add(tag)
+
+	return render_to_response('members/user_tags.html',{'tags':tags, 'user':user}, context_instance=RequestContext(request))
+
+def delete_tag(request, username, tag):
+	user = get_object_or_404(User, username=username)
+	if not user == request.user: 
+		if not request.user.is_staff: return HttpResponseRedirect(reverse('members.views.user', kwargs={'username':request.user.username}))
+	user.get_profile().tags.remove(tag)
+	return HttpResponseRedirect(reverse('members.views.user_tags', kwargs={'username':request.user.username}))
+
 # Copyright 2010 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

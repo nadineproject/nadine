@@ -1,0 +1,21 @@
+{% extends "members/u_base.html" %}
+{% load taggit_extras %}
+{% include_tagcloud 'staff.member' %}
+
+{% block content %}
+	<h2>Profile Tags for: {{ user }}</h2>
+	<ul>
+		{% for tag in tags %}
+			<li>
+				<a href="{% url members.views.tag tag %}">{{ tag }}</a> 
+				(<a href="{% url members.views.delete_tag user.username tag%}">x</a>)
+			</li>
+		{% endfor %}
+	</ul>
+	
+	<p><form action="." method="POST">
+		<input name="tag">
+		<input type="submit" value="Add">
+		{% csrf_token %}
+	</form></p>
+{% endblock %}

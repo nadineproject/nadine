@@ -18,18 +18,25 @@
 		<dt>Quicklinks:</dt>    
 		<dd><a href="{% url members.views.edit_profile user.username %}">edit profile</a></dd>
 		<dd><a href="{% url members.views.mail user.username %}">mailing lists</a></dd>
+		<dd><a href="{% url members.views.user_tags user.username %}">edit tags</a></dd>
 	</dl>
 
+	<dl>
+		<dt>Profile Tags:</dt>
+		{% for tag in member.tags.all %}
+			<dd><a href="{% url members.views.tag tag %}">{{ tag }}</a></dd>
+		{% endfor %}
+	</dl>
 	<div class="clearfix"></div>
 
 	<div id="tabs">
 		<ul>
 			<li><a href="#tabs-0">Member Details</a></li>
-	  		<li><a href="#tabs-1">Member Profile</a></li>
-	  		<li><a href="#tabs-2">Membership History</a></li>
+			<li><a href="#tabs-1">Member Profile</a></li>
+			<li><a href="#tabs-2">Membership History</a></li>
 			<li><a href="#tabs-3">Daily Activity</a></li>
 			<li><a href="#tabs-4">Billing History</a></li>
-	</ul>
+		</ul>
 	
 	<div id="tabs-0">
 		<h3>Member Details</h3>
