@@ -52,7 +52,7 @@ def edit_profile(request, username):
 			profile_form.save()
 			return HttpResponseRedirect(reverse('members.views.user', kwargs={'username':user.username}))
 	else:
-		profile_form = EditProfileForm(initial={'member_id':member.id, 'phone':member.phone, 'phone2':member.phone2,
+		profile_form = EditProfileForm(initial={'member_id':member.id, 'phone':member.phone, 'phone2':member.phone2, 'email2':member.email2,
 			'address1':member.address1, 'address2':member.address2, 'city':member.city, 'state':member.state, 'zipcode':member.zipcode,
 			'company_name':member.company_name, 'url_personal':member.url_personal, 'url_professional':member.url_professional, 
 			'url_facebook':member.url_facebook, 'url_twitter':member.url_twitter, 'url_biznik':member.url_biznik, 

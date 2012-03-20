@@ -20,6 +20,7 @@
 		<dd><a href="{% url members.views.mail user.username %}">mailing lists</a></dd>
 		<dd><a href="{% url members.views.user_tags user.username %}">edit tags</a></dd>
 	</dl>
+{% endif %}
 
 	<dl>
 		<dt>Profile Tags:</dt>
@@ -27,36 +28,43 @@
 			<dd><a href="{% url members.views.tag tag %}">{{ tag }}</a></dd>
 		{% endfor %}
 	</dl>
+
+{% if user.username == request.user.username or request.user.is_staff %}
 	<div class="clearfix"></div>
 
 	<div id="tabs">
 		<ul>
-			<li><a href="#tabs-0">Member Details</a></li>
-			<li><a href="#tabs-1">Member Profile</a></li>
+			<li><a href="#tabs-0">Member Profile</a></li>
+			<li><a href="#tabs-1">Private Details</a></li>
 			<li><a href="#tabs-2">Membership History</a></li>
 			<li><a href="#tabs-3">Daily Activity</a></li>
 			<li><a href="#tabs-4">Billing History</a></li>
 		</ul>
 	
 	<div id="tabs-0">
-		<h3>Member Details</h3>
+		<h3>Member Profile</h3>
+		{% include "members/profile.frag" %}
+	</div>
+	
+	<div id="tabs-1">
+		<h3>Private Details</h3>
 		<table>
 			<!-- Username -->
 		   <tr>
-		      <td>Username</td>
+		      <td>Username:</td>
 		      <td>{{ user.username }}</td>
 		   </tr>
 
 			<!-- Status -->
 			<tr>
-				<td>Membership status</td>
+				<td>Membership Rate:</td>
 				<td>{{ user.profile.membership_type }}{% if user.profile.is_monthly %} at ${{ user.profile.last_membership.monthly_rate }}/month{% endif %}</td>
 			</tr>
 			
 			<!-- Anniversary Date -->
 			{% if user.profile.is_monthly %}
 			<tr>
-				<td>Anniversary date</td>
+				<td>Anniversary date:</td>
 				<td>{{ user.profile.last_membership.start_date|date:"M d, Y" }}</td>
 			</tr>
 			{% endif %}
@@ -82,82 +90,32 @@
 		   </tr>
 			-->
 
-		   <!-- Company Name -->
-		   {% if member.company_name %}
+		   <!-- Address1 -->
+		   {% if member.address1 %}
 		      <tr>
-		         <td>Company Name</td>
-		         <td>{{ member.company_name }}</td>
+		         <td>Address 1:</td>
+		         <td>{{ member.address1 }}</td>
 		      </tr>
 		   {% endif %}
-
-		   <!-- Personal Website -->
-		   {% if member.url_personal %}
+		   <!-- Address2 -->
+		   {% if member.address2 %}
 		      <tr>
-		         <td>Personal Website</td>
-		         <td><a href="{{ member.url_personal }}">{{ member.url_personal }}</a></td>
+		         <td>Address 2:</td>
+		         <td>{{ member.address2 }}</td>
 		      </tr>
 		   {% endif %}
-
-		   <!-- Professional Website -->
-		   {% if member.url_professional %}
+		   <!-- City -->
+		   {% if member.city %}
 		      <tr>
-		         <td>Professional Website</td>
-		         <td><a href="{{ member.url_professional }}">{{ member.url_professional }}</a></td>
-		      </tr>
-		   {% endif %}
-
-		   <!-- Facebook -->
-		   {% if member.url_facebook %}
-		      <tr>
-		         <td>Facebook</td>
-		         <td><a href="{{ member.url_facebook }}">{{ member.url_facebook }}</a></td>
-		      </tr>
-		   {% endif %}
-
-		   <!-- Twitter -->
-		   {% if member.url_twitter %}
-		      <tr>
-		         <td>Twitter</td>
-		         <td><a href="{{ member.url_twitter }}">{{ member.url_twitter }}</a></td>
-		      </tr>
-		   {% endif %}
-
-		   <!-- Biznik -->
-		   {% if member.url_biznik %}
-		      <tr>
-		         <td>Personal Website</td>
-		         <td><a href="{{ member.url_biznik }}">{{ member.url_biznik }}</a></td>
-		      </tr>
-		   {% endif %}
-
-		   <!-- Linkedin -->
-		   {% if member.url_linkedin %}
-		      <tr>
-		         <td>Linkedin</td>
-		         <td><a href="{{ member.url_linkedin }}">{{ member.url_linkedin }}</a></td>
-		      </tr>
-		   {% endif %}
-
-		   <!-- Loosecubes -->
-		   {% if member.url_loosecubes %}
-		      <tr>
-		         <td>Loosecubes</td>
-		         <td><a href="{{ member.url_loosecubes }}">{{ member.url_loosecubes }}</a></td>
-		      </tr>
-		   {% endif %}
-
-		   <!-- Gender -->
-		   {% if member.gender %}
-		      <tr>
-		         <td>Gender</td>
-		         <td>{{ member.gender }}</td>
+		         <td>City:</td>
+		         <td>{{ member.city }}, {{ member.state }} {{ member.zipcode }}</td>
 		      </tr>
 		   {% endif %}
 
 		   <!-- Email -->
 		   {% if member.email %}
 		      <tr>
-		         <td>Email</td>
+		         <td>Email:</td>
 		         <td>{{ member.email }}</td>
 		      </tr>
 		   {% endif %}
@@ -165,7 +123,7 @@
 		   <!-- Email2 -->
 		   {% if member.email2 %}
 		      <tr>
-		         <td>Alternate Email</td>
+		         <td>Alternate Email:</td>
 		         <td>{{ member.email2 }}</td>
 		      </tr>
 		   {% endif %}
@@ -173,7 +131,7 @@
 		   <!-- Phone -->
 		   {% if member.phone %}
 		      <tr>
-		         <td>Phone</td>
+		         <td>Phone:</td>
 		         <td>{{ member.phone }}</td>
 		      </tr>
 		   {% endif %}
@@ -181,24 +139,27 @@
 		   <!-- Phone2 -->
 		   {% if member.phone2 %}
 		      <tr>
-		         <td>Alternate Phone</td>
-		         <td>{{ member. }}</td>
+		         <td>Alternate Phone:</td>
+		         <td>{{ member.phone2 }}</td>
 		      </tr>
 		   {% endif %}
 
 		   <!-- How Heard -->
 		   {% if member.howHeard %}
 		      <tr>
-		         <td>How Heard</td>
+		         <td>How Heard:</td>
 		         <td>{{ member.howHeard }}</td>
 		      </tr>
 		   {% endif %}
-		</table>		
-	</div>
 
-	<div id="tabs-1">
-		<h3>Member Profile</h3>
-		{% include "members/profile.frag" %}
+		   <!-- Gender -->
+		   {% if member.gender %}
+		      <tr>
+		         <td>Gender:</td>
+		         <td>{{ member.gender }}</td>
+		      </tr>
+		   {% endif %}
+		</table>		
 	</div>
 	
 	<div id="tabs-2">

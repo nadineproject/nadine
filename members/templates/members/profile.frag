@@ -1,11 +1,11 @@
 <div id="profile">
 	<table>
 	<tr>
-		<td>Membership status</td>
+		<td>Membership:</td>
 		<td>{{ user.profile.membership_type }}</td>
 	</tr>
 	<tr>
-      <td>Member Since</td>
+      <td>Member Since:</td>
       <td>{{ member.first_visit }}</td>
    </tr>
    {% if member.company_name %}
@@ -16,55 +16,55 @@
    {% endif %}
    {% if member.url_personal %}
       <tr>
-         <td>Personal Website</td>
+         <td>Personal Website:</td>
          <td><a href="{{ member.url_personal }}">{{ member.url_personal }}</a></td>
       </tr>
    {% endif %}
    {% if member.url_professional %}
       <tr>
-         <td>Professional Website</td>
+         <td>Professional Website:</td>
          <td><a href="{{ member.url_professional }}">{{ member.url_professional }}</a></td>
       </tr>
    {% endif %}
    {% if member.url_facebook %}
       <tr>
-         <td>Facebook</td>
+         <td>Facebook:</td>
          <td><a href="{{ member.url_facebook }}">{{ member.url_facebook }}</a></td>
       </tr>
    {% endif %}
    {% if member.url_twitter %}
       <tr>
-         <td>Twitter</td>
+         <td>Twitter:</td>
          <td><a href="{{ member.url_twitter }}">{{ member.url_twitter }}</a></td>
       </tr>
    {% endif %}
    {% if member.url_biznik %}
       <tr>
-         <td>Biznik</td>
+         <td>Biznik:</td>
          <td><a href="{{ member.url_biznik }}">{{ member.url_biznik }}</a></td>
       </tr>
    {% endif %}
    {% if member.url_linkedin %}
       <tr>
-         <td>Linkedin</td>
+         <td>Linkedin:</td>
          <td><a href="{{ member.url_linkedin }}">{{ member.url_linkedin }}</a></td>
       </tr>
    {% endif %}
    {% if member.url_loosecubes %}
       <tr>
-         <td>Loosecubes</td>
+         <td>Loosecubes:</td>
          <td><a href="{{ member.url_loosecubes }}">{{ member.url_loosecubes }}</a></td>
       </tr>
    {% endif %}
    {% if member.industry %}
       <tr>
-         <td>Industry</td>
+         <td>Industry:</td>
          <td>{{ member.industry }}</td>
       </tr>
    {% endif %}
    {% if member.neighborhood %}
       <tr>
-         <td>Neighborhood</td>
+         <td>Neighborhood:</td>
          <td>{{ member.neighborhood }}</td>
       </tr>
    {% endif %}

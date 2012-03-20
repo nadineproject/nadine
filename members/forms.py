@@ -9,13 +9,14 @@ from django.contrib.localflavor.us.us_states import US_STATES
 
 class EditProfileForm(forms.Form):
 	member_id = forms.IntegerField(required=True, min_value=0, widget=forms.HiddenInput)
-	phone = forms.CharField(max_length=20, required=False)
-	phone2 = forms.CharField(max_length=20, required=False)
 	address1 = forms.CharField(max_length=100, required=False)
 	address2 = forms.CharField(max_length=100, required=False)
 	city = forms.CharField(max_length=100, required=False)
 	state = forms.ChoiceField(choices=US_STATES, required=False)
 	zipcode = forms.CharField(max_length=5, required=False)
+	phone = forms.CharField(max_length=20, required=False)
+	phone2 = forms.CharField(max_length=20, required=False)
+	email2 = forms.EmailField(max_length=100, required=False)
 	company_name = forms.CharField(max_length=100, required=False)
 	url_personal = forms.URLField(required=False)
 	url_professional = forms.URLField(required=False)
@@ -42,7 +43,8 @@ class EditProfileForm(forms.Form):
 			
 		# Update all the fields
 		member.phone = self.cleaned_data['phone']
-		member.phone = self.cleaned_data['phone2']
+		member.phone2 = self.cleaned_data['phone2']
+		member.email2 = self.cleaned_data['email2']
 		member.address1 = self.cleaned_data['address1']
 		member.address2 = self.cleaned_data['address2']
 		member.city = self.cleaned_data['city']
