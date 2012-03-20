@@ -1,0 +1,25 @@
+{% extends "tablet/t_base.html" %}
+{% load imagetags %}
+
+{% block style %}
+{% endblock %}
+
+{% block sub-title %}Nadine Tablet | {% endblock %}
+
+{% block nav-members %} class="ui-btn-active" {% endblock %}
+
+{% block content %}
+	<h2>{{ members.count }} active members:</h2>
+	<div class="user-grid">
+		{% for member in members %}
+			<div class="user-card">
+		      {% if member.photo %}
+		         <a class="photo" href="{% url tablet.views.user member.user %}" data-transition="flip"><img src="{{ member.photo.url|fit_image:"170x170" }}" /></a>
+		      {% else %}
+		         <a class="photo" href="{% url tablet.views.user member.user %}" data-transition="flip">?</a>
+		      {% endif %}         
+		      <a href="{% url tablet.views.user member.user %}" data-transition="flip">{{ member.full_name }}</a>
+			</div>
+		{% endfor %}
+	</div>
+{% endblock %}

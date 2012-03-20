@@ -1,0 +1,45 @@
+{% extends "tablet/t_base.html" %}
+{% load imagetags %}
+
+{% block style %}
+{% endblock %}
+
+{% block sub-title %}Nadine Tablet | {% endblock %}
+
+{% block signin-back %}
+	{% if can_signin %}
+		Back
+	{% else %} 
+		Sign In
+	{% endif %} 
+{% endblock %}
+
+{% block content %}
+	<div class="ui-grid-a">
+		<div class="ui-block-a">
+			{% if member.photo %}
+				<a href="{{ member.photo.url }}"><img src="{{ user.profile.photo.url }}" width="300px"></a>
+			{% else %}
+				<img src="{{ STATIC_URL }}/BlankIcon150x150.jpg">
+			{% endif %}							
+		</div>
+		<div class="ui-block-b">
+			<h2>{{ member.full_name }}</h2>
+			{% include "members/profile.frag" %}
+			{% if activity %}
+				<h3>Last 10 Billable Visits</h3>
+				<ul>
+					{% for log in activity %}
+						<li>{{ log.visit_date }}</li>
+					{% endfor %}
+				</ul>
+			{% endif %}  
+		</div>
+	</div>
+
+	{% if can_signin %}
+		<div data-theme="a">
+			<a href="{% url tablet.views.user_signin user.username %}" data-role="button" data-theme="e" data-transition="slide">Sign In</a>  
+		</div>    
+	{% endif %}  
+{% endblock %}

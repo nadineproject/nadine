@@ -1,0 +1,19 @@
+{% extends "tablet/t_base.html" %}
+{% load imagetags %}
+
+{% block style %}
+{% endblock %}
+
+{% block sub-title %}Nadine Tablet | {% endblock %}
+
+{% block nav-signin %} class="ui-btn-active" {% endblock %}
+
+{% block content %}
+	<div id="member-list">
+		<ul data-role="listview" data-inset="true" data-filter="true">
+			{% for member in members %}
+				<li style="padding: 0.5em;"><a href="{% url tablet.views.user member.user %}" data-transition="slide">{{ member.full_name }}</a></li>
+			{% endfor %}
+		</ul>
+	</div>
+{% endblock %}
