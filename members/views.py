@@ -93,14 +93,15 @@ def user_tags(request, username):
 	if not user == request.user: 
 		if not request.user.is_staff: return HttpResponseRedirect(reverse('members.views.user', kwargs={'username':request.user.username}))
 	profile = user.get_profile()
-	tags = profile.tags.all()
+	user_tags = profile.tags.all()
 	
 	if request.method == 'POST':
-		tag = request.POST.get('tag').lower()
-		profile.tags.add(tag)
+		tag = request.POST.get('tag')
+		if tag:
+			profile.tags.add(tag.lower())
 
 	all_tags = Member.tags.all()
-	return render_to_response('members/user_tags.html',{'tags':tags, 'user':user, 'all_tags':all_tags}, context_instance=RequestContext(request))
+	return render_to_response('members/user_tags.html',{'user':user, 'user_tags':user_tags, 'all_tags':all_tags}, context_instance=RequestContext(request))
 
 def delete_tag(request, username, tag):
 	user = get_object_or_404(User, username=username)
