@@ -96,7 +96,7 @@ def user_tags(request, username):
 	tags = profile.tags.all()
 	
 	if request.method == 'POST':
-		tag = request.POST.get('tag')
+		tag = request.POST.get('tag').lower()
 		profile.tags.add(tag)
 
 	all_tags = Member.tags.all()
