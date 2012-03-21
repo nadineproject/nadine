@@ -23,9 +23,7 @@ table td 	{text-align: left;}
 
 <h2>Edit Your Profile:</h2>
 
-{% if page_message %}
-	<p id="page-message">{{ page_message|safe }}</p>
-{% endif %}
+<p align="center"><em>NOTE: Items in <strong>bold</strong> are viewable by all active members.</em></p>
 
 <div id="profile_form">
 	<form enctype="multipart/form-data" action='.' method='post'>
@@ -121,14 +119,14 @@ table td 	{text-align: left;}
 				<td>{{ profile_form.company_name.errors }}</td>
 			</tr>
 			<tr class="row-odd">
-				<td><strong>Neighborhood</strong>:</td>
-				<td>{{ profile_form.neighborhood }}</td>
-				<td width="300px">{{ profile_form.neighborhood.errors }}</td>
-			</tr>
-			<tr class="row-even">
 				<td><strong>What industry are you in?</strong></td>
 				<td>{{ profile_form.industry }}</td>
 				<td>{{ profile_form.industry.errors }}</td>
+			</tr>
+			<tr class="row-even">
+				<td><strong>Neighborhood:</strong>:</td>
+				<td>{{ profile_form.neighborhood }}</td>
+				<td width="300px">{{ profile_form.neighborhood.errors }}</td>
 			</tr>
 			<tr class="row-odd">
 				<td><strong>Do you have children?</strong></td>
@@ -153,7 +151,6 @@ table td 	{text-align: left;}
 
 		</table>
 
-	   <p align="center"><em>NOTE: Items in <strong>bold</strong> are viewable by all active members</em></p>
 		<p align="center"><input type="submit" value="Update Your Profile" /></p>
 	   {% csrf_token %}
 	</form>
