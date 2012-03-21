@@ -16,12 +16,12 @@ def map_ip_to_mac(hours):
 	start_ts = end_ts - timedelta(hours=hours)
 	ip_logs = UserRemoteAddr.objects.filter(logintime__gte=start_ts, logintime__lte=end_ts)
 	for i in ip_logs:
-		print("ip_log: %s" % (i))
+		#print("ip_log: %s" % (i))
 		arp_logs = ArpLog.objects.filter(ip_address=i.ip_address, runtime__gte=i.logintime-timedelta(minutes=6), runtime__lte=i.logintime+timedelta(minutes=6))[:1]
 		for a in arp_logs:
-			print("arp_log: %s" % (a))
+			#print("arp_log: %s" % (a))
 			if not a.device.ignore and not a.device.user:
-				print("FOUND ONE! %s = %s" % (a.device.mac_address, i.user))
+				#print("FOUND ONE! %s = %s" % (a.device.mac_address, i.user))
 				a.device.user = i.user
 				a.device.save()
 
