@@ -1,5 +1,6 @@
 import traceback
 from datetime import date, datetime, timedelta
+from operator import itemgetter, attrgetter
 
 from django.conf import settings
 from django.template import RequestContext
@@ -81,7 +82,10 @@ def help_topic(request, id):
 	return render_to_response('members/help_topic.html',{'topic':topic}, context_instance=RequestContext(request))
 
 def tags(request):
-	#tags = Member.tags.all()
+	tags = []
+	for tag in Member.tags.all():
+		members = Member.objects.filter(tags__name__in=[tag])
+		tags.append((tag, members))
 	return render_to_response('members/tags.html',{'tags':tags}, context_instance=RequestContext(request))
 
 def tag(request, tag):
