@@ -3,37 +3,39 @@
 {% include_tagcloud 'staff.member' %}
 
 {%block sub-head %}
-<script>
-	$(function() {
-		var availableTags = [
-			{% for t in all_tags %}
-				" {{ t }}",
-			{% endfor %}
-		];
-		$( "#tags" ).autocomplete({
-			source: availableTags
-		});
-	});
-	</script>
+	<!-- TODO need to find out what's in these that's not in our custom stuff already loaded at the top -->
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" type="text/css" media="all" />
+	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.4/jquery-ui.min.js" type="text/javascript"></script>
 	<script>
-	$('.auto-focus:first').focus();
-	</script>
+		$(function() {
+			var availableTags = [
+				{% for t in all_tags %}
+					"{{ t }}",
+				{% endfor %}
+			];
+			$( "#tag" ).autocomplete({
+				source: availableTags
+			});
+			$("#tag").focus();
+		});
+		</script>
 {% endblock %}
 
 {% block content %}
+
 	<h2>Profile Tags for: {{ user }}</h2>
 	<ul>
-		{% for tag in tags %}
+		{% for t in user_tags %}
 			<li>
-				<a href="{% url members.views.tag tag %}">{{ tag }}</a> 
-				(<a href="{% url members.views.delete_tag user.username tag%}" style="color: red;">x</a>)
+				<a href="{% url members.views.tag t %}">{{ t }}</a> 
+				(<a href="{% url members.views.delete_tag user.username t %}" style="color: red;">x</a>)
 			</li>
 		{% endfor %}
 	</ul>
 	
 	<div class="ui-widget">
 	<form action="." method="POST">
-		<input id="tags" name="tag" class="auto-focus">
+		<input id="tag" name="tag">
 		<input type="submit" value="Add">
 		{% csrf_token %}
 	</form>
