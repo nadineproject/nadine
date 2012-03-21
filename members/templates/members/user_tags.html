@@ -2,20 +2,40 @@
 {% load taggit_extras %}
 {% include_tagcloud 'staff.member' %}
 
+{%block sub-head %}
+<script>
+	$(function() {
+		var availableTags = [
+			{% for t in all_tags %}
+				" {{ t }}",
+			{% endfor %}
+		];
+		$( "#tags" ).autocomplete({
+			source: availableTags
+		});
+	});
+	</script>
+	<script>
+	$('.auto-focus:first').focus();
+	</script>
+{% endblock %}
+
 {% block content %}
 	<h2>Profile Tags for: {{ user }}</h2>
 	<ul>
 		{% for tag in tags %}
 			<li>
 				<a href="{% url members.views.tag tag %}">{{ tag }}</a> 
-				(<a href="{% url members.views.delete_tag user.username tag%}">x</a>)
+				(<a href="{% url members.views.delete_tag user.username tag%}" style="color: red;">x</a>)
 			</li>
 		{% endfor %}
 	</ul>
 	
-	<p><form action="." method="POST">
-		<input name="tag">
+	<div class="ui-widget">
+	<form action="." method="POST">
+		<input id="tags" name="tag" class="auto-focus">
 		<input type="submit" value="Add">
 		{% csrf_token %}
-	</form></p>
+	</form>
+	</div>
 {% endblock %}

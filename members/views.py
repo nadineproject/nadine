@@ -99,7 +99,8 @@ def user_tags(request, username):
 		tag = request.POST.get('tag')
 		profile.tags.add(tag)
 
-	return render_to_response('members/user_tags.html',{'tags':tags, 'user':user}, context_instance=RequestContext(request))
+	all_tags = Member.tags.all()
+	return render_to_response('members/user_tags.html',{'tags':tags, 'user':user, 'all_tags':all_tags}, context_instance=RequestContext(request))
 
 def delete_tag(request, username, tag):
 	user = get_object_or_404(User, username=username)
