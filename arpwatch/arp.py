@@ -11,17 +11,19 @@ def register_user_ip(user, ip):
 	print("REMOTE_ADDR for %s: %s" % (user, ip))
 	ip_log = UserRemoteAddr.objects.create(logintime=datetime.now(), user=user, ip_address=ip)
 
-def map_ip_to_mac():
-	# For all the devices w/o a user that we are not ignoring
-	for device in UserDevice.objects.filter(user__exact=None, ignore=False):
-		# Pull the last ArpLog for this device.  We know there will be at least one.
-		a = ArpLog.objects.filter(device=device).order_by('-runtime')[0]
-		# Pull any UserRemoteAddr logs with the same IP, within 10 minutes of this ArpLog
-		ip_logs = UserRemoteAddr.objects.filter(ip_address=a.ip_address, logintime__gte=a.runtime-timedelta(minutes=10), logintime__lte=a.runtime+timedelta(minutes=10))[:1]
-		if ip_logs.count() > 0:
-			# We found one!  Assume this user belongs to this device.
-			device.user = ip_logs[0].user
-			device.save()
+def map_ip_to_mac(hours):
+	end_ts = datetime.now()
+	start_ts = end_ts - timedelta(hours=hours)
+	ip_logs = UserRemoteAddr.objects.filter(logintime__gte=start_ts, logintime__lte=end_ts)
+	for i in ip_logs:
+		print("ip_log: %s" % (i))
+		arp_logs = ArpLog.objects.filter(ip_address=i.ip_address, runtime__gte=i.logintime-timedelta(minutes=6), runtime__lte=i.logintime+timedelta(minutes=6))[:1]
+		for a in arp_logs:
+			print("arp_log: %s" % (a))
+			if not a.device.ignore and not a.device.user:
+				print("FOUND ONE! %s = %s" % (a.device.mac_address, i.user))
+				a.device.user = i.user
+				a.device.save()
 
 def list_files():
 	print("listing:" )
