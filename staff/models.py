@@ -38,8 +38,8 @@ class BillingLog(models.Model):
 	def __unicode__(self):
 	   return 'BillingLog %s: %s' % (self.started, self.successful)
 	def ended_date(self):
-	   if not ended: return None
-	   return datetime.date(ended)
+	   if not self.ended: return None
+	   return datetime.date(self.ended)
 
 class Bill(models.Model):
 	"""A record of what fees a Member owes."""
@@ -51,7 +51,7 @@ class Bill(models.Model):
 	guest_dropins = models.ManyToManyField('DailyLog', blank=True, null=True, related_name='guest_bills')
 	new_member_deposit = models.BooleanField(default=False, blank=False, null=False)
 	paid_by = models.ForeignKey('Member', blank=True, null=True, related_name='guest_bills')
-   
+
 	class Meta:
 		ordering= ['-created']
 		get_latest_by = 'created'
@@ -142,11 +142,11 @@ class MemberManager(models.Manager):
 	def search(self, search_string):
 		terms = search_string.split()
 		if len(terms) == 0: return None;
-		fname_query = Q(user__first_name__icontains=terms[0]) 
-		lname_query = Q(user__last_name__icontains=terms[0]) 
+		fname_query = Q(user__first_name__icontains=terms[0])
+		lname_query = Q(user__last_name__icontains=terms[0])
 		for term in terms[1:]:
-			fname_query = fname_query | Q(user__first_name__icontains=term) 
-			lname_query = lname_query | Q(user__last_name__icontains=term) 
+			fname_query = fname_query | Q(user__first_name__icontains=term)
+			lname_query = lname_query | Q(user__last_name__icontains=term)
 		return self.filter(fname_query | lname_query)
 
 	def get_by_natural_key(self, user_id): return self.get(user__id=user_id)
@@ -206,7 +206,7 @@ class Member(models.Model):
 	def open_bills(self):
 		"""Returns all of the open bills, both for this member and any bills for other members which are marked to be paid by this member."""
 		return Bill.objects.filter(models.Q(member=self) | models.Q(paid_by=self)).filter(transactions=None).order_by('created')
-      
+
 	def open_bills_amount(self):
 		"""Returns the amount of all of the open bills, both for this member and any bills for other members which are marked to be paid by this member."""
 		return Bill.objects.filter(models.Q(member=self) | models.Q(paid_by=self)).filter(transactions=None).aggregate(models.Sum('amount'))['amount__sum']
@@ -227,7 +227,7 @@ class Member(models.Model):
 		memberships = Membership.objects.filter(member=self).order_by('-start_date', 'end_date')[0:]
 		if memberships == None or len(memberships) == 0: return None
 		return memberships[0]
-      
+
 	def paid_count(self):
 		return DailyLog.objects.filter(member=self, payment='Bill').count()
 
@@ -266,7 +266,7 @@ class Member(models.Model):
 				return last_monthly.membership_plan
 			else:
 				return "Ex" + last_monthly.membership_plan
-            
+
 		# Now check daily logs
 		if DailyLog.objects.filter(member=self).count() > 0:
 			# Quantify the daily
@@ -285,7 +285,7 @@ class Member(models.Model):
 		last_log = self.last_membership()
 		if  not last_log: return False
 		return last_log.end_date == None or last_log.end_date >= date.today()
-   
+
 	def onboard_tasks_status(self):
 		"""
 		Returns an array of tuples: (Onboard_Task, Onboard_Task_Completed) for this member.
@@ -329,7 +329,7 @@ def user_save_callback(sender, **kwargs):
 	created = kwargs['created']
 	if Member.objects.filter(user=user).count() > 0: return
 	Member.objects.create(user=user)
-   
+
 post_save.connect(user_save_callback, sender=User)
 
 # Add some handy methods to Django's User object
@@ -377,12 +377,12 @@ class MembershipPlan(models.Model):
 		verbose_name_plural = "Membership Plans"
 
 class MembershipManager(models.Manager):
-	
+
 	def by_date(self, target_date):
 		return self.filter(start_date__lte=target_date).filter(Q(end_date__isnull=True) | Q(end_date__gte=target_date))
 
 	def create_with_plan(self, member, start_date, end_date, membership_plan):
-		self.create(member=member, start_date=start_date, end_date=end_date, membership_plan=membership_plan, 
+		self.create(member=member, start_date=start_date, end_date=end_date, membership_plan=membership_plan,
 			monthly_rate=membership_plan.monthly_rate, daily_rate=membership_plan.daily_rate, dropin_allowance=membership_plan.dropin_allowance,
 			deposit_amount=membership_plan.deposit_amount, has_desk=membership_plan.has_desk)
 
@@ -456,7 +456,7 @@ class ExitTaskCompletedManager(models.Manager):
 	def for_member(self, task, member):
 		if self.filter(task=task, member=member).count() == 0: return None
 		return self.filter(task=task, member=member)[0]
-      
+
 class ExitTaskCompleted(models.Model):
 	"""A record that an exit task has been completed"""
 	member = models.ForeignKey(Member)
