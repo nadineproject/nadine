@@ -1,30 +1,17 @@
-import os
-import re
-import time
 import email
-import random
-import logging
-import smtplib
-import traceback
-import unicodedata
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
 
 from django.db import models
-from django.db.models import Q
-from django.conf import settings
-from django.db.models import signals
-from django.dispatch import dispatcher
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.db.models.signals import post_save
-from django.utils.encoding import force_unicode
 from django.template.loader import render_to_string
-from django.core.mail import send_mail, send_mass_mail
 
 from staff.models import Member, Membership
+
 
 def user_by_email(email):
    users = User.objects.filter(email__iexact=email)
@@ -38,7 +25,7 @@ def membership_save_callback(sender, **kwargs):
 	"""When a membership is created, add the user to any opt-out mailing lists"""
 	membership = kwargs['instance']
 	created = kwargs['created']
-	if not created: return 
+	if not created: return
 	# If the member is just switching from one membership to another, don't change subscriptions
 	if Membership.objects.filter(member=membership.member, end_date=membership.start_date-timedelta(days=1)).count() != 0: return
 	mailing_lists = MailingList.objects.filter(is_opt_out=True)
@@ -55,26 +42,23 @@ class MailingListManager(models.Manager):
    def unsubscribe_from_all(self, user):
       for ml in self.all():
          if user in ml.subscribers.all(): ml.subscribers.remove(user)
-   
-   def fetch_all_mail(self):
+
+   def fetch_all_mail(self, logger=None):
       """Fetches mail for all mailing lists and returns an array of mailing_lists which reported failures"""
-      failures = []
-      for mailing_list in self.all():
-         if not mailing_list.fetch_mail():
-            failures.append(mailing_list)
-      return failures
+      for ml in self.all():
+         ml.fetch_mail(logger)
 
 class MailingList(models.Model):
    """Represents both the user facing information about a mailing list and how to fetch the mail"""
    name = models.CharField(max_length=1024)
    description = models.TextField(blank=True)
    subject_prefix = models.CharField(max_length=1024, blank=True)
-   
+
    is_opt_out = models.BooleanField(default=False, help_text='True if new users should be automatically enrolled')
    moderator_controlled = models.BooleanField(default=False, help_text='True if only the moderators can send mail to the list and can unsubscribe users.')
 
    email_address = models.EmailField()
-   
+
    username = models.CharField(max_length=1024)
    password = models.CharField(max_length=1024)
 
@@ -85,25 +69,20 @@ class MailingList(models.Model):
 
    subscribers = models.ManyToManyField(User, blank=True, related_name='subscribed_mailing_lists')
    moderators = models.ManyToManyField(User, blank=True, related_name='moderated_mailing_lists', help_text='Users who will be sent moderation emails', limit_choices_to={'is_staff': True})
-   
+
    objects = MailingListManager()
-   
-   def fetch_mail(self):
-      """Fetches mailing and returns True if successful and False if it failed"""
+
+   def fetch_mail(self, logger=None):
+      """Fetches incoming mails from the mailing list."""
       from interlink.mail import DEFAULT_MAIL_CHECKER
-      checker = DEFAULT_MAIL_CHECKER(self)
-      try:
-         checker.fetch_mail()
-         return True
-      except:
-         traceback.print_exc()
-         return False
+      checker = DEFAULT_MAIL_CHECKER(self, logger)
+      checker.fetch_mail()
 
    @property
    def list_id(self):
       """Used for List-ID mail headers"""
       return '%s <%s-%s>' % (self.name, Site.objects.get_current().domain, self.id)
-      
+
    @property
    def moderator_addresses(self):
       """Returns a tuple of email address strings, one for each moderator address"""
@@ -113,7 +92,7 @@ class MailingList(models.Model):
    def subscriber_addresses(self):
       """Returns a tuple of email address strings, one for each subscribed address"""
       return tuple([sub.email for sub in self.subscribers.all()])
-   
+
    def __unicode__(self): return '%s' % self.name
 
    @models.permalink
@@ -136,7 +115,7 @@ class IncomingMailManager(models.Manager):
                incoming.state = 'reject'
                incoming.save()
             continue
-         
+
          if incoming.owner == None or not incoming.owner in incoming.mailing_list.subscribers.all():
             subject = 'Moderation Request: %s: %s' % (incoming.mailing_list.name, incoming.subject)
             body = render_to_string('interlink/email/moderation_required.txt', { 'incoming_mail': incoming })
@@ -219,50 +198,42 @@ class OutgoingMail(models.Model):
       self.last_attempt = datetime.now()
       self.attempts = self.attempts + 1
       self.save()
-      try:
-         msg = MIMEMultipart('alternative')
-         if self.body: msg.attach(MIMEText(self.body, 'plain', 'utf-8'))
-         if self.html_body: msg.attach(MIMEText(self.html_body, 'html', 'utf-8'))
-            
-         msg['To'] = self.mailing_list.email_address
-         if self.original_mail and self.original_mail.owner:
-            msg['From'] = '"%s" <%s>' % (self.original_mail.owner.get_full_name(), self.mailing_list.email_address)
-         else:
-            msg['From'] = self.mailing_list.email_address
-         msg['Subject'] = self.subject
-         msg['Date'] = email.utils.formatdate()
-         if self.original_mail:
-            msg['Reply-To'] = self.original_mail.origin_address
-         else:
-            msg['Reply-To'] = self.mailing_list.email_address
-         msg['List-ID'] = self.mailing_list.list_id
-         msg['X-CAN-SPAM-1'] = 'This message may be a solicitation or advertisement within the specific meaning of the CAN-SPAM Act of 2003.'
-         
-         if self.moderators_only:
-            recipient_addresses = self.mailing_list.moderator_addresses
-         else:
-            recipient_addresses = self.mailing_list.subscriber_addresses
 
-         if not settings.IS_TEST and not msg['To'] == '':
-            try:
-               smtp_server = smtplib.SMTP(self.mailing_list.smtp_host, self.mailing_list.smtp_port)
-               smtp_server.login(self.mailing_list.username, self.mailing_list.password)
-               smtp_server.sendmail(msg['From'], recipient_addresses + (self.mailing_list.email_address,), msg.as_string())
-               smtp_server.quit()
-            except:
-               traceback.print_exc()
-               return False
+      msg = MIMEMultipart('alternative')
+      if self.body: msg.attach(MIMEText(self.body, 'plain', 'utf-8'))
+      if self.html_body: msg.attach(MIMEText(self.html_body, 'html', 'utf-8'))
 
-         if self.original_mail and self.original_mail.state != 'moderate':
-            self.original_mail.state = 'sent'
-            self.original_mail.save()
+      msg['To'] = self.mailing_list.email_address
+      if self.original_mail and self.original_mail.owner:
+         msg['From'] = '"%s" <%s>' % (self.original_mail.owner.get_full_name(), self.mailing_list.email_address)
+      else:
+         msg['From'] = self.mailing_list.email_address
+      msg['Subject'] = self.subject
+      msg['Date'] = email.utils.formatdate()
+      if self.original_mail:
+         msg['Reply-To'] = self.original_mail.origin_address
+      else:
+         msg['Reply-To'] = self.mailing_list.email_address
+      msg['List-ID'] = self.mailing_list.list_id
+      msg['X-CAN-SPAM-1'] = 'This message may be a solicitation or advertisement within the specific meaning of the CAN-SPAM Act of 2003.'
 
-         self.sent = datetime.now()
-         self.save()
-         return True
-      except:
-         traceback.print_exc()
-         return False
+      if self.moderators_only:
+         recipient_addresses = self.mailing_list.moderator_addresses
+      else:
+         recipient_addresses = self.mailing_list.subscriber_addresses
+
+      #if not settings.IS_TEST and not msg['To'] == '':
+      #   smtp_server = smtplib.SMTP(self.mailing_list.smtp_host, self.mailing_list.smtp_port)
+      #   smtp_server.login(self.mailing_list.username, self.mailing_list.password)
+      #   smtp_server.sendmail(msg['From'], recipient_addresses + (self.mailing_list.email_address,), msg.as_string())
+      #   smtp_server.quit()
+
+      if self.original_mail and self.original_mail.state != 'moderate':
+         self.original_mail.state = 'sent'
+         self.original_mail.save()
+
+      self.sent = datetime.now()
+      self.save()
 
    class Meta:
       ordering = ['-created']

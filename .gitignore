@@ -11,4 +11,5 @@ media/members
 .project
 .pydevproject
 .settings
+celerybeat-schedule.db
 

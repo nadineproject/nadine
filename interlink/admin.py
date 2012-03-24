@@ -1,8 +1,4 @@
 from django.contrib import admin
-from django import forms
-from django.forms.util import ErrorList
-from django.contrib.auth.models import User
-from django.contrib.auth.admin import UserAdmin
 
 from models import MailingList, IncomingMail, OutgoingMail
 
@@ -16,7 +12,7 @@ admin.site.register(IncomingMail, IncomingMailAdmin)
 
 class OutgoingMailAdmin(admin.ModelAdmin):
    list_display = ('id', 'original_mail', 'subject', 'sent')
-   
+
    actions = ['send_mail']
    def send_mail(self, request, queryset):
       mail_queued = 0

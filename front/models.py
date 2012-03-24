@@ -1,26 +1,10 @@
-import os
-import os.path
-from datetime import datetime, timedelta, date
-import random
-import time
-import re
-import unicodedata
+from datetime import datetime
 import traceback
-import logging
-import pprint
 
-from django.template.loader import render_to_string
-from django.utils.html import strip_tags
 from django.db import models
-from django.db.models import signals
 from django.conf import settings
-from django.contrib.auth.models import User
-from django.contrib.sites.models import Site
-from django.dispatch import dispatcher
 from django.core.mail import send_mail
-from django.utils.encoding import force_unicode
-from django.db.models import Q
-from django.core.mail import send_mail
+
 
 class EmailEntryManager(models.Manager):
    def unsent_entries(self): return self.filter(sent__isnull=True).order_by('created')
