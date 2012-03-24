@@ -8,4 +8,7 @@ media/resized_image
 media/front
 media/staff
 media/members
+.project
+.pydevproject
+.settings
 
