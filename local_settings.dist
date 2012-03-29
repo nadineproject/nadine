@@ -31,6 +31,7 @@ EMAIL_HOST_USER = "username"
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_SUBJECT_PREFIX = "[COWORKING] " # or None if you want no subject prefix
+TEAM_EMAIL_ADDRESS = "team@officenomads.com"
 
 from interlink.tasks import EmailTask
 from staff.tasks import MailingListTask, BillingTask
