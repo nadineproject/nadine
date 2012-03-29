@@ -82,13 +82,17 @@ def help_topic(request, id):
 	return render_to_response('members/help_topic.html',{'topic':topic}, context_instance=RequestContext(request))
 
 def tags(request):
+	active_members = Member.objects.active_members()
+	# TODO - need to remove non-active members!
 	tags = []
-	for tag in Member.tags.all():
+	for tag in Member.tags.all().order_by('name'):
 		members = Member.objects.filter(tags__name__in=[tag])
 		tags.append((tag, members))
 	return render_to_response('members/tags.html',{'tags':tags}, context_instance=RequestContext(request))
 
 def tag(request, tag):
+	active_members = Member.objects.active_members()
+	# TODO - need to remove non-active members!
 	members = Member.objects.filter(tags__name__in=[tag])
 	return render_to_response('members/tag.html',{'tag':tag, 'members':members}, context_instance=RequestContext(request))
 
