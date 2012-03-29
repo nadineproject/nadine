@@ -1,5 +1,12 @@
+{% extends "base.html" %}
+
+{% block sub-title %}Logs | {% endblock %}
+
+{% block content %} 
+{% include "arpwatch/logs_menu.frag" %}
+
 <h3>Device Info</h3>
-<table border=1 cellpadding=2>
+<table>
 	<tr>
 		<th>User</th>
 		<td>{{ device.user }}</td>
@@ -15,15 +22,19 @@
 </table>
 
 <h3>Logs</h3>
-<table border=1 cellpadding=2>
+<table>
 	<tr>
 		<th>Date</th>
 		<th>IP Address</th>
+		<th/>
 	</tr>
 	{% for log in logs %}
 		<tr>
-			<td><a href="{% url arpwatch.views.logs_by_day log.day|date:'Y' log.day|date:'m' log.day|date:'d' %}">{{ log.day|date:"M d, Y" }}</a></td>			
+			<td><a href="{% url arpwatch.views.device_logs_by_day log.day|date:'Y' log.day|date:'m' log.day|date:'d' %}">{{ log.day|date:"M d, Y" }}</a></td>			
 			<td>{{ log.ip }}</td>
+			<td/>
 		</tr>
 	{% endfor %}
 </table>
+
+{% endblock %}

@@ -48,7 +48,7 @@ class ArpLog_Manager(models.Manager):
 
 	def for_device(self, device_id):
 		DeviceLog = namedtuple('DeviceLog', 'ip, day')
-		sql = "select ip_address, date_trunc('day', runtime) from arpwatch_arplog where device_id = %s group by 1, 2 order by 2;"
+		sql = "select ip_address, date_trunc('day', runtime) from arpwatch_arplog where device_id = %s group by 1, 2 order by 2 desc;"
 		sql = sql % (device_id)
 		cursor = connection.cursor()
 		cursor.execute(sql)
