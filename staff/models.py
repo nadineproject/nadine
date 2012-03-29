@@ -171,6 +171,8 @@ class Member(models.Model):
 	url_biznik = models.URLField(blank=True, null=True, verify_exists=False)
 	url_linkedin = models.URLField(blank=True, null=True, verify_exists=False)
 	url_loosecubes = models.URLField(blank=True, null=True, verify_exists=False)
+	url_aboutme = models.URLField(blank=True, null=True, verify_exists=False)
+	url_github = models.URLField(blank=True, null=True, verify_exists=False)
 	gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True, null=True)
 	howHeard = models.ForeignKey(HowHeard, blank=True, null=True)
 	industry = models.ForeignKey(Industry, blank=True, null=True)
