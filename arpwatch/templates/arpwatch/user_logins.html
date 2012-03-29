@@ -2,6 +2,10 @@
 
 {% block sub-title %}Logs | {% endblock %}
 
+{% block style %}
+nav #logs-tab { background: #FBD850; color: black; }
+{% endblock %}
+
 {% block content %} 
 {% include "arpwatch/logs_menu.frag" %}  
 
@@ -26,7 +30,7 @@
 	{% for l in logs %}
 		<tr>
 			<td>{{ l.logintime|date:"h:i a" }}</td>
-			<td>{{ l.user }}</td>
+			<td>{{ l.user.get_profile }}</td>
 			<td>{{ l.ip_address }}</td>
 			<td></td>
 		</tr>
