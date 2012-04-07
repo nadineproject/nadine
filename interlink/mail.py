@@ -55,6 +55,8 @@ class PopMailChecker(MailChecker):
 
    def fetch_mail(self):
       """Pops mail from the pop server and writes them as IncomingMail"""
+      self.logger.debug("Checking mail from %s:%d" %
+                        (self.mailing_list.pop_host, self.mailing_list.pop_port))
       pop_client = poplib.POP3_SSL(self.mailing_list.pop_host, self.mailing_list.pop_port)
       response = pop_client.user(self.mailing_list.username)
       if not response.startswith('+OK'): raise Exception('Username not accepted: %s' % response)
@@ -68,7 +70,7 @@ class PopMailChecker(MailChecker):
       results = []
       self.logger.debug("Processing %d mails" % stats[0])
       for i in range(stats[0]):
-         response, mail, size = pop_client.retr(i+1)
+         response, mail, _size = pop_client.retr(i+1)
          parser = email.FeedParser.FeedParser()
          parser.feed('\n'.join(mail))
          message = parser.close()
@@ -86,7 +88,7 @@ class PopMailChecker(MailChecker):
 
          #TODO Delete and ignore soft bounces
 
-         name, origin_address = email.utils.parseaddr(message['From'])
+         _name, origin_address = email.utils.parseaddr(message['From'])
          time_struct = email.utils.parsedate(message['Date'])
          if time_struct:
             sent_time = datetime(*time_struct[:-2])
