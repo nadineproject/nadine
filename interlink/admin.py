@@ -2,27 +2,48 @@ from django.contrib import admin
 
 from models import MailingList, IncomingMail, OutgoingMail
 
-class MailingListAdmin(admin.ModelAdmin):
+class MailBase(admin.ModelAdmin):
+   def _action(self, request, queryset, f, singular, plural):
+      count = 0
+      for u in queryset.iterator():
+         f(u)
+         count = count + 1
+         if count == 1:
+            self.message_user(request, singular)
+         else:
+            self.message_user(request, plural % count)
+
+class MailingListAdmin(MailBase):
    raw_id_fields = ['subscribers']
+   actions = ['fetch_mail']
+   def fetch_mail(self, request, queryset):
+      self._action(request, queryset,
+                   lambda u: u.fetch_mail(),
+                   "Mail fetched from 1 list",
+                   "Mail fetched from %s lists")
+   fetch_mail.short_description = "Fetch mail"
 admin.site.register(MailingList, MailingListAdmin)
 
-class IncomingMailAdmin(admin.ModelAdmin):
+class IncomingMailAdmin(MailBase):
    list_display = ('sent_time', 'origin_address', 'subject', 'state')
+   actions = ['process_mail']
+   def process_mail(self, request, queryset):
+      self._action(request, queryset,
+                   lambda u: u.process(),
+                   "1 incoming mail processed",
+                   "%s incoming mails processed")
+   process_mail.short_description = "Process mail"
 admin.site.register(IncomingMail, IncomingMailAdmin)
 
-class OutgoingMailAdmin(admin.ModelAdmin):
+class OutgoingMailAdmin(MailBase):
    list_display = ('id', 'original_mail', 'subject', 'sent')
 
    actions = ['send_mail']
    def send_mail(self, request, queryset):
-      mail_queued = 0
-      for u in queryset.iterator():
-         u.send()
-         mail_queued = mail_queued + 1
-         if mail_queued == 1:
-            self.message_user(request, "1 mail queued to send")
-         else:
-            self.message_user(request, "%d mails queued to send" % mail_queued)
+      self._action(request, queryset,
+                   lambda u: u.send(),
+                   "1 mail sent",
+                   "%s mails sent")
    send_mail.short_description = "Send mail"
 
 admin.site.register(OutgoingMail, OutgoingMailAdmin)
