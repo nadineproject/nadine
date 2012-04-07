@@ -1,18 +1,15 @@
-import traceback
 from datetime import datetime, timedelta, date
 
-from django.conf import settings
 from django.test import TestCase
-from django.core import management
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.core.management import call_command
+from django.core import mail
 
 from staff.models import Member, MembershipPlan, Membership
 
 from interlink.tests.test_utils import create_user
 from interlink.models import MailingList, IncomingMail, OutgoingMail
-from interlink.mail import DEFAULT_MAIL_CHECKER, TestMailChecker, TEST_INCOMING_MAIL, add_test_incoming
+from interlink.mail import DEFAULT_MAIL_CHECKER, TestMailChecker, add_test_incoming
 
 class ListTest(TestCase):
 
@@ -75,7 +72,7 @@ class ListTest(TestCase):
       self.assertEqual(0, self.mlist1.subscribers.count())
       self.mlist1.is_opt_out = True
       self.mlist1.save()
-      user3, client3 = create_user('suz', 'Suz', 'Ebens', email='suz@example.com')
+      user3, _client3 = create_user('suz', 'Suz', 'Ebens', email='suz@example.com')
       self.assertEqual(0, self.mlist1.subscribers.count())
       membership = Membership.objects.create(member=user3.get_profile(), membership_plan=self.basic_plan, start_date=date.today() - timedelta(days=31))
       self.assertEqual(1, self.mlist1.subscribers.count())
@@ -85,7 +82,7 @@ class ListTest(TestCase):
       membership.end_date = date.today() - timedelta(days=1)
       membership.save()
       self.mlist1.subscribers.remove(user3)
-      membership2 = Membership.objects.create(member=user3.get_profile(), membership_plan=self.basic_plan, start_date=date.today())
+      _membership2 = Membership.objects.create(member=user3.get_profile(), membership_plan=self.basic_plan, start_date=date.today())
       self.assertFalse(user3 in self.mlist1.subscribers.all())
 
    def test_subscribe_command(self):
@@ -99,7 +96,6 @@ class ListTest(TestCase):
       call_command('subscribe_members', '%s' % self.mlist1.id)
       self.assertEqual(1, self.mlist1.subscribers.count())
 
-
    def test_outgoing_processing(self):
       self.assertEqual(OutgoingMail.objects.all().count(), 0)
       OutgoingMail.objects.send_outgoing()
@@ -111,11 +107,13 @@ class ListTest(TestCase):
       IncomingMail.objects.process_incoming()
       outgoing = OutgoingMail.objects.all()[0]
       self.assertEqual(outgoing.sent, None)
+      self.assertEqual(0, len(mail.outbox))
       OutgoingMail.objects.send_outgoing()
       incoming = IncomingMail.objects.get(pk=incoming[0].id)
       outgoing = OutgoingMail.objects.all()[0]
       self.assertNotEqual(outgoing.sent, None)
       self.assertEqual(incoming.state, 'sent')
+      self.assertEqual(1, len(mail.outbox))
 
    def test_incoming_processing(self):
       checker = DEFAULT_MAIL_CHECKER(self.mlist1)
