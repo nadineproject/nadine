@@ -1,5 +1,4 @@
 from django import forms
-from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 
 from interlink.models import MailingList, OutgoingMail
@@ -7,11 +6,11 @@ from interlink.models import MailingList, OutgoingMail
 class MailingListSubscriptionForm(forms.Form):
 	subscribe = forms.CharField(required=False, widget=forms.HiddenInput)
 	mailing_list_id = forms.IntegerField(required=True, widget=forms.HiddenInput)
-	
+
 	def save(self, user):
 		list = MailingList.objects.get(pk=self.cleaned_data['mailing_list_id'])
 		if list.moderator_controlled: return False
-		
+
 		body = 'So says http://%s ' % Site.objects.get_current().domain
 		if self.cleaned_data['subscribe'] == 'true' and (user.get_profile().is_monthly() or user.is_staff):
 			list.subscribers.add(user)

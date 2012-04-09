@@ -2,6 +2,8 @@
 import os
 import sys
 
+from datetime import timedelta
+
 PROJECT_ROOT = os.path.realpath(os.path.dirname(__file__))
 TEMPLATE_DIRS = ( PROJECT_ROOT + '/templates/', )
 MEDIA_ROOT = PROJECT_ROOT + '/media/'
@@ -100,6 +102,7 @@ INSTALLED_APPS = (
 	'django.contrib.humanize',
 	'django.contrib.staticfiles',
 	'taggit',
+	'djcelery',
 	'taggit_templatetags',
 	'south',
 	'front',
@@ -109,6 +112,43 @@ INSTALLED_APPS = (
 	'arpwatch',
 	'tablet',
 )
+
+#
+# Celery initialization
+#
+try:
+   import djcelery
+   djcelery.setup_loader()
+except ImportError:
+   pass
+
+BROKER_URL = "amqp://guest:guest@localhost:5672//"
+
+#
+# Celery beat schedules
+#
+CELERYBEAT_SCHEDULE = {
+	"email-task": {
+		"task": "interlink.tasks.email_task",
+		"schedule": timedelta(seconds=2),
+	},
+	#"billing-task": {
+   #  "task": "staff.tasks.billing_task",
+	#	"schedule": timedelta(hours=1)
+	#},
+	"unsubscribe-dropouts": {
+		"task": "staff.tasks.unsubscribe_recent_dropouts_task",
+		"schedule": timedelta(hours=1)
+	},
+}
+CELERY_DISABLE_RATE_LIMITS = True
+CELERY_RESULT_BACKEND = "amqp"
+
+# When this is True, celery tasks will be run synchronously.
+# This is nice when running unit tests or in development.
+# In production set this to False in your local_settings.py
+CELERY_ALWAYS_EAGER = False
+
 
 from local_settings import *
 

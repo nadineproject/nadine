@@ -5,3 +5,5 @@ pil
 feedparser
 django-taggit
 django-taggit-templatetags
+celery==2.5.1
+django-celery==2.5.1
