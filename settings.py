@@ -132,10 +132,10 @@ CELERYBEAT_SCHEDULE = {
 		"task": "interlink.tasks.email_task",
 		"schedule": timedelta(seconds=2),
 	},
-	"billing-task": {
-		"task": "staff.tasks.billing_task",
-		"schedule": timedelta(hours=1)
-	},
+	#"billing-task": {
+   #  "task": "staff.tasks.billing_task",
+	#	"schedule": timedelta(hours=1)
+	#},
 	"unsubscribe-dropouts": {
 		"task": "staff.tasks.unsubscribe_recent_dropouts_task",
 		"schedule": timedelta(hours=1)
