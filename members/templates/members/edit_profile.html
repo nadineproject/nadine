@@ -16,6 +16,8 @@ nav #members-tab { background: #FBD850; color: black; }
 #id_url_biznik { width: 32em; }
 #id_url_linkedin { width: 32em; }
 #id_url_loosecubes { width: 32em; }
+#id_url_aboutme { width: 32em; }
+#id_url_github { width: 32em; }
 table td 	{text-align: left;}
 {% endblock %}
 
@@ -109,10 +111,20 @@ table td 	{text-align: left;}
 				<td>{{ profile_form.url_loosecubes }}</td>
 				<td>{{ profile_form.url_loosecubes.errors }}</td>
 			</tr>
+			<tr class="row-odd">
+				<td><strong>About Me Profile</strong>:</td>
+				<td>{{ profile_form.url_aboutme }}</td>
+				<td>{{ profile_form.url_aboutme.errors }}</td>
+			</tr>
+			<tr class="row-even">
+				<td><strong>Github Profile</strong>:</td>
+				<td>{{ profile_form.url_github }}</td>
+				<td>{{ profile_form.url_github.errors }}</td>
+			</tr>
 		</table>
 
 		<h3>Other Information</h3>
-	   <table id="websites">
+	   <table id="otherinfo">
 			<tr class="row-even">
 				<td><strong>Company Name:</strong></td>
 				<td>{{ profile_form.company_name }}</td>

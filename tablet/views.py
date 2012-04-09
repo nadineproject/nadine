@@ -12,6 +12,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 
 from staff.models import Member, DailyLog
 from staff.forms import MemberSearchForm
+from django.core.mail import send_mail
 
 @login_required
 def signin(request):
@@ -63,6 +64,12 @@ def user_signin(request, username):
 	daily_log.visit_date = date.today()
 	daily_log.payment = 'Bill';
 	daily_log.save()
+	
+	if not member.photo:
+		subject = "Photo Opportunity - %s" % (member)
+		message = "Team,\r\n\r\n \t%s just signed in and we don't have a photo of them yet.\r\n\r\n - Nadine" % (member)
+		send_mail(subject, message, settings.EMAIL_ADDRESS, [settings.TEAM_EMAIL_ADDRESS], fail_silently=True)
+		
 	return HttpResponseRedirect(reverse('tablet.views.signin', kwargs={}))
 
 # Copyright 2011 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

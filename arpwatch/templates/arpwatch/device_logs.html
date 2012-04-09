@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block sub-title %}Logs | {% endblock %}
+
+{% block style %}
+nav #logs-tab { background: #FBD850; color: black; }
+{% endblock %}
+
+{% block content %} 
+{% include "arpwatch/logs_menu.frag" %}  
+
+<div>
+	<div style="size:large; float:right;"><strong>{{ device_logs|length }} Logs</strong></div>
+	<h2>Device Logs - {{ day|date:"M d, Y" }}</h2>
+</div>
+
+<h4 align="center">
+	<a href="{% url arpwatch.views.device_logs_by_day previous_day.year previous_day.month previous_day.day %}">&laquo; Prev</a>
+	[ <a href="{% url arpwatch.views.device_logs_today %}">Today</a> ]
+	<a href="{% url arpwatch.views.device_logs_by_day next_day.year next_day.month next_day.day %}">Next &raquo;</a>
+</h4>
+
+<table border=1>
+	<tr>
+		<th>Device</th>
+		<th>Start</th>
+		<th>End</th>
+		<th>Duration</th>
+		<th></th>
+	</tr>
+	{% for l in device_logs %}
+		<tr>
+			<td><a href="{% url arpwatch.views.device l.device.id %}">{{ l.device }}</a></td>
+			<td>{{ l.start|date:"h:i a" }}</td>
+			<td>{{ l.end|date:"h:i a" }}</td>
+			<td>{{ l.diff }}</td>
+			<td></td>
+		</tr>
+	{% endfor %}
+</table>
+
+{% endblock %}
