@@ -8,4 +8,9 @@ media/resized_image
 media/front
 media/staff
 media/members
+media/arp/import.log
+.project
+.pydevproject
+.settings
+celerybeat-schedule.db
 

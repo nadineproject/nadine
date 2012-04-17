@@ -17,8 +17,10 @@ Set up PostgreSQL, create a blank database and grant all permissions to whatever
 Copy local_settings.dist to local_settings.py and edit it to reflect your local settings. 
 
 Run Django's syncdb and then South's migrate commands.  
+(Currently creating a superuser before running migrate is broken; when prompted to create one, choose no.
+After running the <code>migrate</code> command, run <code>./manage.py createsuperuser</code>.)
 
-    ./manage.py syncdb # when prompted, create an admin account
+    ./manage.py syncdb 
     ./manage.py migrate
 
 Now run the tests to make certain that everthing is installed:
@@ -45,7 +47,7 @@ And visit your installation of Nadine at http://127.0.0.1:8000/
 
 In order to repeatedly execute tasks like checking and sending email, run this command:
 
-    ./manage.py scheduler
+    ./manage.py celeryd -B
 
 You will need to run that command as a long lived process.  On linux and other unices, use something like the nohup command.
 
@@ -74,7 +76,7 @@ In the interest of shipping more quickly, we have made certain assumptions about
 - the reply-to address for mail from a list is the original sender, not the entire list
 - attachments are neither saved nor sent to the list, but a removal note is appended to the message
 - incoming messages are parsed for a single text message and a single html message (not multiple MIME messages)
-- you can set the frequency of mail fetching in the EmailTask in your local_settings.py
+- you can set the frequency of mail fetching by changing the value in CELERYBEAT_SCHEDULE in your settings.py or local_settings.py
 - loops and bounces are silently dropped
 - any email sent to a list which is not in a subscriber's user or membership record is moderated
 - the sender of a message receives a copy of the message like any other subscriber

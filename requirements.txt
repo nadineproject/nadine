@@ -1,7 +1,9 @@
-django
+django==1.3.1
 south
 psycopg2==2.4.1
 pil
 feedparser
 django-taggit
 django-taggit-templatetags
+celery==2.5.1
+django-celery==2.5.1

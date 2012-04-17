@@ -33,11 +33,6 @@ EMAIL_PORT = 587
 EMAIL_SUBJECT_PREFIX = "[COWORKING] " # or None if you want no subject prefix
 TEAM_EMAIL_ADDRESS = "team@officenomads.com"
 
-from interlink.tasks import EmailTask
-from staff.tasks import MailingListTask, BillingTask
-# You can set the frequency of any Task by passing loopdelay=<number of seconds>
-SCHEDULED_TASKS = (EmailTask(), MailingListTask(), BillingTask())
-
 import datetime
 BILLING_START_DATE = datetime.date(2009, 11, 17)
 NEW_MEMBER_DEPOSIT = 500
