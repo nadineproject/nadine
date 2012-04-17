@@ -58,56 +58,56 @@ class PopMailChecker(MailChecker):
       self.logger.debug("Checking mail from %s:%d" %
                         (self.mailing_list.pop_host, self.mailing_list.pop_port))
       pop_client = poplib.POP3_SSL(self.mailing_list.pop_host, self.mailing_list.pop_port)
-      response = pop_client.user(self.mailing_list.username)
-      if not response.startswith('+OK'): raise Exception('Username not accepted: %s' % response)
-      response = pop_client.pass_(self.mailing_list.password)
-      if not response.startswith('+OK'): raise Exception('Password not accepted: %s' % response)
-      stats = pop_client.stat()
-      if stats[0] == 0:
-         self.logger.debug("No mail")
-         return []
+      try :
+         response = pop_client.user(self.mailing_list.username)
+         if not response.startswith('+OK'): raise Exception('Username not accepted: %s' % response)
+         response = pop_client.pass_(self.mailing_list.password)
+         if not response.startswith('+OK'): raise Exception('Password not accepted: %s' % response)
+         stats = pop_client.stat()
+         if stats[0] == 0:
+            self.logger.debug("No mail")
+            return []
 
-      results = []
-      self.logger.debug("Processing %d mails" % stats[0])
-      for i in range(stats[0]):
-         response, mail, _size = pop_client.retr(i+1)
-         parser = email.FeedParser.FeedParser()
-         parser.feed('\n'.join(mail))
-         message = parser.close()
+         results = []
+         self.logger.debug("Processing %d mails" % stats[0])
+         for i in range(stats[0]):
+            response, mail, _size = pop_client.retr(i+1)
+            parser = email.FeedParser.FeedParser()
+            parser.feed('\n'.join(mail))
+            message = parser.close()
 
+            # Delete and ignore auto responses
+            if message['Auto-Submitted'] and message['Auto-Submitted'] != 'no':
+               pop_client.dele(i+1)
+               continue
 
-         # Delete and ignore auto responses
-         if message['Auto-Submitted'] and message['Auto-Submitted'] != 'no':
+            # Delete and ignore messages sent from any list to avoid loops
+            if message['List-ID']:
+               pop_client.dele(i+1)
+               continue
+
+            #TODO Delete and ignore soft bounces
+
+            _name, origin_address = email.utils.parseaddr(message['From'])
+            time_struct = email.utils.parsedate(message['Date'])
+            if time_struct:
+               sent_time = datetime(*time_struct[:-2])
+            else:
+               sent_time = datetime.now()
+
+            body, html_body, file_names = self.find_bodies(message)
+            for file_name in file_names:
+               if body: body = '%s\n\n%s' % (body, '\nAn attachment has been dropped: %s' % strip_tags(file_name))
+               if html_body: html_body = '%s<br><br>%s' % (html_body, '<div>An attachment has been dropped: %s</div>' % strip_tags(file_name))
+
+            site = Site.objects.get_current()
+            if body: body += '\n\nEmail sent to the %s list at http://%s' % (self.mailing_list.name, site.domain)
+            if html_body: html_body += u'<br/><div>Email sent to the %s list at <a href="http://%s">%s</a></div>' % (self.mailing_list.name, site.domain, site.name)
+
+            results.append(IncomingMail.objects.create(mailing_list=self.mailing_list, origin_address=origin_address, subject=message['Subject'], body=body, html_body=html_body, sent_time=sent_time, original_message=message))
             pop_client.dele(i+1)
-            continue
-
-         # Delete and ignore messages sent from any list to avoid loops
-         if message['List-ID']:
-            pop_client.dele(i+1)
-            continue
-
-         #TODO Delete and ignore soft bounces
-
-         _name, origin_address = email.utils.parseaddr(message['From'])
-         time_struct = email.utils.parsedate(message['Date'])
-         if time_struct:
-            sent_time = datetime(*time_struct[:-2])
-         else:
-            sent_time = datetime.now()
-
-         body, html_body, file_names = self.find_bodies(message)
-         for file_name in file_names:
-            if body: body = '%s\n\n%s' % (body, '\nAn attachment has been dropped: %s' % strip_tags(file_name))
-            if html_body: html_body = '%s<br><br>%s' % (html_body, '<div>An attachment has been dropped: %s</div>' % strip_tags(file_name))
-
-         site = Site.objects.get_current()
-         if body: body += '\n\nEmail sent to the %s list at http://%s' % (self.mailing_list.name, site.domain)
-         if html_body: html_body += u'<br/><div>Email sent to the %s list at <a href="http://%s">%s</a></div>' % (self.mailing_list.name, site.domain, site.name)
-
-         results.append(IncomingMail.objects.create(mailing_list=self.mailing_list, origin_address=origin_address, subject=message['Subject'], body=body, html_body=html_body, sent_time=sent_time, original_message=message))
-         pop_client.dele(i+1)
-
-      pop_client.quit()
+      finally:
+         pop_client.quit()
 
    def find_bodies(self, message):
       """Returns (body, html_body, file_names[]) for this payload, recursing into multipart/alternative payloads if necessary"""
