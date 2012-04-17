@@ -61,7 +61,7 @@ class PopMailChecker(MailChecker):
       response = pop_client.user(self.mailing_list.username)
       if not response.startswith('+OK'): raise Exception('Username not accepted: %s' % response)
       response = pop_client.pass_(self.mailing_list.password)
-      if not response.startswith('+OK Logged in'): raise Exception('Password not accepted: %s' % response)
+      if not response.startswith('+OK'): raise Exception('Password not accepted: %s' % response)
       stats = pop_client.stat()
       if stats[0] == 0:
          self.logger.debug("No mail")
