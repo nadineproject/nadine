@@ -16,6 +16,7 @@ class ListTest(TestCase):
    def setUp(self):
       self.user1, self.client1 = create_user('alice', 'Alice', 'Dodgson', email='alice@example.com', is_staff=True)
       self.user2, self.client2 = create_user('bob', 'Bob', 'Albert', email='bob@example.com')
+      self.user3, self.client3 = create_user('charlie', 'Charlie', 'Tuna', email='charlie@example.com')
       self.mlist1 = MailingList.objects.create(
          name='Hat Styles', description='All about les chapeau', subject_prefix='hat',
          email_address='hats@example.com', username='hat', password='1234',
@@ -34,8 +35,8 @@ class ListTest(TestCase):
       }
       response = self.client2.post(reverse('members.views.mail', kwargs={'username':self.user2.username}), form_data)
       self.assertEqual(response.status_code, 302)
-      self.assertEqual(IncomingMail.objects.all().count(), 0)
-      self.assertEqual(OutgoingMail.objects.all().count(), 1)
+      self.assertEqual(IncomingMail.objects.count(), 0)
+      self.assertEqual(OutgoingMail.objects.count(), 1)
       IncomingMail.objects.process_incoming()
       OutgoingMail.objects.send_outgoing()
 
@@ -97,23 +98,35 @@ class ListTest(TestCase):
       self.assertEqual(1, self.mlist1.subscribers.count())
 
    def test_outgoing_processing(self):
-      self.assertEqual(OutgoingMail.objects.all().count(), 0)
+      self.assertEqual(OutgoingMail.objects.count(), 0)
       OutgoingMail.objects.send_outgoing()
       checker = DEFAULT_MAIL_CHECKER(self.mlist1)
 
-      self.mlist1.subscribers.add(self.user2)
+      self.mlist1.subscribers = [self.user2, self.user3]
       add_test_incoming(self.mlist1, 'bob@example.com', 'ahoi 3', 'I like traffic lights.', sent_time=datetime.now() - timedelta(minutes=15))
       incoming = checker.fetch_mail()
       IncomingMail.objects.process_incoming()
       outgoing = OutgoingMail.objects.all()[0]
-      self.assertEqual(outgoing.sent, None)
+      self.assertIsNone(outgoing.sent)
       self.assertEqual(0, len(mail.outbox))
       OutgoingMail.objects.send_outgoing()
       incoming = IncomingMail.objects.get(pk=incoming[0].id)
       outgoing = OutgoingMail.objects.all()[0]
-      self.assertNotEqual(outgoing.sent, None)
+      self.assertIsNotNone(outgoing.sent)
       self.assertEqual(incoming.state, 'sent')
+      # Only one mail sent the the server, but with multiple BCCs
       self.assertEqual(1, len(mail.outbox))
+      m = mail.outbox[0]
+
+      # Inspect the mails --
+      # The 'From' should be the user's name with the mailing list
+      # The 'To' should be the mailing list
+      # The 'Reply-To' should be the user
+      self.assertEqual('"Bob Albert" <hats@example.com>', m.from_email)
+      self.assertEqual('hat ahoi 3', m.subject)
+      self.assertEqual(['hats@example.com'], m.to)
+      self.assertEqual('bob@example.com', m.extra_headers['Reply-To'])
+      self.assertEqual([u'bob@example.com', u'charlie@example.com'], sorted(m.recipients()))
 
    def test_incoming_processing(self):
       checker = DEFAULT_MAIL_CHECKER(self.mlist1)
@@ -123,7 +136,7 @@ class ListTest(TestCase):
       self.assertEqual(len(incoming), 1)
       self.assertEqual(incoming[0].state, 'raw')
       IncomingMail.objects.process_incoming()
-      self.assertEqual(OutgoingMail.objects.all().count(), 1)
+      self.assertEqual(OutgoingMail.objects.count(), 1)
       incoming = IncomingMail.objects.get(pk=incoming[0].id)
       self.assertEqual(incoming.state, 'moderate')
       outgoing = OutgoingMail.objects.all()[0]
@@ -136,7 +149,7 @@ class ListTest(TestCase):
       self.assertEqual(len(incoming), 1)
       self.assertEqual(incoming[0].state, 'raw')
       IncomingMail.objects.process_incoming()
-      self.assertEqual(OutgoingMail.objects.all().count(), 2)
+      self.assertEqual(OutgoingMail.objects.count(), 2)
       incoming = IncomingMail.objects.get(pk=incoming[0].id)
       self.assertEqual(incoming.state, 'moderate')
 
@@ -147,7 +160,7 @@ class ListTest(TestCase):
       self.assertEqual(len(incoming), 1)
       self.assertEqual(incoming[0].state, 'raw')
       IncomingMail.objects.process_incoming()
-      self.assertEqual(OutgoingMail.objects.all().count(), 3)
+      self.assertEqual(OutgoingMail.objects.count(), 3)
       incoming = IncomingMail.objects.get(pk=incoming[0].id)
       self.assertEqual(incoming.state, 'send')
       outgoing = OutgoingMail.objects.all()[0]
@@ -167,14 +180,14 @@ class ListTest(TestCase):
       self.assertEqual(DEFAULT_MAIL_CHECKER, TestMailChecker)
       checker = DEFAULT_MAIL_CHECKER(self.mlist1)
       add_test_incoming(self.mlist1, 'alice@example.com', 'ahoi', 'I like traffic lights.', sent_time=datetime.now() - timedelta(minutes=15))
-      self.assertEqual(IncomingMail.objects.all().count(), 0)
+      self.assertEqual(IncomingMail.objects.count(), 0)
       in_mail = checker.fetch_mail()
       self.assertEqual(len(in_mail), 1)
       self.assertEqual(in_mail[0].origin_address, 'alice@example.com')
-      self.assertEqual(IncomingMail.objects.all().count(), 1)
+      self.assertEqual(IncomingMail.objects.count(), 1)
 
       add_test_incoming(self.mlist1, 'alice@example.com', 'ahoi 2', 'I like traffic lights A LOT.', sent_time=datetime.now() - timedelta(minutes=15))
       MailingList.objects.fetch_all_mail()
-      self.assertEqual(IncomingMail.objects.all().count(), 2)
+      self.assertEqual(IncomingMail.objects.count(), 2)
 
 # Copyright 2011 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

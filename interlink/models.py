@@ -3,14 +3,16 @@ from collections import defaultdict
 
 from django.db import models
 from django.db.models import Q
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
-from django.core.mail import get_connection, EmailMultiAlternatives
+from django.core.mail import get_connection
 from django.db.models.signals import post_save
 from django.template.loader import render_to_string
 
 from staff.models import Member, Membership
+from interlink.message import MailingListMessage
 
 
 def user_by_email(email):
@@ -80,10 +82,12 @@ class MailingList(models.Model):
       checker.fetch_mail()
 
    def get_smtp_connection(self):
+      fail_silently = getattr(settings, 'INTERLINK_MAILS_FAIL_SILENTLY', False)
       return get_connection(host=self.smtp_host,
                             port=self.smtp_port,
                             username=self.username,
-                            password=self.password)
+                            password=self.password,
+                            fail_silently=fail_silently)
 
    @property
    def list_id(self):
@@ -228,15 +232,21 @@ class OutgoingMail(models.Model):
       self.attempts = self.attempts + 1
       self.save()
 
+      args = {
+         'subject': self.subject,
+         'body': self.body
+      }
+
       if self.moderators_only:
-         to = self.mailing_list.moderator_addresses
+         args['to'] = self.mailing_list.moderator_addresses
       else:
-         to = self.mailing_list.subscriber_addresses
+         args['to'] = [self.mailing_list.email_address]
+         args['bcc'] = self.mailing_list.subscriber_addresses
 
       if self.original_mail and self.original_mail.owner:
-         from_email = '"%s" <%s>' % (self.original_mail.owner.get_full_name(), self.mailing_list.email_address)
+         args['from_email'] = '"%s" <%s>' % (self.original_mail.owner.get_full_name(), self.mailing_list.email_address)
       else:
-         from_email = self.mailing_list.email_address
+         args['from_email'] = self.mailing_list.email_address
 
       headers = {
          #'Date': email.utils.formatdate(),  # Done by default in Django
@@ -248,11 +258,9 @@ class OutgoingMail(models.Model):
       else:
          headers['Reply-To'] = self.mailing_list.email_address
 
-      msg = EmailMultiAlternatives(subject=self.subject,
-                                   body=self.body,
-                                   to=to,
-                                   from_email=from_email,
-                                   headers=headers)
+      args['headers'] = headers
+
+      msg = MailingListMessage(**args)
       # Is this really the case? Right now it is, until we don't use the
       # body or html_body and instead edit the MIME version itself.
       msg.encoding = 'utf-8'
