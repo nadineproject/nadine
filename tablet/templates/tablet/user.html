@@ -27,7 +27,8 @@
 			<h2>{{ member.full_name }}</h2>
 			{% include "members/profile.frag" %}
 			{% if activity %}
-				<h3>Last 10 Billable Visits</h3>
+				<h3>Billing Date: {{ member.last_membership.start_date|date:"M d, Y" }}</h3>
+				<h3>Visits This Cycle (6):</h3>
 				<ul>
 					{% for log in activity %}
 						<li>{{ log.visit_date }}</li>
@@ -39,7 +40,7 @@
 
 	{% if can_signin %}
 		<div data-theme="a">
-			<a href="{% url tablet.views.user_signin user.username %}" data-role="button" data-theme="e" data-transition="slide">Sign In</a>  
+			<a href="{% url tablet.views.user_signin user.username %}" data-role="button" data-theme="e" data-transition="fade">Sign In</a>  
 		</div>    
 	{% endif %}  
 {% endblock %}
