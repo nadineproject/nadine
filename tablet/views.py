@@ -1,5 +1,5 @@
 import traceback
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timedelta
 
 from django.conf import settings
 from django.template import RequestContext
@@ -10,7 +10,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 
-from staff.models import Member, DailyLog
+from staff.models import Member, DailyLog, Bill
 from staff.forms import MemberSearchForm
 from django.core.mail import send_mail
 
@@ -51,9 +51,10 @@ def user(request, username):
 			if not DailyLog.objects.filter(member=member, visit_date=datetime.today().date()):
 			 	can_signin = True
 		
-	activity = DailyLog.objects.filter(member=member, payment='Bill')[:10]
+	activity = DailyLog.objects.filter(member=member, payment='Bill', bills__isnull=True, visit_date__gt=date.today()-timedelta(days=31))
+	guest_activity = DailyLog.objects.filter(guest_of=member, payment='Bill', guest_bills__isnull=True, visit_date__gte=date.today()-timedelta(days=31))
 
-	return render_to_response('tablet/user.html',{'user':user, 'member':member, 'can_signin':can_signin, 'activity':activity}, context_instance=RequestContext(request))
+	return render_to_response('tablet/user.html',{'user':user, 'member':member, 'can_signin':can_signin, 'activity':activity, 'guest_activity':guest_activity}, context_instance=RequestContext(request))
 
 @login_required
 def user_signin(request, username):

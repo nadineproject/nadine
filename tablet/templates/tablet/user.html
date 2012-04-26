@@ -26,16 +26,23 @@
 		<div class="ui-block-b">
 			<h2>{{ member.full_name }}</h2>
 			{% include "members/profile.frag" %}
+			<h3>Billing Day: {{ member.last_membership.start_date|date:"dS" }}.</h3>
 			{% if activity %}
-				<h3>Billing Date: {{ member.last_membership.start_date|date:"M d, Y" }}</h3>
-				<h3>Visits This Cycle (6):</h3>
+				<h3>Visits This Cycle ({{activity.count}}):</h3>
 				<ul>
 					{% for log in activity %}
-						<li>{{ log.visit_date }}</li>
+						<li>{{ log.visit_date|date:"M dS"}}</li>
 					{% endfor %}
 				</ul>
 			{% endif %}  
-		</div>
+			{% if guest_activity %}
+				<h3>Guest Visits ({{guest_activity.count}}):</h3>
+				<ul>
+					{% for log in guest_activity %}
+						<li>{{ log.member }} - {{ log.visit_date|date:"M dS" }}</li>
+					{% endfor %}
+				</ul>
+			{% endif %}		</div>
 	</div>
 
 	{% if can_signin %}
