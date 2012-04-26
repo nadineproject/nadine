@@ -1,0 +1,39 @@
+{% extends "tablet/t_base.html" %}
+{% load imagetags %}
+
+{% block style %}
+{% endblock %}
+
+{% block sub-title %}Nadine Tablet | {% endblock %}
+
+{% block signin-back %}
+	{% if can_signin %}
+		Back
+	{% else %} 
+		Sign In
+	{% endif %} 
+{% endblock %}
+
+{% block content %}
+	<div class="ui-grid-a">
+		<div class="ui-block-a">
+			{% if member.photo %}
+				<img src="{{ user.profile.photo.url }}" width="300px">
+			{% else %}
+				<img src="{{ STATIC_URL }}/BlankIcon150x150.jpg">
+			{% endif %}							
+		</div>
+		<div class="ui-block-b">
+			<h2>{{ member.full_name }}</h2>
+			{% include "members/profile.frag" %}
+			<h3>Profile Tags:</h3>
+			{% if tags %}
+				<ul>{% for tag in tags %}
+					<li>{{ tag }}</li>
+				{% endfor %}</ul>
+			{% else %}
+				<ul>None</ul>
+			{% endif %}
+		</div>
+	</div>
+{% endblock %}

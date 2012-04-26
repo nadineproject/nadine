@@ -12,7 +12,7 @@
 	<div id="member-list">
 		<ul data-role="listview" data-inset="true" data-filter="true">
 			{% for member in members %}
-				<li style="padding: 0.5em;"><a href="{% url tablet.views.user member.user %}" data-transition="fade">{{ member.full_name }}</a></li>
+				<li style="padding: 0.5em;"><a href="{% url tablet.views.user_signin member.user %}" data-transition="fade">{{ member.full_name }}</a></li>
 			{% endfor %}
 		</ul>
 	</div>

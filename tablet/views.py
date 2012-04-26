@@ -42,22 +42,29 @@ def search(request):
 	return render_to_response('tablet/search.html', { 'member_search_form':member_search_form, 'search_results':search_results }, context_instance=RequestContext(request))
 
 @login_required
-def user(request, username):
+def view_profile(request, username):
+	user = get_object_or_404(User, username=username)
+	member = get_object_or_404(Member, user=user)
+	tags = member.tags.order_by('name')
+	return render_to_response('tablet/view_profile.html',{'user':user, 'member':member, 'tags':tags}, context_instance=RequestContext(request))
+
+@login_required
+def user_signin(request, username):
 	user = get_object_or_404(User, username=username)
 	member = get_object_or_404(Member, user=user)
 
 	can_signin = False
-	if not member.last_membership() or not member.last_membership().has_desk:
+	if not member.last_membership() or member.last_membership().end_date or not member.last_membership().has_desk:
 			if not DailyLog.objects.filter(member=member, visit_date=datetime.today().date()):
 			 	can_signin = True
-		
+
 	activity = DailyLog.objects.filter(member=member, payment='Bill', bills__isnull=True, visit_date__gt=date.today()-timedelta(days=31))
 	guest_activity = DailyLog.objects.filter(guest_of=member, payment='Bill', guest_bills__isnull=True, visit_date__gte=date.today()-timedelta(days=31))
 
-	return render_to_response('tablet/user.html',{'user':user, 'member':member, 'can_signin':can_signin, 'activity':activity, 'guest_activity':guest_activity}, context_instance=RequestContext(request))
+	return render_to_response('tablet/user_signin.html',{'user':user, 'member':member, 'can_signin':can_signin, 'activity':activity, 'guest_activity':guest_activity}, context_instance=RequestContext(request))
 
 @login_required
-def user_signin(request, username):
+def signin_user(request, username):
 	user = get_object_or_404(User, username=username)
 	member = get_object_or_404(Member, user=user)
 	daily_log = DailyLog()

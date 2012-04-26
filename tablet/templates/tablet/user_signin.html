@@ -18,20 +18,19 @@
 	<div class="ui-grid-a">
 		<div class="ui-block-a">
 			{% if member.photo %}
-				<a href="{{ member.photo.url }}"><img src="{{ user.profile.photo.url }}" width="300px"></a>
+				<a href="{% url tablet.views.view_profile member.user %}"><img src="{{ user.profile.photo.url }}" width="300px"></a>
 			{% else %}
 				<img src="{{ STATIC_URL }}/BlankIcon150x150.jpg">
 			{% endif %}							
 		</div>
 		<div class="ui-block-b">
 			<h2>{{ member.full_name }}</h2>
-			{% include "members/profile.frag" %}
-			<h3>Billing Day: {{ member.last_membership.start_date|date:"dS" }}.</h3>
+			<h3>Billing Day: {{ member.last_membership.start_date|date:"jS" }}</h3>
 			{% if activity %}
 				<h3>Visits This Cycle ({{activity.count}}):</h3>
 				<ul>
 					{% for log in activity %}
-						<li>{{ log.visit_date|date:"M dS"}}</li>
+						<li>{{ log.visit_date|date:"l F jS"}}</li>
 					{% endfor %}
 				</ul>
 			{% endif %}  
@@ -39,7 +38,7 @@
 				<h3>Guest Visits ({{guest_activity.count}}):</h3>
 				<ul>
 					{% for log in guest_activity %}
-						<li>{{ log.member }} - {{ log.visit_date|date:"M dS" }}</li>
+						<li>{{ log.member }} - {{ log.visit_date|date:"M jS" }}</li>
 					{% endfor %}
 				</ul>
 			{% endif %}		</div>
@@ -47,7 +46,7 @@
 
 	{% if can_signin %}
 		<div data-theme="a">
-			<a href="{% url tablet.views.user_signin user.username %}" data-role="button" data-theme="e" data-transition="fade">Sign In</a>  
+			<a href="{% url tablet.views.signin_user user.username %}" data-role="button" data-theme="e" data-transition="fade">Sign In</a>  
 		</div>    
 	{% endif %}  
 {% endblock %}
