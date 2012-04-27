@@ -11,8 +11,24 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 
 from staff.models import Member, DailyLog, Bill
-from staff.forms import MemberSearchForm
+from staff.forms import NewUserForm, MemberSearchForm
 from django.core.mail import send_mail
+
+@login_required
+def new_user(request):
+	page_message = None
+	if request.method == "POST":
+		form = NewUserForm(request.POST)
+		try:
+			if form.is_valid():
+				user = form.save() 
+				return HttpResponseRedirect(reverse('tablet.views.user_signin', kwargs={ 'username':user.username }))
+		except Exception as e:
+			page_message = e
+	else:
+		form = NewUserForm()
+
+	return render_to_response('tablet/new_user.html', {'new_user_form':form, 'page_message':page_message}, context_instance=RequestContext(request))
 
 @login_required
 def signin(request):
@@ -70,7 +86,10 @@ def signin_user(request, username):
 	daily_log = DailyLog()
 	daily_log.member = member
 	daily_log.visit_date = date.today()
-	daily_log.payment = 'Bill';
+	if DailyLog.objects.filter(member=member).count() == 0:
+		daily_log.payment = 'Trial';
+	else:
+		daily_log.payment = 'Bill';
 	daily_log.save()
 	
 	if not member.photo:

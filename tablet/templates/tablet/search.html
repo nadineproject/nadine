@@ -11,10 +11,13 @@
 {% block nav-search %} class="ui-btn-active" {% endblock %}
 
 {% block content %}
+<h2>Find a Member</h2>
 	<div id="search-box">
 		<form id="member-search-form" action="{% url tablet.views.search %}" method="POST">
-			{% for field in member_search_form %}{{ field }}{% endfor %}
-			<input type="submit" value="search" />
+			{% for field in member_search_form %}
+				{{ field }}
+			{% endfor %}
+			<input type="submit" value="search"  data-theme="e" data-transition="fade"/>
 			{% csrf_token %}
 		</form>
 	</div>

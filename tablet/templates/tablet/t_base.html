@@ -25,18 +25,20 @@
 
 <body>{% block body %}
 	<div data-role="page">
-		<div id="header" data-role="header" data-position="inline" style="padding-top: 20px;">
-			<h1>{{site.name}}: {{site.domain}}</h1>
+		<div style="padding-top:20px; background:black;"></div>
+		<div id="header" data-role="header" data-position="inline">
+			<h1>Nadine Membership Console</h1>
+		</div>
 			<div id="top-nav" data-role="navbar" data-iconpos="left">
 				<ul>
 					<li><a data-transition="fade" href="{% url tablet.views.signin %}" {% block nav-signin %}{% endblock %} data-icon="check">{% block signin-back %}Sign In{% endblock %}</a></li>
-					<li><a data-transition="fade" href="{% url tablet.views.members %}" {% block nav-members %}{% endblock %} data-icon="grid">View All Members</a></li>
-					<li><a data-transition="fade" href="{% url tablet.views.search %}" {% block nav-search %}{% endblock %} data-icon="search">Member Search</a></li>
+					<li><a data-transition="fade" href="{% url tablet.views.members %}" {% block nav-members %}{% endblock %} data-icon="grid">Members</a></li>
+					<li><a data-transition="fade" href="{% url tablet.views.search %}" {% block nav-search %}{% endblock %} data-icon="search">Search</a></li>
+					<li><a data-transition="fade" href="{% url tablet.views.new_user %}" {% block nav-newuser %}{% endblock %} data-icon="plus">New User</a></li>
 				</ul>
 			</div>
 			{% block header %}
 			{% endblock %}
-		</div>
 		<div data-role="content">
 			{% block content %}
 			{% endblock %}

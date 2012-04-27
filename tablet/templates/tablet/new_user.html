@@ -1,0 +1,33 @@
+{% extends "tablet/t_base.html" %}
+{% load imagetags %}
+
+{% block style %}
+#page-message { font-size: 1.5em; color: #933; margin: 20px 0px; }
+{% endblock %}
+
+{% block sub-title %}Nadine Tablet | {% endblock %}
+
+{% block nav-newuser %} class="ui-btn-active" {% endblock %}
+
+{% block content %}
+<h2>Create a New User</h2>
+
+{% if page_message %}
+	<p id="page_message">{{ page_message|safe }}</p>
+{% endif %}
+
+	<div id="new_user">
+		<form id="new-user-form" action="{% url tablet.views.new_user %}" method="POST">
+			{{ new_user_form.non_field_errors }}
+			{% for field in new_user_form %}
+				<div data-role="fieldcontain">
+					{{ field.label_tag }}
+					{{ field }}
+				</div>
+				<div style="align:center; color: #933;">{{ field.errors }}</div>
+			{% endfor %}
+			<input type="submit" value="Add" data-theme="e" data-transition="fade"/>
+			{% csrf_token %}
+		</form>
+	</div>	
+{% endblock %}

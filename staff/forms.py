@@ -19,6 +19,28 @@ class PayBillsForm(forms.Form):
 class RunBillingForm(forms.Form):
 	run_billing = forms.BooleanField(required=True, widget=forms.HiddenInput)
 	
+class NewUserForm(forms.Form):
+	first_name = forms.CharField(max_length=100, label="First name *", required=True)
+	last_name = forms.CharField(max_length=100, label="Last name *", required=True)
+	email = forms.EmailField(max_length=100, label="Email *", required=True)
+	phone = forms.CharField(max_length=100, required=False)
+
+	def save(self):
+		"Creates the User and Member records with the field data and returns the user"
+		if not self.is_valid(): raise Exception('The form must be valid in order to save')
+		
+		username = "%s_%s" % (self.cleaned_data['first_name'].lower(), self.cleaned_data['last_name'].lower())
+		if User.objects.filter(username=username).count() > 0: raise forms.ValidationError("That username is already in use.")
+		
+		user = User(username=username, first_name=self.cleaned_data['first_name'], last_name=self.cleaned_data['last_name'], email=self.cleaned_data['email'])
+		user.save()
+
+		member = user.get_profile()
+		member.phone = self.cleaned_data['phone']
+		member.save()
+		
+		return user
+
 class MemberSearchForm(forms.Form):
 	terms = forms.CharField(max_length=100)
 
