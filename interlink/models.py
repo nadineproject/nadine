@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
-from django.core.mail import get_connection
+from django.core.mail import get_connection, EmailMultiAlternatives
 from django.db.models.signals import post_save
 from django.template.loader import render_to_string
 
@@ -238,8 +238,10 @@ class OutgoingMail(models.Model):
       }
 
       if self.moderators_only:
+         email_cls = EmailMultiAlternatives
          args['to'] = self.mailing_list.moderator_addresses
       else:
+         email_cls = MailingListMessage
          args['to'] = [self.mailing_list.email_address]
          args['bcc'] = self.mailing_list.subscriber_addresses
 
@@ -260,7 +262,7 @@ class OutgoingMail(models.Model):
 
       args['headers'] = headers
 
-      msg = MailingListMessage(**args)
+      msg = email_cls(**args)
       # Is this really the case? Right now it is, until we don't use the
       # body or html_body and instead edit the MIME version itself.
       msg.encoding = 'utf-8'

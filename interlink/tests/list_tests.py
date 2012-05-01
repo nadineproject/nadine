@@ -131,6 +131,7 @@ class ListTest(TestCase):
    def test_incoming_processing(self):
       checker = DEFAULT_MAIL_CHECKER(self.mlist1)
       # send an email from an unknown address
+      self.mlist1.moderators.add(self.user3)
       add_test_incoming(self.mlist1, 'bogus@example.com', 'ahoi 1', 'I like traffic lights.', sent_time=datetime.now() - timedelta(minutes=15))
       incoming = checker.fetch_mail()
       self.assertEqual(len(incoming), 1)
@@ -142,6 +143,15 @@ class ListTest(TestCase):
       outgoing = OutgoingMail.objects.all()[0]
       self.assertEqual(outgoing.original_mail, incoming)
       self.assertTrue(outgoing.subject.startswith('Moderation Request'))
+      # Process outgoing and make sure the moderation email gets sent.
+      OutgoingMail.objects.send_outgoing()
+      self.assertEqual(1, len(mail.outbox))
+      m = mail.outbox[0]
+      self.assertEqual('hats@example.com', m.from_email)
+      self.assertEqual(u'Moderation Request: Hat Styles: ahoi 1', m.subject)
+      self.assertEqual(['charlie@example.com'], m.to)
+      self.assertEqual(u'bogus@example.com', m.extra_headers['Reply-To'])
+      self.assertEqual([u'charlie@example.com'], m.recipients())
 
       # send an email from a known address, but not a subscriber
       add_test_incoming(self.mlist1, 'alice@example.com', 'ahoi 2', 'I like traffic lights.', sent_time=datetime.now() - timedelta(minutes=15))
