@@ -45,7 +45,7 @@ def log_message(msg):
 	log = "%s: %s\r\n" % (datetime.now(), msg)
 	if not default_storage.exists(settings.ARP_IMPORT_LOG):
 		log = "%s: Log Started\r\n%s" % (datetime.now(), log)
-	log_file = default_storage.open(settings.ARP_IMPORT_LOG, mode="w")
+	log_file = default_storage.open(settings.ARP_IMPORT_LOG, mode="a")
 	log_file.write(log)
 	log_file.close()
 	
@@ -86,7 +86,8 @@ def import_file(file, runtime):
 
 			# Stop me if you think that you've heard this one before
 			if ArpLog.objects.filter(runtime=runtime, ip_address=ip).count() > 0:
-				raise RuntimeError('Data Already Loaded')
+				log_message("Data For This Time Already Loaded: %s" % runtime)
+				return
 
 			# User Device
 			if UserDevice.objects.filter(mac_address=mac).count() > 0:
