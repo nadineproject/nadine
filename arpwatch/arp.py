@@ -51,7 +51,7 @@ def log_message(msg):
 	
 def import_all():
 	if import_dir_locked():
-		raise RuntimeError('Import Directory Locked')
+		return
 
 	# Lock the import directory
 	lock_import_dir()
