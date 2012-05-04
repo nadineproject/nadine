@@ -1,3 +1,5 @@
+import email
+
 from datetime import datetime, timedelta, date
 
 from django.test import TestCase
@@ -9,7 +11,7 @@ from staff.models import Member, MembershipPlan, Membership
 
 from interlink.tests.test_utils import create_user
 from interlink.models import MailingList, IncomingMail, OutgoingMail
-from interlink.mail import DEFAULT_MAIL_CHECKER, TestMailChecker, add_test_incoming
+
 
 class ListTest(TestCase):
 
@@ -48,25 +50,28 @@ class ListTest(TestCase):
       self.mlist1.subscribers.add(self.user2)
       self.assertEqual(1, self.mlist1.subscribers.count())
 
-      checker = DEFAULT_MAIL_CHECKER(self.mlist1)
+      incoming = IncomingMail.objects.create(mailing_list=self.mlist1,
+                       origin_address='bob@example.com',
+                       subject='ahoi 3',
+                       body='I like traffic lights',
+                       sent_time=datetime.now() - timedelta(minutes=15))
 
-      # check that non-moderator emails are rejected
-      add_test_incoming(self.mlist1, 'bob@example.com', 'ahoi 3', 'I like traffic lights.', sent_time=datetime.now() - timedelta(minutes=15))
-      incoming = checker.fetch_mail()
-      self.assertEqual(len(incoming), 1)
       IncomingMail.objects.process_incoming()
       outgoing = OutgoingMail.objects.all()
       self.assertEqual(len(outgoing), 0)
-      income = IncomingMail.objects.get(pk=incoming[0].id)
-      self.assertEqual(income.state, 'reject')
+      incoming = IncomingMail.objects.get(pk=incoming.id)
+      self.assertEqual(incoming.state, 'reject')
 
-      add_test_incoming(self.mlist1, 'alice@example.com', 'ahoi 4', 'Who are you. Who who who who.', sent_time=datetime.now() - timedelta(minutes=10))
-      incoming = checker.fetch_mail()
-      self.assertEqual(len(incoming), 1)
+      incoming = IncomingMail.objects.create(mailing_list=self.mlist1,
+                       origin_address='alice@example.com',
+                       subject='ahoi 4',
+                       body='Who are you. Who who who who.',
+                       sent_time=datetime.now() - timedelta(minutes=10))
+
       IncomingMail.objects.process_incoming()
       outgoing = OutgoingMail.objects.all()
       self.assertEqual(len(outgoing), 1)
-      income = IncomingMail.objects.get(pk=incoming[0].id)
+      income = IncomingMail.objects.get(pk=incoming.id)
       self.assertEqual(income.state, 'send')
 
    def test_opt_out(self):
@@ -100,17 +105,20 @@ class ListTest(TestCase):
    def test_outgoing_processing(self):
       self.assertEqual(OutgoingMail.objects.count(), 0)
       OutgoingMail.objects.send_outgoing()
-      checker = DEFAULT_MAIL_CHECKER(self.mlist1)
-
       self.mlist1.subscribers = [self.user2, self.user3]
-      add_test_incoming(self.mlist1, 'bob@example.com', 'ahoi 3', 'I like traffic lights.', sent_time=datetime.now() - timedelta(minutes=15))
-      incoming = checker.fetch_mail()
+
+      incoming = IncomingMail.objects.create(mailing_list=self.mlist1,
+                       origin_address='bob@example.com',
+                       subject='ahoi 3',
+                       body='I like traffic lights.',
+                       sent_time=datetime.now() - timedelta(minutes=15))
+
       IncomingMail.objects.process_incoming()
       outgoing = OutgoingMail.objects.all()[0]
       self.assertIsNone(outgoing.sent)
       self.assertEqual(0, len(mail.outbox))
       OutgoingMail.objects.send_outgoing()
-      incoming = IncomingMail.objects.get(pk=incoming[0].id)
+      incoming = IncomingMail.objects.get(pk=incoming.id)
       outgoing = OutgoingMail.objects.all()[0]
       self.assertIsNotNone(outgoing.sent)
       self.assertEqual(incoming.state, 'sent')
@@ -129,16 +137,18 @@ class ListTest(TestCase):
       self.assertEqual([u'bob@example.com', u'charlie@example.com'], sorted(m.recipients()))
 
    def test_incoming_processing(self):
-      checker = DEFAULT_MAIL_CHECKER(self.mlist1)
       # send an email from an unknown address
       self.mlist1.moderators.add(self.user3)
-      add_test_incoming(self.mlist1, 'bogus@example.com', 'ahoi 1', 'I like traffic lights.', sent_time=datetime.now() - timedelta(minutes=15))
-      incoming = checker.fetch_mail()
-      self.assertEqual(len(incoming), 1)
-      self.assertEqual(incoming[0].state, 'raw')
+      incoming = IncomingMail.objects.create(mailing_list=self.mlist1,
+                       origin_address='bogus@example.com',
+                       subject='ahoi 1',
+                       body='I like traffic lights.',
+                       sent_time=datetime.now() - timedelta(minutes=15))
+
+      self.assertEqual(incoming.state, 'raw')
       IncomingMail.objects.process_incoming()
       self.assertEqual(OutgoingMail.objects.count(), 1)
-      incoming = IncomingMail.objects.get(pk=incoming[0].id)
+      incoming = IncomingMail.objects.get(pk=incoming.id)
       self.assertEqual(incoming.state, 'moderate')
       outgoing = OutgoingMail.objects.all()[0]
       self.assertEqual(outgoing.original_mail, incoming)
@@ -154,24 +164,30 @@ class ListTest(TestCase):
       self.assertEqual([u'charlie@example.com'], m.recipients())
 
       # send an email from a known address, but not a subscriber
-      add_test_incoming(self.mlist1, 'alice@example.com', 'ahoi 2', 'I like traffic lights.', sent_time=datetime.now() - timedelta(minutes=15))
-      incoming = checker.fetch_mail()
-      self.assertEqual(len(incoming), 1)
-      self.assertEqual(incoming[0].state, 'raw')
+      incoming = IncomingMail.objects.create(mailing_list=self.mlist1,
+                       origin_address='alice@example.com',
+                       subject='ahoi 1',
+                       body='I like traffic lights.',
+                       sent_time=datetime.now() - timedelta(minutes=15))
+      self.assertEqual(incoming.state, 'raw')
       IncomingMail.objects.process_incoming()
       self.assertEqual(OutgoingMail.objects.count(), 2)
-      incoming = IncomingMail.objects.get(pk=incoming[0].id)
+      incoming = IncomingMail.objects.get(pk=incoming.id)
       self.assertEqual(incoming.state, 'moderate')
 
       # send an email from a subscriber
       self.mlist1.subscribers.add(self.user2)
-      add_test_incoming(self.mlist1, 'bob@example.com', 'ahoi 3', 'I like traffic lights.', sent_time=datetime.now() - timedelta(minutes=15))
-      incoming = checker.fetch_mail()
-      self.assertEqual(len(incoming), 1)
-      self.assertEqual(incoming[0].state, 'raw')
+
+      incoming = IncomingMail.objects.create(mailing_list=self.mlist1,
+                       origin_address='bob@example.com',
+                       subject='ahoi 3',
+                       body='I like traffic lights.',
+                       sent_time=datetime.now() - timedelta(minutes=15))
+
+      self.assertEqual(incoming.state, 'raw')
       IncomingMail.objects.process_incoming()
       self.assertEqual(OutgoingMail.objects.count(), 3)
-      incoming = IncomingMail.objects.get(pk=incoming[0].id)
+      incoming = IncomingMail.objects.get(pk=incoming.id)
       self.assertEqual(incoming.state, 'send')
       outgoing = OutgoingMail.objects.all()[0]
       self.assertTrue(outgoing.subject.startswith(self.mlist1.subject_prefix), outgoing.subject)
@@ -186,18 +202,121 @@ class ListTest(TestCase):
       self.assertEqual(len(self.mlist1.subscriber_addresses), 1)
       self.assertEqual(len(self.mlist1.moderator_addresses), 1)
 
-   def test_mail_checking(self):
-      self.assertEqual(DEFAULT_MAIL_CHECKER, TestMailChecker)
-      checker = DEFAULT_MAIL_CHECKER(self.mlist1)
-      add_test_incoming(self.mlist1, 'alice@example.com', 'ahoi', 'I like traffic lights.', sent_time=datetime.now() - timedelta(minutes=15))
-      self.assertEqual(IncomingMail.objects.count(), 0)
-      in_mail = checker.fetch_mail()
-      self.assertEqual(len(in_mail), 1)
-      self.assertEqual(in_mail[0].origin_address, 'alice@example.com')
-      self.assertEqual(IncomingMail.objects.count(), 1)
+   def test_propagate_message_id(self):
+      TEST_EMAIL="""From nobody Thu May  3 13:31:54 2012
+Date: Thu, 3 May 2012 13:27:29 -0700
+From: Bob Albert <bob@example.com>
+To: hats@example.com
+Message-ID: <00A46A5C1AF8411DB6FF0CB15688E828@gmail.com>
+Subject: Test me
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="4fa2ea31_5046b5a9_1b6"
 
-      add_test_incoming(self.mlist1, 'alice@example.com', 'ahoi 2', 'I like traffic lights A LOT.', sent_time=datetime.now() - timedelta(minutes=15))
-      MailingList.objects.fetch_all_mail()
-      self.assertEqual(IncomingMail.objects.count(), 2)
+--4fa2ea31_5046b5a9_1b6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+Please ignore=E2=80=A6 =20
+
+
+--4fa2ea31_5046b5a9_1b6
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+
+                <div>Please ignore=E2=80=A6
+                </div><div><br></div>
+                <div></div>
+
+--4fa2ea31_5046b5a9_1b6--
+
+"""
+      self.mlist1.subscribers = [self.user2, self.user3]
+
+      self.mlist1.create_incoming(email.message_from_string(TEST_EMAIL))
+      IncomingMail.objects.process_incoming()
+      OutgoingMail.objects.send_outgoing()
+
+      self.assertEqual(1, len(mail.outbox))
+      m = mail.outbox[0]
+      self.assertEqual('"Bob Albert" <hats@example.com>', m.from_email)
+      self.assertEqual('hat Test me', m.subject)
+      self.assertEqual(['hats@example.com'], m.to)
+      self.assertEqual('<00A46A5C1AF8411DB6FF0CB15688E828@gmail.com>', m.extra_headers['Message-ID'])
+
+   def test_reply_subject(self):
+      "Replies don't have the subject prefix prefixed, if it begins with re prefix"
+      TEST_EMAIL = """From nobody Thu May  3 14:47:44 2012
+Date: Thu, 3 May 2012 14:47:29 -0700
+From: Bob Albert <bob@example.com>
+To: Charlie Tuna <charlie@example.com>
+Cc: hats@example.com
+Message-ID: <5468B39B3E1548269FF218E1716B93A3@gmail.com>
+In-Reply-To: <66A138E298054C28B6FBF7E6704C36E2@gmail.com>
+References: <66A138E298054C28B6FBF7E6704C36E2@gmail.com>
+Subject: Re: hat Reply
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="4fa2fcf1_759f82cd_1b6"
+
+--4fa2fcf1_759f82cd_1b6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+I want to reply to this email... =20
+
+
+On Thursday, May 3, 2012 at 2:47 PM, Paul Watts wrote:
+
+> I am sending this email=E2=80=A6 =20
+> =20
+> =20
+
+
+--4fa2fcf1_759f82cd_1b6
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+
+                <div>
+                    I want to reply to this email...
+                </div>
+                <div></div>
+                =20
+                <p style=3D=22color: =23A0A0A8;=22>On Thursday, May 3, 20=
+12 at 2:47 PM, Paul Watts wrote:</p>
+                <blockquote type=3D=22cite=22 style=3D=22border-left-styl=
+e:solid;border-width:1px;margin-left:0px;padding-left:10px;=22>
+                    <span><div><div>
+                <div>
+                    I am sending this email=E2=80=A6
+                </div><div><br></div>
+                </blockquote>
+                =20
+                <div>
+                    <br>
+                </div>
+
+--4fa2fcf1_759f82cd_1b6--
+
+"""
+      self.mlist1.subscribers = [self.user2, self.user3]
+
+      self.mlist1.create_incoming(email.message_from_string(TEST_EMAIL))
+      IncomingMail.objects.process_incoming()
+      OutgoingMail.objects.send_outgoing()
+
+      self.assertEqual(1, len(mail.outbox))
+      m = mail.outbox[0]
+      self.assertEqual('"Bob Albert" <hats@example.com>', m.from_email)
+      self.assertEqual('Re: hat Reply', m.subject)
+      self.assertEqual(['hats@example.com'], m.to)
+      self.assertEqual('<5468B39B3E1548269FF218E1716B93A3@gmail.com>', m.extra_headers['Message-ID'])
+      self.assertEqual('<66A138E298054C28B6FBF7E6704C36E2@gmail.com>', m.extra_headers['In-Reply-To'])
+      self.assertEqual('<66A138E298054C28B6FBF7E6704C36E2@gmail.com>', m.extra_headers['References'])
+
 
 # Copyright 2011 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

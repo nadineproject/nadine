@@ -24,7 +24,6 @@ STATICFILES_FINDERS = (
 SOUTH_AUTO_FREEZE_APP = True
 
 DEBUG = False
-IS_TEST = len(sys.argv) > 1 and sys.argv[0].endswith('manage.py') and 'test' == sys.argv[1]
 
 # Local time zone for this installation. Choices can be found here:
 # http://www.postgresql.org/docs/8.1/static/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE

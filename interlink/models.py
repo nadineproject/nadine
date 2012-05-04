@@ -1,3 +1,4 @@
+import email
 from datetime import datetime, timedelta
 from collections import defaultdict
 
@@ -10,6 +11,7 @@ from django.core.urlresolvers import reverse
 from django.core.mail import get_connection, EmailMultiAlternatives
 from django.db.models.signals import post_save
 from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 from staff.models import Member, Membership
 from interlink.message import MailingListMessage
@@ -77,9 +79,11 @@ class MailingList(models.Model):
 
    def fetch_mail(self, logger=None):
       """Fetches incoming mails from the mailing list."""
-      from interlink.mail import DEFAULT_MAIL_CHECKER
-      checker = DEFAULT_MAIL_CHECKER(self, logger)
-      checker.fetch_mail()
+      # We could bring back the configurability of the mail checker,
+      # but right now it doesn't really *test* anything..
+      from interlink.mail import PopMailChecker
+      checker = PopMailChecker(self, logger)
+      return checker.fetch_mail()
 
    def get_smtp_connection(self):
       fail_silently = getattr(settings, 'INTERLINK_MAILS_FAIL_SILENTLY', False)
@@ -109,15 +113,68 @@ class MailingList(models.Model):
    @models.permalink
    def get_absolute_url(self): return ('interlink.views.list', (), { 'id':self.id })
 
+   def create_incoming(self, message, commit=True):
+      "Parses an email message and creates an IncomingMail from it."
+      _name, origin_address = email.utils.parseaddr(message['From'])
+      time_struct = email.utils.parsedate(message['Date'])
+      if time_struct:
+         sent_time = datetime(*time_struct[:-2])
+      else:
+         sent_time = datetime.now()
+
+      body, html_body, file_names = self.find_bodies(message)
+      for file_name in file_names:
+         if body:
+            body = '%s\n\n%s' % (body, '\nAn attachment has been dropped: %s' % strip_tags(file_name))
+         if html_body:
+            html_body = '%s<br><br>%s' % (html_body, '<div>An attachment has been dropped: %s</div>' % strip_tags(file_name))
+
+      site = Site.objects.get_current()
+      if body:
+         body += '\n\nEmail sent to the %s list at http://%s' % (self.name, site.domain)
+      if html_body:
+         html_body += u'<br/><div>Email sent to the %s list at <a href="http://%s">%s</a></div>' % (self.name, site.domain, site.name)
+
+      incoming = IncomingMail(mailing_list=self,
+                             origin_address=origin_address,
+                             subject=message['Subject'],
+                             body=body,
+                             html_body=html_body,
+                             sent_time=sent_time,
+                             original_message=str(message))
+      if commit:
+         incoming.save()
+      return incoming
+
+   def find_bodies(self, message):
+      """Returns (body, html_body, file_names[]) for this payload, recursing into multipart/alternative payloads if necessary"""
+      #if not message.is_multipart(): return (message.get_payload(decode=True), None, [])
+      body = None
+      html_body = None
+      file_names = []
+      for bod in message.walk():
+         if bod.get_content_type().startswith('text/plain') and not body:
+            body = bod.get_payload(decode=True)
+            body = body.decode(bod.get_content_charset())
+         elif bod.get_content_type().startswith('text/html') and not html_body:
+            html_body = bod.get_payload(decode=True)
+            html_body = html_body.decode(bod.get_content_charset())
+         elif bod.has_key('Content-Disposition') and bod['Content-Disposition'].startswith('attachment; filename="'):
+            file_names.append(bod['Content-Disposition'][len('attachment; filename="'):-1])
+      return (body, html_body, file_names)
+
+
 def user_mailing_list_memberships(user):
    """Returns an array of tuples of <MailingList, is_subscriber> for a User"""
    return [(ml, user in ml.subscribers.all()) for ml in MailingList.objects.all()]
 User.mailing_list_memberships = user_mailing_list_memberships
 
+
 class IncomingMailManager(models.Manager):
    def process_incoming(self):
       for incoming in self.filter(state='raw'):
          incoming.process()
+
 
 class IncomingMail(models.Model):
    """An email as popped for a mailing list"""
@@ -142,11 +199,23 @@ class IncomingMail(models.Model):
       self.state = 'reject'
       self.save()
 
+   @property
+   def _prefix_subject(self):
+      subject = self.subject
+      subject_prefix = self.mailing_list.subject_prefix
+
+      if not subject_prefix:
+         return subject
+
+      # Reply handling: if the prefix is already in the subject, don't prefix
+      if subject_prefix in subject:
+         return subject
+
+      # Otherwise prefix
+      return ' '.join((subject_prefix, subject))
+
    def create_outgoing(self):
-      if self.mailing_list.subject_prefix:
-         subject = '%s %s' % (self.mailing_list.subject_prefix, self.subject)
-      else:
-         subject = self.subject
+      subject = self._prefix_subject
       outgoing = OutgoingMail.objects.create(mailing_list=self.mailing_list, original_mail=self, subject=subject, body=self.body, html_body=self.html_body)
       self.state = 'send'
       self.save()
@@ -255,8 +324,15 @@ class OutgoingMail(models.Model):
          'List-ID': self.mailing_list.list_id,
          'X-CAN-SPAM-1': 'This message may be a solicitation or advertisement within the specific meaning of the CAN-SPAM Act of 2003.'
       }
+
       if self.original_mail:
          headers['Reply-To'] = self.original_mail.origin_address
+         if not self.moderators_only:
+            # Attempt to propagate certain headers
+            msg = email.message_from_string(str(self.original_mail.original_message))
+            for hdr in ('Message-ID', 'References', 'In-Reply-To'):
+               if hdr in msg:
+                  headers[hdr] = msg[hdr].replace("\r", "").replace("\n", " ")
       else:
          headers['Reply-To'] = self.mailing_list.email_address
 
