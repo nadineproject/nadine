@@ -26,13 +26,27 @@ from django.http import HttpResponse, Http404, HttpResponseServerError, HttpResp
 
 from models import MailingList, IncomingMail
 
+@staff_member_required
 def index(request):
-   return render_to_response('interlink/index.html', {}, context_instance=RequestContext(request))
+   lists = MailingList.objects.all()
+   return render_to_response('interlink/index.html', {'lists':lists}, context_instance=RequestContext(request))
 
 @staff_member_required
-def list(request, id):
-   mailing_list = get_object_or_404(MailingList, pk=id)
-   return render_to_response('interlink/list.html', {'mailing_list':mailing_list}, context_instance=RequestContext(request))
+def list_messages(request, list_id):
+   mailing_list = get_object_or_404(MailingList, pk=list_id)
+   return render_to_response('interlink/messages.html', {'mailing_list':mailing_list}, context_instance=RequestContext(request))
+
+@staff_member_required
+def list_subscribers(request, list_id):
+   mailing_list = get_object_or_404(MailingList, pk=list_id)
+   return render_to_response('interlink/subscribers.html', {'mailing_list':mailing_list}, context_instance=RequestContext(request))
+
+@login_required
+def unsubscribe(request, list_id, username):
+   mailing_list = get_object_or_404(MailingList, pk=list_id)
+   user = get_object_or_404(User, username=username)
+   mailing_list.subscribers.remove(user)
+   return HttpResponseRedirect(reverse('interlink.views.list_subscribers', args=[list_id]))
 
 @login_required
 def moderator_list(request):

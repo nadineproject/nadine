@@ -3,10 +3,22 @@
 {% block sub-title %}Interlink | {% endblock %}
 
 {% block style %}
+nav #lists-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {% block content%}
+{% include "interlink/list_menu.frag" %}  
 
-<h1>Interlink:</h1>
+<h2>Mailing Lists</h2>
+
+<ul>
+{% for l in lists %}
+	<li>
+		<strong>{{ l }}</strong>: 
+		<a href="{% url interlink.views.list_messages l.id %}">messages</a> |
+		<a href="{% url interlink.views.list_subscribers l.id %}">subscribers</a>
+	</li>
+{% endfor %}
+</ul>
 
 {% endblock %}

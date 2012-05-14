@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block content%}
+{% include "interlink/list_menu.frag" %}  
 
 <h2>{{ incoming_mail.origin_address }}: {{ incoming_mail.subject }}</h2>
 

@@ -4,7 +4,9 @@ from django.conf import settings
 from models import *
 
 urlpatterns = patterns('',
-   (r'^list/(?P<id>[^/]+)/$', 'interlink.views.list'),
+   (r'^messages/(?P<list_id>[^/]+)/$', 'interlink.views.list_messages'),
+   (r'^subscribers/(?P<list_id>[^/]+)/$', 'interlink.views.list_subscribers'),
+   (r'^unsubscribe/(?P<list_id>[^/]+)/(?P<username>[^/]+)$', 'interlink.views.unsubscribe'),
    (r'^moderate/$', 'interlink.views.moderator_list'),
    (r'^moderate/(?P<id>[\d]+)/$', 'interlink.views.moderator_inspect'),
    (r'^moderate/(?P<id>[\d]+)/approve/$', 'interlink.views.moderator_approve'),

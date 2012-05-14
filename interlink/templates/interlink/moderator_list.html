@@ -3,12 +3,14 @@
 {% block sub-title %}Moderation List | {% endblock %}
 
 {% block style %}
+nav #lists-tab { background: #FBD850; color: black; }
 #content td, #content th { text-align: left; padding-right: 2em; }
 #content td:first-child, #content th:first-child { width: 15em; }
 #content h3 { text-align: center; }
 {% endblock %}
 
 {% block content%}
+{% include "interlink/list_menu.frag" %}  
 
 <h2>Moderation List:</h2>
 

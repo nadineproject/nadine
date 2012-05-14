@@ -3,12 +3,14 @@
 {% block sub-title %}{{ mailing_list.name }} Log | {% endblock %}
 
 {% block style %}
+nav #lists-tab { background: #FBD850; color: black; }
 #content td, #content th { text-align: left; padding-right: 2em; }
 #content td:first-child, #content th:first-child { width: 15em; }
 .last-attempt { color: #F44; }
 {% endblock %}
 
 {% block content%}
+{% include "interlink/list_menu.frag" %}  
 
 <h2>{{ mailing_list.name }} Log:</h2>
 
@@ -19,7 +21,7 @@
 		<th>Origin</th>
 		<th>Subject</th>
 	</tr>
-{% for incoming_mail in mailing_list.incoming_mails.all|slice:"0:15" %}
+{% for incoming_mail in mailing_list.incoming_mails.all|dictsortreversed:"sent_time"|slice:"0:15" %}
 	<tr>
 		<td>{{ incoming_mail.sent_time }}</td>
 		<td>{{ incoming_mail.origin_address }}</td>
@@ -36,7 +38,7 @@
 		<th>Subject</th>
 		<th>Moderators only?</th>
 	</tr>
-{% for outgoing_mail in mailing_list.outgoing_mails.all|slice:"0:15" %}
+{% for outgoing_mail in mailing_list.outgoing_mails.all|dictsortreversed:"sent"|slice:"0:15" %}
 	<tr>
 		<td>
 			{% if outgoing_mail.sent %}
