@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block sub-title %}Subscribers to '{{ mailing_list.name }}' | {% endblock %}
+
+{% block style %}
+nav #lists-tab { background: #FBD850; color: black; }
+#content td, #content th { text-align: left; padding-right: 2em; }
+#content td:first-child, #content th:first-child { width: 15em; }
+.last-attempt { color: #F44; }
+{% endblock %}
+
+
+{% block content%}
+{% include "interlink/list_menu.frag" %}  
+
+<div>
+	<div style="size:large; float:right;"><strong>{{ mailing_list.subscribers.all|length }} Subscribers</strong></div>
+	<h2>Subscribers to <i>{{ mailing_list.name }} </i>:</h2>
+</div>
+
+<table>
+	<tr>
+		<th>Name</th>
+		<th>Start Date</th>
+		<th>End Date</th>
+		<th>Action</th>
+	</tr>
+{% for subscriber in mailing_list.subscribers.all|dictsort:"username.lower" %}
+	<tr>
+		<td>{{ subscriber.first_name }} {{ subscriber.last_name }}</td>
+		<td>{{ subscriber.get_profile.last_membership.start_date }}</td>
+		<td>{{ subscriber.get_profile.last_membership.end_date }}</td>
+		<td><a href="{%url interlink.views.unsubscribe mailing_list.id subscriber.username%}">unsubscribe</a></td>
+	</tr>
+{% endfor %}
+</table>
+{% endblock %}
