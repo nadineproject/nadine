@@ -45,12 +45,14 @@ nav #lists-tab { background: #FBD850; color: black; }
 		<th>Name</th>
 		<th>Start Date</th>
 		<th>End Date</th>
+		<th>Action</th>
 	</tr>
 {% for subscriber in not_subscribed %}
 	<tr>
 		<td>{{ subscriber.first_name }} {{ subscriber.last_name }}</td>
 		<td>{{ subscriber.last_membership.start_date }}</td>
 		<td>{{ subscriber.last_membership.end_date }}</td>
+		<td><a href="{%url interlink.views.subscribe mailing_list.id subscriber.user%}">subscribe</a></td>
 	</tr>
 {% endfor %}
 </table>

@@ -44,6 +44,16 @@ def list_subscribers(request, list_id):
    return render_to_response('interlink/subscribers.html', {'mailing_list':mailing_list, 'not_subscribed':not_subscribed}, context_instance=RequestContext(request))
 
 @login_required
+def subscribe(request, list_id, username):
+   mailing_list = get_object_or_404(MailingList, pk=list_id)
+   user = get_object_or_404(User, username=username)
+   if request.method == 'POST':
+      if request.POST.get('confirm', 'No') == "Yes":
+         mailing_list.subscribers.add(user)
+      return HttpResponseRedirect(reverse('interlink.views.list_subscribers', args=[list_id]))
+   return render_to_response('interlink/subscribe.html', {'member':user.get_profile(), 'mailing_list':mailing_list}, context_instance=RequestContext(request))
+
+@login_required
 def unsubscribe(request, list_id, username):
    mailing_list = get_object_or_404(MailingList, pk=list_id)
    user = get_object_or_404(User, username=username)
@@ -52,6 +62,7 @@ def unsubscribe(request, list_id, username):
          mailing_list.subscribers.remove(user)
       return HttpResponseRedirect(reverse('interlink.views.list_subscribers', args=[list_id]))
    return render_to_response('interlink/unsubscribe.html', {'member':user.get_profile(), 'mailing_list':mailing_list}, context_instance=RequestContext(request))
+
 
 @staff_member_required
 def moderator_list(request):
