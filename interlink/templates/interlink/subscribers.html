@@ -15,7 +15,7 @@ nav #lists-tab { background: #FBD850; color: black; }
 
 <div>
 	<div style="size:large; float:right;"><strong>{{ mailing_list.subscribers.all|length }} Subscribers</strong></div>
-	<h2>Subscribers to <i>{{ mailing_list.name }} </i>:</h2>
+	<h2>Subscribers to <i>{{ mailing_list.name }}</i></h2>
 </div>
 
 <table>
@@ -31,6 +31,26 @@ nav #lists-tab { background: #FBD850; color: black; }
 		<td>{{ subscriber.get_profile.last_membership.start_date }}</td>
 		<td>{{ subscriber.get_profile.last_membership.end_date }}</td>
 		<td><a href="{%url interlink.views.unsubscribe mailing_list.id subscriber.username%}">unsubscribe</a></td>
+	</tr>
+{% endfor %}
+</table>
+
+<div>
+	<div style="size:large; float:right;"><strong>{{ not_subscribed|length }} Members</strong></div>
+	<h2>Active Members Not Subscribed</h2>
+</div>
+<h3></h3>
+<table>
+	<tr>
+		<th>Name</th>
+		<th>Start Date</th>
+		<th>End Date</th>
+	</tr>
+{% for subscriber in not_subscribed %}
+	<tr>
+		<td>{{ subscriber.first_name }} {{ subscriber.last_name }}</td>
+		<td>{{ subscriber.last_membership.start_date }}</td>
+		<td>{{ subscriber.last_membership.end_date }}</td>
 	</tr>
 {% endfor %}
 </table>
