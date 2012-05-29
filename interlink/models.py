@@ -284,7 +284,6 @@ class OutgoingMail(models.Model):
    subject = models.TextField(blank=True)
    body = models.TextField(blank=True, null=True)
    html_body = models.TextField(blank=True, null=True)
-
    attempts = models.IntegerField(blank=False, null=False, default=0)
    last_attempt = models.DateTimeField(blank=True, null=True)
    sent = models.DateTimeField(blank=True, null=True)
@@ -314,27 +313,29 @@ class OutgoingMail(models.Model):
          args['to'] = [self.mailing_list.email_address]
          args['bcc'] = self.mailing_list.subscriber_addresses
 
-      if self.original_mail and self.original_mail.owner:
-         args['from_email'] = '"%s" <%s>' % (self.original_mail.owner.get_full_name(), self.mailing_list.email_address)
-      else:
-         args['from_email'] = self.mailing_list.email_address
-
       headers = {
          #'Date': email.utils.formatdate(),  # Done by default in Django
+         'Sender': self.mailing_list.email_address,
+         'Reply-To': self.mailing_list.email_address,
          'List-ID': self.mailing_list.list_id,
          'X-CAN-SPAM-1': 'This message may be a solicitation or advertisement within the specific meaning of the CAN-SPAM Act of 2003.'
       }
 
+      if self.original_mail and self.original_mail.owner:
+         args['from_email'] = '"%s" <%s>' % (self.original_mail.owner.get_full_name(), self.original_mail.owner.email)
+      else:
+         args['from_email'] = self.mailing_list.email_address
+
       if self.original_mail:
-         headers['Reply-To'] = self.original_mail.origin_address
-         if not self.moderators_only:
+         if self.moderators_only:
+            # Replies go to the originating user, not the list
+            headers['Reply-To'] = self.original_mail.origin_address
+         else:
             # Attempt to propagate certain headers
             msg = email.message_from_string(str(self.original_mail.original_message))
             for hdr in ('Message-ID', 'References', 'In-Reply-To'):
                if hdr in msg:
                   headers[hdr] = msg[hdr].replace("\r", "").replace("\n", " ")
-      else:
-         headers['Reply-To'] = self.mailing_list.email_address
 
       args['headers'] = headers
 

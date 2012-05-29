@@ -127,13 +127,15 @@ class ListTest(TestCase):
       m = mail.outbox[0]
 
       # Inspect the mails --
-      # The 'From' should be the user's name with the mailing list
+      # The 'From' should be the user's name & address
       # The 'To' should be the mailing list
-      # The 'Reply-To' should be the user
-      self.assertEqual('"Bob Albert" <hats@example.com>', m.from_email)
+      # The 'Sender' should be the mailing list
+      # The 'Reply-To' should be the mailing list
+      self.assertEqual('"Bob Albert" <bob@example.com>', m.from_email)
       self.assertEqual('hat ahoi 3', m.subject)
       self.assertEqual(['hats@example.com'], m.to)
-      self.assertEqual('bob@example.com', m.extra_headers['Reply-To'])
+      self.assertEqual('hats@example.com', m.extra_headers['Sender'])
+      self.assertEqual('hats@example.com', m.extra_headers['Reply-To'])
       self.assertEqual([u'bob@example.com', u'charlie@example.com'], sorted(m.recipients()))
 
    def test_incoming_processing(self):
@@ -241,7 +243,7 @@ Content-Disposition: inline
 
       self.assertEqual(1, len(mail.outbox))
       m = mail.outbox[0]
-      self.assertEqual('"Bob Albert" <hats@example.com>', m.from_email)
+      self.assertEqual('"Bob Albert" <bob@example.com>', m.from_email)
       self.assertEqual('hat Test me', m.subject)
       self.assertEqual(['hats@example.com'], m.to)
       self.assertEqual('<00A46A5C1AF8411DB6FF0CB15688E828@gmail.com>', m.extra_headers['Message-ID'])
@@ -311,7 +313,7 @@ e:solid;border-width:1px;margin-left:0px;padding-left:10px;=22>
 
       self.assertEqual(1, len(mail.outbox))
       m = mail.outbox[0]
-      self.assertEqual('"Bob Albert" <hats@example.com>', m.from_email)
+      self.assertEqual('"Bob Albert" <bob@example.com>', m.from_email)
       self.assertEqual('Re: hat Reply', m.subject)
       self.assertEqual(['hats@example.com'], m.to)
       self.assertEqual('<5468B39B3E1548269FF218E1716B93A3@gmail.com>', m.extra_headers['Message-ID'])
