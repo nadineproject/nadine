@@ -30,6 +30,17 @@ def members(request):
 		plans.append({ 'name':plan.name, 'id':plan.id, 'members':member_list, 'count':len(Member.objects.members_by_plan_id(plan.id))})
 	return render_to_response('staff/members.html', { 'plans': plans, 'member_count':member_count }, context_instance=RequestContext(request))
 
+def member_bcc(request, plan_id):
+	plans = MembershipPlan.objects.all()
+	if plan_id == '0':
+		print(plan_id)
+		plan_name = 'All'
+		member_list = Member.objects.active_members()
+	else:
+		plan_name = MembershipPlan.objects.get(pk=plan_id)
+		member_list = Member.objects.members_by_plan_id(plan_id);
+	return render_to_response('staff/member_bcc.html', { 'plans':plans, 'plan':plan_name, 'members':member_list }, context_instance=RequestContext(request))
+
 @staff_member_required
 def export_members(request):
 	members = Member.objects.all()

@@ -1,0 +1,25 @@
+{% extends "staff/ml_base.html" %}
+
+{% block sub-title %}Members | {% endblock %}
+
+{% block style%}
+nav #members-tab { background: #FBD850; color: black; }
+{% endblock %}
+
+{% block content %}
+{% include "staff/member_menu.frag" %}  
+
+<h2>Member BCC Tool- {{ plan }}</h2>
+
+<div class="submenu">
+{% for p in plans %}
+	<a href="{% url staff.views.member_bcc p.id %}">{{ p }}<a> |
+{% endfor %}
+<a href="{% url staff.views.member_bcc 0 %}">All</a>
+</div>
+
+<textarea rows="20" cols="80">
+{% for member in members %}{{ member.email }}, {% endfor %}
+</textarea>
+
+{% endblock %}
