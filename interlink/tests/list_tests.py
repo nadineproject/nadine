@@ -320,5 +320,20 @@ e:solid;border-width:1px;margin-left:0px;padding-left:10px;=22>
       self.assertEqual('<66A138E298054C28B6FBF7E6704C36E2@gmail.com>', m.extra_headers['In-Reply-To'])
       self.assertEqual('<66A138E298054C28B6FBF7E6704C36E2@gmail.com>', m.extra_headers['References'])
 
+   def test_no_content_type(self):
+      TEST_EMAIL = """Return-Path: <store@b-pb-mailstore-quonix>
+Delivered-To: members@officenomads.com
+Date: 8 Jun 2012 17:26:08 -0000
+Message-ID: <1339176368.11152.blah>
+Delivered-To: Autoresponder
+To: members@officenomads.com
+From: test@testington.com
+Subject: Friday June 8th-out of office
+
+This email has no content type
+"""
+      self.mlist1.subscribers = [self.user2, self.user3]
+      self.mlist1.create_incoming(email.message_from_string(TEST_EMAIL))
+
 
 # Copyright 2011 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

@@ -155,10 +155,10 @@ class MailingList(models.Model):
       for bod in message.walk():
          if bod.get_content_type().startswith('text/plain') and not body:
             body = bod.get_payload(decode=True)
-            body = body.decode(bod.get_content_charset())
+            body = body.decode(bod.get_content_charset('ascii'))
          elif bod.get_content_type().startswith('text/html') and not html_body:
             html_body = bod.get_payload(decode=True)
-            html_body = html_body.decode(bod.get_content_charset())
+            html_body = html_body.decode(bod.get_content_charset('ascii'))
          elif bod.has_key('Content-Disposition') and bod['Content-Disposition'].startswith('attachment; filename="'):
             file_names.append(bod['Content-Disposition'][len('attachment; filename="'):-1])
       return (body, html_body, file_names)
