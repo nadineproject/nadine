@@ -20,9 +20,20 @@ class PopMailChecker(object):
       pop_client = poplib.POP3_SSL(self.mailing_list.pop_host, self.mailing_list.pop_port)
       try :
          response = pop_client.user(self.mailing_list.username)
-         if not response.startswith('+OK'): raise Exception('Username not accepted: %s' % response)
-         response = pop_client.pass_(self.mailing_list.password)
-         if not response.startswith('+OK'): raise Exception('Password not accepted: %s' % response)
+         if not response.startswith('+OK'):
+            raise Exception('Username not accepted: %s' % response)
+         try:
+            response = pop_client.pass_(self.mailing_list.password)
+            if not response.startswith('+OK'):
+               raise Exception('Password not accepted: %s' % response)
+         except poplib.error_proto, e:
+            # We get this back a lot, and we don't want it to flood our logs:
+            # error_proto('-ERR [IN-USE] Unable to lock maildrop: Mailbox is locked by POP server',)
+            if 'IN-USE' not in e.message:
+               raise
+            self.logger.debug("Ignoring locked mailbox")
+            return
+
          stats = pop_client.stat()
          if stats[0] == 0:
             self.logger.debug("No mail")
@@ -31,24 +42,30 @@ class PopMailChecker(object):
          results = []
          self.logger.debug("Processing %d mails" % stats[0])
          for i in range(stats[0]):
-            response, mail, _size = pop_client.retr(i+1)
-            parser = email.FeedParser.FeedParser()
-            parser.feed('\n'.join(mail))
-            message = parser.close()
+            try:
+               response, mail, _size = pop_client.retr(i+1)
+               parser = email.FeedParser.FeedParser()
+               parser.feed('\n'.join(mail))
+               message = parser.close()
 
-            # Delete and ignore auto responses
-            if message['Auto-Submitted'] and message['Auto-Submitted'] != 'no':
+               # Delete and ignore auto responses
+               if message['Auto-Submitted'] and message['Auto-Submitted'] != 'no':
+                  pop_client.dele(i+1)
+                  continue
+
+               # Delete and ignore messages sent from any list to avoid loops
+               if message['List-ID']:
+                  pop_client.dele(i+1)
+                  continue
+
+               #TODO Delete and ignore soft bounces
+               results.append(self.mailing_list.create_incoming(message))
                pop_client.dele(i+1)
-               continue
+            except Exception, e:
+               self.logger.error("Exception while processing email")
+               self.logger.error("Message: " + str(message))
+               self.logger.error("Exception: " + str(e))
 
-            # Delete and ignore messages sent from any list to avoid loops
-            if message['List-ID']:
-               pop_client.dele(i+1)
-               continue
-
-            #TODO Delete and ignore soft bounces
-            results.append(self.mailing_list.create_incoming(message))
-            pop_client.dele(i+1)
       finally:
          pop_client.quit()
 
