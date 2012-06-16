@@ -74,6 +74,33 @@ class ListTest(TestCase):
       income = IncomingMail.objects.get(pk=incoming.id)
       self.assertEqual(income.state, 'send')
 
+   def test_moderated_from(self):
+      "Moderated emails from non-users were losing their 'from' address."
+      self.mlist1.moderators.add(self.user1)
+      self.mlist1.subscribers.add(self.user2)
+      self.assertEqual(1, self.mlist1.subscribers.count())
+
+      incoming = IncomingMail.objects.create(mailing_list=self.mlist1,
+                       origin_address='unknownperson@example.com',
+                       subject='ahoi 3',
+                       body='I like traffic lights.',
+                       sent_time=datetime.now() - timedelta(minutes=15))
+      IncomingMail.objects.process_incoming()
+      incoming = IncomingMail.objects.get(pk=incoming.pk)
+      self.assertEqual(incoming.state, 'moderate')
+      # One outgoing mail, the moderation mail
+      self.assertEqual(1, OutgoingMail.objects.count())
+      # Clear the outgoing mail
+      OutgoingMail.objects.all().delete()
+      # Approve the moderated mail
+      incoming.create_outgoing()
+      OutgoingMail.objects.send_outgoing()
+      self.assertEqual(1, len(mail.outbox))
+      m = mail.outbox[0]
+      self.assertEqual('unknownperson@example.com', m.from_email)
+      self.assertEqual('hats@example.com', m.extra_headers['Sender'])
+      self.assertEqual('hats@example.com', m.extra_headers['Reply-To'])
+
    def test_opt_out(self):
       self.assertEqual(0, self.mlist1.subscribers.count())
       self.mlist1.is_opt_out = True
@@ -131,7 +158,7 @@ class ListTest(TestCase):
       # The 'To' should be the mailing list
       # The 'Sender' should be the mailing list
       # The 'Reply-To' should be the mailing list
-      self.assertEqual('"Bob Albert" <bob@example.com>', m.from_email)
+      self.assertEqual('Bob Albert <bob@example.com>', m.from_email)
       self.assertEqual('hat ahoi 3', m.subject)
       self.assertEqual(['hats@example.com'], m.to)
       self.assertEqual('hats@example.com', m.extra_headers['Sender'])
@@ -243,7 +270,7 @@ Content-Disposition: inline
 
       self.assertEqual(1, len(mail.outbox))
       m = mail.outbox[0]
-      self.assertEqual('"Bob Albert" <bob@example.com>', m.from_email)
+      self.assertEqual('Bob Albert <bob@example.com>', m.from_email)
       self.assertEqual('hat Test me', m.subject)
       self.assertEqual(['hats@example.com'], m.to)
       self.assertEqual('<00A46A5C1AF8411DB6FF0CB15688E828@gmail.com>', m.extra_headers['Message-ID'])
@@ -313,7 +340,7 @@ e:solid;border-width:1px;margin-left:0px;padding-left:10px;=22>
 
       self.assertEqual(1, len(mail.outbox))
       m = mail.outbox[0]
-      self.assertEqual('"Bob Albert" <bob@example.com>', m.from_email)
+      self.assertEqual('Bob Albert <bob@example.com>', m.from_email)
       self.assertEqual('Re: hat Reply', m.subject)
       self.assertEqual(['hats@example.com'], m.to)
       self.assertEqual('<5468B39B3E1548269FF218E1716B93A3@gmail.com>', m.extra_headers['Message-ID'])

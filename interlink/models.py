@@ -321,10 +321,17 @@ class OutgoingMail(models.Model):
          'X-CAN-SPAM-1': 'This message may be a solicitation or advertisement within the specific meaning of the CAN-SPAM Act of 2003.'
       }
 
-      if self.original_mail and self.original_mail.owner:
-         args['from_email'] = '"%s" <%s>' % (self.original_mail.owner.get_full_name(), self.original_mail.owner.email)
-      else:
-         args['from_email'] = self.mailing_list.email_address
+      # Determine the from address
+      if self.original_mail:
+         org = self.original_mail
+         if org.owner:
+            # Sender is a known user
+            args['from_email'] = email.utils.formataddr((org.owner.get_full_name(), org.owner.email))
+         elif org.origin_address and not self.moderators_only:
+            args['from_email'] = self.original_mail.origin_address
+
+      # If it wasn't set, we have nothing better than just to send it from the mailing list
+      args.setdefault('from_email', self.mailing_list.email_address)
 
       if self.original_mail:
          if self.moderators_only:
