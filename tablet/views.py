@@ -4,11 +4,12 @@ from datetime import date, datetime, time, timedelta
 from django.conf import settings
 from django.template import RequestContext
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, resolve
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.sites.models import Site
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
-from django.contrib.admin.views.decorators import staff_member_required
 
 from staff.models import Member, DailyLog, Bill
 from staff.forms import NewUserForm, MemberSearchForm
@@ -22,7 +23,14 @@ def new_user(request):
 		try:
 			if form.is_valid():
 				user = form.save() 
-				return HttpResponseRedirect(reverse('tablet.views.user_signin', kwargs={ 'username':user.username }))
+				# Send a welcome email
+				site = Site.objects.get_current()
+				url = "http://%s%s" % (site.domain, reverse('members.views.index'))
+				subject = "%s: Introduction to Nadine" % (site.name)
+				message = "Hello,\r\n\r\n \tWe just created a new user in Nadine, the system we use to run %s.  You can login to Nadine to see other members, update your profile, and view your activity and billing history.  The first time you will need to reset your password.  Your username is: %s\r\n\r\n%s\r\n\r\n - Nadine" % (site.name, user.username, url)
+				send_mail(subject, message, settings.EMAIL_ADDRESS, [user.email], fail_silently=True)
+				# Now sign them in
+				return HttpResponseRedirect(reverse('tablet.views.signin_user', kwargs={ 'username':user.username }))
 		except Exception as e:
 			page_message = e
 	else:
