@@ -88,14 +88,18 @@ def signin_user(request, username):
 	daily_log.visit_date = date.today()
 	if DailyLog.objects.filter(member=member).count() == 0:
 		daily_log.payment = 'Trial';
+		subject = "New User - %s" % (member)
+		message = "Team,\r\n\r\n \t%s just signed in for the first time!\r\n\r\n - Nadine" % (member)
+		send_mail(subject, message, settings.EMAIL_ADDRESS, [settings.TEAM_EMAIL_ADDRESS], fail_silently=True)
 	else:
 		daily_log.payment = 'Bill';
+		if not member.photo:
+			subject = "Photo Opportunity - %s" % (member)
+			message = "Team,\r\n\r\n \t%s just signed in and we don't have a photo of them yet.\r\n\r\n - Nadine" % (member)
+			send_mail(subject, message, settings.EMAIL_ADDRESS, [settings.TEAM_EMAIL_ADDRESS], fail_silently=True)
+
 	daily_log.save()
 	
-	if not member.photo:
-		subject = "Photo Opportunity - %s" % (member)
-		message = "Team,\r\n\r\n \t%s just signed in and we don't have a photo of them yet.\r\n\r\n - Nadine" % (member)
-		send_mail(subject, message, settings.EMAIL_ADDRESS, [settings.TEAM_EMAIL_ADDRESS], fail_silently=True)
 		
 	return HttpResponseRedirect(reverse('tablet.views.signin', kwargs={}))
 
