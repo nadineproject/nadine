@@ -33,7 +33,6 @@ def members(request):
 def member_bcc(request, plan_id):
 	plans = MembershipPlan.objects.all()
 	if plan_id == '0':
-		print(plan_id)
 		plan_name = 'All'
 		member_list = Member.objects.active_members()
 	else:
