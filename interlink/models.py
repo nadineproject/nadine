@@ -316,7 +316,7 @@ class OutgoingMail(models.Model):
       headers = {
          #'Date': email.utils.formatdate(),  # Done by default in Django
          'Sender': self.mailing_list.email_address,
-         'Reply-To': self.mailing_list.email_address,
+         #'Reply-To': self.mailing_list.email_address,
          'List-ID': self.mailing_list.list_id,
          'X-CAN-SPAM-1': 'This message may be a solicitation or advertisement within the specific meaning of the CAN-SPAM Act of 2003.'
       }
@@ -332,17 +332,15 @@ class OutgoingMail(models.Model):
 
       # If it wasn't set, we have nothing better than just to send it from the mailing list
       args.setdefault('from_email', self.mailing_list.email_address)
+      # Replies go to the originating user, not the list
+      headers['Reply-To'] = args['from_email']
 
-      if self.original_mail:
-         if self.moderators_only:
-            # Replies go to the originating user, not the list
-            headers['Reply-To'] = self.original_mail.origin_address
-         else:
-            # Attempt to propagate certain headers
-            msg = email.message_from_string(str(self.original_mail.original_message))
-            for hdr in ('Message-ID', 'References', 'In-Reply-To'):
-               if hdr in msg:
-                  headers[hdr] = msg[hdr].replace("\r", "").replace("\n", " ")
+      if self.original_mail and not self.moderators_only:
+         # Attempt to propagate certain headers
+         msg = email.message_from_string(str(self.original_mail.original_message))
+         for hdr in ('Message-ID', 'References', 'In-Reply-To'):
+            if hdr in msg:
+               headers[hdr] = msg[hdr].replace("\r", "").replace("\n", " ")
 
       args['headers'] = headers
 
