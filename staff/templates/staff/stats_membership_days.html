@@ -1,0 +1,45 @@
+{% extends "staff/ml_base.html" %}
+{% load stats_tags %}
+
+{% block sub-title %}Stats | Membership Days | {% endblock %}
+
+{% block style %}
+nav #stats-tab { background: #FBD850; color: black; }
+#content table { width: auto; margin-bottom: 40px; }
+#content td { border-bottom: none; width: 50px; }
+#content th { width: 100px;}
+{% endblock %}
+
+{% block content %}
+{% include "staff/stats_menu.frag" %}  
+
+<h2>Stats - Membership Days:</h2>
+
+<table border=1>
+	<tr>
+		<th>User</th>
+		<th>Rank</th>
+		<th>Memberships</th>
+		<th>Total Days</th>
+		<th>Max Days</th>
+		<th></th>
+	</tr>
+	{% for d in membership_days %}
+		<tr>
+			<td>{% if d.current %}<strong>{% endif %}{{ d.user }}{% if d.current %}</strong>{% endif %}</td>
+			<td>{{ forloop.counter }}</th>
+			<td>{{ d.membership_count }}</td>
+			<td>{{ d.total_days }}</td>
+			<td>{{ d.max_days }}</td>
+			<td></td>
+		</tr>
+	{% endfor %}
+</table>
+
+<table>
+	<tr>
+		<th>Average Days</th>
+		<td>{{ avg_days }}</td>
+</table>
+
+{% endblock %}

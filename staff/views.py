@@ -3,6 +3,7 @@ import time as timeo
 from datetime import date, datetime, timedelta
 import calendar
 from decimal import Decimal
+from collections import namedtuple
 
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -315,6 +316,37 @@ def stats_neighborhood(request):
 	
 	return render_to_response('staff/stats_neighborhood.html', { 'neighborhoods': neighborhoods, 'stats': stats_dict, 
 									  'active_only': active_only}, context_instance=RequestContext(request))
+
+@staff_member_required
+def stats_membership_days(request):
+	MembershipDays = namedtuple('MembershipDays', 'user, membership_count, total_days, max_days, current')
+	membership_days = []
+	users = User.objects.all()
+	memberships = Membership.objects.select_related('member', 'member__user').all()
+	avg_count = 0
+	avg_total = 0
+	for user in users:
+		user_memberships = [m for m in memberships if m.member.user == user]
+		membership_count = len(user_memberships)
+		total_days = 0
+		max_days = 0
+		current = False;
+		for membership in user_memberships:
+			end = membership.end_date
+			if not end: 
+				end = date.today()
+				current = True;
+			diff = end - membership.start_date
+			days = diff.days
+			total_days = total_days + days
+			if (days > max_days):
+				max_days = days
+		membership_days.append(MembershipDays(user, membership_count, total_days, max_days, current))
+		if total_days > 0:
+			avg_count = avg_count + 1
+			avg_total = avg_total + total_days
+	membership_days.sort(key=lambda x:x.total_days, reverse=True)
+	return render_to_response('staff/stats_membership_days.html', { 'membership_days':membership_days, 'avg_days':avg_total/avg_count }, context_instance=RequestContext(request))
 
 @staff_member_required
 def member_detail(request, member_id):
