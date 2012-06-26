@@ -1,4 +1,5 @@
 import email
+import logging
 
 from datetime import datetime, timedelta, date
 
@@ -99,7 +100,7 @@ class ListTest(TestCase):
       m = mail.outbox[0]
       self.assertEqual('unknownperson@example.com', m.from_email)
       self.assertEqual('hats@example.com', m.extra_headers['Sender'])
-      self.assertEqual('hats@example.com', m.extra_headers['Reply-To'])
+      self.assertEqual('unknownperson@example.com', m.extra_headers['Reply-To'])
 
    def test_opt_out(self):
       self.assertEqual(0, self.mlist1.subscribers.count())
@@ -162,7 +163,7 @@ class ListTest(TestCase):
       self.assertEqual('hat ahoi 3', m.subject)
       self.assertEqual(['hats@example.com'], m.to)
       self.assertEqual('hats@example.com', m.extra_headers['Sender'])
-      self.assertEqual('hats@example.com', m.extra_headers['Reply-To'])
+      self.assertEqual('Bob Albert <bob@example.com>', m.extra_headers['Reply-To'])
       self.assertEqual([u'bob@example.com', u'charlie@example.com'], sorted(m.recipients()))
 
    def test_incoming_processing(self):
@@ -189,7 +190,7 @@ class ListTest(TestCase):
       self.assertEqual('hats@example.com', m.from_email)
       self.assertEqual(u'Moderation Request: Hat Styles: ahoi 1', m.subject)
       self.assertEqual(['charlie@example.com'], m.to)
-      self.assertEqual(u'bogus@example.com', m.extra_headers['Reply-To'])
+      self.assertEqual(u'hats@example.com', m.extra_headers['Reply-To'])
       self.assertEqual([u'charlie@example.com'], m.recipients())
 
       # send an email from a known address, but not a subscriber
@@ -361,6 +362,60 @@ This email has no content type
 """
       self.mlist1.subscribers = [self.user2, self.user3]
       self.mlist1.create_incoming(email.message_from_string(TEST_EMAIL))
+
+   def _throttle_logging_handler(self):
+      logger = logging.getLogger("interlink.models")
+      hdlr = logging.NullHandler()
+      logger.addHandler(hdlr)
+
+   def test_throttle_limit(self):
+      # Squelch the throttle warning
+      self._throttle_logging_handler()
+
+      self.mlist1.subscribers = [self.user2, self.user3]
+      self.mlist1.throttle_limit = 5
+      self.mlist1.save()
+
+      # Create mail A that will go through
+      incoming1 = IncomingMail.objects.create(mailing_list=self.mlist1,
+                       origin_address=self.user2.email,
+                       subject='ahoi 1',
+                       body='This will go through',
+                       sent_time=datetime.now())
+
+      IncomingMail.objects.process_incoming()
+      OutgoingMail.objects.send_outgoing()
+      self.assertEqual(1, len(mail.outbox))
+
+      # Create two more -- #2 will go through, #3 will not.
+      _incoming2 = IncomingMail.objects.create(mailing_list=self.mlist1,
+                       origin_address=self.user2.email,
+                       subject='ahoi 2',
+                       body='This will go through as well',
+                       sent_time=datetime.now())
+      _incoming3 = IncomingMail.objects.create(mailing_list=self.mlist1,
+                       origin_address=self.user2.email,
+                       subject='ahoi 3',
+                       body='This will NOT go through',
+                       sent_time=datetime.now())
+      IncomingMail.objects.process_incoming()
+      OutgoingMail.objects.send_outgoing()
+      self.assertEqual(2, len(mail.outbox))
+
+      # Even if we try to call send_outgoing again, this
+      # won't go through.
+      OutgoingMail.objects.send_outgoing()
+      self.assertEqual(2, len(mail.outbox))
+
+      #
+      # Change #1 send time to be earlier (beyond the hour)
+      # Send again -- this time #3 will go through
+      outgoing1 = OutgoingMail.objects.get(original_mail=incoming1)
+      outgoing1.sent = datetime.now() - timedelta(hours=2)
+      outgoing1.save()
+
+      OutgoingMail.objects.send_outgoing()
+      self.assertEqual(3, len(mail.outbox))
 
 
 # Copyright 2011 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

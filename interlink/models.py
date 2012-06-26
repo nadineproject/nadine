@@ -1,9 +1,11 @@
 import email
+import logging
+import sys
 from datetime import datetime, timedelta
 from collections import defaultdict
 
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
@@ -15,6 +17,8 @@ from django.utils.html import strip_tags
 
 from staff.models import Member, Membership
 from interlink.message import MailingListMessage
+
+logger = logging.getLogger(__name__)
 
 
 def user_by_email(email):
@@ -75,7 +79,12 @@ class MailingList(models.Model):
    subscribers = models.ManyToManyField(User, blank=True, related_name='subscribed_mailing_lists')
    moderators = models.ManyToManyField(User, blank=True, related_name='moderated_mailing_lists', help_text='Users who will be sent moderation emails', limit_choices_to={'is_staff': True})
 
+   throttle_limit = models.IntegerField(default=0, help_text='The number of recipients/hour this mailing list is limited to. Default is 0, which means no limit.')
+
    objects = MailingListManager()
+
+   class LimitExceeded(Exception):
+      pass
 
    def fetch_mail(self, logger=None):
       """Fetches incoming mails from the mailing list."""
@@ -272,7 +281,14 @@ class OutgoingMailManager(models.Manager):
             conn = ml.get_smtp_connection()
             conn.open()
             for m in mails:
-               m.send(conn)
+               try:
+                  m.send(conn)
+               except MailingList.LimitExceeded, e:
+                  logger.warning("Limit exceeded: " + str(e),
+                                 exc_info=sys.exc_info(),
+                                 extra={'exception': e})
+                  break
+
          finally:
             conn.close()
 
@@ -287,18 +303,32 @@ class OutgoingMail(models.Model):
    attempts = models.IntegerField(blank=False, null=False, default=0)
    last_attempt = models.DateTimeField(blank=True, null=True)
    sent = models.DateTimeField(blank=True, null=True)
+   sent_recipients = models.IntegerField(default=0)
 
    created = models.DateTimeField(auto_now_add=True)
 
    objects = OutgoingMailManager()
 
+   def _check_throttle(self, msg):
+      num_recipients = len(msg.recipients())
+      limit = self.mailing_list.throttle_limit
+      if not limit:
+         return len(msg.recipients())
+
+      r = (OutgoingMail.objects.filter(mailing_list=self.mailing_list,
+                                       sent__gt=datetime.now() - timedelta(hours=1))
+                               .aggregate(Sum('sent_recipients')))
+      num_sent_recipients = r['sent_recipients__sum'] or 0
+
+      if num_sent_recipients + num_recipients > limit:
+         num = num_sent_recipients + num_recipients
+         raise MailingList.LimitExceeded("%d exceeds limit of %d recipients for this list" %
+                                         (num, limit))
+      return num_recipients
+
    def send(self, connection=None):
       if self.sent:
-         return False
-
-      self.last_attempt = datetime.now()
-      self.attempts = self.attempts + 1
-      self.save()
+         return
 
       args = {
          'subject': self.subject,
@@ -351,6 +381,13 @@ class OutgoingMail(models.Model):
       if self.html_body:
          msg.attach_alternative(self.html_body, 'text/html')
 
+      num_recipients = self._check_throttle(msg)
+
+      # Update this after we pass the throttle but before we actually try to send.
+      self.last_attempt = datetime.now()
+      self.attempts = self.attempts + 1
+      self.save()
+
       conn = connection or self.mailing_list.get_smtp_connection()
       conn.send_messages([msg])
 
@@ -358,6 +395,7 @@ class OutgoingMail(models.Model):
          self.original_mail.state = 'sent'
          self.original_mail.save()
 
+      self.sent_recipients = num_recipients
       self.sent = datetime.now()
       self.save()
 
