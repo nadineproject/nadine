@@ -11,10 +11,12 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 
-from staff.models import Member, Transaction
+from staff.models import Member, Membership, Transaction, DailyLog
 from forms import EditProfileForm
 from interlink.forms import MailingListSubscriptionForm
 from models import HelpText
+from arpwatch import arp
+from arpwatch.models import ArpLog
 
 @login_required
 def index(request):
@@ -81,6 +83,7 @@ def help_topic(request, id):
 	topic = get_object_or_404(HelpText, id=id)
 	return render_to_response('members/help_topic.html',{'topic':topic}, context_instance=RequestContext(request))
 
+@login_required
 def tags(request):
 	active_members = Member.objects.active_members()
 	# TODO - need to remove non-active members!
@@ -90,12 +93,14 @@ def tags(request):
 		tags.append((tag, members))
 	return render_to_response('members/tags.html',{'tags':tags}, context_instance=RequestContext(request))
 
+@login_required
 def tag(request, tag):
 	active_members = Member.objects.active_members()
 	# TODO - need to remove non-active members!
 	members = Member.objects.filter(tags__name__in=[tag])
 	return render_to_response('members/tag.html',{'tag':tag, 'members':members}, context_instance=RequestContext(request))
 
+@login_required
 def user_tags(request, username):
 	user = get_object_or_404(User, username=username)
 	if not user == request.user: 
@@ -111,11 +116,41 @@ def user_tags(request, username):
 	all_tags = Member.tags.all()
 	return render_to_response('members/user_tags.html',{'user':user, 'user_tags':user_tags, 'all_tags':all_tags}, context_instance=RequestContext(request))
 
+@login_required
 def delete_tag(request, username, tag):
 	user = get_object_or_404(User, username=username)
 	if not user == request.user: 
 		if not request.user.is_staff: return HttpResponseRedirect(reverse('members.views.user', kwargs={'username':request.user.username}))
 	user.get_profile().tags.remove(tag)
 	return HttpResponseRedirect(reverse('members.views.user_tags', kwargs={'username':request.user.username}))
+
+@login_required
+def ticker(request):
+	now = datetime.now()
+
+	# Who's logged into the space today
+	daily_logs = DailyLog.objects.filter(visit_date=now).reverse()
+
+	# Grab the devices in the space today
+	# Dumb way of doing it, but it works
+	year = str(now.year)
+	month = str(now.month)
+	day = str(now.day)
+	day_start = datetime.strptime(year + month + day + " 00:00", "%Y%m%d %H:%M")
+	day_end = datetime.strptime(year + month + day + " 23:59", "%Y%m%d %H:%M")
+	device_logs = ArpLog.objects.for_range(day_start, day_end)	
+
+	member_count = Membership.objects.by_date(now).count()
+	has_desk = Membership.objects.by_date(now).filter(has_desk=True).count()
+	drop_ins = member_count - has_desk
+
+	#plans = []
+	#member_count = 0
+	#for plan in MembershipPlan.objects.all():
+	#	member_list = Member.objects.members_by_plan_id(plan.id);
+	#	member_count = member_count + len(member_list)
+	#	plans.append({ 'name':plan.name, 'id':plan.id, 'members':member_list, 'count':len(Member.objects.members_by_plan_id(plan.id))})
+
+	return render_to_response('members/ticker.html',{'daily_logs':daily_logs, 'device_logs':device_logs, 'has_desk':has_desk, 'drop_ins':drop_ins, 'member_count':member_count}, context_instance=RequestContext(request))
 
 # Copyright 2010 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

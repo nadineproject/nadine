@@ -1,0 +1,38 @@
+{% extends "members/u_base.html" %}
+
+{% block content %}
+
+<h2>The Numbers</h2>
+<table>
+    <tr class="row-odd">
+		<th>Total Members</th>
+		<th align="left">{{ member_count }}</th>
+	</tr>
+    <tr class="row-even">
+		<th>Residents</th>
+		<th align="left">{{ has_desk }}</th>
+	</tr>
+    <tr class="row-odd">
+		<th>Drop-ins</th>
+		<th align="left">{{ drop_ins }}</th>
+	</tr>
+    <tr class="row-even">
+		<th>Drop-ins Today</th>
+		<th align="left">{{ daily_logs|length }}</th>
+	</tr>
+    <tr class="row-odd">
+		<th>Internet Devices</th>
+		<th align="left">{{ device_logs|length }}</th>
+	</tr>
+</table>
+
+<h2>Who's Here</h2>
+<table>
+    {% for log in daily_logs %}
+       <tr class="{% cycle 'row-even' 'row-odd' %}">
+          <td>log.member</a></td>
+       </tr>
+    {% endfor %}	
+</table>
+
+{% endblock %}
