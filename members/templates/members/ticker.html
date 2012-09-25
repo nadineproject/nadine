@@ -30,7 +30,7 @@
 <table>
     {% for log in daily_logs %}
        <tr class="{% cycle 'row-even' 'row-odd' %}">
-          <td>log.member</a></td>
+           <td><a href="{% url staff.views.member_activity log.member.id %}">{{ log.member }}</a></td>
        </tr>
     {% endfor %}	
 </table>
