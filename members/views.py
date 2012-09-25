@@ -129,17 +129,13 @@ def ticker(request):
 	now = datetime.now()
 
 	# Who's logged into the space today
-	daily_logs = DailyLog.objects.filter(visit_date=now).reverse()
+	daily_logs = DailyLog.objects.filter(visit_date=now)
 
-	# Grab the devices in the space today
-	# Dumb way of doing it, but it works
-	year = str(now.year)
-	month = str(now.month)
-	day = str(now.day)
-	day_start = datetime.strptime(year + month + day + " 00:00", "%Y%m%d %H:%M")
-	day_end = datetime.strptime(year + month + day + " 23:59", "%Y%m%d %H:%M")
-	device_logs = ArpLog.objects.for_range(day_start, day_end)	
+	# Grab the devices in the space for the last 10 min
+	ten_min_ago = now - timedelta(minutes=10)
+	device_logs = ArpLog.objects.for_range(now, ten_min_ago)	
 
+	# A few counts
 	member_count = Membership.objects.by_date(now).count()
 	has_desk = Membership.objects.by_date(now).filter(has_desk=True).count()
 	drop_ins = member_count - has_desk

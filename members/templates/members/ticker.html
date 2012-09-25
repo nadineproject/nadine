@@ -4,33 +4,40 @@
 
 <h2>The Numbers</h2>
 <table>
-    <tr class="row-odd">
-		<th>Total Members</th>
-		<th align="left">{{ member_count }}</th>
-	</tr>
     <tr class="row-even">
-		<th>Residents</th>
-		<th align="left">{{ has_desk }}</th>
+		<th>Members</th>
+		<th>Full-Time</th>
+		<th>Part-Time</th>
+		<th>Sign-Ins Today</th>1
+		<th>Devices</th>
+		<th></th>
 	</tr>
-    <tr class="row-odd">
-		<th>Drop-ins</th>
-		<th align="left">{{ drop_ins }}</th>
-	</tr>
-    <tr class="row-even">
-		<th>Drop-ins Today</th>
-		<th align="left">{{ daily_logs|length }}</th>
-	</tr>
-    <tr class="row-odd">
-		<th>Internet Devices</th>
-		<th align="left">{{ device_logs|length }}</th>
+    <tr>
+		<td align="center">{{ member_count }}</td>
+		<td>{{ has_desk }}</td>
+		<td>{{ drop_ins }}</td>
+		<td>{{ daily_logs|length }}</td>
+		<td>{{ device_logs|length }}</td>
+		<td></td>
 	</tr>
 </table>
 
 <h2>Who's Here</h2>
+{% load imagetags %}
+
 <table>
     {% for log in daily_logs %}
-       <tr class="{% cycle 'row-even' 'row-odd' %}">
-           <td><a href="{% url staff.views.member_activity log.member.id %}">{{ log.member }}</a></td>
+		<tr class="{% cycle 'row-odd' 'row-even'%}">
+			<td style="text-align:center;">
+				{% if log.member.photo %}<a href="{% url staff.views.member_detail log.member.id %}"><img 						
+					class="member-table-photo" src="{{ log.member.photo.url|fit_image:"48x48"}}" /></a>{% endif %}
+			</td>
+			<td nowrap style="text-align:left;">
+				<a href="{% url staff.views.member_detail log.member.id %}">{{ log.member }}</a>
+			</td>
+			<td>{{ log.member.last_membership.membership_plan }}</td>
+			<!--<td>{{ log.created|date:"h:m" }}</td>-->
+			<td></td>
        </tr>
     {% endfor %}	
 </table>
