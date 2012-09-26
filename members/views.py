@@ -124,7 +124,6 @@ def delete_tag(request, username, tag):
 	user.get_profile().tags.remove(tag)
 	return HttpResponseRedirect(reverse('members.views.user_tags', kwargs={'username':request.user.username}))
 
-@login_required
 def ticker(request):
 	counts = {}
 	here_today = {}
