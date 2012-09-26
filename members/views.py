@@ -152,6 +152,7 @@ def ticker(request):
 
 	# Sort the members
 	members = sorted(here_today, key=here_today.get)
+	members.reverse()
 	
 	return render_to_response('members/ticker.html',{'counts':counts, 'members':members}, context_instance=RequestContext(request))
 
