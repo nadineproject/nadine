@@ -126,27 +126,34 @@ def delete_tag(request, username, tag):
 
 @login_required
 def ticker(request):
+	counts = {}
+	here_today = {}
+		
+	# Who's signed into the space today
 	now = datetime.now()
-
-	# Who's logged into the space today
 	daily_logs = DailyLog.objects.filter(visit_date=now)
+	for l in daily_logs:
+		here_today[l.member] = l.created
 
-	# Grab the devices in the space for the last 10 min
-	ten_min_ago = now - timedelta(minutes=10)
-	device_logs = ArpLog.objects.for_range(now, ten_min_ago)	
+	# Device Logs
+	eight_hours_ago = now - timedelta(hours=8)
+	device_logs = ArpLog.objects.for_range(eight_hours_ago, now)
+	for l in device_logs:
+		if l.device.user:
+			member = l.device.user.get_profile()
+			if not here_today.has_key(member) or l.start < here_today[member]:				
+				here_today[member] = l.start
 
 	# A few counts
-	member_count = Membership.objects.by_date(now).count()
-	has_desk = Membership.objects.by_date(now).filter(has_desk=True).count()
-	drop_ins = member_count - has_desk
+	counts['members'] = Member.objects.active_members().count()
+	counts['full_time'] = Membership.objects.by_date(now).filter(has_desk=True).count()
+	counts['part_time'] = counts['members'] - counts['full_time']
+	counts['here_today'] = len(here_today)
+	counts['devices'] = len(device_logs)
 
-	#plans = []
-	#member_count = 0
-	#for plan in MembershipPlan.objects.all():
-	#	member_list = Member.objects.members_by_plan_id(plan.id);
-	#	member_count = member_count + len(member_list)
-	#	plans.append({ 'name':plan.name, 'id':plan.id, 'members':member_list, 'count':len(Member.objects.members_by_plan_id(plan.id))})
-
-	return render_to_response('members/ticker.html',{'daily_logs':daily_logs, 'device_logs':device_logs, 'has_desk':has_desk, 'drop_ins':drop_ins, 'member_count':member_count}, context_instance=RequestContext(request))
+	# Sort the members
+	members = sorted(here_today, key=here_today.get)
+	
+	return render_to_response('members/ticker.html',{'counts':counts, 'members':members}, context_instance=RequestContext(request))
 
 # Copyright 2010 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

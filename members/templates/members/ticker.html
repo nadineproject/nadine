@@ -1,24 +1,49 @@
-{% extends "members/u_base.html" %}
-<META HTTP-EQUIV="REFRESH" CONTENT="5">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<META HTTP-EQUIV="REFRESH" CONTENT="10">
+	<title>Office Nomads Ticker</title>
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}base.css" />
+	<link type="text/css" href="{{ STATIC_URL }}jquery-ui-1.8.4.custom.css" rel="stylesheet" />	
+	<!--[if IE]>
+		<script src="{{ STATIC_URL }}html5.js"></script>
+	<![endif]-->
+	<script src="{{ STATIC_URL }}jquery-1.7.1.min.js"></script> 
+	<script src="{{ STATIC_URL }}jquery-ui-1.8.4.custom.min.js"></script> 
+	<script>
+		$(function(){
+    		jQuery('#tabs').tabs();     
+  		});
+	</script>
+</head>
 
-{% block content %}
+<body>
 
+<div id="branding">
+	<div style="float:right;">
+		<a href="http://nadineproject.org" target="_new">The Nadine Project</a>
+	</div>
+	<a href="/">{{ site.name}}</a>: <span style="color:#e1e1e1">Nadine Membership Console</span>
+</div>
+
+<div id="content" class="clearfix">	
 <h2>The Numbers</h2>
 <table>
     <tr class="row-even">
 		<th>Members</th>
 		<th>Full-Time</th>
 		<th>Part-Time</th>
-		<th>Sign-Ins Today</th>
+		<th>Here Today</th>
 		<th>Devices</th>
 		<th></th>
 	</tr>
     <tr>
-		<td align="center">{{ member_count }}</td>
-		<td>{{ has_desk }}</td>
-		<td>{{ drop_ins }}</td>
-		<td>{{ daily_logs|length }}</td>
-		<td>{{ device_logs|length }}</td>
+		<td align="center">{{ counts.members }}</td>
+		<td>{{ counts.full_time }}</td>
+		<td>{{ counts.part_time }}</td>
+		<td>{{ counts.here_today }}</td>
+		<td>{{ counts.devices }}</td>
 		<td></td>
 	</tr>
 </table>
@@ -27,20 +52,26 @@
 {% load imagetags %}
 
 <table>
-    {% for log in daily_logs %}
+    {% for member in members %}
 		<tr class="{% cycle 'row-odd' 'row-even'%}">
 			<td style="text-align:center;">
-				{% if log.member.photo %}<a href="{% url staff.views.member_detail log.member.id %}"><img 						
-					class="member-table-photo" src="{{ log.member.photo.url|fit_image:"48x48"}}" /></a>{% endif %}
+				{% if member.photo %}<a href="{% url staff.views.member_detail member.id %}"><img 						
+					class="member-table-photo" src="{{ member.photo.url|fit_image:"48x48"}}" /></a>{% endif %}
 			</td>
 			<td nowrap style="text-align:left;">
-				<a href="{% url staff.views.member_detail log.member.id %}">{{ log.member }}</a>
+				<a href="{% url staff.views.member_detail member.id %}">{{ member }}</a>
 			</td>
-			<td>{{ log.member.last_membership.membership_plan }}</td>
-			<!--<td>{{ log.created|date:"h:m" }}</td>-->
+			<td>{{ member.last_membership.membership_plan }}</td>
 			<td></td>
        </tr>
     {% endfor %}	
 </table>
+</div>
 
-{% endblock %}
+<div id="footer">
+	{% block footer %}
+	&copy;2008-2012 <a href="http://nadineproject.org" target="_new">The Nadine Project</a> by <a href="http://officenomads.com">Office Nomads</a>
+	{% endblock %}
+</div>
+</body>
+</html>
