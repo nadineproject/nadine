@@ -262,7 +262,7 @@ class Member(models.Model):
 	def membership_type(self):
 		# First check for existing monthly
 		memberships = Membership.objects.filter(member=self)
-		if memberships.count() > 0:
+		if self.last_membership():
 			last_monthly = self.last_membership()
 			if last_monthly.end_date == None or last_monthly.end_date > date.today():
 				return last_monthly.membership_plan
@@ -270,18 +270,13 @@ class Member(models.Model):
 				return "Ex" + last_monthly.membership_plan
 
 		# Now check daily logs
-		if DailyLog.objects.filter(member=self).count() > 0:
-			# Quantify the daily
-			p = self.paid_count()
-			if p == 0:
-				return "Free Trial Only"
-			elif p > 5:
-				return "Regular Daily"
-			else:
-				return "Dabbler"
+		drop_ins = DailyLog.objects.filter(member=self).count()
+	 	if drop_ins == 0:
+			return "New User"
+		elif drop_ins == 1:
+			return "First Day"
 		else:
-			# Never visited
-			return "No drop-ins"
+			return "Drop-in"
 
 	def is_monthly(self):
 		last_log = self.last_membership()
