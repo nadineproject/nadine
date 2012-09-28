@@ -125,18 +125,18 @@ def delete_tag(request, username, tag):
 	return HttpResponseRedirect(reverse('members.views.user_tags', kwargs={'username':request.user.username}))
 
 def ticker(request):
-	counts = {}
+	now = datetime.now()
 	here_today = {}
+	counts = {}
 		
 	# Who's signed into the space today
-	now = datetime.now()
 	daily_logs = DailyLog.objects.filter(visit_date=now)
 	for l in daily_logs:
 		here_today[l.member] = l.created
 
 	# Device Logs
-	eight_hours_ago = now - timedelta(hours=8)
-	device_logs = ArpLog.objects.for_range(eight_hours_ago, now)
+	midnight = now - timedelta(seconds=now.hour*60*60 + now.minute*60 + now.second)
+	device_logs = ArpLog.objects.for_range(midnight, now)
 	for l in device_logs:
 		if l.device.user:
 			member = l.device.user.get_profile()
@@ -154,6 +154,11 @@ def ticker(request):
 	members = sorted(here_today, key=here_today.get)
 	members.reverse()
 	
-	return render_to_response('members/ticker.html',{'counts':counts, 'members':members}, context_instance=RequestContext(request))
+	# Auto refresh?
+	refresh = True;
+	if request.GET.has_key("norefresh"):
+		refresh = False;
+		
+	return render_to_response('members/ticker.html',{'counts':counts, 'members':members, 'refresh':refresh}, context_instance=RequestContext(request))
 
 # Copyright 2010 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

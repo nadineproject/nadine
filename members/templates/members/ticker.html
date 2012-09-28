@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<META HTTP-EQUIV="REFRESH" CONTENT="10">
+	{% if refresh %}<META HTTP-EQUIV="REFRESH" CONTENT="10">{% endif %}
 	<title>Office Nomads Ticker</title>
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}base.css" />
 	<link type="text/css" href="{{ STATIC_URL }}jquery-ui-1.8.4.custom.css" rel="stylesheet" />	
@@ -16,6 +16,14 @@
     		jQuery('#tabs').tabs();     
   		});
 	</script>
+	<style>
+		#ticker { 
+			margin:20px; 
+			font-size: 1.3em; 
+			color:black; 
+		}
+		#ticker h1 { font-size:2em; }
+	</style>
 </head>
 
 <body>
@@ -27,9 +35,10 @@
 	<a href="/">{{ site.name}}</a>: <span style="color:#e1e1e1">Nadine Membership Console</span>
 </div>
 
-<div id="content" class="clearfix">	
-<h2>The Numbers</h2>
-<table>
+<div id="ticker">
+	
+<div>	
+<table style="-webkit-column-count: 2">
     <tr class="row-even">
 		<th>Members</th>
 		<th>Full-Time</th>
@@ -47,31 +56,28 @@
 		<td></td>
 	</tr>
 </table>
+</div>
 
+<div>&nbsp;</div>
+
+<div>
 <h2>Who's Here</h2>
 {% load imagetags %}
 
-<table>
-    {% for member in members %}
-		<tr class="{% cycle 'row-odd' 'row-even'%}">
-			<td style="text-align:center;">
-				{% if member.photo %}<a href="{% url staff.views.member_detail member.id %}"><img 						
-					class="member-table-photo" src="{{ member.photo.url|fit_image:"48x48"}}" /></a>{% endif %}
-			</td>
-			<td nowrap style="text-align:left;">
-				<a href="{% url staff.views.member_detail member.id %}">{{ member }}</a>
-			</td>
-			<td>{{ member.last_membership.membership_plan }}</td>
-			<td></td>
-       </tr>
-    {% endfor %}	
-</table>
+{% for member in members %}
+	<div class="user-card">
+	      {% if member.photo %}
+	         <a class="photo" href="{% url members.views.user member.user.username %}"><img src="{{ member.photo.url|fit_image:"170x170" }}" /></a>
+	      {% else %}
+	         <a class="photo" href="{% url members.views.user member.user.username %}">?</a>
+	      {% endif %}         
+	      <a href="{% url members.views.user member.user.username %}">{{ member.full_name }}</a> 
+		  {{ member.membership_type }}
+	</div>
+{% endfor %}	
 </div>
 
-<div id="footer">
-	{% block footer %}
-	&copy;2008-2012 <a href="http://nadineproject.org" target="_new">The Nadine Project</a> by <a href="http://officenomads.com">Office Nomads</a>
-	{% endblock %}
 </div>
+
 </body>
 </html>
