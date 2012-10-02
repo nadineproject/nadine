@@ -21,6 +21,7 @@ nav #stats-tab { background: #FBD850; color: black; }
 		<th>Rank</th>
 		<th>Memberships</th>
 		<th>Total Days</th>
+		<th>Sign-Ins</th>
 		<th>Max Days</th>
 		<th></th>
 	</tr>
@@ -30,6 +31,7 @@ nav #stats-tab { background: #FBD850; color: black; }
 			<td>{{ forloop.counter }}</th>
 			<td>{{ d.membership_count }}</td>
 			<td>{{ d.total_days }}</td>
+			<td>{{ d.daily_logs }}</td>
 			<td>{{ d.max_days }}</td>
 			<td></td>
 		</tr>

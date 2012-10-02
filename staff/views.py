@@ -319,7 +319,7 @@ def stats_neighborhood(request):
 
 @staff_member_required
 def stats_membership_days(request):
-	MembershipDays = namedtuple('MembershipDays', 'user, membership_count, total_days, max_days, current')
+	MembershipDays = namedtuple('MembershipDays', 'user, membership_count, total_days, daily_logs, max_days, current')
 	membership_days = []
 	users = User.objects.all()
 	memberships = Membership.objects.select_related('member', 'member__user').all()
@@ -341,7 +341,8 @@ def stats_membership_days(request):
 			total_days = total_days + days
 			if (days > max_days):
 				max_days = days
-		membership_days.append(MembershipDays(user, membership_count, total_days, max_days, current))
+		daily_logs = DailyLog.objects.filter(member=user.profile).count()
+		membership_days.append(MembershipDays(user, membership_count, total_days, daily_logs, max_days, current))
 		if total_days > 0:
 			avg_count = avg_count + 1
 			avg_total = avg_total + total_days
