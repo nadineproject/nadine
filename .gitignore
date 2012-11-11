@@ -13,4 +13,4 @@ media/arp/import.log
 .pydevproject
 .settings
 celerybeat-schedule.db
-
+.DS_Store
