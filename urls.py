@@ -5,6 +5,8 @@ from django.http import HttpResponse
 
 admin.autodiscover()
 
+from nadine import API
+
 urlpatterns = patterns('',
    (r'^robots\.txt$', lambda r: HttpResponse("User-agent: *\nDisallow: /", mimetype="text/plain")),
    
@@ -25,6 +27,8 @@ urlpatterns = patterns('',
    (r'^reset/done/$', 'django.contrib.auth.views.password_reset_done'),
    (r'^reset/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)/$', 'django.contrib.auth.views.password_reset_confirm'),
    (r'^reset/complete/$', 'django.contrib.auth.views.password_reset_complete'),
+
+   (r'^api/', include(API.urls)),
 
    (r'^', include('front.urls')),
 
