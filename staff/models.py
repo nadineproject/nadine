@@ -185,6 +185,7 @@ class Member(models.Model):
 	notes = models.TextField(blank=True, null=True)
 	photo = models.ImageField(upload_to='member_photo', blank=True, null=True)
 	tags = TaggableManager(blank=True)
+	valid_billing = models.BooleanField(default=False)
 
 	@property
 	def first_name(self): return smart_str(self.user.first_name)
