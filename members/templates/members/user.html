@@ -263,12 +263,23 @@
 				<input type="hidden" name="UMcommand" value="AuthOnly">
 				<input type="hidden" name="UMamount" value="1.00">
 				<input type="hidden" name="UMinvoice" value="1617">
-				<input type="hidden" name="UMcustreceipt" value="yes">
-				<input type="hidden" name="UMcustemail" value="{{ user.email }}">
-				<input type="hidden" name="UMbillfname" value="{{ user.first_name }}">
-				<input type="hidden" name="UMbilllname" value="{{ user.last_name }}">
 				<input type="hidden" name="UMaddcustomer" value="yes">
 				<input type="hidden" name="UMschedule" value="disabled">
+				<input type="hidden" name="UMsoftware" value="nadine">
+				<input type="hidden" name="UMcustreceipt" value="yes">
+				<input type="hidden" name="UMcustemail" value="{{ user.email }}">
+				<input type="hidden" name="UMname" value="{{ user.get_full_name }}">
+				<input type="hidden" name="UMstreet" value="{{ member.address1 }}">
+				<input type="hidden" name="UMzip" value="{{ member.zipcode }}">
+				<input type="hidden" name="UMbillfname" value="{{ user.first_name }}">
+				<input type="hidden" name="UMbilllname" value="{{ user.last_name }}">
+				<input type="hidden" name="UMbillstreet" value="{{ member.address1 }}">
+				<input type="hidden" name="UMbillstreet2" value="{{ member.address2 }}">
+				<input type="hidden" name="UMbillcity" value="{{ member.city }}">
+				<input type="hidden" name="UMbillstate" value="{{ member.state }}">
+				<input type="hidden" name="UMbillzip" value="{{ member.zipcode }}">
+				<input type="hidden" name="UMbillphone" value="{{ member.phone }}">
+				<input type="hidden" name="UMemail" value="{{ user.email }}">
 				<!--<input type="hidden" name="UMtestmode" value="true">-->
 				<input type="submit" value="Create New Billing Profile">
 			</form>
