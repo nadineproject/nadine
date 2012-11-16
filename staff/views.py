@@ -131,6 +131,23 @@ def bills(request):
 	return render_to_response('staff/bills.html', { "members":members, 'page_message':page_message }, context_instance=RequestContext(request))
 
 @staff_member_required
+def toggle_billing_flag(request, member_id):
+	member = get_object_or_404(Member, pk=member_id)
+	page_message = member.full_name + " billing profile: "
+	if member.valid_billing:
+		member.valid_billing = False;
+		member.save()
+		page_message += " Invalid";
+	else:
+		member.valid_billing = True;
+		member.save()
+		page_message += " Valid";
+		
+	if 'back' in request.POST:
+		return HttpResponseRedirect(request.POST.get('back'))
+	return HttpResponseRedirect(reverse('staff.views.bills'))
+
+@staff_member_required
 def bill(request, id):
 	bill = get_object_or_404(Bill, pk=id)
 	return render_to_response('staff/bill.html', { "bill":bill, 'new_member_deposit':settings.NEW_MEMBER_DEPOSIT }, context_instance=RequestContext(request))
@@ -365,7 +382,7 @@ def member_detail(request, member_id):
 		else:
 			print request.POST
 
-	return render_to_response('staff/member_detail.html', { 'member':member }, context_instance=RequestContext(request))
+	return render_to_response('staff/member_detail.html', { 'member':member, 'settings':settings}, context_instance=RequestContext(request))
 
 def date_range_from_request(request):
 	# Pull the Start Date param

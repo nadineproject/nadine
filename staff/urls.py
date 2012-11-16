@@ -29,6 +29,7 @@ urlpatterns = patterns('staff.views',
     (r'^(?P<member_id>\d+)/activity/$', 'member_activity'),
     (r'^(?P<member_id>\d+)/transaction/$', 'member_transactions'),
     (r'^(?P<member_id>\d+)/bill/$', 'member_bills'),
+    (r'^(?P<member_id>\d+)/toggle_billing_flag/$', 'toggle_billing_flag'),
     (r'^(?P<member_id>\d+)/membership/$', 'member_membership'),
     (r'^membership/(?P<membership_id>\d+)/$', 'membership'),
 )

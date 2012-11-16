@@ -62,6 +62,7 @@ function gotoEmailReset(emailAddress){
 			<a href="{% url staff.views.member_membership member.id %}">add membership</a>
 		{% endif %}
 	</div>
+
 	<table>
 		<!-- Username -->
 	   <tr>
@@ -86,10 +87,10 @@ function gotoEmailReset(emailAddress){
 	      <td>First Visit</td>
 	      <td>{{ member.first_visit }}</td>
 	   </tr>
-	   <tr>
+	   <!--<tr>
 	      <td>Last Visit</td>
 	      <td>{{ member.last_visit }}</td>
-	   </tr>
+	   </tr>-->
 	
 	   <!-- Company Name -->
 	   {% if member.company_name %}
@@ -233,6 +234,10 @@ function gotoEmailReset(emailAddress){
 		</tr>			
 		{% endif %}
 	</table>
+
+<!-- Billing Profile -->
+<h2>Billing Profile</h2>
+{% include "members/billing_profile.frag" %}  
 
 <!-- Onboarding Tasks -->
 <h2>Onboard Tasks</h2>

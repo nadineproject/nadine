@@ -46,11 +46,11 @@ nav #billing-tab { background: #FBD850; color: black; }
 
 {% if not members %}
 <p>There are no open bills!</p>
-{% endif%}
+{% endif %}
 
 <ul id="bill-list">
 	{% for member in members %}
-		<li>
+		<li {% if not member.valid_billing %}style="color:red;"{% endif %}><span style="color:black">
 			<form class="pay-bill-form" action="." method="post">
 				<div>
 				<a class="bill-detail-toggle" id="bill-details-toggle-{{member.id}}" href="." onclick="toggleBillDetails('{{member.id}}'); return false;">[+]</a>&nbsp;
@@ -108,10 +108,22 @@ nav #billing-tab { background: #FBD850; color: black; }
 						{% ifequal field.name 'transaction_note' %}{{ field }}{% endifequal %}
 					{% endfor %}
 
-				</div>
+				</form>
 				{% csrf_token %}
-			</form>
-		</li>
+
+				<div style="margin-left:5em;">
+				<form action="{% url staff.views.toggle_billing_flag member.id %}" onSubmit="return confirm('Are you sure?');">
+					{% if member.valid_billing %}
+						<input type="submit" value="Flag Invalid Billing Profile">
+					{% else %}
+						<input type="submit" value="Clear Invalid Billing Flag">
+					{% endif %}
+					{% csrf_token %}
+				</form>
+				</div>
+				
+				</div>
+		</span></li>
 	{% endfor %}
 </ul>
 
