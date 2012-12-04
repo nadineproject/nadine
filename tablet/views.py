@@ -81,9 +81,11 @@ def view_profile(request, username):
 
 @login_required
 def user_signin(request, username):
+	print("member")
+	
 	user = get_object_or_404(User, username=username)
 	member = get_object_or_404(Member, user=user)
-
+	
 	can_signin = False
 	if not member.last_membership() or member.last_membership().end_date or not member.last_membership().has_desk:
 			if not DailyLog.objects.filter(member=member, visit_date=datetime.today().date()):
@@ -92,15 +94,32 @@ def user_signin(request, username):
 	activity = DailyLog.objects.filter(member=member, payment='Bill', bills__isnull=True, visit_date__gt=date.today()-timedelta(days=31))
 	guest_activity = DailyLog.objects.filter(guest_of=member, payment='Bill', guest_bills__isnull=True, visit_date__gte=date.today()-timedelta(days=31))
 
-	return render_to_response('tablet/user_signin.html',{'user':user, 'member':member, 'can_signin':can_signin, 'activity':activity, 'guest_activity':guest_activity}, context_instance=RequestContext(request))
+	search_results = None
+	if request.method == "POST":
+		member_search_form = MemberSearchForm(request.POST)
+		if member_search_form.is_valid(): 
+			search_results = Member.objects.search(member_search_form.cleaned_data['terms'])
+	else:
+		member_search_form = MemberSearchForm()
+
+	return render_to_response('tablet/user_signin.html',{'user':user, 'member':member, 'can_signin':can_signin, 
+		'activity':activity, 'guest_activity':guest_activity, 'member_search_form':member_search_form, 'search_results':search_results}, context_instance=RequestContext(request))
 
 @login_required
 def signin_user(request, username):
+	return signin_user_guest(request, username, None)
+
+@login_required
+def signin_user_guest(request, username, guestof):
 	user = get_object_or_404(User, username=username)
 	member = get_object_or_404(Member, user=user)
 	daily_log = DailyLog()
 	daily_log.member = member
 	daily_log.visit_date = date.today()
+	if guestof:
+		guestof_user = get_object_or_404(User, username=guestof)
+		guestof_member = get_object_or_404(Member, user=guestof_user)
+		daily_log.guest_of = guestof_member
 	if DailyLog.objects.filter(member=member).count() == 0:
 		daily_log.payment = 'Trial';
 		subject = "New User - %s" % (member)
