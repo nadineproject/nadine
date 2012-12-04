@@ -6,6 +6,7 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 
 from models import *
+from staff.models import Member, DailyLog
 
 def register_user_ip(user, ip):
 	print("REMOTE_ADDR for %s: %s" % (user, ip))
@@ -105,3 +106,26 @@ def day_is_complete(day_str):
 	arp_logs = ArpLog.objects.filter(runtime__gt=day_start, runtime__lt=day_end).order_by('runtime')
 	print(arp_logs.count())
 	return True
+	
+def here_today():
+	now = datetime.now()
+	here_today = {}
+	counts = {}
+
+	# Who's signed into the space today
+	daily_logs = DailyLog.objects.filter(visit_date=now)
+	for l in daily_logs:
+		here_today[l.member] = l.created
+
+	# Device Logs
+	midnight = now - timedelta(seconds=now.hour*60*60 + now.minute*60 + now.second)
+	device_logs = ArpLog.objects.for_range(midnight, now)
+	for l in device_logs:
+		if l.device.user:
+			member = l.device.user.get_profile()
+			if not here_today.has_key(member) or l.start < here_today[member]:				
+				here_today[member] = l.start
+				
+	members = sorted(here_today, key=here_today.get)
+	members.reverse()
+	return members
