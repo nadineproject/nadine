@@ -5,10 +5,9 @@ urlpatterns = patterns('tablet.views',
 	(r'^signin/$', 'signin'),
 	(r'^signin/(?P<username>[^/]+)/$', 'user_signin'),
 	(r'^(?P<username>[^/]+)/signin/$', 'signin_user'),
-
 	(r'^members/$', 'members'),
 	(r'^member/(?P<username>[^/]+)/$', 'view_profile'),
-
+	(r'^here_today/$', 'here_today'),
 	(r'^search/$', 'search'),
 	(r'^new/$', 'new_user'),
 )

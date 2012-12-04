@@ -9,8 +9,19 @@
 {% block nav-signin %} class="ui-btn-active" {% endblock %}
 
 {% block content %}
+	<div id="search-box">
+		<form id="member-search-form" action="{% url tablet.views.search %}" method="POST">
+			{% for field in member_search_form %}
+				{{ field }}
+			{% endfor %}
+			<input type="submit" value="Search"  data-theme="e" data-transition="fade"/>
+			{% csrf_token %}
+		</form>
+	</div>
+
+	<h3>Members</h3>
 	<div id="member-list">
-		<ul data-role="listview" data-inset="true" data-filter="true" data-autodividers="true">
+		<ul data-role="listview" data-inset="true" data-autodividers="true">
 			{% for member in members %}
 				<li style="padding: 0.5em;"><a href="{% url tablet.views.user_signin member.user %}" data-transition="fade">{{ member.full_name }}</a></li>
 			{% endfor %}

@@ -8,22 +8,17 @@
 
 {% block sub-title %}Nadine Tablet | {% endblock %}
 
-{% block nav-search %} class="ui-btn-active" {% endblock %}
+{% block signin-back %}
+	{% if can_signin %}
+		Back
+	{% else %} 
+		Sign In
+	{% endif %} 
+{% endblock %}
 
 {% block content %}
-<h2>Find a Member</h2>
-	<div id="search-box">
-		<form id="member-search-form" action="{% url tablet.views.search %}" method="POST">
-			{% for field in member_search_form %}
-				{{ field }}
-			{% endfor %}
-			<input type="submit" value="search"  data-theme="e" data-transition="fade"/>
-			{% csrf_token %}
-		</form>
-	</div>
-	
 	{% if search_results %}
-		<h3>Search Results</h3>
+		<h2>Search Results</h2>
 		<div id="member-list">
 			<ul data-role="listview" data-inset="true" data-filter="false">
 				{% for member in search_results %}
@@ -31,6 +26,19 @@
 				{% endfor %}
 			</ul>
 		</div>
+	{% else %}
+		<h2>Find a Member</h2>
+		<div id="search-box">
+			<form id="member-search-form" action="{% url tablet.views.search %}" method="POST">
+				{% for field in member_search_form %}
+					{{ field }}
+				{% endfor %}
+				<input type="submit" value="search"  data-theme="e" data-transition="fade"/>
+				{% csrf_token %}
+			</form>
+		</div>	
 	{% endif %}  
+
+
 	
 {% endblock %}

@@ -15,6 +15,8 @@ from staff.models import Member, DailyLog, Bill
 from staff.forms import NewUserForm, MemberSearchForm
 from django.core.mail import send_mail
 
+from arpwatch import arp
+
 @login_required
 def new_user(request):
 	page_message = None
@@ -47,12 +49,17 @@ def signin(request):
 			if not daily_logs:
 				members.append(member)
 	
-	return render_to_response('tablet/signin.html', {'members':members}, context_instance=RequestContext(request))
+	return render_to_response('tablet/signin.html', {'members':members, 'member_search_form':MemberSearchForm()}, context_instance=RequestContext(request))
 
 @login_required
 def members(request):
 	members = Member.objects.active_members().order_by('user__first_name')
 	return render_to_response('tablet/members.html', {'members':members}, context_instance=RequestContext(request))
+
+@login_required
+def here_today(request):
+	members = arp.here_today()
+	return render_to_response('tablet/here_today.html', {'members':members}, context_instance=RequestContext(request))
 
 @login_required
 def search(request):
