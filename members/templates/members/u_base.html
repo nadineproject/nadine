@@ -40,9 +40,10 @@
 	</div>
 	{% block header %}<header>
 	<nav>
-		<a href="{% url members.views.index %}">All Members</a>
+		<a href="{% url members.views.home %}">Home</a>
+		<a href="{% url members.views.all_members %}">All Members</a>
+		<a href="{% url members.views.here_today %}">Here Today</a>
 		<a href="{% url members.views.tags %}">Tags</a>
-		<a href="{% url members.views.help_all %}">Help Center</a>
 		{% if request.user.is_authenticated %}
 		<a href="{% url members.views.user request.user.username %}">My Profile</a>
 			<a href="{% url django.contrib.auth.views.logout_then_login %}">Logout</a>
@@ -51,7 +52,7 @@
 			<a href="{% url django.contrib.auth.views.login %}">Login</a>
 		{% endif %}
 	</nav>
-	{% block header-title %}<h1><a class="ir" href="{% url members.views.index %}">{{ site.name }}</a></h1>{% endblock %}
+	{% block header-title %}<h1><a class="ir" href="{% url members.views.home %}">{{ site.name }}</a></h1>{% endblock %}
 	</header>{% endblock %}
 
 <div id="content" class="clearfix">{% block content %}{% endblock %}</div>

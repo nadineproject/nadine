@@ -18,10 +18,30 @@ from models import HelpText
 from arpwatch import arp
 from arpwatch.models import ArpLog
 
+def home(request):
+	home_text = ""
+	help_texts = {}
+	for topic in HelpText.objects.all():
+		if topic.title.lower() == 'home':
+			home_text = topic.text
+		else: 
+			help_texts[topic.title] = topic
+	
+	return render_to_response('members/home.html',{'home_text':home_text, 'help_texts':help_texts}, context_instance=RequestContext(request))
+
+def help_topic(request, id):
+	topic = get_object_or_404(HelpText, id=id)
+	return render_to_response('members/help_topic.html',{'topic':topic}, context_instance=RequestContext(request))
+
 @login_required
-def index(request):
+def all_members(request):
 	members = Member.objects.active_members().order_by('user__first_name') 
-	return render_to_response('members/index.html',{ 'members':members }, context_instance=RequestContext(request))
+	return render_to_response('members/all_members.html',{ 'members':members }, context_instance=RequestContext(request))
+
+@login_required
+def here_today(request):
+	members = arp.here_today()
+	return render_to_response('members/here_today.html',{ 'members':members }, context_instance=RequestContext(request))
 
 @login_required
 def profile_redirect(request):
@@ -74,14 +94,6 @@ def receipt(request, username, id):
 		if not request.user.is_staff: return HttpResponseRedirect(reverse('members.views.user', kwargs={'username':request.user.username}))
 	bills = transaction.bills.all()
 	return render_to_response('members/receipt.html',{'user':user, 'transaction':transaction, 'bills':bills}, context_instance=RequestContext(request))
-
-def help_all(request):
-	help_topics = HelpText.objects.all().order_by('title')
-	return render_to_response('members/help.html',{'help_topics':help_topics}, context_instance=RequestContext(request))
-
-def help_topic(request, id):
-	topic = get_object_or_404(HelpText, id=id)
-	return render_to_response('members/help_topic.html',{'topic':topic}, context_instance=RequestContext(request))
 
 @login_required
 def tags(request):

@@ -1,0 +1,19 @@
+{% extends "members/u_base.html" %}
+
+{% block content %}
+	{% autoescape off %}
+		{{ home_text }}
+	{% endautoescape %}
+	
+	<h3>More Help Topics</h3>
+	{% if help_texts %}
+		<ul>
+			{% for t in help_texts.values %}
+				<li><a href="{% url members.views.help_topic t.id %}">{{ t }}</a></li>
+			{% endfor %}
+		</ul>
+	{% else %}
+		<i>No Help Topics...</i>
+	{% endif %}
+	
+{% endblock %}
