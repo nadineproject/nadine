@@ -2,35 +2,7 @@
 {% load imagetags %}
 
 {%block sub-head %}
-	<script language="javascript" type="text/javascript">
-		function showGuestForm() {
-			document.getElementById('guestform-show').style.display = 'none';
-			document.getElementById('guestform-hide').style.display = 'inline';
-			document.getElementById('guestform').style.display = 'block';
-			document.getElementById('signin').style.display = 'none';
-		}
-	
-		function hideGuestForm() {
-			document.getElementById('guestform-show').style.display = 'inline';
-			document.getElementById('guestform-hide').style.display = 'none';
-			document.getElementById('guestform').style.display = 'none';
-			document.getElementById('signin').style.display = 'block';
-		}
-	</script>
 
-	<style type="text/css">
-		.hidden {
-			display: none;
-		}
-		a.showLink, a.hideLink {
-			text-decoration: none;
-			color: #36f;
-			font-size: 1.2em;
-		}
-		a.hideLink {
-			display: none;
-		}
-	</style>
 {% endblock %}
 
 {% block sub-title %}Nadine Tablet | {% endblock %}

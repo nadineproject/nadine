@@ -11,15 +11,11 @@
 {% block content %}
 	<div id="search-box">
 		<form id="member-search-form" action="{% url tablet.views.search %}" method="POST">
-			{% for field in member_search_form %}
-				{{ field }}
-			{% endfor %}
+			<input id="id_terms" type="text" name="terms" maxlength="100" class="ui-input-text ui-body-c ui-corner-all ui-shadow-inset" placeholder="Find a member">
 			<input type="submit" value="Search"  data-theme="e" data-transition="fade"/>
 			{% csrf_token %}
 		</form>
 	</div>
-
-	<h3>Members</h3>
 	<div id="member-list">
 		<ul data-role="listview" data-inset="true" data-autodividers="true">
 			{% for member in members %}

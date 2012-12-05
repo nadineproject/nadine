@@ -9,3 +9,14 @@ table td { vertical-align: top; text-align: left; border-bottom: 1px solid #ccc;
 .user-card a { padding: 10px 0; display: block; }
 .user-card a.photo { height: 170px; background-color: #EEE; font-size: 150px; color: #DDD; text-decoration: none; }
 
+.hidden {
+	display: none;
+}
+a.showLink, a.hideLink {
+	text-decoration: none;
+	color: #36f;
+	font-size: 1.2em;
+}
+a.hideLink {
+	display: none;
+}
