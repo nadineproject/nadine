@@ -27,7 +27,7 @@ def new_user(request):
 				user = form.save() 
 				# Send a welcome email
 				site = Site.objects.get_current()
-				url = "http://%s%s" % (site.domain, reverse('members.views.index'))
+				url = "http://%s%s" % (site.domain, reverse('members.views.home'))
 				subject = "%s: Introduction to Nadine" % (site.name)
 				message = "Hello,\r\n\r\n \tWe just created a new user in Nadine, the system we use to run %s.  You can login to Nadine to see other members, update your profile, and view your activity and billing history.  The first time you will need to reset your password.  Your username is: %s\r\n\r\n%s\r\n\r\n - Nadine" % (site.name, user.username, url)
 				send_mail(subject, message, settings.EMAIL_ADDRESS, [user.email], fail_silently=True)
