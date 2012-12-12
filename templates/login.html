@@ -1,16 +1,15 @@
-{% extends "base.html" %}
+{% extends "members/u_base.html" %}
 
 {% block sub-title %}Login | {% endblock %}
 
 {% block style %}
-#content { border: none; }
-#content form { margin-bottom: 40px; width: 200px; }
-#content input[type=submit] { float: right; }
-#content h1 { font-size: 1.8em; margin: 0.5em 0; }
-#content table td { border-bottom: none; }
+#content { font-size: 1.1em; border: none; }
+#content form { margin-top: 1em; margin-bottom: 1em; width: 600px; }
+#content input[type=submit] { float: right; width: 280px;}
+#content h1 { font-size: 1.8em; margin: 1em 0; }
+#content table td { border-bottom: none;}
 {% endblock %}
 
-{% block header %}{%endblock %}
 {% block content %}
 <h1>{{ site.name }} Login:</h1>
 
@@ -20,17 +19,28 @@
 
 <form method="post" action=".">
 <table>
-<tr><td>{{ form.username.label_tag }}</td><td>{{ form.username }}</td></tr>
-<tr><td>{{ form.password.label_tag }}</td><td>{{ form.password }}</td></tr>
-<tr><td colspan=2>
+<tr>
+	<th>{{ form.username.label_tag }}:</th>
+	<td>{{ form.username }}</td>
+	<td><i>Your username was emailed to you.<br>  Note: This is not your email address.</td>
+</tr>
+<tr>
+	<th>{{ form.password.label_tag }}:</th>
+	<td>{{ form.password }}</td>
+	<td><i>First time logging in? <br>Forgot your password? 
+	<br>You'll need to <a href="{% url front.views.password_reset %}">create a new password</a>.</i></td>
+</tr>
+<tr>
+	<td colspan=2>
 		<input type="submit" value="login" />
 		<input type="hidden" name="next" value="{{ next }}" />
 	</td>
+	<td></td>
 </tr>
 </table>
 {% csrf_token %}
 </form>
 
-Forgot your password?  Use our handy <a href="{% url front.views.password_reset %}">password reset page</a>.
+.
 
 {% endblock %}
