@@ -4,9 +4,9 @@
 
 {% block style %}
 #content { font-size: 1.1em; border: none; }
-#content form { margin-top: 1em; margin-bottom: 1em; width: 600px; }
+#content form { margin-top: 1em; margin-bottom: 0; width: 600px; }
 #content input[type=submit] { float: right; width: 280px;}
-#content h1 { font-size: 1.8em; margin: 1em 0; }
+#content h1 { font-size: 1.8em; margin: 0; }
 #content table td { border-bottom: none;}
 {% endblock %}
 
@@ -40,7 +40,5 @@
 </table>
 {% csrf_token %}
 </form>
-
-.
 
 {% endblock %}
