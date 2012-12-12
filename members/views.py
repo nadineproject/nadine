@@ -18,6 +18,7 @@ from models import HelpText
 from arpwatch import arp
 from arpwatch.models import ArpLog
 
+@login_required
 def home(request):
 	home_text = ""
 	help_texts = {}
@@ -29,6 +30,7 @@ def home(request):
 	
 	return render_to_response('members/home.html',{'home_text':home_text, 'help_texts':help_texts}, context_instance=RequestContext(request))
 
+@login_required
 def help_topic(request, id):
 	topic = get_object_or_404(HelpText, id=id)
 	return render_to_response('members/help_topic.html',{'topic':topic}, context_instance=RequestContext(request))
