@@ -12,13 +12,12 @@ BACKUP_ROOT = PROJECT_ROOT + '/backups/'
 STATIC_URL = '/static/'
 STATIC_ROOT = ''
 
-STATICFILES_DIRS = (
-)
+STATICFILES_DIRS = ( 'static', )
 
 STATICFILES_FINDERS = (
 	'django.contrib.staticfiles.finders.FileSystemFinder',
 	'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-	#'django.contrib.staticfiles.finders.DefaultStorageFinder',
+	'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 SOUTH_AUTO_FREEZE_APP = True
@@ -104,7 +103,6 @@ INSTALLED_APPS = (
 	'taggit',
 	'djcelery',
 	'south',
-	'front',
 	'staff',
 	'members',
 	'interlink',
