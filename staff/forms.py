@@ -64,7 +64,8 @@ class MemberSignupForm(forms.Form):
 	url_twitter = forms.URLField(required=False)
 	url_biznik = forms.URLField(required=False)
 	url_linkedin = forms.URLField(required=False)
-	url_loosecubes = forms.URLField(required=False)
+	url_github = forms.URLField(required=False)
+	url_aboutme = forms.URLField(required=False)
 	gender = forms.ChoiceField(choices=GENDER_CHOICES, required=False)
 	howHeard = forms.ModelChoiceField(label="How heard", queryset=HowHeard.objects.all(), required=False)
 	industry = forms.ModelChoiceField(queryset=Industry.objects.all(), required=False)
@@ -98,8 +99,9 @@ class MemberSignupForm(forms.Form):
 		member.url_facebook = self.cleaned_data['url_facebook']
 		member.url_twitter = self.cleaned_data['url_twitter']
 		member.url_linkedin = self.cleaned_data['url_linkedin']
-		member.url_loosecubes = self.cleaned_data['url_loosecubes']
 		member.url_biznik = self.cleaned_data['url_biznik']
+		member.url_github = self.cleaned_data['url_github']
+		member.url_aboutme = self.cleaned_data['url_aboutme']
 		member.gender = self.cleaned_data['gender']
 		member.howHeard = self.cleaned_data['howHeard']
 		member.industry = self.cleaned_data['industry']

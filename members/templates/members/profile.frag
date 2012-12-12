@@ -50,22 +50,16 @@
          <td><a href="{{ member.url_linkedin }}">{{ member.url_linkedin }}</a></td>
       </tr>
    {% endif %}
-   {% if member.url_loosecubes %}
+   {% if member.url_github %}
       <tr>
-         <td>Loosecubes:</td>
-         <td><a href="{{ member.url_loosecubes }}">{{ member.url_loosecubes }}</a></td>
+         <td>Github:</td>
+         <td><a href="{{ member.url_github }}">{{ member.url_github }}</a></td>
       </tr>
    {% endif %}
    {% if member.url_aboutme %}
       <tr>
          <td>About Me:</td>
          <td><a href="{{ member.url_aboutme }}">{{ member.url_aboutme }}</a></td>
-      </tr>
-   {% endif %}
-   {% if member.url_github %}
-      <tr>
-         <td>Github:</td>
-         <td><a href="{{ member.url_github }}">{{ member.url_github }}</a></td>
       </tr>
    {% endif %}
    {% if member.industry %}

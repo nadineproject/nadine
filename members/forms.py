@@ -24,7 +24,6 @@ class EditProfileForm(forms.Form):
 	url_twitter = forms.URLField(required=False)
 	url_biznik = forms.URLField(required=False)
 	url_linkedin = forms.URLField(required=False)
-	url_loosecubes = forms.URLField(required=False)
 	url_aboutme = forms.URLField(required=False)
 	url_github = forms.URLField(required=False)
 	gender = forms.ChoiceField(choices=GENDER_CHOICES, required=False)
@@ -57,7 +56,6 @@ class EditProfileForm(forms.Form):
 		member.url_facebook = self.cleaned_data['url_facebook']
 		member.url_twitter = self.cleaned_data['url_twitter']
 		member.url_linkedin = self.cleaned_data['url_linkedin']
-		member.url_loosecubes = self.cleaned_data['url_loosecubes']
 		member.url_biznik = self.cleaned_data['url_biznik']
 		member.url_aboutme = self.cleaned_data['url_aboutme']
 		member.url_github = self.cleaned_data['url_github']

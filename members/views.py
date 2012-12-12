@@ -81,8 +81,9 @@ def edit_profile(request, username):
 			'address1':member.address1, 'address2':member.address2, 'city':member.city, 'state':member.state, 'zipcode':member.zipcode,
 			'company_name':member.company_name, 'url_personal':member.url_personal, 'url_professional':member.url_professional, 
 			'url_facebook':member.url_facebook, 'url_twitter':member.url_twitter, 'url_biznik':member.url_biznik, 
-			'url_linkedin':member.url_linkedin, 'url_loosecubes':member.url_loosecubes, 'gender':member.gender, 'howHeard':member.howHeard,
-			'industry':member.industry, 'neighborhood':member.neighborhood, 'has_kids':member.has_kids, 'self_employed':member.self_employed})
+			'url_linkedin':member.url_linkedin, 'url_aboutme':member.url_aboutme, 'url_github':member.url_github, 
+			'gender':member.gender, 'howHeard':member.howHeard, 'industry':member.industry, 'neighborhood':member.neighborhood, 
+			'has_kids':member.has_kids, 'self_employed':member.self_employed})
 
 	return render_to_response('members/edit_profile.html',{'user':user, 'profile_form':profile_form}, context_instance=RequestContext(request))
 
