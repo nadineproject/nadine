@@ -129,7 +129,7 @@ BROKER_URL = "amqp://guest:guest@localhost:5672//"
 CELERYBEAT_SCHEDULE = {
 	"email-task": {
 		"task": "interlink.tasks.email_task",
-		"schedule": timedelta(seconds=2),
+		"schedule": timedelta(seconds=15),
 	},
 	#"billing-task": {
    #  "task": "staff.tasks.billing_task",
