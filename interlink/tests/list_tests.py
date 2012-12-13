@@ -101,7 +101,22 @@ class ListTest(TestCase):
 		self.assertEqual('unknownperson@example.com', m.from_email)
 		self.assertEqual('hats@example.com', m.extra_headers['Sender'])
 		self.assertEqual('unknownperson@example.com', m.extra_headers['Reply-To'])
+		
+	def test_moderated_subject(self):
+		"Moderated emails from non-users were losing their 'from' address."
+		self.mlist1.moderators.add(self.user1)
+		self.mlist1.subscribers.add(self.user2)
+		self.assertEqual(1, self.mlist1.subscribers.count())
 
+		incoming = IncomingMail.objects.create(mailing_list=self.mlist1,
+							  origin_address='bob@example.com',
+							  subject='This is a freaking auto-reply message',
+							  body='just a stupid message that should get bonked',
+							  sent_time=datetime.now() - timedelta(minutes=15))
+		IncomingMail.objects.process_incoming()
+		incoming = IncomingMail.objects.get(pk=incoming.pk)
+		self.assertEqual(incoming.state, 'moderate')
+		
 	def test_opt_out(self):
 		self.assertEqual(0, self.mlist1.subscribers.count())
 		self.mlist1.is_opt_out = True

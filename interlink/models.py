@@ -223,6 +223,21 @@ class IncomingMail(models.Model):
       # Otherwise prefix
       return ' '.join((subject_prefix, subject))
 
+   def sender_subscribed(self):
+      return self.owner in self.mailing_list.subscribers.all()
+
+   def is_moderated_subject(self):
+      s = self.subject.lower()
+      if "auto-reply" in s: 
+         return True
+      if "auto reply" in s: 
+         return True
+      if "automatic reply" in s: 
+         return True
+      if "out of office" in s: 
+         return True
+      return False
+
    def create_outgoing(self):
       subject = self._prefix_subject
       outgoing = OutgoingMail.objects.create(mailing_list=self.mailing_list, original_mail=self, subject=subject, body=self.body, html_body=self.html_body)
@@ -240,7 +255,7 @@ class IncomingMail(models.Model):
             self.state = 'reject'
             self.save()
 
-      elif self.owner == None or not self.owner in self.mailing_list.subscribers.all():
+      elif self.owner == None or not self.sender_subscribed() or self.is_moderated_subject():
          subject = 'Moderation Request: %s: %s' % (self.mailing_list.name, self.subject)
          body = render_to_string('interlink/email/moderation_required.txt', { 'incoming_mail': self })
          OutgoingMail.objects.create(mailing_list=self.mailing_list, moderators_only=True, original_mail=self, subject=subject, body=body)
