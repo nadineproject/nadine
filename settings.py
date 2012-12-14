@@ -124,20 +124,21 @@ BROKER_URL = "amqp://guest:guest@localhost:5672//"
 #
 # Celery beat schedules
 #
-CELERYBEAT_SCHEDULE = {
-	"email-task": {
-		"task": "interlink.tasks.email_task",
-		"schedule": timedelta(seconds=15),
-	},
+CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
+#CELERYBEAT_SCHEDULE = {
+	#"email-task": {
+	#	"task": "interlink.tasks.email_task",
+	#	"schedule": timedelta(seconds=15),
+	#},
 	#"billing-task": {
    #  "task": "staff.tasks.billing_task",
 	#	"schedule": timedelta(hours=1)
 	#},
-	"unsubscribe-dropouts": {
-		"task": "staff.tasks.unsubscribe_recent_dropouts_task",
-		"schedule": timedelta(hours=1)
-	},
-}
+	#"unsubscribe-dropouts": {
+	#	"task": "staff.tasks.unsubscribe_recent_dropouts_task",
+	#	"schedule": timedelta(hours=1)
+	#},
+#}
 CELERY_DISABLE_RATE_LIMITS = True
 CELERY_RESULT_BACKEND = "amqp"
 
