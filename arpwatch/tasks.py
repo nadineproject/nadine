@@ -2,7 +2,7 @@ from celery.task import task
 
 from datetime import datetime, timedelta
 
-@task(ignore_result=False)
+@task()
 def import_arp():
 	from arpwatch import arp
 	arp.import_all()

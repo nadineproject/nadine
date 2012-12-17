@@ -3,7 +3,7 @@ from celery.task import task
 from datetime import datetime, timedelta
 
 
-@task(ignore_result=True)
+@task()
 def billing_task():
 	"""
 	A recurring task which calculates billing.
@@ -16,18 +16,13 @@ def billing_task():
 	if not BillingLog.objects.filter(started__gt=last_day).exists():
 		billing.run_billing()
 
-@task(ignore_result=True)
+@task()
 def unsubscribe_recent_dropouts_task():
 	"""A recurring task which checks for members who need to be unsubscribed from mailing lists"""
 	from models import Member
 	Member.objects.unsubscribe_recent_dropouts()
 
-@task(ignore_result=False)
-def test_tasks():
-	from django.core.mail import send_mail
-	send_mail("email test", "this is your message on drugs", settings.EMAIL_ADDRESS, ["jsayles@gmail.com",], fail_silently=False)
-
-@task(ignore_result=False)
+@task()
 def make_backup():
 	from staff.backup import BackupManager
 	manager = BackupManager()

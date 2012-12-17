@@ -88,7 +88,6 @@ MIDDLEWARE_CLASSES = (
 	'django.contrib.messages.middleware.MessageMiddleware',
 )
 
-
 ROOT_URLCONF = 'urls'
 
 INSTALLED_APPS = (
@@ -119,35 +118,17 @@ try:
 except ImportError:
    pass
 
-BROKER_URL = "amqp://guest:guest@localhost:5672//"
-
-#
-# Celery beat schedules
-#
 CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
-#CELERYBEAT_SCHEDULE = {
-	#"email-task": {
-	#	"task": "interlink.tasks.email_task",
-	#	"schedule": timedelta(seconds=15),
-	#},
-	#"billing-task": {
-   #  "task": "staff.tasks.billing_task",
-	#	"schedule": timedelta(hours=1)
-	#},
-	#"unsubscribe-dropouts": {
-	#	"task": "staff.tasks.unsubscribe_recent_dropouts_task",
-	#	"schedule": timedelta(hours=1)
-	#},
-#}
 CELERY_DISABLE_RATE_LIMITS = True
 CELERY_RESULT_BACKEND = "amqp"
+BROKER_URL = "amqp://guest:guest@localhost:5672//"
 
 # When this is True, celery tasks will be run synchronously.
 # This is nice when running unit tests or in development.
 # In production set this to False in your local_settings.py
 CELERY_ALWAYS_EAGER = False
 
-
+# Import the local settings file
 from local_settings import *
 
-# Copyright 2009, 2010 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2009 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
