@@ -6,6 +6,6 @@
 {% block content %}
 	<h2>{{ topic.title }}</h2>
 	{% autoescape off %}
-		{{ topic.text }}
+		{{ topic.template }}
 	{% endautoescape %}
 {% endblock %}

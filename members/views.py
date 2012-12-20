@@ -31,8 +31,8 @@ def home(request):
 	return render_to_response('members/home.html',{'template_text':template_text, 'other_topics':other_topics}, context_instance=RequestContext(request))
 
 @login_required
-def help_topic(request, id):
-	topic = get_object_or_404(HelpText, id=id)
+def help_topic(request, slug):
+	topic = get_object_or_404(HelpText, slug=slug)
 	return render_to_response('members/help_topic.html',{'topic':topic}, context_instance=RequestContext(request))
 
 @login_required
