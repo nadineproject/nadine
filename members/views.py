@@ -3,7 +3,7 @@ from datetime import date, datetime, timedelta
 from operator import itemgetter, attrgetter
 
 from django.conf import settings
-from django.template import RequestContext
+from django.template import RequestContext, Template
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
@@ -20,20 +20,30 @@ from arpwatch.models import ArpLog
 
 @login_required
 def home(request):
-	template_text = ""
+	title = "Home"
+	template_text = "Welcome to {{ site.name }}"
 	other_topics = {}
 	for topic in HelpText.objects.all():
 		if topic.slug == 'home':
+			title = topic.title
 			template_text = topic.template
 		else: 
 			other_topics[topic.title] = topic
 	
-	return render_to_response('members/home.html',{'template_text':template_text, 'other_topics':other_topics}, context_instance=RequestContext(request))
+	current_context = context_instance=RequestContext(request)
+	template = Template(template_text)
+	rendered = template.render(current_context)
+	return render_to_response('members/home.html',{'title':title, 'page_body':rendered, 'other_topics':other_topics}, current_context)
 
 @login_required
 def help_topic(request, slug):
 	topic = get_object_or_404(HelpText, slug=slug)
-	return render_to_response('members/help_topic.html',{'topic':topic}, context_instance=RequestContext(request))
+	title = topic.title
+	template_text = topic.template
+	current_context = context_instance=RequestContext(request)
+	template = Template(template_text)
+	rendered = template.render(current_context)
+	return render_to_response('members/help_topic.html',{'title':title, 'page_body':rendered}, current_context)
 
 @login_required
 def all_members(request):

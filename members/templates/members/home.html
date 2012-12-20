@@ -1,8 +1,9 @@
 {% extends "members/u_base.html" %}
 
 {% block content %}
+	<h2>{{ title }}</h2>
 	{% autoescape off %}
-		{{ template_text }}
+		{{ page_body }}
 	{% endautoescape %}
 	
 	<h3>More Help Topics</h3>
