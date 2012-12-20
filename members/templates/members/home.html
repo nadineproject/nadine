@@ -2,13 +2,13 @@
 
 {% block content %}
 	{% autoescape off %}
-		{{ home_text }}
+		{{ template_text }}
 	{% endautoescape %}
 	
 	<h3>More Help Topics</h3>
-	{% if help_texts %}
+	{% if other_topics %}
 		<ul>
-			{% for t in help_texts.values %}
+			{% for t in other_topics.values %}
 				<li><a href="{% url members.views.help_topic t.id %}">{{ t }}</a></li>
 			{% endfor %}
 		</ul>

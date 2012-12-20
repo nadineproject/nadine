@@ -20,15 +20,15 @@ from arpwatch.models import ArpLog
 
 @login_required
 def home(request):
-	home_text = ""
-	help_texts = {}
+	template_text = ""
+	other_topics = {}
 	for topic in HelpText.objects.all():
-		if topic.title.lower() == 'home':
-			home_text = topic.text
+		if topic.slug == 'home':
+			template_text = topic.template
 		else: 
-			help_texts[topic.title] = topic
+			other_topics[topic.title] = topic
 	
-	return render_to_response('members/home.html',{'home_text':home_text, 'help_texts':help_texts}, context_instance=RequestContext(request))
+	return render_to_response('members/home.html',{'template_text':template_text, 'other_topics':other_topics}, context_instance=RequestContext(request))
 
 @login_required
 def help_topic(request, id):
