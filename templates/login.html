@@ -22,13 +22,13 @@
 <tr>
 	<th>{{ form.username.label_tag }}:</th>
 	<td>{{ form.username }}</td>
-	<td><i>Your username was emailed to you.<br>  Note: This is not your email address.</td>
+	<td><font size="-1"><i>Your username was emailed to you when we created your account. This is not your email address and it is case-sensitive.</font></i></td>
 </tr>
 <tr>
 	<th>{{ form.password.label_tag }}:</th>
 	<td>{{ form.password }}</td>
-	<td><i>First time logging in? <br>Forgot your password? 
-	<br>You'll need to <a href="{% url views.password_reset %}">create a new password</a>.</i></td>
+	<td><font size="-1"><i>If this is your first time logging in or you've forgotten your password or username, 
+	you will need to <a href="{% url views.password_reset %}">create a new password</a>.</i></font></td>
 </tr>
 <tr>
 	<td colspan=2>
