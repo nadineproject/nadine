@@ -33,7 +33,7 @@ Current Profile:
 			<input type="hidden" name="UMaddcustomer" value="yes">
 			<input type="hidden" name="UMschedule" value="disabled">
 			<input type="hidden" name="UMsoftware" value="nadine">
-			<input type="hidden" name="UMcustreceipt" value="no">
+			<input type="hidden" name="UMcustreceipt" value="yes">
 			<input type="hidden" name="UMname" value="{{ member.full_name }}">
 			<input type="hidden" name="UMstreet" value="{{ member.address1 }}">
 			<input type="hidden" name="UMzip" value="{{ member.zipcode }}">
