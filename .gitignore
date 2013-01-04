@@ -3,6 +3,7 @@
 pip-log.txt
 backups
 local_settings.py
+media
 media/
 media/member_photo
 media/resized_image
