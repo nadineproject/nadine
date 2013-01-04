@@ -14,7 +14,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
 from django.contrib.auth.decorators import login_required
-from django.conf.urls.defaults import patterns, include, url
+from django.conf.urls import patterns, include, url
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponse, Http404, HttpResponseServerError, HttpResponseRedirect, HttpResponsePermanentRedirect
@@ -83,4 +83,5 @@ class ActivityResource(Resource):
 	def obj_get_list(self, request=None, **kwargs): return self.get_object_list(request)
 	def obj_get(self, request=None, **kwargs): return ActivityModel()
 
-API.register(ActivityResource())
+# Turning off for now -JLS
+#API.register(ActivityResource())

@@ -56,11 +56,11 @@ ARP_IP_PFX = '172.16.5.'
 # URL that handles login
 LOGIN_URL='/login/'
 
-# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
-# trailing slash.
-# Examples: "http://foo.com/media/", "/media/".
-#ADMIN_MEDIA_PREFIX = 'https://secure.officenomads.com/staff/media/admin/'
-ADMIN_MEDIA_PREFIX = '/static/admin/'
+# Auth Backends
+AUTHENTICATION_BACKENDS = (
+	'backends.EmailOrUsernameModelBackend',
+	'django.contrib.auth.backends.ModelBackend'
+)
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -108,6 +108,9 @@ INSTALLED_APPS = (
 	'arpwatch',
 	'tablet',
 )
+
+# New Django 1.4 timezone support
+USE_TZ = False
 
 #
 # Celery initialization
