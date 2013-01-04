@@ -27,6 +27,9 @@
 		<div class="ui-block-b">
 			<h2>{{ member.full_name }}</h2>
 			<h3>Billing Day: {{ member.last_membership.start_date|date:"jS" }}</h3>
+			{% if not member.valid_billing %}
+				<h3 style="color:red;">Please update your billing profile.</h3>
+			{% endif %} 
 			{% if activity %}
 				<h3>Visits This Cycle ({{activity.count}}):</h3>
 				<ul>
