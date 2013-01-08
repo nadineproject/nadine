@@ -30,7 +30,7 @@ def home(request):
 		else: 
 			other_topics[topic.title] = topic
 	
-	current_context = context_instance=RequestContext(request)
+	current_context = RequestContext(request)
 	template = Template(template_text)
 	rendered = template.render(current_context)
 	return render_to_response('members/home.html',{'title':title, 'page_body':rendered, 'other_topics':other_topics}, current_context)
