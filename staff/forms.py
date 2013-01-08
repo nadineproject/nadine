@@ -6,6 +6,12 @@ from taggit.forms import *
 from models import *
 
 import datetime
+import user_reports
+
+class UserReportForm(forms.Form):
+	report = forms.ChoiceField(choices=user_reports.REPORT_KEYS, required=True)
+	order_by = forms.ChoiceField(choices=user_reports.REPORT_FIELDS, required=True)
+	active_only = forms.BooleanField(required=True)
 
 class DateRangeForm(forms.Form):
 	start = forms.DateField()
