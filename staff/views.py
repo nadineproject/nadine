@@ -9,17 +9,14 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.template import RequestContext
-from django.template.loader import render_to_string
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
-from django.core.mail import send_mail
 
 import settings
 from models import *
 from forms import *
-import billing
-import user_reports
+import billing, user_reports, email
 
 START_DATE_PARAM = 'start'
 END_DATE_PARAM = 'end'
@@ -142,21 +139,15 @@ def toggle_billing_flag(request, member_id):
 	
 	page_message = member.full_name + " billing profile: "
 	if member.valid_billing:
+		page_message += " Invalid";
 		member.valid_billing = False;
 		member.save()
-
-		site = Site.objects.get_current()
-		subject = "%s: Billing Problem" % (site.name)
-		message = render_to_string('email/invalid_billing.txt', {'user':user, 'site':site})
-		send_mail(subject, message, settings.EMAIL_ADDRESS, [user.email], fail_silently=True)	
-
-		page_message += " Invalid";
+		email.send_invalid_billing(user)
 	else:
+		page_message += " Valid";
 		member.valid_billing = True;
 		member.save()
-		page_message += " Valid";
-	
-	
+		
 	if 'back' in request.POST:
 		return HttpResponseRedirect(request.POST.get('back'))
 	return HttpResponseRedirect(reverse('staff.views.bills'))

@@ -13,9 +13,8 @@ from django.shortcuts import render_to_response, get_object_or_404
 
 from staff.models import Member, DailyLog, Bill
 from staff.forms import NewUserForm, MemberSearchForm
-from django.core.mail import send_mail
-
 from arpwatch import arp
+from staff import email
 
 @login_required
 def new_user(request):
@@ -25,13 +24,7 @@ def new_user(request):
 		try:
 			if form.is_valid():
 				user = form.save() 
-				# Send a welcome email
-				site = Site.objects.get_current()
-				url = "http://%s%s" % (site.domain, reverse('members.views.home'))
-				subject = "%s: Introduction to Nadine" % (site.name)
-				message = "Hello,\r\n\r\n \tWe just created a new user in Nadine, the system we use to run %s.  You can login to Nadine to see other members, update your profile, and view your activity and billing history.  The first time you will need to reset your password.  Your username is: %s\r\n\r\n%s\r\n\r\n - Nadine" % (site.name, user.username, url)
-				send_mail(subject, message, settings.EMAIL_ADDRESS, [user.email], fail_silently=True)
-				# Now sign them in
+				email.send_introduction(user)
 				return HttpResponseRedirect(reverse('tablet.views.signin_user', kwargs={ 'username':user.username }))
 		except Exception as e:
 			page_message = e
