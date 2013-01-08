@@ -9,13 +9,17 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.template import RequestContext
+from django.template.loader import render_to_string
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.contrib.sites.models import Site
+from django.core.mail import send_mail
 
 import settings
 from models import *
 from forms import *
 import billing
+import user_reports
 
 START_DATE_PARAM = 'start'
 END_DATE_PARAM = 'end'
@@ -128,21 +132,31 @@ def bills(request):
 				page_message = 'Created a <a href="%s">transaction for %s</a>' % (reverse('staff.views.transaction', args=[], kwargs={'id':transaction.id}), member,)
 
 	members = Member.objects.filter(models.Q(bills__isnull=False, bills__transactions=None, bills__paid_by__isnull=True) | models.Q(guest_bills__isnull=False, guest_bills__transactions=None)).distinct().order_by('user__last_name')
-	return render_to_response('staff/bills.html', { "members":members, 'page_message':page_message }, context_instance=RequestContext(request))
+	invalids = Member.objects.active_members().filter(valid_billing=False)	
+	return render_to_response('staff/bills.html', { "members":members, 'page_message':page_message, 'invalid_members':invalids }, context_instance=RequestContext(request))
 
 @staff_member_required
 def toggle_billing_flag(request, member_id):
 	member = get_object_or_404(Member, pk=member_id)
+	user = member.user
+	
 	page_message = member.full_name + " billing profile: "
 	if member.valid_billing:
 		member.valid_billing = False;
 		member.save()
+
+		site = Site.objects.get_current()
+		subject = "%s: Billing Problem" % (site.name)
+		message = render_to_string('email/invalid_billing.txt', {'user':user, 'site':site})
+		send_mail(subject, message, settings.EMAIL_ADDRESS, [user.email], fail_silently=True)	
+
 		page_message += " Invalid";
 	else:
 		member.valid_billing = True;
 		member.save()
 		page_message += " Valid";
-		
+	
+	
 	if 'back' in request.POST:
 		return HttpResponseRedirect(request.POST.get('back'))
 	return HttpResponseRedirect(reverse('staff.views.bills'))
@@ -525,4 +539,17 @@ def membership(request, membership_id):
 
 	return render_to_response('staff/membership.html', {'member':membership.member, 'membership': membership, 'membership_plans':MembershipPlan.objects.all(), 
 		'membership_form':membership_form, 'today':date.today().isoformat()}, context_instance=RequestContext(request))
+
+@staff_member_required
+def view_user_reports(request):
+	if request.method == 'POST':
+		form = UserReportForm(request.POST, request.FILES)
+	else:
+		form_data = {'report':'ALL', 'order_by':'NAME', 'active_only':True}
+		form = UserReportForm(form_data)
+
+	report = user_reports.User_Report(form)
+	users = report.get_users()
+	return render_to_response('staff/user_reports.html', {'users':users, 'form':form}, context_instance=RequestContext(request))
+
 # Copyright 2009, 2010 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
