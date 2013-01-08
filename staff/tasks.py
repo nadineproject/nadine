@@ -2,6 +2,7 @@ from celery.task import task
 
 from datetime import datetime, timedelta
 
+import email
 
 @task()
 def billing_task():
@@ -16,6 +17,11 @@ def billing_task():
 	if not BillingLog.objects.filter(started__gt=last_day).exists():
 		billing.run_billing()
 
+@task()
+def send_end_of_day_checkin():
+	"""A recurring task which sends an end of day email to new members"""
+	email.send_end_of_day_checkin()
+	
 @task()
 def unsubscribe_recent_dropouts_task():
 	"""A recurring task which checks for members who need to be unsubscribed from mailing lists"""
