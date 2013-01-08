@@ -1,0 +1,11 @@
+{% load i18n %}{% autoescape off %}
+{{ user.first_name }}, 
+
+You are now signed up for a {{ membership.membership_plan.name }} membership with a billing date of {{ membership.start_date|date:"jS" }}.  If you have not already done so, please login to your Nadine profile and make sure we have a valid billing profile.  If you would like to make any changes to your membership you need to let us know before your billing date or you will be billed automatically.  
+
+http://{{ site.domain }}{% url members.views.profile_redirect %}
+
+Thanks!
+ - The {{ site.name }} team
+
+{% endautoescape %}

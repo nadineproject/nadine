@@ -1,8 +1,0 @@
-{% load i18n %}{% autoescape off %}
-{{ user.first_name }}, 
-
-Thanks so much for coworking with us today.  We hope you had fun trying out Office Nomads.  If you have any questions, shoot us a reply to this email or give us a call at 206.323.6500.  Hope to see you around soon!
-
- - The {{ site.name }} team
-
-{% endautoescape %}

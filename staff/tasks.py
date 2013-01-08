@@ -18,9 +18,9 @@ def billing_task():
 		billing.run_billing()
 
 @task()
-def send_end_of_day_checkin():
-	"""A recurring task which sends an end of day email to new members"""
-	email.send_end_of_day_checkin()
+def first_day_checkins():
+	"""A recurring task which sends an email to new members"""
+	email.send_first_day_checkins()
 	
 @task()
 def unsubscribe_recent_dropouts_task():
