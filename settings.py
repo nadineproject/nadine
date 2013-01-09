@@ -98,6 +98,7 @@ INSTALLED_APPS = (
 	'django.contrib.admin',
 	'django.contrib.humanize',
 	'django.contrib.staticfiles',
+	'mailchimp',
 	'taggit_templatetags',
 	'taggit',
 	'djcelery',
@@ -130,6 +131,9 @@ BROKER_URL = "amqp://guest:guest@localhost:5672//"
 # This is nice when running unit tests or in development.
 # In production set this to False in your local_settings.py
 CELERY_ALWAYS_EAGER = False
+
+MAILCHIMP_API_KEY="YourMailchimpKey"
+MAILCHIMP_NEWSLETTER_KEY="YourNewsletter"
 
 # Import the local settings file
 from local_settings import *
