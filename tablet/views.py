@@ -115,11 +115,11 @@ def signin_user_guest(request, username, guestof):
 		daily_log.guest_of = guestof_member
 	if DailyLog.objects.filter(member=member).count() == 0:
 		daily_log.payment = 'Trial';
-		staff.email.announce_new_member(member)
+		email.announce_new_member(member)
 	else:
 		daily_log.payment = 'Bill';
 		if not member.photo:
-			staff.email.announce_need_photo(member)
+			email.announce_need_photo(member)
 	daily_log.save()
 		
 	return HttpResponseRedirect(reverse('tablet.views.signin', kwargs={}))
