@@ -3,13 +3,18 @@ from django.contrib.sites.models import Site
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from models import Member, DailyLog
-import settings
+import settings, mailchimp
 
 def send_introduction(user):
 	site = Site.objects.get_current()
 	subject = "%s: Introduction to Nadine" % (site.name)
 	message = render_to_string('email/introduction.txt', {'user':user, 'site':site})
-	send_mail(subject, message, settings.EMAIL_ADDRESS, [user.email], fail_silently=False)	
+	send_mail(subject, message, settings.EMAIL_ADDRESS, [user.email], fail_silently=True)
+	try:
+		newsletter = mailchimp.utils.get_connection().get_list_by_id(settings.MAILCHIMP_NEWSLETTER_KEY)
+		newsletter.subscribe(user.email, {'EMAIL':user.email})
+	except:
+		pass
 
 def send_new_membership(user):
 	site = Site.objects.get_current()
