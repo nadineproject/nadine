@@ -7,5 +7,6 @@ django-taggit
 django-taggit-templatetags
 celery
 django-celery
+django-mailchimp-v1.3
 
 git+git://github.com/toastdriven/django-tastypie.git#egg=django-tastypie
