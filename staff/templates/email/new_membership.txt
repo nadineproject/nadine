@@ -1,11 +1,11 @@
 {% load i18n %}{% autoescape off %}
 {{ user.first_name }}, 
 
-You are now signed up for a {{ membership.membership_plan.name }} membership with a billing date of {{ membership.start_date|date:"jS" }}.  If you have not already done so, please login to your Nadine profile and make sure we have a valid billing profile.  If you would like to make any changes to your membership you need to let us know before your billing date or you will be billed automatically.  
+Congratulations on your new {{ membership.membership_plan.name }} membership! Your billing date will be the {{ membership.start_date|date:"jS" }} of each month. If you have not already done so, please login to your Nadine profile (link below) and make sure we have a valid billing profile. We will assume you would like to stay at your current membership level unless you tell us otherwise (by email or dropping by the front desk) before your billing date arrives. If you have signed up as a Resident member, we ask that you give us 30 days notice before ending your membership. If you have any questions or concerns, please don't hesitate to ask us. In the mean time, welcome! We're so happy to have you as a part of our Nomad family.
 
 http://{{ site.domain }}{% url members.views.profile_redirect %}
 
 Thanks!
- - The {{ site.name }} team
+The {{ site.name }} Team
 
 {% endautoescape %}

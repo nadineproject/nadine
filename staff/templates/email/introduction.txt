@@ -6,6 +6,6 @@ Thanks for visiting {{ site.name }}! We just created a new user for you in Nadin
 http://{{ site.domain }}{% url members.views.profile_redirect %}
 
 Thanks!
-The {{ site.name }} team
+The {{ site.name }} Team
 
 {% endautoescape %}
