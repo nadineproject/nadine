@@ -42,3 +42,12 @@ def send_invalid_billing(user):
 	message = render_to_string('email/invalid_billing.txt', {'user':user, 'site':site})
 	send_mail(subject, message, settings.EMAIL_ADDRESS, [user.email], fail_silently=False)	
 
+def announce_new_member(member):
+	subject = "New User - %s" % (member)
+	message = "Team,\r\n\r\n \t%s just signed in for the first time!\r\n\r\n - Nadine" % (member)
+	send_mail(subject, message, settings.EMAIL_ADDRESS, [settings.TEAM_EMAIL_ADDRESS], fail_silently=True)
+
+def announce_need_photo(member):
+	subject = "Photo Opportunity - %s" % (member)
+	message = "Team,\r\n\r\n \t%s just signed in and we don't have a photo of them yet.\r\n\r\n - Nadine" % (member)
+	send_mail(subject, message, settings.EMAIL_ADDRESS, [settings.TEAM_EMAIL_ADDRESS], fail_silently=True)

@@ -115,18 +115,12 @@ def signin_user_guest(request, username, guestof):
 		daily_log.guest_of = guestof_member
 	if DailyLog.objects.filter(member=member).count() == 0:
 		daily_log.payment = 'Trial';
-		subject = "New User - %s" % (member)
-		message = "Team,\r\n\r\n \t%s just signed in for the first time!\r\n\r\n - Nadine" % (member)
-		send_mail(subject, message, settings.EMAIL_ADDRESS, [settings.TEAM_EMAIL_ADDRESS], fail_silently=True)
+		staff.email.announce_new_member(member)
 	else:
 		daily_log.payment = 'Bill';
 		if not member.photo:
-			subject = "Photo Opportunity - %s" % (member)
-			message = "Team,\r\n\r\n \t%s just signed in and we don't have a photo of them yet.\r\n\r\n - Nadine" % (member)
-			send_mail(subject, message, settings.EMAIL_ADDRESS, [settings.TEAM_EMAIL_ADDRESS], fail_silently=True)
-
+			staff.email.announce_need_photo(member)
 	daily_log.save()
-	
 		
 	return HttpResponseRedirect(reverse('tablet.views.signin', kwargs={}))
 
