@@ -10,11 +10,15 @@ def send_introduction(user):
 	subject = "%s: Introduction to Nadine" % (site.name)
 	message = render_to_string('email/introduction.txt', {'user':user, 'site':site})
 	send_mail(subject, message, settings.EMAIL_ADDRESS, [user.email], fail_silently=True)
-	try:
-		newsletter = mailchimp.utils.get_connection().get_list_by_id(settings.MAILCHIMP_NEWSLETTER_KEY)
-		newsletter.subscribe(user.email, {'EMAIL':user.email})
-	except:
-		pass
+	subscribe_to_newsletter(user.email)
+
+def subscribe_to_newsletter(email):
+	if settings.MAILCHIMP_NEWSLETTER_KEY:
+		try:
+			newsletter = mailchimp.utils.get_connection().get_list_by_id(settings.MAILCHIMP_NEWSLETTER_KEY)
+			newsletter.subscribe(email, {'EMAIL':email})
+		except:
+			pass
 
 def send_new_membership(user):
 	site = Site.objects.get_current()
