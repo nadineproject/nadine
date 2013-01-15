@@ -37,8 +37,22 @@ class ActivityModel(object):
 		self.part_time_counts = self.member_count - self.full_time_count
 		devices = ArpLog.objects.for_range(midnight, now)
 		self.device_count = len(devices)
-		self.here_today = arp.here_today()
+		#self.here_today = arp.here_today()
 
+	@property
+	def here_today(self):
+		'''This property is exposed in the ActivityModel'''
+		results = []
+		for member in arp.here_today():
+			member_dict = {"username":member.user.username, "name":member.full_name}
+			member_dict["photo"] = "http://%s%s%s" % (Site.objects.get_current().domain, settings.MEDIA_URL, member.photo)
+			tags = []
+			for t in member.tags.all():
+				tags.append(t)
+			member_dict["tags"] = tags
+			results.append(member_dict)
+		return results
+		
 class ActivityResource(Resource):
 	'''
 	Exposes information about the activity in the space for today.
