@@ -267,7 +267,7 @@ class Member(models.Model):
 			if last_monthly.end_date == None or last_monthly.end_date > date.today():
 				return last_monthly.membership_plan
 			else:
-				return "Ex" + last_monthly.membership_plan
+				return "Ex" + str(last_monthly.membership_plan)
 
 		# Now check daily logs
 		drop_ins = DailyLog.objects.filter(member=self).count()
