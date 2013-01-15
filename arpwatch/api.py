@@ -37,7 +37,6 @@ class ActivityModel(object):
 		self.part_time_counts = self.member_count - self.full_time_count
 		devices = ArpLog.objects.for_range(midnight, now)
 		self.device_count = len(devices)
-		#self.here_today = arp.here_today()
 
 	@property
 	def here_today(self):
@@ -46,6 +45,9 @@ class ActivityModel(object):
 		for member in arp.here_today():
 			member_dict = {"username":member.user.username, "name":member.full_name}
 			member_dict["photo"] = "http://%s%s%s" % (Site.objects.get_current().domain, settings.MEDIA_URL, member.photo)
+			member_dict["industry"] = member.industry
+			membership = member.membership_type()
+			member_dict["membership"] = membership
 			tags = []
 			for t in member.tags.all():
 				tags.append(t)
