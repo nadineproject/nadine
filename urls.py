@@ -5,7 +5,10 @@ from django.http import HttpResponse
 
 admin.autodiscover()
 
-#from nadine import API
+from tastypie.api import Api
+from arpwatch.api import ActivityResource
+API = Api(api_name='v1')
+API.register(ActivityResource())
 
 urlpatterns = patterns('',
    (r'^robots\.txt$', lambda r: HttpResponse("User-agent: *\nDisallow: /", mimetype="text/plain")),
@@ -28,7 +31,7 @@ urlpatterns = patterns('',
    (r'^reset/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)/$', 'django.contrib.auth.views.password_reset_confirm', {'template_name': 'password_reset_confirm.html'}),
    (r'^reset/complete/$', 'django.contrib.auth.views.password_reset_complete', {'template_name': 'password_reset_complete.html'}),
 
-   #(r'^api/', include(API.urls)),
+   (r'^api/', include(API.urls)),
    (r'^$', 'views.index'),
 
 )
