@@ -79,7 +79,7 @@ class MailingList(models.Model):
    subscribers = models.ManyToManyField(User, blank=True, related_name='subscribed_mailing_lists')
    moderators = models.ManyToManyField(User, blank=True, related_name='moderated_mailing_lists', help_text='Users who will be sent moderation emails', limit_choices_to={'is_staff': True})
 
-   throttle_limit = models.IntegerField(default=0, help_text='The number of recipients/hour this mailing list is limited to. Default is 0, which means no limit.')
+   throttle_limit = models.IntegerField(default=0, help_text='The number of recipients in 10 minutes this mailing list is limited to. Default is 0, which means no limit.')
 
    objects = MailingListManager()
 
@@ -331,7 +331,7 @@ class OutgoingMail(models.Model):
          return len(msg.recipients())
 
       r = (OutgoingMail.objects.filter(mailing_list=self.mailing_list,
-                                       sent__gt=datetime.now() - timedelta(hours=1))
+                                       sent__gt=datetime.now() - timedelta(minutes=10))
                                .aggregate(Sum('sent_recipients')))
       num_sent_recipients = r['sent_recipients__sum'] or 0
 
