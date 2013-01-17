@@ -61,6 +61,7 @@ def device_logs_today(request):
 
 @staff_member_required
 def device_logs_by_day(request, year, month, day):
+	if len(month) == 1: month = "0" + month
 	log_date = date(year=int(year), month=int(month), day=int(day))
 	day_start = datetime.strptime(year + month + day + " 00:00", "%Y%m%d %H:%M")
 	day_end = datetime.strptime(year + month + day + " 23:59", "%Y%m%d %H:%M")
@@ -73,6 +74,7 @@ def logins_today(request):
 	return logins_by_day(request, str(now.year), str(now.month), str(now.day));
 
 def logins_by_day(request, year, month, day):
+	if len(month) == 1: month = "0" + month
 	log_date = date(year=int(year), month=int(month), day=int(day))
 	start = datetime.strptime(year + month + day + " 00:00", "%Y%m%d %H:%M")
 	end = datetime.strptime(year + month + day + " 23:59", "%Y%m%d %H:%M")
