@@ -134,6 +134,7 @@ CELERY_ALWAYS_EAGER = False
 
 #MAILCHIMP_API_KEY="YourMailchimpKey"
 #MAILCHIMP_NEWSLETTER_KEY="YourNewsletter"
+MAILCHIMP_WEBHOOK_KEY="nadine"
 
 # Import the local settings file
 from local_settings import *
