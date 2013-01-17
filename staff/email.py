@@ -9,7 +9,11 @@ def send_introduction(user):
 	site = Site.objects.get_current()
 	subject = "%s: Introduction to Nadine" % (site.name)
 	message = render_to_string('email/introduction.txt', {'user':user, 'site':site})
-	send_mail(subject, message, settings.EMAIL_ADDRESS, [user.email], fail_silently=True)
+	try:
+		send_mail(subject, message, settings.EMAIL_ADDRESS, [user.email], fail_silently=True)
+		announce_bad_email(user)
+	except:
+		announce_bad_email(user)
 	subscribe_to_newsletter(user.email)
 
 def subscribe_to_newsletter(email):
@@ -54,4 +58,9 @@ def announce_new_member(member):
 def announce_need_photo(member):
 	subject = "Photo Opportunity - %s" % (member)
 	message = "Team,\r\n\r\n \t%s just signed in and we don't have a photo of them yet.\r\n\r\n - Nadine" % (member)
+	send_mail(subject, message, settings.EMAIL_ADDRESS, [settings.TEAM_EMAIL_ADDRESS], fail_silently=True)
+
+def announce_bad_email(user):
+	subject = "Email Problem - %s" % (user)
+	message = "Team,\r\n\r\n \tWe had a problem sending the introduction email to '%s'.\r\n\r\n - Nadine" % (user.email)
 	send_mail(subject, message, settings.EMAIL_ADDRESS, [settings.TEAM_EMAIL_ADDRESS], fail_silently=True)
