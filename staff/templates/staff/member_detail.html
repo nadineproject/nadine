@@ -48,7 +48,7 @@ function gotoEmailReset(emailAddress){
 
 <!-- Member Detail -->    
 <div id="member-detail">
-	<h2>{{ member.first_name }} {{ member.last_name }} {% if member.is_monthly %} - <i>{{ member.membership_type }}</i> {% endif %}</h2>
+	<h2>{{ member.first_name }} {{ member.last_name }} {% if member.is_active %} - <i>{{ member.membership_type }}</i> {% endif %}</h2>
 	<div id="quick-links">
 		<a href="{% url staff.views.member_activity member.id %}">activity</a> |
 		<a href="{% url staff.views.member_bills member.id %}">bills</a> |
@@ -56,7 +56,7 @@ function gotoEmailReset(emailAddress){
 		<a href="{% url views.password_reset %}?email={{ member.email }}">pw reset</a> |
 		<a href="{% url members.views.user member.user.username %}">profile</a> |
 		<a href="{% url admin:auth_user_change member.user.id %}">edit member</a> |
-		{% if member.is_monthly %}
+		{% if member.is_active %}
 			<a href="{% url staff.views.membership member.last_membership.id %}">update membership</a>
 		{% else %}	
 			<a href="{% url staff.views.member_membership member.id %}">add membership</a>

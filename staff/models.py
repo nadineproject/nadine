@@ -278,7 +278,7 @@ class Member(models.Model):
 		else:
 			return "Drop-in"
 
-	def is_monthly(self):
+	def is_active(self):
 		last_log = self.last_membership()
 		if  not last_log: return False
 		return last_log.end_date == None or last_log.end_date >= date.today()
@@ -436,7 +436,7 @@ class ExitTask(models.Model):
 	order = models.SmallIntegerField()
 
 	def uncompleted_members(self):
-		return [member for member in Member.objects.filter(memberships__isnull=False).exclude(exittaskcompleted__task=self).distinct() if not member.is_monthly()]
+		return [member for member in Member.objects.filter(memberships__isnull=False).exclude(exittaskcompleted__task=self).distinct() if not member.is_active()]
 
 	def completed_members(self):
 		return Member.objects.filter(memberships__end_date__gt=date.today()).filter(exittaskcompleted__task=self).distinct()
