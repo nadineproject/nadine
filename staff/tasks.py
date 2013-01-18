@@ -1,7 +1,7 @@
 from celery.task import task
 
 from datetime import datetime, timedelta
-
+from models import Member, Membership, DailyLog
 import email
 
 @task()
@@ -20,8 +20,21 @@ def billing_task():
 @task()
 def first_day_checkins():
 	"""A recurring task which sends an email to new members"""
-	email.send_first_day_checkins()
-	
+	now = datetime.now()
+	midnight = now - timedelta(seconds=now.hour*60*60 + now.minute*60 + now.second)
+	free_trials = DailyLog.objects.filter(visit_date__range=(midnight, now), payment='Trial')
+	for l in free_trials:
+		email.send_first_day_checkin(l.member.user)
+
+@task()
+def coworking_survey():
+	"""A recurring task which sends a survey to members that have been here for 60 days"""
+	two_months_ago = datetime.now() - timedelta(days=60)
+	for membership in Membership.objects.filter(start_date=two_months_ago):
+		
+		if not membership.end_date:
+			email.send_member_survey(membership.member.user)
+
 @task()
 def unsubscribe_recent_dropouts_task():
 	"""A recurring task which checks for members who need to be unsubscribed from mailing lists"""

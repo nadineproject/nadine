@@ -28,17 +28,16 @@ def send_new_membership(user):
 	send(user.email, subject, message)
 	announce_new_membership(user)
 
-def send_first_day_checkins():
-	now = datetime.now()
-	midnight = now - timedelta(seconds=now.hour*60*60 + now.minute*60 + now.second)
-	free_trials = DailyLog.objects.filter(visit_date__range=(midnight, now), payment='Trial')
-	for l in free_trials:
-		send_first_day_checkin(l.member.user)
-
 def send_first_day_checkin(user):
 	site = Site.objects.get_current()
 	subject = "%s: How was your first day?" % (site.name)
 	message = render_to_string('email/first_day.txt', {'user':user, 'site':site})
+	send(user.email, subject, message)
+
+def send_member_survey(user):
+	site = Site.objects.get_current()
+	subject = "%s: Coworking Survey" % (site.name)
+	message = render_to_string('email/member_survey.txt', {'user':user, 'site':site})
 	send(user.email, subject, message)
 
 def send_invalid_billing(user):
