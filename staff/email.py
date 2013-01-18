@@ -34,10 +34,22 @@ def send_first_day_checkin(user):
 	message = render_to_string('email/first_day.txt', {'user':user, 'site':site})
 	send(user.email, subject, message)
 
+def send_exit_survey(user):
+	site = Site.objects.get_current()
+	subject = "%s: Exit Survey" % (site.name)
+	message = render_to_string('email/exit_survey.txt', {'user':user, 'site':site})
+	send(user.email, subject, message)
+
 def send_member_survey(user):
 	site = Site.objects.get_current()
 	subject = "%s: Coworking Survey" % (site.name)
 	message = render_to_string('email/member_survey.txt', {'user':user, 'site':site})
+	send(user.email, subject, message)
+
+def send_no_return_checkin(user):
+	site = Site.objects.get_current()
+	subject = "%s: Checking In" % (site.name)
+	message = render_to_string('email/no_return.txt', {'user':user, 'site':site})
 	send(user.email, subject, message)
 
 def send_invalid_billing(user):
@@ -74,6 +86,10 @@ def send_quietly(recipient, subject, message):
 	send_email(recipient, subject, message, True)
 
 def send_email(recipient, subject, message, fail_silently):
+	# A little safety net when debugging
+	if settings.DEBUG:
+		recipient = settings.EMAIL_ADDRESS
+
 	success = False
 	try:
 		send_mail(subject, message, settings.EMAIL_ADDRESS, [recipient], fail_silently=fail_silently)

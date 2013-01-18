@@ -1,0 +1,9 @@
+{% load i18n %}{% autoescape off %}
+{{ user.first_name }},
+
+We are sad to see you go!  Please complete this exit survey:  [surveyURL]
+
+Hope to see you again soon,
+The {{ site.name }} Team
+
+{% endautoescape %}

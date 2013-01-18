@@ -1,0 +1,9 @@
+{% load i18n %}{% autoescape off %}
+{{ user.first_name }},
+
+You came into Office Nomads a couple months ago but we haven't seen you since!
+
+Hope to see you again soon,
+The {{ site.name }} Team
+
+{% endautoescape %}

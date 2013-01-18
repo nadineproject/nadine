@@ -27,13 +27,26 @@ def first_day_checkins():
 		email.send_first_day_checkin(l.member.user)
 
 @task()
-def coworking_survey():
-	"""A recurring task which sends a survey to members that have been here for 60 days"""
+def regular_checkins():
+	"""A recurring task which sends checkin emails to members"""
+	# Pull the memberships that started 60 days ago and send the coworking survey
+	# if they are still active and this was their first membership
 	two_months_ago = datetime.now() - timedelta(days=60)
 	for membership in Membership.objects.filter(start_date=two_months_ago):
-		
-		if not membership.end_date:
-			email.send_member_survey(membership.member.user)
+		if Membership.objects.filter(member=membership.member, start_date__lt=two_months_ago).count() == 0:
+			if membership.member.is_active():
+				email.send_member_survey(membership.member.user)
+				
+	# Pull all the free trials from 60 days ago and send an email if they haven't been back
+	for dropin in DailyLog.objects.filter(visit_date=two_months_ago, payment='Trial'):
+		if DailyLog.objects.filter(member=dropin.member).count() == 1:
+			email.send_no_return_checkin(dropin.member.user)
+
+	# Send an exit survey to members that have been gone a week.
+	one_week_ago = datetime.now() - timedelta(days=7)
+	for membership in Membership.objects.filter(end_date=one_week_ago):
+		if not membership.member.is_active():
+			email.send_exit_survey(membership.member.user)
 
 @task()
 def unsubscribe_recent_dropouts_task():
