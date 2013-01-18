@@ -4,7 +4,7 @@ from django.utils.html import strip_tags
 from taggit.forms import *
 
 from models import *
-
+import email
 import datetime
 import user_reports
 
@@ -197,6 +197,9 @@ class MembershipForm(forms.Form):
 					completed_task.delete()
 				for completed_task in ExitTaskCompleted.objects.filter(member=membership.member):
 					completed_task.delete()
+
+		if adding:
+			email.send_new_membership(membership.member.user)
 
 		return membership
 
