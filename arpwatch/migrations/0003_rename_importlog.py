@@ -8,26 +8,34 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding field 'UploadLog.success'
-        db.add_column('arpwatch_uploadlog', 'success',
-                      self.gf('django.db.models.fields.BooleanField')(default=False),
-                      keep_default=False)
+        # Deleting model 'UploadLog'
+        db.delete_table('arpwatch_uploadlog')
 
-        # Adding index on 'UploadLog', fields ['file_name']
-        db.create_index('arpwatch_uploadlog', ['file_name'])
+        # Adding model 'ImportLog'
+        db.create_table('arpwatch_importlog', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
+            ('file_name', self.gf('django.db.models.fields.CharField')(max_length=32, db_index=True)),
+            ('success', self.gf('django.db.models.fields.BooleanField')(default=False)),
+        ))
+        db.send_create_signal('arpwatch', ['ImportLog'])
 
-        # Changing field 'UserRemoteAddr.logintime'
-        db.alter_column('arpwatch_userremoteaddr', 'logintime', self.gf('django.db.models.fields.DateTimeField')())
 
     def backwards(self, orm):
-        # Removing index on 'UploadLog', fields ['file_name']
-        db.delete_index('arpwatch_uploadlog', ['file_name'])
+        # Adding model 'UploadLog'
+        db.create_table('arpwatch_uploadlog', (
+            ('success', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('loadtime', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
+            ('file_name', self.gf('django.db.models.fields.CharField')(max_length=32, db_index=True)),
+            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], null=True)),
+            ('file_size', self.gf('django.db.models.fields.IntegerField')(default=0)),
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+        ))
+        db.send_create_signal('arpwatch', ['UploadLog'])
 
-        # Deleting field 'UploadLog.success'
-        db.delete_column('arpwatch_uploadlog', 'success')
+        # Deleting model 'ImportLog'
+        db.delete_table('arpwatch_importlog')
 
-        # Changing field 'UserRemoteAddr.logintime'
-        db.alter_column('arpwatch_userremoteaddr', 'logintime', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True))
 
     models = {
         'arpwatch.arplog': {
@@ -37,14 +45,12 @@ class Migration(SchemaMigration):
             'ip_address': ('django.db.models.fields.IPAddressField', [], {'max_length': '15'}),
             'runtime': ('django.db.models.fields.DateTimeField', [], {})
         },
-        'arpwatch.uploadlog': {
-            'Meta': {'object_name': 'UploadLog'},
+        'arpwatch.importlog': {
+            'Meta': {'object_name': 'ImportLog'},
+            'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'file_name': ('django.db.models.fields.CharField', [], {'max_length': '32', 'db_index': 'True'}),
-            'file_size': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'loadtime': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'success': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True'})
+            'success': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
         },
         'arpwatch.userdevice': {
             'Meta': {'object_name': 'UserDevice'},

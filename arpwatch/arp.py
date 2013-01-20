@@ -4,6 +4,7 @@ from datetime import datetime, time, date, timedelta
 from django.conf import settings
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from django.db import transaction
 
 from models import *
 from staff.models import Member, DailyLog
@@ -59,17 +60,20 @@ def import_all():
 	
 	file_list = default_storage.listdir(settings.ARP_ROOT)[1]
 	for file_name in file_list:
-		# Expects filename like: arp-111101-0006.txt
-		if file_name.find("arp-") < 0:
-			continue
-		runtime_str = file_name.lstrip(settings.ARP_ROOT)
-		runtime_str = runtime_str.lstrip("arp-").rstrip(".txt")
-		runtime = datetime.strptime(runtime_str, "%y%m%d-%H%M")
-		full_path = settings.ARP_ROOT + file_name
-		file = default_storage.open(full_path)
-		log_message("importing %s" % file_name)
-		import_file(file, runtime)
-		default_storage.delete(full_path)
+		ImportLog.objects.create(file_name=file_name, success=False)
+		with transaction.commit_on_success():
+			# Expects filename like: arp-111101-0006.txt
+			if file_name.find("arp-") < 0:
+				continue
+			runtime_str = file_name.lstrip(settings.ARP_ROOT)
+			runtime_str = runtime_str.lstrip("arp-").rstrip(".txt")
+			runtime = datetime.strptime(runtime_str, "%y%m%d-%H%M")
+			full_path = settings.ARP_ROOT + file_name
+			file = default_storage.open(full_path)
+			log_message("importing %s" % file_name)
+			import_file(file, runtime)
+			default_storage.delete(full_path)
+			ImportLog.objects.create(file_name=file_name, success=True)
 		
 	# Unlock the import directory
 	unlock_import_dir()
@@ -96,8 +100,8 @@ def import_file(file, runtime):
 			else:
 				device = UserDevice.objects.create(mac_address=mac)
 
-			# Create a log entry
-			log = ArpLog.objects.create(runtime=runtime, ip_address=ip, device=device)
+			# ArpLog
+			ArpLog.objects.create(runtime=runtime, ip_address=ip, device=device)
 
 def day_is_complete(day_str):
 	# Return true if there are evenly spaced logs throughout the day
