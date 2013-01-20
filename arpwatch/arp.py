@@ -60,8 +60,6 @@ def import_all():
 	
 	file_list = default_storage.listdir(settings.ARP_ROOT)[1]
 	for file_name in file_list:
-		ImportLog.objects.create(file_name=file_name, success=False)
-		with transaction.commit_on_success():
 			# Expects filename like: arp-111101-0006.txt
 			if file_name.find("arp-") < 0:
 				continue
@@ -71,6 +69,7 @@ def import_all():
 			full_path = settings.ARP_ROOT + file_name
 			file = default_storage.open(full_path)
 			log_message("importing %s" % file_name)
+			ImportLog.objects.create(file_name=file_name, success=False)
 			import_file(file, runtime)
 			default_storage.delete(full_path)
 			log = ImportLog.objects.filter(file_name=file_name).order_by('created')[0]
@@ -84,26 +83,27 @@ def import_file(file):
 	import_file(file, file.name)
 
 def import_file(file, runtime):
-	for chunk in file.chunks():
-		for line in chunk.splitlines():
-			# Expect line like:
-			# ? (172.16.5.153) at 00:1b:21:4e:e7:2c on sk4 expires in 1169 seconds [ethernet]
-			ip = line.split("(")[1].split(") at ")[0]
-			mac = line.split(") at ")[1].split(" on ")[0]
+	with transaction.commit_on_success():
+		for chunk in file.chunks():
+			for line in chunk.splitlines():
+				# Expect line like:
+				# ? (172.16.5.153) at 00:1b:21:4e:e7:2c on sk4 expires in 1169 seconds [ethernet]
+				ip = line.split("(")[1].split(") at ")[0]
+				mac = line.split(") at ")[1].split(" on ")[0]
 
-			# Stop me if you think that you've heard this one before
-			if ArpLog.objects.filter(runtime=runtime, ip_address=ip).count() > 0:
-				log_message("Data For This Time Already Loaded: %s" % runtime)
-				return
+				# Stop me if you think that you've heard this one before
+				if ArpLog.objects.filter(runtime=runtime, ip_address=ip).count() > 0:
+					log_message("Data For This Time Already Loaded: %s" % runtime)
+					return
 
-			# User Device
-			if UserDevice.objects.filter(mac_address=mac).count() > 0:
-				device = UserDevice.objects.get(mac_address=mac)
-			else:
-				device = UserDevice.objects.create(mac_address=mac)
+				# User Device
+				if UserDevice.objects.filter(mac_address=mac).count() > 0:
+					device = UserDevice.objects.get(mac_address=mac)
+				else:
+					device = UserDevice.objects.create(mac_address=mac)
 
-			# ArpLog
-			ArpLog.objects.create(runtime=runtime, ip_address=ip, device=device)
+				# ArpLog
+				ArpLog.objects.create(runtime=runtime, ip_address=ip, device=device)
 
 def day_is_complete(day_str):
 	# Return true if there are evenly spaced logs throughout the day
