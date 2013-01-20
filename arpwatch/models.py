@@ -72,8 +72,9 @@ class ArpLog(models.Model):
 class UploadLog(models.Model):
 	loadtime = models.DateTimeField(auto_now_add=True, null=False)
 	user = models.ForeignKey(User, null=True, unique=False)
-	file_name = models.CharField(max_length=32, blank=False, null=False)
+	file_name = models.CharField(max_length=32, blank=False, null=False, db_index=True)
 	file_size = models.IntegerField(default=0)
+	success = models.BooleanField(default=False)
 	def __unicode__(self):
 	   return '%s: %s = %s' % (self.loadtime, self.user, self.file_name)
 	
