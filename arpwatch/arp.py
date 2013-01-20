@@ -73,7 +73,9 @@ def import_all():
 			log_message("importing %s" % file_name)
 			import_file(file, runtime)
 			default_storage.delete(full_path)
-			ImportLog.objects.create(file_name=file_name, success=True)
+			log = ImportLog.objects.filter(file_name=file_name).order_by('created')[0]
+			log.success = True
+			log.save()
 		
 	# Unlock the import directory
 	unlock_import_dir()
