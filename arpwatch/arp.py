@@ -60,21 +60,21 @@ def import_all():
 	
 	file_list = default_storage.listdir(settings.ARP_ROOT)[1]
 	for file_name in file_list:
-			# Expects filename like: arp-111101-0006.txt
-			if file_name.find("arp-") < 0:
-				continue
-			runtime_str = file_name.lstrip(settings.ARP_ROOT)
-			runtime_str = runtime_str.lstrip("arp-").rstrip(".txt")
-			runtime = datetime.strptime(runtime_str, "%y%m%d-%H%M")
-			full_path = settings.ARP_ROOT + file_name
-			file = default_storage.open(full_path)
-			log_message("importing %s" % file_name)
-			ImportLog.objects.create(file_name=file_name, success=False)
-			import_file(file, runtime)
-			default_storage.delete(full_path)
-			log = ImportLog.objects.filter(file_name=file_name).order_by('created')[0]
-			log.success = True
-			log.save()
+		# Expects filename like: arp-111101-0006.txt
+		if file_name.find("arp-") < 0:
+			continue
+		runtime_str = file_name.lstrip(settings.ARP_ROOT)
+		runtime_str = runtime_str.lstrip("arp-").rstrip(".txt")
+		runtime = datetime.strptime(runtime_str, "%y%m%d-%H%M")
+		full_path = settings.ARP_ROOT + file_name
+		file = default_storage.open(full_path)
+		log_message("importing %s" % file_name)
+		ImportLog.objects.create(file_name=file_name, success=False)
+		import_file(file, runtime)
+		default_storage.delete(full_path)
+		log = ImportLog.objects.filter(file_name=file_name).order_by('created')[0]
+		log.success = True
+		log.save()
 		
 	# Unlock the import directory
 	unlock_import_dir()
