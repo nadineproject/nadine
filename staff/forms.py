@@ -35,14 +35,16 @@ class NewUserForm(forms.Form):
 		"Creates the User and Member records with the field data and returns the user"
 		if not self.is_valid(): raise Exception('The form must be valid in order to save')
 		
-		username = "%s_%s" % (self.cleaned_data['first_name'].lower(), self.cleaned_data['last_name'].lower())
+		first = self.cleaned_data['first_name'].strip()
+		last = self.cleaned_data['last_name'].strip()
+		username = "%s_%s" % (first.lower(), last.lower())
 		if User.objects.filter(username=username).count() > 0: raise forms.ValidationError("That username is already in use.")
 		
-		user = User(username=username, first_name=self.cleaned_data['first_name'], last_name=self.cleaned_data['last_name'], email=self.cleaned_data['email'])
+		user = User(username=username, first_name=first, last_name=last, email=self.cleaned_data['email'].strip())
 		user.save()
 
 		member = user.get_profile()
-		member.phone = self.cleaned_data['phone']
+		member.phone = self.cleaned_data['phone'].strip()
 		member.save()
 		
 		return user
