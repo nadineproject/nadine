@@ -107,10 +107,9 @@ class BackupManager(object):
 			print 'aborting'
 			return
 
-		
 		backup_file = '%s-backup.tar' % file_token
 		backup_path = '%s%s' % (settings.BACKUP_ROOT, backup_file)
-		print 'backup_file', backup_file, backup_path
+		print "backup_file: %s" % backup_file
 		command = 'cd "%s" && tar -czf "%s" "%s" "%s"' % (settings.BACKUP_ROOT, backup_path, media_file, sql_file)
 		if not self.call_system(command):
 			print 'aborting'
