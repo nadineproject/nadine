@@ -8,14 +8,11 @@ import email
 def billing_task():
 	"""
 	A recurring task which calculates billing.
-	The task runs once an hour, but will only run billing once every 24 hours.
 	"""
 	import billing
 	from models import BillingLog
 
-	last_day = datetime.now() - timedelta(hours=24)
-	if not BillingLog.objects.filter(started__gt=last_day).exists():
-		billing.run_billing()
+	billing.run_billing()
 
 @task()
 def first_day_checkins():

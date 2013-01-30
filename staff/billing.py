@@ -107,6 +107,7 @@ class Run:
 
 def run_billing(bill_time=datetime.now()):
 	"""Generate billing records for every member who deserves it."""
+	print "Running billing..."
 	bill_date = datetime.date(bill_time)
 	try:
 		latest_billing_log = BillingLog.objects.latest()
