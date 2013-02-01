@@ -91,7 +91,7 @@ def user_signin(request, username):
 	if request.method == "POST":
 		member_search_form = MemberSearchForm(request.POST)
 		if member_search_form.is_valid(): 
-			search_results = Member.objects.search(member_search_form.cleaned_data['terms'])
+			search_results = Member.objects.search(member_search_form.cleaned_data['terms'], active_only=True)
 	else:
 		member_search_form = MemberSearchForm()
 
