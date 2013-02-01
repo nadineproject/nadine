@@ -139,7 +139,7 @@ class MemberManager(models.Manager):
 		for member in recently_expired:
 			MailingList.objects.unsubscribe_from_all(member.user)
 
-	def search(self, search_string):
+	def search(self, search_string, active_only=False):
 		terms = search_string.split()
 		if len(terms) == 0: return None;
 		fname_query = Q(user__first_name__icontains=terms[0])
@@ -147,6 +147,11 @@ class MemberManager(models.Manager):
 		for term in terms[1:]:
 			fname_query = fname_query | Q(user__first_name__icontains=term)
 			lname_query = lname_query | Q(user__last_name__icontains=term)
+		
+		if active_only:
+			active_members = self.active_members()
+			return active_members.filter(fname_query | lname_query)
+
 		return self.filter(fname_query | lname_query)
 
 	def get_by_natural_key(self, user_id): return self.get(user__id=user_id)
