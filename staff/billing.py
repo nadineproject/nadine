@@ -107,8 +107,8 @@ class Run:
 
 def run_billing(bill_time=datetime.now()):
 	"""Generate billing records for every member who deserves it."""
-	print "Running billing..."
 	bill_date = datetime.date(bill_time)
+	print "Running billing for %s" % bill_date
 	try:
 		latest_billing_log = BillingLog.objects.latest()
 	except ObjectDoesNotExist:
@@ -116,7 +116,7 @@ def run_billing(bill_time=datetime.now()):
 	if latest_billing_log and not latest_billing_log.ended:
 		print 'The last billing log (%s) claims to be in progress.	Aborting billing.' % latest_billing_log
 		return
-	#print 'Running billing:', bill_time
+
 	billing_log = BillingLog.objects.create()
 	billing_success = False
 	bill_count = 0
