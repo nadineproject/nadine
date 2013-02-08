@@ -1,7 +1,7 @@
 {% load i18n %}{% autoescape off %}
 {{ user.first_name }},
 
-You came into Office Nomads a couple months ago but we haven't seen you since!
+It has been a couple months since you tried out Office Nomads and we wanted to again say thank you for coming in.  Please let us know if there's anything else that we can do for you or if you have any further questions.  We understand that sometimes it's just not the right fit but it was a pleasure to meet you and we appreciate you trying out our space.
 
 Hope to see you again soon,
 The {{ site.name }} Team
