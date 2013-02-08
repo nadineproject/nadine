@@ -508,7 +508,7 @@ class Onboard_Task_Completed(models.Model):
 	class Meta:
 		unique_together = ("member", "task")
 
-	def __str__(self): return '%s - %s - %s' % (self.member, self.task, self.completed_date)
+	def __str__(self): return '%s - %s' % (self.member, self.completed_date)
 
 class SentEmailLog(models.Model):
 	created = models.DateTimeField(auto_now_add=True)
