@@ -237,7 +237,23 @@ function gotoEmailReset(emailAddress){
 
 <!-- Billing Profile -->
 <h2>Billing Profile</h2>
-{% include "members/billing_profile.frag" %}  
+{% include "members/billing_profile.frag" %}
+<div style="margin-left: 2em; margin-top: .5em;">
+	<form method=POST action="{% url staff.views.toggle_billing_flag member.id %}" onSubmit="return confirm('Are you sure?');">
+		<input type="hidden" name="back" value="{{request.get_full_path}}">
+		{% if member.valid_billing %}
+			<input type="submit" value="Flag Invalid Billing Profile">
+		{% else %}
+			<input type="submit" value="Clear Invalid Billing Flag">
+		{% endif %}
+		{% csrf_token %}
+	</form>
+</div>
+<div style="margin-left: 2em; margin-top: .5em;">
+	[ <a href="https://secure.usaepay.com/interface/epayform/{{ settings.USA_EPAY_KEY }}/?UMdescription=Office%20Nomads%20Billing%20Authorization&UMcustid={{ member.user.username }}&UMcommand=AuthOnly&UMamount=1.00&UMaddcustomer=yes&UMschedule=disabled">payment link</a> ]
+</div>
+
+
 
 <!-- Onboarding Tasks -->
 <h2>Onboard Tasks</h2>

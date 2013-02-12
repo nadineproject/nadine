@@ -7,20 +7,6 @@ Current Profile:
 {% endif %}
 </div>
 
-{% if request.user.is_staff %}
-	<div style="margin-left: 2em; margin-bottom: .5em;">
-		<form method=POST action="{% url staff.views.toggle_billing_flag member.id %}" onSubmit="return confirm('Are you sure?');">
-			<input type="hidden" name="back" value="{{request.get_full_path}}">
-			{% if member.valid_billing %}
-				<input type="submit" value="Flag Invalid Billing Profile">
-			{% else %}
-				<input type="submit" value="Clear Invalid Billing Flag">
-			{% endif %}
-			{% csrf_token %}
-		</form>
-	</div>
-{% endif %}
-
 {% if settings.USA_EPAY_KEY %}
 	<div style="margin-left: 2em">
 		<form action="https://www.usaepay.com/interface/epayform/">
