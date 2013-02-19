@@ -1,9 +1,10 @@
 {% load i18n %}{% autoescape off %}
 {{ user.first_name }},
 
-It has been a couple months since you tried out Office Nomads and we wanted to again say thank you for coming in.  Please let us know if there's anything else that we can do for you or if you have any further questions.  We understand that sometimes it's just not the right fit but it was a pleasure to meet you and we appreciate you trying out our space.
+It has been a couple months since you took your trial day here at Office Nomads, and we wanted to check in to see if we'll be seeing you back in the space sometime soon. We also wanted to be sure to reach out in case you had some lingering questions about coworking with us. Feel free to drop us a line anytime and we'd be happy to talk with you.
 
-Hope to see you again soon,
+Thank you for coming by and wish you all the best. 
+
+Take care,
 The {{ site.name }} Team
-
 {% endautoescape %}
