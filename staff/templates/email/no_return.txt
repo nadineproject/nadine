@@ -1,9 +1,11 @@
 {% load i18n %}{% autoescape off %}
 {{ user.first_name }},
 
-It has been a couple months since you took your trial day here at Office Nomads, and we wanted to check in to see if we'll be seeing you back in the space sometime soon. We also wanted to be sure to reach out in case you had some lingering questions about coworking with us. Feel free to drop us a line anytime and we'd be happy to talk with you.
+Hey, where'd you go? :)
 
-Thank you for coming by and wish you all the best. 
+It has been a couple months since you took your trial day here at Office Nomads, and we just wanted to check in to see if we'll be seeing you back in the space sometime soon. We also wanted to be sure to reach out in case you had some lingering questions about coworking with us that we could help you out with. Feel free to drop us a line anytime and we'd be happy to talk with you.
+
+Otherwise, if you just came in and we won't be seeing you again, we just wanted to thank you for coming by and wish you all the best. 
 
 Take care,
 The {{ site.name }} Team
