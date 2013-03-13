@@ -92,8 +92,12 @@ def send_email(recipient, subject, message, fail_silently):
 
 	success = False
 	try:
-		send_mail(subject, message, settings.EMAIL_ADDRESS, [recipient], fail_silently=fail_silently)
+		send_mail(subject, message, settings.EMAIL_ADDRESS, [recipient])
 		success = True
+	except:
+		if fail_silently:
+			pass
+		raise
 	finally:
 		try:
 			log = SentEmailLog(recipient=recipient, subject=subject, success=success)
