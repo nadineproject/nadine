@@ -1,9 +1,12 @@
+import settings
+import mailchimp
+import traceback
+
 from datetime import datetime, time, date, timedelta
 from django.contrib.sites.models import Site
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from models import Member, DailyLog, SentEmailLog
-import settings, mailchimp
 
 def send_introduction(user):
 	site = Site.objects.get_current()
@@ -90,17 +93,21 @@ def send_email(recipient, subject, message, fail_silently):
 	if settings.DEBUG:
 		recipient = settings.EMAIL_ADDRESS
 
+	note = None
 	success = False
 	try:
 		send_mail(subject, message, settings.EMAIL_ADDRESS, [recipient])
 		success = True
 	except:
+		note = traceback.format_exc()
 		if fail_silently:
 			pass
 		raise
 	finally:
 		try:
 			log = SentEmailLog(recipient=recipient, subject=subject, success=success)
+			if note:
+				log.note = note
 			log.save()
 		except:
 			pass
