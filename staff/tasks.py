@@ -1,17 +1,12 @@
 from celery.task import task
-
 from datetime import datetime, timedelta
-from models import Member, Membership, DailyLog
+from models import Member, Membership, DailyLog, BillingLog
+import billing
 import email
 
 @task()
 def billing_task():
-	"""
-	A recurring task which calculates billing.
-	"""
-	import billing
-	from models import BillingLog
-
+	"""A recurring task which calculates billing"""
 	billing.run_billing()
 
 @task()
