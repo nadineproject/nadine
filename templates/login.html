@@ -17,18 +17,18 @@
 <p>Your username and password didn't match. Please try again.</p>
 {% endif %}
 
+<div style="margin-left:2em;">
 <form method="post" action=".">
-<table>
+<table style="width:300px;">
 <tr>
-	<th>{{ form.username.label_tag }}:</th>
+	<th>Email:</th>
 	<td>{{ form.username }}</td>
-	<td><font size="-1"><i>Your username was emailed to you when we created your account. This is case-sensitive.</font></i></td>
+	<td></td>
 </tr>
 <tr>
 	<th>{{ form.password.label_tag }}:</th>
 	<td>{{ form.password }}</td>
-	<td><font size="-1"><i>If this is your first time logging in or you've forgotten your password or username, 
-	you will need to <a href="{% url views.password_reset %}">create a new password</a>.</i></font></td>
+	<td></td>
 </tr>
 <tr>
 	<td colspan=2>
@@ -40,5 +40,10 @@
 </table>
 {% csrf_token %}
 </form>
+</div>
+<div style="margin-top:1.5em;">
+<font size="-1"><i>If this is your first time logging in or you've forgotten your password, 
+you will need to <a href="{% url views.password_reset %}">create a new password</a>.</i></font>
+</div>
 
 {% endblock %}
