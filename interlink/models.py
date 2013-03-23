@@ -20,7 +20,6 @@ from interlink.message import MailingListMessage
 
 logger = logging.getLogger(__name__)
 
-
 def user_by_email(email):
    users = User.objects.filter(email__iexact=email)
    if len(users) > 0: return users[0]
@@ -172,6 +171,8 @@ class MailingList(models.Model):
             file_names.append(bod['Content-Disposition'][len('attachment; filename="'):-1])
       return (body, html_body, file_names)
 
+   def incoming_mail(self):
+      return IncomingMail.objects.filter(mailing_list=self, state="sent").order_by("sent_time").reverse()[:25]
 
 def user_mailing_list_memberships(user):
    """Returns an array of tuples of <MailingList, is_subscriber> for a User"""
@@ -264,6 +265,9 @@ class IncomingMail(models.Model):
 
       else:
          self.create_outgoing()
+
+   def get_user(self):
+      return user_by_email(self.origin_address)
 
    @property
    def approve_url(self): return 'http://%s%s' % (Site.objects.get_current().domain, reverse('interlink.views.moderator_approve', kwargs={'id':self.id}, current_app='interlink'))

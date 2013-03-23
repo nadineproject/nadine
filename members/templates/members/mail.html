@@ -11,6 +11,9 @@
 #content h2 { margin-bottom: 1em; }
 
 #mailing-list-subscription-form { display: none; }
+#list_mail { margin-left: 2em; }
+#msg_table td, th {text-align: left; }
+
 {% endblock %}
 
 {%block sub-head %}
@@ -32,26 +35,41 @@ function unsubscribe(mlID){
 {% block content %}
 <h2>Mailing lists:</h2>
 
-{% if request.user.is_staff %}
-Admin: <a href="{% url interlink.views.moderator_list %}">moderate</a>
-{% endif %}
-
 <ul>
 {% for mailing_list, is_subscriber in user.mailing_list_memberships %}
 	<li>
 		<h3>
 			{{mailing_list.name}}
 			{% if not mailing_list.moderator_controlled %}
+				-
     			{% if is_subscriber %}
-    			<a href="." onclick="unsubscribe({{mailing_list.id}}); return false;">unsubscribe</a>
+    			(<a href="." onclick="unsubscribe({{mailing_list.id}}); return false;">unsubscribe</a>)
     			{% else %}
         			{% if request.user.get_profile.is_active or request.user.is_staff %}
-        			    <a href="." onclick="subscribe({{mailing_list.id}}); return false;">subscribe</a>
+        			    ( <a href="." onclick="subscribe({{mailing_list.id}}); return false;">subscribe</a> )
         			{% endif %}
     			{% endif %}
     		{% endif %}
 		</h3>
 		{{ mailing_list.description }}
+		
+		<h3>Last 25 Messages</h3>
+		<div id="list_mail">
+			<table id="msg_table">
+				<tr>
+					<th>Sent</th>
+					<th>Member</th>
+					<th>Subject</th>
+				</tr>
+				{% for msg in mailing_list.incoming_mail %}
+				<tr>
+					<td nowrap>{{ msg.sent_time }}</td>
+					<td><a href="{% url members.views.user msg.get_user.username %}">{{ msg.get_user }}</a></td>
+					<td>{{ msg.subject }}</td>
+				</tr>
+				{% endfor %}
+			</table>
+		</div>
 	</li>
 {% endfor %}
 </ul>
