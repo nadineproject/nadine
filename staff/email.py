@@ -72,6 +72,12 @@ def announce_new_membership(user):
 	message = "Team,\r\n\r\n \t%s has a new %s membership!\r\n\r\n - Nadine" % (user.get_full_name(), membership.membership_plan.name)
 	send_quietly(settings.TEAM_EMAIL_ADDRESS, subject, message)
 
+def announce_member_checkin(user):
+	membership = user.profile.last_membership()
+	subject = "Member Check-in - %s" % (user.get_full_name())
+	message = "Team,\r\n\r\n \t%s has been a %s member for almost a month!  Someone go see how they are doing.\r\n\r\n - Nadine" % (user.get_full_name(), membership.membership_plan.name)
+	send_quietly(settings.TEAM_EMAIL_ADDRESS, subject, message)
+
 def announce_need_photo(user):
 	subject = "Photo Opportunity - %s" % (user.get_full_name())
 	message = "Team,\r\n\r\n \t%s just signed in and we don't have a photo of them yet.\r\n\r\n - Nadine" % (user.get_full_name())
