@@ -171,8 +171,11 @@ class MailingList(models.Model):
             file_names.append(bod['Content-Disposition'][len('attachment; filename="'):-1])
       return (body, html_body, file_names)
 
-   def incoming_mail(self):
-      return IncomingMail.objects.filter(mailing_list=self, state="sent").order_by("sent_time").reverse()[:25]
+   def incoming_mail(self, limit=25, sent_only=True):
+      if sent_only:
+         return IncomingMail.objects.filter(mailing_list=self, state="sent").order_by("sent_time").reverse()[:limit]
+      else:
+         return IncomingMail.objects.filter(mailing_list=self).order_by("sent_time").reverse()[:limit]
 
 def user_mailing_list_memberships(user):
    """Returns an array of tuples of <MailingList, is_subscriber> for a User"""
