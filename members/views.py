@@ -14,6 +14,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from staff.models import Member, Membership, Transaction, DailyLog
 from forms import EditProfileForm
 from interlink.forms import MailingListSubscriptionForm
+from interlink.models import IncomingMail
 from models import HelpText
 from arpwatch import arp
 from arpwatch.models import ArpLog
@@ -77,6 +78,11 @@ def mail(request, username):
 			sub_form.save(user)
 			return HttpResponseRedirect(reverse('members.views.mail', kwargs={'username':user.username}))
 	return render_to_response('members/mail.html',{'user':user, 'mailing_list_subscription_form':MailingListSubscriptionForm()}, context_instance=RequestContext(request))
+
+@login_required
+def mail_message(request, id):
+	message = get_object_or_404(IncomingMail, id=id)
+	return render_to_response('members/mail_message.html',{'message':message}, context_instance=RequestContext(request))
 
 @login_required
 def edit_profile(request, username):

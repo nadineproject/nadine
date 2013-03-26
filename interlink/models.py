@@ -188,7 +188,6 @@ class IncomingMailManager(models.Manager):
       for incoming in self.filter(state='raw'):
          incoming.process()
 
-
 class IncomingMail(models.Model):
    """An email as popped for a mailing list"""
    mailing_list = models.ForeignKey(MailingList, related_name='incoming_mails')
@@ -229,6 +228,15 @@ class IncomingMail(models.Model):
 
    def sender_subscribed(self):
       return self.owner in self.mailing_list.subscribers.all()
+
+   def clean_subject(self):
+      subject = self.subject
+      prefix = self.mailing_list.subject_prefix
+      if prefix:
+         index = subject.find(prefix)
+         if index >= 0:
+            subject = subject[index + len(prefix):]
+      return subject.strip()
 
    def is_moderated_subject(self):
       s = self.subject.lower()

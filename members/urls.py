@@ -15,6 +15,7 @@ urlpatterns = patterns('members.views',
 	(r'^u/(?P<username>[^/]+)/edit/$', 'edit_profile'),
 	(r'^u/(?P<username>[^/]+)/r/(?P<id>\d+)/$', 'receipt'),
 	(r'^help/(?P<slug>[^/]+)/$', 'help_topic'),
+	(r'^mail/(?P<id>\d+)/$', 'mail_message'),
 
 )
 
