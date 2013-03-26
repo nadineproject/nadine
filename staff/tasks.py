@@ -29,8 +29,9 @@ def regular_checkins():
 			if membership.member.is_active():
 				email.send_member_survey(membership.member.user)
 				
-	# Pull all the free trials from 60 days ago and send an email if they haven't been back
-	for dropin in DailyLog.objects.filter(visit_date=two_months_ago, payment='Trial'):
+	# Pull all the free trials from 30 days ago and send an email if they haven't been back
+	one_month_ago = datetime.now() - timedelta(days=30)
+	for dropin in DailyLog.objects.filter(visit_date=one_month_ago, payment='Trial'):
 		if DailyLog.objects.filter(member=dropin.member).count() == 1:
 			email.send_no_return_checkin(dropin.member.user)
 
