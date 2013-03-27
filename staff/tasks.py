@@ -33,7 +33,8 @@ def regular_checkins():
 	one_month_ago = datetime.now() - timedelta(days=30)
 	for dropin in DailyLog.objects.filter(visit_date=one_month_ago, payment='Trial'):
 		if DailyLog.objects.filter(member=dropin.member).count() == 1:
-			email.send_no_return_checkin(dropin.member.user)
+			if not dropin.member.is_active():
+				email.send_no_return_checkin(dropin.member.user)
 
 	# Send an exit survey to members that have been gone a week.
 	one_week_ago = datetime.now() - timedelta(days=7)
