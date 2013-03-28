@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<title>Office Nomads:  Here Today</title>
+	<title>Office Nomads:  Here Today Ticker</title>
 	<link rel="stylesheet" href="bootstrap.min.css">
 	<style>
 		#user { margin:10px; }
@@ -15,7 +15,7 @@
 		<p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
 	<![endif]-->
 	<div class="header">
-		<h2>Here Today</h2>
+		<h1>Here Today</h1>
 	</div>
 	<div class="data">
 		<div class="holder">
@@ -26,7 +26,8 @@
 		<script>
 		function fillData(data) {
 			console.log(data);
-		    holder = $('.data .holder');
+			holder = $('.data .holder');
+			holder.empty();
 		    for (var i = 0; i < data['objects'][0]['here_today'].length; i++) {
 				var newdiv = $('<div class="span1" id="user">');
 				newdiv.text(data['objects'][0]['here_today'][i]['name']);
@@ -34,17 +35,22 @@
 				//var newimg = $('<img>');
 				//newimg.src = data['objects'][0]['here_today'][i]['photo'];
 				//holder.append(newimg)
-		    }
+			}
 		}
 
-		$(document).ready(function() {
-		    var url = "http://apps.officenomads.com/api/v1/activity/?format=jsonp";
+		function getData() {
+			var url = "http://apps.officenomads.com/api/v1/activity/?format=jsonp";
 		    $.ajax({
 		        url: url,
 		        type: "GET",
 		        contentType: 'text/javascript', /*'application/json', /* ; charset=utf-8 */
 		        dataType: "jsonp"
 		    }).done(fillData);
+			setTimeout(getData, 4000);
+		}
+		
+		$(document).ready(function() {
+			getData();
 		});
 		</script>
 	</div>
