@@ -249,11 +249,19 @@ class MonthHistory:
 
 @staff_member_required
 def stats_membership_history(request):
-	start_month = min(DailyLog.objects.all().order_by('visit_date')[0].visit_date, Membership.objects.all().order_by('start_date')[0].start_date)
-	start_month = date(year=start_month.year, month=start_month.month, day=1)
-	end_month = date.today()
-	end_month = date(year=end_month.year, month=end_month.month, day=1)
+	if 'start_date' in request.REQUEST:
+		try:
+			start_date = datetime.datetime.strptime(request.REQUEST.get('start_date'), "%m-%Y").date()
+		except:
+			return render_to_response('staff/stats_membership_history.html', { 'page_message':"Invalid Start Date!  Example: '01-2012'."}, context_instance=RequestContext(request))
+	else:
+		#start_date = min(DailyLog.objects.all().order_by('visit_date')[0].visit_date, Membership.objects.all().order_by('start_date')[0].start_date)
+		start_date = date.today() - timedelta(days=365)
+	start_month = date(year=start_date.year, month=start_date.month, day=1)
+	end_date = date.today()
+	end_month = date(year=end_date.year, month=end_date.month, day=1)
 
+	average_only = 'average_only' in request.REQUEST
 	working_month = start_month
 	month_histories = []
 	while working_month <= end_month:
@@ -265,7 +273,11 @@ def stats_membership_history(request):
 		dates = [date(month.year, month.month, i) for i in range(1, month.days_in_month + 1)]
 
 		for plan in MembershipPlan.objects.all():
-			month.data[plan.name] = '%s - %s' % calculate_monthly_low_high(plan.id, dates)
+			data = calculate_monthly_low_high(plan.id, dates)
+			if average_only:
+				month.data[plan.name] = data[2]
+			else:
+				month.data[plan.name] = '%s - %s' % (data[0], data[1])
 
 		month.data['visits'], month.data['trial'], month.data['waved'], month.data['billed'] = calculate_dropins(month.start_date, month.end_date)
 
@@ -277,8 +289,9 @@ def stats_membership_history(request):
 				current_year = month.year
 			year_histories[-1].append(month)
 
-	return render_to_response('staff/stats_membership_history.html', { 'history_types':sorted(month_histories[0].data.keys()), 'year_histories':year_histories
- }, context_instance=RequestContext(request))
+	return render_to_response('staff/stats_membership_history.html', { 'history_types':sorted(month_histories[0].data.keys()), 
+		'year_histories':year_histories, 'start_date':start_date, 'average_only':average_only
+ 	}, context_instance=RequestContext(request))
 
 def calculate_dropins(start_date, end_date):
 	all_logs = DailyLog.objects.filter(visit_date__gte=start_date, visit_date__lte=end_date)
@@ -292,7 +305,8 @@ def calculate_monthly_low_high(plan_id, dates):
 		num_residents = Membership.objects.by_date(working_date).filter(membership_plan=plan_id).count()
 		high = max(high, num_residents)
 		low = min(low, num_residents)
-	return (low, high)
+		avg = int(round((low + high) / 2))
+	return (low, high, avg)
 
 @staff_member_required
 def stats_history(request):		
