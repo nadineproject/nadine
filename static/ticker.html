@@ -11,8 +11,19 @@
 			padding: 10px;
 			background-color:black;
 		}
-		#header {
+		#header_title {
 			font-size: 1.5em;
+		}
+		#header {
+			font-size: 2em;
+			font-weight: bold;
+			line-height: 2em;
+			color: #E8E8E8;
+			margin:10px;
+			
+		}
+		#header span {
+			padding: 20px;
 		}
 		.user { 
 			font-size: 2em;
@@ -33,25 +44,13 @@
 			max-width: 100%;
 			max-height: 210px;
 		}
-		#stats {
-			font-size: 2em;
-			font-weight: bold;
-			line-height: 2em;
-			color: #E8E8E8;
-			margin:10px;
-			
-		}
-		#stats span {
-			padding: 20px;
-		}
 	</style>
 </head>
 <body>
 	<!--[if lt IE 7]>
 		<p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
 	<![endif]-->
-	<div id="stats">
-		<span id="header">Here Today:</span>
+	<div id="header">
 	</div>
 	<div class="data">
 		<div class="holder">
@@ -61,7 +60,16 @@
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 		<script>
 		function fillData(data) {
-			console.log(data);
+			//console.log(data);
+			
+			var header = $('#header');
+			header.empty();
+			header.append('<span id=header_title>Here Today:</span>');
+			header.append('<span>Members: ' + data['objects'][0]['member_count'] + '</span>');
+			header.append('<span>Full Time: ' + data['objects'][0]['full_time_count'] + '</span>');
+			header.append('<span>Part Time: ' + data['objects'][0]['part_time_count'] + '</span>');
+			header.append('<span>Devices: ' + data['objects'][0]['device_count'] + '</span>');
+			
 			var holder = $('.data .holder');
 			holder.empty();
 		    for (var i = 0; i < data['objects'][0]['here_today'].length; i++) {
@@ -78,12 +86,6 @@
 				}
 				newdiv.append(newimg);
 			}
-			
-			var stats = $('#stats');
-			stats.append('<span>Members: ' + data['objects'][0]['member_count'] + '</span>');
-			stats.append('<span>Full Time: ' + data['objects'][0]['full_time_count'] + '</span>');
-			stats.append('<span>Part Time: ' + data['objects'][0]['part_time_count'] + '</span>');
-			stats.append('<span>Devices: ' + data['objects'][0]['device_count'] + '</span>');
 		}
 
 		function getData() {
