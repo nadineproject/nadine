@@ -82,7 +82,7 @@ def fit_image(file, size_param="300x300"):
 		return miniature_url
 	except:
 		traceback.print_exc()
-		print "Could not fit_image %s" % filename
+		print "Could not fit_image %s" % file
 		return ''
 register.filter('fit_image', fit_image)
 
