@@ -10,6 +10,7 @@
 		body {
 			background-color:black;
 			overflow: hidden;
+			margin-left:10px;
 		}
 		#header {
 			font-size: 2em;
@@ -61,10 +62,11 @@
 			var header = $('#header');
 			header.empty();
 			header.append('<span>Here Today: ' + data['objects'][0]['here_today'].length + '</span>');
-			header.append('<span>Total Members: ' + data['objects'][0]['member_count'] + '</span>');
-			header.append('<span>Full Time: ' + data['objects'][0]['full_time_count'] + '</span>');
-			header.append('<span>Part Time: ' + data['objects'][0]['part_time_count'] + '</span>');
+			header.append('<span>Drop-Ins: ' + data['objects'][0]['dropin_count'] + '</span>');
 			header.append('<span>Devices: ' + data['objects'][0]['device_count'] + '</span>');
+			header.append('<span>Total Members: ' + data['objects'][0]['member_count'] + '</span>');
+			header.append('<span>Full-Time: ' + data['objects'][0]['full_time_count'] + '</span>');
+			header.append('<span>Part-Time: ' + data['objects'][0]['part_time_count'] + '</span>');
 			
 			var holder = $('.data .holder');
 			holder.empty();

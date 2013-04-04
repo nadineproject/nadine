@@ -30,14 +30,14 @@ class ActivityModel(object):
 	'''
 	def __init__(self):
 		now = datetime.now()
-		midnight = now - timedelta(seconds=now.hour*60*60 + now.minute*60 + now.second)
+		midnight = now - timedelta(seconds=now.hour*60*60 + now.minute*60 + now.second) - timedelta(minutes=1)
 		# These are the values which are directly exposed via the ActivityModel
 		members = Member.objects.active_members()
 		self.member_count = len(members)
 		self.full_time_count = Membership.objects.by_date(now).filter(has_desk=True).count()
 		self.part_time_count = self.member_count - self.full_time_count
-		devices = ArpLog.objects.for_range(midnight, now)
-		self.device_count = len(devices)
+		self.device_count = len(ArpLog.objects.for_range(midnight, now))
+		self.dropin_count = DailyLog.objects.filter(visit_date__gt=midnight).count()
 
 	@property
 	def here_today(self):
@@ -69,7 +69,8 @@ class ActivityResource(Resource):
 	full_time_count = fields.IntegerField(attribute='full_time_count', readonly=True)
 	part_time_count = fields.IntegerField(attribute='part_time_count', readonly=True)
 	device_count = fields.IntegerField(attribute='device_count', readonly=True)
-	here_today = fields.ListField(attribute='here_today', readonly=True)
+	dropin_count = fields.IntegerField(attribute='dropin_count', readonly=True)
+	here_today = fields.ListField(attribute='here_today', readonly=True)	
 
 	class Meta:
 		allowed_methods = ['get']
