@@ -87,15 +87,15 @@
 		}
 
 		function getData() {
-			//var url = "https://apps.officenomads.com/api/v1/activity/?format=jsonp";
-			var url = "/api/v1/activity/?format=jsonp";
+			var url = "https://apps.officenomads.com/api/v1/activity/?format=jsonp";
+			//var url = "/api/v1/activity/?format=jsonp";
 		    $.ajax({
 		        url: url,
 		        type: "GET",
 		        contentType: 'text/javascript', /*'application/json', /* ; charset=utf-8 */
 		        dataType: "jsonp"
 		    }).done(fillData);
-			//setTimeout(getData, 10000);
+			setTimeout(getData, 10000);
 		}
 		
 		$(document).ready(function() {
