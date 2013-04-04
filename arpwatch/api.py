@@ -34,7 +34,7 @@ class ActivityModel(object):
 		members = Member.objects.active_members()
 		self.member_count = len(members)
 		self.full_time_count = Membership.objects.by_date(now).filter(has_desk=True).count()
-		self.part_time_counts = self.member_count - self.full_time_count
+		self.part_time_count = self.member_count - self.full_time_count
 		devices = ArpLog.objects.for_range(midnight, now)
 		self.device_count = len(devices)
 
@@ -44,7 +44,8 @@ class ActivityModel(object):
 		results = []
 		for member in arp.here_today():
 			member_dict = {"username":member.user.username, "name":member.full_name}
-			member_dict["photo"] = "http://%s%s%s" % (Site.objects.get_current().domain, settings.MEDIA_URL, member.photo)
+			if(member.photo):
+				member_dict["photo"] = "http://%s%s%s" % (Site.objects.get_current().domain, settings.MEDIA_URL, member.photo)
 			member_dict["industry"] = member.industry
 			membership = member.membership_type()
 			member_dict["membership"] = membership
@@ -64,7 +65,7 @@ class ActivityResource(Resource):
 	'''
 	member_count = fields.IntegerField(attribute='member_count', readonly=True)
 	full_time_count = fields.IntegerField(attribute='full_time_count', readonly=True)
-	part_time_counts = fields.IntegerField(attribute='part_time_counts', readonly=True)
+	part_time_count = fields.IntegerField(attribute='part_time_count', readonly=True)
 	device_count = fields.IntegerField(attribute='device_count', readonly=True)
 	here_today = fields.ListField(attribute='here_today', readonly=True)
 
