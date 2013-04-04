@@ -22,6 +22,7 @@ from django.http import HttpResponse, Http404, HttpResponseServerError, HttpResp
 import arp
 from models import UserDevice, ArpLog
 from staff.models import Member, Membership, DailyLog
+from staff.templatetags import imagetags
 
 class ActivityModel(object):
 	'''
@@ -46,6 +47,7 @@ class ActivityModel(object):
 			member_dict = {"username":member.user.username, "name":member.full_name}
 			if(member.photo):
 				member_dict["photo"] = "http://%s%s%s" % (Site.objects.get_current().domain, settings.MEDIA_URL, member.photo)
+				member_dict["thumbnail"] = "http://%s%s" % (Site.objects.get_current().domain, imagetags.fit_image(member.photo.url, '170x170'))
 			member_dict["industry"] = member.industry
 			membership = member.membership_type()
 			member_dict["membership"] = membership
