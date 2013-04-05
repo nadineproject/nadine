@@ -118,7 +118,7 @@ def signin_user_guest(request, username, guestof):
 		email.announce_new_user(user)
 	else:
 		daily_log.payment = 'Bill';
-		if not member.photo:
+		if not member.photo and member.is_active():
 			email.announce_need_photo(user)
 	daily_log.save()
 		
