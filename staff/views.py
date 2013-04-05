@@ -387,8 +387,9 @@ def stats_membership_days(request):
 
 @staff_member_required
 def stats_gender(request):
-	active_only = 'ActiveOnly' in request.REQUEST
-	
+	active_only = False
+	if 'ActiveOnly' in request.POST or request.method == 'GET':
+		active_only = True
 	
 	if active_only:
 		m = Member.objects.active_members().filter(gender='M').count()
