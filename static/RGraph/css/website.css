@@ -1,0 +1,365 @@
+    /**
+    * o------------------------------------------------------------------------------o
+    * | This file is part of the RGraph package - you can learn more at:             |
+    * |                                                                              |
+    * |                          http://www.rgraph.net                               |
+    * |                                                                              |
+    * | This package is licensed under the RGraph license. For all kinds of business |
+    * | purposes there is a small one-time licensing fee to pay and for non          |
+    * | purposes there is a small one-time licensing fee to pay and for non          |
+    * | commercial  purposes it is free to use. You can read the full license here:  |
+    * |                                                                              |
+    * |                      http://www.rgraph.net/LICENSE.txt                       |
+    * o------------------------------------------------------------------------------o
+    */
+
+body {
+    padding-top: 10px;
+    font-family: Segoe UI Light, Segoe UI, Trebuchet MS, Verdana, Arial, Sans-serif;
+    font-weight: Lighter;
+}
+
+b {
+    font-weight: bold;
+}
+
+h1,
+h2,
+h3,
+h4 {
+    font-weight: lighter;
+}
+
+h1 span,
+h2 span,
+h3 span,
+h4 span {
+    color: #65AEFF;
+    font-style: italic;
+}
+
+a#read-more {
+}
+
+pre.code,
+code {
+    padding: 5px;
+    background-color: #eee;
+    border: 2px dashed gray
+}
+
+pre.code span {
+    color: green;
+}
+
+pre.code span span {
+    color: #770;
+}
+
+#breadcrumb,
+#logo {
+    float: right;
+    margin: 2px;
+    font-size: 10pt;
+    position: relative;
+}
+#breadcrumb a,
+#logo a {
+    text-decoration: none;
+}
+
+th {
+    text-align: left;
+    border: 1px solid gray;
+    background-color: #ddd;
+    padding: 3px;
+    vertical-align: top;
+}
+
+td {
+    vertical-align: top;
+}
+
+ol li {
+    margin-top: 20px;
+}
+
+ol#implementation li code {
+    margin-top: 5px;
+}
+
+ol.compact li {
+    margin-top: 0;
+}
+
+td.description {
+    background-color: #eee;
+    padding: 3px;
+    border: 1px solid #ddd;
+}
+
+td.chart {
+    text-align: center;
+}
+
+.example_boxout {
+    background-color: #eee;
+    padding: 3px;
+    border: 1px solid #aaa;
+}
+
+
+/**
+* This is semi-transparent box in the top left corner
+*/
+div#devtag {
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-box-shadow: #999 3px 3px 3px;
+    -moz-box-shadow: #999 3px 3px 3px;
+    box-shadow: #999 3px 3px 3px;
+    filter: progid:DXImageTransform.Microsoft.Shadow(color=#666666,direction=135);
+    position: fixed;
+    top: 2px;
+    left: 2px;
+    width: 145px;
+    border: 2px solid black;
+    text-align: center;
+    font-weight: bold;
+    font-family: Arial;
+    background-color: #fdd;
+    z-index: 1001;
+    opacity: 0.3;
+}
+
+/**
+* This overrides something defined earlier
+*/
+ol#colors li {
+    margin: 0;
+}
+
+/**
+* styles lists
+*/
+div.list-item {
+    width: 220px;
+    display: inline-block;
+}
+
+div.list-item.label {
+    width: 170px;
+}
+
+legend {
+    background-color: #efefef;
+    border: 1px solid #75736e;
+}
+
+body#licensing span {
+    font-size: 120%;
+}
+
+/**
+* The yellow warning box on the front page
+*/
+div.warning {
+    border: 1px solid black;
+    _text-align: center;
+    background-color: #ffa;
+    padding: 5px;
+    margin-top: 5px;
+    border-radius: 15px;
+    -moz-border-radius: 15px;
+    -webkit-border-radius: 15px;
+    webkit-box-shadow: #aaa 1px 1px 15px;
+    -moz-box-shadow: #aaa 1px 1px 15px;
+    box-shadow: #aaa 1px 1px 15px;
+    filter: progid:DXImageTransform.Microsoft.Shadow(color=#666666,direction=135);
+    z-index: 98;
+    opacity: 0.9;
+}
+
+
+/**
+* The title "bar"
+*/
+div#title {
+}
+
+div#title div#image {
+    float: left;
+    margin-right: 15px;
+}
+
+div#title div#text {
+    padding-top: 5px;
+    margin-left: 70px;
+}
+
+
+div.warning p {
+    text-align: center;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+        
+div.description {
+    border: 1px dashed gray;
+    background-color: #eee;
+    font-size: 75%;
+    padding: 3px;
+}
+
+div#social {
+    display: inline;
+    display: inline-block;
+}
+
+.upgrade_notice {
+    display: inline;
+    display: inline-block;
+    text-align: center;
+    background-color: yellow;
+    border: 1px black solid;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    padding: 3px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+
+div.navigation,
+div.testimonial {
+    font-size: 80%;
+    background-color: rgba(248,248,248, 0.5);
+    padding: 6px;
+    border: 1px solid #ddd;
+    border-radius: 15px;
+    box-shadow: 0 0 15px #ddd;
+    background: -webkit-gradient(linear, left top, left bottom, from(#eee), to(white));
+    background: -moz-linear-gradient(top,  #eee,  white);
+    background-image: linear-gradient( 0deg, white, #eee);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eeeeee', endColorstr='#ffffff');
+}
+
+
+div#social_icons img {
+    border: none;
+}
+
+span.javascript-comment {
+    color: #090;
+}
+
+.ModalDialog_dialog {
+    box-shadow: 0 0 25px gray ! important;
+}
+
+/*****************
+* New navigation *
+*****************/
+
+div.navigation {
+    box-shadow: 0 0 15px #ddd;
+    margin-top: 10px;
+    min-height: 30px;
+}
+
+div.navigation span {
+    font-size: 18pt;
+}
+
+div.navigation span.selected {
+    background-color: rgb(255,228,228);
+    background-color: rgba(255,0,0,0.2);
+    padding: 3px;
+    border-radius: 10px;
+    border: 1px solid gray;
+    background: -webkit-gradient(linear, left top, left bottom, from(rgba(255,0,0,0.2)), to(rgba(255,128,128,0.2)));
+    background: -moz-linear-gradient(top,  rgba(255,0,0,0.2),  rgba(255,128,128,0.2));
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffeeee', endColorstr='#888888');
+}
+
+div.navigation span a {
+    text-decoration: none;
+}
+
+/****************
+* Website lists *
+* **************/
+ul
+{
+    list-style-image:url('http://www.rgraph.net/images/bullet.png');
+}
+
+/**
+* The recent updates box on the front page
+*/
+div#recent {
+    color: #333;
+    background-color: #f6f6f6;
+    padding: 10px;
+    margin-left: 10px;
+    font-size: 90%;
+}
+
+div#recent div {
+    letter-spacing: 2px;
+    margin-top: 5px;
+    //text-align: center;
+}
+
+div#recent a {
+    text-decoration: none;
+    font-style: italic;
+}
+
+div#recent b {
+    color: #666;
+}
+
+canvas.grayscale {
+    filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale"); /* Firefox 10+, Firefox on Android */
+    filter: gray; /* IE6-9 */
+    -webkit-filter: grayscale(100%); /* Chrome 19+, Safari 6+, Safari 6+ iOS */
+}
+
+div.testimonial {
+    background-color: none;
+    background: none;
+    box-shadow: none;
+    border: none;
+}
+
+.documentation_header {
+    border: 1px solid #aaa;
+    background-color: #eee;
+    font-style: italic;
+    padding: 5px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px
+}
+
+ul#prices {
+    background-color: #afa;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    width: 550px;
+    font-size: 110%;
+    font-weight: bold;
+    border: 1px dashed #6a6;
+    border-radius: 3px;
+}
+
+h1,
+h2,
+h3 {
+    text-shadow: 1px 1px 2px #ccc;
+}

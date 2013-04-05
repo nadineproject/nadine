@@ -1,0 +1,60 @@
+{% extends "staff/ml_base.html" %}
+
+
+{% block sub-head %}
+	<script src="{{ STATIC_URL }}RGraph/libraries/RGraph.common.core.js" ></script>
+	<script src="{{ STATIC_URL }}RGraph/libraries/RGraph.common.dynamic.js"></script>
+	<script src="{{ STATIC_URL }}RGraph/libraries/RGraph.common.tooltips.js" ></script>
+	<script src="{{ STATIC_URL }}RGraph/libraries/RGraph.pie.js" ></script>
+{% endblock %}
+
+{% block style %} 
+	nav #stats-tab { background: #FBD850; color: black; }
+	#cvs { margin-left: 20px; margin-top: 20px; }
+	#stats span { font-size: 1.2em; padding: 10px; }
+{% endblock %}
+
+{% block sub-title %}Stats | Gender | {% endblock %}
+
+{% block content %}
+{% include "staff/stats_menu.frag" %}  
+
+<h2>Gender Balance - 
+	{% if active_only %}
+		Active Members Only
+	{% else %}
+		All Members
+	{% endif %}	
+</h2>
+
+<div id="stats">
+	<span>Male: {{ counts.male }} ({{percentages.male}}%)</span>
+	<span>Female: {{ counts.female }} ({{percentages.female}}%)</span>
+	<span>Other: {{ counts.other }} ({{percentages.other}}%)</span>
+	<span>Unknown: {{ counts.unknown }} ({{percentages.unknown}}%)</span>
+	<span>Total: {{  counts.total }}</span>
+</div>
+
+<canvas id="cvs" width="500" height="400">[No canvas support]</canvas>
+
+<script>
+    window.onload = function ()
+    {
+        var pie = new RGraph.Pie('cvs', [{{counts.male}},{{counts.female}},{{counts.other}}]);
+        pie.Set('chart.labels', ['Male','Female','Other',]);
+        pie.Set('chart.colors', ['#0000ff','#ff0000','#00ff00']);
+        pie.Draw();
+    }
+</script>
+
+<form action="." method="POST">
+	{% if active_only %}
+		<input type=submit name="AllMembers" value="View All Members">
+	{% else %}
+		<input type=submit name="ActiveOnly" value="View Active Members Only">
+	{% endif %}
+	{% csrf_token %}
+</form>
+
+</div>
+{% endblock %}

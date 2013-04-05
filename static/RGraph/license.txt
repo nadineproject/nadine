@@ -1,0 +1,33 @@
+
+Free license
+============
+
+RGraph may be used by both commercial and non-commercial entities under the
+Creative Commons Attribution license (meaning you need to link to the RGraph
+website).
+
+
+Commercial license
+==================
+
+If you don't wish to link to the RGraph website then there are commercial
+licenses available. There are different types of commercial license available
+depending on your situation. You can read more about them on the RGraph website:
+
+http://www.rgraph.net/license
+
+Questions
+=========
+
+If you have any questions about the RGraph license you can send them to:
+
+licensing@rgraph.net
+
+
+
+o--------------------------------------------------------------------------------o
+| You may not redistribute, sublicense or sell this program. This software is    |
+| provided without warranty. You can read the full license here:                 |
+|                                                                                |
+|                          http://www.rgraph.net/license                         |
+o--------------------------------------------------------------------------------o

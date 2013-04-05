@@ -386,6 +386,31 @@ def stats_membership_days(request):
 	return render_to_response('staff/stats_membership_days.html', { 'membership_days':membership_days, 'avg_days':avg_total/avg_count }, context_instance=RequestContext(request))
 
 @staff_member_required
+def stats_gender(request):
+	active_only = 'ActiveOnly' in request.REQUEST
+	
+	
+	if active_only:
+		m = Member.objects.active_members().filter(gender='M').count()
+		f = Member.objects.active_members().filter(gender='F').count()
+		o = Member.objects.active_members().filter(gender='O').count()
+		u = Member.objects.active_members().filter(gender='U').count()
+	else:
+		m = Member.objects.filter(gender='M').count()
+		f = Member.objects.filter(gender='F').count()
+		o = Member.objects.filter(gender='O').count()
+		u = Member.objects.filter(gender='U').count()
+		
+	t = m + f + o + u
+	counts = { 'male':m, 'female':f, 'other':o, 'unknown':u, 'total':t }
+	percentages = { 'male':p(m, t), 'female':p(f, t), 'other':p(o, t), 'unknown':p(u, t) }
+
+	return render_to_response('staff/stats_gender.html', {'counts':counts, 'percentages':percentages, 'active_only':active_only}, context_instance=RequestContext(request))
+
+def p(p, w):
+	return int(round(100*(float(p)/float(w))))
+	
+@staff_member_required
 def member_detail(request, member_id):
 	member = get_object_or_404(Member, pk=member_id)
 	daily_logs = DailyLog.objects.filter(member=member).order_by('visit_date').reverse()
