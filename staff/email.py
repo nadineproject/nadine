@@ -13,13 +13,13 @@ def send_introduction(user):
 	subject = "%s: Introduction to Nadine" % (site.name)
 	message = render_to_string('email/introduction.txt', {'user':user, 'site':site})
 	send_quietly(user.email, subject, message)
-	subscribe_to_newsletter(user.email)
+	subscribe_to_newsletter(user)
 
-def subscribe_to_newsletter(email):
+def subscribe_to_newsletter(user):
 	if settings.MAILCHIMP_NEWSLETTER_KEY:
 		try:
 			newsletter = mailchimp.utils.get_connection().get_list_by_id(settings.MAILCHIMP_NEWSLETTER_KEY)
-			newsletter.subscribe(email, {'EMAIL':email})
+			newsletter.subscribe(user.email, {'EMAIL':user.email, 'FNAME':user.first_name, 'LNAME':user.last_name})
 		except:
 			pass
 
