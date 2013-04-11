@@ -56,6 +56,9 @@ def here_today(request):
 	members = arp.here_today()
 	return render_to_response('members/here_today.html',{ 'members':members }, context_instance=RequestContext(request))
 
+def not_active(request):
+	return render_to_response('members/not_active.html',{ }, context_instance=RequestContext(request))
+
 @login_required
 def profile_redirect(request):
 	return HttpResponseRedirect(reverse('members.views.user', kwargs={'username':request.user.username}))

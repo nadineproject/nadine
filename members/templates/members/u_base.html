@@ -49,10 +49,10 @@
 			<a href="{% url members.views.tags %}">Tags</a>
 			<a href="{% url members.views.mail user.username %}">Mailing Lists</a>
 		{% else %}
-			<a>All Members</a>
-			<a>Here Today</a>
-			<a>Tags</a>
-			<a>Mailing Lists</a>
+			<a href="{% url members.views.not_active %}">All Members</a>
+			<a href="{% url members.views.not_active %}">Here Today</a>
+			<a href="{% url members.views.not_active %}">Tags</a>
+			<a href="{% url members.views.not_active %}">Mailing Lists</a>
 		{% endif %}
 		
 		{% if request.user.is_authenticated %}
@@ -69,7 +69,7 @@
 <!-- Footer -->
 <div id="footer">
 	{% block footer %}
-	&copy;2008-2012 <a href="http://nadineproject.org" target="_new">The Nadine Project</a> by <a href="http://officenomads.com">Office Nomads</a>
+	&copy;2008-2013 <a href="http://nadineproject.org" target="_new">The Nadine Project</a> by <a href="http://officenomads.com">Office Nomads</a>
 	{% endblock %}
 </div>
 {% endblock %}</body>
