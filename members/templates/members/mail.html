@@ -11,8 +11,9 @@
 #content h2 { margin-bottom: 1em; }
 
 #mailing-list-subscription-form { display: none; }
-#list_mail { margin-left: 2em; }
-#msg_table td, th {text-align: left; }
+.list_mail { margin-left: 2em; }
+.msg_table td, th {text-align: left; }
+.list_desc { margin-left: 2em; }
 
 {% endblock %}
 
@@ -29,6 +30,17 @@ function unsubscribe(mlID){
 	$('#id_mailing_list_id').val(mlID);
 	$('#mailing-list-subscription-form').submit();
 }
+function toggleRecents(listID){
+	var recent_selector = '#recents-' + listID;
+	var recent_toggle_selector = '#recents-toggle-' + listID;
+	if($(recent_selector).is(':hidden')) {
+		$(recent_selector).show();
+		$(recent_toggle_selector).html('[-]');
+	} else {
+		$(recent_selector).hide();
+		$(recent_toggle_selector).html('[+]');
+	}
+}
 </script>
 {% endblock %}
 
@@ -39,9 +51,8 @@ function unsubscribe(mlID){
 {% for mailing_list, is_subscriber in user.mailing_list_memberships %}
 	<li>
 		<h3>
-			{{mailing_list.name}}
-			{% if not mailing_list.moderator_controlled %}
-				-
+			{{ mailing_list.name }}
+			{% if not mailing_list.moderator_controlled %} - {{ mailing_list.email_address}}
     			{% if is_subscriber %}
     			(<a href="." onclick="unsubscribe({{mailing_list.id}}); return false;">unsubscribe</a>)
     			{% else %}
@@ -51,11 +62,14 @@ function unsubscribe(mlID){
     			{% endif %}
     		{% endif %}
 		</h3>
-		{{ mailing_list.description }}
+		<div class="list_desc">{{ mailing_list.description }}</div>
 		
-		<h3>Last 25 Messages</h3>
-		<div id="list_mail">
-			<table id="msg_table">
+		<h3>
+			Recent Messages
+			<a id="recents-toggle-{{mailing_list.id}}" href="." onclick="toggleRecents('{{mailing_list.id}}'); return false;">[-]</a>
+		</h3>
+		<div class="list_mail" id="recents-{{mailing_list.id}}">
+			<table class="msg_table">
 				<tr>
 					<th>Sent</th>
 					<th>Member</th>
