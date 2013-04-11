@@ -118,19 +118,16 @@ def receipt(request, username, id):
 
 @login_required
 def tags(request):
-	active_members = Member.objects.active_members()
-	# TODO - need to remove non-active members!
 	tags = []
 	for tag in Member.tags.all().order_by('name'):
-		members = Member.objects.filter(tags__name__in=[tag])
-		tags.append((tag, members))
+		members = Member.objects.active_members().filter(tags__name__in=[tag])
+		if members:
+			tags.append((tag, members))
 	return render_to_response('members/tags.html',{'tags':tags}, context_instance=RequestContext(request))
 
 @login_required
 def tag(request, tag):
-	active_members = Member.objects.active_members()
-	# TODO - need to remove non-active members!
-	members = Member.objects.filter(tags__name__in=[tag])
+	members = Member.objects.active_members().filter(tags__name__in=[tag])
 	return render_to_response('members/tag.html',{'tag':tag, 'members':members}, context_instance=RequestContext(request))
 
 @login_required
