@@ -27,7 +27,9 @@ def new_user(request):
 				email.send_introduction(user)
 				return HttpResponseRedirect(reverse('tablet.views.signin_user', kwargs={ 'username':user.username }))
 		except Exception as e:
-			page_message = e
+			# Stupid fucking string won't get the best of me!
+			# Note: this is retarded --JLS
+			page_message = str(e)[3:len(str(e))-2]
 	else:
 		form = NewUserForm()
 
