@@ -5,16 +5,19 @@
 <script type="text/javascript" src="{{ STATIC_URL }}jqcloud/jqcloud-1.0.3.js"></script>
 <script type="text/javascript">
 var word_list = [
+{ text: "web development", weight: 5, link: "{% url members.views.tag 'web development' %}" },
 {% for tag, members in tags %}
-        {
-                text: "{{ tag }}", 
-                weight: {{ members|length }},
-                link: {href:"{% url members.views.tag tag %}", title:"{{tag}}"}
-        },
+	{% if tag.name != "web development" %}
+	{
+		text: "{{ tag.name }}", 
+		weight: {{ members|length }},
+		link: "{% url members.views.tag tag %}"
+	},
+	{% endif %}
 {% endfor %}
 ];
   $(function() {
-    $("#my_favorite_latin_words").jQCloud(word_list, {shape: "elliptic", encodeURI:false});
+    $("#my_favorite_latin_words").jQCloud(word_list, {shape: "rectangular", encodeURI:false});
   });
 </script>
 {% endblock %}
@@ -22,5 +25,5 @@ var word_list = [
 {% block content %}
 	<div style="float: right;">[ <a href="{% url members.views.tags %}">Tag List</a> ]</div>
 	<h2>All Member Tags</h2>
-	<div id="my_favorite_latin_words" style="font-size: 13px; width: 900px; height: 600px;"></div>
+	<div id="my_favorite_latin_words" style="font-size: 100%; width: 800px; height: 680px;"></div>
 {% endblock %}
