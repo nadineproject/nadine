@@ -1,6 +1,7 @@
 {% extends "members/u_base.html" %}
 
 {% block content %}
+	<div style="float: right;">[ <a href="{% url members.views.tag_cloud %}">Tag Cloud</a> ]</div>
 	<h2>All Member Tags</h2>
 	<ul>
 	{% for tag, members in tags %}

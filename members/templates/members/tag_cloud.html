@@ -1,0 +1,26 @@
+{% extends "members/u_base.html" %}
+
+{%block sub-head %}
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}jqcloud/jqcloud.css" />
+<script type="text/javascript" src="{{ STATIC_URL }}jqcloud/jqcloud-1.0.3.js"></script>
+<script type="text/javascript">
+var word_list = [
+{% for tag, members in tags %}
+        {
+                text: "{{ tag }}", 
+                weight: {{ members|length }},
+                link: {href:"{% url members.views.tag tag %}", title:"{{tag}}"}
+        },
+{% endfor %}
+];
+  $(function() {
+    $("#my_favorite_latin_words").jQCloud(word_list, {shape: "elliptic", encodeURI:false});
+  });
+</script>
+{% endblock %}
+
+{% block content %}
+	<div style="float: right;">[ <a href="{% url members.views.tags %}">Tag List</a> ]</div>
+	<h2>All Member Tags</h2>
+	<div id="my_favorite_latin_words" style="font-size: 13px; width: 900px; height: 600px;"></div>
+{% endblock %}

@@ -52,7 +52,7 @@
 		{% elif request.user.get_profile.is_active %}
 			<a href="{% url members.views.all_members %}">All Members</a>
 			<a href="{% url members.views.here_today %}">Here Today</a>
-			<a href="{% url members.views.tags %}">Tags</a>
+			<a href="{% url members.views.tag_cloud %}">Tags</a>
 			<a href="{% url members.views.mail user.username %}">Mailing Lists</a>
 			<a href="{% url django.contrib.auth.views.logout_then_login %}">Logout</a>
 		{% else %}

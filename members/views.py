@@ -129,6 +129,15 @@ def tags(request):
 	return render_to_response('members/tags.html',{'tags':tags}, context_instance=RequestContext(request))
 
 @login_required
+def tag_cloud(request):
+	tags = []
+	for tag in Member.tags.all().order_by('name'):
+		members = Member.objects.active_members().filter(tags__name__in=[tag])
+		if members:
+			tags.append((tag, members))
+	return render_to_response('members/tag_cloud.html',{'tags':tags}, context_instance=RequestContext(request))
+
+@login_required
 def tag(request, tag):
 	members = Member.objects.active_members().filter(tags__name__in=[tag])
 	return render_to_response('members/tag.html',{'tag':tag, 'members':members}, context_instance=RequestContext(request))
