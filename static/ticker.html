@@ -41,6 +41,15 @@
 			max-width: 100%;
 			max-height: 160px;
 		}
+		.blur{
+		        box-shadow: 0px 0px 20px 10px rgba(255,255,255,1);
+		        -webkit-transform: scale(0.9);
+		        -moz-transform: scale(0.9);
+		        -o-transform: scale(0.9);
+		        -ms-transform: scale(0.9);
+		        transform: scale(0.9);
+		        opacity: 0.7;
+		}
 	</style>
 </head>
 <body>
@@ -84,6 +93,7 @@
 				} else {
 					newimg.attr('src', 'https://apps.officenomads.com/static/BlankIcon150x150.jpg');
 				}
+				//newimg.addClass('blur');
 				newdiv.append(newimg);
 			}
 		}
