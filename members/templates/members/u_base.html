@@ -46,7 +46,7 @@
 		<a href="{% url members.views.here_today %}">Here Today</a>
 		<a href="{% url members.views.tags %}">Tags</a>
 		{% if request.user.is_authenticated %}
-			<a href="{% url members.views.mail user.username %}">Mailing List</a>
+			<a href="{% url members.views.mail user.username %}">Mailing Lists</a>
 			<a href="{% url django.contrib.auth.views.logout_then_login %}">Logout</a>
 		{% endif %}
 		{% if not request.user.is_authenticated %}
