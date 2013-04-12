@@ -574,10 +574,9 @@ def membership(request, membership_id):
 @staff_member_required
 def view_user_reports(request):
 	if request.method == 'POST':
-		form = UserReportForm(request.POST, request.FILES)
+		form = user_reports.UserReportForm(request.POST, request.FILES)
 	else:
-		form_data = {'report':'ALL', 'order_by':'NAME', 'active_only':True}
-		form = UserReportForm(form_data)
+		form = user_reports.getDefaultForm()
 
 	report = user_reports.User_Report(form)
 	users = report.get_users()

@@ -1,34 +1,89 @@
+from django import forms
 from django.contrib.auth.models import User
-from forms import *
-from models import Member
+from datetime import date, datetime, timedelta
+
+from models import Member, Membership
 
 REPORT_KEYS = (
 	('ALL', 'All Users'),
 	('INVALID_BILLING', 'Users with Invalid Billing'),
-	('NEW', 'Users with Invalid Billing'),
-	('EXITING', 'Users with Invalid Billing'),
+	('NEW_MEMBER', 'New Members'),
+	('EXITING_MEMBER', 'Exiting Members'),
 )
 
 REPORT_FIELDS = (
-	('NAME', 'Name'),
-	('START', 'First Visit'),
-	('LAST', 'Last Visit'),
+	('FIRST', 'First Name'),
+	('LAST', 'Last Name'),
+	('JOINED', 'Date Joined'),
+	#('LAST', 'Last Visit'),
 )
+
+def getDefaultForm():
+	start = date.today() - timedelta(days=30)
+	end = date.today()
+	form_data = {'report':'ALL', 'order_by':'NAME', 'active_only':True, 'start_date':start, 'end_date':end}
+	return UserReportForm(form_data)
+
+class UserReportForm(forms.Form):
+	report = forms.ChoiceField(choices=REPORT_KEYS, required=True)
+	order_by = forms.ChoiceField(choices=REPORT_FIELDS, required=True)
+	active_only = forms.BooleanField(initial=True)
+	start_date = forms.DateField(required=True)
+	end_date = forms.DateField(required=True)
 
 class User_Report:
 	def __init__(self, form):
 		self.report = form.data['report']
 		self.order_by = form.data['order_by']
-		self.active_only = form.data['active_only']
+		self.active_only = form.data.has_key('active_only')
+		self.start_date = form.data['start_date']
+		self.end_date = form.data['end_date']
+		if not self.end_date:
+			self.end_date = date.today()
+		print(self.end_date)
 
 	def get_users(self):
+		# Grab the users we want
 		if self.report == "ALL":
-			return self.get_all_users()
-		else:
-			return None
-	
-	def get_all_users(self):
+			users = self.all_users()
+		elif self.report == "NEW_MEMBER":
+			users = self.new_membership()
+		elif self.report == "EXITING_MEMBER":
+			users = self.ended_membership()
+		elif self.report == "INVALID_BILLING":
+			users = self.invalid_billing()
+		if not users:
+			return User.objects.none()
+		
+		# Only active members?
 		if self.active_only:
-			Member.objects.active_members().values('user')
-		else:
-			return User.objects.all()
+			users = users.filter(member__in=Member.objects.active_members())
+		
+		# Sort them
+		if self.order_by == "FIRST":
+			users = users.order_by("first_name")
+		elif self.order_by == "LAST":
+			users = users.order_by("last_name")
+		elif self.order_by == "JOINED":
+			users = users.order_by("date_joined")
+	
+		# Done!
+		return users
+	
+	def all_users(self):
+		return User.objects.filter(date_joined__gte=self.start_date, date_joined__lte=self.end_date)
+
+	def new_membership(self):
+		new_memberships = Membership.objects.filter(start_date__gte=self.start_date, start_date__lte=self.end_date)
+		members = Member.objects.filter(memberships__in=new_memberships)
+		return User.objects.filter(member__in=members)
+
+	def ended_membership(self):
+		ended_memberships = Membership.objects.filter(end_date__gte=self.start_date, end_date__lte=self.end_date)
+		members = Member.objects.filter(memberships__in=ended_memberships)
+		return User.objects.filter(member__in=members)
+
+	def invalid_billing(self):
+		members = Member.objects.filter(valid_billing=False)
+		return User.objects.filter(member__in=members, date_joined__gte=self.start_date, date_joined__lte=self.end_date)
+		

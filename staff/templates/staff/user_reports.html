@@ -14,9 +14,9 @@ table #user_report { padding: 2em;}
 
 <h2>User Reports</h2>
 
-<form action="." method="POST" style="margin:1em 1em 1em 1em;">
+<form action="." method="POST" style="margin:1em 20em 1em 1em;">
 	{% for field in form %}
-		<span style="margin-left:1em;">
+		<span style="margin-left:1em;" nowrap>
 			<strong>{{ field.label }}:</strong>
 			{{ field }}
 		</span>
@@ -31,16 +31,30 @@ table #user_report { padding: 2em;}
 <table class="member-table">
 	<tr>
 		<th>Name</th>
-		<th>First Visit</th>
-		<th>Membership</th>
+		<th>Joined</th>
+		<th>Active</th>
+		<th>Billing</th>
+		<th>Type</th>
+		<th>Last Visit</th>
 		<th></th>
 	</tr>
 	
 	{% for user in users %}
 		<tr class="{% cycle 'row-even' 'row-odd' %}">
 			<td nowrap style="text-align:left;"><a href="{% url staff.views.member_detail user.get_profile.id %}">{{ user.get_full_name }}</a></td>
-			<td>{{ user.get_profile.first_visit }}</td>
-			<td>{{ user.get_profile.last_membership.membership_plan }}</td>
+			<td>{{ user.date_joined|date:"M d, Y" }}</td>
+			{% if user.get_profile.is_active %}
+				<td>Active</td>
+			{% else %}
+				<td>Inactive</td>
+			{% endif %}
+			{% if user.get_profile.valid_billing %}
+				<td>Valid</td>
+			{% else %}
+				<td>Invalid</td>
+			{% endif %}
+			<td>{{ user.get_profile.membership_type }}</td>
+			<td>{{ user.get_profile.last_visit }}</td>
 			<td></td>
 		</tr>
 	{% endfor %}
