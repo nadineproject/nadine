@@ -4,9 +4,8 @@
 
 {% block style%}
 nav #members-tab { background: #FBD850; color: black; }
-
 table #user_report { padding: 2em;}
-
+table th.bottom_line { border-bottom:1px solid; }
 {% endblock %}
 
 {% block content %}
@@ -30,11 +29,17 @@ table #user_report { padding: 2em;}
 
 <table class="member-table">
 	<tr>
+		<th colspan="2"></th>
+		<th colspan="3" class="bottom_line">Last Membership</th>
+		<th colspan="3"></th>
+	</tr>
+	<tr>
 		<th>Name</th>
 		<th>Joined</th>
-		<th>Active</th>
+		<th>Plan</th>
+		<th>Start</th>
+		<th>End</th>
 		<th>Billing</th>
-		<th>Type</th>
 		<th>Last Visit</th>
 		<th></th>
 	</tr>
@@ -43,17 +48,14 @@ table #user_report { padding: 2em;}
 		<tr class="{% cycle 'row-even' 'row-odd' %}">
 			<td nowrap style="text-align:left;"><a href="{% url staff.views.member_detail user.get_profile.id %}">{{ user.get_full_name }}</a></td>
 			<td>{{ user.date_joined|date:"M d, Y" }}</td>
-			{% if user.get_profile.is_active %}
-				<td>Active</td>
-			{% else %}
-				<td>Inactive</td>
-			{% endif %}
+			<td>{{ user.get_profile.last_membership.membership_plan }}</td>
+			<td>{{ user.get_profile.last_membership.start_date|date:"M d, Y" }}</td>
+			<td>{{ user.get_profile.last_membership.end_date|date:"M d, Y" }}</td>
 			{% if user.get_profile.valid_billing %}
 				<td>Valid</td>
 			{% else %}
-				<td>Invalid</td>
+				<td style="color: red;">Invalid</td>
 			{% endif %}
-			<td>{{ user.get_profile.membership_type }}</td>
 			<td>{{ user.get_profile.last_visit }}</td>
 			<td></td>
 		</tr>

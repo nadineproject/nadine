@@ -6,9 +6,9 @@ from models import Member, Membership
 
 REPORT_KEYS = (
 	('ALL', 'All Users'),
-	('INVALID_BILLING', 'Users with Invalid Billing'),
 	('NEW_MEMBER', 'New Members'),
 	('EXITING_MEMBER', 'Exiting Members'),
+	('INVALID_BILLING', 'Users with Invalid Billing'),
 )
 
 REPORT_FIELDS = (
@@ -21,7 +21,7 @@ REPORT_FIELDS = (
 def getDefaultForm():
 	start = date.today() - timedelta(days=30)
 	end = date.today()
-	form_data = {'report':'ALL', 'order_by':'NAME', 'active_only':True, 'start_date':start, 'end_date':end}
+	form_data = {'report':'ALL', 'order_by':'JOINED', 'active_only':True, 'start_date':start, 'end_date':end}
 	return UserReportForm(form_data)
 
 class UserReportForm(forms.Form):
