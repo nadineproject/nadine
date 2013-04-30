@@ -2,6 +2,7 @@ from django.conf.urls import *
 from django.contrib import admin
 from django.conf import settings
 from django.http import HttpResponse
+from django.shortcuts import redirect
 
 admin.autodiscover()
 
@@ -22,7 +23,7 @@ urlpatterns = patterns('',
 
    (r'^login/$', 'django.contrib.auth.views.login', {'template_name': 'login.html'}),
    (r'^logout/$', 'django.contrib.auth.views.logout_then_login'),
-   (r'^accounts/profile/$', 'django.views.generic.simple.redirect_to', {'url': '/'}),
+   (r'^accounts/profile/$', lambda r: redirect('/')),
 
    (r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT }),
 

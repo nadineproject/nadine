@@ -25,9 +25,9 @@ nav #members-tab { background: #FBD850; color: black; }
 	            <td>{{ field.label_tag }}</td>
 	            <td>
 	               {{ field }}
-	               {% if field.label == 'How heard' %}<a href="{% url admin:staff_howheard_add %}">+</a>{% endif %}
-	               {% if field.label == 'Industry' %}<a href="{% url admin:staff_industry_add %}">+</a>{% endif %}
-	               {% if field.label == 'Neighborhood' %}<a href="{% url admin:staff_neighborhood_add %}">+</a>{% endif %}
+	               {% if field.label == 'How heard' %}<a href="{% url "admin:staff_howheard_add" %}">+</a>{% endif %}
+	               {% if field.label == 'Industry' %}<a href="{% url "admin:staff_industry_add" %}">+</a>{% endif %}
+	               {% if field.label == 'Neighborhood' %}<a href="{% url "admin:staff_neighborhood_add" %}">+</a>{% endif %}
 	            </td>
 	            {% if field.errors %}
 	            <td>

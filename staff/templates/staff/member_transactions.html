@@ -8,7 +8,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {% block content %}
-<h2>Transactions for <a href="{% url staff.views.member_detail member.id %}">{{ member.first_name }} {{ member.last_name }}</a>:</h2>
+<h2>Transactions for <a href="{% url "staff.views.member_detail" member.id %}">{{ member.first_name }} {{ member.last_name }}</a>:</h2>
 {% if not member.transaction_set.all %}
 <p>There are no transactions!</p>
 {% endif%}

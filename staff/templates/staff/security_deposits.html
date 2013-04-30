@@ -17,7 +17,7 @@ nav #members-tab { background: #FBD850; color: black; }
 	<tr><th>Name</th><th align="left">Amount</th></tr>
 	{% for member in member_list %}
 	<tr class="{% cycle 'row-even' 'row-odd' %}">
-		<td nowrap ><a href="{% url staff.views.member_detail member.id %}">{{ member.name }}</a></td>
+		<td nowrap ><a href="{% url "staff.views.member_detail" member.id %}">{{ member.name }}</a></td>
 		<td>${{ member.deposit }}</td>
 	</tr>
 	{% endfor %}

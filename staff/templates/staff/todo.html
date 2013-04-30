@@ -21,7 +21,7 @@ nav #todo-tab { background: #FBD850; color: black; }
    {% for task, remaining in onboard_tasks %}
       <tr class="{% cycle 'row-even' 'row-odd' %}">
          <td align="left">
-            <a href="{% url staff.views.onboard_task task.id %}">{{ task.name }}</a>
+            <a href="{% url "staff.views.onboard_task" task.id %}">{{ task.name }}</a>
          </td>
          <td>{{ remaining }}</td>
          <td>{% if task.monthly_only %}monthly only{% endif %}</td>
@@ -38,7 +38,7 @@ nav #todo-tab { background: #FBD850; color: black; }
    {% for task, remaining in exit_tasks %}
       <tr class="{% cycle 'row-even' 'row-odd' %}">
          <td align="left">
-            <a href="{% url staff.views.exit_task task.id %}">{{ task.name }}</a>
+            <a href="{% url "staff.views.exit_task" task.id %}">{{ task.name }}</a>
          </td>
          <td>{{ remaining }}</td>
          <td></td>

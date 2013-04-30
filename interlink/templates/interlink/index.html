@@ -15,8 +15,8 @@ nav #lists-tab { background: #FBD850; color: black; }
 {% for l in lists %}
 	<li>
 		<strong>{{ l }}</strong>: 
-		<a href="{% url interlink.views.list_messages l.id %}">messages</a> |
-		<a href="{% url interlink.views.list_subscribers l.id %}">subscribers</a>
+		<a href="{% url "interlink.views.list_messages" l.id %}">messages</a> |
+		<a href="{% url "interlink.views.list_subscribers" l.id %}">subscribers</a>
 	</li>
 {% endfor %}
 </ul>
