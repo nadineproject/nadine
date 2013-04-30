@@ -12,7 +12,10 @@ media/staff
 media/members
 media/arp/import.log
 .project
+.idea
 .pydevproject
 .settings
 celerybeat-schedule.db
 .DS_Store
+
+nadine.sqlite
