@@ -10,7 +10,7 @@
 	{% if other_topics %}
 		<ul>
 			{% for t in other_topics.values %}
-				<li><a href="{% url members.views.help_topic t.slug %}">{{ t }}</a></li>
+				<li><a href="{% url "members.views.help_topic" t.slug %}">{{ t }}</a></li>
 			{% endfor %}
 		</ul>
 	{% else %}

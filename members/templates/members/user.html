@@ -16,15 +16,15 @@
 {% if user.username == request.user.username or request.user.is_staff %}
 	<dl>
 		<dt>Quicklinks:</dt>    
-		<dd><a href="{% url members.views.edit_profile user.username %}">edit profile</a></dd>
-		<dd><a href="{% url members.views.user_tags user.username %}">edit tags</a></dd>
+		<dd><a href="{% url "members.views.edit_profile" user.username %}">edit profile</a></dd>
+		<dd><a href="{% url "members.views.user_tags" user.username %}">edit tags</a></dd>
 	</dl>
 {% endif %}
 
 	<dl>
 		<dt>Profile Tags:</dt>
 		{% for tag in member.tags.all %}
-			<dd><a href="{% url members.views.tag tag %}">{{ tag }}</a></dd>
+			<dd><a href="{% url "members.views.tag" tag %}">{{ tag }}</a></dd>
 		{% endfor %}
 	</dl>
 
@@ -260,7 +260,7 @@
 	     <tbody>
 	   		{% for transaction in user.profile.transaction_set.all %}
 	   		<tr class="{% cycle 'row-even' 'row-odd' %}">
-	   			<td><a href="{% url members.views.receipt user.username transaction.id %}">{{ transaction.created|date:"m/d/y" }}</a></td>
+	   			<td><a href="{% url "members.views.receipt" user.username transaction.id %}">{{ transaction.created|date:"m/d/y" }}</a></td>
 	   			<td>${{ transaction.amount }}</td>
 	   			<td>
 	   			   {% for bill in transaction.bills.all %}

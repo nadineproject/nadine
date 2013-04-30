@@ -22,7 +22,7 @@ nav #todo-tab { background: #FBD850; color: black; }
 		</tr>
 		{% for member in task.uncompleted_members %}
 		   <tr class="{% cycle 'row-even' 'row-odd' %}">
-		      <td nowrap><a href="{% url staff.views.member_detail member.id %}">{{ member }}</a></td>
+		      <td nowrap><a href="{% url "staff.views.member_detail" member.id %}">{{ member }}</a></td>
 		      <td nowrap>{{ member.phone }}</td>
 		      <td nowrap>{{ member.email }}</td>
    			<td style="text-align: right;">

@@ -112,7 +112,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 				{% csrf_token %}
 
 				<div style="margin-left:5em;">
-				<form action="{% url staff.views.toggle_billing_flag member.id %}" onSubmit="return confirm('Are you sure?');">
+				<form action="{% url "staff.views.toggle_billing_flag" member.id %}" onSubmit="return confirm('Are you sure?');">
 					{% if member.valid_billing %}
 						<input type="submit" value="Flag Invalid Billing Profile">
 					{% else %}
@@ -131,7 +131,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 <table>
 	{% for member in invalid_members %}
 		<tr class="{% cycle 'row-odd' 'row-even' %}">
-			<td nowrap style="text-align:left;"><li><a href="{% url staff.views.member_detail member.id %}">{{ member.full_name }}</a></li></td>
+			<td nowrap style="text-align:left;"><li><a href="{% url "staff.views.member_detail" member.id %}">{{ member.full_name }}</a></li></td>
 			<td></td>
 		</tr>
 	{% endfor %}

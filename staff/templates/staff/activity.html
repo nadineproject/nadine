@@ -26,7 +26,7 @@ nav #activity-tab { background: #FBD850; color: black; }
    </tr>
 {% for day in days %}
    <tr>
-      <td><a href="{% url staff.views.activity_date day.date.year day.date.month day.date.day %}">{{ day.date|date:"M d, Y" }}</td>
+      <td><a href="{% url "staff.views.activity_date" day.date.year day.date.month day.date.day %}">{{ day.date|date:"M d, Y" }}</td>
       <td>
          <div class="membership-bar" style="width: {{ day.membership_size }}px;">{{ day.membership }}</div>
          <div class="has-desk-bar" style="width: {{ day.has_desk_size }}px;">{{ day.has_desk }}</div>
