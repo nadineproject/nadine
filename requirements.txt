@@ -9,4 +9,5 @@ celery
 django-celery
 django-mailchimp-v1.3
 
+https://github.com/django/django-localflavor-us/zipball/master
 git+git://github.com/toastdriven/django-tastypie.git#egg=django-tastypie

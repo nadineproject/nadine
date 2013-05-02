@@ -5,14 +5,14 @@ from taggit.forms import *
 from models import *
 from staff.models import *
 import datetime
-from django.contrib.localflavor.us.us_states import US_STATES
+from django_localflavor_us.us_states import STATE_CHOICES
 
 class EditProfileForm(forms.Form):
 	member_id = forms.IntegerField(required=True, min_value=0, widget=forms.HiddenInput)
 	address1 = forms.CharField(max_length=100, required=False)
 	address2 = forms.CharField(max_length=100, required=False)
 	city = forms.CharField(max_length=100, required=False)
-	state = forms.ChoiceField(choices=US_STATES, required=False)
+	state = forms.ChoiceField(choices=STATE_CHOICES, required=False)
 	zipcode = forms.CharField(max_length=5, required=False)
 	phone = forms.CharField(max_length=20, required=False)
 	phone2 = forms.CharField(max_length=20, required=False)

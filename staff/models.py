@@ -8,7 +8,7 @@ from django.core import urlresolvers
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.utils.encoding import smart_str, smart_unicode
-from django.contrib.localflavor.us.models import USStateField, PhoneNumberField
+from django_localflavor_us.models import USStateField, PhoneNumberField
 
 from taggit.managers import TaggableManager
 from taggit.models import TaggedItemBase
