@@ -6,6 +6,8 @@ Most of the action is in the staff application, where you'll find a member track
 
 ## Handy Installation Instructions
 
+Requires Django 1.5 or above.  Note, we didn't do the full Django 1.3 to Django 1.4 upgrade yet so there are some timezone issues that need to be worked out.
+
 Set up your Django environment then test that it's up by creating a scratch project and running the Django development server.
 
 Set up PostgreSQL, create a blank database and grant all permissions to whatever account/password combination you want to use for the app.
