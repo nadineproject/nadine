@@ -10,7 +10,7 @@ nav #activity-tab { background: #FBD850; color: black; }
 {% block content %}
 {% include "staff/activity_menu.frag" %}  
 
-<h2>Activity for <a href="{% url staff.views.member_detail member.id %}">{{ member }}</a>:</h2>
+<h2>Activity for <a href="{% url 'staff.views.member_detail' member.id %}">{{ member }}</a>:</h2>
 
 {% if member.daily_logs.all %}
 	<table>

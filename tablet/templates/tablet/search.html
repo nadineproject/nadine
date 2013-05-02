@@ -22,14 +22,14 @@
 		<div id="member-list">
 			<ul data-role="listview" data-inset="true" data-filter="false">
 				{% for member in search_results %}
-					<li style="padding: 0.5em;"><a href="{% url tablet.views.user_signin member.user %}" data-transition="fade">{{ member.full_name }}</a></li>
+					<li style="padding: 0.5em;"><a href="{% url 'tablet.views.user_signin' member.user %}" data-transition="fade">{{ member.full_name }}</a></li>
 				{% endfor %}
 			</ul>
 		</div>
 	{% else %}
 		<h2>Find a Member</h2>
 		<div id="search-box">
-			<form id="member-search-form" action="{% url tablet.views.search %}" method="POST">
+			<form id="member-search-form" action="{% url 'tablet.views.search' %}" method="POST">
 				{% for field in member_search_form %}
 					{{ field }}
 				{% endfor %}

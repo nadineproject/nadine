@@ -32,10 +32,10 @@
 		</div>
 			<div id="top-nav" data-role="navbar" data-iconpos="left">
 				<ul>
-					<li><a data-transition="fade" href="{% url tablet.views.signin %}" {% block nav-signin %}{% endblock %} data-icon="check">{% block signin-back %}Sign In{% endblock %}</a></li>
-					<li><a data-transition="fade" href="{% url tablet.views.members %}" {% block nav-members %}{% endblock %} data-icon="grid">Members</a></li>
-					<li><a data-transition="fade" href="{% url tablet.views.here_today %}" {% block nav-here %}{% endblock %} data-icon="star">Here Today</a></li>
-					<li><a data-transition="fade" href="{% url tablet.views.new_user %}" {% block nav-newuser %}{% endblock %} data-icon="plus">New User</a></li>
+					<li><a data-transition="fade" href="{% url 'tablet.views.signin' %}" {% block nav-signin %}{% endblock %} data-icon="check">{% block signin-back %}Sign In{% endblock %}</a></li>
+					<li><a data-transition="fade" href="{% url 'tablet.views.members' %}" {% block nav-members %}{% endblock %} data-icon="grid">Members</a></li>
+					<li><a data-transition="fade" href="{% url 'tablet.views.here_today' %}" {% block nav-here %}{% endblock %} data-icon="star">Here Today</a></li>
+					<li><a data-transition="fade" href="{% url 'tablet.views.new_user' %}" {% block nav-newuser %}{% endblock %} data-icon="plus">New User</a></li>
 				</ul>
 			</div>
 			{% block header %}

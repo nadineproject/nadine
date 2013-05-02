@@ -79,11 +79,11 @@ function toggleRecents(listID){
 				<tr>
 					<td nowrap>{{ msg.sent_time }}</td>
 					{% if msg.get_user %}
-						<td nowrap><a href="{% url members.views.user msg.get_user.username %}">{{ msg.get_user.get_profile.full_name }}</a></td>
+						<td nowrap><a href="{% url 'members.views.user' msg.get_user.username %}">{{ msg.get_user.get_profile.full_name }}</a></td>
 					{% else %}
 						<td nowrap>{{ msg.origin_address }}</td>
 					{% endif %}
-					<td><a  href="{% url members.views.mail_message msg.id %}">{{ msg.clean_subject }}</a></td>
+					<td><a  href="{% url 'members.views.mail_message' msg.id %}">{{ msg.clean_subject }}</a></td>
 				</tr>
 				{% endfor %}
 			</table>

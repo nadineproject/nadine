@@ -46,7 +46,7 @@ table th.bottom_line { border-bottom:1px solid; }
 	
 	{% for user in users %}
 		<tr class="{% cycle 'row-even' 'row-odd' %}">
-			<td nowrap style="text-align:left;"><a href="{% url staff.views.member_detail user.get_profile.id %}">{{ user.get_full_name }}</a></td>
+			<td nowrap style="text-align:left;"><a href="{% url 'staff.views.member_detail' user.get_profile.id %}">{{ user.get_full_name }}</a></td>
 			<td>{{ user.date_joined|date:"M d, Y" }}</td>
 			<td>{{ user.get_profile.last_membership.membership_plan }}</td>
 			<td>{{ user.get_profile.last_membership.start_date|date:"M d, Y" }}</td>

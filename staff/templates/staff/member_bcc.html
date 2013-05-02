@@ -13,9 +13,9 @@ nav #members-tab { background: #FBD850; color: black; }
 
 <div class="submenu">
 {% for p in plans %}
-	<a href="{% url staff.views.member_bcc p.id %}">{{ p }}<a> |
+	<a href="{% url 'staff.views.member_bcc' p.id %}">{{ p }}<a> |
 {% endfor %}
-<a href="{% url staff.views.member_bcc 0 %}">All</a>
+<a href="{% url 'staff.views.member_bcc' 0 %}">All</a>
 </div>
 
 <textarea rows="20" cols="80">

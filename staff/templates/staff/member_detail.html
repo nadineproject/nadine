@@ -50,16 +50,16 @@ function gotoEmailReset(emailAddress){
 <div id="member-detail">
 	<h2>{{ member.first_name }} {{ member.last_name }} {% if member.is_active %} - <i>{{ member.membership_type }}</i> {% endif %}</h2>
 	<div id="quick-links">
-		<a href="{% url staff.views.member_activity member.id %}">activity</a> |
-		<a href="{% url staff.views.member_bills member.id %}">bills</a> |
-		<a href="{% url staff.views.member_transactions member.id %}">transactions</a> |
-		<a href="{% url views.password_reset %}?email={{ member.email }}">pw reset</a> |
-		<a href="{% url members.views.user member.user.username %}">profile</a> |
-		<a href="{% url admin:auth_user_change member.user.id %}">edit member</a> |
+		<a href="{% url 'staff.views.member_activity' member.id %}">activity</a> |
+		<a href="{% url 'staff.views.member_bills' member.id %}">bills</a> |
+		<a href="{% url 'staff.views.member_transactions' member.id %}">transactions</a> |
+		<a href="{% url 'views.password_reset' %}?email={{ member.email }}">pw reset</a> |
+		<a href="{% url 'members.views.user' member.user.username %}">profile</a> |
+		<a href="{% url 'admin:auth_user_change member.user.id' %}">edit member</a> |
 		{% if member.is_active %}
-			<a href="{% url staff.views.membership member.last_membership.id %}">update membership</a>
+			<a href="{% url 'staff.views.membership' member.last_membership.id %}">update membership</a>
 		{% else %}	
-			<a href="{% url staff.views.member_membership member.id %}">add membership</a>
+			<a href="{% url 'staff.views.member_membership' member.id %}">add membership</a>
 		{% endif %}
 	</div>
 
@@ -221,7 +221,7 @@ function gotoEmailReset(emailAddress){
 				<td>{{ membership.note }}</td>
 				<td>
 					{% if membership == member.last_membership %}
-						[<a href="{% url staff.views.membership membership.id %}">edit</a>]
+						[<a href="{% url 'staff.views.membership' membership.id %}">edit</a>]
 					{% endif %}
 				&nbsp;</td>
 			</tr>
@@ -230,7 +230,7 @@ function gotoEmailReset(emailAddress){
 		{% if member.last_membership.end_date %}
 		<tr class="{% cycle 'row-even' 'row-odd' %}">
 			<td colspan="4">&nbsp;</td>
-			<td>[<a href="{% url staff.views.member_membership member.id %}">add membership</a>]</td>
+			<td>[<a href="{% url 'staff.views.member_membership' member.id %}">add membership</a>]</td>
 		</tr>			
 		{% endif %}
 	</table>
@@ -239,7 +239,7 @@ function gotoEmailReset(emailAddress){
 <h2>Billing Profile</h2>
 {% include "members/billing_profile.frag" %}
 <div style="margin-left: 2em; margin-top: .5em;">
-	<form method=POST action="{% url staff.views.toggle_billing_flag member.id %}" onSubmit="return confirm('Are you sure?');">
+	<form method=POST action="{% url 'staff.views.toggle_billing_flag' member.id %}" onSubmit="return confirm('Are you sure?');">
 		<input type="hidden" name="back" value="{{request.get_full_path}}">
 		{% if member.valid_billing %}
 			<input type="submit" value="Flag Invalid Billing Profile">

@@ -19,7 +19,7 @@
 	<div class="ui-grid-a">
 		<div class="ui-block-a">
 			{% if member.photo %}
-				<a href="{% url tablet.views.view_profile member.user %}"><img src="{{ user.profile.photo.url }}" width="300px"></a>
+				<a href="{% url 'tablet.views.view_profile' member.user %}"><img src="{{ user.profile.photo.url }}" width="300px"></a>
 			{% else %}
 				<img src="{{ STATIC_URL }}/BlankIcon150x150.jpg">
 			{% endif %}							
@@ -64,7 +64,7 @@
 				<div id="member-list">
 					<ul data-role="listview" data-inset="true" data-filter="false">
 						{% for member in search_results %}
-							<li style="padding: 0.5em;"><a href="{% url tablet.views.signin_user_guest user.username member.user %}" data-transition="fade">{{ member.full_name }}</a></li>
+							<li style="padding: 0.5em;"><a href="{% url 'tablet.views.signin_user_guest' user.username member.user %}" data-transition="fade">{{ member.full_name }}</a></li>
 						{% endfor %}
 					</ul>
 				</div>
@@ -80,7 +80,7 @@
 		</div>
 
 		<div id="signin" data-theme="a" {% if search_results %} class="hidden" {% endif %}>
-			<a href="{% url tablet.views.signin_user user.username %}" data-role="button" data-theme="e" data-transition="fade">Sign In</a>  
+			<a href="{% url 'tablet.views.signin_user' user.username %}" data-role="button" data-theme="e" data-transition="fade">Sign In</a>  
 		</div>    
 	{% endif %}  
 {% endblock %}

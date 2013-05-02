@@ -14,11 +14,11 @@
 		{% for member in members %}
 			<div class="user-card">
 		      {% if member.photo %}
-		         <a class="photo" href="{% url tablet.views.view_profile member.user %}" data-transition="fade"><img src="{{ member.photo.url|fit_image:"170x170" }}" /></a>
+		         <a class="photo" href="{% url 'tablet.views.view_profile' member.user %}" data-transition="fade"><img src="{{ member.photo.url|fit_image:"170x170" }}" /></a>
 		      {% else %}
-		         <a class="photo" href="{% url tablet.views.view_profile member.user %}" data-transition="fade">?</a>
+		         <a class="photo" href="{% url 'tablet.views.view_profile' member.user %}" data-transition="fade">?</a>
 		      {% endif %}         
-		      <a href="{% url tablet.views.view_profile member.user %}" data-transition="fade">{{ member.full_name }}</a>
+		      <a href="{% url 'tablet.views.view_profile' member.user %}" data-transition="fade">{{ member.full_name }}</a>
 			</div>
 		{% endfor %}
 	</div>

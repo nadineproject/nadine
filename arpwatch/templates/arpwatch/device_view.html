@@ -34,7 +34,7 @@ nav #logs-tab { background: #FBD850; color: black; }
 	</tr>
 	{% for log in logs %}
 		<tr>
-			<td><a href="{% url arpwatch.views.device_logs_by_day log.day|date:'Y' log.day|date:'m' log.day|date:'d' %}">{{ log.day|date:"M d, Y" }}</a></td>			
+			<td><a href="{% url 'arpwatch.views.device_logs_by_day' log.day|date:'Y' log.day|date:'m' log.day|date:'d' %}">{{ log.day|date:"M d, Y" }}</a></td>			
 			<td>{{ log.ip }}</td>
 			<td/>
 		</tr>

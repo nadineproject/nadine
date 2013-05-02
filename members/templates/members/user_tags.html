@@ -27,8 +27,8 @@
 	<ul>
 		{% for t in user_tags %}
 			<li>
-				<a href="{% url members.views.tag t %}">{{ t }}</a> 
-				(<a href="{% url members.views.delete_tag user.username t %}" style="color: red;">x</a>)
+				<a href="{% url 'members.views.tag' t %}">{{ t }}</a> 
+				(<a href="{% url 'members.views.delete_tag' user.username t %}" style="color: red;">x</a>)
 			</li>
 		{% endfor %}
 	</ul>

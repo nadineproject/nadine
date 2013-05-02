@@ -15,9 +15,9 @@ nav #logs-tab { background: #FBD850; color: black; }
 </div>
 
 <h4 align="center">
-	<a href="{% url arpwatch.views.device_logs_by_day previous_day.year previous_day.month previous_day.day %}">&laquo; Prev</a>
-	[ <a href="{% url arpwatch.views.device_logs_today %}">Today</a> ]
-	<a href="{% url arpwatch.views.device_logs_by_day next_day.year next_day.month next_day.day %}">Next &raquo;</a>
+	<a href="{% url 'arpwatch.views.device_logs_by_day' previous_day.year previous_day.month previous_day.day %}">&laquo; Prev</a>
+	[ <a href="{% url 'arpwatch.views.device_logs_today' %}">Today</a> ]
+	<a href="{% url 'arpwatch.views.device_logs_by_day' next_day.year next_day.month next_day.day %}">Next &raquo;</a>
 </h4>
 
 <table border=1>
@@ -30,7 +30,7 @@ nav #logs-tab { background: #FBD850; color: black; }
 	</tr>
 	{% for l in device_logs %}
 		<tr>
-			<td><a href="{% url arpwatch.views.device l.device.id %}">{{ l.device }}</a></td>
+			<td><a href="{% url 'arpwatch.views.device' l.device.id %}">{{ l.device }}</a></td>
 			<td>{{ l.start|date:"h:i a" }}</td>
 			<td>{{ l.end|date:"h:i a" }}</td>
 			<td>{{ l.diff }}</td>
