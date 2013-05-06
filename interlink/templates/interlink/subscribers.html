@@ -30,7 +30,7 @@ nav #lists-tab { background: #FBD850; color: black; }
 		<td>{{ subscriber.first_name }} {{ subscriber.last_name }}</td>
 		<td>{{ subscriber.get_profile.last_membership.start_date }}</td>
 		<td>{{ subscriber.get_profile.last_membership.end_date }}</td>
-		<td><a href="{%url interlink.views.unsubscribe mailing_list.id subscriber.username%}">unsubscribe</a></td>
+		<td><a href="{%url 'interlink.views.unsubscribe' mailing_list.id subscriber.username%}">unsubscribe</a></td>
 	</tr>
 {% endfor %}
 </table>
@@ -52,7 +52,7 @@ nav #lists-tab { background: #FBD850; color: black; }
 		<td>{{ subscriber.first_name }} {{ subscriber.last_name }}</td>
 		<td>{{ subscriber.last_membership.start_date }}</td>
 		<td>{{ subscriber.last_membership.end_date }}</td>
-		<td><a href="{%url interlink.views.subscribe mailing_list.id subscriber.user%}">subscribe</a></td>
+		<td><a href="{%url 'interlink.views.subscribe' mailing_list.id subscriber.user%}">subscribe</a></td>
 	</tr>
 {% endfor %}
 </table>

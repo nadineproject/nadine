@@ -14,7 +14,7 @@ nav #lists-tab { background: #FBD850; color: black; }
 <div align="center">
 <p>Are you sure you want to subscribe <strong>{{ member }}</strong> to <strong>{{ mailing_list }}</strong>?</p>
 <p/>
-<form action="{%url interlink.views.subscribe mailing_list.id member.user%}" method='post'>
+<form action="{%url 'interlink.views.subscribe' mailing_list.id member.user%}" method='post'>
 	<input type="Submit" name="confirm" value="Yes">
 	<input type="Submit" name="confirm" value="No">
 	{% csrf_token %}
