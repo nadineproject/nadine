@@ -1,4 +1,5 @@
 from django.conf.urls import *
+from django.shortcuts import redirect
 
 urlpatterns = patterns('members.views',
 	(r'^$', 'home'),
