@@ -443,6 +443,35 @@ def date_range_from_request(request):
 	return (start, end)
 
 @staff_member_required
+def income(request):
+	start, end = date_range_from_request(request)
+	date_range_form = DateRangeForm({START_DATE_PARAM:start, END_DATE_PARAM:end })
+	starteo = timeo.strptime(start, "%Y-%m-%d")
+	start_date = date(year=starteo.tm_year, month=starteo.tm_mon, day=starteo.tm_mday)
+	endeo = timeo.strptime(end, "%Y-%m-%d")
+	end_date = date(year=endeo.tm_year, month=endeo.tm_mon, day=endeo.tm_mday)
+	days = [{'date':start_date + timedelta(days=i)} for i in range((end_date - start_date).days) ]
+	income_min = 0;
+	income_max = 0;
+	income_total = 0
+	for day in days:
+		membership_count = 0
+		membership_income = 0
+		for membership in Membership.objects.by_date(day['date']):
+			membership_count = membership_count + 1
+			membership_income = membership_income +  membership.monthly_rate
+		income_total = income_total + membership_income
+		if membership_income > income_max:
+			income_max = membership_income
+		if income_min == 0 or membership_income < income_min:
+			income_min = membership_income
+		day['membership'] = membership_count
+		day['income'] = membership_income
+	income_avg = income_total / len(days)
+	return render_to_response('staff/income.html', {'days':days, 'date_range_form':date_range_form, 'start':start, 'end':end, 'min':income_min, 'max':income_max, 'avg':income_avg }, context_instance=RequestContext(request))
+		
+
+@staff_member_required
 def activity(request):
 	start, end = date_range_from_request(request)
 	date_range_form = DateRangeForm({START_DATE_PARAM:start, END_DATE_PARAM:end })
@@ -451,11 +480,12 @@ def activity(request):
 	endeo = timeo.strptime(end, "%Y-%m-%d")
 	end_date = date(year=endeo.tm_year, month=endeo.tm_mon, day=endeo.tm_mday)
 	days = [{'date':start_date + timedelta(days=i)} for i in range((end_date - start_date).days) ]
+	days.reverse()
 	for day in days:
 		day['daily_logs'] = DailyLog.objects.filter(visit_date=day['date']).count()
-		day['membership'] = Membership.objects.by_date(day['date']).count()
 		day['has_desk'] = Membership.objects.by_date(day['date']).filter(has_desk=True).count()
 		day['occupancy'] = day['daily_logs'] + day['has_desk']
+		day['membership'] = Membership.objects.by_date(day['date']).count()
 
 	max_membership = 0
 	max_has_desk = 0
