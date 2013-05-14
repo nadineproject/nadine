@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
+from django.utils import timezone
 
 from staff.models import Member, Membership, Transaction, DailyLog
 from forms import EditProfileForm
@@ -169,7 +170,7 @@ def delete_tag(request, username, tag):
 def ticker(request):
 	here_today = arp.here_today()
 	
-	now = datetime.now()
+	now = timezone.now()
 	midnight = now - timedelta(seconds=now.hour*60*60 + now.minute*60 + now.second)
 	device_logs = ArpLog.objects.for_range(midnight, now)
 	

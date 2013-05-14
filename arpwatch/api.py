@@ -18,6 +18,7 @@ from django.conf.urls import patterns, include, url
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponse, Http404, HttpResponseServerError, HttpResponseRedirect, HttpResponsePermanentRedirect
+from django.utils import timezone
 
 import arp
 from models import UserDevice, ArpLog
@@ -29,7 +30,7 @@ class ActivityModel(object):
 	The object which will hold the activity data to serve up via ActivityResource
 	'''
 	def __init__(self):
-		now = datetime.now()
+		now = timezone.now()
 		midnight = now - timedelta(seconds=now.hour*60*60 + now.minute*60 + now.second) - timedelta(minutes=1)
 		# These are the values which are directly exposed via the ActivityModel
 		members = Member.objects.active_members()

@@ -6,6 +6,7 @@ import settings
 from models import Bill, BillingLog, Transaction, Member, Membership, DailyLog
 from django.db.models import Count
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
 
 class Day:
 	"""All of the daily_logs, memberships, and (optionally) a bill associated with this day of a Run."""
@@ -105,7 +106,7 @@ class Run:
 		if len(self.days) == 0: return 'Run for %s' % self.member
 		return 'Run for %s (%s / %s)' % (self.member, self.days[0].date, self.days[len(self.days) - 1].date)
 
-def run_billing(bill_time=datetime.now()):
+def run_billing(bill_time=timezone.now()):
 	"""Generate billing records for every member who deserves it."""
 	bill_date = datetime.date(bill_time)
 	print "Running billing for %s" % bill_date
@@ -183,7 +184,7 @@ def run_billing(bill_time=datetime.now()):
 	except:
 		billing_log.note = traceback.format_exc()
 	finally:
-		billing_log.ended = datetime.now()
+		billing_log.ended = timezone.now()
 		billing_log.successful = billing_success
 		billing_log.save()
 		#print 'Completed billing %s' % billing_success

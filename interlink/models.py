@@ -14,6 +14,7 @@ from django.core.mail import get_connection, EmailMultiAlternatives
 from django.db.models.signals import post_save
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.utils import timezone
 
 from staff.models import Member, Membership
 from interlink.message import MailingListMessage
@@ -128,7 +129,7 @@ class MailingList(models.Model):
       if time_struct:
          sent_time = datetime(*time_struct[:-2])
       else:
-         sent_time = datetime.now()
+         sent_time = timezone.now()
 
       body, html_body, file_names = self.find_bodies(message)
       for file_name in file_names:
@@ -297,7 +298,7 @@ class OutgoingMailManager(models.Manager):
       to_send = (self.select_related('mailing_list')
                      .filter(sent__isnull=True)
                      .filter(Q(last_attempt__isnull=True) |
-                             Q(last_attempt__lt=datetime.now() - timedelta(minutes=10))))
+                             Q(last_attempt__lt=timezone.now() - timedelta(minutes=10))))
       # This dict is indexed by the mailing list
       # and contains a list of each mail that should be sent using that smtp info
       d = defaultdict(list)
@@ -346,7 +347,7 @@ class OutgoingMail(models.Model):
          return len(msg.recipients())
 
       r = (OutgoingMail.objects.filter(mailing_list=self.mailing_list,
-                                       sent__gt=datetime.now() - timedelta(minutes=10))
+                                       sent__gt=timezone.now() - timedelta(minutes=10))
                                .aggregate(Sum('sent_recipients')))
       num_sent_recipients = r['sent_recipients__sum'] or 0
 
@@ -414,7 +415,7 @@ class OutgoingMail(models.Model):
       num_recipients = self._check_throttle(msg)
 
       # Update this after we pass the throttle but before we actually try to send.
-      self.last_attempt = datetime.now()
+      self.last_attempt = timezone.now()
       self.attempts = self.attempts + 1
       self.save()
 
@@ -426,7 +427,7 @@ class OutgoingMail(models.Model):
          self.original_mail.save()
 
       self.sent_recipients = num_recipients
-      self.sent = datetime.now()
+      self.sent = timezone.now()
       self.save()
 
    class Meta:

@@ -7,6 +7,7 @@ from django.template import Context, loader
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponse, Http404, HttpResponseServerError, HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.contrib.admin.views.decorators import staff_member_required
+from django.utils import timezone
 
 from forms import *
 from models import *
@@ -56,7 +57,7 @@ def device(request, id):
 @staff_member_required
 def device_logs_today(request):
 	# Kinda clunky but it works
-	now = datetime.now()
+	now = timezone.now()
 	return device_logs_by_day(request, str(now.year), str(now.month), str(now.day));
 
 @staff_member_required
@@ -70,7 +71,7 @@ def device_logs_by_day(request, year, month, day):
 
 @staff_member_required
 def logins_today(request):
-	now = datetime.now()
+	now = timezone.now()
 	return logins_by_day(request, str(now.year), str(now.month), str(now.day));
 
 def logins_by_day(request, year, month, day):

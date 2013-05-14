@@ -10,6 +10,7 @@ import shutil
 logger = logging.getLogger(__name__)
 
 from django.conf import settings
+from django.utils import timezone
 
 class BackupError(Exception):
 	pass
@@ -88,7 +89,7 @@ class BackupManager(object):
 		self.check_dirs()
 		db_user, db_name, db_password = self.get_db_info()
 
-		now = datetime.datetime.now()
+		now = datetime.timezone.now()
 		file_token = '%d-%02d-%02d_%02d-%02d-%02d' % (now.year, now.month, now.day, now.hour, now.minute, now.second)
 
 		sql_file = '%s-sql.gz' % file_token

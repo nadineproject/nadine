@@ -111,7 +111,8 @@ INSTALLED_APPS = (
 )
 
 # New Django 1.4 timezone support
-USE_TZ = False
+USE_TZ = True
+TIME_ZONE="America/Los_Angeles"
 
 #
 # Celery initialization

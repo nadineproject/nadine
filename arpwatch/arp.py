@@ -5,16 +5,17 @@ from django.conf import settings
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.db import transaction
+from django.utils import timezone
 
 from models import *
 from staff.models import Member, DailyLog
 
 def register_user_ip(user, ip):
 	print("REMOTE_ADDR for %s: %s" % (user, ip))
-	ip_log = UserRemoteAddr.objects.create(logintime=datetime.now(), user=user, ip_address=ip)
+	ip_log = UserRemoteAddr.objects.create(logintime=timezone.now(), user=user, ip_address=ip)
 
 def map_ip_to_mac(hours):
-	end_ts = datetime.now()
+	end_ts = timezone.now()
 	start_ts = end_ts - timedelta(hours=hours)
 	ip_logs = UserRemoteAddr.objects.filter(logintime__gte=start_ts, logintime__lte=end_ts)
 	for i in ip_logs:
@@ -37,16 +38,16 @@ def import_dir_locked():
 	return default_storage.exists(settings.ARP_IMPORT_LOCK)
 
 def lock_import_dir():
-	msg = "locked: %s" % datetime.now()
+	msg = "locked: %s" % timezone.now()
 	default_storage.save(settings.ARP_IMPORT_LOCK, ContentFile(msg))
 
 def unlock_import_dir():
 	default_storage.delete(settings.ARP_IMPORT_LOCK)
 
 def log_message(msg):
-	log = "%s: %s\r\n" % (datetime.now(), msg)
+	log = "%s: %s\r\n" % (timezone.now(), msg)
 	if not default_storage.exists(settings.ARP_IMPORT_LOG):
-		log = "%s: Log Started\r\n%s" % (datetime.now(), log)
+		log = "%s: Log Started\r\n%s" % (timezone.now(), log)
 	log_file = default_storage.open(settings.ARP_IMPORT_LOG, mode="a")
 	log_file.write(log)
 	log_file.close()
@@ -114,7 +115,7 @@ def day_is_complete(day_str):
 	return True
 	
 def here_today():
-	now = datetime.now()
+	now = timezone.now()
 	here_today = {}
 	counts = {}
 

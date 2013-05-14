@@ -9,6 +9,7 @@ import traceback
 
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
+from django.utils import timezone
 
 class Command(BaseCommand):
    help = "Shows the billing information for a given user."
@@ -22,8 +23,8 @@ class Command(BaseCommand):
       member_id = int(labels[0])
       try:
          member = Member.objects.get(pk=member_id)
-         start_date = datetime.date(datetime.now()) - timedelta(days=365)
-         end_date = datetime.date(datetime.now())
+         start_date = datetime.date(timezone.now()) - timedelta(days=365)
+         end_date = datetime.date(timezone.now())
          print 'Run info for %s (%s - %s)' % (member, start_date, end_date)
          run = Run(member, start_date, end_date, False)
          run.print_info()
