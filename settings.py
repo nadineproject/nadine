@@ -29,7 +29,8 @@ DEBUG = False
 # although not all variations may be possible on all operating systems.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = 'America/Vancouver'
+TIME_ZONE = 'America/Los_Angeles'
+USE_TZ = True
 
 # Language code for this installation. All choices can be found here:
 # http://www.w3.org/TR/REC-html40/struct/dirlang.html#langcodes
@@ -109,10 +110,6 @@ INSTALLED_APPS = (
 	'arpwatch',
 	'tablet',
 )
-
-# New Django 1.4 timezone support
-USE_TZ = True
-TIME_ZONE="America/Los_Angeles"
 
 #
 # Celery initialization
