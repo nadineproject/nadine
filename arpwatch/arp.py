@@ -66,9 +66,9 @@ def import_all():
 			continue
 		runtime_str = file_name.lstrip(settings.ARP_ROOT)
 		runtime_str = runtime_str.lstrip("arp-").rstrip(".txt")
-		runtime = datetime.strptime(runtime_str, "%y%m%d-%H%M")
+		runtime = timezone.make_aware(datetime.strptime(runtime_str, "%y%m%d-%H%M"), timezone.get_current_timezone())
 		full_path = settings.ARP_ROOT + file_name
-		file = default_storage.open(full_path)
+		file = default_storage.open(full_path)	
 		log_message("importing %s" % file_name)
 		ImportLog.objects.create(file_name=file_name, success=False)
 		import_file(file, runtime)
