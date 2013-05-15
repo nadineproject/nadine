@@ -115,7 +115,7 @@ def day_is_complete(day_str):
 	return True
 	
 def here_today():
-	now = timezone.now()
+	now = timezone.localtime(timezone.now())
 	here_today = {}
 	counts = {}
 

@@ -106,7 +106,7 @@ class Run:
 		if len(self.days) == 0: return 'Run for %s' % self.member
 		return 'Run for %s (%s / %s)' % (self.member, self.days[0].date, self.days[len(self.days) - 1].date)
 
-def run_billing(bill_time=timezone.now()):
+def run_billing(bill_time=timezone.localtime(timezone.now())):
 	"""Generate billing records for every member who deserves it."""
 	bill_date = datetime.date(bill_time)
 	print "Running billing for %s" % bill_date
