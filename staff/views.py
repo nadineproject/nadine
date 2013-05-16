@@ -12,6 +12,7 @@ from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
+from django.db.models import Sum
 
 import settings
 from models import *
@@ -131,6 +132,18 @@ def bills(request):
 	members = Member.objects.filter(models.Q(bills__isnull=False, bills__transactions=None, bills__paid_by__isnull=True) | models.Q(guest_bills__isnull=False, guest_bills__transactions=None)).distinct().order_by('user__last_name')
 	invalids = Member.objects.active_members().filter(valid_billing=False)	
 	return render_to_response('staff/bills.html', { "members":members, 'page_message':page_message, 'invalid_members':invalids }, context_instance=RequestContext(request))
+
+@staff_member_required
+def bill_list(request):
+	start, end = date_range_from_request(request)
+	date_range_form = DateRangeForm({START_DATE_PARAM:start, END_DATE_PARAM:end })
+	starteo = timeo.strptime(start, "%Y-%m-%d")
+	start_date = date(year=starteo.tm_year, month=starteo.tm_mon, day=starteo.tm_mday)
+	endeo = timeo.strptime(end, "%Y-%m-%d")
+	end_date = date(year=endeo.tm_year, month=endeo.tm_mon, day=endeo.tm_mday)
+	bills = Bill.objects.filter(created__range=(start_date, end_date), amount__gt=0).order_by('created')
+	total_amount = bills.aggregate(s=Sum('amount'))['s']
+	return render_to_response('staff/bill_list.html', {'bills':bills, 'total_amount':total_amount, 'date_range_form':date_range_form, 'start_date':start_date, 'end_date':end_date }, context_instance=RequestContext(request))
 
 @staff_member_required
 def toggle_billing_flag(request, member_id):
