@@ -124,6 +124,7 @@ CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
 CELERY_DISABLE_RATE_LIMITS = True
 CELERY_RESULT_BACKEND = "amqp"
 BROKER_URL = "amqp://guest:guest@localhost:5672//"
+CELERY_TIMEZONE = 'America/Los_Angeles'
 
 # When this is True, celery tasks will be run synchronously.
 # This is nice when running unit tests or in development.
