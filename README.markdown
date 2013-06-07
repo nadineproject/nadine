@@ -33,11 +33,11 @@ Both Django and South have excellent documentation, so check there if you run in
 
 At this point you will need to populate the django_sites database. We will assume you only have Nadine in the database you have created.
 
-    ./manage.py shell
->>> from django.contrib.sites.models import Site
->>> newsite = Site(name="Nadine",domain="nadine.com")
->>> newsite.save()
-Ctrl+D
+	./manage.py shell
+	>>> from django.contrib.sites.models import Site
+	>>> newsite = Site(name="Nadine",domain="nadine.com")
+	>>> newsite.save()
+	Ctrl+D
 
 At this point you can run the server
 
