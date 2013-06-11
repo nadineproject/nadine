@@ -14,6 +14,10 @@ from django.utils import timezone
 from taggit.managers import TaggableManager
 from taggit.models import TaggedItemBase
 
+from south.modelsinspector import add_introspection_rules
+add_introspection_rules([], ["^django_localflavor_us\.models\.USStateField"])
+add_introspection_rules([], ["^django_localflavor_us\.models\.PhoneNumberField"])
+
 GENDER_CHOICES = (
 	('U', 'Unknown'),
 	('M', 'Male'),
@@ -513,6 +517,7 @@ class Onboard_Task_Completed(models.Model):
 
 class SentEmailLog(models.Model):
 	created = models.DateTimeField(auto_now_add=True)
+	member = models.ForeignKey('Member', null=True)
 	recipient = models.EmailField()
 	subject = models.CharField(max_length=128, blank=True, null=True)
 	success = models.NullBooleanField(blank=False, null=False, default=False)

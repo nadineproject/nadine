@@ -110,8 +110,15 @@ def send_email(recipient, subject, message, fail_silently):
 			pass
 		raise
 	finally:
+		member = None
 		try:
-			log = SentEmailLog(recipient=recipient, subject=subject, success=success)
+			members = Member.objects.filter(user__email=recipient)
+			if len(members) == 1:
+				member = members[0]
+		except:
+			pass
+		try:
+			log = SentEmailLog(member=member, recipient=recipient, subject=subject, success=success)
 			if note:
 				log.note = note
 			log.save()
