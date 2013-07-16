@@ -16,7 +16,7 @@ from staff.models import Member, Membership, Transaction, DailyLog
 from forms import EditProfileForm
 from interlink.forms import MailingListSubscriptionForm
 from interlink.models import IncomingMail
-from models import HelpText
+from models import HelpText, UserNotification
 from arpwatch import arp
 from arpwatch.models import ArpLog
 
@@ -166,6 +166,25 @@ def delete_tag(request, username, tag):
 		if not request.user.is_staff: return HttpResponseRedirect(reverse('members.views.user', kwargs={'username':request.user.username}))
 	user.get_profile().tags.remove(tag)
 	return HttpResponseRedirect(reverse('members.views.user_tags', kwargs={'username':request.user.username}))
+
+@login_required
+def notifications(request):
+	notifications = UserNotification.objects.filter(notify_user=request.user, sent_date__isnull=True)
+	return render_to_response('members/notifications.html',{'notifications':notifications}, context_instance=RequestContext(request))
+
+@login_required
+def add_notification(request, username):
+	target = get_object_or_404(User, username=username)
+	if UserNotification.objects.filter(notify_user=request.user, target_user=target).count() == 0:
+		UserNotification.objects.create(notify_user=request.user, target_user=target)	
+	return HttpResponseRedirect(reverse('members.views.notifications', kwargs={}))
+
+@login_required
+def delete_notification(request, username):
+	target = get_object_or_404(User, username=username)
+	for n in UserNotification.objects.filter(notify_user=request.user, target_user=target):
+		n.delete()
+	return HttpResponseRedirect(reverse('members.views.notifications', kwargs={}))
 
 def ticker(request):
 	here_today = arp.here_today()

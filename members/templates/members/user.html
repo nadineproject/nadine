@@ -21,12 +21,18 @@
 	</dl>
 {% endif %}
 
-	<dl>
-		<dt>Profile Tags:</dt>
-		{% for tag in member.tags.all %}
-			<dd><a href="{% url 'members.views.tag' tag %}">{{ tag }}</a></dd>
-		{% endfor %}
-	</dl>
+<dl>
+	<dt>Profile Tags:</dt>
+	{% for tag in member.tags.all %}
+		<dd><a href="{% url 'members.views.tag' tag %}">{{ tag }}</a></dd>
+	{% endfor %}
+</dl>
+
+{% if user.username != request.user.username %}
+	<div style="margin:1em;">
+		[ <a href="{% url 'members.views.add_notification' user %}">Notify me the next time we are both in the space</a> ]
+	</div>
+{% endif %}
 
 {% if user.username == request.user.username or request.user.is_staff %}
 	<div class="clearfix"></div>

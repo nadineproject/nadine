@@ -1,0 +1,11 @@
+{% load i18n %}{% autoescape off %}
+{{ user.first_name }}, 
+
+You asked to be notified when both you and {{ target.get_full_name }} were in the space and that's right now!  
+
+http://{{ site.domain }}{% url 'members.views.user' target.username %}
+
+Thanks!
+The {{ site.name }} Team
+
+{% endautoescape %}
