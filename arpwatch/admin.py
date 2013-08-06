@@ -3,7 +3,19 @@ from django.contrib import admin
 from models import *
 
 # Register the objects with the admin interface
-admin.site.register(ArpLog)
-admin.site.register(UserDevice)
 admin.site.register(ImportLog)
-admin.site.register(UserRemoteAddr)
+
+class ArpLogAdmin(admin.ModelAdmin):
+	list_display = ('runtime', 'device', 'ip_address')
+	search_fields = ('ip_address', )
+admin.site.register(ArpLog, ArpLogAdmin)
+
+class UserDeviceAdmin(admin.ModelAdmin):
+	list_display = ('mac_address', 'user', 'device_name', 'ignore')
+	search_fields = ('mac_address', 'user__username')
+admin.site.register(UserDevice, UserDeviceAdmin)
+
+class UserRemoteAddrAdmin(admin.ModelAdmin):
+	list_display = ('logintime', 'user', 'ip_address')
+	search_fields = ('ip_address', 'user__username')
+admin.site.register(UserRemoteAddr, UserRemoteAddrAdmin)
