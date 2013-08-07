@@ -12,10 +12,10 @@ from staff.models import Member, DailyLog
 
 def register_user_ip(user, ip):
 	print("REMOTE_ADDR for %s: %s" % (user, ip))
-	ip_log = UserRemoteAddr.objects.create(logintime=timezone.now(), user=user, ip_address=ip)
+	ip_log = UserRemoteAddr.objects.create(logintime=timezone.localtime(timezone.now()), user=user, ip_address=ip)
 
 def map_ip_to_mac(hours):
-	end_ts = timezone.now()
+	end_ts = timezone.localtime(timezone.now())
 	start_ts = end_ts - timedelta(hours=hours)
 	ip_logs = UserRemoteAddr.objects.filter(logintime__gte=start_ts, logintime__lte=end_ts)
 	for i in ip_logs:
@@ -38,16 +38,16 @@ def import_dir_locked():
 	return default_storage.exists(settings.ARP_IMPORT_LOCK)
 
 def lock_import_dir():
-	msg = "locked: %s" % timezone.now()
+	msg = "locked: %s" % timezone.localtime(timezone.now())
 	default_storage.save(settings.ARP_IMPORT_LOCK, ContentFile(msg))
 
 def unlock_import_dir():
 	default_storage.delete(settings.ARP_IMPORT_LOCK)
 
 def log_message(msg):
-	log = "%s: %s\r\n" % (timezone.now(), msg)
+	log = "%s: %s\r\n" % (timezone.localtime(timezone.now()), msg)
 	if not default_storage.exists(settings.ARP_IMPORT_LOG):
-		log = "%s: Log Started\r\n%s" % (timezone.now(), log)
+		log = "%s: Log Started\r\n%s" % (timezone.localtime(timezone.now()), log)
 	log_file = default_storage.open(settings.ARP_IMPORT_LOG, mode="a")
 	log_file.write(log)
 	log_file.close()

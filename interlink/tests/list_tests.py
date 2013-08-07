@@ -56,7 +56,7 @@ class ListTest(TestCase):
 							  origin_address='bob@example.com',
 							  subject='ahoi 3',
 							  body='I like traffic lights',
-							  sent_time=timezone.now() - timedelta(minutes=15))
+							  sent_time=timezone.localtime(timezone.now()) - timedelta(minutes=15))
 
 		IncomingMail.objects.process_incoming()
 		outgoing = OutgoingMail.objects.all()
@@ -68,7 +68,7 @@ class ListTest(TestCase):
 							  origin_address='alice@example.com',
 							  subject='ahoi 4',
 							  body='Who are you. Who who who who.',
-							  sent_time=timezone.now() - timedelta(minutes=10))
+							  sent_time=timezone.localtime(timezone.now()) - timedelta(minutes=10))
 
 		IncomingMail.objects.process_incoming()
 		outgoing = OutgoingMail.objects.all()
@@ -86,7 +86,7 @@ class ListTest(TestCase):
 							  origin_address='unknownperson@example.com',
 							  subject='ahoi 3',
 							  body='I like traffic lights.',
-							  sent_time=timezone.now() - timedelta(minutes=15))
+							  sent_time=timezone.localtime(timezone.now()) - timedelta(minutes=15))
 		IncomingMail.objects.process_incoming()
 		incoming = IncomingMail.objects.get(pk=incoming.pk)
 		self.assertEqual(incoming.state, 'moderate')
@@ -113,7 +113,7 @@ class ListTest(TestCase):
 							  origin_address='bob@example.com',
 							  subject='This is a freaking auto-reply message',
 							  body='just a stupid message that should get bonked',
-							  sent_time=timezone.now() - timedelta(minutes=15))
+							  sent_time=timezone.localtime(timezone.now()) - timedelta(minutes=15))
 		IncomingMail.objects.process_incoming()
 		incoming = IncomingMail.objects.get(pk=incoming.pk)
 		self.assertEqual(incoming.state, 'moderate')
@@ -155,7 +155,7 @@ class ListTest(TestCase):
 							  origin_address='bob@example.com',
 							  subject='ahoi 3',
 							  body='I like traffic lights.',
-							  sent_time=timezone.now() - timedelta(minutes=15))
+							  sent_time=timezone.localtime(timezone.now()) - timedelta(minutes=15))
 
 		IncomingMail.objects.process_incoming()
 		outgoing = OutgoingMail.objects.all()[0]
@@ -189,7 +189,7 @@ class ListTest(TestCase):
 							  origin_address='bogus@example.com',
 							  subject='ahoi 1',
 							  body='I like traffic lights.',
-							  sent_time=timezone.now() - timedelta(minutes=15))
+							  sent_time=timezone.localtime(timezone.now()) - timedelta(minutes=15))
 
 		self.assertEqual(incoming.state, 'raw')
 		IncomingMail.objects.process_incoming()
@@ -214,7 +214,7 @@ class ListTest(TestCase):
 							  origin_address='alice@example.com',
 							  subject='ahoi 1',
 							  body='I like traffic lights.',
-							  sent_time=timezone.now() - timedelta(minutes=15))
+							  sent_time=timezone.localtime(timezone.now()) - timedelta(minutes=15))
 		self.assertEqual(incoming.state, 'raw')
 		IncomingMail.objects.process_incoming()
 		self.assertEqual(OutgoingMail.objects.count(), 2)
@@ -228,7 +228,7 @@ class ListTest(TestCase):
 							  origin_address='bob@example.com',
 							  subject='ahoi 3',
 							  body='I like traffic lights.',
-							  sent_time=timezone.now() - timedelta(minutes=15))
+							  sent_time=timezone.localtime(timezone.now()) - timedelta(minutes=15))
 
 		self.assertEqual(incoming.state, 'raw')
 		IncomingMail.objects.process_incoming()
@@ -397,7 +397,7 @@ This email has no content type
 							  origin_address=self.user2.email,
 							  subject='ahoi 1',
 							  body='This will go through',
-							  sent_time=timezone.now())
+							  sent_time=timezone.localtime(timezone.now()))
 
 		IncomingMail.objects.process_incoming()
 		OutgoingMail.objects.send_outgoing()
@@ -408,12 +408,12 @@ This email has no content type
 							  origin_address=self.user2.email,
 							  subject='ahoi 2',
 							  body='This will go through as well',
-							  sent_time=timezone.now())
+							  sent_time=timezone.localtime(timezone.now()))
 		_incoming3 = IncomingMail.objects.create(mailing_list=self.mlist1,
 							  origin_address=self.user2.email,
 							  subject='ahoi 3',
 							  body='This will NOT go through',
-							  sent_time=timezone.now())
+							  sent_time=timezone.localtime(timezone.now()))
 		IncomingMail.objects.process_incoming()
 		OutgoingMail.objects.send_outgoing()
 		self.assertEqual(2, len(mail.outbox))
@@ -427,7 +427,7 @@ This email has no content type
 		# Change #1 send time to be earlier (beyond the hour)
 		# Send again -- this time #3 will go through
 		outgoing1 = OutgoingMail.objects.get(original_mail=incoming1)
-		outgoing1.sent = timezone.now() - timedelta(hours=2)
+		outgoing1.sent = timezone.localtime(timezone.now()) - timedelta(hours=2)
 		outgoing1.save()
 
 		OutgoingMail.objects.send_outgoing()

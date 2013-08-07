@@ -30,7 +30,7 @@ class ActivityModel(object):
 	The object which will hold the activity data to serve up via ActivityResource
 	'''
 	def __init__(self):
-		now = timezone.now()
+		now = timezone.localtime(timezone.now())
 		midnight = now - timedelta(seconds=now.hour*60*60 + now.minute*60 + now.second) - timedelta(minutes=1)
 		# These are the values which are directly exposed via the ActivityModel
 		members = Member.objects.active_members()

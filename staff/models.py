@@ -258,7 +258,7 @@ class Member(models.Model):
 	def member_since(self):
 		first = self.first_visit()
 		if first == None: return None
-		return timezone.now() - datetime.combine(first, time(0,0,0))
+		return timezone.localtime(timezone.now()) - datetime.combine(first, time(0,0,0))
 
 	def last_visit(self):
 		if DailyLog.objects.filter(member=self).count() > 0:
@@ -352,7 +352,7 @@ class DailyLog(models.Model):
 	guest_of = models.ForeignKey(Member, verbose_name="Guest Of", related_name="guest_of", blank=True, null=True)
 	note = models.CharField("Note", max_length=128, blank="True")
 
-	created = models.DateTimeField(auto_now_add=True, default=timezone.now())
+	created = models.DateTimeField(auto_now_add=True, default=timezone.localtime(timezone.now()))
 
 	def __str__(self):
 		return '%s - %s' % (self.visit_date, self.member)

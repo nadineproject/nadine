@@ -189,7 +189,7 @@ def delete_notification(request, username):
 def ticker(request):
 	here_today = arp.here_today()
 	
-	now = timezone.now()
+	now = timezone.localtime(timezone.now())
 	midnight = now - timedelta(seconds=now.hour*60*60 + now.minute*60 + now.second)
 	device_logs = ArpLog.objects.for_range(midnight, now)
 	

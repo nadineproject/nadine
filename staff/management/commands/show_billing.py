@@ -23,8 +23,8 @@ class Command(BaseCommand):
       member_id = int(labels[0])
       try:
          member = Member.objects.get(pk=member_id)
-         start_date = datetime.date(timezone.now()) - timedelta(days=365)
-         end_date = datetime.date(timezone.now())
+         start_date = timezone.localtime(timezone.now()) - timedelta(days=365)
+         end_date = timezone.localtime(timezone.now())
          print 'Run info for %s (%s - %s)' % (member, start_date, end_date)
          run = Run(member, start_date, end_date, False)
          run.print_info()

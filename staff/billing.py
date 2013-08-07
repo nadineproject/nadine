@@ -184,7 +184,7 @@ def run_billing(bill_time=timezone.localtime(timezone.now())):
 	except:
 		billing_log.note = traceback.format_exc()
 	finally:
-		billing_log.ended = timezone.now()
+		billing_log.ended = timezone.localtime(timezone.now())
 		billing_log.successful = billing_success
 		billing_log.save()
 		#print 'Completed billing %s' % billing_success

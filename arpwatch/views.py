@@ -56,8 +56,7 @@ def device(request, id):
 
 @staff_member_required
 def device_logs_today(request):
-	# Kinda clunky but it works
-	now = timezone.now()
+	now = timezone.localtime(timezone.now())
 	return device_logs_by_day(request, str(now.year), str(now.month), str(now.day));
 
 @staff_member_required
@@ -71,7 +70,7 @@ def device_logs_by_day(request, year, month, day):
 
 @staff_member_required
 def logins_today(request):
-	now = timezone.now()
+	now = timezone.localtime(timezone.now())
 	return logins_by_day(request, str(now.year), str(now.month), str(now.day));
 
 def logins_by_day(request, year, month, day):
