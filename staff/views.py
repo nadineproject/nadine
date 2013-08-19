@@ -427,8 +427,9 @@ def p(p, w):
 @staff_member_required
 def member_detail(request, member_id):
 	member = get_object_or_404(Member, pk=member_id)
-	daily_logs = DailyLog.objects.filter(member=member).order_by('visit_date').reverse()
+	#daily_logs = DailyLog.objects.filter(member=member).order_by('visit_date').reverse()
 	memberships = Membership.objects.filter(member=member).order_by('start_date').reverse()
+	email_logs = SentEmailLog.objects.filter(member=member).order_by('created')
 
 	if request.method == 'POST':
 		if 'save_onboard_task' in request.POST:
@@ -440,7 +441,7 @@ def member_detail(request, member_id):
 		else:
 			print request.POST
 
-	return render_to_response('staff/member_detail.html', { 'member':member, 'settings':settings}, context_instance=RequestContext(request))
+	return render_to_response('staff/member_detail.html', { 'member':member, 'memberships':memberships, 'email_logs':email_logs, 'settings':settings}, context_instance=RequestContext(request))
 
 def date_range_from_request(request):
 	# Pull the Start Date param

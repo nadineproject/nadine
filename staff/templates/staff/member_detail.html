@@ -213,7 +213,7 @@ function gotoEmailReset(emailAddress){
 			<th>Notes</th> 
 		</tr>
 
-		{% for membership in member.memberships.all reversed %}
+		{% for membership in memberships %}
 			<tr class="{% cycle 'row-even' 'row-odd' %}">
 				<td>{{ membership.membership_plan }}</td>
 				<td><a href="{{ membership.get_admin_url }}">{{ membership.start_date }}</a></td>
@@ -253,7 +253,36 @@ function gotoEmailReset(emailAddress){
 	[ <a href="https://secure.usaepay.com/interface/epayform/{{ settings.USA_EPAY_KEY }}/?UMdescription=Office%20Nomads%20Billing%20Authorization&UMcustid={{ member.user.username }}&UMcommand=AuthOnly&UMamount=1.00&UMaddcustomer=yes&UMschedule=disabled">payment link</a> ]
 </div>
 
-
+<!-- Email Logs -->
+<h2>Email Logs</h2>
+<div>
+{% if email_logs %}
+	<table>
+		<tr><th>Sent</th><th align="left">Subject</th></tr>
+		{% for log in email_logs %}
+			<tr {% if not log.success %} style="color:red;" {% endif %}>
+				<td nowrap>{{ log.created }}</td>
+				<td>{{ log.subject }}</td>
+			</tr>
+		{% endfor %}
+	</table>
+{% else %}
+	<p>No email logs.</p>
+{% endif %}
+<!--
+<div style="margin:1em;">
+<form action="." method="POST">
+	<strong>Manually Send Email: </strong>
+	<input name="member_id" value="{{ member.id }}" type="hidden" />
+	<select>
+		<option>Introduction</option>
+	</select>
+	<input type="submit" Value="Send" />
+	{% csrf_token %}
+</form>
+</div>
+-->
+</div>
 
 <!-- Onboarding Tasks -->
 <h2>Onboard Tasks</h2>
