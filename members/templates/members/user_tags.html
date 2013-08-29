@@ -22,7 +22,6 @@
 {% endblock %}
 
 {% block content %}
-
 	<h2>Profile Tags for: {{ user }}</h2>
 	<ul>
 		{% for t in user_tags %}
@@ -40,4 +39,9 @@
 		{% csrf_token %}
 	</form>
 	</div>
+	
+	{% if error %}
+		<div style="color:red;"><strong>Error:</strong> {{ error }}</div>
+	{% endif %}
+	
 {% endblock %}

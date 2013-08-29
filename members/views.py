@@ -1,4 +1,4 @@
-import traceback
+import traceback, string
 from datetime import date, datetime, timedelta
 from operator import itemgetter, attrgetter
 
@@ -151,13 +151,19 @@ def user_tags(request, username):
 	profile = user.get_profile()
 	user_tags = profile.tags.all()
 	
+	error = None
 	if request.method == 'POST':
 		tag = request.POST.get('tag')
 		if tag:
-			profile.tags.add(tag.lower())
+			for p in string.punctuation:
+				if p in tag:
+					error = "Tags can't contain punctuation."
+					break;
+			else:
+				profile.tags.add(tag.lower())
 
 	all_tags = Member.tags.all()
-	return render_to_response('members/user_tags.html',{'user':user, 'user_tags':user_tags, 'all_tags':all_tags}, context_instance=RequestContext(request))
+	return render_to_response('members/user_tags.html',{'user':user, 'user_tags':user_tags, 'all_tags':all_tags, 'error':error}, context_instance=RequestContext(request))
 
 @login_required
 def delete_tag(request, username, tag):
