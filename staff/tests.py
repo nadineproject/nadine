@@ -56,27 +56,45 @@ class UtilsTest(TestCase):
 class TasksTestCase(TestCase):
 
 	def setUp(self):
-		residentPlan = MembershipPlan(name="Resident",monthly_rate="475",dropin_allowance="5",daily_rate="20",deposit_amount="500",has_desk=True)
+		residentPlan = MembershipPlan(name="Resident",monthly_rate="475",dropin_allowance="5",daily_rate="20",deposit_amount="500")
+		basicPlan = MembershipPlan(name="Basic",monthly_rate="25",dropin_allowance="1",daily_rate="20",deposit_amount="500")
 		
 		self.user1 = User.objects.create(username='member_one', first_name='Member', last_name='One')
-		Membership.objects.create(member=self.user1.get_profile(), membership_plan=residentPlan, start_date=date(2008, 6, 26))
+		Membership.objects.create(member=self.user1.get_profile(), membership_plan=residentPlan, start_date=date(2008, 6, 26), has_desk=True)
 
 		self.user2 = User.objects.create(username='member_two', first_name='Member', last_name='Two')
-		Membership.objects.create(member=self.user2.get_profile(), membership_plan=residentPlan, start_date=date(2008, 6, 26), end_date=(date.today() - timedelta(days=1)))
+		Membership.objects.create(member=self.user2.get_profile(), membership_plan=residentPlan, start_date=date(2008, 6, 26), end_date=(date.today() - timedelta(days=1)), has_desk=True)
 
-		self.on_task_1 = Onboard_Task.objects.create(name="Welcome Coffee Mug", order=1, description="Print a coffee mug", monthly_only=True)
-		self.on_task_2 = Onboard_Task.objects.create(name="Entry Tat", order=2, description="Tattoo a bar code on the neck.", monthly_only=False)
+		self.user3 = User.objects.create(username='member_three', first_name='Member', last_name='Three')
+		Membership.objects.create(member=self.user3.get_profile(), membership_plan=basicPlan, start_date=date(2008, 6, 26))
 
-		self.exit_task_1 = ExitTask.objects.create(name="Exit Shaming", order=1, description="The parade of shame.")
-		self.exit_task_2 = ExitTask.objects.create(name="Break Coffee Mug", order=2, description="Crush the member's coffee mug.")
+		self.user4 = User.objects.create(username='member_four', first_name='Member', last_name='Four')
+		Membership.objects.create(member=self.user4.get_profile(), membership_plan=basicPlan, start_date=date(2008, 6, 26), end_date=(date.today() - timedelta(days=1)))
+
+		self.on_task_1 = Onboard_Task.objects.create(name="Give Desk", order=1, description="Give the member a desk.", has_desk_only=True)
+		self.on_task_2 = Onboard_Task.objects.create(name="Entry Tat", order=2, description="Tattoo a bar code on the neck.", has_desk_only=False)
+
+		self.exit_task_1 = ExitTask.objects.create(name="Exit Shaming", order=1, description="The parade of shame.", has_desk_only=False)
+		self.exit_task_2 = ExitTask.objects.create(name="Clean Desk", order=2, description="Clean the member's old desk.", has_desk_only=True)
 
 
 	def testTasks(self):
 		self.assertEqual(Onboard_Task_Completed.objects.filter(member=self.user1.profile).count(), 0)
 		self.assertEqual(ExitTaskCompleted.objects.filter(member=self.user1.profile).count(), 0)
 
+		self.assertTrue(self.user1.profile.is_active())
+		self.assertFalse(self.user2.profile.is_active())
+		self.assertTrue(self.user3.profile.is_active())
+		self.assertFalse(self.user4.profile.is_active())
+		self.assertTrue(self.user1.profile.has_desk())
+		self.assertTrue(self.user2.profile.has_desk())
+		self.assertFalse(self.user3.profile.has_desk())
+		self.assertFalse(self.user4.profile.has_desk())
+
 		self.assertTrue(self.user1.profile in self.on_task_1.uncompleted_members())
 		self.assertFalse(self.user2.profile in self.on_task_1.uncompleted_members()) # ended memberships don't require onboard tasks
+		self.assertFalse(self.user3.profile in self.on_task_1.uncompleted_members()) # doesn't have a desk
+		self.assertFalse(self.user4.profile in self.on_task_1.uncompleted_members()) # doesn't have a desk
 
 		Onboard_Task_Completed.objects.create(member=self.user1.profile, task=self.on_task_1)
 		self.assertFalse(self.user1.profile in self.on_task_1.uncompleted_members())

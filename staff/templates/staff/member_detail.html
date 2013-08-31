@@ -11,7 +11,7 @@ caption { font-weight: bold; font-size: 1.4em; margin-bottom: 10px; }
 .member-photo { width: 170px; text-align: center; margin: 10px 10px; padding-top: 10px;}
 #content td, #content th { padding-left: 20px; }
 
-#onboard-form, #exit-form { margin-bottom: 60px; width: 400px; }
+#onboard-form, #exit-form { width: 400px; }
 #onboard-form td, #exit-form td { white-space: nowrap; }
 #onboard-form th, #exit-form th { text-align: left; }
 
@@ -286,10 +286,10 @@ function gotoEmailReset(emailAddress){
 
 <!-- Onboarding Tasks -->
 <h2>Onboard Tasks</h2>
-{% if member.onboard_tasks_to_complete %}
-	<table id="onboard-form">
-		<tr><th>Task</th><th>Completed</th></tr>
-		{% for task, completed in member.onboard_tasks_status %}
+<table id="onboard-form">
+	<tr><th>Task</th><th>Completed</th></tr>
+	{% for task, completed in member.onboard_tasks_status %}
+	{% if not task.has_desk_only or member.has_desk %}
 		<tr>
 			<td>{{ task.name }}</td>
 			<td>
@@ -304,11 +304,9 @@ function gotoEmailReset(emailAddress){
 				{% endif %}
 			</td>
 		</tr>
-		{% endfor %}
-	</table>
-{% else %}
-	<p>No onboard tasks remain.</p>
-{% endif %}
+		{% endif %}
+	{% endfor %}
+</table>
 
 <!-- Exit Tasks -->
 {% if member.qualifies_for_exit_tasks %}
@@ -317,20 +315,22 @@ function gotoEmailReset(emailAddress){
 		<table id="exit-form">
 			<tr><th>Task</th><th>Completed</th></tr>
 			{% for task, completed in member.exit_tasks_status %}
-			<tr>
-				<td>{{ task.name }}</td>
-				<td>
-					{% if completed %}
-						{{ completed.completed_date }}
-					{% else %}
-						<form  action="." method="POST">
-							<input name="task_id" value="{{ task.id }}" type="hidden" />
-							<input name="save_exit_task" type="submit" Value="Done" />
-							{% csrf_token %}
-						</form>
-					{% endif %}
-				</td>
-			</tr>
+				{% if not task.has_desk_only or member.has_desk %}
+				<tr>
+					<td>{{ task.name }}</td>
+					<td>
+						{% if completed %}
+							{{ completed.completed_date }}
+						{% else %}
+							<form  action="." method="POST">
+								<input name="task_id" value="{{ task.id }}" type="hidden" />
+								<input name="save_exit_task" type="submit" Value="Done" />
+								{% csrf_token %}
+							</form>
+						{% endif %}
+					</td>
+				</tr>
+				{% endif %}
 			{% endfor %}
 		</table>
 	{% else %}

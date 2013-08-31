@@ -165,7 +165,7 @@ class Member(models.Model):
 	"""A person who has used the space and may or may not have a monthly membership"""
 	objects = MemberManager()
 
-	user = models.ForeignKey(User, unique=True, blank=False)
+	user = models.ForeignKey(User, unique=True, blank=False, related_name="user")
 	email2 = models.EmailField("Alternate Email", blank=True, null=True)
 	phone = PhoneNumberField(blank=True, null=True)
 	phone2 = PhoneNumberField("Alternate Phone", blank=True, null=True)
@@ -184,6 +184,7 @@ class Member(models.Model):
 	url_github = models.URLField(blank=True, null=True)
 	gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default="U")
 	howHeard = models.ForeignKey(HowHeard, blank=True, null=True)
+	#referred_by = models.ForeignKey(User, verbose_name="Referred By", related_name="referred_by", blank=True, null=True)
 	industry = models.ForeignKey(Industry, blank=True, null=True)
 	neighborhood = models.ForeignKey(Neighborhood, blank=True, null=True)
 	has_kids = models.NullBooleanField(blank=True, null=True)
@@ -292,6 +293,11 @@ class Member(models.Model):
 		last_log = self.last_membership()
 		if  not last_log: return False
 		return last_log.end_date == None or last_log.end_date >= date.today()
+
+	def has_desk(self):
+		last_log = self.last_membership()
+		if  not last_log: return False
+		return last_log.has_desk
 
 	def onboard_tasks_status(self):
 		"""
@@ -444,9 +450,13 @@ class ExitTask(models.Model):
 	name = models.CharField(max_length=64)
 	description = models.CharField(max_length=512)
 	order = models.SmallIntegerField()
+	has_desk_only = models.BooleanField(verbose_name="Only Applies to Members with Desks")
 
 	def uncompleted_members(self):
-		return [member for member in Member.objects.filter(memberships__isnull=False).exclude(exittaskcompleted__task=self).distinct() if not member.is_active()]
+		eligable_members = [member for member in Member.objects.filter(memberships__isnull=False).exclude(exittaskcompleted__task=self).distinct() if not member.is_active()]
+		if self.has_desk_only:
+			eligable_members = [member for member in eligable_members if member.has_desk()]
+		return eligable_members
 
 	def completed_members(self):
 		return Member.objects.filter(memberships__end_date__gt=date.today()).filter(exittaskcompleted__task=self).distinct()
@@ -477,13 +487,13 @@ class Onboard_Task(models.Model):
 	name = models.CharField(max_length=64)
 	description = models.CharField(max_length=512)
 	order = models.SmallIntegerField()
-	monthly_only = models.BooleanField()
+	has_desk_only = models.BooleanField(verbose_name="Only Applies to Members with Desks")
 
 	def uncompleted_members(self):
-		if self.monthly_only:
-			eligable_members = Member.objects.filter(memberships__start_date__isnull=False).filter(Q(memberships__end_date__gt=date.today()) | Q(memberships__end_date__isnull=True))
-		else:
-			eligable_members = Member.objects.all()
+		eligable_members = Member.objects.active_members()
+		if self.has_desk_only:
+			eligable_members = eligable_members.filter(memberships__has_desk=True)
+			print eligable_members	
 		return eligable_members.exclude(onboard_task_completed__task=self).distinct()
 
 	def completed_members(self):

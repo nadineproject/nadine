@@ -9,8 +9,11 @@ nav #todo-tab { background: #FBD850; color: black; }
 {% block content %}
 <h2>Onboard Task: {{ task.name }}</h2>
 
-<p>{{ task.description }}</p>    
-<p>This task only applies to monthly members</p>
+<p>{{ task.description }}</p>  
+
+{% if task.has_desk_only %}  
+	<p><i>This task only applies to members with dedicated desks.</i></p>
+{% endif %}
 
 {% if task.uncompleted_members %}
 	<table>

@@ -11,6 +11,10 @@ nav #todo-tab { background: #FBD850; color: black; }
 
 <p>{{ task.description }}</p>    
 
+{% if task.has_desk_only %}  
+	<p><i>This task only applies to members with dedicated desks.</i></p>
+{% endif %}
+
 {% if task.uncompleted_members %}
 	<!-- Member List -->
 	<div id="members-todo">

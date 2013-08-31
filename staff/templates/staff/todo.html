@@ -15,7 +15,6 @@ nav #todo-tab { background: #FBD850; color: black; }
    <tr>
       <th>Task</th>
       <th>Number remaining</th>
-      <th></th>
    </tr>
 
    {% for task, remaining in onboard_tasks %}
@@ -24,7 +23,7 @@ nav #todo-tab { background: #FBD850; color: black; }
             <a href="{% url 'staff.views.onboard_task' task.id %}">{{ task.name }}</a>
          </td>
          <td>{{ remaining }}</td>
-         <td>{% if task.monthly_only %}monthly only{% endif %}</td>
+         <td></td>
       </tr>
    {% endfor %}
 </table>
