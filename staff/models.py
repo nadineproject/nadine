@@ -445,12 +445,20 @@ class Membership(models.Model):
 		verbose_name_plural = "Memberships"
 		ordering = ['start_date'];
 
+class ExitTaskManager(models.Manager):
+	def uncompleted_count(self):
+		count = 0;
+		for t in ExitTask.objects.all():
+			count += len(t.uncompleted_members())
+		return count
+
 class ExitTask(models.Model):
 	"""Tasks which are to be completed when a monthly member ends their memberships."""
 	name = models.CharField(max_length=64)
 	description = models.CharField(max_length=512)
 	order = models.SmallIntegerField()
 	has_desk_only = models.BooleanField(verbose_name="Only Applies to Members with Desks")
+	objects = ExitTaskManager()
 
 	def uncompleted_members(self):
 		eligable_members = [member for member in Member.objects.filter(memberships__isnull=False).exclude(exittaskcompleted__task=self).distinct() if not member.is_active()]
@@ -482,18 +490,25 @@ class ExitTaskCompleted(models.Model):
 	objects = ExitTaskCompletedManager()
 	def __str__(self): return '%s - %s - %s' % (self.member, self.task, self.completed_date)
 
+class Onboard_Task_Manager(models.Manager):
+	def uncompleted_count(self):
+		count = 0;
+		for t in Onboard_Task.objects.all():
+			count += t.uncompleted_members().count()
+		return count
+
 class Onboard_Task(models.Model):
 	"""Tasks which are to be completed when a new member joins the space."""
 	name = models.CharField(max_length=64)
 	description = models.CharField(max_length=512)
 	order = models.SmallIntegerField()
 	has_desk_only = models.BooleanField(verbose_name="Only Applies to Members with Desks")
+	objects = Onboard_Task_Manager()
 
 	def uncompleted_members(self):
 		eligable_members = Member.objects.active_members()
 		if self.has_desk_only:
 			eligable_members = eligable_members.filter(memberships__has_desk=True)
-			print eligable_members	
 		return eligable_members.exclude(onboard_task_completed__task=self).distinct()
 
 	def completed_members(self):

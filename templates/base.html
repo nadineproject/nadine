@@ -40,7 +40,7 @@
 	</div>
 {% block header %}<header>	
   <nav>
-  <a id="todo-tab" href="{% url 'staff.views.todo' %}">Todo</a>
+  <a id="todo-tab" href="{% url 'staff.views.todo' %}">Todo ({{ todo_count }})</a>
   <a id="members-tab" href="{% url 'staff.views.members' %}">Member List</a>
   <a id="activity-tab" href="{% url 'staff.views.activity' %}">Activity</a>
   <a id="billing-tab" href="{% url 'staff.views.bills' %}">Billing ({{ billing_count }})</a>
