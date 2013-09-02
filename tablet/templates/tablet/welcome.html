@@ -1,0 +1,17 @@
+{% extends "tablet/t_base.html" %}
+
+{%block sub-head %}
+	<!--<META http-equiv="refresh" content="5; URL={% url 'tablet.views.signin' %}">-->
+{% endblock %}
+
+{% block sub-title %}Nadine Tablet | Welcome {% endblock %}
+
+{% block content %}
+	<h2>Welcome {{user.first_name}} {{user.last_name}}!</h2>
+	<div>
+		{{ motd }}
+	</div>
+	<script>
+		setTimeout(function () {window.location.href = "{% url 'tablet.views.signin' %}"; }, {{timeout}}); //will call the function after 5 secs.
+	</script>
+{% endblock %}

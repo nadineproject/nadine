@@ -3,6 +3,7 @@ from django.conf.urls import *
 urlpatterns = patterns('tablet.views',
 	(r'^$', 'signin'),
 	(r'^signin/$', 'signin'),
+	(r'^welcome/(?P<username>[^/]+)$', 'welcome'),
 	(r'^signin/(?P<username>[^/]+)/$', 'user_signin'),
 	(r'^(?P<username>[^/]+)/signin/$', 'signin_user'),
 	(r'^(?P<username>[^/]+)/guestof/(?P<guestof>[^/]+)$', 'signin_user_guest'),
