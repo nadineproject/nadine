@@ -114,6 +114,7 @@ INSTALLED_APPS = (
 	'interlink',
 	'arpwatch',
 	'tablet',
+	'gnotty',
 )
 
 #
@@ -139,6 +140,21 @@ CELERY_ALWAYS_EAGER = False
 #MAILCHIMP_API_KEY="YourMailchimpKey"
 #MAILCHIMP_NEWSLETTER_KEY="YourNewsletter"
 MAILCHIMP_WEBHOOK_KEY="nadine"
+
+# Gnotty Install
+GNOTTY_HTTP_HOST = "127.0.0.1"
+GNOTTY_HTTP_PORT = 8080
+GNOTTY_IRC_HOST = "127.0.0.1"
+GNOTTY_IRC_PORT = 6667
+GNOTTY_IRC_CHANNEL = "#officenomads"
+#GNOTTY_IRC_CHANNEL_KEY - Optional key required to access the IRC channel. string, default: None
+#GNOTTY_BOT_CLASS - Dotted Python path to the IRC client bot class to run. string, default: gnotty.bots.BaseBot
+#GNOTTY_BOT_NICKNAME - IRC nickname the logging client will use. string, default: gnotty
+#GNOTTY_BOT_PASSWORD - Optional IRC password for the bot. string, default: None
+GNOTTY_LOGIN_REQUIRED = True
+#GNOTTY_DAEMON - run in daemon mode. boolean, default: False
+#GNOTTY_PID_FILE - path to write PID file to when in daemon mode. string, default: [tmp]/gnotty-[http-host]-[http-port].pid
+GNOTTY_LOG_LEVEL = "INFO"
 
 # Import the local settings file
 from local_settings import *
