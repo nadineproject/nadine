@@ -115,6 +115,7 @@ class MemberTestCase(TestCase):
 		self.user1 = User.objects.create(username='member_one', first_name='Member', last_name='One')
 		self.profile1 = self.user1.profile
 		self.profile1.neighborhood=self.neighborhood1
+		self.profile1.valid_billing = True
 		self.profile1.save()
 		Membership.objects.create(member=self.user1.get_profile(), membership_plan=self.basicPlan, start_date=date(2008, 2, 26), end_date=date(2010, 6, 25))
 		Membership.objects.create(member=self.user1.get_profile(), membership_plan=self.residentPlan, start_date=date(2010, 6, 26))
@@ -135,6 +136,12 @@ class MemberTestCase(TestCase):
 		self.profile4.save()
 		Membership.objects.create(member=self.user4.get_profile(), membership_plan=self.pt5Plan, start_date=date(2009, 1, 1), end_date=date(2010, 1, 1))
 		
+		self.user5 = User.objects.create(username='member_five', first_name='Member', last_name='Five')
+		self.profile5 = self.user5.profile
+		self.profile5.valid_billing = False
+		self.profile5.save()
+		Membership.objects.create(member=self.user5.get_profile(), membership_plan=self.pt5Plan, start_date=date(2009, 1, 1), guest_of=self.profile1)
+		
 	def testInfoMethods(self):
 		self.assertTrue(self.user1.profile in Member.objects.members_by_plan_id(self.residentPlan.id))
 		self.assertFalse(self.user1.profile in Member.objects.members_by_plan_id(self.basicPlan.id))
@@ -147,6 +154,17 @@ class MemberTestCase(TestCase):
 		self.assertFalse(self.user4.profile in Member.objects.members_by_neighborhood(self.neighborhood1))
 		self.assertTrue(self.user3.profile in Member.objects.members_by_neighborhood(self.neighborhood1, active_only=False))
 		self.assertTrue(self.user4.profile in Member.objects.members_by_neighborhood(self.neighborhood1, active_only=False))
+	
+	def testValidBilling(self):
+		# Member 1 has valid billing
+		self.assertTrue(self.user1.profile.valid_billing)
+		self.assertTrue(self.user1.profile.has_valid_billing())
+		# Member 2 does not have valid billing
+		self.assertFalse(self.user2.profile.valid_billing)
+		self.assertFalse(self.user2.profile.has_valid_billing())
+		# Member 5 does not have valid billing but is a guest of Member 1
+		self.assertFalse(self.user5.profile.valid_billing)
+		self.assertTrue(self.user5.profile.has_valid_billing())
 
 class BillingTestCase(TestCase):
 

@@ -304,9 +304,8 @@ class Member(models.Model):
 	def has_valid_billing(self):
 		m = self.last_membership()
 		if m and m.is_active() and m.guest_of:
-			return m.guest_of.valid_billing
-		return valid_billing
-		
+			return m.guest_of.has_valid_billing()
+		return self.valid_billing
 
 	def onboard_tasks_status(self):
 		"""
