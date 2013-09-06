@@ -1,6 +1,6 @@
 {% load i18n %}{% autoescape off %}
 
-Profile:  http://{{ site.domain }}{% url 'members.views.user' user.username %}
+Profile:  https://{{ site.domain }}{% url 'members.views.user' user.username %}
 
 -- Nadine
 {% endautoescape %}
