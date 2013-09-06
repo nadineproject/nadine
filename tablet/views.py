@@ -10,7 +10,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.sites.models import Site
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
-
+from django.utils import timezone
 from staff.models import Member, DailyLog, Bill
 from staff.forms import NewUserForm, MemberSearchForm
 from arpwatch import arp
@@ -93,8 +93,8 @@ def user_signin(request, username):
 			if not DailyLog.objects.filter(member=member, visit_date=datetime.today().date()):
 			 	can_signin = True
 
-	activity = DailyLog.objects.filter(member=member, payment='Bill', bills__isnull=True, visit_date__gt=date.today()-timedelta(days=31))
-	guest_activity = DailyLog.objects.filter(guest_of=member, payment='Bill', guest_bills__isnull=True, visit_date__gte=date.today()-timedelta(days=31))
+	activity = DailyLog.objects.filter(member=member, payment='Bill', bills__isnull=True, visit_date__gt=timezone.now().date()-timedelta(days=31))
+	guest_activity = DailyLog.objects.filter(guest_of=member, payment='Bill', guest_bills__isnull=True, visit_date__gte=timezone.now().date()-timedelta(days=31))
 
 	search_results = None
 	if request.method == "POST":
@@ -117,7 +117,7 @@ def signin_user_guest(request, username, guestof):
 	member = get_object_or_404(Member, user=user)
 	daily_log = DailyLog()
 	daily_log.member = member
-	daily_log.visit_date = date.today()
+	daily_log.visit_date = timezone.now().date()
 	if guestof:
 		guestof_user = get_object_or_404(User, username=guestof)
 		guestof_member = get_object_or_404(Member, user=guestof_user)

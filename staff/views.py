@@ -4,7 +4,7 @@ from datetime import date, datetime, timedelta
 import calendar
 from decimal import Decimal
 from collections import namedtuple
-
+from django.utils import timezone
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
@@ -269,9 +269,9 @@ def stats_membership_history(request):
 			return render_to_response('staff/stats_membership_history.html', { 'page_message':"Invalid Start Date!  Example: '01-2012'."}, context_instance=RequestContext(request))
 	else:
 		#start_date = min(DailyLog.objects.all().order_by('visit_date')[0].visit_date, Membership.objects.all().order_by('start_date')[0].start_date)
-		start_date = date.today() - timedelta(days=365)
+		start_date = timezone.now().date() - timedelta(days=365)
 	start_month = date(year=start_date.year, month=start_date.month, day=1)
-	end_date = date.today()
+	end_date = timezone.now().date()
 	end_month = date(year=end_date.year, month=end_date.month, day=1)
 
 	average_only = 'average_only' in request.REQUEST
@@ -324,7 +324,7 @@ def calculate_monthly_low_high(plan_id, dates):
 @staff_member_required
 def stats_history(request):		
 	logs = [log for log in Membership.objects.all()]
-	end_date = date.today()
+	end_date = timezone.now().date()
 	if len(logs) > 0:
 		start_date = logs[0].start_date
 	else:
@@ -383,7 +383,7 @@ def stats_membership_days(request):
 		for membership in user_memberships:
 			end = membership.end_date
 			if not end: 
-				end = date.today()
+				end = timezone.now().date()
 				current = True;
 			diff = end - membership.start_date
 			days = diff.days
@@ -448,12 +448,12 @@ def date_range_from_request(request):
 	start = request.POST.get(START_DATE_PARAM, None)
 	if not start: start = request.GET.get(START_DATE_PARAM, None)
 	if not start:
-		start_date = date.today() - timedelta(days=31)
+		start_date = timezone.now().date() - timedelta(days=31)
 		start = start_date.isoformat()
 	end = request.POST.get(END_DATE_PARAM, None)
 	if not end: end = request.GET.get(END_DATE_PARAM, None)
 	if not end:
-		end = date.today().isoformat()
+		end = timezone.now().date().isoformat()
 	return (start, end)
 
 @staff_member_required
@@ -548,7 +548,7 @@ def activity_date(request, year, month, day):
 
 @staff_member_required
 def activity_today(request):
-	return activity_for_date(request, datetime.date.today())
+	return activity_for_date(request, datetime.timezone.now().date())
 
 @staff_member_required
 def activity_for_date(request, activity_date):
@@ -596,7 +596,7 @@ def member_membership(request, member_id):
 		return HttpResponseRedirect(reverse('staff.views.membership', args=[], kwargs={'membership_id':member.last_membership().id}))
 	
 	return render_to_response('staff/membership.html', {'member':member, 'membership_plans':MembershipPlan.objects.all(), 
-		'membership_form':MembershipForm(initial={'member':member_id}), 'today':date.today().isoformat()}, context_instance=RequestContext(request))
+		'membership_form':MembershipForm(initial={'member':member_id}), 'today':timezone.now().date().isoformat()}, context_instance=RequestContext(request))
 
 @staff_member_required
 def membership(request, membership_id):
@@ -613,7 +613,7 @@ def membership(request, membership_id):
 			'daily_rate':membership.daily_rate, 'deposit_amount':membership.deposit_amount, 'has_desk':membership.has_desk, 'guest_of':membership.guest_of, 'note':membership.note})
 
 	return render_to_response('staff/membership.html', {'member':membership.member, 'membership': membership, 'membership_plans':MembershipPlan.objects.all(), 
-		'membership_form':membership_form, 'today':date.today().isoformat()}, context_instance=RequestContext(request))
+		'membership_form':membership_form, 'today':timezone.now().date().isoformat()}, context_instance=RequestContext(request))
 
 @staff_member_required
 def view_user_reports(request):

@@ -1,4 +1,4 @@
-from django.conf.urls import *
+from django.conf.urls import patterns, include, url
 
 urlpatterns = patterns('tablet.views',
 	(r'^$', 'signin'),

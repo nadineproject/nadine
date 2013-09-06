@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from datetime import date, datetime, timedelta
-
+from django.utils import timezone
 from models import Member, Membership
 
 REPORT_KEYS = (
@@ -19,8 +19,8 @@ REPORT_FIELDS = (
 )
 
 def getDefaultForm():
-	start = date.today() - timedelta(days=30)
-	end = date.today()
+	start = timezone.now().date() - timedelta(days=30)
+	end = timezone.now().date()
 	form_data = {'report':'ALL', 'order_by':'JOINED', 'active_only':True, 'start_date':start, 'end_date':end}
 	return UserReportForm(form_data)
 
@@ -39,7 +39,7 @@ class User_Report:
 		self.start_date = form.data['start_date']
 		self.end_date = form.data['end_date']
 		if not self.end_date:
-			self.end_date = date.today()
+			self.end_date = timezone.now().date()
 		print(self.end_date)
 
 	def get_users(self):

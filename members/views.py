@@ -68,8 +68,8 @@ def profile_redirect(request):
 def user(request, username):
 	user = get_object_or_404(User, username=username)
 	member = get_object_or_404(Member, user=user)
-	activity = DailyLog.objects.filter(member=member, payment='Bill', bills__isnull=True, visit_date__gt=date.today()-timedelta(days=31))
-	guest_activity = DailyLog.objects.filter(guest_of=member, payment='Bill', guest_bills__isnull=True, visit_date__gte=date.today()-timedelta(days=31))
+	activity = DailyLog.objects.filter(member=member, payment='Bill', bills__isnull=True, visit_date__gt=timezone.now().date()-timedelta(days=31))
+	guest_activity = DailyLog.objects.filter(guest_of=member, payment='Bill', guest_bills__isnull=True, visit_date__gte=timezone.now().date()-timedelta(days=31))
 	return render_to_response('members/user.html',{'user':user, 'member':member, 'activity':activity, 'guest_activity':guest_activity, 'settings':settings}, context_instance=RequestContext(request))
 
 @login_required

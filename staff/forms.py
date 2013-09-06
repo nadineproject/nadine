@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.utils.html import strip_tags
+from django.utils import timezone
 from taggit.forms import *
 
 from models import *
@@ -192,7 +193,7 @@ class MembershipForm(forms.Form):
 		# If this is a new membership and they have an old membership that is at least 5 days old
 		# Then remove all the onboarding tasks and the exit tasks so they have a clean slate
 		if adding and last_membership and last_membership.end_date:
-			if last_membership.end_date < date.today() - timedelta(5):
+			if last_membership.end_date < timezone.now().date() - timedelta(5):
 				for completed_task in Onboard_Task_Completed.objects.filter(member=membership.member):
 					completed_task.delete()
 				for completed_task in ExitTaskCompleted.objects.filter(member=membership.member):

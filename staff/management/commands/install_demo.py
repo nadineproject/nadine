@@ -3,7 +3,7 @@ import sys
 import time
 import urllib
 from datetime import date, datetime, timedelta
-
+from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
@@ -55,11 +55,11 @@ class Command(BaseCommand):
 		knitters_ml.moderators.add(alice)
 
 		terry = self.create_user('terry', '1234', 'Terry', 'Moofty', email='terry@example.com')
-		Membership.objects.create(member=terry.get_profile(), membership_plan=resident_plan, start_date=date.today() - timedelta(days=400), daily_rate=0, deposit_amount=475, has_desk=True)
+		Membership.objects.create(member=terry.get_profile(), membership_plan=resident_plan, start_date=timezone.now().date() - timedelta(days=400), daily_rate=0, deposit_amount=475, has_desk=True)
 		knitters_ml.subscribers.add(terry)
 
 		bob = self.create_user('bob', '1234', 'Bob', 'Stilton', email='bob@example.com')
-		Membership.objects.create(member=bob.get_profile(), membership_plan=basic_plan, start_date=date.today() - timedelta(days=92), daily_rate=25, deposit_amount=0)
+		Membership.objects.create(member=bob.get_profile(), membership_plan=basic_plan, start_date=timezone.now().date() - timedelta(days=92), daily_rate=25, deposit_amount=0)
 		knitters_ml.subscribers.add(bob)
 
 	def delete_all(self, cls):

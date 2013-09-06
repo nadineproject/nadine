@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.core import management
 from django.contrib.auth.models import User
 from django.conf import settings
-
+from django.utils import timezone
 import staff.billing as billing
 from interlink.models import MailingList
 from staff.views import beginning_of_next_month, first_days_in_months
@@ -26,11 +26,11 @@ class MailingListTest(TestCase):
 		Membership.objects.create(member=self.user1.get_profile(), membership_plan=resident_plan, start_date=date(2008, 6, 26))
 
 		self.user2 = User.objects.create(username='member_two', first_name='Member', last_name='Two')
-		Membership.objects.create(member=self.user2.get_profile(), membership_plan=resident_plan, start_date=date(2008, 6, 26), end_date=(date.today() - timedelta(days=1)))
+		Membership.objects.create(member=self.user2.get_profile(), membership_plan=resident_plan, start_date=date(2008, 6, 26), end_date=(timezone.now().date() - timedelta(days=1)))
 
 		self.user3 = User.objects.create(username='member_three', first_name='Member', last_name='Three')
-		Membership.objects.create(member=self.user3.get_profile(), membership_plan=resident_plan, start_date=date(2008, 6, 26), end_date=(date.today() - timedelta(days=1)))
-		Membership.objects.create(member=self.user3.get_profile(), membership_plan=resident_plan, start_date=date.today())
+		Membership.objects.create(member=self.user3.get_profile(), membership_plan=resident_plan, start_date=date(2008, 6, 26), end_date=(timezone.now().date() - timedelta(days=1)))
+		Membership.objects.create(member=self.user3.get_profile(), membership_plan=resident_plan, start_date=timezone.now().date())
 
 	def test_auto_unsubscribe(self):
 		self.mlist1.subscribers.add(self.user1)
@@ -63,13 +63,13 @@ class TasksTestCase(TestCase):
 		Membership.objects.create(member=self.user1.get_profile(), membership_plan=residentPlan, start_date=date(2008, 6, 26), has_desk=True)
 
 		self.user2 = User.objects.create(username='member_two', first_name='Member', last_name='Two')
-		Membership.objects.create(member=self.user2.get_profile(), membership_plan=residentPlan, start_date=date(2008, 6, 26), end_date=(date.today() - timedelta(days=1)), has_desk=True)
+		Membership.objects.create(member=self.user2.get_profile(), membership_plan=residentPlan, start_date=date(2008, 6, 26), end_date=(timezone.now().date() - timedelta(days=1)), has_desk=True)
 
 		self.user3 = User.objects.create(username='member_three', first_name='Member', last_name='Three')
 		Membership.objects.create(member=self.user3.get_profile(), membership_plan=basicPlan, start_date=date(2008, 6, 26))
 
 		self.user4 = User.objects.create(username='member_four', first_name='Member', last_name='Four')
-		Membership.objects.create(member=self.user4.get_profile(), membership_plan=basicPlan, start_date=date(2008, 6, 26), end_date=(date.today() - timedelta(days=1)))
+		Membership.objects.create(member=self.user4.get_profile(), membership_plan=basicPlan, start_date=date(2008, 6, 26), end_date=(timezone.now().date() - timedelta(days=1)))
 
 		self.on_task_1 = Onboard_Task.objects.create(name="Give Desk", order=1, description="Give the member a desk.", has_desk_only=True)
 		self.on_task_2 = Onboard_Task.objects.create(name="Entry Tat", order=2, description="Tattoo a bar code on the neck.", has_desk_only=False)
@@ -87,7 +87,7 @@ class TasksTestCase(TestCase):
 		self.assertTrue(self.user3.profile.is_active())
 		self.assertFalse(self.user4.profile.is_active())
 		self.assertTrue(self.user1.profile.has_desk())
-		self.assertTrue(self.user2.profile.has_desk())
+		self.assertFalse(self.user2.profile.has_desk())
 		self.assertFalse(self.user3.profile.has_desk())
 		self.assertFalse(self.user4.profile.has_desk())
 
@@ -188,8 +188,10 @@ class BillingTestCase(TestCase):
 	def testMembership(self):
 		orig_membership = Membership.objects.create(member=self.user1.get_profile(), membership_plan=self.residentPlan, start_date=date(2008, 2, 10))
 		self.assertTrue(orig_membership.is_anniversary_day(date(2010, 4, 10)))
+		self.assertTrue(orig_membership.is_active())
 		orig_membership.end_date = orig_membership.start_date + timedelta(days=31)
 		orig_membership.save()
+		self.assertFalse(orig_membership.is_active())
 		new_membership = Membership(start_date=orig_membership.end_date, member=orig_membership.member, membership_plan=orig_membership.membership_plan)
 		self.assertRaises(Exception, new_membership.save) # the start date is the same as the previous plan's end date, which is an error
 		new_membership.start_date = orig_membership.end_date + timedelta(days=1)
