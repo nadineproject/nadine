@@ -152,7 +152,7 @@ GNOTTY_IRC_CHANNEL = "#officenomads"
 #GNOTTY_BOT_NICKNAME - IRC nickname the logging client will use. string, default: gnotty
 #GNOTTY_BOT_PASSWORD - Optional IRC password for the bot. string, default: None
 GNOTTY_LOGIN_REQUIRED = True
-#GNOTTY_DAEMON - run in daemon mode. boolean, default: False
+GNOTTY_DAEMON = True
 #GNOTTY_PID_FILE - path to write PID file to when in daemon mode. string, default: [tmp]/gnotty-[http-host]-[http-port].pid
 GNOTTY_LOG_LEVEL = "INFO"
 
