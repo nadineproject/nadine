@@ -149,7 +149,7 @@ GNOTTY_IRC_PORT = 6667
 GNOTTY_IRC_CHANNEL = "#officenomads"
 #GNOTTY_IRC_CHANNEL_KEY - Optional key required to access the IRC channel. string, default: None
 #GNOTTY_BOT_CLASS - Dotted Python path to the IRC client bot class to run. string, default: gnotty.bots.BaseBot
-#GNOTTY_BOT_NICKNAME - IRC nickname the logging client will use. string, default: gnotty
+GNOTTY_BOT_NICKNAME = "nadine"
 #GNOTTY_BOT_PASSWORD - Optional IRC password for the bot. string, default: None
 GNOTTY_LOGIN_REQUIRED = True
 GNOTTY_DAEMON = True
