@@ -140,9 +140,9 @@ class MailingList(models.Model):
 
       site = Site.objects.get_current()
       if body:
-         body += '\n\nEmail sent to the %s list at http://%s' % (self.name, site.domain)
+         body += '\n\nEmail sent to the %s list at https://%s' % (self.name, site.domain)
       if html_body:
-         html_body += u'<br/><div>Email sent to the %s list at <a href="http://%s">%s</a></div>' % (self.name, site.domain, site.name)
+         html_body += u'<br/><div>Email sent to the %s list at <a href="https://%s">%s</a></div>' % (self.name, site.domain, site.name)
 
       incoming = IncomingMail(mailing_list=self,
                              origin_address=origin_address,
@@ -282,13 +282,13 @@ class IncomingMail(models.Model):
       return user_by_email(self.origin_address)
 
    @property
-   def approve_url(self): return 'http://%s%s' % (Site.objects.get_current().domain, reverse('interlink.views.moderator_approve', kwargs={'id':self.id}, current_app='interlink'))
+   def approve_url(self): return 'https://%s%s' % (Site.objects.get_current().domain, reverse('interlink.views.moderator_approve', kwargs={'id':self.id}, current_app='interlink'))
 
    @property
-   def reject_url(self): return 'http://%s%s' % (Site.objects.get_current().domain, reverse('interlink.views.moderator_reject', kwargs={'id':self.id}))
+   def reject_url(self): return 'https://%s%s' % (Site.objects.get_current().domain, reverse('interlink.views.moderator_reject', kwargs={'id':self.id}))
 
    @property
-   def inspect_url(self): return 'http://%s%s' % (Site.objects.get_current().domain, reverse('interlink.views.moderator_inspect', kwargs={'id':self.id}))
+   def inspect_url(self): return 'https://%s%s' % (Site.objects.get_current().domain, reverse('interlink.views.moderator_inspect', kwargs={'id':self.id}))
 
    def __unicode__(self): return '%s: %s' % (self.origin_address, self.subject)
 
