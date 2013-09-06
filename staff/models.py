@@ -118,7 +118,7 @@ class MemberManager(models.Manager):
 
 	def active_members(self):
 		unending = Q(memberships__end_date__isnull=True)
-		future_ending = Q(memberships__end_date__gt=date.today())
+		future_ending = Q(memberships__end_date__gt=timezone.now().date())
 		return Member.objects.exclude(memberships__isnull=True).filter(unending | future_ending).distinct()
 
 	def daily_members(self):
@@ -129,18 +129,18 @@ class MemberManager(models.Manager):
 		return member_list
 
 	def members_by_plan_id(self, plan_id):
-		return [m.member for m in Membership.objects.filter(membership_plan=plan_id).filter(Q(end_date__isnull=True, start_date__lte=date.today()) | Q(end_date__gt=date.today())).distinct().order_by('member__user__first_name')]
+		return [m.member for m in Membership.objects.filter(membership_plan=plan_id).filter(Q(end_date__isnull=True, start_date__lte=timezone.now().date()) | Q(end_date__gt=timezone.now().date())).distinct().order_by('member__user__first_name')]
 
 	def members_by_neighborhood(self, hood, active_only=True):
 		if active_only:
-			return Member.objects.filter(neighborhood=hood).filter(memberships__isnull=False).filter(Q(memberships__end_date__isnull=True) | Q(memberships__end_date__gt=date.today())).distinct()
+			return Member.objects.filter(neighborhood=hood).filter(memberships__isnull=False).filter(Q(memberships__end_date__isnull=True) | Q(memberships__end_date__gt=timezone.now().date())).distinct()
 		else:
 			return Member.objects.filter(neighborhood=hood)
 
 	def unsubscribe_recent_dropouts(self):
 		"""Remove mailing list subscriptions from members whose memberships expired yesterday and they do not start a membership today"""
 		from interlink.models import MailingList
-		recently_expired = Member.objects.filter(memberships__end_date=date.today() - timedelta(days=1)).exclude(memberships__start_date=date.today())
+		recently_expired = Member.objects.filter(memberships__end_date=timezone.now().date() - timedelta(days=1)).exclude(memberships__start_date=timezone.now().date())
 		for member in recently_expired:
 			MailingList.objects.unsubscribe_from_all(member.user)
 
@@ -275,7 +275,7 @@ class Member(models.Model):
 		memberships = Membership.objects.filter(member=self)
 		if self.last_membership():
 			last_monthly = self.last_membership()
-			if last_monthly.end_date == None or last_monthly.end_date > date.today():
+			if last_monthly.end_date == None or last_monthly.end_date > timezone.now().date():
 				return last_monthly.membership_plan
 			else:
 				return "Ex" + str(last_monthly.membership_plan)
@@ -290,14 +290,23 @@ class Member(models.Model):
 			return "Drop-in"
 
 	def is_active(self):
-		last_log = self.last_membership()
-		if  not last_log: return False
-		return last_log.end_date == None or last_log.end_date >= date.today()
+		m = self.last_membership()
+		if not m: return False
+		return m.is_active()
 
 	def has_desk(self):
-		last_log = self.last_membership()
-		if  not last_log: return False
-		return last_log.has_desk
+		m = self.last_membership()
+		if not m: return False
+		if m.is_active():
+			return m.has_desk
+		return False
+
+	def has_valid_billing(self):
+		m = self.last_membership()
+		if m and m.is_active() and m.guest_of:
+			return m.guest_of.valid_billing
+		return valid_billing
+		
 
 	def onboard_tasks_status(self):
 		"""
@@ -312,7 +321,7 @@ class Member(models.Model):
 	def qualifies_for_exit_tasks(self):
 		last_log = self.last_membership()
 		if not last_log or last_log.end_date == None: return False
-		return last_log.end_date < date.today()
+		return last_log.end_date < timezone.now().date()
 
 	def exit_tasks_status(self):
 		"""
@@ -424,6 +433,9 @@ class Membership(models.Model):
 			raise Exception('A Membership cannot start after it ends')
 		super(Membership, self).save(*args, **kwargs)
 
+	def is_active(self):
+		return self.end_date == None or self.end_date >= timezone.now().date()
+
 	def is_anniversary_day(self, test_date):
 		# Do something smarter if we're at the end of February
 		if test_date.month == 2 and test_date.day == 28:
@@ -467,7 +479,7 @@ class ExitTask(models.Model):
 		return eligable_members
 
 	def completed_members(self):
-		return Member.objects.filter(memberships__end_date__gt=date.today()).filter(exittaskcompleted__task=self).distinct()
+		return Member.objects.filter(memberships__end_date__gt=timezone.now().date()).filter(exittaskcompleted__task=self).distinct()
 
 	def __str__(self): return self.name
 
