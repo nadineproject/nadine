@@ -12,7 +12,6 @@ from staff.views import beginning_of_next_month, first_days_in_months
 from staff.models import *
 
 class MailingListTest(TestCase):
-   
 	def setUp(self):
 		self.mlist1 = MailingList.objects.create(
 			name='Hat Styles', description='All about les chapeau', subject_prefix='hat',
@@ -42,7 +41,6 @@ class MailingListTest(TestCase):
 		self.assertTrue(self.user3 in self.mlist1.subscribers.all())
 
 class UtilsTest(TestCase):
-	
 	def test_monthly_ranges(self):
 		self.assertEqual(beginning_of_next_month(date(2010, 1, 1)), date(2010, 2, 1))
 		self.assertEqual(beginning_of_next_month(date(2010, 6, 30)), date(2010, 7, 1))
@@ -54,7 +52,6 @@ class UtilsTest(TestCase):
 		self.assertEqual(first_days_in_months(date(2009, 12, 3), date(2010, 1, 14)), [date(2009, 12, 1), date(2010, 1, 1)])
 
 class TasksTestCase(TestCase):
-
 	def setUp(self):
 		residentPlan = MembershipPlan(name="Resident",monthly_rate="475",dropin_allowance="5",daily_rate="20",deposit_amount="500")
 		basicPlan = MembershipPlan(name="Basic",monthly_rate="25",dropin_allowance="1",daily_rate="20",deposit_amount="500")
@@ -76,7 +73,6 @@ class TasksTestCase(TestCase):
 
 		self.exit_task_1 = ExitTask.objects.create(name="Exit Shaming", order=1, description="The parade of shame.", has_desk_only=False)
 		self.exit_task_2 = ExitTask.objects.create(name="Clean Desk", order=2, description="Clean the member's old desk.", has_desk_only=True)
-
 
 	def testTasks(self):
 		self.assertEqual(Onboard_Task_Completed.objects.filter(member=self.user1.profile).count(), 0)
@@ -167,8 +163,40 @@ class MemberTestCase(TestCase):
 		self.assertTrue(self.user5.profile.has_valid_billing())
 		self.assertEquals(self.user5.profile.is_guest(), self.user1.profile)
 
-class BillingTestCase(TestCase):
+	def testTags (self):
+		member1 = self.user1.get_profile()
+		member1.tags.add("coworking", "books", "beer")
+		member2 = self.user2.get_profile()
+		member2.tags.add("beer", "cars", "women")
+		member3 = self.user3.get_profile()
+		member3.tags.add("knitting", "beer", "travel")
+		self.assertTrue(member1 in Member.objects.filter(tags__name__in=["beer"]))
+		self.assertTrue(member2 in Member.objects.filter(tags__name__in=["beer"]))
+		self.assertTrue(member3 in Member.objects.filter(tags__name__in=["beer"]))
+		self.assertFalse(member1 in Member.objects.filter(tags__name__in=["knitting"]))
+		self.assertFalse(member3 in Member.objects.filter(tags__name__in=["books"]))
 
+class MembershipTestCase(TestCase):
+	def setUp(self):
+		self.residentPlan = MembershipPlan.objects.create(name="Resident",monthly_rate=475,dropin_allowance=5,daily_rate=20,deposit_amount=500,has_desk=True)
+		self.user1 = User.objects.create(username='member_one', first_name='Member', last_name='One')
+	
+	def testMembership(self):
+		orig_membership = Membership.objects.create(member=self.user1.get_profile(), membership_plan=self.residentPlan, start_date=date(2008, 2, 10))
+		self.assertTrue(orig_membership.is_anniversary_day(date(2010, 4, 10)))
+		self.assertTrue(orig_membership.is_active())
+		orig_membership.end_date = orig_membership.start_date + timedelta(days=31)
+		orig_membership.save()
+		self.assertFalse(orig_membership.is_active())
+		new_membership = Membership(start_date=orig_membership.end_date, member=orig_membership.member, membership_plan=orig_membership.membership_plan)
+		self.assertRaises(Exception, new_membership.save) # the start date is the same as the previous plan's end date, which is an error
+		new_membership.start_date = orig_membership.end_date + timedelta(days=1)
+		new_membership.save()
+		new_membership.end_date = new_membership.start_date + timedelta(days=64)
+		new_membership.start_date = new_membership.end_date + timedelta(days=12)
+		self.assertRaises(Exception, new_membership.save) # the start date can't be the same or later than the end date
+
+class BillingTestCase(TestCase):
 	def setUp(self):
 		self.basicPlan = MembershipPlan.objects.create(name="Basic",monthly_rate=50,dropin_allowance=3,daily_rate=20,deposit_amount=0,has_desk=False)
 		self.pt5Plan = MembershipPlan.objects.create(name="PT5",monthly_rate=75,dropin_allowance=5,daily_rate=20,deposit_amount=0,has_desk=False)
@@ -203,34 +231,6 @@ class BillingTestCase(TestCase):
 		Membership.objects.create_with_plan(member=self.user5.get_profile(), start_date=date(2010, 5, 20), end_date=date(2010, 6, 16), membership_plan=self.pt15Plan)
 		Membership.objects.create_with_plan(member=self.user5.get_profile(), start_date=date(2010, 6, 17), end_date=None, membership_plan=self.basicPlan)
 		for day in range(1,16): DailyLog.objects.create(member=self.user5.get_profile(), visit_date=date(2010, 6, day), payment='Bill')
-
-	def testMembership(self):
-		orig_membership = Membership.objects.create(member=self.user1.get_profile(), membership_plan=self.residentPlan, start_date=date(2008, 2, 10))
-		self.assertTrue(orig_membership.is_anniversary_day(date(2010, 4, 10)))
-		self.assertTrue(orig_membership.is_active())
-		orig_membership.end_date = orig_membership.start_date + timedelta(days=31)
-		orig_membership.save()
-		self.assertFalse(orig_membership.is_active())
-		new_membership = Membership(start_date=orig_membership.end_date, member=orig_membership.member, membership_plan=orig_membership.membership_plan)
-		self.assertRaises(Exception, new_membership.save) # the start date is the same as the previous plan's end date, which is an error
-		new_membership.start_date = orig_membership.end_date + timedelta(days=1)
-		new_membership.save()
-		new_membership.end_date = new_membership.start_date + timedelta(days=64)
-		new_membership.start_date = new_membership.end_date + timedelta(days=12)
-		self.assertRaises(Exception, new_membership.save) # the start date can't be the same or later than the end date
-
-	def testTags (self):
-		member1 = self.user1.get_profile()
-		member1.tags.add("coworking", "books", "beer")
-		member2 = self.user2.get_profile()
-		member2.tags.add("beer", "cars", "women")
-		member3 = self.user3.get_profile()
-		member3.tags.add("knitting", "beer", "travel")
-		self.assertTrue(member1 in Member.objects.filter(tags__name__in=["beer"]))
-		self.assertTrue(member2 in Member.objects.filter(tags__name__in=["beer"]))
-		self.assertTrue(member3 in Member.objects.filter(tags__name__in=["beer"]))
-		self.assertFalse(member1 in Member.objects.filter(tags__name__in=["knitting"]))
-		self.assertFalse(member3 in Member.objects.filter(tags__name__in=["books"]))
 
 	def testRun(self):
 		member1 = self.user1.get_profile()
