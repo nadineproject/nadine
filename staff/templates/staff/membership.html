@@ -87,15 +87,36 @@ $(document).ready(function() {
 			</tr>
 			<tr class="row-even">
 				<td>Monthly Rate</td>
-				<td>{{ membership_form.monthly_rate }}</td>
+				<td>
+					{% if membership %}
+						{{ membership.monthly_rate }}
+						{{ membership_form.monthly_rate.as_hidden }}
+					{% else %}
+						{{ membership_form.monthly_rate }} 
+					{% endif %}
+				</td>
 			</tr>
 			<tr class="row-odd">
 				<td>Drop-in Allowance</td>
-				<td>{{ membership_form.dropin_allowance }}</td>
+				<td>
+					{% if membership %}
+						{{ membership.dropin_allowance }}
+						{{ membership_form.dropin_allowance.as_hidden }}
+					{% else %}
+						{{ membership_form.dropin_allowance }} 
+					{% endif %}
+				</td>
 			</tr>
 			<tr class="row-even">
 				<td>Daily Rate</td>
-				<td>{{ membership_form.daily_rate }}</td>
+				<td>
+					{% if membership %}
+						{{ membership.daily_rate }}
+						{{ membership_form.daily_rate.as_hidden }}
+					{% else %}
+						{{ membership_form.daily_rate }} 
+					{% endif %}
+				</td>
 			</tr>
 			<tr class="row-odd">
 				<td>Deposit Amount</td>
