@@ -1,7 +1,10 @@
 <div style="margin-left: 2em; margin-bottom: .5em;">
 Current Profile: 
-{% if member.valid_billing %}
+{% if member.has_valid_billing %}
 	<font color=green>Valid</font>
+	{% if member.is_guest %}
+		- Guest of: {{ member.is_guest }}
+	{% endif %}
 {% else %}
 	<font color=red>Invalid</font>
 {% endif %}

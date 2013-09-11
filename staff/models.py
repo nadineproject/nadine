@@ -128,6 +128,13 @@ class MemberManager(models.Manager):
 				member_list.append(active_member)
 		return member_list
 
+	def invalid_billing(self):
+		members = []
+		for m in self.active_members():
+			if not m.has_valid_billing():
+				members.append(m)
+		return members
+		
 	def members_by_plan_id(self, plan_id):
 		return [m.member for m in Membership.objects.filter(membership_plan=plan_id).filter(Q(end_date__isnull=True, start_date__lte=timezone.now().date()) | Q(end_date__gt=timezone.now().date())).distinct().order_by('member__user__first_name')]
 
@@ -301,10 +308,16 @@ class Member(models.Model):
 			return m.has_desk
 		return False
 
-	def has_valid_billing(self):
+	def is_guest(self):
 		m = self.last_membership()
 		if m and m.is_active() and m.guest_of:
-			return m.guest_of.has_valid_billing()
+			return m.guest_of
+		return None
+
+	def has_valid_billing(self):
+		host = self.is_guest()
+		if host:
+			return host.has_valid_billing()
 		return self.valid_billing
 
 	def onboard_tasks_status(self):

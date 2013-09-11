@@ -130,7 +130,7 @@ def bills(request):
 				page_message = 'Created a <a href="%s">transaction for %s</a>' % (reverse('staff.views.transaction', args=[], kwargs={'id':transaction.id}), member,)
 
 	members = Member.objects.filter(models.Q(bills__isnull=False, bills__transactions=None, bills__paid_by__isnull=True) | models.Q(guest_bills__isnull=False, guest_bills__transactions=None)).distinct().order_by('user__last_name')
-	invalids = Member.objects.active_members().filter(valid_billing=False)	
+	invalids = Member.objects.invalid_billing()
 	return render_to_response('staff/bills.html', { "members":members, 'page_message':page_message, 'invalid_members':invalids }, context_instance=RequestContext(request))
 
 @staff_member_required

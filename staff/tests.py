@@ -9,7 +9,7 @@ from django.utils import timezone
 import staff.billing as billing
 from interlink.models import MailingList
 from staff.views import beginning_of_next_month, first_days_in_months
-from staff.models import Bill, Transaction, Member, Membership, MembershipPlan, DailyLog, Onboard_Task, Onboard_Task_Completed, ExitTask, ExitTaskCompleted, Neighborhood
+from staff.models import *
 
 class MailingListTest(TestCase):
    
@@ -165,6 +165,7 @@ class MemberTestCase(TestCase):
 		# Member 5 does not have valid billing but is a guest of Member 1
 		self.assertFalse(self.user5.profile.valid_billing)
 		self.assertTrue(self.user5.profile.has_valid_billing())
+		self.assertEquals(self.user5.profile.is_guest(), self.user1.profile)
 
 class BillingTestCase(TestCase):
 

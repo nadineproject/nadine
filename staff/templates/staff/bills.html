@@ -50,7 +50,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 
 <ul id="bill-list">
 	{% for member in members %}
-		<li {% if not member.valid_billing %}style="color:red;"{% endif %}><span style="color:black">
+		<li {% if not member.has_valid_billing %}style="color:red;"{% endif %}><span style="color:black">
 			<form class="pay-bill-form" action="." method="post">
 				<div>
 				<a class="bill-detail-toggle" id="bill-details-toggle-{{member.id}}" href="." onclick="toggleBillDetails('{{member.id}}'); return false;">[+]</a>&nbsp;
