@@ -319,6 +319,13 @@ class Member(models.Model):
 		if host:
 			return host.has_valid_billing()
 		return self.valid_billing
+		
+	def guests(self):
+		guests = []
+		for membership in Membership.objects.filter(guest_of=self):
+			if membership.is_active():
+				guests.append(membership.member)
+		return guests
 
 	def onboard_tasks_status(self):
 		"""
@@ -378,7 +385,6 @@ class DailyLog(models.Model):
 	payment = models.CharField("Payment", max_length=5, choices=PAYMENT_CHOICES)
 	guest_of = models.ForeignKey(Member, verbose_name="Guest Of", related_name="guest_of", blank=True, null=True)
 	note = models.CharField("Note", max_length=128, blank="True")
-
 	created = models.DateTimeField(auto_now_add=True, default=timezone.localtime(timezone.now()))
 
 	def __str__(self):
