@@ -135,6 +135,9 @@ class MemberManager(models.Manager):
 				members.append(m)
 		return members
 		
+	def recent_members(self, days):
+		return Member.objects.filter(user__date_joined__gt=timezone.localtime(timezone.now())- timedelta(days=days))
+		
 	def members_by_plan_id(self, plan_id):
 		return [m.member for m in Membership.objects.filter(membership_plan=plan_id).filter(Q(end_date__isnull=True, start_date__lte=timezone.now().date()) | Q(end_date__gt=timezone.now().date())).distinct().order_by('member__user__first_name')]
 
