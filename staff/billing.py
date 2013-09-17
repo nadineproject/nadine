@@ -4,7 +4,7 @@ import traceback
 
 import settings
 from models import Bill, BillingLog, Transaction, Member, Membership, DailyLog
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 
@@ -34,9 +34,8 @@ class Run:
 		self.filter_closed_logs = filter_closed_logs
 		
 		self.populate_days()
-		self.populate_daily_logs()
-		self.populate_guest_daily_logs()
 		self.populate_memberships()
+		self.populate_daily_logs()
 
 	def non_member_daily_logs(self):
 		"""Returns a tuple (daily_logs, guest_daily_logs) [each sorted ascending by date] in this run which are not covered by a membership, including guest daily logs"""
@@ -57,42 +56,55 @@ class Run:
 		for day in self.days:
 			if len(day.guest_daily_logs) > 0: return True
 		return False
-	
-	def populate_memberships(self):
-		for log in Membership.objects.filter(member=self.member).order_by('start_date'):
-			if log.end_date and log.end_date < self.start_date: continue
-			if log.start_date > self.end_date: continue
-			for i in range(0, len(self.days)):
-				if self.days[i].date >= log.start_date:
-					if log.end_date == None or self.days[i].date <= log.end_date:
-						if self.days[i].membership: print 'Duplicate membership! %s' % log
-						self.days[i].membership = log
-
-	def populate_guest_daily_logs(self):
-		daily_logs = DailyLog.objects.filter(guest_of=self.member, payment="Bill").filter(visit_date__gte=self.start_date).filter(visit_date__lte=self.end_date)
-		if self.filter_closed_logs: daily_logs = daily_logs.annotate(bill_count=Count('bills')).filter(bill_count=0)
-		daily_logs = daily_logs.order_by('visit_date')
-		for log in daily_logs:
-			for i in range(0, len(self.days)):
-				if log.visit_date == self.days[i].date:
-					self.days[i].guest_daily_logs.append(log)
-					break
-
-	def populate_daily_logs(self):
-		daily_logs = DailyLog.objects.filter(member=self.member, payment="Bill", guest_of=None).filter(visit_date__gte=self.start_date).filter(visit_date__lte=self.end_date)
-		if self.filter_closed_logs: daily_logs = daily_logs.annotate(bill_count=Count('bills')).filter(bill_count=0)
-		daily_logs = daily_logs.order_by('visit_date')
-		index = 0
-		for log in daily_logs:
-			for i in range(index, len(self.days)):
-				index += 1
-				if log.visit_date == self.days[i].date:
-					self.days[i].daily_log = log
-					break
 
 	def populate_days(self):
 		for i in range((self.end_date - self.start_date).days + 1):
 			self.days.append(Day(self.start_date + timedelta(days=i)))
+
+	def populate_memberships(self):
+		for membership in Membership.objects.filter(member=self.member).order_by('start_date'):
+			if membership.end_date and membership.end_date < self.start_date: continue
+			if membership.start_date > self.end_date: continue
+			for i in range(0, len(self.days)):
+				if self.days[i].date >= membership.start_date:
+					if membership.end_date == None or self.days[i].date <= membership.end_date:
+						if self.days[i].membership: print 'Duplicate membership! %s' % membership
+						self.days[i].membership = membership
+
+	def populate_daily_logs(self):
+		# Grab all the daily_logs from this member
+		daily_logs = DailyLog.objects.filter(member=self.member, payment="Bill", guest_of=None).filter(visit_date__gte=self.start_date).filter(visit_date__lte=self.end_date)
+		if self.filter_closed_logs: daily_logs = daily_logs.annotate(bill_count=Count('bills')).filter(bill_count=0)
+		for log in daily_logs.order_by('visit_date'):
+			self.add_daily_log(log)
+
+		# Grab all the daily_logs marked as a guest of this member
+		daily_logs = DailyLog.objects.filter(guest_of=self.member, payment="Bill").filter(visit_date__gte=self.start_date).filter(visit_date__lte=self.end_date)
+		if self.filter_closed_logs: daily_logs = daily_logs.annotate(bill_count=Count('bills')).filter(bill_count=0)
+		for log in daily_logs.order_by('visit_date'):
+			self.add_guest_log(log)
+
+		# Grab all the daily_logs attached to memberships marked as guests of this member
+		for membership in Membership.objects.filter(guest_of=self.member).order_by('start_date'):
+			if membership.end_date and membership.end_date < self.start_date: continue
+			if membership.start_date > self.end_date: continue
+			for log in DailyLog.objects.filter(member=membership.member, payment="Bill", guest_of=None).filter(visit_date__gte=self.start_date).filter(visit_date__lte=self.end_date):
+				self.add_guest_log(log)
+
+	def add_daily_log(self, log):
+		for i in range(0, len(self.days)):
+			if log.visit_date == self.days[i].date:
+				if self.days[i].membership and self.days[i].membership.guest_of:
+					# Skip guest activity.  It will get picked up by the host's bill.
+					break
+				self.days[i].daily_log = log
+				break
+
+	def add_guest_log(self, log):
+		for i in range(0, len(self.days)):
+			if log.visit_date == self.days[i].date:
+				self.days[i].guest_daily_logs.append(log)
+				break
 
 	def print_info(self):
 		for day in self.days:
@@ -109,7 +121,7 @@ class Run:
 def run_billing(bill_time=timezone.localtime(timezone.now())):
 	"""Generate billing records for every member who deserves it."""
 	bill_date = datetime.date(bill_time)
-	print "Running billing for %s" % bill_date
+	#print "Running billing for %s" % bill_date
 	try:
 		latest_billing_log = BillingLog.objects.latest()
 	except ObjectDoesNotExist:

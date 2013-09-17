@@ -232,12 +232,22 @@ class BillingTestCase(TestCase):
 		Membership.objects.create_with_plan(member=self.user5.get_profile(), start_date=date(2010, 6, 17), end_date=None, membership_plan=self.basicPlan)
 		for day in range(1,16): DailyLog.objects.create(member=self.user5.get_profile(), visit_date=date(2010, 6, day), payment='Bill')
 
+		# User 6, 7 = PT-5 6/26/2008 - User 7 guest of User 6
+		# User 7 has daily activity 6/1/2010 through 6/15/2010
+		self.user6 = User.objects.create(username='member_six', first_name='Member', last_name='Six')
+		self.user7 = User.objects.create(username='member_seven', first_name='Member', last_name='Seven')
+		Membership.objects.create_with_plan(member=self.user6.get_profile(), start_date=date(2008, 6, 26), end_date=None, membership_plan=self.pt5Plan)
+		Membership.objects.create_with_plan(member=self.user7.get_profile(), start_date=date(2008, 6, 26), end_date=None, membership_plan=self.pt5Plan, rate=0, guest_of=self.user6.get_profile())
+		for day in range(1,16): DailyLog.objects.create(member=self.user7.get_profile(), visit_date=date(2010, 6, day), payment='Bill')
+
 	def testRun(self):
 		member1 = self.user1.get_profile()
 		member2 = self.user2.get_profile()
 		member3 = self.user3.get_profile()
 		member4 = self.user4.get_profile()
 		member5 = self.user5.get_profile()
+		member6 = self.user6.get_profile()
+		member7 = self.user7.get_profile()
 
 		end_time = datetime(2010, 6, 30)
 		day_range = range(30)
@@ -288,10 +298,23 @@ class BillingTestCase(TestCase):
 				self.assertTrue(member3.last_bill().created.month == day.month and member3.last_bill().created.day == day.day)
 				self.assertEqual(member3.last_bill().dropins.count(), 0)
 			if day.day == 26:
+				# User 1
 				self.assertTrue(member1.last_membership().is_anniversary_day(day))
 				member_bills = member1.bills.all().order_by('-created')
 				self.assertTrue(len(member_bills) > 0)
 				self.assertTrue(member_bills[0].membership == member1.last_membership())
+				
+				# User 6's PT-5, User 7's PT-5
+				# User 7 guest of user 6 and used 15 days
+				self.assertEqual(member7.is_guest(), member6)
+				self.assertTrue(member7.last_bill() != None)
+				self.assertEqual(member7.last_bill().dropins.count(), 0)
+				self.assertEquals(member7.last_bill().amount, 0)
+				self.assertTrue(member6.last_bill() != None)
+				self.assertEqual(member6.last_bill().dropins.count(), 0)
+				self.assertEqual(member6.last_bill().guest_dropins.count(), 15)
+				# $75 base rate + 10 overage days @ $20 = $275
+				self.assertEquals(member6.last_bill().amount, 275)
 			if day.day == 30:
 				self.assertTrue(member2.last_membership().is_anniversary_day(day))
 
