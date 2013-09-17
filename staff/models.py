@@ -424,9 +424,11 @@ class MembershipManager(models.Manager):
 	def by_date(self, target_date):
 		return self.filter(start_date__lte=target_date).filter(Q(end_date__isnull=True) | Q(end_date__gte=target_date))
 
-	def create_with_plan(self, member, start_date, end_date, membership_plan, guest_of=None):
+	def create_with_plan(self, member, start_date, end_date, membership_plan, rate=-1, guest_of=None):
+		if rate < 0:
+			rate = membership_plan.monthly_rate 
 		self.create(member=member, start_date=start_date, end_date=end_date, membership_plan=membership_plan,
-			monthly_rate=membership_plan.monthly_rate, daily_rate=membership_plan.daily_rate, dropin_allowance=membership_plan.dropin_allowance,
+			monthly_rate=rate, daily_rate=membership_plan.daily_rate, dropin_allowance=membership_plan.dropin_allowance,
 			deposit_amount=membership_plan.deposit_amount, has_desk=membership_plan.has_desk, guest_of=guest_of)
 
 class Membership(models.Model):
