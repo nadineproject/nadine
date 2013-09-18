@@ -39,9 +39,11 @@
 								<img class="member-table-photo" src="{{ guest.photo.url|fit_image:"48x48"}}" />
 							</a>
 						{% endif %}</td>
-						<td  style="text-align: left; border-bottom: 0px solid #ccc; padding: 0.5em;">
+						<td style="text-align: left; border-bottom: 0px solid #ccc; padding: 0.5em;">
 							<a href="{% url 'staff.views.member_detail' guest.id %}">{{ guest.first_name }} {{ guest.last_name }}</a>
 						</td>
+						<td style="text-align: left; border-bottom: 0px solid #ccc; padding: 0.5em;">{{ guest.active_membership.membership_plan }}</td>
+						<td style="text-align: left; border-bottom: 0px solid #ccc; padding: 0.5em;">{{ guest.active_membership.start_date }}</td>
 					</tr>
 				{% endfor %}
 			</table></td>
