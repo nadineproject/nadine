@@ -1,6 +1,6 @@
 {% extends "staff/ml_base.html" %}
 
-{% block sub-title %}Income | {% endblock %}
+{% block sub-title %}Stats | Income | {% endblock %}
 
 {% block sub-head %}
 	<script src="{{ STATIC_URL }}RGraph/libraries/RGraph.common.core.js" ></script>
@@ -11,11 +11,12 @@
 {% endblock %}
 
 {% block style%}
-nav #activity-tab { background: #FBD850; color: black; }
+nav #stats-tab { background: #FBD850; color: black; }
+#stats span { font-size: 1.2em; padding: 10px; }
 {% endblock %}
 
 {% block content %} 
-{% include "staff/activity_menu.frag" %}  
+{% include "staff/stats_menu.frag" %}  
 
 <h2>Monthly Membership Income by Day</h2>
 <div class="columns clearfix date-range">
