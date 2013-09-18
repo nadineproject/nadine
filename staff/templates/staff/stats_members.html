@@ -1,0 +1,77 @@
+{% extends "staff/ml_base.html" %}
+
+{% block sub-title %}Stats | Members | {% endblock %}
+
+{% block sub-head %}
+	<script src="{{ STATIC_URL }}RGraph/libraries/RGraph.common.core.js" ></script>
+	<script src="{{ STATIC_URL }}RGraph/libraries/RGraph.common.dynamic.js"></script>
+	<script src="{{ STATIC_URL }}RGraph/libraries/RGraph.common.tooltips.js" ></script>
+	<script src="{{ STATIC_URL }}RGraph/libraries/RGraph.common.effects.js" ></script>
+	<script src="{{ STATIC_URL }}RGraph/libraries/RGraph.line.js" ></script>
+{% endblock %}
+
+{% block style%}
+nav #stats-tab { background: #FBD850; color: black; }
+#stats span { font-size: 1.2em; padding: 10px; }
+{% endblock %}
+
+{% block content %} 
+{% include "staff/stats_menu.frag" %}  
+
+<h2>Memberships by Day</h2>
+<div class="columns clearfix date-range">
+	{% include "staff/date_range_form.frag"%}    
+</div>
+
+<div>min = {{min}}, max = {{max}}, avg={{avg}}</div>
+    
+    <canvas id="cvs" width="800" height="500">[No canvas support]</canvas>
+    
+    <script>
+        window.onload = function ()
+        {
+            var data = [{% for day in days %}{{day.members}},{% endfor %}];
+            var labels = ['{{ start }}', '{{ end }}'];
+
+            var myLine = new RGraph.Line('cvs', [{{avg}}, {{avg}}], data)
+                .Set('labels', labels)
+                .Set('gutter.left', 60)
+                .Set('gutter.right', 45)
+                .Set('gutter.bottom', 20)
+                .Set('colors', ['red', 'black'])
+                //.Set('units.pre', '$')
+                .Set('linewidth', 2)
+                //.Set('hmargin', 15)
+                .Set('text.color', '#333')
+                .Set('text.font', 'Arial')
+                //.Set('background.grid.autofit', true)
+                //.Set('background.grid.autofit.numvlines', {{ days|length }})
+                .Set('chart.ymin', {{min}})
+                .Set('shadow', true)
+                .Set('shadow.color', 'rgba(20,20,20,0.3)')
+                .Set('shadow.blur',  10)
+                .Set('shadow.offsetx', 0)
+                .Set('shadow.offsety', 0)
+                .Set('background.grid.vlines', false)
+                .Set('background.grid.border', true)
+                .Set('noxaxis', false)
+                .Set('axis.color', '#666')
+                .Set('text.color', '#666')
+                //.Set('spline', true)
+
+            /**
+            * Use the Trace animation to show the chart
+            */
+            if (ISOLD) {
+                // IE7/8 don't support shadow blur, so set custom shadow properties
+                myLine.Set('chart.shadow.offsetx', 3)
+                    .Set('chart.shadow.offsety', 3)
+                    .Set('chart.shadow.color', '#aaa')
+                    .Draw();
+            } else {
+                RGraph.Effects.Line.jQuery.UnfoldFromCenterTrace(myLine, {'duration': 1000});
+            }
+        }
+    </script>
+
+{% endblock %}

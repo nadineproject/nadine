@@ -449,6 +449,29 @@ def stats_income(request):
 	income_avg = income_total / len(days)
 	return render_to_response('staff/stats_income.html', {'days':days, 'date_range_form':date_range_form, 'start':start, 'end':end, 'min':income_min, 'max':income_max, 'avg':income_avg }, context_instance=RequestContext(request))
 
+
+@staff_member_required
+def stats_members(request):
+	start, end = date_range_from_request(request)
+	date_range_form = DateRangeForm({START_DATE_PARAM:start, END_DATE_PARAM:end })
+	starteo = timeo.strptime(start, "%Y-%m-%d")
+	start_date = date(year=starteo.tm_year, month=starteo.tm_mon, day=starteo.tm_mday)
+	endeo = timeo.strptime(end, "%Y-%m-%d")
+	end_date = date(year=endeo.tm_year, month=endeo.tm_mon, day=endeo.tm_mday)
+	days = [{'date':start_date + timedelta(days=i)} for i in range((end_date - start_date).days) ]
+	member_min = 0;
+	member_max = 0;
+	member_total = 0
+	for day in days:
+		day['members'] = Membership.objects.by_date(day['date']).count()
+		member_total = member_total + day['members']
+		if day['members'] > member_max:
+			member_max = day['members']
+		if member_min == 0 or day['members'] < member_min:
+			member_min = day['members']
+	member_avg = member_total / len(days)
+	return render_to_response('staff/stats_members.html', {'days':days, 'date_range_form':date_range_form, 'start':start, 'end':end, 'min':member_min, 'max':member_max, 'avg':member_avg }, context_instance=RequestContext(request))
+
 def p(p, w):
 	return int(round(100*(float(p)/float(w))))
 	
