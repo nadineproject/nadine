@@ -251,6 +251,12 @@ class Member(models.Model):
 		if memberships == None or len(memberships) == 0: return None
 		return memberships[0]
 
+	def active_membership(self):
+		for membership in Membership.objects.filter(member=self).order_by('-start_date', 'end_date'):
+			if membership.is_active():
+				return membership
+		return None
+
 	def paid_count(self):
 		return DailyLog.objects.filter(member=self, payment='Bill').count()
 
@@ -300,9 +306,8 @@ class Member(models.Model):
 			return "Drop-in"
 
 	def is_active(self):
-		m = self.last_membership()
-		if not m: return False
-		return m.is_active()
+		m = self.active_membership()
+		return m is not None
 
 	def has_desk(self):
 		m = self.last_membership()
@@ -456,8 +461,9 @@ class Membership(models.Model):
 			raise Exception('A Membership cannot start after it ends')
 		super(Membership, self).save(*args, **kwargs)
 
-	def is_active(self):
-		return self.end_date == None or self.end_date >= timezone.now().date()
+	def is_active(self, on_date=date.today()):
+		if self.start_date > on_date: return false
+		return self.end_date == None or self.end_date >= on_date
 
 	def is_anniversary_day(self, test_date):
 		# Do something smarter if we're at the end of February
