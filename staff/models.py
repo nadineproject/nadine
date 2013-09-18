@@ -462,7 +462,7 @@ class Membership(models.Model):
 		super(Membership, self).save(*args, **kwargs)
 
 	def is_active(self, on_date=date.today()):
-		if self.start_date > on_date: return false
+		if self.start_date > on_date: return False
 		return self.end_date == None or self.end_date >= on_date
 
 	def is_anniversary_day(self, test_date):
