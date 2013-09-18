@@ -570,7 +570,7 @@ def activity_date(request, year, month, day):
 
 @staff_member_required
 def activity_today(request):
-	return activity_for_date(request, datetime.timezone.now().date())
+	return activity_for_date(request, timezone.localtime(timezone.now()))
 
 @staff_member_required
 def activity_for_date(request, activity_date):
