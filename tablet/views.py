@@ -19,9 +19,13 @@ from staff import email
 @login_required
 def welcome(request, username):
 	user = get_object_or_404(User, username=username)
+	member = user.get_profile()
+	membership = None
+	if member:
+		membership = member.active_membership()
 	motd = settings.MOTD
 	timeout = settings.MOTD_TIMEOUT
-	return render_to_response('tablet/welcome.html', {'user':user, 'motd':motd, 'timeout':timeout}, context_instance=RequestContext(request))
+	return render_to_response('tablet/welcome.html', {'user':user, 'membership':membership, 'motd':motd, 'timeout':timeout}, context_instance=RequestContext(request))
 
 @login_required
 def new_user(request):

@@ -8,8 +8,16 @@
 
 {% block content %}
 	<h2>Welcome {{user.first_name}} {{user.last_name}}!</h2>
+	{% if membership %}
+	<div style="font-weight:bold; padding-bottom:1em;">
+		As of today, you have used {{ membership.activity_this_month | length }} of {{ membership.get_allowance }} days.
+	</div>
+	{% endif %}
 	<div>
 		{{ motd }}
+		<p style="padding-left:3em;">
+			-- The Office Nomads Team
+		</p>
 	</div>
 	<script>
 		setTimeout(function () {window.location.href = "{% url 'tablet.views.signin' %}"; }, {{timeout}}); //will call the function after 5 secs.
