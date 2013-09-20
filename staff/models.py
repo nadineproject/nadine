@@ -500,6 +500,15 @@ class Membership(models.Model):
 
 	def next_billing_date(self, test_date=date.today()):
 		return self.prev_billing_date(test_date) + MonthDelta(1)
+	
+	def get_allowance(self):
+		if self.guest_of:
+			m = self.guest_of.active_membership()
+			if m:
+				return m.dropin_allowance
+			else:
+				return 0
+		return self.dropin_allowance
 
 	def __str__(self):
 		return '%s - %s' % (self.start_date, self.member)
