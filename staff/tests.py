@@ -267,6 +267,14 @@ class BillingTestCase(TestCase):
 		Membership.objects.create_with_plan(member=self.user7.get_profile(), start_date=date(2008, 6, 26), end_date=None, membership_plan=self.pt5Plan, rate=0, guest_of=self.user6.get_profile())
 		for day in range(1,16): DailyLog.objects.create(member=self.user7.get_profile(), visit_date=date(2010, 6, day), payment='Bill')
 
+	def testGuestActivity(self):
+		test_date = date(2010, 6, 20)
+		member6 = self.user6.get_profile()
+		member7 = self.user7.get_profile()
+		self.assertEqual(member7.is_guest(), member6)
+		self.assertTrue(member7 in member6.guests())
+		self.assertEqual(len(member6.activity_this_month(test_date)), 15)
+
 	def testRun(self):
 		member1 = self.user1.get_profile()
 		member2 = self.user2.get_profile()

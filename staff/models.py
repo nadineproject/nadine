@@ -258,10 +258,23 @@ class Member(models.Model):
 				return membership
 		return None
 
-	def membership_days_left(self):
+	def activity_this_month(self, test_date=date.today()):
 		membership = self.active_membership()
-		if not membership: return -1
-		
+		if not membership: 
+			# Not a member
+			return None
+		if membership.guest_of:
+			# Return host's activity
+			host = membership.guest_of
+			return host.activity_this_month()
+		month_start = membership.prev_billing_date(test_date)
+		activity = []
+		for m in [self] + self.guests():
+			for l in DailyLog.objects.filter(member=m, payment='Bill', visit_date__gt=month_start):
+				activity.append(l)
+		for l in DailyLog.objects.filter(guest_of=self, payment='Bill', visit_date__gte=month_start):
+			activity.append(l)
+		return activity
 
 	def paid_count(self):
 		return DailyLog.objects.filter(member=self, payment='Bill').count()
