@@ -11,3 +11,4 @@ django-mailchimp-v1.3
 django-tastypie
 django-localflavor-us
 gnotty
+monthdelta

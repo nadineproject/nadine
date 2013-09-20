@@ -11,6 +11,7 @@ from django.utils.encoding import smart_str, smart_unicode
 from django_localflavor_us.models import USStateField, PhoneNumberField
 from django.utils import timezone
 
+from monthdelta import MonthDelta, monthmod
 from taggit.managers import TaggableManager
 from taggit.models import TaggedItemBase
 
@@ -257,6 +258,11 @@ class Member(models.Model):
 				return membership
 		return None
 
+	def membership_days_left(self):
+		membership = self.active_membership()
+		if not membership: return -1
+		
+
 	def paid_count(self):
 		return DailyLog.objects.filter(member=self, payment='Bill').count()
 
@@ -474,6 +480,13 @@ class Membership(models.Model):
 		if self.start_date.day == 31 and test_date.day == 30:
 			if test_date.month in [9, 4, 6, 11]: return True
 		return test_date.day == self.start_date.day
+
+	def prev_billing_date(self, test_date=date.today()):
+		day_difference = monthmod(self.start_date, test_date)[1]
+		return test_date - day_difference
+
+	def next_billing_date(self, test_date=date.today()):
+		return self.prev_billing_date(test_date) + MonthDelta(1)
 
 	def __str__(self):
 		return '%s - %s' % (self.start_date, self.member)
