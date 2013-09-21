@@ -10,7 +10,7 @@
 	<h2>Welcome {{user.first_name}} {{user.last_name}}!</h2>
 	{% if membership %}
 	<div style="font-weight:bold; padding-bottom:1em;">
-		As of today, you have used {{ membership.activity_this_month | length }} of {{ membership.get_allowance }} days.
+		As of today, you have used {{ member.activity_this_month | length }} of {{ membership.get_allowance }} days.
 	</div>
 	{% endif %}
 	<div>
