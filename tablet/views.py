@@ -25,7 +25,7 @@ def welcome(request, username):
 		membership = member.active_membership()
 	motd = settings.MOTD
 	timeout = settings.MOTD_TIMEOUT
-	return render_to_response('tablet/welcome.html', {'user':user, 'membership':membership, 'motd':motd, 'timeout':timeout}, context_instance=RequestContext(request))
+	return render_to_response('tablet/welcome.html', {'user':user, 'member':member, 'membership':membership, 'motd':motd, 'timeout':timeout}, context_instance=RequestContext(request))
 
 @login_required
 def new_user(request):
@@ -91,14 +91,13 @@ def user_signin(request, username):
 	
 	user = get_object_or_404(User, username=username)
 	member = get_object_or_404(Member, user=user)
-	
+	membership = member.active_membership()
+	print len(member.activity_this_month())
+
 	can_signin = False
 	if not member.last_membership() or member.last_membership().end_date or not member.last_membership().has_desk:
 			if not DailyLog.objects.filter(member=member, visit_date=datetime.today().date()):
 			 	can_signin = True
-
-	activity = DailyLog.objects.filter(member=member, payment='Bill', bills__isnull=True, visit_date__gt=timezone.now().date()-timedelta(days=31))
-	guest_activity = DailyLog.objects.filter(guest_of=member, payment='Bill', guest_bills__isnull=True, visit_date__gte=timezone.now().date()-timedelta(days=31))
 
 	search_results = None
 	if request.method == "POST":
@@ -109,7 +108,7 @@ def user_signin(request, username):
 		member_search_form = MemberSearchForm()
 
 	return render_to_response('tablet/user_signin.html',{'user':user, 'member':member, 'can_signin':can_signin, 
-		'activity':activity, 'guest_activity':guest_activity, 'member_search_form':member_search_form, 'search_results':search_results}, context_instance=RequestContext(request))
+		'membership':membership, 'member':member, 'member_search_form':member_search_form, 'search_results':search_results}, context_instance=RequestContext(request))
 
 @login_required
 def signin_user(request, username):

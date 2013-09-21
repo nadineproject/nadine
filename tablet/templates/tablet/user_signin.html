@@ -26,27 +26,17 @@
 		</div>
 		<div class="ui-block-b">
 			<h2>{{ member.full_name }}</h2>
-			<h3>Billing Day: {{ member.last_membership.start_date|date:"jS" }}</h3>
+			<h3>Billing Day: <span style="font-weight:normal;">{{ member.active_membership.start_date|date:"jS" }}</span></h3>
+			
 			{% if not member.has_valid_billing %}
 				<h3 style="color:red;">Please update your billing profile.</h3>
 			{% endif %} 
-			{% if activity %}
-				<h3>Visits This Cycle ({{activity.count}}):</h3>
-				<ul>
-					{% for log in activity %}
-						<li>{{ log.visit_date|date:"l F jS"}}</li>
-					{% endfor %}
-				</ul>
+			
+			{% if membership %}
+				<h3>Visits This Cycle: 
+					<span style="font-weight:normal;">{{ member.activity_this_month | length }} of {{ membership.get_allowance }}</span>
+				</h3>
 			{% endif %} 
-			 
-			{% if guest_activity %}
-				<h3>Guest Visits ({{guest_activity.count}}):</h3>
-				<ul>
-					{% for log in guest_activity %}
-						<li>{{ log.member }} - {{ log.visit_date|date:"M jS" }}</li>
-					{% endfor %}
-				</ul>
-			{% endif %}
 
 			{% if can_signin and not search_results %}
 				<div id="wrap">
