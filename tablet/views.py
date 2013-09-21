@@ -87,16 +87,13 @@ def view_profile(request, username):
 
 @login_required
 def user_signin(request, username):
-	print("member")
-	
 	user = get_object_or_404(User, username=username)
 	member = get_object_or_404(Member, user=user)
 	membership = member.active_membership()
-	print len(member.activity_this_month())
 
 	can_signin = False
 	if not member.last_membership() or member.last_membership().end_date or not member.last_membership().has_desk:
-			if not DailyLog.objects.filter(member=member, visit_date=datetime.today().date()):
+			if not DailyLog.objects.filter(member=member, visit_date=timezone.localtime(timezone.now()).date()):
 			 	can_signin = True
 
 	search_results = None
@@ -120,7 +117,7 @@ def signin_user_guest(request, username, guestof):
 	member = get_object_or_404(Member, user=user)
 	daily_log = DailyLog()
 	daily_log.member = member
-	daily_log.visit_date = timezone.now().date()
+	daily_log.visit_date = timezone.localtime(timezone.now()).date()
 	if guestof:
 		guestof_user = get_object_or_404(User, username=guestof)
 		guestof_member = get_object_or_404(Member, user=guestof_user)
