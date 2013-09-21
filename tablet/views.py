@@ -82,8 +82,9 @@ def search(request):
 def view_profile(request, username):
 	user = get_object_or_404(User, username=username)
 	member = get_object_or_404(Member, user=user)
+	membership = member.active_membership()
 	tags = member.tags.order_by('name')
-	return render_to_response('tablet/view_profile.html',{'user':user, 'member':member, 'tags':tags}, context_instance=RequestContext(request))
+	return render_to_response('tablet/view_profile.html',{'user':user, 'member':member, 'membership':membership, 'tags':tags}, context_instance=RequestContext(request))
 
 @login_required
 def user_signin(request, username):

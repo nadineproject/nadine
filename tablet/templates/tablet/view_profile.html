@@ -26,6 +26,11 @@
 		<div class="ui-block-b">
 			<h2>{{ member.full_name }}</h2>
 			{% include "members/profile.frag" %}
+			{% if membership %}
+				<h3>Visits This Cycle: 
+					<span style="font-weight:normal;">{{ member.activity_this_month | length }} of {{ membership.get_allowance }}</span>
+				</h3>
+			{% endif %} 
 			<h3>Profile Tags:</h3>
 			{% if tags %}
 				<ul>{% for tag in tags %}
