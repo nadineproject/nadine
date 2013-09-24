@@ -7,13 +7,14 @@
 {% block sub-title %}Nadine Tablet | Welcome {% endblock %}
 
 {% block content %}
-	<h2>Welcome {{user.first_name}} {{user.last_name}}!</h2>
+	<div style="font-size: 150%;">Welcome {{user.first_name}} {{user.last_name}}!</div>
 	{% if membership %}
-	<div style="font-weight:bold; padding-bottom:1em;">
+	<div style="font-weight:bold; padding:1em; font-size:200%">
 		As of today, you have used {{ member.activity_this_month | length }} of {{ membership.get_allowance }} days.
+		<div style="padding-top:1em; font-weight:normal;">Your billing day is the {{ member.active_membership.start_date|date:"jS" }}.</div>
 	</div>
 	{% endif %}
-	<div>
+	<div style="font-size:150%;">
 		{{ motd }}
 		<p style="padding-left:3em;">
 			-- The Office Nomads Team
