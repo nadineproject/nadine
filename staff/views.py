@@ -13,6 +13,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
 from django.db.models import Sum
+from monthdelta import MonthDelta, monthmod
 
 import settings
 from models import *
@@ -617,8 +618,12 @@ def member_membership(request, member_id):
 	if (member.last_membership() and not member.last_membership().end_date):
 		return HttpResponseRedirect(reverse('staff.views.membership', args=[], kwargs={'membership_id':member.last_membership().id}))
 	
+	start = today = timezone.localtime(timezone.now()).date()
+	if member.last_membership().end_date:
+		start = (member.last_membership().end_date + timedelta(days=1))
+	last = start + MonthDelta(1) - timedelta(days=1)
 	return render_to_response('staff/membership.html', {'member':member, 'membership_plans':MembershipPlan.objects.all(), 
-		'membership_form':MembershipForm(initial={'member':member_id}), 'today':timezone.now().date().isoformat()}, context_instance=RequestContext(request))
+		'membership_form':MembershipForm(initial={'member':member_id, 'start_date':start}), 'today':today.isoformat(), 'last':last.isoformat()}, context_instance=RequestContext(request))
 
 @staff_member_required
 def membership(request, membership_id):
@@ -634,8 +639,10 @@ def membership(request, membership_id):
 			'start_date':membership.start_date, 'end_date':membership.end_date, 'monthly_rate':membership.monthly_rate, 'dropin_allowance':membership.dropin_allowance, 
 			'daily_rate':membership.daily_rate, 'deposit_amount':membership.deposit_amount, 'has_desk':membership.has_desk, 'guest_of':membership.guest_of, 'note':membership.note})
 
+	today = timezone.localtime(timezone.now()).date()
+	last = membership.next_billing_date() - timedelta(days=1)
 	return render_to_response('staff/membership.html', {'member':membership.member, 'membership': membership, 'membership_plans':MembershipPlan.objects.all(), 
-		'membership_form':membership_form, 'today':timezone.now().date().isoformat()}, context_instance=RequestContext(request))
+		'membership_form':membership_form, 'today':today.isoformat(), 'last':last.isoformat()}, context_instance=RequestContext(request))
 
 @staff_member_required
 def view_user_reports(request):

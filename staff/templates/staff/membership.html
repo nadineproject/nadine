@@ -35,14 +35,11 @@ $(document).ready(function() {
 		  }
 	 });
 
-	$('#start_today').click(function() {
-		$('#id_start_date').val('{{today}}');
-	});
 	$('#end_today').click(function() {
 		$('#id_end_date').val('{{today}}');
 	});
-	$('#end_anniv').click(function() {
-		$('#id_end_date').val('{{anniversary_date}}');
+	$('#end_last').click(function() {
+		$('#id_end_date').val('{{ last }}');
 	});
 
 })
@@ -77,13 +74,13 @@ $(document).ready(function() {
 						{{ membership.start_date }}
 						{{ membership_form.start_date.as_hidden }}
 					{% else %}
-						{{ membership_form.start_date }} <!--[ <a id="start_today">today</a> ]-->
+						{{ membership_form.start_date }}
 					{% endif %}
 				</td>
 			</tr>
 			<tr class="row-odd">
 				<td>End Date</td>
-				<td>{{ membership_form.end_date }} [ <a id="end_today">today</a> <!--| <a id="end_anniv">anniversary</a>--> ]</td>
+				<td>{{ membership_form.end_date }} [ <a id="end_last">last</a> | <a id="end_today">today</a> ]</td>
 			</tr>
 			<tr class="row-even">
 				<td>Monthly Rate</td>
