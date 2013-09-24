@@ -34,7 +34,11 @@
 			
 			{% if membership %}
 				<h3>Visits This Cycle: 
-					<span style="font-weight:normal;">{{ member.activity_this_month | length }} of {{ membership.get_allowance }}</span>
+					<span style="font-weight:normal;">{{ member.activity_this_month | length }} 
+						{% if membership.get_allowance %}
+							of {{ membership.get_allowance }}
+						{% endif %}
+					</span>
 				</h3>
 			{% endif %} 
 

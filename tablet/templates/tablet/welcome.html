@@ -10,7 +10,11 @@
 	<div style="font-size: 150%;">Welcome {{user.first_name}} {{user.last_name}}!</div>
 	{% if membership %}
 	<div style="font-weight:bold; padding:1em; font-size:200%">
-		As of today, you have used {{ member.activity_this_month | length }} of {{ membership.get_allowance }} days.
+		As of today, you have used {{ member.activity_this_month | length }}
+		{% if membership.get_allowance %}
+			of {{ membership.get_allowance }} 
+		{% endif %}
+		days.
 		<div style="padding-top:1em; font-weight:normal;">Your billing day is the {{ member.active_membership.start_date|date:"jS" }}.</div>
 	</div>
 	{% endif %}
