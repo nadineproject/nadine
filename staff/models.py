@@ -329,14 +329,14 @@ class Member(models.Model):
 		return m is not None
 
 	def has_desk(self):
-		m = self.last_membership()
+		m = self.active_membership()
 		if not m: return False
 		if m.is_active():
 			return m.has_desk
 		return False
 
 	def is_guest(self):
-		m = self.last_membership()
+		m = self.active_membership()
 		if m and m.is_active() and m.guest_of:
 			return m.guest_of
 		return None
