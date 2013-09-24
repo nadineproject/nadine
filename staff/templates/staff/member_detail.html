@@ -241,12 +241,14 @@ function gotoEmailReset(emailAddress){
 		<table>
 			<tr>
 				<th>Name</th>
+				<th>Membership</th>
 				<th>First Visit</th>
 			</tr>
 
 			{% for guest in member.guests %}
 				<tr class="{% cycle 'row-even' 'row-odd' %}">
 					<td nowrap><a href="{% url 'staff.views.member_detail' guest.id %}">{{ guest.first_name }} {{ guest.last_name }}</a></td>
+					<td>{{ guest.active_membership.membership_plan }}</td>
 					<td style="text-align: center;">{{ guest.first_visit }}</td>
 				</tr>
 			{% endfor %}
