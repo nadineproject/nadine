@@ -619,7 +619,7 @@ def member_membership(request, member_id):
 		return HttpResponseRedirect(reverse('staff.views.membership', args=[], kwargs={'membership_id':member.last_membership().id}))
 	
 	start = today = timezone.localtime(timezone.now()).date()
-	if member.last_membership().end_date:
+	if member.last_membership() and member.last_membership().end_date:
 		start = (member.last_membership().end_date + timedelta(days=1))
 	last = start + MonthDelta(1) - timedelta(days=1)
 	return render_to_response('staff/membership.html', {'member':member, 'membership_plans':MembershipPlan.objects.all(), 
