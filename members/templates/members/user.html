@@ -196,6 +196,16 @@
 	</div>
 
 	<div id="tabs-3">
+		{% if member.is_active %}
+			<h3>Visits This Cycle</h3>
+			<div style="font-weight:bold; padding-left:1em; font-size:120%">
+				{{ member.activity_this_month | length }}
+				{% if member.active_membership.get_allowance %}
+					of {{ member.active_membership.get_allowance }} 
+				{% endif %}
+				Days
+			</div>
+		{% endif %}
 		<h3>Daily Activity</h3>
 		{% if user.profile.daily_logs.all %}		
 		<table> 
