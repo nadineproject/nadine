@@ -18,14 +18,25 @@ from staff import email
 
 @login_required
 def welcome(request, username):
+	usage_color = "black";
 	user = get_object_or_404(User, username=username)
 	member = user.get_profile()
 	membership = None
 	if member:
 		membership = member.active_membership()
+		if membership:
+			days = len(member.activity_this_month())
+			allowed = membership.get_allowance()
+			if days > allowed:
+				usage_color = "red"
+			elif days == allowed:
+				usage_color = "orange"
+			else:
+				usage_color = "green"
 	motd = settings.MOTD
 	timeout = settings.MOTD_TIMEOUT
-	return render_to_response('tablet/welcome.html', {'user':user, 'member':member, 'membership':membership, 'motd':motd, 'timeout':timeout}, context_instance=RequestContext(request))
+	return render_to_response('tablet/welcome.html', {'user':user, 'member':member, 'membership':membership, 
+		'motd':motd, 'timeout':timeout, 'usage_color':usage_color}, context_instance=RequestContext(request))
 
 @login_required
 def new_user(request):
