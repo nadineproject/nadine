@@ -1,5 +1,6 @@
 .svn
 *.pyc
+*.class
 pip-log.txt
 backups
 local_settings.py
