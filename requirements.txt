@@ -12,3 +12,4 @@ django-tastypie
 django-localflavor-us
 gnotty
 monthdelta
+py4j
