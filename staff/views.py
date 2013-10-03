@@ -14,6 +14,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
 from django.db.models import Sum
 from monthdelta import MonthDelta, monthmod
+from py4j.java_gateway import JavaGateway
 
 import settings
 from models import *
@@ -655,4 +656,20 @@ def view_user_reports(request):
 	users = report.get_users()
 	return render_to_response('staff/user_reports.html', {'users':users, 'form':form}, context_instance=RequestContext(request))
 
+@staff_member_required
+def usaepay(request, username):
+	try:
+		gateway = JavaGateway()
+		customers = gateway.entry_point.searchCustomers(username)
+	except:
+		error = 'Could not connect to USAePay Gateway!'
+		return render_to_response('staff/usaepay.html', {'username':username, 'error':error}, context_instance=RequestContext(request))
+
+	if request.method == 'POST':
+		if 'disable_all' in request.POST:
+			gateway.entry_point.disableAll(username)
+			customers = gateway.entry_point.searchCustomers(username)
+
+	return render_to_response('staff/usaepay.html', {'username':username, 'customers':customers}, context_instance=RequestContext(request))
+	
 # Copyright 2009, 2010 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

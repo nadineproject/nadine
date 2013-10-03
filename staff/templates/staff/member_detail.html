@@ -55,6 +55,7 @@ function gotoEmailReset(emailAddress){
 		<a href="{% url 'staff.views.member_transactions' member.id %}">transactions</a> |
 		<a href="{% url 'views.password_reset' %}?email={{ member.email }}">pw reset</a> |
 		<a href="{% url 'members.views.user' member.user.username %}">profile</a> |
+		<a href="{% url 'staff.views.usaepay' member.user.username %}">usaepay</a> |
 		<a href="{% url 'admin:auth_user_change' member.user.id %}">edit member</a> |
 		{% if member.is_active %}
 			<a href="{% url 'staff.views.membership' member.last_membership.id %}">update membership</a>

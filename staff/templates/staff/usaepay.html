@@ -1,0 +1,53 @@
+{% extends "staff/ml_base.html" %}
+
+{% block style %}
+nav #members-tab { background: #FBD850; color: black; }
+#content td { white-space:nowrap; }
+{% endblock %}
+
+{% block sub-title %}USAePay Customers | {% endblock %}
+
+{% block content %}
+{% include "staff/member_menu.frag" %}	 
+
+<h2>USAePay Customers - {{ username }}</h2>
+
+{% if error %}
+	<div style="text-align:center; font-size:150%; color:red">{{ error }}</div>
+{% endif %}
+
+<table>
+	<tr>
+		<th>Created</th>
+		<th>Customer #</th>
+		<th>Next Bill</th>
+		<th>Auto-Billing</th>
+		<th></th>
+	</tr>
+
+	{% for cust in customers %}
+		<tr class="{% cycle 'row-even' 'row-odd' %}">
+			<td>{{ cust.getCreated | slice:":10"}}</td>
+			<td><a href="https://secure.usaepay.com/console/billing_edit?id={{ cust.getCustNum }}" target="new">{{ cust.getCustNum }}</a></td>
+			{% if cust.isEnabled %}
+			<td>{{ cust.getNext | slice:":10"}}</td>
+				<td><span style="color:green; font-weight:bold;">Enabled</span></td>
+			{% else %}
+				<td colspan=2></td>
+			{% endif %}
+			<td></td>
+		</tr>
+	{% endfor %}
+
+	<tr>
+		<td colspan=3></td>
+		<td>
+			<form method="POST" action=".">
+				<input type="submit" name="disable_all" value="Disable All">
+				{% csrf_token %}
+			</form>
+		</td>
+		<td></td>
+</table>
+
+{% endblock %}
