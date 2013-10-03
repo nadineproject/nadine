@@ -23,7 +23,7 @@ public class USAePayBridge {
 	}
 	
 	public List searchCustomers(String user_id) throws Exception {
-		return searchCustomers(user_id, true, 0, 100, "fname");
+		return searchCustomers(user_id, true, 0, 100, "created");
 	}
 	
 	public List searchCustomers(String user_id, boolean match_all, int start, int limit, String sort_by) throws Exception {
