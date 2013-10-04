@@ -1,11 +1,19 @@
 #!/usr/bin/python
 
 import os
+import sys
 import glob
 from settings import *
 
 java_dir = "py4j_gateway"
 java_file = "USAePayBridge"
+
+def needCompile():
+	if not os.path.exists(java_dir + "/" + java_file + ".class"):
+		return True
+	if "-c" in sys.argv:
+		return True
+	return False
 
 def getClasspath():
 	cwd = os.getcwd()
@@ -18,7 +26,7 @@ def main():
 	cp = getClasspath()
 	#print("classpath: " + cp)
 	
-	if not os.path.exists(java_dir + "/" + java_file + ".class"):
+	if needCompile():
 		print("Compiling java class")
 		compile_command = "javac -cp '" + cp + "' " + java_dir + "/" + java_file + ".java"
 		#print compile_command
