@@ -30,7 +30,9 @@ def main():
 		print("Compiling java class")
 		compile_command = "javac -cp '" + cp + "' " + java_dir + "/" + java_file + ".java"
 		#print compile_command
-		os.system(compile_command)
+		if os.system(compile_command) > 0:
+			print("Could not compile the java class!")
+			return
 	
 	launch_command = "java -cp '" + cp + "' " + java_file + " " + USA_EPAY_URL + " " + USA_EPAY_KEY2 + " " + USA_EPAY_PIN2
  	#print launch_command
