@@ -22,14 +22,25 @@ public class USAePayBridge {
 		return customer;
 	}
 	
-	public List searchCustomers(String user_id) throws Exception {
-		return searchCustomers(user_id, true, 0, 100, "created");
-	}
-	
-	public List searchCustomers(String user_id, boolean match_all, int start, int limit, String sort_by) throws Exception {
-		System.out.println("searchCustomers: " + user_id);
+	public List getAllCustomers(String user_id) throws Exception {
+		System.out.println("getAllCustomers: " + user_id);
 		SearchParamArray search = new SearchParamArray();
 		search.add(new SearchParam("CustomerID", "eq", user_id));
+		return searchCustomers(search);
+	}
+
+	public List getEnabledCustomers() throws Exception {
+		System.out.println("getEnabledCustomers");
+		SearchParamArray search = new SearchParamArray();
+		search.add(new SearchParam("Enabled", "eq", "True"));
+		return searchCustomers(search, true, 0, 500, "next");
+	}
+
+	public List searchCustomers(SearchParamArray search) throws Exception {
+		return searchCustomers(search, true, 0, 100, "created");
+	}
+	
+	public List searchCustomers(SearchParamArray search, boolean match_all, int start, int limit, String sort_by) throws Exception {
 		CustomerSearchResult result = client.searchCustomers(token, search, match_all, BigInteger.valueOf(start), BigInteger.valueOf(limit), sort_by);
 		System.out.println("searchCustomers: found " + result.getCustomersReturned());
 		CustomerObjectArray customerArray = result.getCustomers();
@@ -55,7 +66,7 @@ public class USAePayBridge {
 
 	public void disableAll(String user_id) throws Exception {
 		System.out.println("disableAll: " + user_id);
-		List customers = searchCustomers(user_id);
+		List customers = getAllCustomers(user_id);
 		ListIterator it = customers.listIterator();
 		while(it.hasNext()){
 			CustomerObject customer = (CustomerObject) it.next();
@@ -93,18 +104,4 @@ public class USAePayBridge {
 			System.out.println(e.getMessage());
 		}
 	}
-	
-	public static void dump_methods(String classname) {
-		System.out.println("Methods for " + classname);
-        try {
-            Class c = Class.forName(classname);
-            Method m[] = c.getDeclaredMethods();
-            for (int i = 0; i < m.length; i++)
-            System.out.println(m[i].toString());
-        }
-        catch (Throwable e) {
-            System.err.println(e);
-        }
-    }
-
 }

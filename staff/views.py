@@ -660,7 +660,7 @@ def view_user_reports(request):
 def usaepay(request, username):
 	try:
 		gateway = JavaGateway()
-		customers = gateway.entry_point.searchCustomers(username)
+		customers = gateway.entry_point.getAllCustomers(username)
 	except:
 		error = 'Could not connect to USAePay Gateway!'
 		return render_to_response('staff/usaepay.html', {'username':username, 'error':error}, context_instance=RequestContext(request))
@@ -668,7 +668,8 @@ def usaepay(request, username):
 	if request.method == 'POST':
 		if 'disable_all' in request.POST:
 			gateway.entry_point.disableAll(username)
-			customers = gateway.entry_point.searchCustomers(username)
+			# Pull the customers again since we've changed them
+			customers = gateway.entry_point.getAllCustomers(username)
 
 	return render_to_response('staff/usaepay.html', {'username':username, 'customers':customers}, context_instance=RequestContext(request))
 	
