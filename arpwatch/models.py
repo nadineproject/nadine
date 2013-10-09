@@ -1,5 +1,5 @@
 from datetime import datetime, time, date, timedelta
-from collections import namedtuple
+from collections import OrderedDict, namedtuple
 
 from django.db import models
 from django.db.models import Q
@@ -7,6 +7,8 @@ from django.contrib import admin
 from django.core import urlresolvers
 from django.contrib.auth.models import User
 from django.db import connection
+from django.db.models import Min, Max
+from django.utils import timezone
 
 from staff.models import Member, Membership
 
@@ -33,19 +35,47 @@ class UserRemoteAddr(models.Model):
 	   return '%s: %s = %s' % (self.logintime, self.user, self.ip_address)
 	
 class ArpLog_Manager(models.Manager):
-	def for_range(self, day_start, day_end):
-		DeviceLog = namedtuple('DeviceLog', 'device, start, end, diff')
-		sql = "select device_id, min(runtime), max(runtime) from arpwatch_arplog where runtime > '%s' and runtime < '%s' group by 1 order by 2;"
-		sql = sql % (day_start, day_end)
-		cursor = connection.cursor()
-		cursor.execute(sql)
-		device_logs = []
-		for row in cursor.fetchall():
-			device = UserDevice.objects.get(pk=row[0])
-			if not device.ignore:
-				device_logs.append(DeviceLog(device, row[1], row[2], row[2]-row[1]))
-		return device_logs
+	# Uses raw SQL - Has problems with TZ dates
+	#def for_range(self, day_start, day_end):
+	#	DeviceLog = namedtuple('DeviceLog', 'device, start, end, diff')
+	#	sql = "select device_id, min(runtime), max(runtime) from arpwatch_arplog where runtime > '%s' and runtime < '%s' group by 1 order by 2;"
+	#	sql = sql % (day_start, day_end)
+	#	cursor = connection.cursor()
+	#	cursor.execute(sql)
+	#	device_logs = []
+	#	for row in cursor.fetchall():
+	#		device = UserDevice.objects.get(pk=row[0])
+	#		if not device.ignore:
+	#			device_logs.append(DeviceLog(device, row[1], row[2], row[2]-row[1]))
+	#	return device_logs
 
+	# Uses DJango aggrigation - Doesn't work!!! 
+	#def for_range(self, day_start, day_end):
+	#	device_logs = []
+	#	DeviceLog = namedtuple('DeviceLog', 'device, start, end, diff')
+	#	query = ArpLog.objects.filter(runtime__gte=day_start, runtime__lte=day_end)
+	#	query.group_by = ['device_id']
+	#	for l in query.annotate(start=Min('runtime'), end=Max('runtime')).order_by('start'):
+	#		if not l.device.ignore:
+	#			device_logs.append(DeviceLog(l.device, l.start, l.end, l.end-l.start))
+	#	return device_logs
+
+	# Aggregate manually
+	def for_range(self, day_start, day_end):
+		device_logs = OrderedDict()
+		DeviceLog = namedtuple('DeviceLog', 'device, start, end, diff')
+		for arp_log in ArpLog.objects.filter(runtime__gte=day_start, runtime__lte=day_end, device__ignore=False).order_by('runtime'):
+			key = arp_log.device.mac_address
+			if key in device_logs:
+				start = device_logs[key].start
+				end = arp_log.runtime
+				device_logs[key] = DeviceLog(arp_log.device, start, end, end-start)
+			else:
+				# Create a new device log
+				start = end = arp_log.runtime
+				device_logs[key] = DeviceLog(arp_log.device, start, end, 0)
+		return device_logs.values()
+			
 	def for_device(self, device_id):
 		DeviceLog = namedtuple('DeviceLog', 'ip, day')
 		sql = "select ip_address, date_trunc('day', runtime) from arpwatch_arplog where device_id = %s group by 1, 2 order by 2 desc;"
