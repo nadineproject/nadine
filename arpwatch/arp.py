@@ -131,9 +131,12 @@ def users_for_day(day=date.today()):
 
 	# Device Logs
 	for l in device_users_for_day(day):
-		member = l.device_user.get_profile()
-		if not member_dict.has_key(member) or l.runtime < member_dict[member]:
-			member_dict[member] = l.runtime
+		runtime = l.get('runtime')
+		user_id = l.get('device__user')
+		if user_id:
+			member = Member.objects.get(user__id=user_id)
+			if not member_dict.has_key(member) or runtime < member_dict[member]:
+				member_dict[member] = runtime
 	
 	members = sorted(member_dict, key=member_dict.get)
 	members.reverse()
