@@ -65,7 +65,7 @@ def make_backup():
 	
 @task()
 def send_notifications():
-	here_today = arp.here_today()
+	here_today = arp.users_for_day()
 	for n in UserNotification.objects.filter(sent_date__isnull=True):
 		if n.notify_user.get_profile() in here_today:
 			if n.target_user.get_profile() in here_today:

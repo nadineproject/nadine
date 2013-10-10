@@ -114,25 +114,27 @@ def day_is_complete(day_str):
 	print(arp_logs.count())
 	return True
 	
-def here_today():
-	now = timezone.localtime(timezone.now())
-	here_today = {}
-	counts = {}
+def device_users_for_day(day=date.today()):
+	start = datetime(year=day.year, month=day.month, day=day.day, hour=0, minute=0, second=0, microsecond=0)
+	start = timezone.make_aware(start, timezone.get_current_timezone())
+	end = start + timedelta(days=1)
+	query = ArpLog.objects.filter(runtime__range=(start, end)).order_by('device__user').distinct('device__user')
+	return query.values('device__user', 'runtime')
+
+def users_for_day(day=date.today()):
+	member_dict = {}
 
 	# Who's signed into the space today
-	daily_logs = DailyLog.objects.filter(visit_date=now)
+	daily_logs = DailyLog.objects.filter(visit_date=day)
 	for l in daily_logs:
-		here_today[l.member] = l.created
+		member_dict[l.member] = l.created
 
 	# Device Logs
-	midnight = now - timedelta(seconds=now.hour*60*60 + now.minute*60 + now.second)
-	device_logs = ArpLog.objects.for_range(midnight, now)
-	for l in device_logs:
-		if l.device.user:
-			member = l.device.user.get_profile()
-			if not here_today.has_key(member) or l.start < here_today[member]:				
-				here_today[member] = l.start
-				
-	members = sorted(here_today, key=here_today.get)
+	for l in device_users_for_day(day):
+		member = l.get_profile()
+		if not member_dict.has_key(member) or l.runtime < member_dict[member]:
+			member_dict[member] = l.runtime
+	
+	members = sorted(member_dict, key=member_dict.get)
 	members.reverse()
 	return members

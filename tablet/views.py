@@ -75,7 +75,7 @@ def members(request):
 
 @login_required
 def here_today(request):
-	members = arp.here_today()
+	members = arp.users_for_day()
 	return render_to_response('tablet/here_today.html', {'members':members}, context_instance=RequestContext(request))
 
 @login_required

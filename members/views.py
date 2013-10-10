@@ -54,7 +54,7 @@ def all_members(request):
 
 @login_required
 def here_today(request):
-	members = arp.here_today()
+	members = arp.users_for_day()
 	return render_to_response('members/here_today.html',{ 'members':members }, context_instance=RequestContext(request))
 
 def not_active(request):
@@ -193,7 +193,7 @@ def delete_notification(request, username):
 	return HttpResponseRedirect(reverse('members.views.notifications', kwargs={}))
 
 def ticker(request):
-	here_today = arp.here_today()
+	here_today = arp.users_for_day()
 	
 	now = timezone.localtime(timezone.now())
 	midnight = now - timedelta(seconds=now.hour*60*60 + now.minute*60 + now.second)
