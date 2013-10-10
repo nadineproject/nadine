@@ -131,7 +131,7 @@ def users_for_day(day=date.today()):
 
 	# Device Logs
 	for l in device_users_for_day(day):
-		member = l.get_profile()
+		member = l.device_user.get_profile()
 		if not member_dict.has_key(member) or l.runtime < member_dict[member]:
 			member_dict[member] = l.runtime
 	
