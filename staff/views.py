@@ -572,7 +572,8 @@ def activity_date(request, year, month, day):
 
 @staff_member_required
 def activity_today(request):
-	return activity_for_date(request, timezone.localtime(timezone.now()).date())
+	today = timezone.localtime(timezone.now())
+	return HttpResponseRedirect(reverse('staff.views.activity_date', args=[], kwargs={'year':today.year, 'month':today.month, 'day':today.day}))
 
 @staff_member_required
 def activity_for_date(request, activity_date):
@@ -672,5 +673,23 @@ def usaepay(request, username):
 			customers = gateway.entry_point.getAllCustomers(username)
 
 	return render_to_response('staff/usaepay.html', {'username':username, 'customers':customers}, context_instance=RequestContext(request))
+
+@staff_member_required
+def usaepay_transactions_today(request):
+	today = timezone.localtime(timezone.now())
+	return HttpResponseRedirect(reverse('staff.views.usaepay_transactions', args=[], kwargs={'year':today.year, 'month':today.month, 'day':today.day}))
+
+@staff_member_required
+def usaepay_transactions(request, year, month, day):
+	d = date(year=int(year), month=int(month), day=int(day))
+	error = ""
+	try:
+		gateway = JavaGateway()
+		transactions = gateway.entry_point.getTransactions(year, month, day)
+	except:
+		error = 'Could not connect to USAePay Gateway!'
+	return render_to_response('staff/usaepay_transactions.html', {'date':d, 'error':error, 'transactions':transactions,
+		'next_date':d + timedelta(days=1), 'previous_date':d - timedelta(days=1)}, context_instance=RequestContext(request))
+
 	
 # Copyright 2009, 2010 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
