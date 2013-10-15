@@ -12,7 +12,51 @@ public class USAePayBridge {
 		// Not sure what IP is used for so I'll just stub it out - JLS
 		String ip = "";
 		client = usaepay.getClient(url);
-		token = usaepay.getToken(key, pin, ip);		
+		token = usaepay.getToken(key, pin, ip);
+	}
+
+	public List getTransactions(String year, String month, String day) throws Exception {
+		String[] dates = getDateRange(year, month, day);
+		String start = dates[0];
+		String end = dates[1];
+		System.out.println("getTransactions: " + start);
+		SearchParamArray search = new SearchParamArray();
+		search.add(new SearchParam("created", "gte", start));
+		search.add(new SearchParam("created", "lte", end));
+		return searchTransactions(search);
+	}
+
+	public List searchTransactions(SearchParamArray search) throws Exception {
+		return searchTransactions(search, true, 0, 100, "created");
+	}
+	
+	public List searchTransactions(SearchParamArray search, boolean match_all, int start, int limit, String sort_by) throws Exception {
+		TransactionSearchResult result = client.searchTransactions(token, search, match_all, BigInteger.valueOf(start), BigInteger.valueOf(limit), sort_by);
+		System.out.println("searchTransactions: found " + result.getTransactionsReturned());
+		TransactionObjectArray transactionArray = result.getTransactions();
+		return transactionArray.getTransactions();
+	}
+	
+	public List getBatches(String year, String month, String day) throws Exception {
+		String[] dates = getDateRange(year, month, day);
+		String start = dates[0];
+		String end = dates[1];
+		System.out.println("getBatches: " + start);
+		SearchParamArray search = new SearchParamArray();
+		search.add(new SearchParam("opened", "gte", start));
+		search.add(new SearchParam("opened", "lte", end));
+		return searchBatches(search);
+	}
+
+	public List searchBatches(SearchParamArray search) throws Exception {
+		return searchBatches(search, true, 0, 100, "opened");
+	}
+	
+	public List searchBatches(SearchParamArray search, boolean match_all, int start, int limit, String sort_by) throws Exception {
+		BatchSearchResult result = client.searchBatches(token, search, match_all, BigInteger.valueOf(start), BigInteger.valueOf(limit), sort_by);
+		System.out.println("searchBatches: found " + result.getBatchesReturned());
+		BatchStatusArray batchArray = result.getBatches();
+		return batchArray.getBatchStatuses();
 	}
 	
 	public CustomerObject getCustomer(String user_id) throws Exception {
@@ -35,7 +79,7 @@ public class USAePayBridge {
 		search.add(new SearchParam("Enabled", "eq", "True"));
 		return searchCustomers(search, true, 0, 500, "next");
 	}
-
+	
 	public List searchCustomers(SearchParamArray search) throws Exception {
 		return searchCustomers(search, true, 0, 100, "created");
 	}
@@ -79,6 +123,14 @@ public class USAePayBridge {
 		BigInteger n = client.searchCustomerID(token, user_id);
 		System.out.println("getCustomerNumber: " + user_id + " = " + n);
 		return n;
+	}
+	
+	private String[] getDateRange(String year, String month, String day) {
+		// TODO - Add Validation
+		String start = year + "-" + month + "-" + day + " 00:00:00";
+		String end = year + "-" + month + "-" + day + " 23:59:59";
+		String[] dates = {start, end};
+		return dates;
 	}
 
 	public static void main(String[] args) {
