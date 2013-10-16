@@ -476,7 +476,12 @@ def stats_members(request):
 
 def p(p, w):
 	return int(round(100*(float(p)/float(w))))
-	
+
+@staff_member_required
+def member_detail_user(request, username):
+	user = get_object_or_404(User, username=username)
+	return HttpResponseRedirect(reverse('staff.views.member_detail', args=[], kwargs={'member_id':user.profile.id}))
+
 @staff_member_required
 def member_detail(request, member_id):
 	member = get_object_or_404(Member, pk=member_id)
@@ -682,7 +687,8 @@ def usaepay_transactions_today(request):
 @staff_member_required
 def usaepay_transactions(request, year, month, day):
 	d = date(year=int(year), month=int(month), day=int(day))
-	error = ""
+	error = None
+	transactions = None
 	try:
 		gateway = JavaGateway()
 		transactions = gateway.entry_point.getTransactions(year, month, day)

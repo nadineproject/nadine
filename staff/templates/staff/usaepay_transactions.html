@@ -32,7 +32,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 
 	{% for t in transactions %}
 		<tr class="{% cycle 'row-even' 'row-odd' %}">
-			<td>{{ t.getAccountHolder }}</td>
+			<td><a href="{% url 'staff.views.member_detail_user' t.getCustomerID %}">{{ t.getAccountHolder }}</a></td>
 			<td>{{ t.getDetails.getDescription }}</td>
 			<td>{{ t.getCreditCardData.getCardType }}</td>
 			<td>{{ t.getStatus }}</td>
