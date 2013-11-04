@@ -14,14 +14,16 @@ nav #activity-tab { background: #FBD850; color: black; }
 {% include "staff/activity_menu.frag" %}  
 
 <h2>
-	Daily Activity - {{ activity_date|date:"M d, Y" }}
-	<a href="{% url 'staff.views.activity_date' previous_date.year previous_date.month previous_date.day %}">&laquo;</a>
-	<a href="{% url 'staff.views.activity_date' next_date.year next_date.month next_date.day %}">&raquo;</a>
+	Daily Activity - {{ activity_date|date:"l, M dS" }}
+	<span style="float:right;">
+	<a href="{% url 'staff.views.activity_date' previous_date.year previous_date.month previous_date.day %}">&larr;</a>
+	<a href="{% url 'staff.views.activity_today' %}">&bull;</a>
+	<a href="{% url 'staff.views.activity_date' next_date.year next_date.month next_date.day %}">&rarr;</a>
+	</span>
 </h2>
 
 <div id="activity_list">
    <table>
-      <!-- Display all the daily logs first -->
       <tr>
          <th>Member</th>
          <th>Payment</th>
@@ -51,6 +53,37 @@ nav #activity-tab { background: #FBD850; color: black; }
       {% csrf_token %}
       </form>
   </table>
+  <div style="font-weight:bold; text-align:right;">{{ daily_logs | length }} records found</div>
+</div>
+
+{% if not_signed_in %}
+<h2>Forgot to sign in?</h2>
+<div id="activity_list">
+	<table>
+		<tr>
+			<th>Member</th>
+			<th>Payment</th>
+			<th>Guest of</th>
+			<th>Notes</th> 
+		</tr>
+		{% for member in not_signed_in %}
+			<form enctype="multipart/form-data" action='.' method='post'>
+			{{ daily_log_form.visit_date }}
+			<input type="hidden" id="id_member" name="member" value="{{member.id}}">
+			<tr class="{% cycle 'row-even' 'row-odd' %}">
+				<td style="text-align:left;"><a href="{% url 'staff.views.member_activity' member.id %}">{{ member }}</a></td>
+				<td>{{ daily_log_form.payment }}</td>
+				<td>{{ daily_log_form.guest_of }}</td>
+				<td>{{ daily_log_form.notes }}</td>
+	         <td><input type="submit" value="Add" /></td>
+				<td></td>
+			</tr>
+			{% csrf_token %}
+			</form>
+		{% endfor %}
+	</table>
+	<div style="font-weight:bold; text-align:right;">{{ not_signed_in | length }} records found</div>
+{% endif %}
 </div>
 
 <!-- Display form errors if there are some -->

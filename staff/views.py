@@ -20,6 +20,7 @@ import settings
 from models import *
 from forms import *
 import billing, user_reports, email
+from arpwatch import arp
 
 START_DATE_PARAM = 'start'
 END_DATE_PARAM = 'end'
@@ -593,7 +594,9 @@ def activity_for_date(request, activity_date):
 	else:
 		daily_log_form = DailyLogForm(initial={'visit_date': activity_date})
 	
-	return render_to_response('staff/activity_date.html', {'daily_logs':daily_logs, 'daily_log_form':daily_log_form, 'page_message':page_message, 'activity_date':activity_date, 'next_date':activity_date + timedelta(days=1), 'previous_date':activity_date - timedelta(days=1),  }, context_instance=RequestContext(request))
+	not_signed_in = arp.not_signed_in(activity_date)
+	
+	return render_to_response('staff/activity_date.html', {'daily_logs':daily_logs, 'not_signed_in':not_signed_in, 'daily_log_form':daily_log_form, 'page_message':page_message, 'activity_date':activity_date, 'next_date':activity_date + timedelta(days=1), 'previous_date':activity_date - timedelta(days=1),  }, context_instance=RequestContext(request))
 
 @staff_member_required
 def member_transactions(request, member_id):

@@ -121,6 +121,21 @@ def device_users_for_day(day=date.today()):
 	query = ArpLog.objects.filter(runtime__range=(start, end)).order_by('device__user').distinct('device__user')
 	return query.values('device__user', 'runtime')
 
+def not_signed_in(day=date.today()):
+	signed_in = []
+	for l in DailyLog.objects.filter(visit_date=day):
+		signed_in.append(l.member.user.id)
+	
+	not_signed_in = []
+	for l in device_users_for_day(day):
+		user_id = l.get('device__user')
+		if user_id and user_id not in signed_in:
+			member = Member.objects.get(user__id=user_id)
+			if not member.has_desk():
+				not_signed_in.append(member)
+				
+	return not_signed_in
+
 def users_for_day(day=date.today()):
 	member_dict = {}
 
