@@ -23,38 +23,59 @@
 		<strong>Note:</strong>  To register your device you must be in the office and not connected to a VPN.  You can not do this from home. 
 	</p>
 	
-	<h3>Your Device List</h3>
-	<table>
-		<tr>
-			<th>Mac Address</th>
-			<th>Device Name</th>
-			<th>Action</th>
-			<th></th>
-		</tr>
-		{% for d in devices %}
+	{% if not this_device %}
+		<h3>Device Unknown</h3>
+		<p>
+			We can not register your device at this time because it hasn't made it's way into the system yet.  
+			It can take a few minutes the first time a device connects to the network.  Please try again later.  
+		</p>
+	{% elif not this_device.user %}
+		<h3>Register New Device</h3>
+		<table>
+			<tr>
+				<th>Mac Address</th>
+				<th>Device Name</th>
+				<th>Action</th>
+				<th></th>
+			</tr>
 			<form action="." method="POST">
-			<input type="hidden" name="device_id", value="{{ d.id }}">
- 			<tr class="{% cycle 'row-even' 'row-odd' %}" {% if d == this_device %} style="font-weight:bold;" {% endif %}>
-				<td>{{ d.mac_address}}</td>
-				<td><input name="device_name" value="{{ d.device_name }}" size=64></td>
-				<td><input type="submit" value="Update"></td>
-				<td>
-					{% if d == this_device %} ( Current ) {% endif %}
-				</td>
+			<input type="hidden" name="device_id", value="{{ this_device.id }}">
+ 			<tr>
+				<td>{{ this_device.mac_address}}</td>
+				<td><input name="device_name" value="{{ this_device.device_name }}" size=64 placeholder="computer, phone, tablet"></td>
+				<td><input name="action" type="submit" value="Register"></td>
+				<td></td>
 			</tr>
 			{% csrf_token %}
-		</form>
-		{% endfor %}
-	</table>
+			</form>
+		</table>
+	{% endif %}
 	
-	<!--
-	<div class="ui-widget">
-		<input id="tag" name="tag">
-		<input type="submit" value="Add">
-		{% csrf_token %}
-	</form>
-	</div>
-	-->
+	{% if devices %}
+		<h3>Your Device List</h3>
+		<table>
+			<tr>
+				<th>Mac Address</th>
+				<th>Device Name</th>
+				<th>Action</th>
+				<th></th>
+			</tr>
+			{% for d in devices %}
+				<form action="." method="POST">
+				<input type="hidden" name="device_id", value="{{ d.id }}">
+	 			<tr class="{% cycle 'row-even' 'row-odd' %}" {% if d == this_device %} style="font-weight:bold;" {% endif %}>
+					<td>{{ d.mac_address}}</td>
+					<td><input name="device_name" value="{{ d.device_name }}" size=64></td>
+					<td><input name="action" type="submit" value="Update"></td>
+					<td>
+						{% if d == this_device %} ( Current ) {% endif %}
+					</td>
+				</tr>
+				{% csrf_token %}
+			</form>
+			{% endfor %}
+		</table>
+	{% endif %}
 	
 	{% if error %}
 		<div style="color:red;"><strong>Error:</strong> {{ error }}</div>

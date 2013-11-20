@@ -177,22 +177,24 @@ def delete_tag(request, username, tag):
 def user_devices(request):
 	user = request.user
 	profile = user.get_profile()
-	devices = arp.devices_by_user(user)
-	ip = request.META['REMOTE_ADDR']
-	this_device = arp.device_by_ip(ip)
 
 	error = None
 	if request.method == 'POST':
 		device_id = request.POST.get('device_id')
 		device = UserDevice.objects.get(id=device_id)
-		if not device:
-			error = "Device unkown"
-		else:
-			device_name = request.POST.get('device_name')
-			device_name = device_name.strip()[:32]
-			device.device_name = device_name
-			device.save()
 
+		action = request.POST.get('action')
+		if action == "Register":
+			device.user = user
+
+		device_name = request.POST.get('device_name')
+		device_name = device_name.strip()[:32]
+		device.device_name = device_name
+		device.save()
+
+	devices = arp.devices_by_user(user)
+	ip = request.META['REMOTE_ADDR']
+	this_device = arp.device_by_ip(ip)
 	return render_to_response('members/user_devices.html',{'user':user, 'devices':devices, 'this_device':this_device, 'ip':ip, 'error':error}, context_instance=RequestContext(request))
 
 @login_required
