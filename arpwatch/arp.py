@@ -17,9 +17,14 @@ def register_user_ip(user, ip):
 def device_by_ip(ip):
 	end_ts = timezone.localtime(timezone.now())
 	start_ts = end_ts - timedelta(minutes=30)
-	latest_log = ArpLog.objects.filter(ip_address=ip, runtime__gte=start_ts, runtime__lte=end_ts).order_by('runtime').reverse()[1]
-	if latest_log:
-		return latest_log.device
+	logs = ArpLog.objects.filter(ip_address=ip, runtime__gte=start_ts, runtime__lte=end_ts).order_by('runtime').reverse()
+	if logs.count() > 0:
+		latest_log = logs[0]
+		if latest_log:
+			return latest_log.device
+
+def devices_by_user(user):
+	return UserDevice.objects.filter(user=user).order_by('mac_address')
 
 def map_ip_to_mac(hours):
 	end_ts = timezone.localtime(timezone.now())
