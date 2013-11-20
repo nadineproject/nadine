@@ -1,0 +1,63 @@
+{% extends "members/u_base.html" %}
+
+{%block sub-head %}
+{% endblock %}
+
+{% block content %}
+	<h2>Registered Devices</h2>
+	<p style="float:right; margin-top:0; margin-bottom:1em; font-style:italic">Current IP Address: {{ ip }}</p>
+	
+	<h3 style="margin-top: 1em;">Explanation</h3>
+	<p style="font-size:110%;">
+		Just as we keep track of every member in the space, we also keep track of every device (<i>computer, phone, tablet</i>) 
+		that connects to the network so we can better understand how all the systems are being used and to make sure everything 
+		is in working order.  
+		Please note that we only track the presence of each device, not what is being accessed.  
+		An example of how this data is used can be seen in the <a href="{% url 'members.views.here_today' %}">Here Today</a> page, 
+		and we also have some staff tools that help remind us if people have forgotten to sign in on any given day.  
+		If you have any questions about this system, or you think a device has been registered incorrectly, 
+		please do not hesitate to talk with a <a href="mailto:staff@officenomads.com">staff member</a> 
+		or let us know the next time you come by the front desk.
+	</p>
+	<p>
+		<strong>Note:</strong>  To register your device you must be in the office and not connected to a VPN.  You can not do this from home. 
+	</p>
+	
+	<h3>Your Device List</h3>
+	<table>
+		<tr>
+			<th>Mac Address</th>
+			<th>Device Name</th>
+			<th>Action</th>
+			<th></th>
+		</tr>
+		{% for d in devices %}
+			<form action="." method="POST">
+			<input type="hidden" name="device_id", value="{{ d.id }}">
+ 			<tr class="{% cycle 'row-even' 'row-odd' %}" {% if d == this_device %} style="font-weight:bold;" {% endif %}>
+				<td>{{ d.mac_address}}</td>
+				<td><input name="device_name" value="{{ d.device_name }}" size=64></td>
+				<td><input type="submit" value="Update"></td>
+				<td>
+					{% if d == this_device %} ( Current ) {% endif %}
+				</td>
+			</tr>
+			{% csrf_token %}
+		</form>
+		{% endfor %}
+	</table>
+	
+	<!--
+	<div class="ui-widget">
+		<input id="tag" name="tag">
+		<input type="submit" value="Add">
+		{% csrf_token %}
+	</form>
+	</div>
+	-->
+	
+	{% if error %}
+		<div style="color:red;"><strong>Error:</strong> {{ error }}</div>
+	{% endif %}
+	
+{% endblock %}
