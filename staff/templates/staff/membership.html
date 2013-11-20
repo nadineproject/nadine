@@ -116,12 +116,22 @@ $(document).ready(function() {
 				</td>
 			</tr>
 			<tr class="row-odd">
-				<td>Deposit Amount</td>
-				<td>{{ membership_form.deposit_amount }}</td>
+				<td>Extras</td>
+				<td>
+					{% if membership %}
+						{% if membership.has_desk %}<span style="margin-right:2em;">&check; Desk</span>{% endif %}
+						{% if membership.has_key %}<span style="margin-right:2em;">&check; Key</span>{% endif %}
+						{% if membership.has_mail %}<span style="margin-right:2em;">&check; Mail</span>{% endif %}
+					{% else %}
+						<span style="margin-right:2em;">{{ membership_form.has_desk }} Desk</span>
+						<span style="margin-right:2em;">{{ membership_form.has_key }} Key</span>
+						<span style="margin-right:2em;">{{ membership_form.has_mail }} Mail</span>
+					{% endif %}
+				</td>
 			</tr>
 			<tr class="row-even">
-				<td>Has Desk?</td>
-				<td>{{ membership_form.has_desk }}</td>
+				<td>Deposit Amount</td>
+				<td>{{ membership_form.deposit_amount }}</td>
 			</tr>
 			<tr class="row-odd">
 				<td>Guest Of</td>

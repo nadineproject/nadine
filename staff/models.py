@@ -142,6 +142,15 @@ class MemberManager(models.Manager):
 	def members_by_plan_id(self, plan_id):
 		return [m.member for m in Membership.objects.filter(membership_plan=plan_id).filter(Q(end_date__isnull=True, start_date__lte=timezone.now().date()) | Q(end_date__gt=timezone.now().date())).distinct().order_by('member__user__first_name')]
 
+	def members_with_desks(self):
+		return Member.objects.filter(memberships__isnull=False).filter(Q(memberships__has_desk=True) & (Q(memberships__end_date__isnull=True) | Q(memberships__end_date__gt=timezone.now().date()))).distinct()
+
+	def members_with_keys(self):
+		return Member.objects.filter(memberships__isnull=False).filter(Q(memberships__has_key=True) & (Q(memberships__end_date__isnull=True) | Q(memberships__end_date__gt=timezone.now().date()))).distinct()
+
+	def members_with_mail(self):
+		return Member.objects.filter(memberships__isnull=False).filter(Q(memberships__has_mail=True) & (Q(memberships__end_date__isnull=True) | Q(memberships__end_date__gt=timezone.now().date()))).distinct()
+
 	def members_by_neighborhood(self, hood, active_only=True):
 		if active_only:
 			return Member.objects.filter(neighborhood=hood).filter(memberships__isnull=False).filter(Q(memberships__end_date__isnull=True) | Q(memberships__end_date__gt=timezone.now().date())).distinct()
@@ -467,6 +476,8 @@ class Membership(models.Model):
 	daily_rate = models.IntegerField(default=0)
 	deposit_amount = models.IntegerField(default=0)
 	has_desk = models.NullBooleanField(default=False)
+	has_key = models.NullBooleanField(default=False)
+	has_mail = models.NullBooleanField(default=False)
 	guest_of = models.ForeignKey(Member, blank=True, null=True, related_name="monthly_guests")
 	note = models.CharField(max_length=128, blank=True, null=True)
 

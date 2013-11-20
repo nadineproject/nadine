@@ -30,10 +30,17 @@ def members(request):
 	if not request.user.is_staff: return HttpResponseRedirect(reverse('members.views.user', args=[], kwargs={'username':request.user.username}))
 	plans = []
 	member_count = 0
-	for plan in MembershipPlan.objects.all():
+	for plan in MembershipPlan.objects.all().order_by('name'):
 		member_list = Member.objects.members_by_plan_id(plan.id);
 		member_count = member_count + len(member_list)
 		plans.append({ 'name':plan.name, 'id':plan.id, 'members':member_list, 'count':len(Member.objects.members_by_plan_id(plan.id))})
+	has_desk = Member.objects.members_with_desks()
+	plans.append({ 'name':'Has Desk', 'id':'desk', 'members':has_desk, 'count':len(has_desk)})
+	has_key = Member.objects.members_with_keys()
+	plans.append({ 'name':'Has Key', 'id':'key', 'members':has_key, 'count':len(has_key)})
+	has_mail = Member.objects.members_with_mail()
+	plans.append({ 'name':'Has Mail', 'id':'mail', 'members':has_mail, 'count':len(has_mail)})
+	
 	return render_to_response('staff/members.html', { 'plans': plans, 'member_count':member_count }, context_instance=RequestContext(request))
 
 def member_bcc(request, plan_id):
@@ -647,7 +654,8 @@ def membership(request, membership_id):
 	else:
 		membership_form = MembershipForm(initial={'membership_id':membership.id, 'member':membership.member.id, 'membership_plan':membership.membership_plan, 
 			'start_date':membership.start_date, 'end_date':membership.end_date, 'monthly_rate':membership.monthly_rate, 'dropin_allowance':membership.dropin_allowance, 
-			'daily_rate':membership.daily_rate, 'deposit_amount':membership.deposit_amount, 'has_desk':membership.has_desk, 'guest_of':membership.guest_of, 'note':membership.note})
+			'daily_rate':membership.daily_rate, 'deposit_amount':membership.deposit_amount, 'has_desk':membership.has_desk, 'has_key':membership.has_key, 'has_mail':membership.has_mail,
+			'guest_of':membership.guest_of, 'note':membership.note})
 
 	today = timezone.localtime(timezone.now()).date()
 	last = membership.next_billing_date() - timedelta(days=1)

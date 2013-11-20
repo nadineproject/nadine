@@ -154,6 +154,8 @@ class MembershipForm(forms.Form):
 	daily_rate = forms.IntegerField(required=True, min_value=0)
 	deposit_amount = forms.IntegerField(required=True, min_value=0)
 	has_desk = forms.BooleanField(initial=False, required=False)
+	has_key = forms.BooleanField(initial=False, required=False)
+	has_mail = forms.BooleanField(initial=False, required=False)
 	guest_of = forms.ModelChoiceField(queryset=member_list, required=False)
 	note = forms.CharField(required=False, widget=forms.Textarea)
 
@@ -186,6 +188,8 @@ class MembershipForm(forms.Form):
 		membership.daily_rate = self.cleaned_data['daily_rate']
 		membership.deposit_amount = self.cleaned_data['deposit_amount']
 		membership.has_desk = self.cleaned_data['has_desk']
+		membership.has_key = self.cleaned_data['has_key']
+		membership.has_mail = self.cleaned_data['has_mail']
 		membership.guest_of = self.cleaned_data['guest_of']
 		membership.note = self.cleaned_data['note']
 		membership.save()
