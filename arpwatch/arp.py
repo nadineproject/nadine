@@ -14,6 +14,13 @@ def register_user_ip(user, ip):
 	print("REMOTE_ADDR for %s: %s" % (user, ip))
 	ip_log = UserRemoteAddr.objects.create(logintime=timezone.localtime(timezone.now()), user=user, ip_address=ip)
 
+def device_by_ip(ip):
+	end_ts = timezone.localtime(timezone.now())
+	start_ts = end_ts - timedelta(minutes=30)
+	latest_log = ArpLog.objects.filter(ip_address=ip, runtime__gte=start_ts, runtime__lte=end_ts).order_by('runtime').reverse()[1]
+	if latest_log:
+		return latest_log.device
+
 def map_ip_to_mac(hours):
 	end_ts = timezone.localtime(timezone.now())
 	start_ts = end_ts - timedelta(hours=hours)
