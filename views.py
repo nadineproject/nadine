@@ -35,7 +35,7 @@ def index(request):
 	arp.register_user_ip(request.user, ip)
 	device = arp.device_by_ip(ip)
 	if device and not device.user:
-		return HttpResponseRedirect(reverse('members.views.device'))
+		return HttpResponseRedirect(reverse('members.views.user_devices'))
 	
 	if request.user.is_staff: return HttpResponseRedirect(reverse('staff.views.todo'))
 	

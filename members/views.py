@@ -18,7 +18,7 @@ from interlink.forms import MailingListSubscriptionForm
 from interlink.models import IncomingMail
 from models import HelpText, UserNotification
 from arpwatch import arp
-from arpwatch.models import ArpLog
+from arpwatch.models import ArpLog, UserDevice
 
 @login_required
 def home(request):
@@ -172,6 +172,30 @@ def delete_tag(request, username, tag):
 		if not request.user.is_staff: return HttpResponseRedirect(reverse('members.views.user', kwargs={'username':request.user.username}))
 	user.get_profile().tags.remove(tag)
 	return HttpResponseRedirect(reverse('members.views.user_tags', kwargs={'username':request.user.username}))
+
+@login_required
+def user_devices(request, username):
+	user = get_object_or_404(User, username=username)
+	if not user == request.user: 
+		if not request.user.is_staff: return HttpResponseRedirect(reverse('members.views.user', kwargs={'username':request.user.username}))
+	profile = user.get_profile()
+	devices = arp.devices_by_user(user)
+	ip = request.META['REMOTE_ADDR']
+	this_device = arp.device_by_ip(ip)
+
+	error = None
+	if request.method == 'POST':
+		device_id = request.POST.get('device_id')
+		device = UserDevice.objects.get(id=device_id)
+		if not device:
+			error = "Device unkown"
+		else:
+			device_name = request.POST.get('device_name')
+			device_name = device_name.strip()[:32]
+			device.device_name = device_name
+			device.save()
+
+	return render_to_response('members/user_devices.html',{'user':user, 'devices':devices, 'this_device':this_device, 'ip':ip, 'error':error}, context_instance=RequestContext(request))
 
 @login_required
 def notifications(request):
