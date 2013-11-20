@@ -30,8 +30,15 @@ from arpwatch import arp
 
 def index(request):
 	if not request.user.is_authenticated(): return HttpResponseRedirect(reverse('django.contrib.auth.views.login'))
-	arp.register_user_ip(request.user, request.META['REMOTE_ADDR'])
+
+	ip = request.META['REMOTE_ADDR']
+	arp.register_user_ip(request.user, ip)
+	device = arp.device_by_ip(ip)
+	if device and not device.user:
+		return HttpResponseRedirect(reverse('members.views.device'))
+	
 	if request.user.is_staff: return HttpResponseRedirect(reverse('staff.views.todo'))
+	
 	return HttpResponseRedirect(reverse('members.views.home'))
 
 @csrf_protect
