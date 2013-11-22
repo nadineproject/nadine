@@ -4,30 +4,24 @@
 {% endblock %}
 
 {% block content %}
-	<h2>Registered Devices</h2>
-	<p style="float:right; margin-top:0; margin-bottom:1em; font-style:italic">Current IP Address: {{ ip }}</p>
-	
-	<h3 style="margin-top: 1em;">Explanation</h3>
-	<p style="font-size:110%;">
-		Just as we keep track of every member in the space, we also keep track of every device (<i>computer, phone, tablet</i>) 
-		that connects to the network so we can better understand how all the systems are being used and to make sure everything 
-		is in working order.  
-		Please note that we only track the presence of each device, not what is being accessed.  
-		An example of how this data is used can be seen in the <a href="{% url 'members.views.here_today' %}">Here Today</a> page, 
-		and we also have some staff tools that help remind us if people have forgotten to sign in on any given day.  
-		If you have any questions about this system, or you think a device has been registered incorrectly, 
-		please do not hesitate to talk with a <a href="mailto:staff@officenomads.com">staff member</a> 
-		or let us know the next time you come by the front desk.
+	<h2>Registered Devices</h2>	
+	<p>
+		Please register your device with Nadine.
 	</p>
 	<p>
-		<strong>Note:</strong>  To register your device you must be in the office and not connected to a VPN.  You can not do this from home. 
+		In order to help us manage our systems
+		we ask that you register your device (<i>computer, phone, tablet</i>) 
+		with us using the form below. This help us understand use of the space and our network, and enables handy-dandy tools 
+		like the "<a href="{% url 'members.views.here_today' %}">Here Today</a>" page. 
+		Please note that we only track the presence of each device, not what is being accessed.
 	</p>
-	
+
 	{% if not this_device %}
 		<h3>Device Unknown</h3>
 		<p>
-			We can not register your device at this time because it hasn't made it's way into the system yet.  
-			It can take a few minutes the first time a device connects to the network.  Please try again later.  
+			We are having a hard time identifying your device.  For this to work, you must be in the office and not connected to a VPN.  
+			You can not do this from home.  It can also take a few minutes the first time you connect to the network.  If you are having
+			trouble we can always help you at the front desk.
 		</p>
 	{% elif not this_device.user %}
 		<h3>Register New Device</h3>
@@ -80,5 +74,7 @@
 	{% if error %}
 		<div style="color:red;"><strong>Error:</strong> {{ error }}</div>
 	{% endif %}
+	
+	<p style="float:right; margin-top:0; margin-bottom:1em; font-style:italic">Current IP Address: {{ ip }}</p>
 	
 {% endblock %}
