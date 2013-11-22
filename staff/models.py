@@ -475,9 +475,9 @@ class Membership(models.Model):
 	dropin_allowance = models.IntegerField(default=0)
 	daily_rate = models.IntegerField(default=0)
 	deposit_amount = models.IntegerField(default=0)
-	has_desk = models.NullBooleanField(default=False)
-	has_key = models.NullBooleanField(default=False)
-	has_mail = models.NullBooleanField(default=False)
+	has_desk = models.BooleanField(default=False)
+	has_key = models.BooleanField(default=False)
+	has_mail = models.BooleanField(default=False)
 	guest_of = models.ForeignKey(Member, blank=True, null=True, related_name="monthly_guests")
 	note = models.CharField(max_length=128, blank=True, null=True)
 
