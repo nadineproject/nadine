@@ -209,6 +209,7 @@ function gotoEmailReset(emailAddress){
 	<table>
 		<tr>
 			<th>Plan</th>
+			<th>Rate</th>
 			<th>Start Date</th>
 			<th>End Date</th>
 			<th>Desk</th>
@@ -221,6 +222,7 @@ function gotoEmailReset(emailAddress){
 		{% for membership in memberships %}
 			<tr class="{% cycle 'row-even' 'row-odd' %}">
 				<td>{{ membership.membership_plan }}</td>
+				<td>${{ membership.monthly_rate }}</td>
 				<td><a href="{{ membership.get_admin_url }}">{{ membership.start_date }}</a></td>
 				<td>{% if membership.end_date %}{{ membership.end_date }}{% endif %}</td>
 				<td>{% if membership.has_desk %}&check;{% endif %}</td>
