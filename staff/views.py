@@ -78,7 +78,7 @@ def security_deposits(request):
 
 	members = []
 	total_deposits = 0;
-	for deposit in SecurityDeposit.objects.filter(returned_date=None):
+	for deposit in SecurityDeposit.objects.filter(returned_date=None).order_by('member'):
 		members.append({'id':deposit.member.id, 'name':deposit.member, 'deposit_id':deposit.id, 'deposit':deposit.amount})
 		total_deposits = total_deposits + deposit.amount
 	return render_to_response('staff/security_deposits.html', { 'member_list': members, 'total_deposits':total_deposits}, context_instance=RequestContext(request))
