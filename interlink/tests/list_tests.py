@@ -27,7 +27,7 @@ class ListTest(TestCase):
 			pop_host='localhost', smtp_host='localhost'
 		)
 
-		self.basic_plan = MembershipPlan.objects.create(name='Basic', description='An occasional user', monthly_rate='50', daily_rate='25', dropin_allowance='5', deposit_amount='0')
+		self.basic_plan = MembershipPlan.objects.create(name='Basic', description='An occasional user', monthly_rate='50', daily_rate='25', dropin_allowance='5')
 
 	def test_subscription_form(self):
 		Membership.objects.create(member=self.user2.get_profile(), membership_plan=self.basic_plan, start_date=timezone.now().date() - timedelta(days=10))

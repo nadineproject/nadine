@@ -152,7 +152,6 @@ class MembershipForm(forms.Form):
 	monthly_rate = forms.IntegerField(required=True, min_value=0)
 	dropin_allowance = forms.IntegerField(required=True, min_value=0)
 	daily_rate = forms.IntegerField(required=True, min_value=0)
-	deposit_amount = forms.IntegerField(required=True, min_value=0)
 	has_desk = forms.BooleanField(initial=False, required=False)
 	has_key = forms.BooleanField(initial=False, required=False)
 	has_mail = forms.BooleanField(initial=False, required=False)
@@ -186,7 +185,6 @@ class MembershipForm(forms.Form):
 		membership.monthly_rate = self.cleaned_data['monthly_rate']
 		membership.dropin_allowance = self.cleaned_data['dropin_allowance']
 		membership.daily_rate = self.cleaned_data['daily_rate']
-		membership.deposit_amount = self.cleaned_data['deposit_amount']
 		membership.has_desk = self.cleaned_data['has_desk']
 		membership.has_key = self.cleaned_data['has_key']
 		membership.has_mail = self.cleaned_data['has_mail']

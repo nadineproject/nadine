@@ -17,7 +17,7 @@ $(document).ready(function() {
 	 var formData = {
 		 {% for plan in membership_plans %}
 		  '{{plan.id}}':{ 'monthly_rate':{{plan.monthly_rate}}, 'dropin_allowance':{{plan.dropin_allowance}}, 'daily_rate':{{plan.daily_rate}}, 
-								'deposit_amount':{{plan.deposit_amount}}, 'has_desk':'{{plan.has_desk}}' },
+								'has_desk':'{{plan.has_desk}}' },
 		 {% endfor %}
 	 }
 
@@ -27,7 +27,6 @@ $(document).ready(function() {
 		  $('#id_monthly_rate').val(new_values['monthly_rate']);
 		  $('#id_dropin_allowance').val(new_values['dropin_allowance']);
 		  $('#id_daily_rate').val(new_values['daily_rate']);
-		  $('#id_deposit_amount').val(new_values['deposit_amount']);
 		  if (new_values['has_desk']=='True') {
 			  $('#id_has_desk').attr('checked', 'checked');
 		  } else {
@@ -130,14 +129,10 @@ $(document).ready(function() {
 				</td>
 			</tr>
 			<tr class="row-even">
-				<td>Deposit Amount</td>
-				<td>{{ membership_form.deposit_amount }}</td>
-			</tr>
-			<tr class="row-odd">
 				<td>Guest Of</td>
 				<td>{{ membership_form.guest_of }}</td>
 			</tr>
-			<tr class="row-even">
+			<tr class="row-odd">
 				<td>Note</td>
 				<td>{{ membership_form.note }}</td>
 			</tr>

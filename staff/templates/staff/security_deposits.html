@@ -14,11 +14,24 @@ nav #members-tab { background: #FBD850; color: black; }
 
 <h2>Security Deposits</h2>  
 <table>
-	<tr><th>Name</th><th align="left">Amount</th></tr>
+	<tr>
+		<th>Name</th>
+		<th>Amount</th>
+		<th>Action</th>
+		<th></th>
+	</tr>
 	{% for member in member_list %}
 	<tr class="{% cycle 'row-even' 'row-odd' %}">
 		<td nowrap ><a href="{% url 'staff.views.member_detail' member.id %}">{{ member.name }}</a></td>
 		<td>${{ member.deposit }}</td>
+		<td>
+			<form action="." method="POST" onSubmit="return confirm('Are you sure?');">
+				<input name="deposit_id" value="{{ member.deposit_id }}" type="hidden" />
+				<input name="mark_returned" type="submit" Value="Mark Returned" />
+				{% csrf_token %}
+			</form>
+		</td>
+		<td></td>
 	</tr>
 	{% endfor %}
 	<tr><th><strong>Total Deposits</strong><th align="left">${{total_deposits}}</th></tr>

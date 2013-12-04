@@ -364,6 +364,9 @@ class Member(models.Model):
 				guests.append(membership.member)
 		return guests
 
+	def deposits(self):
+		return SecurityDeposit.objects.filter(member=self)
+		
 	def onboard_tasks_status(self):
 		"""
 		Returns an array of tuples: (Onboard_Task, Onboard_Task_Completed) for this member.
@@ -441,7 +444,6 @@ class MembershipPlan(models.Model):
 	monthly_rate = models.IntegerField(default=0)
 	daily_rate = models.IntegerField(default=0)
 	dropin_allowance = models.IntegerField(default=0)
-	deposit_amount = models.IntegerField(default=0)
 	has_desk = models.NullBooleanField(default=False)
 
 	def __str__(self): return self.name
@@ -463,7 +465,7 @@ class MembershipManager(models.Manager):
 			rate = membership_plan.monthly_rate 
 		self.create(member=member, start_date=start_date, end_date=end_date, membership_plan=membership_plan,
 			monthly_rate=rate, daily_rate=membership_plan.daily_rate, dropin_allowance=membership_plan.dropin_allowance,
-			deposit_amount=membership_plan.deposit_amount, has_desk=membership_plan.has_desk, guest_of=guest_of)
+			has_desk=membership_plan.has_desk, guest_of=guest_of)
 
 class Membership(models.Model):
 	"""A membership level which is billed monthly"""
@@ -474,7 +476,6 @@ class Membership(models.Model):
 	monthly_rate = models.IntegerField(default=0)
 	dropin_allowance = models.IntegerField(default=0)
 	daily_rate = models.IntegerField(default=0)
-	deposit_amount = models.IntegerField(default=0)
 	has_desk = models.BooleanField(default=False)
 	has_key = models.BooleanField(default=False)
 	has_mail = models.BooleanField(default=False)
@@ -636,5 +637,20 @@ class SentEmailLog(models.Model):
 	success = models.NullBooleanField(blank=False, null=False, default=False)
 	note = models.TextField(blank=True, null=True)
 	def __str__(self): return '%s: %s' % (self.created, self.recipient)
+
+class SecurityDeposit(models.Model):
+	member = models.ForeignKey('Member', blank=False, null=False)
+	received_date = models.DateField()
+	returned_date = models.DateField(blank=True, null=True)
+	amount = models.PositiveSmallIntegerField(default=0)
+	note = models.CharField(max_length=128, blank=True, null=True)
+
+class SpecialDay(models.Model):
+	member = models.ForeignKey('Member', blank=False, null=False)
+	year = models.PositiveSmallIntegerField(blank=True, null=True)
+	month = models.PositiveSmallIntegerField(blank=True, null=True)
+	day = models.PositiveSmallIntegerField(blank=True, null=True)
+	description = models.CharField(max_length=128, blank=True, null=True)
+
 
 # Copyright 2009, 2010 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

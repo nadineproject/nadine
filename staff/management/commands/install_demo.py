@@ -45,8 +45,8 @@ class Command(BaseCommand):
 		site.name = 'Nadine'
 		site.save()
 
-		basic_plan = MembershipPlan.objects.create(name='Basic', description='An occasional user', monthly_rate='50', daily_rate='25', dropin_allowance='5', deposit_amount='0')
-		resident_plan = MembershipPlan.objects.create(name='Resident', description='A frequent user', monthly_rate='500', daily_rate='20', deposit_amount='475', has_desk=True)
+		basic_plan = MembershipPlan.objects.create(name='Basic', description='An occasional user', monthly_rate='50', daily_rate='25', dropin_allowance='5')
+		resident_plan = MembershipPlan.objects.create(name='Resident', description='A frequent user', monthly_rate='500', daily_rate='20', has_desk=True)
 
 		knitters_ml = MailingList.objects.create(name='Knitters', description='Knitters of the space', email_address='knitters@example.com', username='knitters', password='1234', pop_host='pop.example.com', smtp_host='smtp.example.com', )
 		gamers_ml = MailingList.objects.create(name='Game players', description='People who play board games', email_address='gamers@example.com', username='gamers', password='1234', pop_host='pop.example.com', smtp_host='smtp.example.com', )
@@ -55,11 +55,11 @@ class Command(BaseCommand):
 		knitters_ml.moderators.add(alice)
 
 		terry = self.create_user('terry', '1234', 'Terry', 'Moofty', email='terry@example.com')
-		Membership.objects.create(member=terry.get_profile(), membership_plan=resident_plan, start_date=timezone.now().date() - timedelta(days=400), daily_rate=0, deposit_amount=475, has_desk=True)
+		Membership.objects.create(member=terry.get_profile(), membership_plan=resident_plan, start_date=timezone.now().date() - timedelta(days=400), daily_rate=0, has_desk=True)
 		knitters_ml.subscribers.add(terry)
 
 		bob = self.create_user('bob', '1234', 'Bob', 'Stilton', email='bob@example.com')
-		Membership.objects.create(member=bob.get_profile(), membership_plan=basic_plan, start_date=timezone.now().date() - timedelta(days=92), daily_rate=25, deposit_amount=0)
+		Membership.objects.create(member=bob.get_profile(), membership_plan=basic_plan, start_date=timezone.now().date() - timedelta(days=92), daily_rate=25)
 		knitters_ml.subscribers.add(bob)
 
 	def delete_all(self, cls):

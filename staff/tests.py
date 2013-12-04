@@ -19,7 +19,7 @@ class MailingListTest(TestCase):
 			pop_host='localhost', smtp_host='localhost'
 		)
 
-		resident_plan = MembershipPlan(name="Resident",monthly_rate="475",dropin_allowance="5",daily_rate="20",deposit_amount="500",has_desk=True)
+		resident_plan = MembershipPlan(name="Resident",monthly_rate="475",dropin_allowance="5",daily_rate="20",has_desk=True)
 
 		self.user1 = User.objects.create(username='member_one', first_name='Member', last_name='One')
 		Membership.objects.create(member=self.user1.get_profile(), membership_plan=resident_plan, start_date=date(2008, 6, 26))
@@ -53,8 +53,8 @@ class UtilsTest(TestCase):
 
 class TasksTestCase(TestCase):
 	def setUp(self):
-		residentPlan = MembershipPlan(name="Resident",monthly_rate="475",dropin_allowance="5",daily_rate="20",deposit_amount="500")
-		basicPlan = MembershipPlan(name="Basic",monthly_rate="25",dropin_allowance="1",daily_rate="20",deposit_amount="500")
+		residentPlan = MembershipPlan(name="Resident",monthly_rate="475",dropin_allowance="5",daily_rate="20")
+		basicPlan = MembershipPlan(name="Basic",monthly_rate="25",dropin_allowance="1",daily_rate="20")
 		
 		self.user1 = User.objects.create(username='member_one', first_name='Member', last_name='One')
 		Membership.objects.create(member=self.user1.get_profile(), membership_plan=residentPlan, start_date=date(2008, 6, 26), has_desk=True)
@@ -104,9 +104,9 @@ class TasksTestCase(TestCase):
 class MemberTestCase(TestCase):
 	def setUp(self):
 		self.neighborhood1 = Neighborhood.objects.create(name="Beggar's Gulch")
-		self.basicPlan = MembershipPlan.objects.create(name="Basic",monthly_rate=50,dropin_allowance=3,daily_rate=20,deposit_amount=0,has_desk=False)
-		self.pt5Plan = MembershipPlan.objects.create(name="PT5",monthly_rate=75,dropin_allowance=5,daily_rate=20,deposit_amount=0,has_desk=False)
-		self.residentPlan = MembershipPlan.objects.create(name="Resident",monthly_rate=475,dropin_allowance=5,daily_rate=20,deposit_amount=500,has_desk=True)
+		self.basicPlan = MembershipPlan.objects.create(name="Basic",monthly_rate=50,dropin_allowance=3,daily_rate=20,has_desk=False)
+		self.pt5Plan = MembershipPlan.objects.create(name="PT5",monthly_rate=75,dropin_allowance=5,daily_rate=20,has_desk=False)
+		self.residentPlan = MembershipPlan.objects.create(name="Resident",monthly_rate=475,dropin_allowance=5,daily_rate=20,has_desk=True)
 
 		self.user1 = User.objects.create(username='member_one', first_name='Member', last_name='One')
 		self.profile1 = self.user1.profile
@@ -178,7 +178,7 @@ class MemberTestCase(TestCase):
 
 class MembershipTestCase(TestCase):
 	def setUp(self):
-		self.residentPlan = MembershipPlan.objects.create(name="Resident",monthly_rate=475,dropin_allowance=5,daily_rate=20,deposit_amount=500,has_desk=True)
+		self.residentPlan = MembershipPlan.objects.create(name="Resident",monthly_rate=475,dropin_allowance=5,daily_rate=20,has_desk=True)
 		self.user1 = User.objects.create(username='member_one', first_name='Member', last_name='One')
 		self.user2 = User.objects.create(username='member_two', first_name='Member', last_name='Two')
 		self.user3 = User.objects.create(username='member_three', first_name='Member', last_name='Three')
@@ -225,10 +225,10 @@ class MembershipTestCase(TestCase):
 
 class BillingTestCase(TestCase):
 	def setUp(self):
-		self.basicPlan = MembershipPlan.objects.create(name="Basic",monthly_rate=50,dropin_allowance=3,daily_rate=20,deposit_amount=0,has_desk=False)
-		self.pt5Plan = MembershipPlan.objects.create(name="PT5",monthly_rate=75,dropin_allowance=5,daily_rate=20,deposit_amount=0,has_desk=False)
-		self.pt15Plan = MembershipPlan.objects.create(name="PT15",monthly_rate=225,dropin_allowance=15,daily_rate=20,deposit_amount=0,has_desk=False)
-		self.residentPlan = MembershipPlan.objects.create(name="Resident",monthly_rate=475,dropin_allowance=5,daily_rate=20,deposit_amount=500,has_desk=True)
+		self.basicPlan = MembershipPlan.objects.create(name="Basic",monthly_rate=50,dropin_allowance=3,daily_rate=20,has_desk=False)
+		self.pt5Plan = MembershipPlan.objects.create(name="PT5",monthly_rate=75,dropin_allowance=5,daily_rate=20,has_desk=False)
+		self.pt15Plan = MembershipPlan.objects.create(name="PT15",monthly_rate=225,dropin_allowance=15,daily_rate=20,has_desk=False)
+		self.residentPlan = MembershipPlan.objects.create(name="Resident",monthly_rate=475,dropin_allowance=5,daily_rate=20,has_desk=True)
 
 		# User 1 = Resident since 6/26/2008 
 		self.user1 = User.objects.create(username='member_one', first_name='Member', last_name='One')

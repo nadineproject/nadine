@@ -245,6 +245,46 @@ function gotoEmailReset(emailAddress){
 		{% endif %}
 	</table>
 
+<!-- Security Deposits -->
+<h2>Security Deposits:</h2>
+
+<table>
+	<tr>
+		<th>Received</th>
+		<th>Returned</th>
+		<th>Amount</th>
+		<th>Note</th>
+		<th>Action</th>
+	</tr>
+	{% for deposit in member.deposits %}
+		<tr class="{% cycle 'row-even' 'row-odd' %}">
+			<td>{{ deposit.received_date }}</td>
+			<td>{% if deposit.returned_date %}{{ deposit.returned_date }}{% endif %}</td>
+			<td>${{ deposit.amount }}</td>
+			<td>{% if deposit.note %}{{ deposit.note }}{% endif %}</td>
+			<td style="text-align:right;">{% if not deposit.returned_date %}
+				<form action="{% url 'staff.views.security_deposits' %}" method="POST" onSubmit="return confirm('Are you sure?');">
+					<input name="member_id" value="{{ member.id }}" type="hidden" />
+					<input name="deposit_id" value="{{ deposit.id }}" type="hidden" />
+					<input name="mark_returned" type="submit" Value="Mark Returned" />
+					{% csrf_token %}
+				</form>
+			{% endif %}</td>
+		</tr>
+	{% endfor %}
+		
+<form action="{% url 'staff.views.security_deposits' %}" method="POST">
+	<input name="member_id" value="{{ member.id }}" type="hidden" />
+	<tr>
+		<td colspan="2" style="text-align:right;"><strong>Record New Deposit:</strong></th>
+		<td><input name="amount" size="4" /></td>
+		<td><input name="note" size="32" /></td>
+		<td style="text-align:right;"><input name="add_deposit" type="submit" Value="Record Deposit" /></td>
+	{% csrf_token %}
+</form>
+
+</table>
+
 <!-- Guest Memberships -->
 {% if member.guests %}
 	<h2>Guest Memberships:</h2>

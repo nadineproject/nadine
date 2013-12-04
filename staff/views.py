@@ -60,11 +60,27 @@ def export_members(request):
 
 @staff_member_required
 def security_deposits(request):
+	if request.method == 'POST':
+		member_id = request.POST.get('member_id')
+		today = timezone.localtime(timezone.now())
+		if 'mark_returned' in request.POST:
+			deposit = SecurityDeposit.objects.get(pk=request.POST.get('deposit_id'))
+			deposit.returned_date = today
+			deposit.save()
+		elif 'add_deposit' in request.POST:
+			member = Member.objects.get(pk=member_id)
+			amount = request.POST.get('amount')
+			note = request.POST.get('note')
+			deposit = SecurityDeposit.objects.create(member=member, received_date=today, amount=amount, note=note)
+			deposit.save()
+		if member_id:
+			return HttpResponseRedirect(reverse('staff.views.member_detail', args=[], kwargs={'member_id':member_id}))
+
 	members = []
 	total_deposits = 0;
-	for membership in Membership.objects.filter(deposit_amount__gt=0):
-		members.append({'id':membership.member.id, 'name':membership.member, 'deposit':membership.deposit_amount})
-		total_deposits = total_deposits + membership.deposit_amount
+	for deposit in SecurityDeposit.objects.filter(returned_date=None):
+		members.append({'id':deposit.member.id, 'name':deposit.member, 'deposit_id':deposit.id, 'deposit':deposit.amount})
+		total_deposits = total_deposits + deposit.amount
 	return render_to_response('staff/security_deposits.html', { 'member_list': members, 'total_deposits':total_deposits}, context_instance=RequestContext(request))
 
 @staff_member_required
@@ -151,7 +167,7 @@ def bill_list(request):
 	start_date = date(year=starteo.tm_year, month=starteo.tm_mon, day=starteo.tm_mday)
 	endeo = timeo.strptime(end, "%Y-%m-%d")
 	end_date = date(year=endeo.tm_year, month=endeo.tm_mon, day=endeo.tm_mday)
-	bills = Bill.objects.filter(created__range=(start_date, end_date), amount__gt=0).order_by('created')
+	bills = Bill.objects.filter(created__range=(start_date, end_date), amount__gt=0).order_by('created').reverse()
 	total_amount = bills.aggregate(s=Sum('amount'))['s']
 	return render_to_response('staff/bill_list.html', {'bills':bills, 'total_amount':total_amount, 'date_range_form':date_range_form, 'start_date':start_date, 'end_date':end_date }, context_instance=RequestContext(request))
 
@@ -654,7 +670,7 @@ def membership(request, membership_id):
 	else:
 		membership_form = MembershipForm(initial={'membership_id':membership.id, 'member':membership.member.id, 'membership_plan':membership.membership_plan, 
 			'start_date':membership.start_date, 'end_date':membership.end_date, 'monthly_rate':membership.monthly_rate, 'dropin_allowance':membership.dropin_allowance, 
-			'daily_rate':membership.daily_rate, 'deposit_amount':membership.deposit_amount, 'has_desk':membership.has_desk, 'has_key':membership.has_key, 'has_mail':membership.has_mail,
+			'daily_rate':membership.daily_rate, 'has_desk':membership.has_desk, 'has_key':membership.has_key, 'has_mail':membership.has_mail,
 			'guest_of':membership.guest_of, 'note':membership.note})
 
 	today = timezone.localtime(timezone.now()).date()
