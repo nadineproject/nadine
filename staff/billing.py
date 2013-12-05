@@ -62,7 +62,7 @@ class Run:
 			self.days.append(Day(self.start_date + timedelta(days=i)))
 
 	def populate_memberships(self):
-		for membership in Membership.objects.filter(member=self.member).order_by('start_date'):
+		for membership in Membership.objects.filter(member=self.member, start_date__lte=self.start_date).order_by('start_date'):
 			if membership.end_date and membership.end_date < self.start_date: continue
 			if membership.start_date > self.end_date: continue
 			for i in range(0, len(self.days)):
