@@ -121,6 +121,9 @@ $(document).ready(function() {
 						{% if membership.has_desk %}<span style="margin-right:2em;">&check; Desk</span>{% endif %}
 						{% if membership.has_key %}<span style="margin-right:2em;">&check; Key</span>{% endif %}
 						{% if membership.has_mail %}<span style="margin-right:2em;">&check; Mail</span>{% endif %}
+						{{ membership_form.has_desk.as_hidden }}
+						{{ membership_form.has_key.as_hidden }}
+						{{ membership_form.has_mail.as_hidden }}
 					{% else %}
 						<span style="margin-right:2em;">{{ membership_form.has_desk }} Desk</span>
 						<span style="margin-right:2em;">{{ membership_form.has_key }} Key</span>
