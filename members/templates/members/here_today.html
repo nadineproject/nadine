@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block content %}
-<h2>{{ members.count }} members here today:</h2>
+<h2>{{ members | size }} members here today:</h2>
 {% for member in members %}
 <div class="user-card">
       {% if member.photo %}
