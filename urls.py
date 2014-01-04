@@ -7,9 +7,9 @@ from django.shortcuts import redirect
 admin.autodiscover()
 
 #from tastypie.api import Api
-from arpwatch.api import ActivityResource
-API = Api(api_name='v1')
-API.register(ActivityResource())
+#from arpwatch.api import ActivityResource
+#API = Api(api_name='v1')
+#API.register(ActivityResource())
 
 urlpatterns = patterns('',
    (r'^robots\.txt$', lambda r: HttpResponse("User-agent: *\nDisallow: /", mimetype="text/plain")),
