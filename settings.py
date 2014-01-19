@@ -48,6 +48,10 @@ SITE_ID = 1
 # to load the internationalization machinery.
 USE_I18N = True
 
+# Logging setup
+LOGGING = {
+    'version': 1,
+}
 
 # URL that handles the media served from MEDIA_ROOT.
 # Example: "http://media.lawrence.com"
@@ -114,7 +118,7 @@ INSTALLED_APPS = (
 	'interlink',
 	'arpwatch',
 	'tablet',
-	'gnotty',
+#	'gnotty',
 )
 
 #
