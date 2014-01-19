@@ -127,7 +127,7 @@ button {  width: auto; overflow: visible; }
 #footer { font-size: small; color:black; background: #5a7abd; padding: 0.5em; margin-top: 1em}
 #footer a { font-size: small; color:black;}
 
-nav { color: white; width: 800px; margin: 0 auto; }
+nav { color: white; width: 960px; margin: 0 auto; }
 nav:before { position: absolute; top: 2.7em; left: 0; width: 100%; background: black;  height: 30px; content: ""; z-index: -1;}
 nav a, nav a:active, nav a:visited { display: inline-block; padding: 0.5em; color: white; } 
 nav ul { list-style:none; }
