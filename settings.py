@@ -104,7 +104,6 @@ INSTALLED_APPS = (
 	'django.contrib.admin',
 	'django.contrib.humanize',
 	'django.contrib.staticfiles',
-	'gunicorn',
 	'mailchimp',
 	'taggit_templatetags',
 	'taggit',

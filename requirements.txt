@@ -1,7 +1,7 @@
 django
 south
 psycopg2
-pil
+pillow
 feedparser
 django-taggit
 django-taggit-templatetags

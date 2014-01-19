@@ -1,7 +1,7 @@
 import os
 import re
 import traceback
-import Image
+from PIL import Image
 from django.template import Library
 from django import template
 from django.utils.html import linebreaks
