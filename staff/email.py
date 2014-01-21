@@ -8,6 +8,34 @@ from django.template.loader import render_to_string
 from django.core.mail import send_mail, EmailMessage
 from models import Member, DailyLog, SentEmailLog
 
+def valid_message_keys():
+	return ["all", "introduction", "newsletter", "new_membership", "first_day_checkin", 
+		"exit_survey", "member_survey", "no_return", "checkin", "invalid_billing", "new_key"]
+
+def send_manual(user, message):
+	message = message.lower()
+	if not message in valid_message_keys():
+		return False
+	if message == "introduction" or message == "all":
+		send_introduction(user)
+	if message == "newsletter" or message == "all":
+		subscribe_to_newsletter(user)
+	if message == "new_member" or message == "all":
+		send_new_membership(user)
+	if message == "first_day_checkin" or message == "all":
+		send_first_day_checkin(user)
+	if message == "exit_survey" or message == "all":
+		send_exit_survey(user)
+	if message == "member_survey" or message == "all":
+		send_member_survey(user)
+	if message == "no_return_checkin" or message == "all":
+		send_no_return_checkin(user)
+	if message == "invalid_billing" or message == "all":
+		send_invalid_billing(user)
+	if message == "new_key" or message == "all":
+		send_new_key(user)
+	return True
+
 def send_introduction(user):
 	site = Site.objects.get_current()
 	subject = "%s: Introduction to Nadine" % (site.name)
@@ -59,6 +87,12 @@ def send_invalid_billing(user):
 	site = Site.objects.get_current()
 	subject = "%s: Billing Problem" % (site.name)
 	message = render_to_string('email/invalid_billing.txt', {'user':user, 'site':site})
+	send(user.email, subject, message)
+
+def send_new_key(user):
+	site = Site.objects.get_current()
+	subject = "%s: Key Holding Details" % (site.name)
+	message = render_to_string('email/new_key.txt', {'user':user, 'site':site})
 	send(user.email, subject, message)
 
 def send_user_notifications(user, target):

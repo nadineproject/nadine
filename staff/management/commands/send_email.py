@@ -4,7 +4,7 @@ import urllib
 import sys
 import datetime
 
-import staff.email
+from staff import email
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand, CommandError
 
@@ -13,8 +13,15 @@ class Command(BaseCommand):
 	args = "[username] [message]"
 	requires_model_validation = False
 
+	def print_keys(self):
+		print("Valid Message Keys: ")
+		for key in email.valid_message_keys():
+			print "   " + key
+
 	def handle(self, *labels, **options):
-		if not labels or len(labels) != 2: raise CommandError('Enter a username and message to send')
+		if not labels or len(labels) != 2: 
+			self.print_keys()
+			raise CommandError('Enter a username and message key')
 		
 		# Make sure we have a valid user
 		user = None
@@ -24,43 +31,10 @@ class Command(BaseCommand):
 			raise CommandError("Invalid username '%s'" % labels[0])
 		
 		message = labels[1].lower()
-		valid_message = False
-		if message == "introduction" or message == "all":
-			print("Sending introduction...")
-			staff.email.send_introduction(user)
-			valid_message = True
-		if message == "newsletter" or message == "all":
-			print("Sending newsletter...")
-			staff.email.subscribe_to_newsletter(user)
-			valid_message = True
-		if message == "new_member" or message == "all":
-			print("Sending new_member...")
-			staff.email.send_new_membership(user)
-			valid_message = True
-		if message == "first_day_checkin" or message == "all":
-			print("Sending first_day_checkin...")
-			staff.email.send_first_day_checkin(user)
-			valid_message = True
-		if message == "exit_survey" or message == "all":
-			print("Sending exit_survey...")
-			staff.email.send_exit_survey(user)
-			valid_message = True
-		if message == "member_survey" or message == "all":
-			print("Sending member_survey...")
-			staff.email.send_member_survey(user)
-			valid_message = True
-		if message == "no_return_checkin" or message == "all":
-			print("Sending no_return_checkin...")
-			staff.email.send_no_return_checkin(user)
-			valid_message = True
-		if message == "invalid_billing" or message == "all":
-			print("Sending invalid_billing...")
-			staff.email.send_invalid_billing(user)
-			valid_message = True
-
-		if not valid_message:
-			print("Message must be: all, introduction, newsletter, new_membership, first_day_checkin, exit_survey, member_survey, no_return checkin, invalid_billing")
-			raise CommandError("Invalid message '%s'" % labels[1])
+		print("Sending %s..." % message)
+		if not email.send_manual(user, message):
+			self.print_keys()
+			raise CommandError("Invalid message key '%s'" % labels[1])
 
 		print("Email address: %s" % user.email)
 
