@@ -339,19 +339,19 @@ function gotoEmailReset(emailAddress){
 {% else %}
 	<p>No email logs.</p>
 {% endif %}
-<!--
 <div style="margin:1em;">
 <form action="." method="POST">
 	<strong>Manually Send Email: </strong>
 	<input name="member_id" value="{{ member.id }}" type="hidden" />
-	<select>
-		<option>Introduction</option>
+	<select name="message_key">
+		{% for key in email_keys %}
+			<option>{{ key }}</option>
+		{% endfor %}
 	</select>
-	<input type="submit" Value="Send" />
+	<input name="send_manual_email" type="submit" Value="Send" />
 	{% csrf_token %}
 </form>
 </div>
--->
 </div>
 
 <!-- Onboarding Tasks -->
