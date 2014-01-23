@@ -1,5 +1,33 @@
-#header h1 { font-size: 1.2em; }
-#top-nav ul li a span span { font-size: 1.5em; }
+#header { 
+	text-shadow: none;
+	background-color:#313131; 
+	font-size: 1.5em; 
+	color: #EEE;
+	padding-top:15px;
+}
+
+#footer {
+	padding-top: 0.5em; 
+	padding-bottom: 1.5em; 
+	background-color:#313131;
+	text-shadow: none;
+	color: #EEE;
+}
+
+#top-nav ul li a { 
+	font-size: 1.3em;
+	border-top: 0px;
+}
+
+#new_user form div label { 
+	font-size: 1.1em;
+	vertical-align: top;
+}
+
+#yellow_button {
+	background-color: yellow; 
+	font-size: 1.2em;
+}
 
 table td:first-child, table td:last-child { text-align: left; }
 table td { vertical-align: top; text-align: left; border-bottom: 1px solid #ccc; padding: 0.5em; }

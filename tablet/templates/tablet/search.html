@@ -22,7 +22,7 @@
 		<div id="member-list">
 			<ul data-role="listview" data-inset="true" data-filter="false">
 				{% for member in search_results %}
-					<li style="padding: 0.5em;"><a href="{% url 'tablet.views.user_signin' member.user %}" data-transition="fade">{{ member.full_name }}</a></li>
+					<li><a href="{% url 'tablet.views.user_signin' member.user %}" data-transition="fade">{{ member.full_name }}</a></li>
 				{% endfor %}
 			</ul>
 		</div>
@@ -33,7 +33,7 @@
 				{% for field in member_search_form %}
 					{{ field }}
 				{% endfor %}
-				<input type="submit" value="search"  data-theme="e" data-transition="fade"/>
+				<input type="submit" value="search"  data-theme="b" data-transition="fade"/>
 				{% csrf_token %}
 			</form>
 		</div>
