@@ -511,7 +511,7 @@ def member_detail(request, member_id):
 	member = get_object_or_404(Member, pk=member_id)
 	#daily_logs = DailyLog.objects.filter(member=member).order_by('visit_date').reverse()
 	memberships = Membership.objects.filter(member=member).order_by('start_date').reverse()
-	email_logs = SentEmailLog.objects.filter(member=member).order_by('created')
+	email_logs = SentEmailLog.objects.filter(member=member).order_by('created').reverse()
 
 	if request.method == 'POST':
 		if 'save_onboard_task' in request.POST:
@@ -520,10 +520,16 @@ def member_detail(request, member_id):
 		elif 'save_exit_task' in request.POST:
 			task = ExitTask.objects.get(pk=request.POST.get('task_id'))
 			ExitTaskCompleted.objects.create(member=member, task=task)
+		elif 'send_manual_email' in request.POST:
+			key = request.POST.get('message_key')
+			email.send_manual(member.user, key)
 		else:
 			print request.POST
+	
+	email_keys = email.valid_message_keys()
+	email_keys.remove("all")
 
-	return render_to_response('staff/member_detail.html', { 'member':member, 'memberships':memberships, 'email_logs':email_logs, 'settings':settings}, context_instance=RequestContext(request))
+	return render_to_response('staff/member_detail.html', { 'member':member, 'memberships':memberships, 'email_logs':email_logs, 'email_keys':email_keys, 'settings':settings}, context_instance=RequestContext(request))
 
 def date_range_from_request(request):
 	# Pull the Start Date param
