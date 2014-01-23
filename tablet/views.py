@@ -16,7 +16,6 @@ from staff.forms import NewUserForm, MemberSearchForm
 from arpwatch import arp
 from staff import email
 
-@login_required
 def welcome(request, username):
 	usage_color = "black";
 	user = get_object_or_404(User, username=username)
@@ -38,7 +37,6 @@ def welcome(request, username):
 	return render_to_response('tablet/welcome.html', {'user':user, 'member':member, 'membership':membership, 
 		'motd':motd, 'timeout':timeout, 'usage_color':usage_color}, context_instance=RequestContext(request))
 
-@login_required
 def new_user(request):
 	page_message = None
 	if request.method == "POST":
@@ -57,7 +55,6 @@ def new_user(request):
 
 	return render_to_response('tablet/new_user.html', {'new_user_form':form, 'page_message':page_message}, context_instance=RequestContext(request))
 
-@login_required
 def signin(request):
 	members = []
 	for member in Member.objects.active_members().order_by('user__first_name'):
@@ -68,17 +65,14 @@ def signin(request):
 	
 	return render_to_response('tablet/signin.html', {'members':members, 'member_search_form':MemberSearchForm()}, context_instance=RequestContext(request))
 
-@login_required
 def members(request):
 	members = Member.objects.active_members().order_by('user__first_name')
 	return render_to_response('tablet/members.html', {'members':members}, context_instance=RequestContext(request))
 
-@login_required
 def here_today(request):
 	members = arp.users_for_day()
 	return render_to_response('tablet/here_today.html', {'members':members}, context_instance=RequestContext(request))
 
-@login_required
 def search(request):
 	search_results = None
 	if request.method == "POST":
@@ -89,7 +83,6 @@ def search(request):
 		member_search_form = MemberSearchForm()
 	return render_to_response('tablet/search.html', { 'member_search_form':member_search_form, 'search_results':search_results }, context_instance=RequestContext(request))
 
-@login_required
 def view_profile(request, username):
 	user = get_object_or_404(User, username=username)
 	member = get_object_or_404(Member, user=user)
@@ -97,7 +90,6 @@ def view_profile(request, username):
 	tags = member.tags.order_by('name')
 	return render_to_response('tablet/view_profile.html',{'user':user, 'member':member, 'membership':membership, 'tags':tags}, context_instance=RequestContext(request))
 
-@login_required
 def user_signin(request, username):
 	user = get_object_or_404(User, username=username)
 	member = get_object_or_404(Member, user=user)
@@ -119,11 +111,9 @@ def user_signin(request, username):
 	return render_to_response('tablet/user_signin.html',{'user':user, 'member':member, 'can_signin':can_signin, 
 		'membership':membership, 'member':member, 'member_search_form':member_search_form, 'search_results':search_results}, context_instance=RequestContext(request))
 
-@login_required
 def signin_user(request, username):
 	return signin_user_guest(request, username, None)
 
-@login_required
 def signin_user_guest(request, username, guestof):
 	user = get_object_or_404(User, username=username)
 	member = get_object_or_404(Member, user=user)
