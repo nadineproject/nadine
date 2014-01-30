@@ -118,7 +118,7 @@ INSTALLED_APPS = (
 	'interlink',
 	'arpwatch',
 	'tablet',
-#	'gnotty',
+	'gnotty',
 )
 
 #

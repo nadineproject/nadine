@@ -35,7 +35,7 @@ urlpatterns = patterns('',
    #(r'^api/', include(API.urls)),
    (r'^$', 'views.index'),
 
-   #('^chat/', include('gnotty.urls')),
+   ('^chat/', include('gnotty.urls')),
 
 )
 
