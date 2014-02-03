@@ -1,5 +1,4 @@
 Django==1.6.1
-Gnotty==0.2.5
 Pillow==2.3.0
 South==0.8.4
 amqp==1.4.1

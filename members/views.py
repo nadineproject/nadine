@@ -53,6 +53,11 @@ def all_members(request):
 	return render_to_response('members/all_members.html',{ 'members':members }, context_instance=RequestContext(request))
 
 @login_required
+def chat(request):
+	user = request.user
+	return render_to_response('members/chat.html',{ 'user':user }, context_instance=RequestContext(request))
+
+@login_required
 def here_today(request):
 	members = arp.users_for_day()
 	return render_to_response('members/here_today.html',{ 'members':members }, context_instance=RequestContext(request))

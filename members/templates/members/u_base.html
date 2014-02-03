@@ -54,14 +54,14 @@
 			<a href="{% url 'members.views.here_today' %}">Here Today</a>
 			<a href="{% url 'members.views.tag_cloud' %}">Tags</a>
 			<a href="{% url 'members.views.mail' user.username %}">Mailing Lists</a>
-			<a href="/chat?nickname={{user.username}}">Chat</a>
+			<a href="{% url 'members.views.chat' %}">Chat</a>
 			<a href="{% url 'django.contrib.auth.views.logout_then_login' %}">Logout</a>
 		{% else %}
 			<a href="{% url 'members.views.not_active' %}">All Members</a>
 			<a href="{% url 'members.views.not_active' %}">Here Today</a>
 			<a href="{% url 'members.views.not_active' %}">Tags</a>
 			<a href="{% url 'members.views.not_active' %}">Mailing Lists</a>
-			<!--<a href="{% url 'members.views.not_active' %}">Chat</a>-->
+			<a href="{% url 'members.views.not_active' %}">Chat</a>
 			<a href="{% url 'django.contrib.auth.views.logout_then_login' %}">Logout</a>
 		{% endif %}
 	</nav>
