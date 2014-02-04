@@ -240,6 +240,12 @@ class Member(models.Model):
 		"""Returns all of the open bills, both for this member and any bills for other members which are marked to be paid by this member."""
 		return Bill.objects.filter(models.Q(member=self) | models.Q(paid_by=self)).filter(transactions=None).order_by('created')
 
+	def open_bill_amount(self):
+		total = 0
+		for b in self.open_bills():
+			total = total + b.amount
+		return total
+
 	def open_bills_amount(self):
 		"""Returns the amount of all of the open bills, both for this member and any bills for other members which are marked to be paid by this member."""
 		return Bill.objects.filter(models.Q(member=self) | models.Q(paid_by=self)).filter(transactions=None).aggregate(models.Sum('amount'))['amount__sum']

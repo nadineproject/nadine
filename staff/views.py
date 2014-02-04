@@ -721,12 +721,24 @@ def usaepay_transactions_today(request):
 def usaepay_transactions(request, year, month, day):
 	d = date(year=int(year), month=int(month), day=int(day))
 	error = None
-	transactions = None
+	transactions = []
+	gateway_transactions = None
 	try:
 		gateway = JavaGateway()
-		transactions = gateway.entry_point.getTransactions(year, month, day)
+		gateway_transactions = gateway.entry_point.getTransactions(year, month, day)
 	except:
 		error = 'Could not connect to USAePay Gateway!'
+
+	if gateway_transactions:
+		for t in gateway_transactions:
+			username = t.getCustomerID()
+			try:
+				member = Member.objects.get(user__username=username)
+			except:
+				member = None
+			transactions.append({'member':member, 'transaction':t, 'username': username, 'description':t.getDetails().getDescription(), 
+				'card_type':t.getCreditCardData().getCardType(), 'status':t.getStatus(), 'amount':t.getDetails().getAmount()})
+		
 	return render_to_response('staff/usaepay_transactions.html', {'date':d, 'error':error, 'transactions':transactions,
 		'next_date':d + timedelta(days=1), 'previous_date':d - timedelta(days=1)}, context_instance=RequestContext(request))
 

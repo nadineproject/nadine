@@ -12,8 +12,11 @@ nav #billing-tab { background: #FBD850; color: black; }
 
 <h2>
 	USAePay Transactions - {{ date|date:"M d, Y" }}
-	<a href="{% url 'staff.views.usaepay_transactions' previous_date.year previous_date.month previous_date.day %}">&laquo;</a>
-	<a href="{% url 'staff.views.usaepay_transactions' next_date.year next_date.month next_date.day %}">&raquo;</a>
+	<span style="float:right;">	
+	<a href="{% url 'staff.views.usaepay_transactions' previous_date.year previous_date.month previous_date.day %}">&larr;</a>
+	<a href="{% url 'staff.views.usaepay_transactions_today' %}">&bull;</a>
+	<a href="{% url 'staff.views.usaepay_transactions' next_date.year next_date.month next_date.day %}">&rarr;</a>
+	</span>
 </h2>
 
 {% if error %}
@@ -27,16 +30,18 @@ nav #billing-tab { background: #FBD850; color: black; }
 		<th>Type</th>
 		<th>Status</th>
 		<th>Amount</th>
+		<th>Owed</th>
 		<th></th>
 	</tr>
 
 	{% for t in transactions %}
 		<tr class="{% cycle 'row-even' 'row-odd' %}">
-			<td><a href="{% url 'staff.views.member_detail_user' t.getCustomerID %}">{{ t.getAccountHolder }}</a></td>
-			<td>{{ t.getDetails.getDescription }}</td>
-			<td>{{ t.getCreditCardData.getCardType }}</td>
-			<td>{{ t.getStatus }}</td>
-			<td>${{ t.getDetails.getAmount }}</td>
+			<td><a href="{% url 'staff.views.member_detail_user' t.username %}">{{ t.username }}</a></td>
+			<td>{{ t.description }}</td>
+			<td>{{ t.card_type }}</td>
+			<td>{{ t.status  | truncatewords:1}}</td>
+			<td>${{ t.amount }}</td>
+			<td>{% if t.member.open_bill_amount %} ${{ t.member.open_bill_amount }} {% endif %}</td>
 			<td></td>
 		</tr>
 	{% endfor %}
