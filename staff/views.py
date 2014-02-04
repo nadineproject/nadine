@@ -712,6 +712,7 @@ def usaepay(request, username):
 
 	return render_to_response('staff/usaepay.html', {'username':username, 'error':error, 'customers':customers}, context_instance=RequestContext(request))
 
+@csrf_exempt
 def usaepay_approve(request, key):
 	# Login not required so we are requiring a special authorization key in the POST
 	error = None
