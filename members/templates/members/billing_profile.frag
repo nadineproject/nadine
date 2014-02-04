@@ -40,7 +40,9 @@ Current Profile:
 			<input type="hidden" name="UMbillphone" value="{{ member.phone }}">
 			<input type="hidden" name="UMemail" value="{{ member.email }}">
 			<!--<input type="hidden" name="UMtestmode" value="true">-->
+			<input type="hidden" name="username" value="{{member.user.username}}">
 			<input type="submit" value="Create New Billing Profile">
+			{% csrf_token %}
 		</form>
 	</div>
 {% endif %}

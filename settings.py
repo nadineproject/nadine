@@ -129,6 +129,13 @@ try:
 except ImportError:
    pass
 
+# USAePay Settings
+USA_EPAY_URL='www.usaepay.com'
+USA_EPAY_KEY='ABCDEFG'
+USA_EPAY_KEY2='ABCDEFG'
+USA_EPAY_PIN2='1234'
+USA_EPAY_URL_KEY='ABCDEFG'
+
 CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
 CELERY_DISABLE_RATE_LIMITS = True
 CELERY_RESULT_BACKEND = "amqp"
