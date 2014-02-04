@@ -714,6 +714,7 @@ def usaepay(request, username):
 
 def usaepay_approve(request, key):
 	# Login not required so we are requiring a special authorization key in the POST
+	error = None
 	username = None	
 	if request.method != 'POST' or 'username' not in request.POST or 'UMresult' not in request.POST:
 		error = "Invalid form fields"
