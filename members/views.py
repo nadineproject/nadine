@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
+from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 
 from staff.models import Member, Membership, Transaction, DailyLog
@@ -19,6 +20,7 @@ from interlink.models import IncomingMail
 from models import HelpText, UserNotification
 from arpwatch import arp
 from arpwatch.models import ArpLog, UserDevice
+from staff import usaepay
 
 @login_required
 def home(request):
@@ -241,5 +243,27 @@ def ticker(request):
 		refresh = False;
 		
 	return render_to_response('members/ticker.html',{'counts':counts, 'members':here_today, 'refresh':refresh}, context_instance=RequestContext(request))
+
+@csrf_exempt
+@login_required
+def new_billing(request):
+	error = None
+	username = None
+	if request.method != 'POST' or 'username' not in request.POST or 'auth' not in request.POST:
+		error = "Invalid form fields!"
+	else:
+		username = request.POST.get('username')
+		if not usaepay.authorize(username, request.POST.get('auth')):
+			error = "Invalid authorization code!"
+		else:
+			member = Member.objects.get(user__username=username)
+			if not member:
+				error = "Could not find '%s'" % (username)
+			else:
+				member.valid_billing = True;
+				member.save()
+				if not usaepay.disableAutoBilling(username):
+					error = "Could not disable auto-billing"
+	return render_to_response('members/new_billing.html', {'username':username, 'error':error}, context_instance=RequestContext(request))
 
 # Copyright 2010 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

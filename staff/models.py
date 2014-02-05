@@ -1,4 +1,4 @@
-import pprint, traceback
+import pprint, traceback, usaepay
 from datetime import datetime, time, date, timedelta
 
 from django.db import models
@@ -401,6 +401,9 @@ class Member(models.Model):
 		return ExitTask.objects.count() - ExitTaskCompleted.objects.filter(member=self).count()
 
 	def __str__(self): return '%s %s' % (smart_str(self.user.first_name), smart_str(self.user.last_name))
+
+	def usaepay_auth(self):
+		return usaepay.get_auth_code(self.user.username)
 
 	@models.permalink
 	def get_absolute_url(self):

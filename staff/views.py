@@ -8,7 +8,6 @@ from django.utils import timezone
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
-from django.views.decorators.csrf import csrf_exempt
 from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -700,43 +699,26 @@ def view_user_reports(request):
 def usaepay(request, username):
 	error = None
 	customers = None
+	gateway = None
+	
 	try:
 		gateway = JavaGateway()
-		customers = gateway.entry_point.getAllCustomers(username)
 	except:
 		error = 'Could not connect to USAePay Gateway!'
 
-	if customers and 'disable_all' in request.POST:
-		gateway.entry_point.disableAll(username)
-		# Pull the customers again since we've changed them
-		customers = gateway.entry_point.getAllCustomers(username)
+	if not error and 'disable_all' in request.POST:
+		try:
+			gateway.entry_point.disableAll(username)
+		except:
+			error = 'Could not disable billing!'
+	
+	if not error:
+		try:
+			customers = gateway.entry_point.getAllCustomers(username)
+		except:
+			error = 'Could not pull customers!'
 
 	return render_to_response('staff/usaepay.html', {'username':username, 'error':error, 'customers':customers}, context_instance=RequestContext(request))
-
-@csrf_exempt
-def usaepay_approve(request, key):
-	# Login not required so we are requiring a special authorization key in the POST
-	error = None
-	username = None	
-	if request.method != 'POST' or 'username' not in request.POST or 'UMresult' not in request.POST:
-		error = "Invalid form fields"
-	else :
-		if key != settings.USA_EPAY_URL_KEY:
-			error = "Invalid Authorization Key"
-		else:
-			username = request.POST.get('username')
-			member = Member.objects.get(user__username=username)
-			if not member:
-				error = "Could not find '%s'" % (username)
-			else:
-				member.valid_billing = True;
-				member.save()
-				try:
-					gateway = JavaGateway()
-					gateway.entry_point.disableAll(username)
-				except:
-					error = "Could not disable auto-billing"
-	return render_to_response('staff/usaepay_approve.html', {'username':username, 'error':error}, context_instance=RequestContext(request))
 
 @staff_member_required
 def usaepay_transactions_today(request):

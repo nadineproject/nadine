@@ -15,4 +15,5 @@ py4j==0.8.1
 MonthDelta==1.0b
 python-dateutil==2.2
 python-mimeparse==0.1.4
+pycrypto==2.6.1
 

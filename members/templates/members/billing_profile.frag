@@ -41,6 +41,7 @@ Current Profile:
 			<input type="hidden" name="UMemail" value="{{ member.email }}">
 			<!--<input type="hidden" name="UMtestmode" value="true">-->
 			<input type="hidden" name="username" value="{{member.user.username}}">
+			<input type="hidden" name="auth" value="{{member.usaepay_auth}}">
 			<input type="submit" value="Create New Billing Profile">
 		</form>
 	</div>
