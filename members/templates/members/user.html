@@ -262,8 +262,20 @@
 
 	<div id="tabs-4">
 		<h3>Billing Profile</h3>
-		{% include "members/billing_profile.frag" %}  
-
+		<table>
+		<tr>
+			<td>{% include "members/billing_profile.frag" %}</td> 
+			<td><div style="margin-left: 2em; margin-bottom: .5em;">
+			Automatic Billing: 
+			{% if member.auto_bill_enabled %}
+				<font color=green>Enabled</font>
+			{% else %}
+				<font color=red>Disabled</font>
+			{% endif %}
+			</div>
+			</td>	
+		</tr></table>
+		
 		<h3>Payments</h3>
 		{% if user.profile.transaction_set.all %}		
 	   <table>

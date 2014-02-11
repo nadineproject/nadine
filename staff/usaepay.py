@@ -15,9 +15,18 @@ def getAllCustomers(username):
 	try:
 		gateway = JavaGateway()
 		return gateway.entry_point.getAllCustomers(username)
-		return True
 	except:
-		return False
+		return None
+
+def auto_bill_enabled(username):
+	try:
+		gateway = JavaGateway()
+		for cust in gateway.entry_point.getAllCustomers(username):
+			if cust.isEnabled: 
+				return True
+	except:
+		return None
+	return False
 
 def authorize(username, auth_code):
 	crypto=AES.new(settings.USA_EPAY_KEY, AES.MODE_ECB)

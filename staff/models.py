@@ -405,6 +405,9 @@ class Member(models.Model):
 	def usaepay_auth(self):
 		return usaepay.get_auth_code(self.user.username)
 
+	def auto_bill_enabled(self):
+		return usaepay.auto_bill_enabled(self.user.username)
+
 	@models.permalink
 	def get_absolute_url(self):
 		return ('staff.views.member_detail', (), { 'member_id':self.id })
