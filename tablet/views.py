@@ -62,7 +62,7 @@ def signin(request):
 			daily_logs = DailyLog.objects.filter(member=member, visit_date=datetime.today().date())
 			if not daily_logs:
 				members.append(member)
-	
+
 	return render_to_response('tablet/signin.html', {'members':members, 'member_search_form':MemberSearchForm()}, context_instance=RequestContext(request))
 
 def members(request):
