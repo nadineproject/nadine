@@ -11,7 +11,7 @@
 {% block content %}
 	<div id="search-box">
 		<form id="member-search-form" action="{% url 'tablet.views.search' %}" method="POST">
-			<input id="id_terms" type="text" name="terms" maxlength="100" class="ui-input-text ui-body-c ui-corner-all ui-shadow-inset" placeholder="Find a member">
+			<input id="id_terms" type="search" name="terms" maxlength="100" class="ui-input-text ui-body-c ui-corner-all ui-shadow-inset" placeholder="Find a member">
 			<input type="submit" value="Search" data-theme="b" data-transition="fade"/>
 			{% csrf_token %}
 		</form>
