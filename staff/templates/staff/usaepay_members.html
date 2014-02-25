@@ -1,0 +1,37 @@
+{% extends "staff/ml_base.html" %}
+
+{% block style %}
+nav #billing-tab { background: #FBD850; color: black; }
+#content td { white-space:nowrap; }
+{% endblock %}
+
+{% block sub-title %}USAePay Transactions | {% endblock %}
+
+{% block content %}
+{% include "staff/billing_menu.frag" %}	 
+
+<h2>Members with Auto-Billing Enabled</h2>
+
+{% if error %}
+	<div style="text-align:center; font-size:150%; color:red">{{ error }}</div>
+{% endif %}
+
+<table>
+	<tr>
+		<th>Member</th>
+		<th>Customer #</th>
+		<th>Next Bill</th>
+		<th></th>
+	</tr>
+
+	{% for m in members %}
+		<tr class="{% cycle 'row-even' 'row-odd' %}">
+			<td><a href="{% url 'staff.views.member_detail_user' m.username %}">{{ m.username }}</a></td>
+			<td><a href="https://secure.usaepay.com/console/billing_edit?id={{ m.customer_number }}" target="new">{{ m.customer_number }}</a></td>
+			<td>{{ m.next | slice:":10"}}</td>
+			<td></td>
+		</tr>
+	{% endfor %}
+</table>
+
+{% endblock %}

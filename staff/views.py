@@ -15,6 +15,7 @@ from django.contrib.sites.models import Site
 from django.db.models import Sum
 from monthdelta import MonthDelta, monthmod
 from py4j.java_gateway import JavaGateway
+import usaepay
 
 import settings
 from models import *
@@ -696,7 +697,7 @@ def view_user_reports(request):
 	return render_to_response('staff/user_reports.html', {'users':users, 'form':form}, context_instance=RequestContext(request))
 
 @staff_member_required
-def usaepay(request, username):
+def usaepay_user(request, username):
 	error = None
 	customers = None
 	gateway = None
@@ -750,5 +751,18 @@ def usaepay_transactions(request, year, month, day):
 	return render_to_response('staff/usaepay_transactions.html', {'date':d, 'error':error, 'transactions':transactions,
 		'next_date':d + timedelta(days=1), 'previous_date':d - timedelta(days=1)}, context_instance=RequestContext(request))
 
-	
-# Copyright 2009, 2010 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+@staff_member_required
+def usaepay_members(request):
+	members = []
+	for m in Member.objects.active_members():
+		username = m.user.username
+		print username
+		customers = usaepay.getAllCustomers(username)
+		if customers:
+			for c in customers:
+				if c.isEnabled():
+					members.append({'member':m, 'username': username, 'next':c.getNext(), 'customer_number':c.getCustNum()})
+	return render_to_response('staff/usaepay_members.html', {'members':members}, context_instance=RequestContext(request))
+
+
+# Copyright 2014 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
