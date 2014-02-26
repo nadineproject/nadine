@@ -9,12 +9,13 @@ ADMINS = (
 MANAGERS = ADMINS
 
 DATABASES = {
-    'default': {
+	'default': {
+		#'ENGINE':'django.db.backends.sqlite3',
 		'ENGINE':'django.db.backends.postgresql_psycopg2',
-		'USER':'postgres',
-		'NAME':'nadine',
-		'PASSWORD':'1234'
-    }
+		'NAME':'nadinedb',
+		#'USER':'postgres',
+		#'PASSWORD':'1234'
+	}
 }
 
 #CACHE_BACKEND = 'dummy:///'
@@ -22,6 +23,10 @@ CACHE_BACKEND = 'locmem:///'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'ZZZ'
+
+MAILCHIMP_API_KEY="goMonkeygo"
+MAILCHIMP_NEWSLETTER_KEY="melikekey"
+MAILCHIMP_WEBHOOK_KEY="hookedonhooks"
 
 DEFAULT_FROM_EMAIL = "something@example.com"
 EMAIL_ADDRESS = "something@example.com"
