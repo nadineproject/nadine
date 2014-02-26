@@ -22,8 +22,8 @@ Run Django's syncdb and then South's migrate commands.
 (Currently creating a superuser before running migrate is broken; when prompted to create one, choose no.
 After running the <code>migrate</code> command, run <code>./manage.py createsuperuser</code>.)
 
-    ./manage.py syncdb 
-    ./manage.py migrate
+    ./manage.py syncdb --all
+    ./manage.py migrate --fake
 
 Now run the tests to make certain that everthing is installed:
 
