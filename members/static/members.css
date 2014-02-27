@@ -1,0 +1,222 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Open Sans Condensed',sans-serif;
+}
+
+a {
+    text-decoration: none;
+    color: #5987C6;
+}
+
+p {
+    font-family: "Helvetica Neue","Helvetica",Helvetica,Arial,sans-serif;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+#content a {
+    font-family: "Helvetica Neue","Helvetica",Helvetica,Arial,sans-serif;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+#home {
+}
+
+#header_container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    min-height: 122px;
+    width: 100%;
+    color: #5987C6;
+    font-size: 16px;
+    font-weight: 700;
+    background-color: #F5F5F5;
+    border-bottom: thin solid #999;
+}
+
+#header_container a {
+   color: #5987C6;
+   text-transform: uppercase;
+   padding-right: 20px;
+}
+
+@media only screen and (max-width: 540px) {
+    #title {
+        display: none;
+    }
+
+    #header_container {
+        position: absolute;
+    }
+}
+
+.setwidth {
+    max-width: 1000px;
+    margin: 0px auto;
+}
+
+#header h1 {
+    margin: 10px;
+    padding: 10px 0;
+}
+
+#logo {
+    float: left;
+    padding-right: 20px;
+}
+
+#header nav {
+}
+
+#header img {
+}
+
+#hours {
+    float: left;
+    width: 33.3%;
+}
+
+#location {
+    float: left;
+    width: 33.3%;
+}
+
+#support {
+    float: left;
+    width: 33.3%;
+}
+
+h2 {
+    text-align: center;
+    font-size: 1.875em;
+}
+
+#footer_container h3 {
+    text-transform: uppercase;
+    font-size: 1.5em;
+}
+
+#content_container {
+    padding-top: 132px;
+    height: 100%;
+    overflow: auto;
+    background-image: url(../img/moo.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-color: #405047;
+}
+
+#content {
+    margin: 10px 20px;
+    padding-bottom: 20px;
+}
+
+    #content img {
+        margin: 10px auto;
+    }
+
+.triptic {
+    text-align: justify;
+}
+
+    .triptic > div {
+        width: 33%; /* Declare your value. Can be in relative units. */
+        display: inline-block;
+        vertical-align: top;
+        /* IE fix. */
+        *display: inline;
+        zoom: 1;
+    }
+
+    .triptic:after {
+        content: "";
+        width: 100%;
+        display: inline-block;
+    }
+
+.lightbg {
+    margin-top: 40px;
+    margin-bottom: 140px;
+    background-color: #F3F3F3;
+    min-height: 500px;
+    padding-top: 10px;
+    border-radius: 4px;
+    box-shadow: 0px 0px 20px 0px #3D3D3D;
+}
+
+#footer_container {
+    min-height: 191px;
+    background-color: #303030;
+    border-top: 8px solid #000;
+    color: #fff;
+}
+
+#footer_info {
+    font-family: "Helvetica Neue","Helvetica",Helvetica,Arial,sans-serif;
+    min-height: 32px;
+    padding: 20px 0;
+    background-color: #1B1B1B;
+    color: #CCC;
+    font-size: 14px;
+}
+
+#copyright {
+    float: left;
+}
+
+#social {
+    float: left;
+    margin-left: 130px;
+    width: 132px;
+}
+
+#fb {
+    display: block;
+    width: 32px;
+    height: 32px;
+    float: left;
+    margin-right: 10px;
+    background-image: url(../img/facebook_32.png);
+    text-indent: -9999px;
+}
+
+#tw {
+    display: block;
+    width: 32px;
+    height: 32px;
+    float: left;
+    margin-right: 10px;
+    background-image: url(../img/twitter_32.png);
+    text-indent: -9999px;
+}
+
+#ye {
+    display: block;
+    width: 32px;
+    height: 32px;
+    float: left;
+    margin-right: 10px;
+    background-image: url(../img/yelp_32.png);
+    text-indent: -9999px;
+}
+
+.scroll-top {
+    font-size: 24px;
+    display: block;
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    background-color: #666;
+    float: right;
+    text-align: center;
+}
+
+.user-card { float: left; width: 190px; border: solid 3px #EEE; margin: 10px; text-align: center; }
+.user-card a { padding: 10px 0; display: block; }
+.user-card a.photo { height: 180px; background-color: #EEE; font-size: 150px; color: #DDD; text-decoration: none; }
+
