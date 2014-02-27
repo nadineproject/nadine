@@ -19,14 +19,14 @@ Create a virtual environment for the python project, pull down the code, and ins
 
 Copy local_settings.dist to local_settings.py and edit it to reflect your local settings. 
 
-Set up PostgreSQL, create a blank database and grant all permissions to whatever account/password combination you want to use for the app.
+PostgreSQL:  Uncomment 'psycopg2' in the requirements.txt file and edit local_settings.py for your database settings.  Create a blank database and grant all permissions to whatever account/password combination you want to use for the app.
 
-Run Django's syncdb and then South's migrate commands.  
-(Currently creating a superuser before running migrate is broken; when prompted to create one, choose no.
-After running the <code>migrate</code> command, run <code>./manage.py createsuperuser</code>.)
+Run Django's syncdb and then South's migrate commands and create a superuser.  We need to create the superuser last so
+we explicitly skip it in the syncdb step.  
 
-    ./manage.py syncdb --all
-    ./manage.py migrate --fake
+	./manage.py syncdb --noinput --all
+	./manage.py migrate --fake
+	./manage.py createsuperuser
 
 Now run the tests to make certain that everthing is installed:
 

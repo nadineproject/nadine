@@ -11,8 +11,9 @@ MANAGERS = ADMINS
 DATABASES = {
 	'default': {
 		'ENGINE':'django.db.backends.sqlite3',
+		'NAME':'db',
 		#'ENGINE':'django.db.backends.postgresql_psycopg2',
-		'NAME':'nadinedb',
+		#'NAME':'nadinedb',
 		#'USER':'postgres',
 		#'PASSWORD':'1234'
 	}
