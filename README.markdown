@@ -8,15 +8,18 @@ Most of the action is in the staff application, where you'll find a member track
 
 Requires Django 1.5 or above.  Note, we didn't do the full Django 1.3 to Django 1.4 upgrade yet so there are some timezone issues that need to be worked out.
 
-Set up your Django environment then test that it's up by creating a scratch project and running the Django development server.
+Create a virtual environment for the python project, pull down the code, and install all the requirements
 
-Set up PostgreSQL, create a blank database and grant all permissions to whatever account/password combination you want to use for the app.
-
-	git clone git://github.com/nadineproject/nadine.git
+	virtualenv nadine
+	cd nadine
+	source bin/activate
+	git clone https://github.com/nadineproject/nadine.git
 	cd nadine
 	pip install -r requirements.txt
 
 Copy local_settings.dist to local_settings.py and edit it to reflect your local settings. 
+
+Set up PostgreSQL, create a blank database and grant all permissions to whatever account/password combination you want to use for the app.
 
 Run Django's syncdb and then South's migrate commands.  
 (Currently creating a superuser before running migrate is broken; when prompted to create one, choose no.
