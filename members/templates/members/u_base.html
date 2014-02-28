@@ -9,80 +9,99 @@
 	<link type="text/css" href="{{ STATIC_URL }}jquery-ui-1.8.4.custom.css" rel="stylesheet" />	
 	<!--[if IE]>
 		<script src="{{ STATIC_URL }}html5.js"></script>
-	<![endif]-->
-	<script src="{{ STATIC_URL }}jquery-1.8.3.min.js"></script>
-	<script src="{{ STATIC_URL }}jquery-ui-1.8.4.custom.min.js"></script> 
-	<script>
-		 $(function () {
-				jQuery('#tabs').tabs();
-		 });
-	</script>
-	
-	{%block sub-head %}{% endblock %}
-	<style>
+		<![endif]-->
+		<script src="{{ STATIC_URL }}jquery-1.8.3.min.js"></script>
+		<script src="{{ STATIC_URL }}jquery-ui-1.8.4.custom.min.js"></script> 
+		<script>
+		$(function () {
+			jQuery('#tabs').tabs();
+		});
+		</script>
+
+		{%block sub-head %}{% endblock %}
+		<style>
 		{% block style %}{% endblock %}
-	</style>
-</head>
+		</style>
+	</head>
 
-<body>{% block body %}
-	<div id="header_container">
-		<div id="header" class="setwidth">
-			<div id="logo">
-				<a href="{% url 'members.views.home' %}" id="home">
-					<img src="{{ STATIC_URL }}img/ON_Logo_tall.png" />
-				</a>
+	<body>{% block body %}
+		<div id="page_container">
+			<!-- Page -->
+			<div id="header_container">
+				<div id="header" class="setwidth">
+					<div id="logo">
+						<a href="{% url 'members.views.home' %}" id="home">
+							<img src="{{ STATIC_URL }}img/ON_Logo_tall.png" />
+						</a>
+					</div>
+					<h1 id="title">Nadine Membership Console</h1>
+					<nav>
+						<a href="{% url 'members.views.profile_redirect' %}">My Profile</a>		
+						{% if not request.user.is_authenticated %}
+						<a>All Members</a>
+						<a>Here Today</a>
+						<a>Tags</a>
+						<a>Mailing Lists</a>
+						<a>Login</a>
+						{% elif request.user.get_profile.is_active %}
+						<a href="{% url 'members.views.all_members' %}">All Members</a>
+						<a href="{% url 'members.views.here_today' %}">Here Today</a>
+						<a href="{% url 'members.views.tag_cloud' %}">Tags</a>
+						<a href="{% url 'members.views.mail' user.username %}">Mailing Lists</a>
+						<a href="{% url 'members.views.chat' %}">Chat</a>
+						<a href="{% url 'django.contrib.auth.views.logout_then_login' %}">Logout</a>
+						{% else %}
+						<a href="{% url 'members.views.not_active' %}">All Members</a>
+						<a href="{% url 'members.views.not_active' %}">Here Today</a>
+						<a href="{% url 'members.views.not_active' %}">Tags</a>
+						<a href="{% url 'members.views.not_active' %}">Mailing Lists</a>
+						<a href="{% url 'members.views.not_active' %}">Chat</a>
+						<a href="{% url 'django.contrib.auth.views.logout_then_login' %}">Logout</a>
+						{% endif %}
+					</nav>
+				</div>
 			</div>
-			<h1 id="title">Nadine Membership Console</h1>
-			<nav>
-				<a href="{% url 'members.views.profile_redirect' %}">My Profile</a>		
-				{% if not request.user.is_authenticated %}
-					<a>All Members</a>
-					<a>Here Today</a>
-					<a>Tags</a>
-					<a>Mailing Lists</a>
-					<a>Login</a>
-				{% elif request.user.get_profile.is_active %}
-					<a href="{% url 'members.views.all_members' %}">All Members</a>
-					<a href="{% url 'members.views.here_today' %}">Here Today</a>
-					<a href="{% url 'members.views.tag_cloud' %}">Tags</a>
-					<a href="{% url 'members.views.mail' user.username %}">Mailing Lists</a>
-					<a href="{% url 'members.views.chat' %}">Chat</a>
-					<a href="{% url 'django.contrib.auth.views.logout_then_login' %}">Logout</a>
-				{% else %}
-					<a href="{% url 'members.views.not_active' %}">All Members</a>
-					<a href="{% url 'members.views.not_active' %}">Here Today</a>
-					<a href="{% url 'members.views.not_active' %}">Tags</a>
-					<a href="{% url 'members.views.not_active' %}">Mailing Lists</a>
-					<a href="{% url 'members.views.not_active' %}">Chat</a>
-					<a href="{% url 'django.contrib.auth.views.logout_then_login' %}">Logout</a>
-				{% endif %}
-			</nav>
+
+			<div id="content_container">
+				<div class="setwidth lightbg">
+					<div id="content">{% block content %}{% endblock %}</div>
+				</div>
+			</div>
+
+
+			<!-- Footer -->
+			<div id="footer">
+				<div class="setwidth">
+					<div id="copyright">
+						Copyright 2014  | Office Nomads |
+						<a href="http://nadineproject.org/" target="_new">The Nadine Project</a>
+					</div>
+					<div id="social">
+						<a id="fb" target="_blank" href="http://www.facebook.com/OfficeNomads">fb</a>
+						<a id="tw" target="_blank" href="http://twitter.com/OfficeNomads">tw</a>
+						<a id="ye" target="_blank" href="http://www.yelp.com/biz/office-nomads-seattle">ye</a>
+					</div>
+					<div id="scroll-top">
+						<a title="scroll to top" href="#scroll-top">↑</a>
+					</div>
+				</div>
+			</div>
+			<!-- End Page -->
 		</div>
-	 </div>
+		<script>
+		$(document).ready(function(){
 
-	<div id="content_container">
-		<div class="setwidth lightbg">
-			<div id="content">{% block content %}{% endblock %}</div>
-		 </div>
-	</div>
+			$(function () {
+				// scroll body to 0px on click
+				$('#scroll-top a').click(function () {
+					$('body,html').animate({
+						scrollTop: 0
+					}, 800);
+					return false;
+				});
+			});
 
-	<!-- Footer -->
-	<div id="footer_info">
-		<div class="setwidth">
-			<div id="copyright">
-				Copyright 2014  | Office Nomads |
-				<a href="http://nadineproject.org/" target="_new">The Nadine Project</a>
-			</div>
-			<div id="social">
-				<a id="fb" target="_blank" href="http://www.facebook.com/OfficeNomads">fb</a>
-				<a id="tw" target="_blank" href="http://twitter.com/OfficeNomads">tw</a>
-				<a id="ye" target="_blank" href="http://www.yelp.com/biz/office-nomads-seattle">ye</a>
-			</div>
-			<div class="scroll-top">
-				<a title="scroll to top" href="#scroll-top">↑</a>
-			</div>
-		</div>
-	</div>
-	
-{% endblock %}</body>
-</html>
+		});
+		</script>
+		{% endblock %}</body>
+		</html>

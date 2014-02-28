@@ -1,7 +1,16 @@
+/* Member Pages Style */
+
+/* Page Setup */
+
+html {
+	height: 100%;
+}
+
 body {
+	height:100%;
     margin: 0;
     padding: 0;
-    font-family: 'Open Sans Condensed',sans-serif;
+    font-family: "Helvetica Neue","Helvetica",Helvetica,Arial,sans-serif;
 }
 
 a {
@@ -16,15 +25,25 @@ p {
     line-height: 1.6;
 }
 
-#content a {
-    font-family: "Helvetica Neue","Helvetica",Helvetica,Arial,sans-serif;
-    font-weight: normal;
-    font-size: 14px;
-    line-height: 1.6;
+#page_container { 
+    min-height: 100%;
+    position: relative;
+        background-image: url(../img/moo.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-color: #405047;
 }
 
-#home {
-}
+.ir { display: block; text-indent: -999em; overflow: hidden; background-repeat: no-repeat; }
+.hidden { display: none; visibility: hidden; } 
+.visuallyhidden { position: absolute !important;    
+  clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+  clip: rect(1px, 1px, 1px, 1px); }
+.invisible { visibility: hidden; }
+.clearfix:after  { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+.clearfix { zoom: 1; }
+
+/* Header */
 
 #header_container {
     position: fixed;
@@ -45,16 +64,6 @@ p {
    padding-right: 20px;
 }
 
-@media only screen and (max-width: 540px) {
-    #title {
-        display: none;
-    }
-
-    #header_container {
-        position: absolute;
-    }
-}
-
 .setwidth {
     max-width: 1000px;
     margin: 0px auto;
@@ -67,13 +76,8 @@ p {
 
 #logo {
     float: left;
+    margin-top: -10px; /* remove mystery space at top */
     padding-right: 20px;
-}
-
-#header nav {
-}
-
-#header img {
 }
 
 #hours {
@@ -91,31 +95,33 @@ p {
     width: 33.3%;
 }
 
-h2 {
+#content h2 {
+    display: block;
     text-align: center;
     font-size: 1.875em;
 }
 
-#footer_container h3 {
-    text-transform: uppercase;
-    font-size: 1.5em;
-}
+/* Body */
 
 #content_container {
     padding-top: 132px;
-    height: 100%;
+    min-height: 100%;
     overflow: auto;
-    background-image: url(../img/moo.jpg);
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-color: #405047;
+
 }
 
 #content {
     margin: 10px 20px;
     padding-bottom: 20px;
+    text-align: left;
 }
 
+#content a {
+    /*font-family: "Helvetica Neue","Helvetica",Helvetica,Arial,sans-serif;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 1.6;*/
+}
     #content img {
         margin: 10px auto;
     }
@@ -125,7 +131,7 @@ h2 {
 }
 
     .triptic > div {
-        width: 33%; /* Declare your value. Can be in relative units. */
+        width: 33%;
         display: inline-block;
         vertical-align: top;
         /* IE fix. */
@@ -147,19 +153,51 @@ h2 {
     padding-top: 10px;
     border-radius: 4px;
     box-shadow: 0px 0px 20px 0px #3D3D3D;
+    overflow: auto;
 }
 
-#footer_container {
-    min-height: 191px;
-    background-color: #303030;
-    border-top: 8px solid #000;
-    color: #fff;
+.user-card {
+ float: left; 
+ width: 190px; 
+ border: solid 3px #EEE; 
+ margin: 10px; 
+ text-align: center; 
 }
 
-#footer_info {
+.user-card a { 
+    padding: 10px 0; 
+    display: block; 
+}
+
+.user-card a.photo { 
+    height: 180px; 
+    background-color: #EEE; 
+    font-size: 150px; 
+    color: #DDD; 
+    text-decoration: none; 
+}
+.member-photo {
+    float: left;
+    margin: 0px 1em 1em 0px;
+}
+
+dt, dd { 
+    display: inline-block; 
+    margin: 0.25em; 
+}
+dt { font-weight: bold; }
+dd:after { content:"|"; margin-left: 0.5em; font-size: 1.2em; }
+dl dd:last-child:after { content: ""; }
+
+/* Footer */
+
+#footer {
+    clear: both;
+    position: absolute;
+    bottom:0;
+    width: 100%;
     font-family: "Helvetica Neue","Helvetica",Helvetica,Arial,sans-serif;
     min-height: 32px;
-    padding: 20px 0;
     background-color: #1B1B1B;
     color: #CCC;
     font-size: 14px;
@@ -167,10 +205,13 @@ h2 {
 
 #copyright {
     float: left;
+    margin: 10px;
+    margin-top:16px;
 }
 
 #social {
     float: left;
+    margin: 10px;
     margin-left: 130px;
     width: 132px;
 }
@@ -205,7 +246,8 @@ h2 {
     text-indent: -9999px;
 }
 
-.scroll-top {
+#scroll-top {
+    margin: 10px;
     font-size: 24px;
     display: block;
     width: 32px;
@@ -216,7 +258,34 @@ h2 {
     text-align: center;
 }
 
-.user-card { float: left; width: 190px; border: solid 3px #EEE; margin: 10px; text-align: center; }
-.user-card a { padding: 10px 0; display: block; }
-.user-card a.photo { height: 180px; background-color: #EEE; font-size: 150px; color: #DDD; text-decoration: none; }
 
+/* Undock header on narrow screens and hide title */
+
+@media only screen and (max-width: 540px) {
+    #title {
+        display: none;
+    }
+
+    #header_container {
+        position: relative;
+        text-align: center;
+    }
+
+    #logo {
+        float: none;
+        position: relative;
+        display: block;
+        margin: 0 auto;
+    }
+
+    #header_container a {
+        display: block;
+        font-size: 20px;
+        margin: 10px auto;
+    }
+
+    #content_container
+    {
+        padding-top: 20px;
+    }
+}
