@@ -30,13 +30,14 @@
 			<div id="header_container">
 				<div id="header" class="setwidth">
 					<div id="logo">
-						<a href="{% url 'members.views.home' %}" id="home">
+						<a href="http://officenomads.com" id="home">
 							<img src="{{ STATIC_URL }}img/ON_Logo_tall.png" />
 						</a>
 					</div>
 					<h1 id="title">Nadine Membership Console</h1>
 					<nav>
-						<a href="{% url 'members.views.profile_redirect' %}">My Profile</a>		
+						<a href="{% url 'members.views.home' %}" id="home">Home</a>
+						<a href="{% url 'members.views.profile_redirect' %}">My Profile</a>
 						{% if not request.user.is_authenticated %}
 						<a>All Members</a>
 						<a>Here Today</a>
