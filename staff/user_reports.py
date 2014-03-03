@@ -57,7 +57,7 @@ class User_Report:
 		
 		# Only active members?
 		if self.active_only:
-			users = users.filter(member__in=Member.objects.active_members())
+			users = users.filter(pk__in=Member.objects.active_members().values('user'))
 		
 		# Sort them
 		if self.order_by == "FIRST":
@@ -76,14 +76,14 @@ class User_Report:
 	def new_membership(self):
 		new_memberships = Membership.objects.filter(start_date__gte=self.start_date, start_date__lte=self.end_date)
 		members = Member.objects.filter(memberships__in=new_memberships)
-		return User.objects.filter(member__in=members)
+		return User.objects.filter(pk__in=members.values('user'))
 
 	def ended_membership(self):
 		ended_memberships = Membership.objects.filter(end_date__gte=self.start_date, end_date__lte=self.end_date)
 		members = Member.objects.filter(memberships__in=ended_memberships)
-		return User.objects.filter(member__in=members)
+		return User.objects.filter(pk__in=members.values('user'))
 
 	def invalid_billing(self):
 		members = Member.objects.filter(valid_billing=False)
-		return User.objects.filter(member__in=members, date_joined__gte=self.start_date, date_joined__lte=self.end_date)
+		return User.objects.filter(pk__in=members.values('user'), date_joined__gte=self.start_date, date_joined__lte=self.end_date)
 		
