@@ -103,7 +103,8 @@ class BackupManager(object):
 
 		media_file = '%s-media.tgz' % file_token
 		media_path = '%s%s' % (settings.BACKUP_ROOT, media_file)
-		command = 'cd "%s" && cd .. && tar -czf "%s" "%s"' % (settings.MEDIA_ROOT, media_path, settings.MEDIA_ROOT.split('/')[-2])
+		dirs = settings.MEDIA_ROOT.split('/')
+		command = 'cd "%s" && cd .. && tar -czf "%s" "%s"' % (settings.MEDIA_ROOT, media_path, dirs[len(dirs)-1])
 		if not self.call_system(command):
 			print 'aborting'
 			return
