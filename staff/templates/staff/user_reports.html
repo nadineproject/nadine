@@ -14,13 +14,18 @@ table th.bottom_line { border-bottom:1px solid; }
 <h2>User Reports</h2>
 
 <form action="." method="POST" style="margin:1em 20em 1em 1em;">
-	{% for field in form %}
-		<span style="margin-left:1em;" nowrap>
-			<strong>{{ field.label }}:</strong>
-			{{ field }}
-		</span>
-	{% endfor %}
-	<input type="submit" value="view report" style="margin-left:1em;" />
+	<div style="padding:.5em;">
+		<span><strong>Report: </strong>{{ form.report }}</span>
+	</div>
+	<div style="padding:.5em;">
+		<span><strong>Start: </strong>{{ form.start_date }}</span>
+		<span style="padding:.5em;"><strong>End: </strong>{{ form.end_date }}</span>
+	</div>
+	<div style="padding:.5em;">
+		<span><strong>Active Only: </strong>{{ form.active_only }}</span>
+		<span style="padding:.5em;"><strong>Order By: </strong>{{ form.order_by }}</span>
+		<input type="submit" value="View Report" style="margin-left:1em;" />
+	</div>
 	{% csrf_token %}
 </form>
 <hr>

@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from datetime import date, datetime, timedelta
 from django.utils import timezone
 from models import Member, Membership
+from django.forms.extras.widgets import SelectDateWidget
 
 REPORT_KEYS = (
 	('ALL', 'All Users'),
@@ -25,11 +26,12 @@ def getDefaultForm():
 	return UserReportForm(form_data)
 
 class UserReportForm(forms.Form):
+	years = (2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016)
 	report = forms.ChoiceField(choices=REPORT_KEYS, required=True)
 	order_by = forms.ChoiceField(choices=REPORT_FIELDS, required=True)
 	active_only = forms.BooleanField(initial=True)
-	start_date = forms.DateField(required=True)
-	end_date = forms.DateField(required=True)
+	start_date = forms.DateField(required=True, widget=SelectDateWidget(years=years))
+	end_date = forms.DateField(required=True, widget=SelectDateWidget(years=years))
 
 class User_Report:
 	def __init__(self, form):
