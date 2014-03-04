@@ -7,6 +7,7 @@ ADMINS = (
     ('YOU', 'you@yourdomain.com'),
 )
 MANAGERS = ADMINS
+SERVER_EMAIL = 'nadine@officenomads.com'
 
 DATABASES = {
 	'default': {
