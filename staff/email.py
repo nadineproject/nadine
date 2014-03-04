@@ -10,7 +10,8 @@ from models import Member, DailyLog, SentEmailLog
 
 def valid_message_keys():
 	return ["all", "introduction", "newsletter", "new_membership", "first_day_checkin", 
-		"exit_survey", "member_survey", "no_return", "checkin", "invalid_billing", "new_key"]
+		"exit_survey", "member_survey", "no_return", "checkin", "invalid_billing", "new_key",
+		"no_signin", "no_device"]
 
 def send_manual(user, message):
 	message = message.lower()
@@ -32,6 +33,10 @@ def send_manual(user, message):
 		send_no_return_checkin(user)
 	if message == "invalid_billing" or message == "all":
 		send_invalid_billing(user)
+	if message == "no_signin" or message == "all":
+		send_no_signin(user)
+	if message == "no_device" or message == "all":
+		send_no_device(user)
 	if message == "new_key" or message == "all":
 		send_new_key(user)
 	return True
@@ -87,6 +92,18 @@ def send_invalid_billing(user):
 	site = Site.objects.get_current()
 	subject = "%s: Billing Problem" % (site.name)
 	message = render_to_string('email/invalid_billing.txt', {'user':user, 'site':site})
+	send(user.email, subject, message)
+
+def send_no_signin(user):
+	site = Site.objects.get_current()
+	subject = "%s: Forget to sign in?" % (site.name)
+	message = render_to_string('email/no_signin.txt', {'user':user, 'site':site})
+	send(user.email, subject, message)
+
+def send_no_device(user):
+	site = Site.objects.get_current()
+	subject = "%s: Device Registration" % (site.name)
+	message = render_to_string('email/no_device.txt', {'user':user, 'site':site})
 	send(user.email, subject, message)
 
 def send_new_key(user):
