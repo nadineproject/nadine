@@ -56,7 +56,7 @@ table th.bottom_line { border-bottom:1px solid; }
 			<td>{{ user.get_profile.last_membership.membership_plan }}</td>
 			<td>{{ user.get_profile.last_membership.start_date|date:"M d, Y" }}</td>
 			<td>{{ user.get_profile.last_membership.end_date|date:"M d, Y" }}</td>
-			{% if user.get_profile.valid_billing %}
+			{% if user.get_profile.has_valid_billing %}
 				<td>Valid</td>
 			{% else %}
 				<td style="color: red;">Invalid</td>
