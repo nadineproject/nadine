@@ -8,6 +8,7 @@ PROJECT_ROOT = os.path.realpath(os.path.dirname(__file__))
 TEMPLATE_DIRS = ( PROJECT_ROOT + '/templates/', )
 MEDIA_ROOT = PROJECT_ROOT + '/media/'
 BACKUP_ROOT = PROJECT_ROOT + '/backups/'
+LOGFILE = '/tmp/django.log'
 
 STATIC_URL = '/static/'
 STATIC_ROOT = ''
@@ -154,5 +155,46 @@ MAILCHIMP_WEBHOOK_KEY="nadine"
 
 # Import the local settings file
 from local_settings import *
+
+# Logging
+LOGGING = {
+	'version': 1,
+	'disable_existing_loggers': False,
+	 'formatters': {
+		  'verbose': {
+				'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+		  },
+		  'simple': {
+				'format': '%(levelname)s %(message)s'
+		  },
+	 },
+	'handlers': {
+		'file': {
+			'level': 'INFO',
+			'class': 'logging.FileHandler',
+			'filename': LOGFILE,
+			'formatter': 'verbose',
+		},
+		'mail_admins': {
+			'level': 'ERROR',
+			'class': 'django.utils.log.AdminEmailHandler',
+			'include_html': True,
+			'formatter': 'verbose',
+		}
+
+	 },
+	 'loggers': {
+		  'django': {
+				'handlers': ['file'],
+				'level': 'INFO',
+				'propagate': True,
+		  },
+		  'django.request': {
+				'handlers': ['file', 'mail_admins'],
+				'level': 'INFO',
+				'propagate': True,
+		  },
+	 },
+}
 
 # Copyright 2009 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
