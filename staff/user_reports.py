@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from datetime import date, datetime, timedelta
 from django.utils import timezone
 from models import Member, Membership
+from arpwatch.models import UserDevice
 from django.forms.extras.widgets import SelectDateWidget
 
 REPORT_KEYS = (
@@ -10,6 +11,7 @@ REPORT_KEYS = (
 	('NEW_MEMBER', 'New Members'),
 	('EXITING_MEMBER', 'Exiting Members'),
 	('INVALID_BILLING', 'Users with Invalid Billing'),
+	('NO_DEVICE', 'Users with no Registered Devices'),
 )
 
 REPORT_FIELDS = (
@@ -30,8 +32,10 @@ class UserReportForm(forms.Form):
 	report = forms.ChoiceField(choices=REPORT_KEYS, required=True)
 	order_by = forms.ChoiceField(choices=REPORT_FIELDS, required=True)
 	active_only = forms.BooleanField(initial=True)
-	start_date = forms.DateField(required=True, widget=SelectDateWidget(years=years))
-	end_date = forms.DateField(required=True, widget=SelectDateWidget(years=years))
+	#start_date = forms.DateField(required=True, widget=SelectDateWidget(years=years))
+	#end_date = forms.DateField(required=True, widget=SelectDateWidget(years=years))
+	start_date = forms.DateField(required=True)
+	end_date = forms.DateField(required=True)
 
 class User_Report:
 	def __init__(self, form):
@@ -54,6 +58,8 @@ class User_Report:
 			users = self.ended_membership()
 		elif self.report == "INVALID_BILLING":
 			users = self.invalid_billing()
+		elif self.report == "NO_DEVICE":
+			users = self.no_device()
 		if not users:
 			return User.objects.none()
 		
@@ -88,4 +94,8 @@ class User_Report:
 	def invalid_billing(self):
 		members = Member.objects.filter(valid_billing=False)
 		return User.objects.filter(pk__in=members.values('user'), date_joined__gte=self.start_date, date_joined__lte=self.end_date)
-		
+
+	def no_device(self):
+		devices = UserDevice.objects.filter(user__isnull=False)
+		users = User.objects.filter(date_joined__gte=self.start_date, date_joined__lte=self.end_date)
+		return users.exclude(pk__in=devices.values('user'))
