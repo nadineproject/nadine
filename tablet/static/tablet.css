@@ -34,16 +34,16 @@
 
 #signin {
 	width: 100%;
-	margin-top: 1em;
+	margin-top: 3em;
 }
 
 #signin a {
-	font-size: 1.2em;
-	color: #222222;
-	background-color: #81c348	;
-	border-color: #d7d8a2;
-	width: 60%;
-	margin: 0 auto;
+   font-size: 2em;
+   color: #EEE;
+   background-color: #009900;
+   border-color: #00cc00;
+   width: 75%;
+   margin: 0 auto;
 }
 
 table td:first-child, table td:last-child { text-align: left; }
