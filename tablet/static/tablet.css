@@ -1,6 +1,6 @@
 #header { 
 	text-shadow: none;
-	background-color:#313131; 
+	background-color:#414141; 
 	font-size: 1.5em; 
 	color: #EEE;
 	padding-top:15px;
@@ -8,10 +8,13 @@
 
 #footer {
 	padding-top: 0.5em; 
-	padding-bottom: 1.5em; 
-	background-color:#313131;
+	padding-bottom: 0.5em; 
+	background-color:#414141;
 	text-shadow: none;
 	color: #EEE;
+	position: absolute;
+	bottom: 0px;
+	width: 100%;
 }
 
 #top-nav ul li a { 
@@ -27,6 +30,14 @@
 #yellow_button {
 	background-color: yellow; 
 	font-size: 1.2em;
+}
+
+#signin a{
+	font-size: 1.2em;
+	color: #DDDFDD;
+	background-color: #005500;
+	border-color: #007700;
+	margin-top: 2em;
 }
 
 table td:first-child, table td:last-child { text-align: left; }
