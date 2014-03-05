@@ -65,3 +65,19 @@ a.showLink, a.hideLink {
 a.hideLink {
 	display: none;
 }
+
+/* Override the JQuery Mobile stuff */
+#header.ui-header, #footer.ui-footer {
+	border: none;
+}
+.ui-content {
+	margin-bottom: 40px;
+}
+#member-search-form .ui-btn.ui-btn-b,
+#new_user .ui-btn.ui-btn-b{
+	background-color: #38c;
+	border-color: #38c;
+	font-size: 1.2em;
+	width: 75%;
+	margin: 1em auto;
+}

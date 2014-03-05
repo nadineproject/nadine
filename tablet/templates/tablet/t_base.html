@@ -4,7 +4,6 @@
 <head>
 	<meta charset="utf-8">
 	<title>{% block title %}{% block sub-title %}{% endblock %}{{ site.name }}{% endblock %}</title>
-	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}tablet.css" />
 	<link rel="apple-touch-icon" href="{{ STATIC_URL }}images/icon57.png">
 	<link rel="apple-touch-icon"sizes="72x72" href="{{ STATIC_URL }}images/icon72.png">
 	
@@ -12,9 +11,11 @@
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 	
+	<link rel="stylesheet" href="{{ STATIC_URL }}jquery.mobile-1.4.1.min.css" />
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}tablet.css" />
+
 	<script src="{{ STATIC_URL }}jquery-1.10.2.min.js"></script>
 	<script src="{{ STATIC_URL }}custom-scripting.js"></script>
-	<link rel="stylesheet" href="{{ STATIC_URL }}jquery.mobile-1.4.1.min.css" />
 	<script src="{{ STATIC_URL }}jquery.mobile-1.4.1.min.js"></script>
 
 	{%block sub-head %}{% endblock %}
