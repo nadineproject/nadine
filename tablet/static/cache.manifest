@@ -1,8 +1,0 @@
-CACHE MANIFEST
-
-# Update the version in order to trigger a reloading of the cache
-# on the iPad. If the version doesn't change, nothing will reloa
-# Version 1.1
-
-NETWORK:
-*
