@@ -2,34 +2,6 @@
 
 {% block sub-title %}Nadine Tablet | Welcome {% endblock %}
 
-{%block sub-head %}
-	<!--<META http-equiv="refresh" content="5; URL={% url 'tablet.views.signin' %}">-->
-	<script>
-	jQuery(function( $ ){
-	var $img = $('#page-coutdown img');
-	var n = $img.length;
-
-	function changeDot(){
-	    $img.delay(1000).eq(--n).attr("src","{{ STATIC_URL }}images/b_dot_empty.png");
-	    if(n<=0){
-	        clearInterval(timer);
-	    }
-	};
-
-	var timer = setInterval(changeDot, 1000);
-	});
-	</script>
-{% endblock %}
-
-{% block style %}
-	#page-countdown {
-		margin-top: 2em;
-	}
-	#page-coutdown img {
-		margin-left: 2em;
-	}
-{% endblock %}
-
 {% block content %}
 	<div style="font-size: 150%;">Welcome {{user.first_name}} {{user.last_name}}!</div>
 	{% if membership %}
@@ -52,14 +24,32 @@
 		</p>
 	</div>
 	
-	<div id="page-coutdown">
-       <img src="{{ STATIC_URL }}images/b_dot_full.png" />
-       <img src="{{ STATIC_URL }}images/b_dot_full.png" />
-       <img src="{{ STATIC_URL }}images/b_dot_full.png" />
-       <img src="{{ STATIC_URL }}images/b_dot_full.png" />
-       <img src="{{ STATIC_URL }}images/b_dot_full.png" />
-   </div>
 	
+	<div style="width:100%; position:absolute; bottom:60px; text-align:center;">
+		<div id="page-coutdown" style="margin:0 auto; position:relative;">
+			<img src="{{ STATIC_URL }}images/b_dot_full.png" style="padding: 0 25px;"/>
+			<img src="{{ STATIC_URL }}images/b_dot_full.png" style="padding: 0 25px;"/>
+			<img src="{{ STATIC_URL }}images/b_dot_full.png" style="padding: 0 25px;"/>
+			<img src="{{ STATIC_URL }}images/b_dot_full.png" style="padding: 0 25px;"/>
+			<img src="{{ STATIC_URL }}images/b_dot_full.png" style="padding: 0 25px;"/>
+		</div>
+	</div>
+
+	<script>
+	jQuery(function( $ ){
+	var $img = $('#page-coutdown img');
+	var n = $img.length;
+
+	function changeDot(){
+	    $img.delay(1000).eq(--n).attr("src","{{ STATIC_URL }}images/b_dot_empty.png");
+	    if(n<=0){
+	        clearInterval(timer);
+	    }
+	};
+
+	var timer = setInterval(changeDot, 1000);
+	});
+	</script>
 	<script>
 		setTimeout(function () {window.location.href = "{% url 'tablet.views.signin' %}"; }, {{timeout}}); //will call the function after 5 secs.
 	</script>
