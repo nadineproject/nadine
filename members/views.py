@@ -20,7 +20,7 @@ from interlink.models import IncomingMail
 from models import HelpText, UserNotification
 from arpwatch import arp
 from arpwatch.models import ArpLog, UserDevice
-from staff import usaepay
+from staff import usaepay, email
 
 @login_required
 def home(request):
@@ -203,6 +203,17 @@ def user_devices(request):
 	ip = request.META['REMOTE_ADDR']
 	this_device = arp.device_by_ip(ip)
 	return render_to_response('members/user_devices.html',{'user':user, 'devices':devices, 'this_device':this_device, 'ip':ip, 'error':error}, context_instance=RequestContext(request))
+
+@login_required
+def connect(request, username):
+	message = ""
+	target = get_object_or_404(User, username=username)
+	user = request.user
+	action = request.GET.get('action')
+	if action and action == "send_info":
+		email.send_contact_request(user, target)
+		message = "Email Sent"
+	return render_to_response('members/connect.html',{'target':target, 'user':user, 'page_message':message}, context_instance=RequestContext(request))
 
 @login_required
 def notifications(request):

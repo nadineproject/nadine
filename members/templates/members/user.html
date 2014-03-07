@@ -4,6 +4,9 @@
 
 {% block sub-title %}{{ user.get_full_name }} | {% endblock %}
 
+{% block style %}
+{% endblock %}
+
 {% block content %}
       {% if user.profile.photo %}
       <div class="member-photo">      
@@ -24,15 +27,20 @@
 
 <dl>
 	<dt>Profile Tags:</dt>
-	{% for tag in member.tags.all %}
-		<dd><a href="{% url 'members.views.tag' tag %}">{{ tag }}</a></dd>
-	{% endfor %}
+	{% if member.tags.all %}
+		{% for tag in member.tags.all %}
+			<dd><a href="{% url 'members.views.tag' tag %}">{{ tag }}</a></dd>
+		{% endfor %}
+	{% else %}
+		<dd><i>No tags</i></dd>
+	{% endif %}
 </dl>
 
 {% if user.username != request.user.username %}
-	<div style="margin:1em;">
-		[ <a href="{% url 'members.views.add_notification' user %}">Notify me the next time we are both in the space</a> ]
-	</div>
+	<dl>
+		<dt>Contact:</dt>
+		<dd><a href="{% url 'members.views.connect' user %}">Connect with this member</a></dd>
+	</dl>
 {% endif %}
 
 {% if user.username == request.user.username or request.user.is_staff %}

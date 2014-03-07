@@ -117,7 +117,13 @@ def send_user_notifications(user, target):
 	subject = "%s: %s is here!" % (site.name, target.get_full_name())
 	message = render_to_string('email/user_notification.txt', {'user':user, 'target':target, 'site':site})
 	send(user.email, subject, message)
-		
+	
+def send_contact_request(user, target):
+	site = Site.objects.get_current()
+	subject = "%s: %s wants to connect!" % (site.name, user.get_full_name())
+	message = render_to_string('email/contact_request.txt', {'user':user, 'target':target, 'site':site})
+	send(user.email, subject, message)
+
 def announce_new_user(user):
 	subject = "New User - %s" % (user.get_full_name())
 	message = "Team,\r\n\r\n \t%s just signed in for the first time! %s" % (user.get_full_name(), team_signature(user))
