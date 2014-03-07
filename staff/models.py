@@ -283,7 +283,7 @@ class Member(models.Model):
 			host = membership.guest_of
 			return host.activity_this_month()
 		month_start = membership.prev_billing_date(test_date)
-		print month_start
+		#print month_start
 		activity = []
 		for m in [self] + self.guests():
 			for l in DailyLog.objects.filter(member=m, payment='Bill', visit_date__gte=month_start):
