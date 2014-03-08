@@ -223,7 +223,7 @@ def notifications(request):
 @login_required
 def add_notification(request, username):
 	target = get_object_or_404(User, username=username)
-	if UserNotification.objects.filter(notify_user=request.user, target_user=target).count() == 0:
+	if UserNotification.objects.filter(notify_user=request.user, target_user=target, sent_date__isnull=True).count() == 0:
 		UserNotification.objects.create(notify_user=request.user, target_user=target)	
 	return HttpResponseRedirect(reverse('members.views.notifications', kwargs={}))
 
