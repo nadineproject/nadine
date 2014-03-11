@@ -132,13 +132,14 @@ def run_billing(bill_time=timezone.localtime(timezone.now())):
 	except ObjectDoesNotExist:
 		latest_billing_log = None
 	if latest_billing_log and not latest_billing_log.ended:
-		print 'The last billing log (%s) claims to be in progress.	Aborting billing.' % latest_billing_log
+		logger.warning("run_billing:The last billing log (%s) claims to be in progress.	Aborting billing." % latest_billing_log)
 		return
 
 	billing_log = BillingLog.objects.create()
 	billing_success = False
 	bill_count = 0
 	try:
+			# This should be changed to "all members w/ activity or an active membership"
 			for member in Member.objects.all():
 				last_bill = member.last_bill()
 				if last_bill:
@@ -165,9 +166,8 @@ def run_billing(bill_time=timezone.localtime(timezone.now())):
 						if day.is_membership_end_date(): monthly_fee = 0
 						billable_dropin_count = max(0, len(bill_dropins) + len(bill_guest_dropins) - day.membership.dropin_allowance)
 						bill_amount = monthly_fee + (billable_dropin_count * day.membership.daily_rate)
-
 						day.bill = Bill(created=day.date, amount=bill_amount, member=member, paid_by=day.membership.guest_of, membership=day.membership)
-						#print 'saving bill: %s - %s - %s' % (day.bill, day, billable_dropin_count)
+						logger.debug('saving bill: %s - %s - %s' % (day.bill, day, billable_dropin_count))
 						day.bill.save()
 						bill_count += 1
 						day.bill.dropins = [dropin.id for dropin in bill_dropins]
@@ -197,14 +197,15 @@ def run_billing(bill_time=timezone.localtime(timezone.now())):
 						last_day.bill.save()
 
 			billing_success = True
-			#print 'Successfully created %s bills' % bill_count
+			logger.info("run_billing: Successfully created %s bills" % bill_count)
 	except:
 		billing_log.note = traceback.format_exc()
 	finally:
 		billing_log.ended = timezone.localtime(timezone.now())
 		billing_log.successful = billing_success
 		billing_log.save()
-		#print 'Completed billing %s' % billing_success
-		if not billing_success: print billing_log.note
+		logger.info("run_billing: Done! Success=%s" % billing_success)
+		if not billing_success: 
+			logger.error(billing_log.note)
 
 # Copyright 2010 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
