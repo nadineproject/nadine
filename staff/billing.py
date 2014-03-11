@@ -1,12 +1,14 @@
 import time
-from datetime import datetime, timedelta, date
-import traceback
-
+import logging
 import settings
+import traceback
 from models import Bill, BillingLog, Transaction, Member, Membership, DailyLog
 from django.db.models import Count, Q
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
+from datetime import datetime, timedelta, date
+
+logger = logging.getLogger(__name__)
 
 class Day:
 	"""All of the daily_logs, memberships, and (optionally) a bill associated with this day of a Run."""
@@ -27,11 +29,14 @@ class Day:
 class Run:
 	"""The information which is gathered for a time period in order to calculate billing."""
 	def __init__(self, member, start_date, end_date, filter_closed_logs=True):
+		#logger.debug(("Run: member=%s, start=%s, end=%s") % (member, start_date, end_date))
+
 		self.member = member
 		self.start_date = start_date
 		self.end_date = end_date
 		self.days = []
 		self.filter_closed_logs = filter_closed_logs
+		
 		
 		self.populate_days()
 		self.populate_memberships()
@@ -121,7 +126,7 @@ class Run:
 def run_billing(bill_time=timezone.localtime(timezone.now())):
 	"""Generate billing records for every member who deserves it."""
 	bill_date = datetime.date(bill_time)
-	#print "Running billing for %s" % bill_date
+	logger.info("run_billing: bill_time=%s, bill_date=%s" % (bill_time, bill_date))
 	try:
 		latest_billing_log = BillingLog.objects.latest()
 	except ObjectDoesNotExist:
