@@ -6,7 +6,7 @@ from django.conf import settings
 from django.template import RequestContext, Template
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
@@ -21,6 +21,13 @@ from models import HelpText, UserNotification
 from arpwatch import arp
 from arpwatch.models import ArpLog, UserDevice
 from staff import usaepay, email
+
+def is_active_member(user):
+	if user and not user.is_anonymous:
+		profile = user.get_profile()
+		if profile:
+			return profile.is_active()
+	return False
 
 @login_required
 def home(request):
@@ -50,6 +57,7 @@ def help_topic(request, slug):
 	return render_to_response('members/help_topic.html',{'title':title, 'page_body':rendered}, current_context)
 
 @login_required
+@user_passes_test(is_active_member, login_url='members.views.not_active')
 def all_members(request):
 	members = Member.objects.active_members().order_by('user__first_name') 
 	return render_to_response('members/all_members.html',{ 'members':members }, context_instance=RequestContext(request))
@@ -60,6 +68,7 @@ def chat(request):
 	return render_to_response('members/chat.html',{ 'user':user }, context_instance=RequestContext(request))
 
 @login_required
+@user_passes_test(is_active_member, login_url='members.views.not_active')
 def here_today(request):
 	members = arp.users_for_day()
 	return render_to_response('members/here_today.html',{ 'members':members }, context_instance=RequestContext(request))
@@ -80,6 +89,7 @@ def user(request, username):
 	return render_to_response('members/user.html',{'user':user, 'member':member, 'activity':activity, 'guest_activity':guest_activity, 'settings':settings}, context_instance=RequestContext(request))
 
 @login_required
+@user_passes_test(is_active_member, login_url='members.views.not_active')
 def mail(request, username):
 	user = get_object_or_404(User, username=username)
 	if not user == request.user: return HttpResponseRedirect(reverse('members.views.user', kwargs={'username':request.user.username}))
@@ -91,6 +101,7 @@ def mail(request, username):
 	return render_to_response('members/mail.html',{'user':user, 'mailing_list_subscription_form':MailingListSubscriptionForm()}, context_instance=RequestContext(request))
 
 @login_required
+@user_passes_test(is_active_member, login_url='members.views.not_active')
 def mail_message(request, id):
 	message = get_object_or_404(IncomingMail, id=id)
 	return render_to_response('members/mail_message.html',{'message':message}, context_instance=RequestContext(request))
@@ -128,6 +139,7 @@ def receipt(request, username, id):
 	return render_to_response('members/receipt.html',{'user':user, 'transaction':transaction, 'bills':bills}, context_instance=RequestContext(request))
 
 @login_required
+@user_passes_test(is_active_member, login_url='members.views.not_active')
 def tags(request):
 	tags = []
 	for tag in Member.tags.all().order_by('name'):
@@ -137,6 +149,7 @@ def tags(request):
 	return render_to_response('members/tags.html',{'tags':tags}, context_instance=RequestContext(request))
 
 @login_required
+@user_passes_test(is_active_member, login_url='members.views.not_active')
 def tag_cloud(request):
 	tags = []
 	for tag in Member.tags.all().order_by('name'):
@@ -146,6 +159,7 @@ def tag_cloud(request):
 	return render_to_response('members/tag_cloud.html',{'tags':tags}, context_instance=RequestContext(request))
 
 @login_required
+@user_passes_test(is_active_member, login_url='members.views.not_active')
 def tag(request, tag):
 	members = Member.objects.active_members().filter(tags__name__in=[tag])
 	return render_to_response('members/tag.html',{'tag':tag, 'members':members}, context_instance=RequestContext(request))
@@ -205,6 +219,7 @@ def user_devices(request):
 	return render_to_response('members/user_devices.html',{'user':user, 'devices':devices, 'this_device':this_device, 'ip':ip, 'error':error}, context_instance=RequestContext(request))
 
 @login_required
+@user_passes_test(is_active_member, login_url='members.views.not_active')
 def connect(request, username):
 	message = ""
 	target = get_object_or_404(User, username=username)
@@ -234,26 +249,27 @@ def delete_notification(request, username):
 		n.delete()
 	return HttpResponseRedirect(reverse('members.views.notifications', kwargs={}))
 
-def ticker(request):
-	here_today = arp.users_for_day()
-	
-	now = timezone.localtime(timezone.now())
-	midnight = now - timedelta(seconds=now.hour*60*60 + now.minute*60 + now.second)
-	device_logs = ArpLog.objects.for_range(midnight, now)
-	
-	counts = {}
-	counts['members'] = Member.objects.active_members().count()
-	counts['full_time'] = Membership.objects.by_date(now).filter(has_desk=True).count()
-	counts['part_time'] = counts['members'] - counts['full_time']
-	counts['here_today'] = len(here_today)
-	counts['devices'] = len(device_logs)
-	
-	# Auto refresh?
-	refresh = True;
-	if request.GET.has_key("norefresh"):
-		refresh = False;
-		
-	return render_to_response('members/ticker.html',{'counts':counts, 'members':here_today, 'refresh':refresh}, context_instance=RequestContext(request))
+# On ice for now.  Preffer a JSON alernative
+#def ticker(request):
+#	here_today = arp.users_for_day()
+#	
+#	now = timezone.localtime(timezone.now())
+#	midnight = now - timedelta(seconds=now.hour*60*60 + now.minute*60 + now.second)
+#	device_logs = ArpLog.objects.for_range(midnight, now)
+#	
+#	counts = {}
+#	counts['members'] = Member.objects.active_members().count()
+#	counts['full_time'] = Membership.objects.by_date(now).filter(has_desk=True).count()
+#	counts['part_time'] = counts['members'] - counts['full_time']
+#	counts['here_today'] = len(here_today)
+#	counts['devices'] = len(device_logs)
+#	
+#	# Auto refresh?
+#	refresh = True;
+#	if request.GET.has_key("norefresh"):
+#		refresh = False;
+#		
+#	return render_to_response('members/ticker.html',{'counts':counts, 'members':here_today, 'refresh':refresh}, context_instance=RequestContext(request))
 
 @login_required
 def disable_billing(request, username):
