@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 def register_user_ip(user, ip):
 	logtime = timezone.localtime(timezone.now())
-	logging.info("register_user_ip: REMOTE_ADDR for %s = %s @ %s" % (user, ip, logtime))
+	logger.info("register_user_ip: REMOTE_ADDR for %s = %s @ %s" % (user, ip, logtime))
 	ip_log = UserRemoteAddr.objects.create(logintime=logtime, user=user, ip_address=ip)
 
 def device_by_ip(ip):
