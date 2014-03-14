@@ -126,14 +126,18 @@ def day_is_complete(day_str):
 	print(arp_logs.count())
 	return True
 	
-def device_users_for_day(day=timezone.localtime(timezone.now())):
+def device_users_for_day(day=None):
+	if not day:
+		day=timezone.localtime(timezone.now())
 	start = datetime(year=day.year, month=day.month, day=day.day, hour=0, minute=0, second=0, microsecond=0)
 	start = timezone.make_aware(start, timezone.get_current_timezone())
 	end = start + timedelta(days=1)
 	query = ArpLog.objects.filter(runtime__range=(start, end)).order_by('device__user').distinct('device__user')
 	return query.values('device__user', 'runtime')
 
-def not_signed_in(day=timezone.localtime(timezone.now())):
+def not_signed_in(day=None):
+	if not day:
+		day=timezone.localtime(timezone.now())
 	signed_in = []
 	for l in DailyLog.objects.filter(visit_date=day):
 		signed_in.append(l.member.user.id)
@@ -148,7 +152,9 @@ def not_signed_in(day=timezone.localtime(timezone.now())):
 				
 	return not_signed_in
 
-def users_for_day(day=timezone.localtime(timezone.now())):
+def users_for_day(day=None):
+	if not day:
+		day=timezone.localtime(timezone.now())
 	member_dict = {}
 
 	# Who's signed into the space today
