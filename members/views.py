@@ -21,6 +21,7 @@ from models import HelpText, UserNotification
 from arpwatch import arp
 from arpwatch.models import ArpLog, UserDevice
 from staff import usaepay, email
+from staff.forms import *
 
 def is_active_member(user):
 	if user and not user.is_anonymous():
@@ -58,20 +59,40 @@ def help_topic(request, slug):
 
 @login_required
 @user_passes_test(is_active_member, login_url='members.views.not_active')
-def all_members(request):
-	members = Member.objects.active_members().order_by('user__first_name') 
-	return render_to_response('members/all_members.html',{ 'members':members }, context_instance=RequestContext(request))
+def active_members(request):
+	members = Member.objects.active_members().order_by('user__first_name')
+	title = "%s active members" % len(members)
+	return render_to_response('members/view_members.html',{'members':members, 'title':title}, context_instance=RequestContext(request))
 
 @login_required
-def chat(request):
-	user = request.user
-	return render_to_response('members/chat.html',{ 'user':user }, context_instance=RequestContext(request))
+@user_passes_test(is_active_member, login_url='members.views.not_active')
+def member_search(request):
+	search_results = None
+	if request.method == "POST":
+		member_search_form = MemberSearchForm(request.POST)
+		if member_search_form.is_valid(): 
+			search_results = Member.objects.search(member_search_form.cleaned_data['terms'])
+	else:
+		member_search_form = MemberSearchForm()
+	title = "Found %s members" % len(search_results)	
+	return render_to_response('members/view_members.html',{'members':search_results, 'title':title}, context_instance=RequestContext(request))
 
 @login_required
 @user_passes_test(is_active_member, login_url='members.views.not_active')
 def here_today(request):
 	members = arp.users_for_day()
-	return render_to_response('members/here_today.html',{ 'members':members }, context_instance=RequestContext(request))
+	length = len(members)
+	title = "There ain't no members here today!" 
+	if length == 1:
+		title = "1 member here today"
+	if length >1:
+		title = "%s members here today" % length
+	return render_to_response('members/view_members.html',{'members':members, 'title':title}, context_instance=RequestContext(request))
+
+@login_required
+def chat(request):
+	user = request.user
+	return render_to_response('members/chat.html',{ 'user':user }, context_instance=RequestContext(request))
 
 def not_active(request):
 	return render_to_response('members/not_active.html',{ }, context_instance=RequestContext(request))

@@ -3,7 +3,8 @@ from django.shortcuts import redirect
 
 urlpatterns = patterns('members.views',
 	(r'^$', 'home'),
-	(r'^all/$', 'all_members'),
+	(r'^active/$', 'active_members'),
+	(r'^find/$', 'member_search'),
 	(r'^here_today/$', 'here_today'),
 	(r'^profile/$', 'profile_redirect'),
 	(r'^chat/$', 'chat'),

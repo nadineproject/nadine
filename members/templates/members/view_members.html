@@ -6,7 +6,23 @@
 {% endblock %}
 
 {% block content %}
-<h2>{{ members.count }} active members:</h2>
+
+<div style="width:100%; ">		
+	<span style="float:left;">
+		[ <a href="{% url 'members.views.active_members' %}">Active Members</a> |
+		<a href="{% url 'members.views.here_today' %}">Here Today</a> ]
+	</span>
+
+	<form id="site-search-form" action="{% url 'members.views.member_search' %}" method="POST" style="float:right;">
+		{% for field in site_search_form %}{{ field }}{% endfor %}
+		<input type="submit" value="search" />
+		{% csrf_token %}
+	</form>
+</div>
+
+<h2 style="vertical-align: top;">{{ title }}</h2>
+
+<div>
 {% for member in members %}
 <div class="user-card">
       {% if member.photo %}
@@ -17,6 +33,6 @@
       <a href="{% url 'members.views.user' member.user.username %}">{{ member.full_name }}</a>
 </div>
 {% endfor %}
-
+</div>
 
 {% endblock %}
