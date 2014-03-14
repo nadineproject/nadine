@@ -23,7 +23,7 @@ from arpwatch.models import ArpLog, UserDevice
 from staff import usaepay, email
 
 def is_active_member(user):
-	if user and not user.is_anonymous:
+	if user and not user.is_anonymous():
 		profile = user.get_profile()
 		if profile:
 			return profile.is_active()
