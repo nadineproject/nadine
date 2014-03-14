@@ -1,4 +1,5 @@
 import time
+import logging
 from datetime import datetime, time, date, timedelta
 
 from django.conf import settings
@@ -10,9 +11,12 @@ from django.utils import timezone
 from models import *
 from staff.models import Member, DailyLog
 
+logger = logging.getLogger(__name__)
+
 def register_user_ip(user, ip):
-	print("REMOTE_ADDR for %s: %s" % (user, ip))
-	ip_log = UserRemoteAddr.objects.create(logintime=timezone.localtime(timezone.now()), user=user, ip_address=ip)
+	logtime = timezone.localtime(timezone.now())
+	logging.info("register_user_ip: REMOTE_ADDR for %s = %s @ %s" % (user, ip, logtime))
+	ip_log = UserRemoteAddr.objects.create(logintime=logtime, user=user, ip_address=ip)
 
 def device_by_ip(ip):
 	end_ts = timezone.localtime(timezone.now())
@@ -29,6 +33,7 @@ def devices_by_user(user):
 def map_ip_to_mac(hours):
 	end_ts = timezone.localtime(timezone.now())
 	start_ts = end_ts - timedelta(hours=hours)
+	logger.debug("map_ip_to_mac: start=%s, end=%s" % (start_ts, end_ts))
 	ip_logs = UserRemoteAddr.objects.filter(logintime__gte=start_ts, logintime__lte=end_ts)
 	for i in ip_logs:
 		#print("ip_log: %s" % (i))
@@ -36,7 +41,7 @@ def map_ip_to_mac(hours):
 		for a in arp_logs:
 			#print("arp_log: %s" % (a))
 			if not a.device.ignore and not a.device.user:
-				#print("FOUND ONE! %s = %s" % (a.device.mac_address, i.user))
+				logger.info("map_ip_to_mac: Associating %s with %s" % (a.device.mac_address, i.user))
 				a.device.user = i.user
 				a.device.save()
 

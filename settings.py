@@ -198,6 +198,10 @@ LOGGING = {
 			'handlers': ['file'],
 			'level': 'DEBUG',
 		},
+		'arpwatch': {
+			'handlers': ['file'],
+			'level': 'DEBUG',
+		},
 	},
 }
 
