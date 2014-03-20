@@ -71,10 +71,15 @@ def member_search(request):
 	if request.method == "POST":
 		member_search_form = MemberSearchForm(request.POST)
 		if member_search_form.is_valid(): 
-			search_results = Member.objects.search(member_search_form.cleaned_data['terms'])
+			search_results = Member.objects.search(member_search_form.cleaned_data['terms'], True)
 	else:
 		member_search_form = MemberSearchForm()
-	title = "Found %s members" % len(search_results)	
+	title = "No one here by that name!" 	
+	if search_results:
+		if len(search_results) == 1:
+			title = "Found 1 member"
+		else:
+			title = "Found %s members" % len(search_results)	
 	return render_to_response('members/view_members.html',{'members':search_results, 'title':title}, context_instance=RequestContext(request))
 
 @login_required
@@ -82,7 +87,7 @@ def member_search(request):
 def here_today(request):
 	members = arp.users_for_day()
 	length = len(members)
-	title = "There ain't no members here today!" 
+	title = "It's really quiet here today!" 
 	if length == 1:
 		title = "1 member here today"
 	if length >1:
