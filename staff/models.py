@@ -505,7 +505,9 @@ class Membership(models.Model):
 			raise Exception('A Membership cannot start after it ends')
 		super(Membership, self).save(*args, **kwargs)
 
-	def is_active(self, on_date=date.today()):
+	def is_active(self, on_date=None):
+		if not on_date:
+			on_date = date.today()
 		if self.start_date > on_date: return False
 		return self.end_date == None or self.end_date >= on_date
 
