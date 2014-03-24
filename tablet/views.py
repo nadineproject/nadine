@@ -70,11 +70,7 @@ def members(request):
 	return render_to_response('tablet/members.html', {'members':members}, context_instance=RequestContext(request))
 
 def here_today(request):
-	#members = arp.users_for_day()
-	today = timezone.localtime(timezone.now()).date()
-	members = []
-	for l in DailyLog.objects.filter(visit_date=today):
-		members.append(l.member)
+	members = arp.users_for_day()
 	return render_to_response('tablet/here_today.html', {'members':members}, context_instance=RequestContext(request))
 
 def search(request):

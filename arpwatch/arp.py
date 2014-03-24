@@ -160,22 +160,34 @@ def not_signed_in(day=None):
 def users_for_day(day=None):
 	if not day:
 		day=timezone.localtime(timezone.now())
-	member_dict = {}
+	start = datetime(year=day.year, month=day.month, day=day.day, hour=0, minute=0, second=0, microsecond=0)
+	start = timezone.make_aware(start, timezone.get_current_timezone())
+	end = start + timedelta(days=1)
+	arp_query = ArpLog.objects.filter(runtime__range=(start, end))
+	arp_members_query = Member.objects.filter(user__in=arp_query.values('device__user'))
+	daily_members_query = Member.objects.filter(pk__in=DailyLog.objects.filter(visit_date=day).values('member__id'))
+	combined_query = arp_members_query | daily_members_query
+	return combined_query.distinct()
 
-	# Who's signed into the space today
-	daily_logs = DailyLog.objects.filter(visit_date=day)
-	for l in daily_logs:
-		member_dict[l.member] = l.created
-
-	# Device Logs
-	for l in device_users_for_day(day):
-		runtime = l.get('runtime')
-		user_id = l.get('device__user')
-		if user_id:
-			member = Member.objects.get(user__id=user_id)
-			if not member_dict.has_key(member) or runtime < member_dict[member]:
-				member_dict[member] = runtime
-	
-	members = sorted(member_dict, key=member_dict.get)
-	members.reverse()
-	return members
+#def users_for_day(day=None):
+#	if not day:
+#		day=timezone.localtime(timezone.now())
+#	member_dict = {}
+#
+#	# Who's signed into the space today
+#	daily_logs = DailyLog.objects.filter(visit_date=day)
+#	for l in daily_logs:
+#		member_dict[l.member] = l.created
+#
+#	# Device Logs
+#	for l in device_users_for_day(day):
+#		runtime = l.get('runtime')
+#		user_id = l.get('device__user')
+#		if user_id:
+#			member = Member.objects.get(user__id=user_id)
+#			if not member_dict.has_key(member) or runtime < member_dict[member]:
+#				member_dict[member] = runtime
+#	
+#	members = sorted(member_dict, key=member_dict.get)
+#	members.reverse()
+#	return members

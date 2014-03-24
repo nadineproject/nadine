@@ -483,8 +483,8 @@ class Membership(models.Model):
 	"""A membership level which is billed monthly"""
 	member = models.ForeignKey(Member, related_name="memberships")
 	membership_plan = models.ForeignKey(MembershipPlan, null=True)
-	start_date = models.DateField()
-	end_date = models.DateField(blank=True, null=True)
+	start_date = models.DateField(db_index=True)
+	end_date = models.DateField(blank=True, null=True, db_index=True)
 	monthly_rate = models.IntegerField(default=0)
 	dropin_allowance = models.IntegerField(default=0)
 	daily_rate = models.IntegerField(default=0)

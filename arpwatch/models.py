@@ -15,7 +15,7 @@ from staff.models import Member, Membership
 class UserDevice(models.Model):
 	user = models.ForeignKey(User, blank=True, null=True, unique=False)
 	device_name = models.CharField(max_length=32, blank=True, null=True)
-	mac_address = models.CharField(max_length=17, blank=False, null=False, unique=True)
+	mac_address = models.CharField(max_length=17, blank=False, null=False, unique=True, db_index=True)
 	ignore = models.BooleanField(default=False)
 	def __unicode__(self):
 		if self.user:
@@ -62,9 +62,9 @@ class ArpLog_Manager(models.Manager):
 		return device_logs
 
 class ArpLog(models.Model):
-	runtime = models.DateTimeField(blank=False)
+	runtime = models.DateTimeField(blank=False, db_index=True)
 	device = models.ForeignKey(UserDevice, null=False)
-	ip_address = models.IPAddressField(blank=False, null=False)
+	ip_address = models.IPAddressField(blank=False, null=False, db_index=True)
 	
 	objects = ArpLog_Manager()
 	class Meta:
