@@ -1,6 +1,18 @@
-{% extends "staff/ml_base.html" %}
+{% extends "staff/staff_base.html" %}
 
 {% block sub-title %}Members | {% endblock %}
+
+{%block sub-head %}
+	<script>
+		$(function () {
+			{% if search_terms %}
+				jQuery('#tabs').tabs({ active: -1 });
+			{% else %} 
+				jQuery('#tabs').tabs({ active: 0 });
+			{% endif %} 
+		});
+	</script>
+{% endblock %}
 
 {% block style%}
 nav #members-tab { background: #FBD850; color: black; }
