@@ -12,16 +12,16 @@ nav #members-tab { background: #FBD850; color: black; }
 <h2>Member List [<i>{{member_count}} total</i> ]</h2>
 
 <div id="tabs">
-  <ul> 
-  {% for plan in plans %}
-		{% ifnotequal plan.count 0 %}		  
-	<li><a href="#tabs-{{forloop.counter}}">{{ plan.name }}</a></li>
-	{% endifnotequal %}
-  {% endfor%}
-  </ul>
+	<ul> 
+		{% for plan in plans %}
+			{% ifnotequal plan.count 0 %}		  
+				<li><a href="#tabs-{{forloop.counter}}">{{ plan.name }}</a></li>
+			{% endifnotequal %}
+		{% endfor%}
+	</ul>
 	{% for plan in plans %} 
 		{% ifnotequal plan.count 0 %}
-		<div id="tabs-{{forloop.counter}}" class="plan-section">		  
+		<div id="tabs-{{forloop.counter}}">
 			<h3>{{ plan.name }}: <em>{{ plan.count }} member{{ plan.count|pluralize }}</em></h3>
 		{% with plan.members as members %}
 			{% include "staff/member_table.frag" %}

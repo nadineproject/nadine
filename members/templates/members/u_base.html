@@ -6,23 +6,19 @@
 	<meta name="DC.title" content="{{ site.name }}" />
 	<title>{% block title %}{% block sub-title %}{% endblock %}{{ site.name }}{% endblock %}</title>
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/members.css" />
-	<link type="text/css" href="{{ STATIC_URL }}jquery-ui-1.8.4.custom.css" rel="stylesheet" />	
+	<link rel="stylesheet" href="{{ STATIC_URL }}themes/custom-member/jquery-ui-1.10.4.custom.min.css ">
 	<!--[if IE]>
 		<script src="{{ STATIC_URL }}html5.js"></script>
-		<![endif]-->
-		<script src="{{ STATIC_URL }}jquery-1.8.3.min.js"></script>
-		<script src="{{ STATIC_URL }}jquery-ui-1.8.4.custom.min.js"></script> 
-		<script>
-		$(function () {
-			jQuery('#tabs').tabs();
-		});
-		</script>
+	<![endif]-->
+	<script src="{{ STATIC_URL }}jquery-2.1.0.min.js"></script>
+	<script src="{{ STATIC_URL }}jquery-ui-1.10.4.custom.min.js"></script> 
 
-		{%block sub-head %}{% endblock %}
-		<style>
-		{% block style %}{% endblock %}
-		</style>
-	</head>
+	{%block sub-head %}{% endblock %}
+	
+	<style>
+	{% block style %}{% endblock %}
+	</style>
+</head>
 
 	<body>{% block body %}
 		<div id="page_container">

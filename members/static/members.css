@@ -28,7 +28,7 @@ p {
 #page_container { 
     min-height: 100%;
     position: relative;
-        background-image: url(../img/moo.jpg);
+    background-image: url(../img/moo.jpg);
     background-repeat: no-repeat;
     background-size: cover;
     background-color: #405047;
@@ -168,11 +168,12 @@ p {
 .user-card a { 
     padding: 10px 0; 
     display: block; 
+    background:#5987C6;
 }
 
 .user-card a.photo { 
     height: 180px; 
-    background-color: #EEE; 
+    background-color: #FFF; 
     font-size: 150px; 
     color: #DDD; 
     text-decoration: none; 

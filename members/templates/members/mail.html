@@ -17,19 +17,25 @@
 {% endblock %}
 
 {%block sub-head %}
-<script>
-function subscribe(mlID){
-	$('#id_subscribe').val(true);
-	$('#id_mailing_list_id').val(mlID);
-	$('#mailing-list-subscription-form').submit();
-}
+	<script>
+		$(function () {
+			jQuery('#tabs').tabs();
+		});
+	</script>
 
-function unsubscribe(mlID){
-	$('#id_subscribe').val(false);
-	$('#id_mailing_list_id').val(mlID);
-	$('#mailing-list-subscription-form').submit();
-}
-</script>
+	<script>
+	function subscribe(mlID){
+		$('#id_subscribe').val(true);
+		$('#id_mailing_list_id').val(mlID);
+		$('#mailing-list-subscription-form').submit();
+	}
+
+	function unsubscribe(mlID){
+		$('#id_subscribe').val(false);
+		$('#id_mailing_list_id').val(mlID);
+		$('#mailing-list-subscription-form').submit();
+	}
+	</script>
 {% endblock %}
 
 {% block content %}

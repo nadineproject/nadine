@@ -5,17 +5,12 @@
 	<meta name="DC.title" content="{{ site.name }}" />
 	<title>{% block title %}{% block sub-title %}{% endblock %}{{ site.name }}{% endblock %}</title>
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}base.css" />
-	<link type="text/css" href="{{ STATIC_URL }}/jquery-ui-1.8.4.custom.css" rel="stylesheet" />	
 	<!--[if IE]>
 		<script src="{{ STATIC_URL }}html5.js"></script>
 	<![endif]-->
-	<script src="{{ STATIC_URL }}jquery-1.8.3.min.js"></script>
-	<script src="{{ STATIC_URL }}jquery-ui-1.8.4.custom.min.js"></script> 
-	<script>
-		$(function(){
-    		jQuery('#tabs').tabs();     
-  		});
-	</script>
+	<link rel="stylesheet" href="{{ STATIC_URL }}themes/custom-staff/jquery-ui-1.10.4.custom.min.css ">
+	<script src="{{ STATIC_URL }}jquery-2.1.0.min.js"></script>
+	<script src="{{ STATIC_URL }}jquery-ui-1.10.4.custom.min.js"></script> 
 
 	{%block sub-head %}{% endblock %}
 	{% block feed-link %}{% endblock %}
@@ -73,5 +68,11 @@
 	&copy;2008-2012 <a href="http://nadineproject.org" target="_new">The Nadine Project</a> by <a href="http://officenomads.com">Office Nomads</a>
 	{% endblock %}
 </div>
-{% endblock %}</body>
+{% endblock %}
+
+<script>
+$( "#tabs" ).tabs();
+</script>
+
+</body>
 </html>

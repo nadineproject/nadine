@@ -4,6 +4,14 @@
 
 {% block sub-title %}{{ user.get_full_name }} | {% endblock %}
 
+{%block sub-head %}
+	<script>
+		$(function () {
+			jQuery('#tabs').tabs();
+		});
+	</script>
+{% endblock %}
+
 {% block style %}
 {% endblock %}
 
