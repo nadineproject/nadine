@@ -7,32 +7,67 @@
 
 {% block content %}
 
-<div style="width:100%;">		
-	<span style="float:left;">
-		[ <a href="{% url 'members.views.active_members' %}">Active Members</a> |
-		<a href="{% url 'members.views.here_today' %}">Here Today</a> ]
-	</span>
+<h2 style="vertical-align: top;">View Members</h2>
 
-	<form id="site-search-form" action="{% url 'members.views.member_search' %}" method="POST" style="float:right;">
-		{% for field in site_search_form %}{{ field }}{% endfor %}
-		<input type="submit" value="search" />
-		{% csrf_token %}
-	</form>
+<div id="tabs">
+
+<form id="site-search-form" action="." method="POST" style="float:right;">
+	{% for field in search_form %}{{ field }}{% endfor %}
+	<input type="submit" value="search"/>
+	{% csrf_token %}
+</form>
+
+<ul> 
+	<li><a href="#tabs-1">Active Members ({{ active_members | length }})</a></li>
+	<li><a href="#tabs-2">Here Today ({{ here_today | length }})</a></li>
+	{% if search_terms %}
+		<li><a href="#tabs-3" active="True">Search Results - {{ search_terms }}</a></li>
+	{% endif %} 
+</ul>
+
+<div id="tabs-1" class="plan-section">
+	{% for member in active_members %}
+	<div class="user-card">
+	      {% if member.photo %}
+	         <a class="photo" href="{% url 'members.views.user' member.user.username %}"><img src="{{ member.photo.url|fit_image:"170x170" }}" /></a>
+	      {% else %}
+	         <a class="photo" href="{% url 'members.views.user' member.user.username %}">?</a>
+	      {% endif %}         
+	      <a href="{% url 'members.views.user' member.user.username %}">{{ member.full_name }}</a>
+	</div>
+	{% endfor %}
 </div>
 
-<h2 style="vertical-align: top;">{{ title }}</h2>
+<div id="tabs-2" class="plan-section">
+	{% for member in here_today %}
+	<div class="user-card">
+	      {% if member.photo %}
+	         <a class="photo" href="{% url 'members.views.user' member.user.username %}"><img src="{{ member.photo.url|fit_image:"170x170" }}" /></a>
+	      {% else %}
+	         <a class="photo" href="{% url 'members.views.user' member.user.username %}">?</a>
+	      {% endif %}         
+	      <a href="{% url 'members.views.user' member.user.username %}">{{ member.full_name }}</a>
+	</div>
+	{% endfor %}
+</div>
 
-<div>
-{% for member in members %}
-<div class="user-card">
-      {% if member.photo %}
-         <a class="photo" href="{% url 'members.views.user' member.user.username %}"><img src="{{ member.photo.url|fit_image:"170x170" }}" /></a>
-      {% else %}
-         <a class="photo" href="{% url 'members.views.user' member.user.username %}">?</a>
-      {% endif %}         
-      <a href="{% url 'members.views.user' member.user.username %}">{{ member.full_name }}</a>
-</div>
-{% endfor %}
-</div>
+{% if search_terms %}
+	<div id="tabs-3" class="plan-section">
+		{% if search_results %}
+			{% for member in search_results %}
+			<div class="user-card">
+			      {% if member.photo %}
+			         <a class="photo" href="{% url 'members.views.user' member.user.username %}"><img src="{{ member.photo.url|fit_image:"170x170" }}" /></a>
+			      {% else %}
+			         <a class="photo" href="{% url 'members.views.user' member.user.username %}">?</a>
+			      {% endif %}         
+			      <a href="{% url 'members.views.user' member.user.username %}">{{ member.full_name }}</a>
+			</div>
+			{% endfor %}
+		{% else %}
+			<h3>No members matching that query</h3>
+		{% endif %}
+	</div>
+{% endif %}
 
 {% endblock %}

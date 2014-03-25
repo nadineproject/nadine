@@ -59,40 +59,20 @@ def help_topic(request, slug):
 
 @login_required
 @user_passes_test(is_active_member, login_url='members.views.not_active')
-def active_members(request):
-	members = Member.objects.active_members().order_by('user__first_name')
-	title = "%s active members" % len(members)
-	return render_to_response('members/view_members.html',{'members':members, 'title':title}, context_instance=RequestContext(request))
-
-@login_required
-@user_passes_test(is_active_member, login_url='members.views.not_active')
-def member_search(request):
+def view_members(request):
+	active_members = Member.objects.active_members().order_by('user__first_name')
+	here_today = arp.users_for_day()
+	search_terms = None
 	search_results = None
 	if request.method == "POST":
-		member_search_form = MemberSearchForm(request.POST)
-		if member_search_form.is_valid(): 
-			search_results = Member.objects.search(member_search_form.cleaned_data['terms'], True)
+		search_form = MemberSearchForm(request.POST)
+		if search_form.is_valid(): 
+			search_terms = search_form.cleaned_data['terms']
+			search_results = Member.objects.search(search_terms, True)
 	else:
-		member_search_form = MemberSearchForm()
-	title = "No one here by that name!" 	
-	if search_results:
-		if len(search_results) == 1:
-			title = "Found 1 member"
-		else:
-			title = "Found %s members" % len(search_results)	
-	return render_to_response('members/view_members.html',{'members':search_results, 'title':title}, context_instance=RequestContext(request))
-
-@login_required
-@user_passes_test(is_active_member, login_url='members.views.not_active')
-def here_today(request):
-	members = arp.users_for_day()
-	length = len(members)
-	title = "It's really quiet here today!" 
-	if length == 1:
-		title = "1 member here today"
-	if length >1:
-		title = "%s members here today" % length
-	return render_to_response('members/view_members.html',{'members':members, 'title':title}, context_instance=RequestContext(request))
+		search_form = MemberSearchForm()
+	return render_to_response('members/view_members.html',{'active_members':active_members, 'here_today':here_today, 
+		'search_results':search_results, 'search_form':search_form, 'search_terms':search_terms}, context_instance=RequestContext(request))
 
 @login_required
 def chat(request):
