@@ -35,48 +35,33 @@
 </ul>
 
 <div id="tabs-1" class="plan-section">
+	<div style="margin:auto; width:100%; text-align:center;">
 	{% for member in active_members %}
-	<div class="user-card">
-	      {% if member.photo %}
-	         <a class="photo" href="{% url 'members.views.user' member.user.username %}"><img src="{{ member.photo.url|fit_image:"170x170" }}" /></a>
-	      {% else %}
-	         <a class="photo" href="{% url 'members.views.user' member.user.username %}">?</a>
-	      {% endif %}         
-	      <a href="{% url 'members.views.user' member.user.username %}">{{ member.full_name }}</a>
-	</div>
+		{% include "members/user_card.frag" %}  
 	{% endfor %}
+	</div>
 </div>
 
 <div id="tabs-2" class="plan-section">
+	<div style="margin:auto; width:100%; text-align:center;">
 	{% for member in here_today %}
-	<div class="user-card">
-	      {% if member.photo %}
-	         <a class="photo" href="{% url 'members.views.user' member.user.username %}"><img src="{{ member.photo.url|fit_image:"170x170" }}" /></a>
-	      {% else %}
-	         <a class="photo" href="{% url 'members.views.user' member.user.username %}">?</a>
-	      {% endif %}         
-	      <a href="{% url 'members.views.user' member.user.username %}">{{ member.full_name }}</a>
-	</div>
+		{% include "members/user_card.frag" %}  
 	{% endfor %}
+	</div>
 </div>
 
 {% if search_terms %}
 	<div id="tabs-3" class="plan-section">
 		{% if search_results %}
+			<div style="margin:auto; width:100%; text-align:center;">
 			{% for member in search_results %}
-			<div class="user-card">
-			      {% if member.photo %}
-			         <a class="photo" href="{% url 'members.views.user' member.user.username %}"><img src="{{ member.photo.url|fit_image:"170x170" }}" /></a>
-			      {% else %}
-			         <a class="photo" href="{% url 'members.views.user' member.user.username %}">?</a>
-			      {% endif %}         
-			      <a href="{% url 'members.views.user' member.user.username %}">{{ member.full_name }}</a>
-			</div>
+				{% include "members/user_card.frag" %}  
 			{% endfor %}
+			</div>
 		{% else %}
 			<h3>No members matching that query</h3>
 		{% endif %}
 	</div>
 {% endif %}
 
-{% endblock %}
+{% endblock %}</div>

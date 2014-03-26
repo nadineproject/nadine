@@ -154,11 +154,11 @@ p {
 }
 
 .user-card {
-	float: left; 
 	width: 190px; 
 	border: solid 3px #EEE; 
 	margin: 10px; 
 	text-align: center; 
+	display: inline-block;
 }
 
 .user-card a { 
@@ -170,7 +170,7 @@ p {
 .user-card a.photo { 
 	height: 180px; 
 	background-color: #FFF; 
-	font-size: 150px; 
+	font-size: 120px; 
 	color: #DDD; 
 	text-decoration: none; 
 }
