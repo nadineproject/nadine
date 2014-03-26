@@ -118,14 +118,12 @@ p {
 }
 
 #content a {
-    /*font-family: "Helvetica Neue","Helvetica",Helvetica,Arial,sans-serif;
-    font-weight: normal;
-    font-size: 14px;
-    line-height: 1.6;*/
+	outline:none;
 }
-    #content img {
-        margin: 10px auto;
-    }
+
+#content img {
+	margin: 10px auto;
+}
 
 .triptic {
     text-align: justify;
