@@ -273,7 +273,9 @@ class Member(models.Model):
 				return membership
 		return None
 
-	def activity_this_month(self, test_date=date.today()):
+	def activity_this_month(self, test_date=None):
+		if not test_date:
+			test_date = date.today()
 		membership = self.active_membership()
 		if not membership: 
 			# Not a member
@@ -521,11 +523,15 @@ class Membership(models.Model):
 			if test_date.month in [9, 4, 6, 11]: return True
 		return test_date.day == self.start_date.day
 
-	def prev_billing_date(self, test_date=date.today()):
+	def prev_billing_date(self, test_date=None):
+		if not test_date:
+			test_date = date.today()
 		day_difference = monthmod(self.start_date, test_date)[1]
 		return test_date - day_difference
 
-	def next_billing_date(self, test_date=date.today()):
+	def next_billing_date(self, test_date=None):
+		if not test_date:
+			test_date = date.today()		
 		return self.prev_billing_date(test_date) + MonthDelta(1)
 	
 	def get_allowance(self):
