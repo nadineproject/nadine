@@ -797,8 +797,6 @@ body .ui-tooltip {
 	font-size: 1em;
 }
 .ui-widget-content {
-	border: 1px solid #f3f3f3;
-	background: #f3f3f3;
 	color: #222222;
 }
 .ui-widget-content a {
