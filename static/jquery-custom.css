@@ -838,10 +838,15 @@ body .ui-tooltip {
 	color: #212121;
 	text-decoration: none;
 }
+
+.ui-state-hover a:hover {
+    background: rgba(251, 216, 80, .2);
+}
+
 .ui-state-active,
 .ui-widget-content .ui-state-active,
 .ui-widget-header .ui-state-active {
-	border: 1px solid ##EB8F00;
+	border: 1px solid #FBD850;
 	background: #ffffff;
 	font-weight: normal;
 	color: #212121;
