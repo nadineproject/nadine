@@ -169,7 +169,7 @@ def run_billing(bill_time=None):
 						billable_dropin_count = max(0, len(bill_dropins) + len(bill_guest_dropins) - day.membership.dropin_allowance)
 						bill_amount = monthly_fee + (billable_dropin_count * day.membership.daily_rate)
 						day.bill = Bill(created=day.date, amount=bill_amount, member=member, paid_by=day.membership.guest_of, membership=day.membership)
-						logger.debug('saving bill: %s - %s - %s' % (day.bill, day, billable_dropin_count))
+						#logger.debug('saving bill: %s - %s - %s' % (day.bill, day, billable_dropin_count))
 						day.bill.save()
 						bill_count += 1
 						day.bill.dropins = [dropin.id for dropin in bill_dropins]
