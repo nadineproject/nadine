@@ -52,10 +52,11 @@ def help_topic(request, slug):
 	topic = get_object_or_404(HelpText, slug=slug)
 	title = topic.title
 	template_text = topic.template
+	other_topics = HelpText.objects.all().order_by('order')
 	current_context = context_instance=RequestContext(request)
 	template = Template(template_text)
 	rendered = template.render(current_context)
-	return render_to_response('members/help_topic.html',{'title':title, 'page_body':rendered}, current_context)
+	return render_to_response('members/help_topic.html',{'title':title, 'page_body':rendered, 'other_topics':other_topics}, current_context)
 
 @login_required
 @user_passes_test(is_active_member, login_url='members.views.not_active')
