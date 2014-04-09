@@ -4,6 +4,14 @@
 {% endblock %}
 
 {% block content %}
+	<!--
+	<dl style="font-size:.9em;">
+	{% for t in other_topics.values %}
+		<dd><a href="{% url 'members.views.help_topic' t.slug %}">{{ t.slug }}</a></dd>
+	{% endfor %}
+	</dl>
+	-->
+	
 	<h2>{{ title }}</h2>
 	{% autoescape off %}
 		{{ page_body }}
