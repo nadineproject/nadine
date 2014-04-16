@@ -97,14 +97,13 @@ def user(request, username):
 
 @login_required
 @user_passes_test(is_active_member, login_url='members.views.not_active')
-def mail(request, username):
-	user = get_object_or_404(User, username=username)
-	if not user == request.user: return HttpResponseRedirect(reverse('members.views.user', kwargs={'username':request.user.username}))
+def mail(request):
+	user = request.user
 	if request.method == 'POST':
 		sub_form = MailingListSubscriptionForm(request.POST)
 		if sub_form.is_valid():
 			sub_form.save(user)
-			return HttpResponseRedirect(reverse('members.views.mail', kwargs={'username':user.username}))
+			return HttpResponseRedirect(reverse('members.views.mail'))
 	return render_to_response('members/mail.html',{'user':user, 'mailing_list_subscription_form':MailingListSubscriptionForm()}, context_instance=RequestContext(request))
 
 @login_required
