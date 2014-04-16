@@ -132,7 +132,8 @@ def run_billing(request):
 		if run_billing_form.is_valid():
 			billing.run_billing()
 			page_message = 'At your request, I have run <a href="%s">the bills</a>.' % (reverse('staff.views.bills', args=[], kwargs={}),)
-	return render_to_response('staff/run_billing.html', { 'run_billing_form':run_billing_form, 'page_message':page_message, "billing_logs":BillingLog.objects.all() }, context_instance=RequestContext(request))
+	logs = BillingLog.objects.all()[:10]
+	return render_to_response('staff/run_billing.html', { 'run_billing_form':run_billing_form, 'page_message':page_message, "billing_logs":logs }, context_instance=RequestContext(request))
 
 @staff_member_required
 def bills(request):
