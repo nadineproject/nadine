@@ -119,6 +119,7 @@ INSTALLED_APPS = (
 	'interlink',
 	'arpwatch',
 	'tablet',
+	'gather',
 	#'debug_toolbar',
 )
 

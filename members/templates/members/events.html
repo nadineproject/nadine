@@ -1,0 +1,32 @@
+{% extends "members/u_base.html" %}
+
+{% block sub-title %}Events | {% endblock %}
+
+{% block style %}
+{% endblock %}
+
+{% block content %}
+
+<h2>Office Nomads - Events</h2>
+<span style="float:right">
+	[ <a href="{% url 'members.views.add_event' %}">Add Event</a> ]
+</span>
+
+<h3 align="center">
+	<a href="{% url 'members.views.events' previous.year previous.month %}">&lt;&lt;</a>
+	&nbsp;&nbsp;{{ this_month_str }}&nbsp;&nbsp;
+	<a href="{% url 'members.views.events' next.year next.month %}">&gt;&gt;</a>
+</h3>
+
+{% for row in calendar_events %}
+	<div>
+		<h4>{{ row.day | date:"l F jS" }}</h4>
+		<ul>
+			{% for event in row.events %}
+				<li><a href="{% url 'members.views.view_event' event.id %}">{{ event.title }}</a></li>
+			{% endfor %}
+		</ul>
+	</div>
+{% endfor %}
+
+{% endblock %}
