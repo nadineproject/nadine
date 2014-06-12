@@ -133,7 +133,7 @@ def signin_user_guest(request, username, guestof):
 	if daily_log.payment == 'Trial':
 		email.announce_new_user(user)
 	else:
-		if member.onboard_tasks_to_complete > 0:
+		if member.onboard_tasks_to_complete() > 0:
 			email.announce_tasks_todo(user, member.onboard_tasks_incomplete())
 	
 	return HttpResponseRedirect(reverse('tablet.views.welcome', kwargs={'username':username}))
