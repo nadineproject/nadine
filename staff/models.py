@@ -382,6 +382,13 @@ class Member(models.Model):
 		"""
 		return [(task, Onboard_Task_Completed.objects.for_member(task, self)) for task in Onboard_Task.objects.all()]
 
+	def onboard_tasks_incomplete(self):
+		tasks = []
+		for task, completed in self.onboard_tasks_status():
+			if not completed:
+				tasks.append(task)
+		return tasks
+
 	def onboard_tasks_to_complete(self):
 		return Onboard_Task.objects.count() - Onboard_Task_Completed.objects.filter(member=self).count()
 
