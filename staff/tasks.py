@@ -46,11 +46,12 @@ def regular_checkins():
 			email.send_exit_survey(membership.member.user)
 
 	# Announce to the team when a new user is nearing the end of their first month
-	almost_a_month_ago = timezone.localtime(timezone.now()) - timedelta(days=21)
-	for membership in Membership.objects.filter(start_date=almost_a_month_ago):
-		if Membership.objects.filter(member=membership.member, start_date__lt=almost_a_month_ago).count() == 0:
-			if membership.member.is_active():
-				email.announce_member_checkin(membership.member.user)
+	#almost_a_month_ago = timezone.localtime(timezone.now()) - timedelta(days=21)
+	#for membership in Membership.objects.filter(start_date=almost_a_month_ago):
+	#	if Membership.objects.filter(member=membership.member, start_date__lt=almost_a_month_ago).count() == 0:
+	#		if membership.member.is_active():
+	#			email.announce_member_checkin(membership.member.user)
+
 @task()
 def unsubscribe_recent_dropouts_task():
 	"""A recurring task which checks for members who need to be unsubscribed from mailing lists"""
