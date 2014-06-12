@@ -197,11 +197,11 @@ LOGGING = {
 		},
 		'staff': {
 			'handlers': ['file'],
-			'level': 'DEBUG',
+			'level': 'INFO',
 		},
 		'arpwatch': {
 			'handlers': ['file'],
-			'level': 'DEBUG',
+			'level': 'INFO',
 		},
 	},
 }
