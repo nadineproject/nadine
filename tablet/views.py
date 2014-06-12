@@ -126,13 +126,16 @@ def signin_user_guest(request, username, guestof):
 		daily_log.guest_of = guestof_member
 	if DailyLog.objects.filter(member=member).count() == 0:
 		daily_log.payment = 'Trial';
-		email.announce_new_user(user)
 	else:
 		daily_log.payment = 'Bill';
-		if not member.photo and member.is_active():
-			email.announce_need_photo(user)
 	daily_log.save()
-		
+	
+	if daily_log.payment == 'Trial':
+		email.announce_new_user(user)
+	else:
+		if member.onboard_tasks_to_complete > 0:
+			email.announce_tasks_todo(user, member.onboard_tasks_incomplete())
+	
 	return HttpResponseRedirect(reverse('tablet.views.welcome', kwargs={'username':username}))
 
 # Copyright 2011 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
