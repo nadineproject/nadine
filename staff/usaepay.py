@@ -22,7 +22,7 @@ def auto_bill_enabled(username):
 	try:
 		gateway = JavaGateway()
 		for cust in gateway.entry_point.getAllCustomers(username):
-			if cust.isEnabled: 
+			if cust.isEnabled(): 
 				return True
 	except:
 		return None
