@@ -154,6 +154,11 @@ def announce_tasks_todo(user, tasks):
 	message = "Team,\r\n\r\n \t%s just signed in and we need to complete a few tasks.\r\n\r\n %s %s" % (user.get_full_name(), task_string, team_signature(user))
 	send_quietly(settings.TEAM_EMAIL_ADDRESS, subject, message)
 
+def announce_billing_disable(user):
+	subject = "Disabled Automatic Billing - %s" % (user.get_full_name())
+	message = "Team,\r\n\r\n \t%s just disabled their automatic billing through Nadine. %s" % (user.get_full_name(), team_signature(user))
+	send_quietly(settings.TEAM_EMAIL_ADDRESS, subject, message)
+
 def announce_bad_email(user):
 	subject = "Email Problem - %s" % (user.get_full_name())
 	message = "Team,\r\n\r\n \tWe had a problem sending the introduction email to '%s'. %s" % (user.email, team_signature(user))
@@ -201,3 +206,5 @@ def send_email(recipient, subject, message, fail_silently):
 			log.save()
 		except:
 			pass
+
+# Copyright 2014 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
