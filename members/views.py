@@ -285,6 +285,7 @@ def delete_notification(request, username):
 @login_required
 def disable_billing(request, username):
 	user = get_object_or_404(User, username=username)
+	email.announce_billing_disable(user)
 	if  user == request.user or request.user.is_staff: 
 		usaepay.disableAutoBilling(username)
 	return HttpResponseRedirect(reverse('members.views.user', kwargs={'username':request.user.username}))
@@ -371,4 +372,9 @@ def add_event(request):
 		form = EventForm()
 	return render_to_response('members/event_add.html',{'form':form}, context_instance=RequestContext(request))
 
-# Copyright 2010 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+#@login_required
+#@user_passes_test(is_active_member, login_url='members.views.not_active')
+#def my_create_event(request, location_slug=None):
+#	return create_event(request, location_slug)
+
+# Copyright 2014 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
