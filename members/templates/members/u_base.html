@@ -54,7 +54,7 @@
 						<a>Login</a>
 						{% elif request.user.get_profile.is_active %}
 						<a href="{% url 'members.views.view_members' %}">Members</a>
-						<a href="{% url 'gather.views.upcoming_events' %}">Events</a>
+						<a href="{% url 'members.views.events_today' %}">Events</a>
 						<a href="{% url 'members.views.tag_cloud' %}">Tags</a>
 						<a href="{% url 'members.views.mail' %}">Mailing Lists</a>
 						<a href="{% url 'members.views.chat' %}">Chat</a>
