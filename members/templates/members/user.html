@@ -276,22 +276,37 @@
 		{% endif %}
   </div>
 
+
 	<div id="tabs-4">
 		<h3>Billing Profile</h3>
-		<table>
+		<table width="65%">
 		<tr>
 			<td>{% include "members/billing_profile.frag" %}</td> 
-			<td><div style="margin-left: 2em; margin-bottom: .5em;">
-			Automatic Billing: 
-			{% if member.auto_bill_enabled %}
-				<font color=green>Enabled</font>
-			{% else %}
-				<font color=red>Disabled</font>
-			{% endif %}
-			</div>
-			</td>	
-		</tr></table>
-		
+			<td>
+				<div style="margin-bottom: .5em; text-align:left;">
+					Automatic Billing: <span id="auto_billing" style="color:green;">The {{ member.active_membership.start_date|date:"jS" }}</span>
+				</div>
+				<form id="disable_billing_form" action="{% url 'members.views.disable_billing' user.username %}">
+					<input id="disable_billing_button" type="submit" value="Disable Automatic Billing" />
+				</form>
+			</td>
+		</tr>
+		<tr><td colspan="2">
+			If you have any questions, or need to make any changes to your membership, please email 
+			<a href="mailto:billing@officenomads.com" style="color:green;">billing@officenomads.com</a>.  We need at least one
+			full business day to make any changes, otherwise your payment will be processed automatically.
+		</td></tr>
+		</table>
+
+		{% if not member.auto_bill_enabled %}
+			<script>
+				ab = document.getElementById("auto_billing");
+				ab.innerHTML = "Disabled";
+				ab.style.color = "red";
+				document.getElementById("disable_billing_button").disabled = true;
+			</script>
+		{% endif %}
+
 		<h3>Payments</h3>
 		{% if user.profile.transaction_set.all %}		
 	   <table>
@@ -318,7 +333,7 @@
 	   </table>
 		{% else %}
 			No bills...
-		{% endif %}	
+		{% endif %}
 		
 		<h3>Bills</h3>
 		{% if user.profile.all_bills %}
