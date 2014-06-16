@@ -15,9 +15,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.template.defaultfilters import slugify
 
-from gather.models import Event, Location, EventAdminGroup
-from gather.forms import EventForm
-from gather.views import get_location
+#from gather.models import Event, Location, EventAdminGroup
+#from gather.forms import EventForm
+#from gather.views import get_location
 from forms import EditProfileForm
 from interlink.forms import MailingListSubscriptionForm
 from interlink.models import IncomingMail
@@ -312,71 +312,70 @@ def new_billing(request):
 					error = "Could not disable auto-billing"
 	return render_to_response('members/new_billing.html', {'username':username, 'error':error}, context_instance=RequestContext(request))
 
-@login_required
-@user_passes_test(is_active_member, login_url='members.views.not_active')
-def events_today(request):
-	today = timezone.localtime(timezone.now())
-	return HttpResponseRedirect(reverse('members.views.events', kwargs={'year':today.year, 'month':today.month}))
+#@login_required
+#@user_passes_test(is_active_member, login_url='members.views.not_active')
+#def events_today(request):
+#	today = timezone.localtime(timezone.now())
+#	return HttpResponseRedirect(reverse('members.views.events', kwargs={'year':today.year, 'month':today.month}))
 
-@login_required
-@user_passes_test(is_active_member, login_url='members.views.not_active')
-def events(request, year, month):
-	thisdate = None
-	try:
-		thisdate = date(int(year), int(month), 1)
-	except:
-		return HttpResponseRedirect(reverse('members.views.events_today', kwargs={}))
-	previous = thisdate - timedelta(days=1)
-	next = thisdate + timedelta(days=32)
-	next = date(next.year, next.month, 1)
-	calendar_events=[]
-	for day in Calendar(0).itermonthdates(thisdate.year, thisdate.month):
-		if day.month == thisdate.month:
-			start = datetime.datetime(year=day.year, month=day.month, day=day.day, hour=0, minute=0, second=0, microsecond=0)
-			start = timezone.make_aware(start, timezone.get_current_timezone())
-			end = start + timedelta(days=1)
-			events = Event.objects.filter(start__gte=start, start__lt=end)
-			calendar_events.append({'day':day, 'events':events})
-	return render_to_response('members/events.html',{'calendar_events':calendar_events, 'year':year, 'month':month, 'this_month_str': thisdate.strftime("%B %Y"),
-		'previous':previous, 'next':next, }, context_instance=RequestContext(request))
+#@login_required
+#@user_passes_test(is_active_member, login_url='members.views.not_active')
+#def events(request, year, month):
+#	thisdate = None
+#	try:
+#		thisdate = date(int(year), int(month), 1)
+#	except:
+#		return HttpResponseRedirect(reverse('members.views.events_today', kwargs={}))
+#	previous = thisdate - timedelta(days=1)
+#	next = thisdate + timedelta(days=32)
+#	next = date(next.year, next.month, 1)
+#	calendar_events=[]
+#	for day in Calendar(0).itermonthdates(thisdate.year, thisdate.month):
+#		if day.month == thisdate.month:
+#			start = datetime.datetime(year=day.year, month=day.month, day=day.day, hour=0, minute=0, second=0, microsecond=0)
+#			start = timezone.make_aware(start, timezone.get_current_timezone())
+#			end = start + timedelta(days=1)
+#			events = Event.objects.filter(start__gte=start, start__lt=end)
+#			calendar_events.append({'day':day, 'events':events})
+#	return render_to_response('members/events.html',{'calendar_events':calendar_events, 'year':year, 'month':month, 'this_month_str': thisdate.strftime("%B %Y"),
+#		'previous':previous, 'next':next, }, context_instance=RequestContext(request))
 
-@login_required
-@user_passes_test(is_active_member, login_url='members.views.not_active')
-def view_event(request, event_id):
-	event = get_object_or_404(Event, id=event_id)
-	return render_to_response('members/event_view.html',{'event':event}, context_instance=RequestContext(request))
-	
-@login_required
-@user_passes_test(is_active_member, login_url='members.views.not_active')
-def add_event(request):
-	current_user = request.user
-	location = get_location()
-	location_admin_group = EventAdminGroup.objects.get(location=location)
-	if request.method == 'POST':
-		print request.POST
-		form = EventForm(request.POST, request.FILES)
-		form.data['slug'] = slugify(form.data['title'])
-		form.data['limit'] = 0
-		if form.is_valid():
-			event = form.save(commit=False)
-			event.creator = current_user
-			event.location = location
-			event.admin = location_admin_group
-			#event.organizers.add(current_user)
-			event.save()
-			return HttpResponseRedirect(reverse('members.views.events', kwargs={'year':event.start.year, 'month':event.start.month}))
-		else:
-			print "form error"
-			print form.errors
-	else:
-		form = EventForm(initial={'start':timezone.localtime(timezone.now())})
-	return render_to_response('members/event_add.html',{'form':form}, context_instance=RequestContext(request))
+#@login_required
+#@user_passes_test(is_active_member, login_url='members.views.not_active')
+#def view_event(request, event_id):
+#	event = get_object_or_404(Event, id=event_id)
+#	return render_to_response('members/event_view.html',{'event':event}, context_instance=RequestContext(request))
+
+#@login_required
+#@user_passes_test(is_active_member, login_url='members.views.not_active')
+#def add_event(request):
+#	current_user = request.user
+#	location = get_location()
+#	location_admin_group = EventAdminGroup.objects.get(location=location)
+#	if request.method == 'POST':
+#		print request.POST
+#		form = EventForm(request.POST, request.FILES)
+#		form.data['slug'] = slugify(form.data['title'])
+#		form.data['limit'] = 0
+#		if form.is_valid():
+#			event = form.save(commit=False)
+#			event.creator = current_user
+#			event.location = location
+#			event.admin = location_admin_group
+#			#event.organizers.add(current_user)
+#			event.save()
+#			return HttpResponseRedirect(reverse('members.views.events', kwargs={'year':event.start.year, 'month':event.start.month}))
+#		else:
+#			print "form error"
+#			print form.errors
+#	else:
+#		form = EventForm(initial={'start':timezone.localtime(timezone.now())})
+#	return render_to_response('members/event_add.html',{'form':form}, context_instance=RequestContext(request))
 
 @login_required
 @user_passes_test(is_active_member, login_url='members.views.not_active')
 def events_google(request, location_slug=None):
 	return render_to_response('members/events_google.html',{}, context_instance=RequestContext(request))
-
 
 #@login_required
 #@user_passes_test(is_active_member, login_url='members.views.not_active')
