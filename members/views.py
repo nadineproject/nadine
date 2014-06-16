@@ -369,7 +369,7 @@ def add_event(request):
 			print "form error"
 			print form.errors
 	else:
-		form = EventForm()
+		form = EventForm(initial={'start':timezone.localtime(timezone.now())})
 	return render_to_response('members/event_add.html',{'form':form}, context_instance=RequestContext(request))
 
 #@login_required
