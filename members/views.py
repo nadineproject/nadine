@@ -372,6 +372,12 @@ def add_event(request):
 		form = EventForm(initial={'start':timezone.localtime(timezone.now())})
 	return render_to_response('members/event_add.html',{'form':form}, context_instance=RequestContext(request))
 
+@login_required
+@user_passes_test(is_active_member, login_url='members.views.not_active')
+def events_google(request, location_slug=None):
+	return render_to_response('members/events_google.html',{}, context_instance=RequestContext(request))
+
+
 #@login_required
 #@user_passes_test(is_active_member, login_url='members.views.not_active')
 #def my_create_event(request, location_slug=None):
