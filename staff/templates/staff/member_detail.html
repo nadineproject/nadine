@@ -357,7 +357,7 @@ function gotoEmailReset(emailAddress){
 <!-- Onboarding Tasks -->
 <h2>Onboard Tasks</h2>
 <table id="onboard-form">
-	<tr><th>Task</th><th>Completed</th></tr>
+	<tr><th>Task</th><th>Completed</th><th>By</th></tr>
 	{% for task, completed in member.onboard_tasks_status %}
 	{% if not task.has_desk_only or member.has_desk %}
 		<tr>
@@ -371,6 +371,13 @@ function gotoEmailReset(emailAddress){
 						<input name="save_onboard_task" type="submit" Value="Done" />
 						{% csrf_token %}
 					</form>
+				{% endif %}
+			</td>
+			<td>
+				{% if completed.completed_by %}
+					{{ completed.completed_by }}
+				{% else %}
+					Unknown
 				{% endif %}
 			</td>
 		</tr>

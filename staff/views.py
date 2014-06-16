@@ -220,11 +220,11 @@ def onboard_task(request, id):
 		if 'save_onboard_task' in request.POST:
 			task = Onboard_Task.objects.get(pk=request.POST.get('task_id'))
 			member = Member.objects.get(user__username=request.POST.get('username'))
-			Onboard_Task_Completed.objects.create(member=member, task=task)
+			Onboard_Task_Completed.objects.create(member=member, task=task, completed_by=request.user)
 			return HttpResponseRedirect(reverse('staff.views.onboard_task', kwargs={ 'id':id }))
 		elif 'Mark All' in request.POST:
 			for member in task.uncompleted_members():
-				update = Onboard_Task_Completed.objects.create(member=member, task=task)
+				update = Onboard_Task_Completed.objects.create(member=member, task=task, completed_by=request.user)
 			return HttpResponseRedirect(reverse('staff.views.onboard_task', kwargs={ 'id':id }))
 	return render_to_response('staff/onboard_task.html', {'task': task}, context_instance=RequestContext(request))
 
@@ -518,7 +518,7 @@ def member_detail(request, member_id):
 	if request.method == 'POST':
 		if 'save_onboard_task' in request.POST:
 			task = Onboard_Task.objects.get(pk=request.POST.get('task_id'))
-			Onboard_Task_Completed.objects.create(member=member, task=task)
+			Onboard_Task_Completed.objects.create(member=member, task=task, completed_by=request.user)
 		elif 'save_exit_task' in request.POST:
 			task = ExitTask.objects.get(pk=request.POST.get('task_id'))
 			ExitTaskCompleted.objects.create(member=member, task=task)

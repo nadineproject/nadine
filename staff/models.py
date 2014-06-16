@@ -649,12 +649,17 @@ class Onboard_Task_Completed(models.Model):
 	member = models.ForeignKey(Member)
 	task = models.ForeignKey(Onboard_Task)
 	completed_date = models.DateField(auto_now_add=True)
+	completed_by = models.ForeignKey(User, null=True)
 	objects = Onboard_Task_Completed_Manager()
 
 	class Meta:
 		unique_together = ("member", "task")
 
-	def __str__(self): return '%s - %s' % (self.member, self.completed_date)
+	def __str__(self): 
+		if self.completed_by:
+			return '%s - %s on %s by %s' % (self.member, self.task, self.completed_date, self.completed_by)
+		else:
+			return '%s - %s on %s' % (self.member, self.task, self.completed_date)
 
 class SentEmailLog(models.Model):
 	created = models.DateTimeField(auto_now_add=True)
