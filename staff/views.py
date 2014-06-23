@@ -525,6 +525,17 @@ def member_detail(request, member_id):
 		elif 'send_manual_email' in request.POST:
 			key = request.POST.get('message_key')
 			email.send_manual(member.user, key)
+		elif 'add_note' in request.POST:
+			note = request.POST.get('note')
+			MemberNote.objects.create(member=member, created_by=request.user, note=note)
+		elif 'add_special_day' in request.POST:
+			month = request.POST.get('month')
+			day = request.POST.get('day')
+			year = request.POST.get('year')
+			if len(year) == 0:
+				year = None
+			desc = request.POST.get('description')
+			SpecialDay.objects.create(member=member, month=month, day=day, year=year, description=desc)
 		else:
 			print request.POST
 	

@@ -417,6 +417,12 @@ class Member(models.Model):
 	def auto_bill_enabled(self):
 		return usaepay.auto_bill_enabled(self.user.username)
 
+	def member_notes(self):
+		return MemberNote.objects.filter(member=self).order_by("created")	
+	
+	def special_days(self):
+		return SpecialDay.objects.filter(member=self)
+
 	@models.permalink
 	def get_absolute_url(self):
 		return ('staff.views.member_detail', (), { 'member_id':self.id })
@@ -684,5 +690,13 @@ class SpecialDay(models.Model):
 	day = models.PositiveSmallIntegerField(blank=True, null=True)
 	description = models.CharField(max_length=128, blank=True, null=True)
 
+class MemberNote(models.Model):
+	created = models.DateTimeField(auto_now_add=True)
+	created_by = models.ForeignKey(User, null=True)
+	member = models.ForeignKey('Member', blank=False, null=False)
+	note = models.TextField(blank=True, null=True)
 
-# Copyright 2009, 2010 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+	def __str__(self): 
+		return '%s - %s: %s' % (self.created.date(), self.member, self.note)
+
+# Copyright 2014 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

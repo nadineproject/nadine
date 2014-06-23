@@ -4,17 +4,15 @@
 {% block sub-title %}{{ member.first_name }} {{ member.last_name }} | {% endblock %}
 
 {% block style%}
-nav #members-tab { background: #FBD850; color: black; }
-#quick-links { text-align: left; }
-caption { font-weight: bold; font-size: 1.4em; margin-bottom: 10px; }
-#right-floater { margin-top: 30px; float: right; width: 180px; min-height: 200px;  }
-.member-photo { width: 170px; text-align: center; margin: 10px 10px; padding-top: 10px;}
-#content td, #content th { padding-left: 20px; }
-
-#onboard-form, #exit-form { width: 400px; }
-#onboard-form td, #exit-form td { white-space: nowrap; }
+	nav #members-tab { background: #FBD850; color: black; }
+	#quick-links { text-align: left; }
+	caption { font-weight: bold; font-size: 1.4em; margin-bottom: 10px; }
+	#right-floater { margin-top: 30px; float: right; width: 180px; min-height: 200px;  }
+	.member-photo { width: 170px; text-align: center; margin: 10px 10px; padding-top: 10px;}
+	#content td, #content th { padding-left: 20px; }
+	#onboard-form, #exit-form { width: 400px; }
+	#onboard-form td, #exit-form td { white-space: nowrap; }
 #onboard-form th, #exit-form th { text-align: left; }
-
 {% endblock %}
 
 {% block sub-head %}
@@ -32,6 +30,20 @@ function gotoEmailReset(emailAddress){
       alert(e);
    }
 }
+</script>
+<script>
+	$(function () {
+		jQuery('#tabs').tabs();
+	});
+</script>
+
+<script>
+	$(function() {
+		var availableDays = ["Birthday", "Anniversary", "Child's Birthday"];
+		$( "#specialdays" ).autocomplete({
+			source: availableDays
+		});
+	});
 </script>
 {% endblock %}
 
@@ -63,7 +75,21 @@ function gotoEmailReset(emailAddress){
 			<a href="{% url 'staff.views.member_membership' member.id %}">add membership</a>
 		{% endif %}
 	</div>
+</div>
 
+<div class="clearfix"></div>
+
+<div id="tabs">
+	<ul>
+		<li><a href="#tabs-0">Details</a></li>
+		<li><a href="#tabs-1">Membership</a></li>
+		<li><a href="#tabs-2">Billing</a></li>
+		<li><a href="#tabs-3">Emails</a></li>
+		<li><a href="#tabs-4">Tasks</a></li>
+		<li><a href="#tabs-5">Notes</a></li>
+	</ul>
+	
+	<div id="tabs-0">
 	<table>
 		<!-- Username -->
 	   <tr>
@@ -72,26 +98,22 @@ function gotoEmailReset(emailAddress){
 	   </tr>
 
 		<!-- Plan Start -->
-	   {% if member.last_membership %}
+	   {% if member.active_membership %}
 	   <tr>
-	      <td>Plan Start</td>
-	      <td>{{ member.last_membership.start_date|date:"Y-m-d" }}</td>
+	      <td>Bill Date</td>
+	      <td>{{ member.active_membership.start_date|date:"jS" }}</td>
 	   </tr>
 	   {% endif %}
 	
 		<!-- Stats -->
 	   <tr>
-	      <td>Paid Visits</td>
-	      <td>{{ member.paid_count }}</td>
-	   </tr>
-	   <tr>
 	      <td>First Visit</td>
 	      <td>{{ member.first_visit }}</td>
 	   </tr>
-	   <!--<tr>
+	   <tr>
 	      <td>Last Visit</td>
 	      <td>{{ member.last_visit }}</td>
-	   </tr>-->
+	   </tr>
 	
 	   <!-- Company Name -->
 	   {% if member.company_name %}
@@ -145,10 +167,34 @@ function gotoEmailReset(emailAddress){
 	   {% if member.phone2 %}
 	      <tr>
 	         <td>Alternate Phone</td>
-	         <td>{{ member. }}</td>
+	         <td>{{ member.phone2 }}</td>
 	      </tr>
 	   {% endif %}
-	
+
+	   <!-- Address 1-->
+	   {% if member.address1 %}
+	      <tr>
+	         <td>Address 1</td>
+	         <td>{{ member.address1 }}</td>
+	      </tr>
+	   {% endif %}
+
+	   <!-- Address 2-->
+	   {% if member.address2 %}
+	      <tr>
+	         <td>Address 2</td>
+	         <td>{{ member.address2 }}</td>
+	      </tr>
+	   {% endif %}
+
+	   <!-- City, State, Zip-->
+	   {% if member.city %}
+	      <tr>
+	         <td>City</td>
+	         <td>{{ member.city }} {{ member.state }}, {{ member.zipcode }}</td>
+	      </tr>
+	   {% endif %}
+
 	   <!-- How Heard -->
 	   {% if member.howHeard %}
 	      <tr>
@@ -188,24 +234,12 @@ function gotoEmailReset(emailAddress){
 	         <td>{{ member.self_employed }}</td>
 	      </tr>
 	   {% endif %}
-	
-	   <!-- Promised Followup -->
-	   {% if member.promised_followup %}
-	      <tr>
-	         <td>Promised Followup</td>
-	         <td>{{ member.promised_followup }}</td>
-	      </tr>
-	   {% endif %}
-	
-	   <tr>
-	      <td>Notes</td>
-	      <td>{{ member.notes }}</td>
-	   </tr>
 	</table>
-</div>
+	</div>
 
-<!-- Memberships -->
-<h2>Memberships:</h2>
+<div id="tabs-1">
+	<!-- Memberships -->
+	<h2>Memberships:</h2>
 	<table>
 		<tr>
 			<th>Plan</th>
@@ -244,175 +278,294 @@ function gotoEmailReset(emailAddress){
 		</tr>			
 		{% endif %}
 	</table>
-
-<!-- Security Deposits -->
-<h2>Security Deposits:</h2>
-
-<table>
-	<tr>
-		<th>Received</th>
-		<th>Returned</th>
-		<th>Amount</th>
-		<th>Note</th>
-		<th>Action</th>
-	</tr>
-	{% for deposit in member.deposits %}
-		<tr class="{% cycle 'row-even' 'row-odd' %}">
-			<td>{{ deposit.received_date }}</td>
-			<td>{% if deposit.returned_date %}{{ deposit.returned_date }}{% endif %}</td>
-			<td>${{ deposit.amount }}</td>
-			<td>{% if deposit.note %}{{ deposit.note }}{% endif %}</td>
-			<td style="text-align:right;">{% if not deposit.returned_date %}
-				<form action="{% url 'staff.views.security_deposits' %}" method="POST" onSubmit="return confirm('Are you sure?');">
-					<input name="member_id" value="{{ member.id }}" type="hidden" />
-					<input name="deposit_id" value="{{ deposit.id }}" type="hidden" />
-					<input name="mark_returned" type="submit" Value="Mark Returned" />
-					{% csrf_token %}
-				</form>
-			{% endif %}</td>
-		</tr>
-	{% endfor %}
-		
-<form action="{% url 'staff.views.security_deposits' %}" method="POST">
-	<input name="member_id" value="{{ member.id }}" type="hidden" />
-	<tr>
-		<td colspan="2" style="text-align:right;"><strong>Record New Deposit:</strong></th>
-		<td><input name="amount" size="4" /></td>
-		<td><input name="note" size="32" /></td>
-		<td style="text-align:right;"><input name="add_deposit" type="submit" Value="Record Deposit" /></td>
-	{% csrf_token %}
-</form>
-
-</table>
-
-<!-- Guest Memberships -->
-{% if member.guests %}
-	<h2>Guest Memberships:</h2>
-		<table>
-			<tr>
-				<th>Name</th>
-				<th>Membership</th>
-				<th>First Visit</th>
-			</tr>
-
-			{% for guest in member.guests %}
-				<tr class="{% cycle 'row-even' 'row-odd' %}">
-					<td nowrap><a href="{% url 'staff.views.member_detail' guest.id %}">{{ guest.first_name }} {{ guest.last_name }}</a></td>
-					<td>{{ guest.active_membership.membership_plan }}</td>
-					<td style="text-align: center;">{{ guest.first_visit }}</td>
+	
+	<!-- Active Guest Memberships -->
+	{% if member.guests %}
+		<h2>Active Guests:</h2>
+			<table>
+				<tr>
+					<th>Name</th>
+					<th>Membership</th>
+					<th>First Visit</th>
 				</tr>
-			{% endfor %}
-		</table>
-{% endif %}
 
-<!-- Billing Profile -->
-<h2>Billing Profile</h2>
-{% include "members/billing_profile.frag" %}
-<div style="margin-left: 2em; margin-top: .5em;">
-	<form method=POST action="{% url 'staff.views.toggle_billing_flag' member.id %}" onSubmit="return confirm('Are you sure?');">
-		<input type="hidden" name="back" value="{{request.get_full_path}}">
-		{% if member.has_valid_billing %}
-			<input type="submit" value="Flag Invalid Billing Profile">
-		{% else %}
-			<input type="submit" value="Clear Invalid Billing Flag">
-		{% endif %}
-		{% csrf_token %}
-	</form>
-</div>
-<div style="margin-left: 2em; margin-top: .5em;">
-	[ <a href="https://secure.usaepay.com/interface/epayform/{{ settings.USA_EPAY_KEY }}/?UMdescription=Office%20Nomads%20Billing%20Authorization&UMcustid={{ member.user.username }}&UMcommand=AuthOnly&UMamount=1.00&UMaddcustomer=yes&UMschedule=disabled">payment link</a> ]
+				{% for guest in member.guests %}
+					<tr class="{% cycle 'row-even' 'row-odd' %}">
+						<td nowrap><a href="{% url 'staff.views.member_detail' guest.id %}">{{ guest.first_name }} {{ guest.last_name }}</a></td>
+						<td>{{ guest.active_membership.membership_plan }}</td>
+						<td style="text-align: center;">{{ guest.first_visit }}</td>
+					</tr>
+				{% endfor %}
+			</table>
+	{% endif %}
 </div>
 
-<!-- Email Logs -->
-<h2>Email Logs</h2>
-<div>
-{% if email_logs %}
+<div id="tabs-2">
+	<!-- Billing Profile -->
+	<h2>Billing Profile</h2>
+	{% include "members/billing_profile.frag" %}
+	<div style="margin-left: 2em; margin-top: .5em;">
+		<form method=POST action="{% url 'staff.views.toggle_billing_flag' member.id %}" onSubmit="return confirm('Are you sure?');">
+			<input type="hidden" name="back" value="{{request.get_full_path}}">
+			{% if member.has_valid_billing %}
+				<input type="submit" value="Flag Invalid Billing Profile">
+			{% else %}
+				<input type="submit" value="Clear Invalid Billing Flag">
+			{% endif %}
+			{% csrf_token %}
+		</form>
+	</div>
+	<div style="margin-left: 2em; margin-top: .5em;">
+		[ <a href="https://secure.usaepay.com/interface/epayform/{{ settings.USA_EPAY_KEY }}/?UMdescription=Office%20Nomads%20Billing%20Authorization&UMcustid={{ member.user.username }}&UMcommand=AuthOnly&UMamount=1.00&UMaddcustomer=yes&UMschedule=disabled">payment link</a> ]
+	</div>
+	
+	<!-- Security Deposits -->
+	<h2>Security Deposits:</h2>
+	<div>
 	<table>
-		<tr><th>Sent</th><th align="left">Subject</th></tr>
-		{% for log in email_logs %}
-			<tr {% if not log.success %} style="color:red;" {% endif %}>
-				<td nowrap>{{ log.created }}</td>
-				<td>{{ log.subject }}</td>
-			</tr>
-		{% endfor %}
-	</table>
-{% else %}
-	<p>No email logs.</p>
-{% endif %}
-<div style="margin:1em;">
-<form action="." method="POST">
-	<strong>Manually Send Email: </strong>
-	<input name="member_id" value="{{ member.id }}" type="hidden" />
-	<select name="message_key">
-		{% for key in email_keys %}
-			<option>{{ key }}</option>
-		{% endfor %}
-	</select>
-	<input name="send_manual_email" type="submit" Value="Send" />
-	{% csrf_token %}
-</form>
-</div>
-</div>
-
-<!-- Onboarding Tasks -->
-<h2>Onboard Tasks</h2>
-<table id="onboard-form">
-	<tr><th>Task</th><th>Completed</th><th>By</th></tr>
-	{% for task, completed in member.onboard_tasks_status %}
-	{% if not task.has_desk_only or member.has_desk %}
 		<tr>
-			<td>{{ task.name }}</td>
-			<td>
-				{% if completed %}
-					{{ completed.completed_date }}
-				{% else %}
-					<form action="." method="POST">
-						<input name="task_id" value="{{ task.id }}" type="hidden" />
-						<input name="save_onboard_task" type="submit" Value="Done" />
+			<th>Received</th>
+			<th>Returned</th>
+			<th>Amount</th>
+			<th>Note</th>
+			<th>Action</th>
+		</tr>
+		{% for deposit in member.deposits %}
+			<tr class="{% cycle 'row-even' 'row-odd' %}">
+				<td>{{ deposit.received_date }}</td>
+				<td>{% if deposit.returned_date %}{{ deposit.returned_date }}{% endif %}</td>
+				<td>${{ deposit.amount }}</td>
+				<td>{% if deposit.note %}{{ deposit.note }}{% endif %}</td>
+				<td style="text-align:right;">{% if not deposit.returned_date %}
+					<form action="{% url 'staff.views.security_deposits' %}" method="POST" onSubmit="return confirm('Are you sure?');">
+						<input name="member_id" value="{{ member.id }}" type="hidden" />
+						<input name="deposit_id" value="{{ deposit.id }}" type="hidden" />
+						<input name="mark_returned" type="submit" Value="Mark Returned" />
 						{% csrf_token %}
 					</form>
-				{% endif %}
-			</td>
-			<td>
-				{% if completed.completed_by %}
-					{{ completed.completed_by }}
-				{% else %}
-					Unknown
-				{% endif %}
-			</td>
-		</tr>
+				{% endif %}</td>
+			</tr>
+		{% endfor %}
+		
+	<form action="{% url 'staff.views.security_deposits' %}" method="POST">
+		<input name="member_id" value="{{ member.id }}" type="hidden" />
+		<tr>
+			<td colspan="2" style="text-align:right;"><strong>Record New Deposit:</strong></th>
+			<td><input name="amount" size="4" /></td>
+			<td><input name="note" size="32" /></td>
+			<td style="text-align:right;"><input name="add_deposit" type="submit" Value="Record Deposit" /></td>
+		{% csrf_token %}
+	</form>
+
+	</table>
+	</div>
+</div>
+
+<div id="tabs-3">
+	<!-- Email Logs -->
+	<h2>Email Logs</h2>
+	<div>
+		{% if email_logs %}
+			<table>
+				<tr><th>Sent</th><th align="left">Subject</th></tr>
+				{% for log in email_logs %}
+					<tr {% if not log.success %} style="color:red;" {% endif %}>
+						<td nowrap>{{ log.created }}</td>
+						<td>{{ log.subject }}</td>
+					</tr>
+				{% endfor %}
+			</table>
+		{% else %}
+			<p>No email logs.</p>
 		{% endif %}
-	{% endfor %}
-</table>
+		<div style="margin:1em;">
+			<form action="." method="POST">
+				<strong>Manually Send Email: </strong>
+				<input name="member_id" value="{{ member.id }}" type="hidden" />
+				<select name="message_key">
+					{% for key in email_keys %}
+						<option>{{ key }}</option>
+					{% endfor %}
+				</select>
+				<input name="send_manual_email" type="submit" Value="Send" />
+				{% csrf_token %}
+			</form>
+		</div>
+	</div>
+</div>
 
-<!-- Exit Tasks -->
-{% if member.qualifies_for_exit_tasks %}
-	<h2>Exit Tasks</h2>
-	{% if member.exit_tasks_to_complete %}
-		<table id="exit-form">
-			<tr><th>Task</th><th>Completed</th></tr>
-			{% for task, completed in member.exit_tasks_status %}
-				{% if not task.has_desk_only or member.has_desk %}
-				<tr>
-					<td>{{ task.name }}</td>
-					<td>
-						{% if completed %}
-							{{ completed.completed_date }}
-						{% else %}
-							<form  action="." method="POST">
-								<input name="task_id" value="{{ task.id }}" type="hidden" />
-								<input name="save_exit_task" type="submit" Value="Done" />
-								{% csrf_token %}
-							</form>
-						{% endif %}
-					</td>
-				</tr>
-				{% endif %}
-			{% endfor %}
-		</table>
-	{% else %}
-		<p>No exit tasks remain.</p>
+<div id="tabs-4">
+	<!-- Onboarding Tasks -->
+	<h2>Onboard Tasks</h2>
+	<table id="onboard-form">
+		<tr><th>Task</th><th>Completed</th><th>By</th></tr>
+		{% for task, completed in member.onboard_tasks_status %}
+		{% if not task.has_desk_only or member.has_desk %}
+			<tr>
+				<td>{{ task.name }}</td>
+				<td>
+					{% if completed %}
+						{{ completed.completed_date }}
+					{% else %}
+						<form action="." method="POST">
+							<input name="task_id" value="{{ task.id }}" type="hidden" />
+							<input name="save_onboard_task" type="submit" Value="Done" />
+							{% csrf_token %}
+						</form>
+					{% endif %}
+				</td>
+				<td>
+					{% if completed.completed_by %}
+						{{ completed.completed_by }}
+					{% else %}
+						Unknown
+					{% endif %}
+				</td>
+			</tr>
+			{% endif %}
+		{% endfor %}
+	</table>
+
+	<!-- Exit Tasks -->
+	{% if member.qualifies_for_exit_tasks %}
+		<h2>Exit Tasks</h2>
+		{% if member.exit_tasks_to_complete %}
+			<table id="exit-form">
+				<tr><th>Task</th><th>Completed</th></tr>
+				{% for task, completed in member.exit_tasks_status %}
+					{% if not task.has_desk_only or member.has_desk %}
+					<tr>
+						<td>{{ task.name }}</td>
+						<td>
+							{% if completed %}
+								{{ completed.completed_date }}
+							{% else %}
+								<form  action="." method="POST">
+									<input name="task_id" value="{{ task.id }}" type="hidden" />
+									<input name="save_exit_task" type="submit" Value="Done" />
+									{% csrf_token %}
+								</form>
+							{% endif %}
+						</td>
+					</tr>
+					{% endif %}
+				{% endfor %}
+			</table>
+		{% else %}
+			<p>No exit tasks remain.</p>
+		{% endif %}
 	{% endif %}
-{% endif %}
+</div>
 
+<div id="tabs-5">
+
+	<h2>Notes:</h2>
+	<div>
+		<table>
+			<tr>
+				<th>Date</th>
+				<th>By</th>
+				<th align="left">Note</th>
+				<th></th>
+			</tr>
+			{% for note in member.member_notes %}
+				<tr>
+					<td>{{ note.created|date:"M d, Y"}}</td>
+					<td>{{ note.created_by }}</td>
+					<td style="text-align:left;">{{ note.note }}</td>
+					<td style="text-align:right;" nowrap>[ <a href="{% url 'admin:staff_membernote_change' note.id %}">edit</a> ]</td>
+				</tr>
+			{% endfor %}
+		<table>
+			<form action="." method="POST">
+			<tr>
+				<td colspan="3" width="10%"><input name="note"/ size="90"></td>
+				<td style="text-align:right;"><input type="submit" name="add_note" value="Add Note"/></td>
+			</tr>
+			{% csrf_token %}
+			</form>
+		</table>
+	</div>
+
+	<h2>Special Days:</h2>
+	<div>
+		<table>
+			<tr>
+				<th>Month</th>
+				<th>Day</th>
+				<th>Year</th>
+				<th>Description</th>
+				<th></th>
+			</tr>
+			{% for d in member.special_days %}
+				<tr>
+					<td>{{ d.month }}</td>
+					<td>{{ d.day }}</td>
+					<td>{% if d.year %}{{ d.year }}{% endif %}</td>
+					<td>{{ d.description }}</td>
+					<td style="text-align:right">[ <a href="{% url 'admin:staff_specialday_change' d.id %}">edit</a> ]</td>
+				</tr>
+			{% endfor %}
+		<form action="." method=POST>
+			<tr>
+				<td><select name="month">
+					<option></option>
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+					<option>4</option>
+					<option>5</option>
+					<option>6</option>
+					<option>7</option>
+					<option>8</option>
+					<option>9</option>
+					<option>10</option>
+					<option>11</option>
+					<option>12</option>
+				</select></td>
+				<td><select name="day">
+					<option></option>
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+					<option>4</option>
+					<option>5</option>
+					<option>6</option>
+					<option>7</option>
+					<option>8</option>
+					<option>9</option>
+					<option>10</option>
+					<option>11</option>
+					<option>12</option>
+					<option>13</option>
+					<option>14</option>
+					<option>15</option>
+					<option>16</option>
+					<option>17</option>
+					<option>18</option>
+					<option>19</option>
+					<option>20</option>
+					<option>21</option>
+					<option>22</option>
+					<option>23</option>
+					<option>24</option>
+					<option>25</option>
+					<option>26</option>
+					<option>27</option>
+					<option>28</option>
+					<option>29</option>
+					<option>30</option>
+					<option>31</option>
+				</select></td>
+				<td><input name="year" size=4/></td>
+				<td><input id="specialdays" name="description" size="50"/></td>
+				<td style="text-align:right"><input type="submit" name="add_special_day" value="Add Special Day"/></td>
+			</tr>
+			{% csrf_token %}
+		</form>
+	</table>
+	</div>
+</div>
+
+</div>
 {% endblock %}
