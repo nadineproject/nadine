@@ -418,7 +418,7 @@ class Member(models.Model):
 		return usaepay.auto_bill_enabled(self.user.username)
 
 	def member_notes(self):
-		return MemberNote.objects.filter(member=self).order_by("created")	
+		return MemberNote.objects.filter(member=self)
 	
 	def special_days(self):
 		return SpecialDay.objects.filter(member=self)
