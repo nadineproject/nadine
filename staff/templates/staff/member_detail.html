@@ -471,7 +471,7 @@ function gotoEmailReset(emailAddress){
 			{% for note in member.member_notes %}
 				<tr>
 					<td>{{ note.created|date:"M d, Y"}}</td>
-					<td>{{ note.created_by }}</td>
+					<td>{% if note.created_by %}{{ note.created_by }} {% endif %}</td>
 					<td style="text-align:left;">{{ note.note }}</td>
 					<td style="text-align:right;" nowrap>[ <a href="{% url 'admin:staff_membernote_change' note.id %}">edit</a> ]</td>
 				</tr>
@@ -494,7 +494,7 @@ function gotoEmailReset(emailAddress){
 				<th>Month</th>
 				<th>Day</th>
 				<th>Year</th>
-				<th>Description</th>
+				<th style="text-align:left;">Description</th>
 				<th></th>
 			</tr>
 			{% for d in member.special_days %}
@@ -502,7 +502,7 @@ function gotoEmailReset(emailAddress){
 					<td>{{ d.month }}</td>
 					<td>{{ d.day }}</td>
 					<td>{% if d.year %}{{ d.year }}{% endif %}</td>
-					<td>{{ d.description }}</td>
+					<td style="text-align:left;">{{ d.description }}</td>
 					<td style="text-align:right">[ <a href="{% url 'admin:staff_specialday_change' d.id %}">edit</a> ]</td>
 				</tr>
 			{% endfor %}
@@ -558,7 +558,7 @@ function gotoEmailReset(emailAddress){
 					<option>31</option>
 				</select></td>
 				<td><input name="year" size=4/></td>
-				<td><input id="specialdays" name="description" size="50"/></td>
+				<td style="text-align:left;"><input id="specialdays" name="description" size="50"/></td>
 				<td style="text-align:right"><input type="submit" name="add_special_day" value="Add Special Day"/></td>
 			</tr>
 			{% csrf_token %}
