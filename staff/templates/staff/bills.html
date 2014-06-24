@@ -97,13 +97,18 @@ nav #billing-tab { background: #FBD850; color: black; }
 						{% endif %}
 					{% endfor %}
 					
-					{% if member.notes %}
-					<br />Member notes:<br />
-					{{ member.notes }}
-					<br />
+					{% if member.member_notes %}
+						<br /><strong>Member notes:</strong>
+						<ul>
+						{% for note in member.member_notes %}
+							<li>{{ note.created|date:"m/d/y" }} - {{ note.note }}</li>
+						{% endfor %}
+						</ul>
+					{% else %}
+						<br />
 					{% endif %}
 
-					<br />Transaction note:<br />
+					<strong>Transaction note:</strong><br />
 					{% for field in member.pay_bills_form %}
 						{% ifequal field.name 'transaction_note' %}{{ field }}{% endifequal %}
 					{% endfor %}

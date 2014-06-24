@@ -663,6 +663,7 @@ def member_membership(request, member_id):
 	if request.method == 'POST':
 		membership_form = MembershipForm(request.POST, request.FILES)
 		if membership_form.is_valid():
+			membership_form.created_by = request.user
 			membership_form.save()
 			return HttpResponseRedirect(reverse('staff.views.member_detail', args=[], kwargs={'member_id':member.id}))
 	

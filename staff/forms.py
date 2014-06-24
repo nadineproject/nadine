@@ -79,7 +79,6 @@ class MemberSignupForm(forms.Form):
 	neighborhood = forms.ModelChoiceField(queryset=Neighborhood.objects.all(), required=False)
 	has_kids = forms.NullBooleanField(required=False)
 	self_employed = forms.NullBooleanField(required=False)
-	notes = forms.CharField(required=False)
 	photo = forms.ImageField(required=False)
 
 	def clean_username(self):
@@ -116,7 +115,6 @@ class MemberSignupForm(forms.Form):
 		member.has_kids = self.cleaned_data['has_kids']
 		member.self_emplyed = self.cleaned_data['self_employed']
 		member.company_name = self.cleaned_data['company_name']
-		member.notes = self.cleaned_data['notes']
 		member.photo = self.cleaned_data['photo']
 		member.save()
 		return user
@@ -156,7 +154,9 @@ class MembershipForm(forms.Form):
 	has_key = forms.BooleanField(initial=False, required=False)
 	has_mail = forms.BooleanField(initial=False, required=False)
 	guest_of = forms.ModelChoiceField(queryset=member_list, required=False)
+	# These are for the MemberNote 
 	note = forms.CharField(required=False, widget=forms.Textarea)
+	created_by = None
 
 	def save(self):
 		if not self.is_valid(): raise Exception('The form must be valid in order to save')
@@ -172,7 +172,7 @@ class MembershipForm(forms.Form):
 			adding = True
 			membership = Membership()
 
-		# Is this right?  Do I really need a DB call so I have the object?	
+		# Is this right?  Do I really need a DB call so I have the object?
 		membership.member = Member.objects.get(id=self.cleaned_data['member'])
 
 		# We need to look at their last membership but we'll wait until after the save
@@ -189,8 +189,12 @@ class MembershipForm(forms.Form):
 		membership.has_key = self.cleaned_data['has_key']
 		membership.has_mail = self.cleaned_data['has_mail']
 		membership.guest_of = self.cleaned_data['guest_of']
-		membership.note = self.cleaned_data['note']
 		membership.save()
+		
+		# Save the note if we were given one
+		note = self.cleaned_data['note']
+		if note:
+			MemberNote.objects.create(member=membership.member, created_by=self.created_by, note=note)
 		
 		# If this is a new membership and they have an old membership that is at least 5 days old
 		# Then remove all the onboarding tasks and the exit tasks so they have a clean slate

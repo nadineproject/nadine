@@ -212,7 +212,6 @@ class Member(models.Model):
 	company_name = models.CharField(max_length=128, blank=True, null=True)
 	promised_followup = models.DateField(blank=True, null=True)
 	last_modified = models.DateField(auto_now=True, editable=False)
-	notes = models.TextField(blank=True, null=True)
 	photo = models.ImageField(upload_to='member_photo', blank=True, null=True)
 	tags = TaggableManager(blank=True)
 	valid_billing = models.BooleanField(default=False)
@@ -507,7 +506,6 @@ class Membership(models.Model):
 	has_key = models.BooleanField(default=False)
 	has_mail = models.BooleanField(default=False)
 	guest_of = models.ForeignKey(Member, blank=True, null=True, related_name="monthly_guests")
-	note = models.CharField(max_length=128, blank=True, null=True)
 
 	objects = MembershipManager()
 

@@ -249,7 +249,6 @@ function gotoEmailReset(emailAddress){
 			<th>Desk</th>
 			<th>Key</th>
 			<th>Mail</th>
-			<!--<th>Notes</th>-->
 			<th>Action</th>
 		</tr>
 
@@ -262,7 +261,6 @@ function gotoEmailReset(emailAddress){
 				<td>{% if membership.has_desk %}&check;{% endif %}</td>
 				<td>{% if membership.has_key %}&check;{% endif %}</td>
 				<td>{% if membership.has_mail %}&check;{% endif %}</td>
-				<!--<td>{{ membership.note }}</td>-->
 				<td style="text-align:center;">
 					{% if membership == member.last_membership %}
 						[<a href="{% url 'staff.views.membership' membership.id %}">edit</a>]
