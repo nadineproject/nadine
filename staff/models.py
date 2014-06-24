@@ -140,7 +140,7 @@ class MemberManager(models.Manager):
 		return Member.objects.filter(user__date_joined__gt=timezone.localtime(timezone.now())- timedelta(days=days))
 		
 	def members_by_plan_id(self, plan_id):
-		return [m.member for m in Membership.objects.filter(membership_plan=plan_id).filter(Q(end_date__isnull=True, start_date__lte=timezone.now().date()) | Q(end_date__gt=timezone.now().date())).distinct().order_by('member__user__first_name')]
+		return [m.member for m in Membership.objects.select_related('member').filter(membership_plan=plan_id).filter(Q(end_date__isnull=True, start_date__lte=timezone.now().date()) | Q(end_date__gt=timezone.now().date())).distinct().order_by('member__user__first_name')]
 
 	def members_with_desks(self):
 		return Member.objects.filter(memberships__isnull=False).filter(Q(memberships__has_desk=True) & (Q(memberships__end_date__isnull=True) | Q(memberships__end_date__gt=timezone.now().date()))).distinct()

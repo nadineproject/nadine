@@ -34,7 +34,7 @@ def members(request):
 	for plan in MembershipPlan.objects.all().order_by('name'):
 		member_list = Member.objects.members_by_plan_id(plan.id);
 		member_count = member_count + len(member_list)
-		plans.append({ 'name':plan.name, 'id':plan.id, 'members':member_list, 'count':len(Member.objects.members_by_plan_id(plan.id))})
+		plans.append({ 'name':plan.name, 'id':plan.id, 'members':member_list, 'count':len(member_list)})
 	has_desk = Member.objects.members_with_desks()
 	plans.append({ 'name':'Has Desk', 'id':'desk', 'members':has_desk, 'count':len(has_desk)})
 	has_key = Member.objects.members_with_keys()
