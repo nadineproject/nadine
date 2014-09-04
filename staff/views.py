@@ -56,8 +56,11 @@ def member_bcc(request, plan_id):
 
 @staff_member_required
 def export_members(request):
-	members = Member.objects.all()
-	return render_to_response('staff/memberList.csv', { 'member_list': members }, context_instance=RequestContext(request))
+	if 'active_only' in request.GET:
+		members = Member.objects.active_members()
+	else:
+		members = Member.objects.all()
+	return render_to_response('staff/memberList.csv', { 'member_list': members }, content_type="text/plain")
 
 @staff_member_required
 def security_deposits(request):

@@ -260,6 +260,9 @@ class Member(models.Model):
 		if len(bills) == 0: return None
 		return bills[0]
 
+	def all_memberships(self):
+		return Membership.objects.filter(member=self).order_by('-start_date', 'end_date')
+
 	def last_membership(self):
 		"""Returns the latest membership, even if it has an end date, or None if none exists"""
 		memberships = Membership.objects.filter(member=self).order_by('-start_date', 'end_date')[0:]
@@ -421,6 +424,26 @@ class Member(models.Model):
 	
 	def special_days(self):
 		return SpecialDay.objects.filter(member=self)
+
+	def membership_days(self):
+		total_days = 0
+		for membership in self.all_memberships():
+			end = membership.end_date
+			if not end: 
+				end = timezone.now().date()
+			diff = end - membership.start_date
+			days = diff.days
+			total_days = total_days + days
+		return total_days
+	
+	def average_bill(self):
+		bills = Bill.objects.filter(member=self)
+		if bills:
+			bill_totals = 0
+			for b in bills:
+				bill_totals = bill_totals + b.amount
+			return bill_totals / len(bills)
+		return 0
 
 	@models.permalink
 	def get_absolute_url(self):

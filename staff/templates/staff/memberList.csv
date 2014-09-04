@@ -1,4 +1,4 @@
-Member, Type, Email, Phone, First Visit, Last Visit, Paid Count
-{% for member in member_list %}{{ member }},{{ member.membership_type }},{{member.email}},{{member.phone}},{{ member.first_visit }},{{ member.last_visit }},{{ member.paid_count }}
+Member, Type, Email, Phone, Gender, Industry, Has Kids, Self Employed, First Visit, Last Visit, Paid Count, Memberships, Membership Days, Average Bill
+{% for m in member_list %}{{ m }},{{ m.membership_type }},{{ m.email }},{{ m.phone }},{{ m.gender }},{{ m.industry }},{{ m.has_kids }},{{ m.self_employed }},{{ m.first_visit|date:"m-d-Y" }},{{ m.last_visit|date:"m-d-Y" }},{{ m.paid_count }},{{ m.all_memberships|length }},{{ m.membership_days }},{{ m.average_bill|floatformat:2 }}
 {% endfor %}
 
