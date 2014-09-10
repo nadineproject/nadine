@@ -7,6 +7,9 @@ from django.contrib.sites.models import Site
 from django.template.loader import render_to_string
 from django.core.mail import send_mail, EmailMessage
 from models import Member, DailyLog, SentEmailLog
+import logging
+
+logger = logging.getLogger(__name__)
 
 def valid_message_keys():
 	return ["all", "introduction", "newsletter", "new_membership", "first_day_checkin", 
@@ -206,5 +209,20 @@ def send_email(recipient, subject, message, fail_silently):
 			log.save()
 		except:
 			pass
+
+def mailgun_send(mailgun_data):
+	logger.debug("Mailgun send: %s" % mailgun_data)
+	if settings.DEBUG:
+		if not hasattr(settings, 'MAILGUN_DEBUG') or settings.MAILGUN_DEBUG:
+			# We will see this message in the mailgun logs but nothing will actually be delivered
+			logger.debug("mailgun_send: setting testmode=yes")
+			mailgun_data["o:testmode"] = "yes"
+	resp = requests.post("https://api.mailgun.net/v2/%s/messages" % settings.LIST_DOMAIN,
+		auth=("api", settings.MAILGUN_API_KEY),
+		data=mailgun_data
+	)
+	logger.debug("Mailgun response: %s" % resp.text)
+	return HttpResponse(status=200)
+
 
 # Copyright 2014 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
