@@ -54,8 +54,8 @@ def send_introduction(user):
 def subscribe_to_newsletter(user):
 	if settings.MAILCHIMP_NEWSLETTER_KEY:
 		try:
-			newsletter = mailchimp.utils.get_connection().get_list_by_id(settings.MAILCHIMP_NEWSLETTER_KEY)
-			newsletter.subscribe(user.email, {'EMAIL':user.email, 'FNAME':user.first_name, 'LNAME':user.last_name})
+			mc = mailchimp.Mailchimp(settings.MAILCHIMP_API_KEY)
+			mc.lists.subscribe(id=settings.MAILCHIMP_NEWSLETTER_KEY, email={'email':user.email}, send_welcome=True)
 		except:
 			pass
 

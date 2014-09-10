@@ -15,9 +15,9 @@ from monthdelta import MonthDelta, monthmod
 from taggit.managers import TaggableManager
 from taggit.models import TaggedItemBase
 
-from south.modelsinspector import add_introspection_rules
-add_introspection_rules([], ["^django_localflavor_us\.models\.USStateField"])
-add_introspection_rules([], ["^django_localflavor_us\.models\.PhoneNumberField"])
+#from south.modelsinspector import add_introspection_rules
+#add_introspection_rules([], ["^django_localflavor_us\.models\.USStateField"])
+#add_introspection_rules([], ["^django_localflavor_us\.models\.PhoneNumberField"])
 
 GENDER_CHOICES = (
 	('U', 'Unknown'),
@@ -474,7 +474,7 @@ class DailyLog(models.Model):
 	payment = models.CharField("Payment", max_length=5, choices=PAYMENT_CHOICES)
 	guest_of = models.ForeignKey(Member, verbose_name="Guest Of", related_name="guest_of", blank=True, null=True)
 	note = models.CharField("Note", max_length=128, blank="True")
-	created = models.DateTimeField(auto_now_add=True, default=timezone.localtime(timezone.now()))
+	created = models.DateTimeField(auto_now_add=True)
 
 	def __str__(self):
 		return '%s - %s' % (self.visit_date, self.member)
