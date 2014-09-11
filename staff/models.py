@@ -600,7 +600,7 @@ class ExitTask(models.Model):
 	name = models.CharField(max_length=64)
 	description = models.CharField(max_length=512)
 	order = models.SmallIntegerField()
-	has_desk_only = models.BooleanField(verbose_name="Only Applies to Members with Desks")
+	has_desk_only = models.BooleanField(verbose_name="Only Applies to Members with Desks", default=False)
 	objects = ExitTaskManager()
 
 	def uncompleted_members(self):
@@ -645,7 +645,7 @@ class Onboard_Task(models.Model):
 	name = models.CharField(max_length=64)
 	description = models.CharField(max_length=512)
 	order = models.SmallIntegerField()
-	has_desk_only = models.BooleanField(verbose_name="Only Applies to Members with Desks")
+	has_desk_only = models.BooleanField(verbose_name="Only Applies to Members with Desks", default=False)
 	objects = Onboard_Task_Manager()
 
 	def uncompleted_members(self):
