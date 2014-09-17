@@ -24,6 +24,7 @@ DATABASES = {
 CACHE_BACKEND = 'locmem:///'
 
 # Make this unique, and don't share it with anybody.
+# http://www.miniwebtool.com/django-secret-key-generator/
 SECRET_KEY = 'ZZZ'
 
 USA_EPAY_URL='www.usaepay.com'
