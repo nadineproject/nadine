@@ -26,6 +26,7 @@ admin.site.register(MailingList, MailingListAdmin)
 
 class IncomingMailAdmin(MailBase):
    list_display = ('sent_time', 'origin_address', 'subject', 'state')
+   list_filter = ('state', 'mailing_list')
    actions = ['process_mail']
    def process_mail(self, request, queryset):
       self._action(request, queryset,
