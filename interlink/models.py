@@ -146,7 +146,7 @@ class MailingList(models.Model):
 
       incoming = IncomingMail(mailing_list=self,
                              origin_address=origin_address,
-                             subject=message['Subject'],
+                             subject=self.clean_subject(message),
                              body=body,
                              html_body=html_body,
                              sent_time=sent_time,
@@ -154,6 +154,11 @@ class MailingList(models.Model):
       if commit:
          incoming.save()
       return incoming
+
+   def clean_subject(self, message):
+      subject = message['Subject']
+      subject = subject.strip().replace('\n', '').replace('\r', '').replace('\t', '')
+      return subject
 
    def find_bodies(self, message):
       """Returns (body, html_body, file_names[]) for this payload, recursing into multipart/alternative payloads if necessary"""
