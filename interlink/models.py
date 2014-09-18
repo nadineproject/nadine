@@ -144,9 +144,13 @@ class MailingList(models.Model):
       if html_body:
          html_body += u'<br/><div>Email sent to the %s list at <a href="https://%s">%s</a></div>' % (self.name, site.domain, site.name)
 
+      # Clean up the subject on the way in.  More processing is done later.
+      subject = message['Subject']
+      subject = subject.strip().replace('\n', '').replace('\r', '').replace('\t', '')
+
       incoming = IncomingMail(mailing_list=self,
                              origin_address=origin_address,
-                             subject=self.clean_subject(message),
+                             subject=subject,
                              body=body,
                              html_body=html_body,
                              sent_time=sent_time,
@@ -154,11 +158,6 @@ class MailingList(models.Model):
       if commit:
          incoming.save()
       return incoming
-
-   def clean_subject(self, message):
-      subject = message['Subject']
-      subject = subject.strip().replace('\n', '').replace('\r', '').replace('\t', '')
-      return subject
 
    def find_bodies(self, message):
       """Returns (body, html_body, file_names[]) for this payload, recursing into multipart/alternative payloads if necessary"""
