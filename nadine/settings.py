@@ -67,7 +67,7 @@ LOGIN_URL='/login/'
 
 # Auth Backends
 AUTHENTICATION_BACKENDS = (
-	'backends.EmailOrUsernameModelBackend',
+	'nadine.backends.EmailOrUsernameModelBackend',
 	'django.contrib.auth.backends.ModelBackend'
 )
 
