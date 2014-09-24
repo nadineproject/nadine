@@ -11,7 +11,6 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib import auth
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.contrib.comments.models import Comment
 from django.contrib.sites.models import Site
 from django.utils.html import strip_tags
 import django.contrib.contenttypes.models as content_type_models
