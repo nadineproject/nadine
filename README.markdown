@@ -6,8 +6,6 @@ Most of the action is in the staff application, where you'll find a member track
 
 ## Handy Installation Instructions
 
-Requires Django 1.5 or above.  Note, we didn't do the full Django 1.3 to Django 1.4 upgrade yet so there are some timezone issues that need to be worked out.
-
 Create a virtual environment for the python project, pull down the code, and install all the requirements
 
 	virtualenv nadine
@@ -17,36 +15,21 @@ Create a virtual environment for the python project, pull down the code, and ins
 	cd nadine
 	pip install -r requirements.txt
 
-Copy local_settings.dist to local_settings.py and edit it to reflect your local settings. 
+Copy nadine/local_settings.dist to nadine/local_settings.py and edit it to reflect your local settings. 
 
 PostgreSQL:  Uncomment 'psycopg2' in the requirements.txt file and edit local_settings.py for your database settings.  Create a blank database and grant all permissions to whatever account/password combination you want to use for the app.
 
-Run Django's syncdb and then South's migrate commands and create a superuser.  We need to create the superuser last so
-we explicitly skip it in the syncdb step.  
+Run Django's migrate command and create a superuser.  
 
-	./manage.py syncdb --noinput --all
-	./manage.py migrate --fake
+	./manage.py migrate
 	./manage.py createsuperuser
-
-Now run the tests to make certain that everthing is installed:
-
-    ./manage.py test staff interlink
-
-Both Django and South have excellent documentation, so check there if you run into trouble.
-
-At this point you will need to populate the django_sites database. We will assume you only have Nadine in the database you have created.
-
-	./manage.py shell
-	>>> from django.contrib.sites.models import Site
-	>>> newsite = Site(name="Nadine",domain="nadine.com")
-	>>> newsite.save()
-	Ctrl+D
 
 At this point you can run the server
 
-    ./manage.py runserver 0.0.0.0:8000
+	./manage.py runserver 0.0.0.0:8000
+	Visit your installation of Nadine at http://127.0.0.1:8000/
 
-And visit your installation of Nadine at http://127.0.0.1:8000/
+You will need to edit the django_sites database in the admin site unless your site is at example.com.
 
 ### Running the scheduler
 
@@ -55,24 +38,6 @@ In order to repeatedly execute tasks like checking and sending email, run this c
     ./manage.py celeryd -B
 
 You will need to run that command as a long lived process.  On linux and other unices, use something like the nohup command.
-
-## Installation Notes
-
- - Many of the required python libraries come in source form and require a gcc to build/install. 
-   On OS X this means installing XCode.
-
- - If you are using a 32bit MySQL python will have problems because it defaults to running in 64 bit mode.  
-   The error will look like:  blah blah blah "mysql.so: mach-o, but wrong architecture"
-   You'll need to get python running in 32 bit mode for this to work.  Run the following:
-   export VERSIONER_PYTHON_PREFER_32_BIT=yes 
-
- - On OS X versions *before* Lion when using a virtualenv, you should remove the 64 python altogether like so:
-   $ mv .../virtualenvs/nadine/bin/python .../virtualenvs/nadine/bin/python.old
-   $ lipo -remove x86_64 .../virtualenvs/nadine/bin/python.old -output .../virtualenvs/nadine/bin/python
-
- - If you are getting a "flat namespace" error when you try to do a syncdb then you most likely are running OS X 10.6
-   and it's trying to run python in 64bit mode.  Do the following:
-   $ defaults write com.apple.versioner.python Prefer-32-Bit -bool yes
 
 # Interlink (mailing lists) notes:
 
