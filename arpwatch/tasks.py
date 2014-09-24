@@ -1,8 +1,8 @@
-from celery.task import task
+from __future__ import absolute_import
 
-from datetime import datetime, timedelta
+from celery import shared_task
 
-@task()
+@shared_task
 def import_arp():
 	from arpwatch import arp
 	arp.import_all()

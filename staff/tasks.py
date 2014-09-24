@@ -1,4 +1,5 @@
-from celery.task import task
+from __future__ import absolute_import
+from celery import shared_task
 from datetime import datetime, timedelta
 from models import Member, Membership, DailyLog, BillingLog
 from members.models import UserNotification
@@ -7,12 +8,12 @@ from arpwatch import arp
 import billing
 import email
 
-@task()
+@shared_task
 def billing_task():
 	"""A recurring task which calculates billing"""
 	billing.run_billing()
 
-@task()
+@shared_task
 def first_day_checkins():
 	"""A recurring task which sends an email to new members"""
 	now = timezone.localtime(timezone.now())
@@ -21,7 +22,7 @@ def first_day_checkins():
 	for l in free_trials:
 		email.send_first_day_checkin(l.member.user)
 
-@task()
+@shared_task
 def regular_checkins():
 	"""A recurring task which sends checkin emails to members"""
 	# Pull the memberships that started 60 days ago and send the coworking survey
@@ -52,19 +53,19 @@ def regular_checkins():
 	#		if membership.member.is_active():
 	#			email.announce_member_checkin(membership.member.user)
 
-@task()
+@shared_task
 def unsubscribe_recent_dropouts_task():
 	"""A recurring task which checks for members who need to be unsubscribed from mailing lists"""
 	from models import Member
 	Member.objects.unsubscribe_recent_dropouts()
 
-@task()
+@shared_task
 def make_backup():
 	from staff.backup import BackupManager
 	manager = BackupManager()
 	manager.make_backup()
 	
-@task()
+@shared_task
 def send_notifications():
 	here_today = arp.users_for_day()
 	for n in UserNotification.objects.filter(sent_date__isnull=True):

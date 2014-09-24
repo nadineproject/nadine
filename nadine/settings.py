@@ -138,6 +138,7 @@ USA_EPAY_URL_KEY='ABCDEFG'
 CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ['json', 'msgpack', 'yaml']
 CELERY_DISABLE_RATE_LIMITS = True
 CELERY_RESULT_BACKEND = "amqp"
 BROKER_URL = "amqp://guest:guest@localhost:5672//"
