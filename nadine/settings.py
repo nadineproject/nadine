@@ -40,8 +40,6 @@ USE_TZ = True
 # http://blogs.law.harvard.edu/tech/stories/storyReader$15
 LANGUAGE_CODE = 'en-us'
 
-SITE_ID = 1
-
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = True
@@ -64,16 +62,12 @@ ARP_IP_PFX = '172.16.5.'
 # URL that handles login
 LOGIN_URL='/login/'
 
+SITE_ID = 1
+
 # Auth Backends
 AUTHENTICATION_BACKENDS = (
 	'nadine.backends.EmailOrUsernameModelBackend',
 	'django.contrib.auth.backends.ModelBackend'
-)
-
-# List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-	'django.template.loaders.filesystem.Loader',
-	'django.template.loaders.app_directories.Loader',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -94,6 +88,7 @@ MIDDLEWARE_CLASSES = (
 	'django.middleware.csrf.CsrfViewMiddleware',
 	'django.contrib.auth.middleware.AuthenticationMiddleware',
 	'django.contrib.messages.middleware.MessageMiddleware',
+	'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
 ROOT_URLCONF = 'urls'
@@ -151,6 +146,8 @@ CELERY_ALWAYS_EAGER = False
 #MAILCHIMP_API_KEY="YourMailchimpKey"
 #MAILCHIMP_NEWSLETTER_KEY="YourNewsletter"
 MAILCHIMP_WEBHOOK_KEY="nadine"
+
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 # Import the local settings file
 from local_settings import *

@@ -74,7 +74,7 @@ class TasksTestCase(TestCase):
 		self.exit_task_1 = ExitTask.objects.create(name="Exit Shaming", order=1, description="The parade of shame.", has_desk_only=False)
 		self.exit_task_2 = ExitTask.objects.create(name="Clean Desk", order=2, description="Clean the member's old desk.", has_desk_only=True)
 
-	def testTasks(self):
+	def test_tasks(self):
 		self.assertEqual(Onboard_Task_Completed.objects.filter(member=self.user1.profile).count(), 0)
 		self.assertEqual(ExitTaskCompleted.objects.filter(member=self.user1.profile).count(), 0)
 
@@ -138,7 +138,7 @@ class MemberTestCase(TestCase):
 		self.profile5.save()
 		Membership.objects.create(member=self.user5.get_profile(), membership_plan=self.pt5Plan, start_date=date(2009, 1, 1), guest_of=self.profile1)
 		
-	def testInfoMethods(self):
+	def test_info_methods(self):
 		self.assertTrue(self.user1.profile in Member.objects.members_by_plan_id(self.residentPlan.id))
 		self.assertFalse(self.user1.profile in Member.objects.members_by_plan_id(self.basicPlan.id))
 		self.assertTrue(self.user2.profile in Member.objects.members_by_plan_id(self.pt5Plan.id))
@@ -151,7 +151,7 @@ class MemberTestCase(TestCase):
 		self.assertTrue(self.user3.profile in Member.objects.members_by_neighborhood(self.neighborhood1, active_only=False))
 		self.assertTrue(self.user4.profile in Member.objects.members_by_neighborhood(self.neighborhood1, active_only=False))
 	
-	def testValidBilling(self):
+	def test_valid_billing(self):
 		# Member 1 has valid billing
 		self.assertTrue(self.user1.profile.valid_billing)
 		self.assertTrue(self.user1.profile.has_valid_billing())
@@ -163,7 +163,7 @@ class MemberTestCase(TestCase):
 		self.assertTrue(self.user5.profile.has_valid_billing())
 		self.assertEquals(self.user5.profile.is_guest(), self.user1.profile)
 
-	def testTags (self):
+	def test_tags (self):
 		member1 = self.user1.get_profile()
 		member1.tags.add("coworking", "books", "beer")
 		member2 = self.user2.get_profile()
@@ -186,7 +186,7 @@ class MembershipTestCase(TestCase):
 		self.user5 = User.objects.create(username='member_five', first_name='Member', last_name='Five')
 		self.user6 = User.objects.create(username='member_six', first_name='Member', last_name='Six')
 	
-	def testMembership(self):
+	def test_membership(self):
 		orig_membership = Membership.objects.create(member=self.user1.get_profile(), membership_plan=self.residentPlan, start_date=date(2008, 2, 10))
 		self.assertTrue(orig_membership.is_anniversary_day(date(2010, 4, 10)))
 		self.assertTrue(orig_membership.is_active())
@@ -201,7 +201,7 @@ class MembershipTestCase(TestCase):
 		new_membership.start_date = new_membership.end_date + timedelta(days=12)
 		self.assertRaises(Exception, new_membership.save) # the start date can't be the same or later than the end date
 	
-	def testDateMethods(self):
+	def test_date_methods(self):
 		test_date = date(2013, 3, 15)
 		# Billing day was yesterday
 		m1 = Membership.objects.create(member=self.user1.get_profile(), membership_plan=self.residentPlan, start_date=date(2012, 6, 14))
@@ -274,7 +274,7 @@ class BillingTestCase(TestCase):
 		Membership.objects.create_with_plan(member=self.user8.get_profile(), start_date=date(2010, 6, 20), end_date=None, membership_plan=self.basicPlan)
 		for day in range(15,23): DailyLog.objects.create(member=self.user8.get_profile(), visit_date=date(2010, 6, day), payment='Bill')
 
-	def testGuestActivity(self):
+	def test_guest_activity(self):
 		test_date = date(2010, 6, 20)
 		member6 = self.user6.get_profile()
 		member7 = self.user7.get_profile()
@@ -282,7 +282,7 @@ class BillingTestCase(TestCase):
 		self.assertTrue(member7 in member6.guests())
 		self.assertEqual(len(member6.activity_this_month(test_date)), 15)
 
-	def testRun(self):
+	def test_run(self):
 		member1 = self.user1.get_profile()
 		member2 = self.user2.get_profile()
 		member3 = self.user3.get_profile()
