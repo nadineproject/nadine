@@ -13,11 +13,11 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
 from django.db.models import Sum
+from django.conf import settings
 from monthdelta import MonthDelta, monthmod
 from py4j.java_gateway import JavaGateway
 import usaepay
 
-import settings
 from models import *
 from forms import *
 import billing, user_reports, email
@@ -453,6 +453,35 @@ def stats_gender(request):
 	return render_to_response('staff/stats_gender.html', {'counts':counts, 'percentages':percentages, 'active_only':active_only}, context_instance=RequestContext(request))
 
 @staff_member_required
+def stats_amv(request):
+	# Average Membership Value
+	start, end = date_range_from_request(request)
+	date_range_form = DateRangeForm({START_DATE_PARAM:start, END_DATE_PARAM:end })
+	starteo = timeo.strptime(start, "%Y-%m-%d")
+	start_date = date(year=starteo.tm_year, month=starteo.tm_mon, day=starteo.tm_mday)
+	endeo = timeo.strptime(end, "%Y-%m-%d")
+	end_date = date(year=endeo.tm_year, month=endeo.tm_mon, day=endeo.tm_mday)
+	days = [{'date':start_date + timedelta(days=i)} for i in range((end_date - start_date).days) ]
+	income_min = 0;
+	income_max = 0;
+	income_total = 0
+	for day in days:
+		membership_count = 0
+		membership_income = 0
+		for membership in Membership.objects.by_date(day['date']):
+			membership_count = membership_count + 1
+			membership_income = membership_income +  membership.monthly_rate
+		income_total = income_total + membership_income
+		if membership_income > income_max:
+			income_max = membership_income
+		if income_min == 0 or membership_income < income_min:
+			income_min = membership_income
+		day['membership'] = membership_count
+		day['income'] = membership_income
+	income_avg = income_total / len(days)
+	return render_to_response('staff/stats_amv.html', {'days':days, 'date_range_form':date_range_form, 'start':start, 'end':end, 'min':income_min, 'max':income_max, 'avg':income_avg }, context_instance=RequestContext(request))
+
+@staff_member_required
 def stats_income(request):
 	start, end = date_range_from_request(request)
 	date_range_form = DateRangeForm({START_DATE_PARAM:start, END_DATE_PARAM:end })
@@ -479,7 +508,6 @@ def stats_income(request):
 		day['income'] = membership_income
 	income_avg = income_total / len(days)
 	return render_to_response('staff/stats_income.html', {'days':days, 'date_range_form':date_range_form, 'start':start, 'end':end, 'min':income_min, 'max':income_max, 'avg':income_avg }, context_instance=RequestContext(request))
-
 
 @staff_member_required
 def stats_members(request):

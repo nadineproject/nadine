@@ -4,24 +4,22 @@ import sys
 
 from datetime import timedelta
 
-PROJECT_ROOT = os.path.realpath(os.path.dirname(__file__))
-TEMPLATE_DIRS = ( PROJECT_ROOT + '/templates/', )
-MEDIA_ROOT = PROJECT_ROOT + '/media/'
-BACKUP_ROOT = PROJECT_ROOT + '/backups/'
-LOGFILE = '/tmp/django.log'
+ROOT = os.path.dirname(os.path.abspath(__file__))
+path = lambda *a: os.path.join(ROOT, *a)
+
+TEMPLATE_DIRS = ( path('../templates/'), )
+MEDIA_ROOT = path('../media/')
+BACKUP_ROOT = path('../backups/')
+STATIC_ROOT = path('../static/')
+LOGFILE = path('../django.log')
 
 STATIC_URL = '/static/'
-STATIC_ROOT = ''
-
 STATICFILES_DIRS = ( 'static', )
-
 STATICFILES_FINDERS = (
 	'django.contrib.staticfiles.finders.FileSystemFinder',
 	'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 	'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
-
-SOUTH_AUTO_FREEZE_APP = True
 
 DEBUG = False
 
@@ -59,7 +57,7 @@ LOGGING = {
 MEDIA_URL = '/media/'
 
 # Arp Watch data directory
-ARP_ROOT = 'arp/'
+ARP_ROOT = path('../arp_import/')
 ARP_IMPORT_LOG = ARP_ROOT + 'import.log'
 ARP_IMPORT_LOCK = ARP_ROOT + 'importing.lock'
 ARP_IP_PFX = '172.16.5.'
@@ -138,6 +136,8 @@ USA_EPAY_PIN2='1234'
 USA_EPAY_URL_KEY='ABCDEFG'
 
 CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
 CELERY_DISABLE_RATE_LIMITS = True
 CELERY_RESULT_BACKEND = "amqp"
 BROKER_URL = "amqp://guest:guest@localhost:5672//"

@@ -1,9 +1,11 @@
 .svn
 *.pyc
 *.class
+.DS_Store
 pip-log.txt
 backups
-local_settings.py
+nadine/settings.py
+nadine/local_settings.py
 media
 media/
 media/member_photo
@@ -16,4 +18,4 @@ media/arp/import.log
 .pydevproject
 .settings
 celerybeat-schedule.db
-.DS_Store
+django.log
