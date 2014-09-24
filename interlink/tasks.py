@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 from celery import shared_task
-from models import MailingList, IncomingMail, OutgoingMail
+from interlink.models import MailingList, IncomingMail, OutgoingMail
 
 @shared_task(ignore_result=True)
 def email_task():

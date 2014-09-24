@@ -8,7 +8,7 @@ from django.core.files.base import ContentFile
 from django.db import transaction
 from django.utils import timezone
 
-from models import *
+from arpwatch.models import *
 from staff.models import Member, DailyLog
 
 logger = logging.getLogger(__name__)

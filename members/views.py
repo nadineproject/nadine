@@ -14,14 +14,13 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.template.defaultfilters import slugify
-
 #from gather.models import Event, Location, EventAdminGroup
 #from gather.forms import EventForm
 #from gather.views import get_location
-from forms import EditProfileForm
 from interlink.forms import MailingListSubscriptionForm
 from interlink.models import IncomingMail
-from models import HelpText, UserNotification
+from members.forms import EditProfileForm
+from members.models import HelpText, UserNotification
 from arpwatch import arp
 from arpwatch.models import ArpLog, UserDevice
 from staff.models import Member, Membership, Transaction, DailyLog

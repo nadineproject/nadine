@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from datetime import date, datetime, timedelta
 from django.utils import timezone
-from models import Member, Membership
+from staff.models import Member, Membership
 from arpwatch.models import UserDevice
 from django.forms.extras.widgets import SelectDateWidget
 

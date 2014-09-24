@@ -21,7 +21,7 @@ from django.http import HttpResponse, Http404, HttpResponseServerError, HttpResp
 from django.utils import timezone
 
 import arp
-from models import UserDevice, ArpLog
+from arpwatch.models import UserDevice, ArpLog
 from staff.models import Member, Membership, DailyLog
 from staff.templatetags import imagetags
 

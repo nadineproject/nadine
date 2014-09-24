@@ -4,8 +4,8 @@ from django.utils.html import strip_tags
 from django.utils import timezone
 from taggit.forms import *
 
-from models import *
-import email
+from staff.models import *
+from staff import email
 import datetime
 
 class DateRangeForm(forms.Form):

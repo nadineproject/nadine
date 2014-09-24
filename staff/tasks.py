@@ -1,12 +1,12 @@
 from __future__ import absolute_import
 from celery import shared_task
 from datetime import datetime, timedelta
-from models import Member, Membership, DailyLog, BillingLog
+from staff.models import Member, Membership, DailyLog, BillingLog
 from members.models import UserNotification
 from django.utils import timezone
 from arpwatch import arp
-import billing
-import email
+import staff.billing
+import staff.email
 
 @shared_task
 def billing_task():
@@ -56,7 +56,7 @@ def regular_checkins():
 @shared_task
 def unsubscribe_recent_dropouts_task():
 	"""A recurring task which checks for members who need to be unsubscribed from mailing lists"""
-	from models import Member
+	from staff.models import Member
 	Member.objects.unsubscribe_recent_dropouts()
 
 @shared_task

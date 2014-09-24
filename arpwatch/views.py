@@ -9,10 +9,10 @@ from django.http import HttpResponse, Http404, HttpResponseServerError, HttpResp
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils import timezone
 
-from forms import *
-from models import *
+from arpwatch.forms import *
+from arpwatch.models import *
+from arpwatch import arp
 
-import arp
 from staff.models import Member
 
 @staff_member_required

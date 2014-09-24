@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from models import MailingList, IncomingMail, OutgoingMail
+from interlink.models import MailingList, IncomingMail, OutgoingMail
 
 class MailBase(admin.ModelAdmin):
    def _action(self, request, queryset, f, singular, plural):

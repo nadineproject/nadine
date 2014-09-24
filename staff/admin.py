@@ -4,7 +4,7 @@ from django.forms.util import ErrorList
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
 
-from models import *
+from staff.models import *
 
 # Register the objects with the admin interface
 admin.site.register(Onboard_Task)

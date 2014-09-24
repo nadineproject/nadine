@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 from django.conf import settings
 
-from models import *
+from arpwatch.models import *
 
 urlpatterns = patterns('',
 	(r'^$', 'arpwatch.views.index'),

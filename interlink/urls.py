@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 from django.conf import settings
 
-from models import *
+from interlink.models import *
 
 urlpatterns = patterns('',
    (r'^messages/(?P<list_id>[^/]+)/$', 'interlink.views.list_messages'),

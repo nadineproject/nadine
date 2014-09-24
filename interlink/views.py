@@ -6,7 +6,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponseRedirect
 
-from models import MailingList, IncomingMail
+from interlink.models import MailingList, IncomingMail
 from staff.models import Member
 
 @staff_member_required

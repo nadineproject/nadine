@@ -6,7 +6,7 @@ from django.conf import settings
 from django.contrib.sites.models import Site
 from django.template.loader import render_to_string
 from django.core.mail import send_mail, EmailMessage
-from models import Member, DailyLog, SentEmailLog
+from staff.models import Member, DailyLog, SentEmailLog
 import logging
 
 logger = logging.getLogger(__name__)
