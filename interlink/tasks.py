@@ -1,10 +1,13 @@
 from __future__ import absolute_import
 from celery import shared_task
 from interlink.models import MailingList, IncomingMail, OutgoingMail
+from celery.utils.log import get_task_logger 
+
+logger = get_task_logger(__name__)
 
 @shared_task(ignore_result=True)
 def email_task():
-   logger = email_task.get_logger()
+   #logger = email_task.get_logger()
    MailingList.objects.fetch_all_mail(logger)
    IncomingMail.objects.process_incoming()
    OutgoingMail.objects.send_outgoing()
