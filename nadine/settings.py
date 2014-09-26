@@ -9,8 +9,10 @@ path = lambda *a: os.path.join(ROOT, *a)
 
 TEMPLATE_DIRS = ( path('../templates/'), )
 MEDIA_ROOT = path('../media/')
-BACKUP_ROOT = path('../backups/')
 LOGFILE = path('../django.log')
+
+BACKUP_ROOT = path('../backups/')
+BACKUP_COUNT = 30
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = ( 'static', )
