@@ -3,7 +3,7 @@
 import os
 import sys
 import glob
-from settings import *
+from nadine.settings import *
 
 java_dir = "py4j_gateway"
 java_file = "USAePayBridge"
