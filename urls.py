@@ -13,8 +13,8 @@ API = Api(api_name='v1')
 API.register(ActivityResource())
 
 urlpatterns = patterns('',
-	(r'^robots\.txt$', lambda r: HttpResponse("User-agent: *\nDisallow: /", mimetype="text/plain")),
-	(r'^cache\.manifest$', lambda r: HttpResponse(get_manifest(), mimetype="text/plain")),
+	(r'^robots\.txt$', lambda r: HttpResponse("User-agent: *\nDisallow: /", content_type="text/plain")),
+	(r'^cache\.manifest$', lambda r: HttpResponse(get_manifest(), content_type="text/plain")),
 
 	(r'^admin/', include(admin.site.urls)),
 	(r'^staff/', include('staff.urls', app_name='staff')),
