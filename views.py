@@ -31,8 +31,8 @@ def index(request):
 	if not request.user.is_authenticated(): return HttpResponseRedirect(reverse('django.contrib.auth.views.login'))
 
 	ip = request.META['REMOTE_ADDR']
-	#arp.register_user_ip(request.user, ip)
-	device = arp.device_by_ip(ip)
+	arp.register_user_ip(request.user, ip)
+	#device = arp.device_by_ip(ip)
 	#if device and not device.user:
 	#	return HttpResponseRedirect(reverse('members.views.user_devices'))
 	
