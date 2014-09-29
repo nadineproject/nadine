@@ -5,8 +5,7 @@ from staff.models import Member, Membership, DailyLog, BillingLog
 from members.models import UserNotification
 from django.utils import timezone
 from arpwatch import arp
-import staff.billing
-import staff.email
+from staff import email, billing
 
 @shared_task
 def billing_task():
