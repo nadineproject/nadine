@@ -9,7 +9,6 @@ path = lambda *a: os.path.join(ROOT, *a)
 
 TEMPLATE_DIRS = ( path('../templates/'), )
 MEDIA_ROOT = path('../media/')
-LOGFILE = path('../django.log')
 
 BACKUP_ROOT = path('../backups/')
 BACKUP_COUNT = 30
@@ -45,11 +44,6 @@ LANGUAGE_CODE = 'en-us'
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = True
-
-# Logging setup
-LOGGING = {
-    'version': 1,
-}
 
 # URL that handles the media served from MEDIA_ROOT.
 # Example: "http://media.lawrence.com"
@@ -151,9 +145,6 @@ MAILCHIMP_WEBHOOK_KEY="nadine"
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
-# Import the local settings file
-from local_settings import *
-
 # Logging
 LOGGING = {
 	'version': 1,
@@ -171,7 +162,7 @@ LOGGING = {
 		'file': {
 			'level': 'DEBUG',
 			'class': 'logging.FileHandler',
-			'filename': LOGFILE,
+			'filename': path('../django.log'),
 			'formatter': 'verbose',
 		},
 		'mail_admins': {
@@ -202,5 +193,8 @@ LOGGING = {
 		},
 	},
 }
+
+# Import the local settings file
+from local_settings import *
 
 # Copyright 2009 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
