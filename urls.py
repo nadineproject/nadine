@@ -30,9 +30,9 @@ urlpatterns = patterns('',
 	(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT }),
 
 	(r'^reset/$', 'views.password_reset', {'template_name': 'password_reset_form.html', 'email_template_name':'email/password_reset_email.txt'}),
-	(r'^reset/done/$', 'django.contrib.auth.views.password_reset_done', {'template_name': 'password_reset_done.html'}),
-	(r'^reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$', 'django.contrib.auth.views.password_reset_confirm', {'template_name': 'password_reset_confirm.html'}),
-	(r'^reset/complete/$', 'django.contrib.auth.views.password_reset_complete', {'template_name': 'password_reset_complete.html'}),
+	(r'^reset/done/$', 'django.contrib.auth.views.password_reset_done', name='password_reset_done', {'template_name': 'password_reset_done.html'}),
+	(r'^reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$', 'django.contrib.auth.views.password_reset_confirm', name='password_reset_confirm', {'template_name': 'password_reset_confirm.html'}),
+	(r'^reset/complete/$', 'django.contrib.auth.views.password_reset_complete', name='password_reset_complete', {'template_name': 'password_reset_complete.html'}),
 
 	(r'^api/', include(API.urls)),
 
