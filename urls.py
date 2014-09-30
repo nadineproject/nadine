@@ -13,30 +13,30 @@ API = Api(api_name='v1')
 API.register(ActivityResource())
 
 urlpatterns = patterns('',
-	(r'^robots\.txt$', lambda r: HttpResponse("User-agent: *\nDisallow: /", content_type="text/plain")),
-	(r'^cache\.manifest$', lambda r: HttpResponse(get_manifest(), content_type="text/plain")),
+	url(r'^robots\.txt$', lambda r: HttpResponse("User-agent: *\nDisallow: /", content_type="text/plain")),
+	url(r'^cache\.manifest$', lambda r: HttpResponse(get_manifest(), content_type="text/plain")),
 
-	(r'^admin/', include(admin.site.urls)),
-	(r'^staff/', include('staff.urls', app_name='staff')),
-	(r'^member/', include('members.urls', app_name='members')),
-	(r'^interlink/', include('interlink.urls', app_name='interlink')),
-	(r'^logs/', include('arpwatch.urls', app_name='arpwatch')),
-	(r'^tablet/', include('tablet.urls', app_name='tablet')),
+	url(r'^admin/', include(admin.site.urls)),
+	url(r'^staff/', include('staff.urls', app_name='staff')),
+	url(r'^member/', include('members.urls', app_name='members')),
+	url(r'^interlink/', include('interlink.urls', app_name='interlink')),
+	url(r'^logs/', include('arpwatch.urls', app_name='arpwatch')),
+	url(r'^tablet/', include('tablet.urls', app_name='tablet')),
 
-	(r'^login/$', 'django.contrib.auth.views.login', {'template_name': 'login.html'}),
-	(r'^logout/$', 'django.contrib.auth.views.logout_then_login'),
-	(r'^accounts/profile/$', lambda r: redirect('/')),
+	url(r'^login/$', 'django.contrib.auth.views.login', {'template_name': 'login.html'}),
+	url(r'^logout/$', 'django.contrib.auth.views.logout_then_login'),
+	url(r'^accounts/profile/$', lambda r: redirect('/')),
 
-	(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT }),
+	url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT }),
 
-	(r'^reset/$', 'views.password_reset', {'template_name': 'password_reset_form.html', 'email_template_name':'email/password_reset_email.txt'}),
-	(r'^reset/done/$', 'django.contrib.auth.views.password_reset_done', {'template_name': 'password_reset_done.html'}),
-	(r'^reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$', 'django.contrib.auth.views.password_reset_confirm', {'template_name': 'password_reset_confirm.html'}),
-	(r'^reset/complete/$', 'django.contrib.auth.views.password_reset_complete', {'template_name': 'password_reset_complete.html'}),
+	url(r'^reset/$', 'views.password_reset', {'template_name': 'password_reset_form.html', 'email_template_name':'email/password_reset_email.txt'}, 'password_reset'),
+	url(r'^reset/done/$', 'django.contrib.auth.views.password_reset_done', {'template_name': 'password_reset_done.html'}, 'password_reset_done'),
+	url(r'^reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$', 'django.contrib.auth.views.password_reset_confirm', {'template_name': 'password_reset_confirm.html'}, 'password_reset_confirm'),
+	url(r'^reset/complete/$', 'django.contrib.auth.views.password_reset_complete', {'template_name': 'password_reset_complete.html'}, 'password_reset_complete'),
 
-	(r'^api/', include(API.urls)),
+	url(r'^api/', include(API.urls)),
 
-	(r'^$', 'views.index'),
+	url(r'^$', 'views.index'),
 )
 
 if settings.DEBUG:
