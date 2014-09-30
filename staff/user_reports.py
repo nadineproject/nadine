@@ -7,9 +7,9 @@ from arpwatch.models import UserDevice
 from django.forms.extras.widgets import SelectDateWidget
 
 REPORT_KEYS = (
-	('ALL', 'All Users'),
-	('NEW_MEMBER', 'New Members'),
-	('EXITING_MEMBER', 'Exiting Members'),
+	('NEW_USERS', 'New Users'),
+	('NEW_MEMBER', 'New Memberships'),
+	('EXITING_MEMBER', 'Ending Memberships'),
 	('INVALID_BILLING', 'Users with Invalid Billing'),
 	('NO_DEVICE', 'Users with no Registered Devices'),
 )
@@ -24,7 +24,7 @@ REPORT_FIELDS = (
 def getDefaultForm():
 	start = timezone.now().date() - timedelta(days=30)
 	end = timezone.now().date()
-	form_data = {'report':'ALL', 'order_by':'JOINED', 'active_only':True, 'start_date':start, 'end_date':end}
+	form_data = {'report':'NEW_MEMBER', 'order_by':'JOINED', 'active_only':False, 'start_date':start, 'end_date':end}
 	return UserReportForm(form_data)
 
 class UserReportForm(forms.Form):
@@ -50,8 +50,9 @@ class User_Report:
 
 	def get_users(self):
 		# Grab the users we want
-		if self.report == "ALL":
-			users = self.all_users()
+		users = None
+		if self.report == "NEW_USERS":
+			users = self.new_users()
 		elif self.report == "NEW_MEMBER":
 			users = self.new_membership()
 		elif self.report == "EXITING_MEMBER":
@@ -78,7 +79,7 @@ class User_Report:
 		# Done!
 		return users
 	
-	def all_users(self):
+	def new_users(self):
 		return User.objects.filter(date_joined__gte=self.start_date, date_joined__lte=self.end_date)
 
 	def new_membership(self):

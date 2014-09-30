@@ -34,18 +34,17 @@ table th.bottom_line { border-bottom:1px solid; }
 
 <table class="member-table">
 	<tr>
-		<th colspan="2"></th>
-		<th colspan="3" class="bottom_line">Last Membership</th>
-		<th colspan="3"></th>
+		<th colspan="4"></th>
+		<th colspan="3" class="bottom_line">Latest Membership</th>
 	</tr>
 	<tr>
 		<th>Name</th>
 		<th>Joined</th>
+		<th>Billing</th>
+		<th>Auto-Bill</th>
 		<th>Plan</th>
 		<th>Start</th>
 		<th>End</th>
-		<th>Billing</th>
-		<th>Last Visit</th>
 		<th></th>
 	</tr>
 	
@@ -53,15 +52,19 @@ table th.bottom_line { border-bottom:1px solid; }
 		<tr class="{% cycle 'row-even' 'row-odd' %}">
 			<td nowrap style="text-align:left;"><a href="{% url 'staff.views.member_detail' user.get_profile.id %}">{{ user.get_full_name }}</a></td>
 			<td>{{ user.date_joined|date:"M d, Y" }}</td>
-			<td>{{ user.get_profile.last_membership.membership_plan }}</td>
-			<td>{{ user.get_profile.last_membership.start_date|date:"M d, Y" }}</td>
-			<td>{{ user.get_profile.last_membership.end_date|date:"M d, Y" }}</td>
 			{% if user.get_profile.has_valid_billing %}
 				<td>Valid</td>
 			{% else %}
 				<td style="color: red;">Invalid</td>
 			{% endif %}
-			<td>{{ user.get_profile.last_visit }}</td>
+			{% if user.get_profile.auto_bill_enabled %}
+				<td>On</td>
+			{% else %}
+				<td style="color: red;">Off</td>
+			{% endif %}
+			<td>{{ user.get_profile.last_membership.membership_plan }}</td>
+			<td>{{ user.get_profile.last_membership.start_date|date:"M d, Y" }}</td>
+			<td>{{ user.get_profile.last_membership.end_date|date:"M d, Y" }}</td>
 			<td></td>
 		</tr>
 	{% endfor %}
