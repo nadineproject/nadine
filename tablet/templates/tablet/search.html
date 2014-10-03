@@ -1,20 +1,7 @@
 {% extends "tablet/t_base.html" %}
 {% load imagetags %}
 
-{% block style %}
-#search-box { align: center; text-align:center; }
-#member-search-form { font-weight: bold; font-size: 1.4em; margin-top: 1.4em; }
-{% endblock %}
-
-{% block sub-title %}Nadine Tablet | {% endblock %}
-
-{% block signin-back %}
-	{% if can_signin %}
-		Back
-	{% else %} 
-		Sign In
-	{% endif %} 
-{% endblock %}
+{% block nav-members %} class="ui-btn-active" {% endblock %}
 
 {% block content %}
 	{% if search_results %}
@@ -27,13 +14,13 @@
 			</ul>
 		</div>
 	{% else %}
-		<h2>Find a Member</h2>
+		<h2>Search</h2>
 		<div id="search-box">
 			<form id="member-search-form" action="{% url 'tablet.views.search' %}" method="POST">
-				{% for field in member_search_form %}
-					{{ field }}
-				{% endfor %}
-				<input type="submit" value="search"  data-theme="b" data-transition="fade"/>
+				<div data-role="fieldcontain">
+					<input id="id_terms" type="search" maxlength="100" name="terms" type="text" />
+					<input type="submit" value="Search" data-theme="b" data-transition="fade"/>
+				</div>
 				{% csrf_token %}
 			</form>
 		</div>

@@ -1,24 +1,19 @@
 {% extends "tablet/t_base.html" %}
 {% load imagetags %}
 
-{% block style %}
-{% endblock %}
-
-{% block sub-title %}Nadine Tablet | {% endblock %}
-
 {% block nav-here %} class="ui-btn-active" {% endblock %}
 
 {% block content %}
-	<h2>Members here today:</h2>
+	<!--<h2>Members here today:</h2>-->
 	<div class="user-grid">
 		{% for member in members %}
 			<div class="user-card">
 		      {% if member.photo %}
-		         <a class="photo" href="{% url 'tablet.views.view_profile' member.user %}" data-transition="fade"><img src="{{ member.photo.url|fit_image:"170x170" }}" /></a>
+		         <a class="photo" href="{% url 'tablet.views.user_profile' member.user %}" data-transition="fade"><img src="{{ member.photo.url|fit_image:"170x170" }}" /></a>
 		      {% else %}
-		         <a class="photo" href="{% url 'tablet.views.view_profile' member.user %}" data-transition="fade">?</a>
+		         <a class="photo" href="{% url 'tablet.views.user_profile' member.user %}" data-transition="fade">?</a>
 		      {% endif %}         
-		      <a href="{% url 'tablet.views.view_profile' member.user %}" data-transition="fade">{{ member.full_name }}</a>
+		      <a href="{% url 'tablet.views.user_profile' member.user %}" data-transition="fade">{{ member.full_name }}</a>
 			</div>
 		{% endfor %}
 	</div>

@@ -1,0 +1,47 @@
+{% extends "tablet/t_base.html" %}
+{% load imagetags %}
+
+{% block nav-visitors %} class="ui-btn-active" {% endblock %}
+
+{% block content %}
+
+	<h2>Have you been here before?</h2>
+		<form id="member-search-form" action="{% url 'tablet.views.search' %}" method="POST">
+			<div data-role="fieldcontain">
+				<input placeholder="Search by your first name" type="search" name="terms" data-inline="true" />
+				<input type="submit" value="Search" data-theme="b"/>
+			</div>
+			{% csrf_token %}
+		</form>
+
+	<h2>New to Office Nomads?</h2>
+	
+	{% if page_message %}
+		<p id="page_message">{{ page_message|safe }}</p>
+	{% endif %}
+
+	<div id="visitor-form">
+		<form action="{% url 'tablet.views.visitors' %}" method="POST">
+			{{ new_user_form.non_field_errors }}
+			{% for field in new_user_form %}
+				<div data-role="fieldcontain">
+					{{ field.label_tag }}
+					{{ field }}
+				</div>
+				<div style="align:center; color: #933;">{{ field.errors }}</div>
+			{% endfor %}
+			<input type="submit" value="Add" data-theme="b" data-transition="fade"/>
+			{% csrf_token %}
+		</form>
+	</div>
+	
+	{% if search_results %}
+		<div id="member-list">
+			<ul data-role="listview" data-inset="true" data-filter="false">
+				{% for member in search_results %}
+					<li><a href="{% url 'tablet.views.user_signin' member.user %}" data-transition="fade">{{ member.full_name }}</a></li>
+				{% endfor %}
+			</ul>
+		</div>
+	{% endif %}
+{% endblock %}

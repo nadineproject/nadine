@@ -1,6 +1,6 @@
 {% extends "tablet/t_base.html" %}
 
-{% block sub-title %}Nadine Tablet | Welcome {% endblock %}
+{% block nav-members %} class="ui-btn-active" {% endblock %}
 
 {% block content %}
 	<div style="font-size: 150%;">Welcome {{user.first_name}} {{user.last_name}}!</div>
@@ -51,6 +51,6 @@
 	});
 	</script>
 	<script>
-		setTimeout(function () {window.location.href = "{% url 'tablet.views.signin' %}"; }, {{timeout}}); //will call the function after 5 secs.
+		setTimeout(function () {window.location.href = "{% url 'tablet.views.members' %}"; }, {{timeout}}); //will call the function after 5 secs.
 	</script>
 {% endblock %}

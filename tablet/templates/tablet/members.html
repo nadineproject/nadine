@@ -1,25 +1,53 @@
 {% extends "tablet/t_base.html" %}
 {% load imagetags %}
 
-{% block style %}
-{% endblock %}
-
-{% block sub-title %}Nadine Tablet | {% endblock %}
-
 {% block nav-members %} class="ui-btn-active" {% endblock %}
 
 {% block content %}
-	<h2>{{ members.count }} active members:</h2>
-	<div class="user-grid">
-		{% for member in members %}
-			<div class="user-card">
-		      {% if member.photo %}
-		         <a class="photo" href="{% url 'tablet.views.view_profile' member.user %}" data-transition="fade"><img src="{{ member.photo.url|fit_image:"170x170" }}" /></a>
-		      {% else %}
-		         <a class="photo" href="{% url 'tablet.views.view_profile' member.user %}" data-transition="fade">?</a>
-		      {% endif %}         
-		      <a href="{% url 'tablet.views.view_profile' member.user %}" data-transition="fade">{{ member.full_name }}</a>
-			</div>
-		{% endfor %}
-	</div>
+	{% if list_members %}
+		{% if members %}
+			<ul data-role="listview" data-inset="true">
+				{% for member in members %}
+					<li >
+						<a href="{% url 'tablet.views.user_signin' member.user %}" data-transition="fade" style="font-size: 1.3em;">{{ member.full_name }}</a>
+					</li>
+				{% endfor %}
+			</ul>
+		{% else %}
+			<h2>No Members</h2>
+		{% endif %}
+		<input type="button" data-theme="E" onclick="window.location='{% url 'tablet.views.members' %}'" value="Back"/>
+	{% else %}
+		<h2>What is the first letter of your <em><u>first name</u></em>?</h2>
+		<div id="tiles">
+			<span class="tile"><a href="?startswith=A">A</a></span>
+			<span class="tile"><a href="?startswith=B">B</a></span>
+			<span class="tile"><a href="?startswith=C">C</a></span>
+			<span class="tile"><a href="?startswith=D">D</a></span>
+			<span class="tile"><a href="?startswith=E">E</a></span>
+			<span class="tile"><a href="?startswith=F">F</a></span>
+			<span class="tile"><a href="?startswith=G">G</a></span>
+			<span class="tile"><a href="?startswith=H">H</a></span>
+			<span class="tile"><a href="?startswith=I">I</a></span>
+			<span class="tile"><a href="?startswith=J">J</a></span>
+			<span class="tile"><a href="?startswith=K">K</a></span>
+			<span class="tile"><a href="?startswith=L">L</a></span>
+			<span class="tile"><a href="?startswith=M">M</a></span>
+			<span class="tile"><a href="?startswith=N">N</a></span>
+			<span class="tile"><a href="?startswith=O">O</a></span>
+			<span class="tile"><a href="?startswith=P">P</a></span>
+			<span class="tile"><a href="?startswith=Q">Q</a></span>
+			<span class="tile"><a href="?startswith=R">R</a></span>
+			<span class="tile"><a href="?startswith=S">S</a></span>
+			<span class="tile"><a href="?startswith=T">T</a></span>
+			<span class="tile"><a href="?startswith=U">U</a></span>
+			<span class="tile"><a href="?startswith=V">V</a></span>
+			<span class="tile"><a href="?startswith=W">W</a></span>
+			<span class="tile"><a href="?startswith=X">X</a></span>
+			<span class="tile"><a href="?startswith=Y">Y</a></span>
+			<span class="tile"><a href="?startswith=Z">Z</a></span>
+			<span class="tile"><a href="{% url 'tablet.views.search' %}">?</a></span>
+			
+		</div>
+	{% endif %}
 {% endblock %}

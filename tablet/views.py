@@ -1,4 +1,5 @@
 import traceback
+import logging
 from datetime import date, datetime, time, timedelta
 
 from django.conf import settings
@@ -15,6 +16,123 @@ from staff.models import Member, DailyLog, Bill
 from staff.forms import NewUserForm, MemberSearchForm
 from arpwatch import arp
 from staff import email
+
+logger = logging.getLogger(__name__)
+
+def members(request):
+	members = None
+	list_members = request.GET.has_key("startswith")
+	if list_members:
+		sw = request.GET.get('startswith')
+		members = Member.objects.active_members().filter(user__first_name__startswith=sw).order_by('user__first_name')
+	return render_to_response('tablet/members.html', {'members':members, 'list_members':list_members}, context_instance=RequestContext(request))
+
+def here_today(request):
+	members = arp.users_for_day()
+	return render_to_response('tablet/here_today.html', {'members':members}, context_instance=RequestContext(request))
+
+def visitors(request):
+	page_message = None
+	if request.method == "POST":
+		form = NewUserForm(request.POST)
+		try:
+			if form.is_valid():
+				user = form.save() 
+				return HttpResponseRedirect(reverse('tablet.views.post_create', kwargs={ 'username':user.username }))
+		except Exception as e:
+			page_message = str(e)[3:len(str(e))-2]
+			logger.error(str(e))
+			#page_message = str(e)
+	else:
+		form = NewUserForm()
+	return render_to_response('tablet/visitors.html', {'new_user_form':form, 'page_message':page_message}, context_instance=RequestContext(request))
+
+def search(request):
+	search_results = None
+	if request.method == "POST":
+		member_search_form = MemberSearchForm(request.POST)
+		if member_search_form.is_valid(): 
+			search_results = Member.objects.search(member_search_form.cleaned_data['terms'])
+	else:
+		member_search_form = MemberSearchForm()
+	return render_to_response('tablet/search.html', { 'member_search_form':member_search_form, 'search_results':search_results }, context_instance=RequestContext(request))
+
+def user_profile(request, username):
+	user = get_object_or_404(User, username=username)
+	member = get_object_or_404(Member, user=user)
+	membership = member.active_membership()
+	tags = member.tags.order_by('name')
+	return render_to_response('tablet/user_profile.html',{'user':user, 'member':member, 'membership':membership, 'tags':tags}, context_instance=RequestContext(request))
+
+def user_signin(request, username):
+	user = get_object_or_404(User, username=username)
+	member = get_object_or_404(Member, user=user)
+	membership = member.active_membership()
+
+	can_signin = False
+	last_membership = member.last_membership()
+	if not last_membership or last_membership.end_date or not last_membership.has_desk:
+		if not DailyLog.objects.filter(member=member, visit_date=timezone.localtime(timezone.now()).date()):
+			can_signin = True
+
+	search_results = None
+	if request.method == "POST":
+		member_search_form = MemberSearchForm(request.POST)
+		if member_search_form.is_valid(): 
+			search_results = Member.objects.search(member_search_form.cleaned_data['terms'], active_only=True)
+	else:
+		member_search_form = MemberSearchForm()
+
+	return render_to_response('tablet/user_signin.html',{'user':user, 'member':member, 'can_signin':can_signin, 
+		'membership':membership, 'member':member, 'member_search_form':member_search_form, 'search_results':search_results}, context_instance=RequestContext(request))
+
+def post_create(request, username):
+	user = get_object_or_404(User, username=username)
+	if request.POST.has_key("work_today"):
+		work_today = request.POST.get('work_today')
+		if work_today == "Yes":
+			print "Yes!"
+			# Send them over to the sign-in page.  This will trigger the Free Trial logic down the line.
+			return HttpResponseRedirect(reverse('tablet.views.signin_user', kwargs={ 'username':user.username }))
+		else:
+			try:
+				email.announce_new_user(user)
+			except:
+				logger.error("Could not send introduction email to %s" % user.email)			
+			return HttpResponseRedirect(reverse('tablet.views.members', kwargs={}))
+	return render_to_response('tablet/post_create.html',{'user':user}, context_instance=RequestContext(request))
+
+def signin_user(request, username):
+	return signin_user_guest(request, username, None)
+
+def signin_user_guest(request, username, guestof):
+	user = get_object_or_404(User, username=username)
+	member = get_object_or_404(Member, user=user)
+	daily_log = DailyLog()
+	daily_log.member = member
+	daily_log.visit_date = timezone.localtime(timezone.now()).date()
+	if guestof:
+		guestof_user = get_object_or_404(User, username=guestof)
+		guestof_member = get_object_or_404(Member, user=guestof_user)
+		daily_log.guest_of = guestof_member
+	if DailyLog.objects.filter(member=member).count() == 0:
+		daily_log.payment = 'Trial';
+	else:
+		daily_log.payment = 'Bill';
+	daily_log.save()
+	
+	if daily_log.payment == 'Trial':
+		try:
+			email.announce_free_trial(user)
+			email.send_introduction(user)
+			email.subscribe_to_newsletter(user)
+		except:
+			logger.error("Could not send introduction email to %s" % user.email)
+	else:
+		if member.onboard_tasks_to_complete() > 0:
+			email.announce_tasks_todo(user, member.onboard_tasks_incomplete())
+	
+	return HttpResponseRedirect(reverse('tablet.views.welcome', kwargs={'username':username}))
 
 def welcome(request, username):
 	usage_color = "black";
@@ -37,105 +155,5 @@ def welcome(request, username):
 	return render_to_response('tablet/welcome.html', {'user':user, 'member':member, 'membership':membership, 
 		'motd':motd, 'timeout':timeout, 'usage_color':usage_color}, context_instance=RequestContext(request))
 
-def new_user(request):
-	page_message = None
-	if request.method == "POST":
-		form = NewUserForm(request.POST)
-		try:
-			if form.is_valid():
-				user = form.save() 
-				email.send_introduction(user)
-				return HttpResponseRedirect(reverse('tablet.views.signin_user', kwargs={ 'username':user.username }))
-		except Exception as e:
-			# Stupid fucking string won't get the best of me!
-			# Note: this is retarded --JLS
-			page_message = str(e)[3:len(str(e))-2]
-	else:
-		form = NewUserForm()
-
-	return render_to_response('tablet/new_user.html', {'new_user_form':form, 'page_message':page_message}, context_instance=RequestContext(request))
-
-def signin(request):
-	members = []
-	for member in Member.objects.active_members().order_by('user__first_name'):
-		if not member.last_membership().has_desk:
-			daily_logs = DailyLog.objects.filter(member=member, visit_date=datetime.today().date())
-			if not daily_logs:
-				members.append(member)
-
-	return render_to_response('tablet/signin.html', {'members':members, 'member_search_form':MemberSearchForm()}, context_instance=RequestContext(request))
-
-def members(request):
-	members = Member.objects.active_members().order_by('user__first_name')
-	return render_to_response('tablet/members.html', {'members':members}, context_instance=RequestContext(request))
-
-def here_today(request):
-	members = arp.users_for_day()
-	return render_to_response('tablet/here_today.html', {'members':members}, context_instance=RequestContext(request))
-
-def search(request):
-	search_results = None
-	if request.method == "POST":
-		member_search_form = MemberSearchForm(request.POST)
-		if member_search_form.is_valid(): 
-			search_results = Member.objects.search(member_search_form.cleaned_data['terms'])
-	else:
-		member_search_form = MemberSearchForm()
-	return render_to_response('tablet/search.html', { 'member_search_form':member_search_form, 'search_results':search_results }, context_instance=RequestContext(request))
-
-def view_profile(request, username):
-	user = get_object_or_404(User, username=username)
-	member = get_object_or_404(Member, user=user)
-	membership = member.active_membership()
-	tags = member.tags.order_by('name')
-	return render_to_response('tablet/view_profile.html',{'user':user, 'member':member, 'membership':membership, 'tags':tags}, context_instance=RequestContext(request))
-
-def user_signin(request, username):
-	user = get_object_or_404(User, username=username)
-	member = get_object_or_404(Member, user=user)
-	membership = member.active_membership()
-
-	can_signin = False
-	if not member.last_membership() or member.last_membership().end_date or not member.last_membership().has_desk:
-			if not DailyLog.objects.filter(member=member, visit_date=timezone.localtime(timezone.now()).date()):
-			 	can_signin = True
-
-	search_results = None
-	if request.method == "POST":
-		member_search_form = MemberSearchForm(request.POST)
-		if member_search_form.is_valid(): 
-			search_results = Member.objects.search(member_search_form.cleaned_data['terms'], active_only=True)
-	else:
-		member_search_form = MemberSearchForm()
-
-	return render_to_response('tablet/user_signin.html',{'user':user, 'member':member, 'can_signin':can_signin, 
-		'membership':membership, 'member':member, 'member_search_form':member_search_form, 'search_results':search_results}, context_instance=RequestContext(request))
-
-def signin_user(request, username):
-	return signin_user_guest(request, username, None)
-
-def signin_user_guest(request, username, guestof):
-	user = get_object_or_404(User, username=username)
-	member = get_object_or_404(Member, user=user)
-	daily_log = DailyLog()
-	daily_log.member = member
-	daily_log.visit_date = timezone.localtime(timezone.now()).date()
-	if guestof:
-		guestof_user = get_object_or_404(User, username=guestof)
-		guestof_member = get_object_or_404(Member, user=guestof_user)
-		daily_log.guest_of = guestof_member
-	if DailyLog.objects.filter(member=member).count() == 0:
-		daily_log.payment = 'Trial';
-	else:
-		daily_log.payment = 'Bill';
-	daily_log.save()
-	
-	if daily_log.payment == 'Trial':
-		email.announce_new_user(user)
-	else:
-		if member.onboard_tasks_to_complete() > 0:
-			email.announce_tasks_todo(user, member.onboard_tasks_incomplete())
-	
-	return HttpResponseRedirect(reverse('tablet.views.welcome', kwargs={'username':username}))
 
 # Copyright 2011 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

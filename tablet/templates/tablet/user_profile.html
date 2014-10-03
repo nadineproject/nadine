@@ -1,18 +1,7 @@
 {% extends "tablet/t_base.html" %}
 {% load imagetags %}
 
-{% block style %}
-{% endblock %}
-
-{% block sub-title %}Nadine Tablet | {% endblock %}
-
-{% block signin-back %}
-	{% if can_signin %}
-		Back
-	{% else %} 
-		Sign In
-	{% endif %} 
-{% endblock %}
+{% block nav-here %} class="ui-btn-active" {% endblock %}
 
 {% block content %}
 	<div class="ui-grid-a">

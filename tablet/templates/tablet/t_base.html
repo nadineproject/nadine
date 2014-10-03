@@ -29,27 +29,26 @@
 
 <body {%block sub-body %}{% endblock %}>{% block body %}
 	<div data-role="page">
-		<div id="header" data-role="header" data-position="inline">
+		<div id="header" data-role="header" data-position="fixed">
 			<h1>Nadine Member Console</h1>
-		</div>
 			<div id="top-nav" data-role="navbar" data-iconpos="left">
 				<ul>
-					<li><a data-transition="fade" href="{% url 'tablet.views.signin' %}" {% block nav-signin %}{% endblock %} data-icon="check">{% block signin-back %}Sign In{% endblock %}</a></li>
-					<li><a data-transition="fade" href="{% url 'tablet.views.members' %}" {% block nav-members %}{% endblock %} data-icon="grid">Members</a></li>
-					<li><a data-transition="fade" href="{% url 'tablet.views.here_today' %}" {% block nav-here %}{% endblock %} data-icon="star">Here Today</a></li>
-					<li><a data-transition="fade" href="{% url 'tablet.views.new_user' %}" {% block nav-newuser %}{% endblock %} data-icon="plus">New User</a></li>
+					<li><a data-transition="fade" href="{% url 'tablet.views.members' %}" {% block nav-members %}{% endblock %}>Members</a></li>
+					<li><a data-transition="fade" href="{% url 'tablet.views.here_today' %}" {% block nav-here %}{% endblock %}>Here Today</a></li>
+					<li><a data-transition="fade" href="{% url 'tablet.views.visitors' %}" {% block nav-visitors %}{% endblock %}>Visitors</a></li>
 				</ul>
 			</div>
 			{% block header %}
 			{% endblock %}
+		</div>
 		<div data-role="content">
 			{% block content %}
 			{% endblock %}
 		</div>
-		<div id="footer" data-role="footer" style="">
+		<div id="footer" data-role="footer" data-position="fixed">
 			{% block footer %}
 			<div style="float:right; margin-right: 1em;">Office Nomads</div>
-			<div style="float:left; margin-left: 1em;">&copy; 2008-2014 The Nadine Project</div>
+			<div style="float:left; margin-left: 1em;">&copy; 2007-2014 The Nadine Project</div>
 			{% endblock %}
 		</div>
 	</div>

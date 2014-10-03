@@ -1,0 +1,35 @@
+{% extends "tablet/t_base.html" %}
+{% load imagetags %}
+
+{% block nav-visitors %} class="ui-btn-active" {% endblock %}
+
+{% block content %}
+	<div style="font-size: 150%;">Welcome to Office Nomads!</div>
+	
+	<p>
+	We have created a new user in Nadine. You can use Nadine to enter billing information, review your membership, your daily activity, and explore everything
+	that is going on here at Office Nomads.  
+	</p>
+	<p style="padding-left:3em;">
+		Enjoy!<br>
+		-- The Office Nomads Team
+	</p>
+	
+	<h2>User Information</h2>
+	<blockquote>
+		<p>Username: <strong>{{ user.username }}</strong>
+		<p>Full Name: <strong>{{ user.get_full_name }}</strong>
+		<p>Email: <strong>{{ user.email }}</em></strong>
+	</blockquote>
+	
+	<div style="width:100%; text-align:center;">
+	<h2>Are you going to stay and work today?</h2>
+	<form action="{% url 'tablet.views.post_create' user.username %}" method="POST">
+		<fieldset class="visitor-form ui-grid-a">
+			<div class="ui-block-a"><input name="work_today" type="Submit" value="Yes"/></div>
+			<div class="ui-block-b"><input name="work_today" type="Submit" value="No"/></div>
+		</fieldset>
+		{% csrf_token %}
+	</form>
+	</div>
+{% endblock %}

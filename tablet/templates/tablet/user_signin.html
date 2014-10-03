@@ -1,25 +1,13 @@
 {% extends "tablet/t_base.html" %}
 {% load imagetags %}
 
-{%block sub-head %}
-
-{% endblock %}
-
-{% block sub-title %}Nadine Tablet | {% endblock %}
-
-{% block signin-back %}
-	{% if can_signin %}
-		Back
-	{% else %} 
-		Sign In
-	{% endif %} 
-{% endblock %}
+{% block nav-members %} class="ui-btn-active" {% endblock %}
 
 {% block content %}
 	<div class="ui-grid-a">
 		<div class="ui-block-a">
 			{% if member.photo %}
-				<a href="{% url 'tablet.views.view_profile' member.user %}"><img src="{{ user.profile.photo.url }}" width="300px"></a>
+				<a href="{% url 'tablet.views.user_profile' member.user %}"><img src="{{ user.profile.photo.url }}" width="300px"></a>
 			{% else %}
 				<img src="{{ STATIC_URL }}/BlankIcon150x150.jpg">
 			{% endif %}							
@@ -43,9 +31,10 @@
 			{% endif %} 
 
 			{% if can_signin and not search_results %}
-				<div id="wrap">
-					<p><a href="#" id="guestform-show" class="showLink" onclick="showGuestForm();return false;">Guest of another member?</a></p>
-					<p><a href="#" id="guestform-hide" class="hideLink" onclick="hideGuestForm();return false;">Hide guest form.</a></p>
+				<div id="guestform-links">
+					<a href="#" data-role="button" data-inline="true" data-mini="true" id="guestform-show" class="showLink" onclick="showGuestForm();return false;">Is someone else paying today?</a>
+					<!--
+					<a href="#" data-role="button" data-inline="true" data-mini="true" id="guestform-hide" class="hideLink" onclick="hideGuestForm();return false;">Cancel Guest Sign-in.</a>-->
 				</div>
 			{% endif %}
 		</div>
@@ -53,7 +42,7 @@
 
 	{% if can_signin %}
 		<div id="guestform" {% if not search_results %} class="hidden" {% endif %} >
-			<h3>Guest of:</h3>
+			<h3>Which member is paying for you today?</h3>
 			{% if search_results %}
 				<div id="member-list">
 					<ul data-role="listview" data-inset="true" data-filter="false">
@@ -64,8 +53,8 @@
 				</div>
 			{% else %}
 				<div id="search-box">
-					<form id="member-search-form" action="./" method="POST">
-						<input id="id_terms" type="text" name="terms" maxlength="100" placeholder=""/>
+					<form id="member-search-form" action="{% url 'tablet.views.user_signin' user.username %}" method="POST">
+						<input id="id_terms"  placeholder="Search by first name" type="search" name="terms" maxlength="100"/>
 						<input type="submit" value="Search" data-theme="b" data-transition="fade"/>
 						{% csrf_token %}
 					</form>
