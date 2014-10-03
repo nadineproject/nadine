@@ -49,7 +49,6 @@ def send_introduction(user):
 	subject = "%s: Introduction to Nadine" % (site.name)
 	message = render_to_string('email/introduction.txt', {'user':user, 'site':site})
 	send_quietly(user.email, subject, message)
-	subscribe_to_newsletter(user)
 
 def subscribe_to_newsletter(user):
 	if settings.MAILCHIMP_NEWSLETTER_KEY:
@@ -129,6 +128,11 @@ def send_contact_request(user, target):
 
 def announce_new_user(user):
 	subject = "New User - %s" % (user.get_full_name())
+	message = "Team,\r\n\r\n \t%s just signed in for the first time! %s" % (user.get_full_name(), team_signature(user))
+	send_quietly(settings.TEAM_EMAIL_ADDRESS, subject, message)
+
+def announce_free_trial(user):
+	subject = "Free Trial - %s" % (user.get_full_name())
 	message = "Team,\r\n\r\n \t%s just signed in for the first time! %s" % (user.get_full_name(), team_signature(user))
 	send_quietly(settings.TEAM_EMAIL_ADDRESS, subject, message)
 
