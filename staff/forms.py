@@ -24,7 +24,7 @@ class NewUserForm(forms.Form):
 	first_name = forms.CharField(max_length=100, label="First name *", required=True)
 	last_name = forms.CharField(max_length=100, label="Last name *", required=True)
 	email = forms.EmailField(max_length=100, label="Email *", required=True)
-	phone = forms.CharField(max_length=100, required=False)
+	#phone = forms.CharField(max_length=100, required=False)
 
 	def save(self):
 		"Creates the User and Member records with the field data and returns the user"
@@ -34,17 +34,17 @@ class NewUserForm(forms.Form):
 		if len(first) == 0: raise forms.ValidationError("First Name Required.")
 		last = self.cleaned_data['last_name'].strip().title()
 		if len(last) == 0: raise forms.ValidationError("Last Name Required.")
-		username = "%s_%s" % (first.lower(), last.lower())
-		if User.objects.filter(username=username).count() > 0: raise forms.ValidationError("That username is already in use.")
 		email = self.cleaned_data['email'].strip().lower()
 		if len(email) == 0: raise forms.ValidationError("Email Required.")
-		if User.objects.filter(email=email).count() > 0: raise forms.ValidationError("That email address is already in use.")
+		if User.objects.filter(email=email).count() > 0: raise forms.ValidationError("Email address '%s' already in use." % email)
+		username = "%s_%s" % (first.lower(), last.lower())
+		if User.objects.filter(username=username).count() > 0: raise forms.ValidationError("Username '%s' already in use." % username)
 
 		user = User(username=username, first_name=first, last_name=last, email=email)
 		user.save()
-		member = user.get_profile()
-		member.phone = self.cleaned_data['phone'].strip()
-		member.save()
+		#member = user.get_profile()
+		#member.phone = self.cleaned_data['phone'].strip()
+		#member.save()
 		
 		return user
 
