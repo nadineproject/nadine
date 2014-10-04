@@ -3,7 +3,7 @@
 	background-color:#313131; 
 	font-size: 1.5em; 
 	color: #EEE;
-	padding-top:15px;
+	padding-top:0px;
 }
 
 #footer {
@@ -33,8 +33,8 @@
 }
 
 #tiles div {
-	overflow:hidden;
-	margin 0: auto;
+	width:100%; 
+	text-align:center;
 }
 
 #tiles a {
@@ -49,9 +49,9 @@
 	width: 2em;
 	background-color: #38c;
 	border-color: #38c;
-	margin-left: 15px;
-	margin-bottom: 15px;
-	font-size: 5em;
+	margin-left: 20px;
+	margin-bottom: 20px;
+	font-size: 3em;
 	text-align: center;
 	vertical-align: middle;
 	padding-top: 20px;
