@@ -2,6 +2,7 @@ import datetime
 import calendar
 import pprint
 import traceback
+import logging
 
 from django.conf import settings
 from django.db.models import Q
@@ -26,6 +27,8 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.forms import PasswordResetForm
 from django.views.decorators.csrf import csrf_protect
 from arpwatch import arp
+
+logger = logging.getLogger(__name__)
 
 def index(request):
 	if not request.user.is_authenticated(): return HttpResponseRedirect(reverse('django.contrib.auth.views.login'))
@@ -52,7 +55,10 @@ def password_reset(request, is_admin_site=False, template_name='registration/pas
 	if request.method == 'GET' and request.GET.get('email',None):
 		form = password_reset_form(initial={'email':request.GET.get('email')})
 	elif request.method == "POST":
+		email = request.POST.get('email')
+		logger.info("Resetting password for '%s'" % email)
 		form = password_reset_form(request.POST)
+		print form.is_valid()
 		if form.is_valid():
 			opts = {}
 			opts['use_https'] = request.is_secure()

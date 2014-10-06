@@ -41,6 +41,8 @@ class NewUserForm(forms.Form):
 		if User.objects.filter(username=username).count() > 0: raise forms.ValidationError("Username '%s' already in use." % username)
 
 		user = User(username=username, first_name=first, last_name=last, email=email)
+		password = User.objects.make_random_password(length=32)
+		user.set_password(password)
 		user.save()
 		#member = user.get_profile()
 		#member.phone = self.cleaned_data['phone'].strip()
