@@ -3,7 +3,7 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>{% block title %}{% block sub-title %}{% endblock %}{{ site.name }}{% endblock %}</title>
+	<title>{{ site.name }} | Front Desk</title>
 	<link rel="apple-touch-icon" href="{{ STATIC_URL }}images/apple-touch-icon-57x57.png">
 	<link rel="apple-touch-icon" sizes="57x57" href="{{ STATIC_URL }}images/apple-touch-icon-57x57.png">
 	<link rel="apple-touch-icon" sizes="76x76" href="{{ STATIC_URL }}images/apple-touch-icon-76x76.png">
@@ -20,38 +20,36 @@
 	<script src="{{ STATIC_URL }}custom-scripting.js"></script>
 	<script src="{{ STATIC_URL }}jquery.mobile-1.4.1.min.js"></script>
 
-	{%block sub-head %}{% endblock %}
-
 	<style>
 		{% block style %}{% endblock %}
 	</style>
 </head>
 
-<body {%block sub-body %}{% endblock %}>{% block body %}
+<body {%block sub-body %}{% endblock %}>
 	<div data-role="page">
-		<div id="header" data-role="header" data-position="fixed">
-			<!--<h1>Nadine Member Console</h1>-->
-			<div id="top-nav" data-role="navbar" data-iconpos="left">
-				<ul>
-					<li><a data-transition="fade" href="{% url 'tablet.views.members' %}" {% block nav-members %}{% endblock %}>Members</a></li>
-					<li><a data-transition="fade" href="{% url 'tablet.views.here_today' %}" {% block nav-here %}{% endblock %}>Here Today</a></li>
-					<li><a data-transition="fade" href="{% url 'tablet.views.visitors' %}" {% block nav-visitors %}{% endblock %}>Visitors</a></li>
-				</ul>
+		{% if not tablet_ios %}
+			<div id="header" data-role="header" data-position="fixed">
+				<h1>Nadine Member Console</h1>
+				<div id="top-nav" data-role="navbar" data-iconpos="left">
+					<ul>
+						<li><a data-transition="fade" href="{% url 'tablet.views.members' %}" {% block nav-members %}{% endblock %}>Members</a></li>
+						<li><a data-transition="fade" href="{% url 'tablet.views.here_today' %}" {% block nav-here %}{% endblock %}>Here Today</a></li>
+						<li><a data-transition="fade" href="{% url 'tablet.views.visitors' %}" {% block nav-visitors %}{% endblock %}>Visitors</a></li>
+					</ul>
+				</div>
 			</div>
-			{% block header %}
-			{% endblock %}
-		</div>
+		{% endif %}
+
 		<div data-role="content">
 			{% block content %}
 			{% endblock %}
 		</div>
+
 		<div id="footer" data-role="footer" data-position="fixed">
-			{% block footer %}
 			<div style="float:right; margin-right: 1em;">Office Nomads</div>
 			<div style="float:left; margin-left: 1em;">&copy; 2007-2014 The Nadine Project</div>
-			{% endblock %}
 		</div>
 	</div>
-{% endblock %}</body>
+</body>
 
 </html>

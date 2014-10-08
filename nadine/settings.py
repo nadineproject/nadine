@@ -58,6 +58,10 @@ ARP_IP_PFX = '172.16.5.'
 # URL that handles login
 LOGIN_URL='/login/'
 
+# The interface for the front desk tablet.  Values are 'WEB' or "iOS"
+#TABLET = "iOS"
+TABLET = "WEB"
+
 SITE_ID = 1
 
 # Auth Backends
@@ -74,8 +78,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 	"django.core.context_processors.static",
 	"django.core.context_processors.request",
 	"django.contrib.messages.context_processors.messages",
-	"context_processors.site",
-	"context_processors.nav_context",
+	"nadine.context_processors.site",
+	"nadine.context_processors.nav_context",
+	"nadine.context_processors.tablet_context",
 )
 
 MIDDLEWARE_CLASSES = (
