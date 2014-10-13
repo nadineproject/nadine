@@ -62,7 +62,7 @@ class Bill(models.Model):
 		ordering= ['-created']
 		get_latest_by = 'created'
 	def __unicode__(self):
-		return 'Bill %s: %s %s' % (self.id, self.member, self.amount)
+		return 'Bill %s: %s - $%s' % (self.id, self.member, self.amount)
 	@models.permalink
 	def get_absolute_url(self):
 		return ('staff.views.bill', (), { 'id':self.id })
@@ -578,7 +578,7 @@ class Membership(models.Model):
 		return self.dropin_allowance
 
 	def __str__(self):
-		return '%s - %s' % (self.start_date, self.member)
+		return '%s - %s - %s' % (self.start_date, self.member, self.membership_plan)
 
 	def get_admin_url(self):
 		return urlresolvers.reverse('admin:staff_membership_change', args=[self.id])
