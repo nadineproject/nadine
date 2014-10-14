@@ -3,7 +3,7 @@ import time as timeo
 from datetime import date, datetime, timedelta
 import calendar
 from decimal import Decimal
-from collections import namedtuple
+from collections import namedtuple, OrderedDict
 from django.utils import timezone
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -158,9 +158,17 @@ def bills(request):
 						transaction.bills.add(bill)
 				page_message = 'Created a <a href="%s">transaction for %s</a>' % (reverse('staff.views.transaction', args=[], kwargs={'id':transaction.id}), member,)
 
+	bills = {}
 	members = Member.objects.filter(models.Q(bills__isnull=False, bills__transactions=None, bills__paid_by__isnull=True) | models.Q(guest_bills__isnull=False, guest_bills__transactions=None)).distinct().order_by('user__last_name')
+	for member in members:
+		last_bill = member.open_bills()[0]
+		if not last_bill.created in bills:
+			bills[last_bill.created] = []
+		bills[last_bill.created].append(member)
+	ordered_bills = OrderedDict(sorted(bills.items(), key=lambda t: t[0]))
+
 	invalids = Member.objects.invalid_billing()
-	return render_to_response('staff/bills.html', { "members":members, 'page_message':page_message, 'invalid_members':invalids }, context_instance=RequestContext(request))
+	return render_to_response('staff/bills.html', { 'bills':ordered_bills, 'page_message':page_message, 'invalid_members':invalids }, context_instance=RequestContext(request))
 
 @staff_member_required
 def bill_list(request):

@@ -44,91 +44,94 @@ nav #billing-tab { background: #FBD850; color: black; }
 <h2>Outstanding Bills</h2>
 {% if page_message%}<p id="page-message">{{ page_message|safe }}</p>{% endif %}
 
-{% if not members %}
-<p>There are no open bills!</p>
+{% if not bills %}
+	<p>There are no open bills!</p>
 {% endif %}
-
-<ul id="bill-list">
-	{% for member in members %}
-		<li {% if not member.has_valid_billing %}style="color:red;"{% endif %}><span style="color:black">
-			<form class="pay-bill-form" action="." method="post">
-				<div>
-				<a class="bill-detail-toggle" id="bill-details-toggle-{{member.id}}" href="." onclick="toggleBillDetails('{{member.id}}'); return false;">[+]</a>&nbsp;
-					<strong><a href="{{ member.get_absolute_url }}">{{ member.first_name }} {{ member.last_name }}</a></strong>:
-					{% for field in member.pay_bills_form %}
-						{% ifequal field.name 'amount' %}${{ field }}{% endifequal %}
-						{% ifequal field.name 'member_id' %}{{ field }}{% endifequal %}
-					{% endfor %}
-					<input type="submit" value="Set Paid" />
-				</div>
-				
-				<div class="bill-details" id="bill-details-{{member.id}}">
-					{% for bill in member.open_bills %}
-						<h4>
-							<input name="bill_id" value="{{ bill.id }}" type="checkbox" checked="checked" />
-							<a href="{{ bill.get_absolute_url }}">Bill on {{ bill.created|date:"m/d" }}</a>
-							{% if bill.paid_by %}for <a href="{{ bill.member.get_absolute_url }}">{{ bill.member.first_name }} {{ bill.member.last_name }}</a>{% endif %}
-							/ Amount: ${{ bill.amount }}
-						</h4>
-				
-						{% if bill.membership %}
-						<div class="bill-info">
-							Monthly: <a href="{{ bill.membership.get_admin_url }}">${{ bill.membership.monthly_rate }}</a>
-						</div>
-						{% endif %}
-						{% if bill.new_member_deposit %}
-						<div class="bill-info">
-							Deposit: ${{ bill.new_member_deposit }}
-						</div>
-						{% endif %}
-						{% if bill.dropins.all %}
-						<div class="bill-info">Dropins:
-							{% for dropin in bill.dropins.all %}
-								<a href="{{ dropin.get_admin_url }}">{{ dropin.visit_date|date:"m/d" }}</a>{% loop_comma %}
-							{% endfor %}
-						</div>
-						{% endif %}
-						{% if bill.guest_dropins.all %}
-						<div class="bill-info">Guest Dropins:
-							{% for dropin in bill.guest_dropins.all %}
-								<a href="{{ dropin.member.get_absolute_url }}">{{dropin.member.first_name}} {{ dropin.member.last_name}}</a> on <a href="{{ dropin.get_admin_url }}">{{ dropin.visit_date|date:"m/d" }}</a>{% loop_comma %}
-							{% endfor %}
-						</div>
-						{% endif %}
-					{% endfor %}
-					
-					{% if member.member_notes %}
-						<br /><strong>Member notes:</strong>
-						<ul>
-						{% for note in member.member_notes %}
-							<li>{{ note.created|date:"m/d/y" }} - {{ note.note }}</li>
+	{% for bill_date, member_list in bills.items %}
+		<h1>{{ bill_date }}</h1>
+		<ul id="bill-list">
+		{% for member in member_list %}
+			<li {% if not member.has_valid_billing %}style="color:red;"{% endif %}><span style="color:black">
+				<form class="pay-bill-form" action="." method="post">
+					<div>
+					<a class="bill-detail-toggle" id="bill-details-toggle-{{member.id}}" href="." onclick="toggleBillDetails('{{member.id}}'); return false;">[+]</a>&nbsp;
+						<strong><a href="{{ member.get_absolute_url }}">{{ member.first_name }} {{ member.last_name }}</a></strong>:
+						{% for field in member.pay_bills_form %}
+							{% ifequal field.name 'amount' %}${{ field }}{% endifequal %}
+							{% ifequal field.name 'member_id' %}{{ field }}{% endifequal %}
 						{% endfor %}
-						</ul>
-					{% else %}
-						<br />
-					{% endif %}
-
-					<strong>Transaction note:</strong><br />
-					{% for field in member.pay_bills_form %}
-						{% ifequal field.name 'transaction_note' %}{{ field }}{% endifequal %}
-					{% endfor %}
-
-				</form>
-				{% csrf_token %}
-
-				<div style="margin-left:5em;">
-				<form action="{% url 'staff.views.toggle_billing_flag' member.id %}" onSubmit="return confirm('Are you sure?');">
-					{% if member.valid_billing %}
-						<input type="submit" value="Flag Invalid Billing Profile">
-					{% else %}
-						<input type="submit" value="Clear Invalid Billing Flag">
-					{% endif %}
-					{% csrf_token %}
-				</form>
-				</div>
+						<input type="submit" value="Set Paid" />
+					</div>
 				
-				</div>
-		</span></li>
+					<div class="bill-details" id="bill-details-{{member.id}}">
+						{% for bill in member.open_bills %}
+							<h4>
+								<input name="bill_id" value="{{ bill.id }}" type="checkbox" checked="checked" />
+								<a href="{{ bill.get_absolute_url }}">Bill on {{ bill.created|date:"m/d" }}</a>
+								{% if bill.paid_by %}for <a href="{{ bill.member.get_absolute_url }}">{{ bill.member.first_name }} {{ bill.member.last_name }}</a>{% endif %}
+								/ Amount: ${{ bill.amount }}
+							</h4>
+				
+							{% if bill.membership %}
+							<div class="bill-info">
+								Monthly: <a href="{{ bill.membership.get_admin_url }}">${{ bill.membership.monthly_rate }}</a>
+							</div>
+							{% endif %}
+							{% if bill.new_member_deposit %}
+							<div class="bill-info">
+								Deposit: ${{ bill.new_member_deposit }}
+							</div>
+							{% endif %}
+							{% if bill.dropins.all %}
+							<div class="bill-info">Dropins ({{ bill.dropins.count }}):
+								{% for dropin in bill.dropins.all %}
+									<a href="{{ dropin.get_admin_url }}">{{ dropin.visit_date|date:"m/d" }}</a>{% loop_comma %}
+								{% endfor %}
+							</div>
+							{% endif %}
+							{% if bill.guest_dropins.all %}
+							<div class="bill-info">Guest Dropins ({{ bill.guest_dropins.count }}):
+								{% for dropin in bill.guest_dropins.all %}
+									<a href="{{ dropin.member.get_absolute_url }}">{{dropin.member.first_name}} {{ dropin.member.last_name}}</a> on <a href="{{ dropin.get_admin_url }}">{{ dropin.visit_date|date:"m/d" }}</a>{% loop_comma %}
+								{% endfor %}
+							</div>
+							{% endif %}
+						{% endfor %}
+					
+						{% if member.member_notes %}
+							<br /><strong>Member notes:</strong>
+							<ul>
+							{% for note in member.member_notes %}
+								<li>{{ note.created|date:"m/d/y" }} - {{ note.note }}</li>
+							{% endfor %}
+							</ul>
+						{% else %}
+							<br />
+						{% endif %}
+
+						<strong>Transaction note:</strong><br />
+						{% for field in member.pay_bills_form %}
+							{% ifequal field.name 'transaction_note' %}{{ field }}{% endifequal %}
+						{% endfor %}
+
+					</form>
+					{% csrf_token %}
+
+					<div style="margin-left:5em;">
+					<form action="{% url 'staff.views.toggle_billing_flag' member.id %}" onSubmit="return confirm('Are you sure?');">
+						{% if member.valid_billing %}
+							<input type="submit" value="Flag Invalid Billing Profile">
+						{% else %}
+							<input type="submit" value="Clear Invalid Billing Flag">
+						{% endif %}
+						{% csrf_token %}
+					</form>
+					</div>
+				
+					</div>
+			</span></li>
+		{% endfor %}
+		</ul>
 	{% endfor %}
 </ul>
 
