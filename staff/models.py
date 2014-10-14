@@ -51,18 +51,22 @@ class Bill(models.Model):
 	"""A record of what fees a Member owes."""
 	member = models.ForeignKey('Member', blank=False, null=False, related_name="bills")
 	amount = models.DecimalField(max_digits=7, decimal_places=2)
+	# TODO - rename created to bill_date
 	created = models.DateField(blank=False, null=False)
 	membership = models.ForeignKey('Membership', blank=True, null=True)
 	dropins = models.ManyToManyField('DailyLog', blank=True, null=True, related_name='bills')
 	guest_dropins = models.ManyToManyField('DailyLog', blank=True, null=True, related_name='guest_bills')
 	new_member_deposit = models.BooleanField(default=False, blank=False, null=False)
 	paid_by = models.ForeignKey('Member', blank=True, null=True, related_name='guest_bills')
+	
+	def overage_days(self):
+		return dropins - membership.dropin_allowance
 
 	class Meta:
 		ordering= ['-created']
 		get_latest_by = 'created'
 	def __unicode__(self):
-		return 'Bill %s: %s - $%s' % (self.id, self.member, self.amount)
+		return 'Bill %s [%s]: %s - $%s' % (self.id, self.created, self.member, self.amount)
 	@models.permalink
 	def get_absolute_url(self):
 		return ('staff.views.bill', (), { 'id':self.id })
