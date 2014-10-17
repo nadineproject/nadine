@@ -168,18 +168,10 @@ class BillingTestCase(TestCase):
 		Membership.objects.create_with_plan(member=user8.get_profile(), start_date=date(2010, 5, 20), end_date=date(2010, 6, 19), membership_plan=self.pt5Plan)
 		Membership.objects.create_with_plan(member=user8.get_profile(), start_date=date(2010, 6, 20), end_date=None, membership_plan=self.basicPlan)
 		for day in range(11,23): DailyLog.objects.create(member=user8.get_profile(), visit_date=date(2010, 6, day), payment='Bill')
-		
 		run_billing_for_range(datetime(2010, 7, 31), 61)
-
-		#end_time = datetime(2010, 7, 31)
-		#day_range = range(61)
-		#day_range.reverse()
-		#days = [end_time - timedelta(days=i) for i in day_range]
-		#for day in days:
-		#	billing.run_billing(day)
+		print_user_data(user8)
 
 		bills = Bill.objects.filter(member=user8.get_profile()).order_by("bill_date")
-		print bills
 		# self.assertEqual(bills.count(), 5, "Member8 had the incorrect number of bills (%d)" % bills.count())
 		may_20_pt5 = bills[0]
 		may_20_overage = bills[1]
@@ -187,17 +179,24 @@ class BillingTestCase(TestCase):
 		june_20_overage = bills[3]
 		#july_20_basic = bills[4]
 
+		# First bill is just a PT-5
 		self.assertTrue(may_20_pt5 != None)
+		self.assertEqual(may_20_pt5.membership.membership_plan, self.pt5Plan)
 		self.assertEqual(date(2010, 5, 20), may_20_pt5.bill_date)
-		
-		# 		self.assertEqual(pre_june_20.membership.membership_plan, self.pt5Plan)
-		# 		self.assertEqual(pre_june_20.dropins.count(), 9, "Member8 had wrong number of dropin days")
-		# 		self.assertEquals(pre_june_20.amount, 80)
+		self.assertEqual(0, may_20_pt5.dropins.count())
 
-		# User 8's Basic membership (1 days)
-		# self.assertTrue(june_20_july_19 != None)
-		# 		self.assertEqual(june_20_july_19.membership.membership_plan, self.basicPlan)
-		# 		self.assertEqual(june_20_july_19.dropins.count(), 1)
-		
+		# Second bill is for 4 overage days on the last day of their membership
+		self.assertTrue(may_20_overage != None)
+		self.assertEqual(may_20_overage.membership.membership_plan, self.pt5Plan)
+		self.assertEqual(date(2010, 6, 19), may_20_overage.bill_date)
+		self.assertEqual(9, may_20_overage.dropins.count())
+		self.assertEqual(4, may_20_overage.overage_days())
+		self.assertEqual(80, may_20_overage.amount)
+
+		# Third bill is for the new Basic membership
+		self.assertTrue(june_20_basic != None)
+		self.assertEqual(june_20_basic.membership.membership_plan, self.basicPlan)
+		self.assertEqual(date(2010, 6, 20), june_20_basic.bill_date)
+		self.assertEqual(0, june_20_basic.dropins.count())
 
 # Copyright 2010 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

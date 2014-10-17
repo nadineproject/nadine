@@ -62,7 +62,7 @@ class Bill(models.Model):
 	paid_by = models.ForeignKey('Member', blank=True, null=True, related_name='guest_bills')
 	
 	def overage_days(self):
-		return dropins - membership.dropin_allowance
+		return self.dropins.count() - self.membership.dropin_allowance
 
 	class Meta:
 		ordering= ['-bill_date']
