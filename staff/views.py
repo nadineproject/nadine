@@ -117,7 +117,7 @@ def transactions(request):
 	page_message = None
 	start, end = date_range_from_request(request)
 	date_range_form = DateRangeForm({START_DATE_PARAM:start, END_DATE_PARAM:end })
-	transactions = Transaction.objects.filter(created__range=(start, end)).order_by('-created')
+	transactions = Transaction.objects.filter(transaction_date__range=(start, end)).order_by('-transaction_date')
 	return render_to_response('staff/transactions.html', { "transactions":transactions, 'date_range_form':date_range_form, 'page_message':page_message }, context_instance=RequestContext(request))
 
 @staff_member_required
@@ -162,9 +162,9 @@ def bills(request):
 	members = Member.objects.filter(models.Q(bills__isnull=False, bills__transactions=None, bills__paid_by__isnull=True) | models.Q(guest_bills__isnull=False, guest_bills__transactions=None)).distinct().order_by('user__last_name')
 	for member in members:
 		last_bill = member.open_bills()[0]
-		if not last_bill.created in bills:
-			bills[last_bill.created] = []
-		bills[last_bill.created].append(member)
+		if not last_bill.bill_date in bills:
+			bills[last_bill.bill_date] = []
+		bills[last_bill.bill_date].append(member)
 	ordered_bills = OrderedDict(sorted(bills.items(), key=lambda t: t[0]))
 
 	invalids = Member.objects.invalid_billing()
@@ -178,7 +178,7 @@ def bill_list(request):
 	start_date = date(year=starteo.tm_year, month=starteo.tm_mon, day=starteo.tm_mday)
 	endeo = timeo.strptime(end, "%Y-%m-%d")
 	end_date = date(year=endeo.tm_year, month=endeo.tm_mon, day=endeo.tm_mday)
-	bills = Bill.objects.filter(created__range=(start_date, end_date), amount__gt=0).order_by('created').reverse()
+	bills = Bill.objects.filter(bill_date__range=(start_date, end_date), amount__gt=0).order_by('bill_date').reverse()
 	total_amount = bills.aggregate(s=Sum('amount'))['s']
 	return render_to_response('staff/bill_list.html', {'bills':bills, 'total_amount':total_amount, 'date_range_form':date_range_form, 'start_date':start_date, 'end_date':end_date }, context_instance=RequestContext(request))
 

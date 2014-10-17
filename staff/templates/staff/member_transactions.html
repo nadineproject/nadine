@@ -16,10 +16,10 @@ nav #billing-tab { background: #FBD850; color: black; }
 <table id="transaction-list">
 	{% for transaction in member.transaction_set.all %}
 		<tr class="{% cycle 'row-even' 'row-odd' %}">
-			<td><a href="{{ transaction.get_absolute_url }}">{{ transaction.created|date:"m/d/y" }}</a>
+			<td><a href="{{ transaction.get_absolute_url }}">{{ transaction.transaction_date|date:"m/d/y" }}</a>
 			   for bill{{ transaction.bills.all|pluralize }}
 			   {% for bill in transaction.bills.all %}
-               <a href="{{ bill.get_absolute_url }}">{{ bill.created|date:"m/d/y" }}</a>{% loop_comma %}
+               <a href="{{ bill.get_absolute_url }}">{{ bill.bill_date|date:"m/d/y" }}</a>{% loop_comma %}
             {% endfor %}
 			</td>
 			<td>${{ transaction.amount }}</td>
@@ -34,7 +34,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 <table id="open-bills-list">
       {% for bill in member.open_bills %}
 		<tr class="{% cycle 'row-even' 'row-odd' %}">
-		   <td><a href="{{ bill.get_absolute_url }}">{{ bill.created|date:"m/d/y" }}</a></td>
+		   <td><a href="{{ bill.get_absolute_url }}">{{ bill.bill_date|date:"m/d/y" }}</a></td>
 		   <td>${{ bill.amount }}</td>
 		   <td></td>
 		</tr>

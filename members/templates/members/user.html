@@ -339,11 +339,11 @@
 		 <tbody>
 			{% for transaction in user.profile.transaction_set.all %}
 			<tr class="{% cycle 'row-even' 'row-odd' %}">
-				<td nowrap><a href="{% url 'members.views.receipt' user.username transaction.id %}">{{ transaction.created|date:"M d, Y" }}</a></td>
+				<td nowrap><a href="{% url 'members.views.receipt' user.username transaction.id %}">{{ transaction.transaction_date | date:"M d, Y" }}</a></td>
 				<td>${{ transaction.amount }}</td>
 				<td>
 				   {% for bill in transaction.bills.all %}
-					  {{ bill.created|date:"M d, Y" }} (${{ bill.amount }}){% loop_comma %}
+					  {{ bill.bill_date|date:"M d, Y" }} (${{ bill.amount }}){% loop_comma %}
 				   {% endfor %}
 				</td>
 			</tr>
@@ -370,7 +370,7 @@
 		  <tbody>
 		{% for bill in user.profile.all_bills %}
 			<tr class="{% cycle 'row-even' 'row-odd' %}">
-				<td nowrap>{{ bill.created|date:"M d, Y" }}</td>
+				<td nowrap>{{ bill.bill_date|date:"M d, Y" }}</td>
 				<td>${{ bill.amount }}</td>
 				<td nowrap>{% if bill.membership %}{{ bill.membership.membership_plan }}{% endif %}</td>
 				<td>

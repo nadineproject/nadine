@@ -5,7 +5,7 @@
 
 {% block content %}
 <h2>Office Nomads - Payment Receipt</h2>
-<div align="right">{{ transaction.created|date:"M d, Y" }}</div>
+<div align="right">{{ transaction.transaction_date|date:"M d, Y" }}</div>
 
 <table id="receipt">
 	<tr>
@@ -36,7 +36,7 @@
   <tbody>
  	{% for bill in bills %}
  		<tr class="{% cycle 'row-even' 'row-odd' %}">
- 			<td>{{ bill.created|date:"M d, Y" }}</td>
+ 			<td>{{ bill.bill_date|date:"M d, Y" }}</td>
  			<td>${{ bill.amount }}</td>
  			<td>{% if bill.membership %}{{ bill.membership.membership_plan }}{% endif %}</td>
  			<td>

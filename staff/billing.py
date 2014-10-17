@@ -145,7 +145,7 @@ def run_billing(bill_time=None):
 			for member in Member.objects.all():
 				last_bill = member.last_bill()
 				if last_bill:
-					start_date = last_bill.created + timedelta(days=1)
+					start_date = last_bill.bill_date + timedelta(days=1)
 				else:
 					start_date = bill_date - timedelta(days=62)
 					if start_date < settings.BILLING_START_DATE: start_date = settings.BILLING_START_DATE
@@ -168,7 +168,7 @@ def run_billing(bill_time=None):
 						if day.is_membership_end_date(): monthly_fee = 0
 						billable_dropin_count = max(0, len(bill_dropins) + len(bill_guest_dropins) - day.membership.dropin_allowance)
 						bill_amount = monthly_fee + (billable_dropin_count * day.membership.daily_rate)
-						day.bill = Bill(created=day.date, amount=bill_amount, member=member, paid_by=day.membership.guest_of, membership=day.membership)
+						day.bill = Bill(bill_date=day.date, amount=bill_amount, member=member, paid_by=day.membership.guest_of, membership=day.membership)
 						#logger.debug('saving bill: %s - %s - %s' % (day.bill, day, billable_dropin_count))
 						day.bill.save()
 						bill_count += 1
@@ -191,7 +191,7 @@ def run_billing(bill_time=None):
 					if time_to_bill_guests or time_to_bill_dropins:
 						bill_amount = (len(bill_dropins) + len(guest_bill_dropins)) * settings.NON_MEMBER_DROPIN_FEE
 						last_day = run.days[len(run.days) - 1]
-						last_day.bill = Bill(created=last_day.date, amount=bill_amount, member=member)
+						last_day.bill = Bill(bill_date=last_day.date, amount=bill_amount, member=member)
 						last_day.bill.save()
 						bill_count += 1
 						last_day.bill.dropins = [dropin.id for dropin in bill_dropins]

@@ -20,13 +20,13 @@ class StyledAdmin(admin.ModelAdmin):
       css = { "all": ('local-admin.css', )}
 
 class TransactionAdmin(StyledAdmin):
-   list_display = ('created', 'member', 'amount')
+   list_display = ('transaction_date', 'member', 'amount')
    search_fields = ('member__user__first_name', 'member__user__last_name', 'amount')
-   raw_id_fields = ('bills','member')
+   raw_id_fields = ('bills', 'member')
 admin.site.register(Transaction, TransactionAdmin)
 
 class BillAdmin(StyledAdmin):
-   list_display = ('created', 'member', 'amount')
+   list_display = ('bill_date', 'member', 'amount')
    search_fields = ('member__user__first_name', 'member__user__last_name')
    raw_id_fields = ('membership', 'dropins', 'guest_dropins')
 admin.site.register(Bill, BillAdmin)

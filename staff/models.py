@@ -38,21 +38,23 @@ class BillingLog(models.Model):
 	ended = models.DateTimeField(blank=True, null=True)
 	successful = models.BooleanField(default=False)
 	note = models.TextField(blank=True, null=True)
+	
 	class Meta:
 	   ordering = ['-started']
 	   get_latest_by = 'started'
+	
 	def __unicode__(self):
 	   return 'BillingLog %s: %s' % (self.started, self.successful)
+	
 	def ended_date(self):
 	   if not self.ended: return None
 	   return datetime.date(self.ended)
 
 class Bill(models.Model):
 	"""A record of what fees a Member owes."""
+	bill_date = models.DateField(blank=False, null=False)
 	member = models.ForeignKey('Member', blank=False, null=False, related_name="bills")
 	amount = models.DecimalField(max_digits=7, decimal_places=2)
-	# TODO - rename created to bill_date
-	created = models.DateField(blank=False, null=False)
 	membership = models.ForeignKey('Membership', blank=True, null=True)
 	dropins = models.ManyToManyField('DailyLog', blank=True, null=True, related_name='bills')
 	guest_dropins = models.ManyToManyField('DailyLog', blank=True, null=True, related_name='guest_bills')
@@ -63,32 +65,39 @@ class Bill(models.Model):
 		return dropins - membership.dropin_allowance
 
 	class Meta:
-		ordering= ['-created']
-		get_latest_by = 'created'
+		ordering= ['-bill_date']
+		get_latest_by = 'bill_date'
+		
 	def __unicode__(self):
-		return 'Bill %s [%s]: %s - $%s' % (self.id, self.created, self.member, self.amount)
+		return 'Bill %s [%s]: %s - $%s' % (self.id, self.bill_date, self.member, self.amount)
+	
 	@models.permalink
 	def get_absolute_url(self):
 		return ('staff.views.bill', (), { 'id':self.id })
+	
 	def get_admin_url(self):
 		return urlresolvers.reverse('admin:staff_bill_change', args=[self.id])
 
 class Transaction(models.Model):
 	"""A record of charges for a member."""
-	created = models.DateTimeField(auto_now_add=True)
+	transaction_date = models.DateTimeField(auto_now_add=True)
 	member = models.ForeignKey('Member', blank=False, null=False)
 	TRANSACTION_STATUS_CHOICES = ( ('open', 'Open'), ('closed', 'Closed') )
 	status = models.CharField(max_length=10, choices=TRANSACTION_STATUS_CHOICES, blank=False, null=False, default='open')
 	bills = models.ManyToManyField(Bill, blank=False, null=False, related_name='transactions')
 	amount = models.DecimalField(max_digits=7, decimal_places=2)
 	note = models.TextField(blank=True, null=True)
+	
 	class Meta:
-		ordering= ['-created']
+		ordering= ['-transaction_date']
+	
 	def __unicode__(self):
 		return '%s: %s' % (self.member.full_name, self.amount)
+	
 	@models.permalink
 	def get_absolute_url(self):
 		return ('staff.views.transaction', (), { 'id':self.id })
+	
 	def get_admin_url(self):
 		return urlresolvers.reverse('admin:staff_transaction_change', args=[self.id])
 
