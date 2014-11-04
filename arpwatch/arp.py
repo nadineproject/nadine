@@ -83,6 +83,7 @@ def import_all():
 			continue
 		runtime_str = file_name.lstrip(settings.ARP_ROOT)
 		runtime_str = runtime_str.lstrip("arp-").rstrip(".txt")
+		# TODO - Test the following line for an AmbiguousTimeError.  Delete the file and move on if so.  It's daylight savings.
 		runtime = timezone.make_aware(datetime.strptime(runtime_str, "%y%m%d-%H%M"), timezone.get_current_timezone())
 		full_path = settings.ARP_ROOT + file_name
 		file = default_storage.open(full_path)	
