@@ -110,27 +110,28 @@ def signin_user_guest(request, username, guestof):
 	daily_log = DailyLog()
 	daily_log.member = member
 	daily_log.visit_date = timezone.localtime(timezone.now()).date()
-	if guestof:
-		guestof_user = get_object_or_404(User, username=guestof)
-		guestof_member = get_object_or_404(Member, user=guestof_user)
-		daily_log.guest_of = guestof_member
-	if DailyLog.objects.filter(member=member).count() == 0:
-		daily_log.payment = 'Trial';
-	else:
-		daily_log.payment = 'Bill';
-	daily_log.save()
+	# Only proceed if they haven't signed in already
+	if DailyLog.objects.filter(member=member, visit_date=daily_log.visit_date).count() == 0:
+		if guestof:
+			guestof_user = get_object_or_404(User, username=guestof)
+			guestof_member = get_object_or_404(Member, user=guestof_user)
+			daily_log.guest_of = guestof_member
+		if DailyLog.objects.filter(member=member).count() == 0:
+			daily_log.payment = 'Trial';
+		else:
+			daily_log.payment = 'Bill';
+		daily_log.save()
 	
-	if daily_log.payment == 'Trial':
-		try:
-			email.announce_free_trial(user)
-			email.send_introduction(user)
-			email.subscribe_to_newsletter(user)
-		except:
-			logger.error("Could not send introduction email to %s" % user.email)
-	else:
-		if member.onboard_tasks_to_complete() > 0:
-			email.announce_tasks_todo(user, member.onboard_tasks_incomplete())
-	
+		if daily_log.payment == 'Trial':
+			try:
+				email.announce_free_trial(user)
+				email.send_introduction(user)
+				email.subscribe_to_newsletter(user)
+			except:
+				logger.error("Could not send introduction email to %s" % user.email)
+		else:
+			if member.onboard_tasks_to_complete() > 0:
+				email.announce_tasks_todo(user, member.onboard_tasks_incomplete())
 	return HttpResponseRedirect(reverse('tablet.views.welcome', kwargs={'username':username}))
 
 def welcome(request, username):
