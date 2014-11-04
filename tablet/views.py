@@ -91,14 +91,13 @@ def post_create(request, username):
 	if request.POST.has_key("work_today"):
 		work_today = request.POST.get('work_today')
 		if work_today == "Yes":
-			print "Yes!"
 			# Send them over to the sign-in page.  This will trigger the Free Trial logic down the line.
 			return HttpResponseRedirect(reverse('tablet.views.signin_user', kwargs={ 'username':user.username }))
 		else:
 			try:
 				email.announce_new_user(user)
 			except:
-				logger.error("Could not send introduction email to %s" % user.email)			
+				logger.error("Could not send introduction email to %s" % user.email)
 			return HttpResponseRedirect(reverse('tablet.views.members', kwargs={}))
 	return render_to_response('tablet/post_create.html',{'user':user}, context_instance=RequestContext(request))
 
