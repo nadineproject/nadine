@@ -246,11 +246,11 @@ class Member(models.Model):
 
 	def all_bills(self):
 		"""Returns all of the open bills, both for this member and any bills for other members which are marked to be paid by this member."""
-		return Bill.objects.filter(models.Q(member=self) | models.Q(paid_by=self)).order_by('-created')
+		return Bill.objects.filter(models.Q(member=self) | models.Q(paid_by=self)).order_by('-bill_date')
 
 	def open_bills(self):
 		"""Returns all of the open bills, both for this member and any bills for other members which are marked to be paid by this member."""
-		return Bill.objects.filter(models.Q(member=self) | models.Q(paid_by=self)).filter(transactions=None).order_by('created')
+		return Bill.objects.filter(models.Q(member=self) | models.Q(paid_by=self)).filter(transactions=None).order_by('bill_date')
 
 	def open_bill_amount(self):
 		total = 0
