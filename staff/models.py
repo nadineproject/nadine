@@ -738,17 +738,29 @@ class MemberNote(models.Model):
 		return '%s - %s: %s' % (self.created.date(), self.member, self.note)
 
 def user_file_upload_path(instance, filename):
-	upload_path = os.path.join(settings.MEDIA_ROOT, "file_uploads/%s/" % instance.user.username)
-	if not os.path.exists(upload_path):
-		os.makedirs(upload_path)
-	return os.path.join(upload_path, filename)
+	upload_dir = "file_uploads/" + instance.user.username + "/"
+	filename = upload_dir + filename
+	return filename
 
 class FileUpload(models.Model):
+	MEMBER_INFO = "Member_Information"
+	MEMBER_AGMT = "Member_Agreement"
+	KEY_AGMT = "Key_Agreement"
+	EVENT_AGMT = "Event_Host_Agreement"
+	
+	DOC_TYPES = (
+			(MEMBER_INFO, 'Member Information'),
+			(MEMBER_AGMT, 'Membership Agreement'),
+			(KEY_AGMT, 'Key Holder Agreement'),
+			(EVENT_AGMT, 'Event Host Agreement'),
+		)
+	
 	uploadTS = models.DateTimeField(auto_now_add=True)
 	user = models.ForeignKey(User, blank=False)
 	name = models.CharField(max_length=64)
 	content_type = models.CharField(max_length=64)
 	file = models.FileField(upload_to=user_file_upload_path, blank=False)
+	document_type = models.CharField(max_length=200, choices=DOC_TYPES, default=None, null=True, blank=True)
 	uploaded_by = models.ForeignKey(User, related_name="uploaded_by")
 
 	def is_pdf(self):

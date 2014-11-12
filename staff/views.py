@@ -1,3 +1,4 @@
+import os
 import traceback
 import time as timeo
 from datetime import date, datetime, timedelta
@@ -732,18 +733,29 @@ def member_files(request, member_id):
 	member = get_object_or_404(Member, pk=member_id)
 	
 	if 'delete' in request.POST:
-		upload_obj = FileUpload.objects.filter(id=request.POST['file_id']).delete()
+		upload_obj = get_object_or_404(FileUpload, pk=request.POST['file_id'])
+		if os.path.exists(upload_obj.file.path): os.remove(upload_obj.file.path)
+		upload_obj.delete()
 	if 'file' in request.FILES:
 		try:
-			file_user = User.objects.get(username=request.POST['user'])
 			upload=request.FILES['file']
-			upload_obj = FileUpload(user=file_user, file=upload, name=upload.name, content_type=upload.content_type, uploaded_by=request.user)
+			file_name = upload.name
+			file_user = User.objects.get(username=request.POST['user'])
+			doc_type = request.POST['doc_type']
+			if doc_type and doc_type != "None":
+				ext = file_name.split('.')[-1]
+				if ext:
+					file_name = "%s.%s" % (doc_type, ext.lower())
+				else:
+					file_name = doc_type
+			upload_obj = FileUpload(user=file_user, file=upload, name=file_name, document_type=doc_type, content_type=upload.content_type, uploaded_by=request.user)
 			upload_obj.save()
-		except:
-			messages.add_message(request, messages.ERROR, 'Could not upload file!')
+		except Exception as e:
+			messages.add_message(request, messages.ERROR, "Could not upload file: (%s)" % e)
 	
+	doc_types = FileUpload.DOC_TYPES
 	files = FileUpload.objects.filter(user=member.user)
-	return render_to_response('staff/member_files.html', {'member':member, 'files':files}, context_instance=RequestContext(request))
+	return render_to_response('staff/member_files.html', {'member':member, 'files':files, 'doc_types':doc_types}, context_instance=RequestContext(request))
 
 @staff_member_required
 def membership(request, membership_id):

@@ -53,6 +53,12 @@ nav #members-tab { background: #FBD850; color: black; }
 <h3>Upload File</h3>
 <form role="form" method="POST" enctype="multipart/form-data" action=".">
 	<input type="hidden" name="user" value="{{ member.user }}"/>
+	<select name="doc_type">
+		<option>None</option>
+		{% for dt_val, dt_desc in doc_types %}
+			<option value="{{dt_val}}">{{dt_desc}}</option>
+		{% endfor %}
+	</select>
 	<span class="btn btn-default btn-file"><input name="file" type="file"></span>
 	<button class="btn btn-primary" type="submit">Upload</button>
 	{% csrf_token %}
