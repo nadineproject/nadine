@@ -1,0 +1,28 @@
+{% load staticfiles %}
+
+<html>
+<head>
+{% if file.is_pdf %}
+	<script type="text/javascript" src="{% static 'pdfobject.js' %}"></script>
+	<script type="text/javascript">
+		window.onload = function (){
+			var success = new PDFObject({ url: "{% url 'members.views.file_download' file.user file.name  %}" }).embed();
+		};
+	</script>
+{% endif %}
+</head>
+<body>
+	{% if file.is_image %}
+		<img src="{% url 'members.views.file_download' file.user file.name  %}" width="900"/>
+	{% elif file.is_text %}
+		<pre id="textdiv"></pre>
+		<script src="{{ STATIC_URL }}jquery-2.1.0.min.js"></script>
+		<script>
+			$("#textdiv").load("{% url 'members.views.file_download' file.user file.name  %}");
+		</script>
+	{% else %}
+		<embed src="{% url 'members.views.file_download' file.user file.name  %}" width="900">
+	{% endif %}
+	
+	<p>[ <a href="{% url 'members.views.file_download' file.user file.name  %}">Download File</a> ]</p>
+</body>

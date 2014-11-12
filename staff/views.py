@@ -1,7 +1,7 @@
 import traceback
 import time as timeo
 from datetime import date, datetime, timedelta
-import calendar
+import calendar, json
 from decimal import Decimal
 from collections import namedtuple, OrderedDict
 from django.utils import timezone
@@ -12,8 +12,11 @@ from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
+from django.contrib import messages
 from django.db.models import Sum
 from django.conf import settings
+from django.core import serializers
+from django.forms.models import model_to_dict
 from monthdelta import MonthDelta, monthmod
 from py4j.java_gateway import JavaGateway
 from staff.models import *
@@ -694,6 +697,15 @@ def member_activity(request, member_id):
 	return render_to_response('staff/member_activity.html', {'payment_types':payment_types, 'member':member}, context_instance=RequestContext(request))
 
 @staff_member_required
+def member_activity_json(request, member_id):
+	member = get_object_or_404(Member, pk=member_id)
+	response_data = {}
+	#response_data['member'] = model_to_dict(member)
+	#response_data['payment_types'] = ['Visit', 'Trial', 'Waved', 'Bill']
+	response_data['daily_logs'] = serializers.serialize('json', member.daily_logs.all())
+	return HttpResponse(json.dumps(response_data), content_type="application/json")
+
+@staff_member_required
 def member_membership(request, member_id):
 	member = get_object_or_404(Member, pk=member_id)
 	
@@ -714,6 +726,24 @@ def member_membership(request, member_id):
 	last = start + MonthDelta(1) - timedelta(days=1)
 	return render_to_response('staff/membership.html', {'member':member, 'membership_plans':MembershipPlan.objects.all(), 
 		'membership_form':MembershipForm(initial={'member':member_id, 'start_date':start}), 'today':today.isoformat(), 'last':last.isoformat()}, context_instance=RequestContext(request))
+
+@staff_member_required
+def member_files(request, member_id):
+	member = get_object_or_404(Member, pk=member_id)
+	
+	if 'delete' in request.POST:
+		upload_obj = FileUpload.objects.filter(id=request.POST['file_id']).delete()
+	if 'file' in request.FILES:
+		try:
+			file_user = User.objects.get(username=request.POST['user'])
+			upload=request.FILES['file']
+			upload_obj = FileUpload(user=file_user, file=upload, name=upload.name, content_type=upload.content_type, uploaded_by=request.user)
+			upload_obj.save()
+		except:
+			messages.add_message(request, messages.ERROR, 'Could not upload file!')
+	
+	files = FileUpload.objects.filter(user=member.user)
+	return render_to_response('staff/member_files.html', {'member':member, 'files':files}, context_instance=RequestContext(request))
 
 @staff_member_required
 def membership(request, membership_id):

@@ -1,4 +1,4 @@
-import pprint, traceback, usaepay
+import os, pprint, traceback, usaepay
 from datetime import datetime, time, date, timedelta
 
 from django.db import models
@@ -7,6 +7,7 @@ from django.contrib import admin
 from django.core import urlresolvers
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
+from django.conf import settings
 from django.utils.encoding import smart_str, smart_unicode
 from django_localflavor_us.models import USStateField, PhoneNumberField
 from django.utils import timezone
@@ -323,6 +324,9 @@ class Member(models.Model):
 
 	def host_daily_logs(self):
 		return DailyLog.objects.filter(guest_of=self).order_by('-visit_date')
+
+	def file_uploads(self):
+		return FileUpload.objects.filter(user=self.user).order_by('uploadTS')
 
 	def member_since(self):
 		first = self.first_visit()
@@ -732,5 +736,34 @@ class MemberNote(models.Model):
 
 	def __str__(self): 
 		return '%s - %s: %s' % (self.created.date(), self.member, self.note)
+
+def user_file_upload_path(instance, filename):
+	upload_path = os.path.join(settings.MEDIA_ROOT, "file_uploads/%s/" % instance.user.username)
+	if not os.path.exists(upload_path):
+		os.makedirs(upload_path)
+	return os.path.join(upload_path, filename)
+
+class FileUpload(models.Model):
+	uploadTS = models.DateTimeField(auto_now_add=True)
+	user = models.ForeignKey(User, blank=False)
+	name = models.CharField(max_length=64)
+	content_type = models.CharField(max_length=64)
+	file = models.FileField(upload_to=user_file_upload_path, blank=False)
+	uploaded_by = models.ForeignKey(User, related_name="uploaded_by")
+
+	def is_pdf(self):
+		if not self.content_type: return False
+		return self.content_type == "application/pdf"
+
+	def is_image(self):
+		if not self.content_type: return False
+		return self.content_type.startswith("image")
+
+	def is_text(self):
+		if not self.content_type: return False
+		return self.content_type.startswith("text")
+
+	def __unicode__(self):
+		return '%s - %s: %s' % (self.uploadTS.date(), self.user, self.name)
 
 # Copyright 2014 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

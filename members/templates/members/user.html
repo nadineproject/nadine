@@ -205,13 +205,22 @@
 				 <td>{{ member.gender }}</td>
 			  </tr>
 		   {% endif %}
-		</table>		
+		</table>
+		
+		{% if user.profile.file_uploads %}
+			<h3>Private Documents</h3>
+			<ul>
+			{% for f in user.profile.file_uploads %}
+				<li><a href="{% url 'members.views.file_view' f.user f.name  %}">{{ f.name }}</a></li>
+			{% endfor %}
+			</ul>
+		{% endif %}
 	</div>
 	
 	<div id="tabs-2">
 		<h3>Membership History</h3>
 		{% if user.profile.memberships.all %}
-		<table>		  
+		<table>
 		  <thead>
 		   <tr>
 			  <th>Plan</th>
@@ -226,7 +235,7 @@
 				 <td align="center">{{ membership.start_date|date:"M d, Y" }}</td>
 				 <td align="left">{% if membership.end_date %}{{ membership.end_date|date:"M d, Y" }}{% endif %}</td>
 			  </tr>
-		   {% endfor %}			
+		   {% endfor %}
 		  </tbody>
 		</table>
 		{% else %}

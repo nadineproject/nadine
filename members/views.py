@@ -8,7 +8,7 @@ from django.template import RequestContext, Template
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 from django.views.decorators.csrf import csrf_exempt
@@ -375,6 +375,24 @@ def new_billing(request):
 @user_passes_test(is_active_member, login_url='members.views.not_active')
 def events_google(request, location_slug=None):
 	return render_to_response('members/events_google.html',{}, context_instance=RequestContext(request))
+
+@login_required
+@user_passes_test(is_active_member, login_url='members.views.not_active')
+def file_view(request, username, file_name):
+	if not request.user.is_staff and not username == request.user.username:
+		return HttpResponseForbidden("Forbidden")
+	file_upload = FileUpload.objects.get(user__username=username, name=file_name)
+	return render_to_response('members/file_view.html',{ 'file':file_upload }, context_instance=RequestContext(request))
+
+@login_required
+@user_passes_test(is_active_member, login_url='members.views.not_active')
+def file_download(request, username, file_name):
+	if not request.user.is_staff and not username == request.user.username:
+		return HttpResponseForbidden("Forbidden")
+	file_upload = FileUpload.objects.get(user__username=username, name=file_name)
+	response = HttpResponse(file_upload.file, content_type=file_upload.content_type)
+	response['Content-Disposition'] = 'attachment; filename="%s"' % file_upload.name
+	return response
 
 #@login_required
 #@user_passes_test(is_active_member, login_url='members.views.not_active')
