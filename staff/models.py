@@ -16,6 +16,13 @@ from monthdelta import MonthDelta, monthmod
 from taggit.managers import TaggableManager
 from taggit.models import TaggedItemBase
 
+# imports for signals
+import django.dispatch
+from django.dispatch import receiver
+from django.db.models.signals import pre_save, post_save
+
+from PIL import Image
+
 #from south.modelsinspector import add_introspection_rules
 #add_introspection_rules([], ["^django_localflavor_us\.models\.USStateField"])
 #add_introspection_rules([], ["^django_localflavor_us\.models\.PhoneNumberField"])
@@ -195,7 +202,13 @@ class MemberManager(models.Manager):
 
 	def get_by_natural_key(self, user_id): return self.get(user__id=user_id)
 
+def user_photo_path(instance, filename):
+	ext = filename.split('.')[-1]
+	return "user_photos/%s.%s" % (instance.user.username, ext.lower())
+
 class Member(models.Model):
+	MAX_PHOTO_SIZE = 1024
+
 	"""A person who has used the space and may or may not have a monthly membership"""
 	objects = MemberManager()
 
@@ -226,7 +239,7 @@ class Member(models.Model):
 	company_name = models.CharField(max_length=128, blank=True, null=True)
 	promised_followup = models.DateField(blank=True, null=True)
 	last_modified = models.DateField(auto_now=True, editable=False)
-	photo = models.ImageField(upload_to='member_photo', blank=True, null=True)
+	photo = models.ImageField(upload_to=user_photo_path, blank=True, null=True)
 	tags = TaggableManager(blank=True)
 	valid_billing = models.BooleanField(default=False)
 
@@ -476,13 +489,29 @@ def user_save_callback(sender, **kwargs):
 	created = kwargs['created']
 	if Member.objects.filter(user=user).count() > 0: return
 	Member.objects.create(user=user)
-
 post_save.connect(user_save_callback, sender=User)
 
 # Add some handy methods to Django's User object
 User.get_profile = lambda self: Member.objects.get_or_create(user=self)[0]
 User.get_absolute_url = lambda self: Member.objects.get(user=self).get_absolute_url()
 User.profile = property(User.get_profile)
+
+@receiver(post_save, sender=Member)
+def size_images(sender, instance, **kwargs):
+	if instance.photo:
+		image = Image.open(instance.photo)
+		old_x, old_y = image.size
+		if old_x > Member.MAX_PHOTO_SIZE or old_y > Member.MAX_PHOTO_SIZE:
+			print "Resizing photo for %s" % instance.user.username
+			if old_y > old_x:
+				new_y = Member.MAX_PHOTO_SIZE
+				new_x = int((float(new_y) / old_y) * old_x)
+			else:
+				new_x = Member.MAX_PHOTO_SIZE
+				new_y = int((float(new_x) / old_x) * old_y)
+			new_image = image.resize((new_x, new_y), Image.ANTIALIAS)
+			new_image.save(instance.photo.path, image.format)
+		image.close()
 
 class DailyLog(models.Model):
 	"""A visit by a member"""
