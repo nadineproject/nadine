@@ -11,7 +11,8 @@ register = template.Library()
 
 SCALE_WIDTH = 'w'
 SCALE_HEIGHT = 'h'
-RESIZED_IMAGE_DIR = 'resized_image'
+# No value for dir means it goes in w/ all the other images
+RESIZED_IMAGE_DIR = ''
 
 def calc_scale(max_x, pair):
 	x, y = pair
