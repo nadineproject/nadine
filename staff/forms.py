@@ -5,8 +5,11 @@ from django.utils import timezone
 from taggit.forms import *
 
 from staff.models import *
+from staff import usaepay
 from staff import email
-import datetime
+import datetime, logging
+
+logger = logging.getLogger(__name__)
 
 class DateRangeForm(forms.Form):
 	start = forms.DateField()
@@ -176,6 +179,11 @@ class MembershipForm(forms.Form):
 
 		# Is this right?  Do I really need a DB call so I have the object?
 		membership.member = Member.objects.get(id=self.cleaned_data['member'])
+
+		# Any change triggers disabling of the automatic billing
+		username = membership.member.user.username
+		usaepay.disableAutoBilling(username)
+		logger.debug("Automatic Billing Disabled for '%s'" % username)
 
 		# We need to look at their last membership but we'll wait until after the save
 		last_membership = membership.member.last_membership()
