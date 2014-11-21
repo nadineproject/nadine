@@ -24,8 +24,8 @@ class RunBillingForm(forms.Form):
 	run_billing = forms.BooleanField(required=True, widget=forms.HiddenInput)
 	
 class NewUserForm(forms.Form):
-	first_name = forms.CharField(max_length=100, label="First name *", required=True, widget=forms.TextInput(attrs={'autocapitalize':"on"}))
-	last_name = forms.CharField(max_length=100, label="Last name *", required=True, widget=forms.TextInput(attrs={'autocapitalize':"on"}))
+	first_name = forms.CharField(max_length=100, label="First name *", required=True, widget=forms.TextInput(attrs={'autocapitalize':"words"}))
+	last_name = forms.CharField(max_length=100, label="Last name *", required=True, widget=forms.TextInput(attrs={'autocapitalize':"words"}))
 	email = forms.EmailField(max_length=100, label="Email *", required=True)
 	#phone = forms.CharField(max_length=100, required=False)
 
