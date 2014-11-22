@@ -476,7 +476,7 @@ class Member(models.Model):
 		return 0
 
 	def is_manager(self):
-		if settings.TEAM_MEMBERSHIP_PLAN:
+		if hasattr(settings, 'TEAM_MEMBERSHIP_PLAN'):
 			management_plan = MembershipPlan.objects.filter(name=settings.TEAM_MEMBERSHIP_PLAN).first()
 			if management_plan:
 				active_membership = self.active_membership()
