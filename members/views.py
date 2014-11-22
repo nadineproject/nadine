@@ -66,7 +66,12 @@ def help_topic(request, slug):
 @user_passes_test(is_active_member, login_url='members.views.not_active')
 def view_members(request):
 	active_members = Member.objects.active_members().order_by('user__first_name')
-	here_today = arp.users_for_day()
+	here_today = arp.users_for_day()	
+	has_key = has_mail = None
+	if request.user.get_profile().is_manager():
+		has_key = Member.objects.members_with_keys()
+		has_mail = Member.objects.members_with_mail()
+
 	search_terms = None
 	search_results = None
 	if request.method == "POST":
@@ -76,8 +81,10 @@ def view_members(request):
 			search_results = Member.objects.search(search_terms, True)
 	else:
 		search_form = MemberSearchForm()
+
 	return render_to_response('members/view_members.html',{'active_members':active_members, 'here_today':here_today, 
-		'search_results':search_results, 'search_form':search_form, 'search_terms':search_terms}, context_instance=RequestContext(request))
+		'search_results':search_results, 'search_form':search_form, 'search_terms':search_terms, 'has_key':has_key, 'has_mail':has_mail}, 
+		context_instance=RequestContext(request))
 
 @login_required
 def chat(request):
