@@ -475,6 +475,15 @@ class Member(models.Model):
 			return bill_totals / len(bills)
 		return 0
 
+	def is_manager(self):
+		if settings.TEAM_MEMBERSHIP_PLAN:
+			management_plan = MembershipPlan.objects.filter(name=settings.TEAM_MEMBERSHIP_PLAN).first()
+			if management_plan:
+				active_membership = self.active_membership()
+				if active_membership:
+					return active_membership.membership_plan ==  management_plan
+		return False
+
 	@models.permalink
 	def get_absolute_url(self):
 		return ('staff.views.member_detail', (), { 'member_id':self.id })
