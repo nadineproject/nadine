@@ -385,20 +385,14 @@ def events_google(request, location_slug=None):
 
 @login_required
 @user_passes_test(is_active_member, login_url='members.views.not_active')
-def file_view(request, username, file_name):
+def file_view(request, disposition, username, file_name):
 	if not request.user.is_staff and not username == request.user.username:
 		return HttpResponseForbidden("Forbidden")
-	file_upload = FileUpload.objects.get(user__username=username, name=file_name)
-	return render_to_response('members/file_view.html',{ 'file':file_upload }, context_instance=RequestContext(request))
-
-@login_required
-@user_passes_test(is_active_member, login_url='members.views.not_active')
-def file_download(request, username, file_name):
-	if not request.user.is_staff and not username == request.user.username:
-		return HttpResponseForbidden("Forbidden")
-	file_upload = FileUpload.objects.get(user__username=username, name=file_name)
+	file_upload = get_object_or_404(FileUpload, user__username=username, name=file_name)
+	if disposition == None or not (disposition == "inline" or disposition == "attachment"):
+		disposition = "inline"
 	response = HttpResponse(file_upload.file, content_type=file_upload.content_type)
-	response['Content-Disposition'] = 'attachment; filename="%s"' % file_upload.name
+	response['Content-Disposition'] = '%s; filename="%s"' % (disposition, file_upload.name)
 	return response
 
 #@login_required

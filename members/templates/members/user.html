@@ -211,7 +211,7 @@
 			<h3>Private Documents</h3>
 			<ul>
 			{% for f in user.profile.file_uploads %}
-				<li><a href="{% url 'members.views.file_view' f.user f.name  %}">{{ f.name }}</a></li>
+				<li><a href="{% url 'members.views.file_view' 'inline' f.user f.name  %}">{{ f.name }}</a></li>
 			{% endfor %}
 			</ul>
 		{% endif %}

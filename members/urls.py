@@ -34,9 +34,7 @@ urlpatterns = patterns('members.views',
 	(r'^notifications/delete/(?P<username>[^/]+)/$', 'delete_notification'),
 	(r'^disable_billing/(?P<username>[^/]+)$', 'disable_billing'),
 	(r'^new_billing/$', 'new_billing'),
-	(r'^f/(?P<username>[^/]+)/view/(?P<file_name>[^/]+)$', 'file_view'),
-	(r'^f/(?P<username>[^/]+)/download/(?P<file_name>[^/]+)$', 'file_download'),
-	
+	(r'^file/(?P<disposition>[^/]+)/(?P<username>[^/]+)/(?P<file_name>[^/]+)$', 'file_view'),
 	#url(r'^events/create/(?P<location_slug>[^/]+)/$', 'my_create_event', name='gather_create_event'),
 	#(r'^events/', include(gather.urls)),	
 )
