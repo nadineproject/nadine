@@ -16,7 +16,7 @@
 			<td>{{ member.last_membership.start_date|date:"M d, Y" }}</td>
 			<td style="text-align:center;">	
 				<a href="{% url 'staff.views.member_activity' member.id %}">activity</a> |
-				<a href="{% url 'staff.views.member_bills' member.id %}">bills </a> |
+				<a href="{% url 'staff.views.member_files' member.id %}">files</a> |
 				<a href="{% url 'staff.views.usaepay_user' member.user.username %}">usaepay</a> |
 				{% if member.is_active %}
 					<a href="{% url 'staff.views.membership' member.active_membership.id %}">membership</a>
