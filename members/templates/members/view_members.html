@@ -31,8 +31,7 @@
 	<li><a href="#tabs-2">Here Today ({{ here_today | length }})</a></li>
 	{% if search_terms %}
 		<li><a href="#tabs-3" active="True">Search Results - {{ search_terms }}</a></li>
-	{% endif %} 
-	{% if user.get_profile.is_manager %}
+	{% elif user.get_profile.is_manager %}
 		<li><a href="#tabs-4">Has Mail ({{ has_mail | length }})</a></li>
 		<li><a href="#tabs-5">Has Key ({{ has_key | length }})</a></li>
 	{% endif %} 
@@ -66,9 +65,7 @@
 			<h3>No members matching that query</h3>
 		{% endif %}
 	</div>
-{% endif %}
-
-{% if user.get_profile.is_manager %}
+{% elif user.get_profile.is_manager %}
 	<div id="tabs-4" class="plan-section">
 		{% for member in has_mail %}
 			{% include "members/user_card.frag" %}  
