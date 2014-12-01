@@ -110,6 +110,8 @@ INSTALLED_APPS = (
 	'interlink',
 	'arpwatch',
 	'tablet',
+	'easy_pdf',
+	'jsignature',
 	#'gather',
 	#'debug_toolbar',
 )
@@ -122,6 +124,16 @@ try:
    djcelery.setup_loader()
 except ImportError:
    pass
+
+# JSignature Settings
+JSIGNATURE_WIDTH = 500
+JSIGNATURE_HEIGHT = 200
+JSIGNATURE_COLOR = "30F"
+#JSIGNATURE_BACKGROUND_COLOR = "CCC"
+#JSIGNATURE_DECOR_COLOR
+#JSIGNATURE_LINE_WIDTH
+#JSIGNATURE_UNDO_BUTTON = True
+JSIGNATURE_RESET_BUTTON = False
 
 # USAePay Settings
 USA_EPAY_URL='www.usaepay.com'

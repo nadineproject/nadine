@@ -1,5 +1,4 @@
-import traceback
-import logging
+import os, traceback, logging, uuid
 from datetime import date, datetime, time, timedelta
 
 from django.conf import settings
@@ -12,7 +11,8 @@ from django.contrib.sites.models import Site
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.utils import timezone
-from staff.models import Member, DailyLog, Bill
+from django.core.files.base import ContentFile
+from staff.models import Member, DailyLog, Bill, FileUpload
 from staff.forms import NewUserForm, MemberSearchForm
 from arpwatch import arp
 from staff import email
@@ -155,5 +155,36 @@ def welcome(request, username):
 	return render_to_response('tablet/welcome.html', {'user':user, 'member':member, 'membership':membership, 
 		'motd':motd, 'timeout':timeout, 'usage_color':usage_color}, context_instance=RequestContext(request))
 
+from jsignature.utils import draw_signature
+from forms import SignatureForm
+from easy_pdf.rendering import render_to_pdf, render_to_pdf_response
+def signature_capture(request, username):
+	user = get_object_or_404(User, username=username)
+	today = timezone.localtime(timezone.now()).date()
+	form = SignatureForm(request.POST or None)
+	if form.is_valid():
+		signature = form.cleaned_data.get('signature')
+		if signature:
+			# as an image
+			signature_picture = draw_signature(signature)
+			signature_key = uuid.uuid4()
+			picture_path = os.path.join(settings.MEDIA_ROOT, "signatures/%s.png" % signature_key)
+			signature_picture.save(picture_path)
+			#return HttpResponseRedirect(reverse('tablet.views.signature_accept', kwargs={'username':username, 'signature_key':signature_key}))
+			pdf_data = render_to_pdf('tablet/signature_accept.html', {'username':username, 'signature_key':signature_key})
+			pdf_file = ContentFile(pdf_data)
+			content_type = "application/pdf"
+			# TODO - Document Type
+			# TODO - File Name
+			upload_obj = FileUpload(user=user, name="model_file_name", document_type=None, content_type="application/pdf", uploaded_by=user)
+			upload_obj.file.save("actual_file_name.pdf", pdf_file)
+			upload_obj.save()
+			
+	return render_to_response('tablet/signature_capture.html', {'user':user, 'form':form, 'today':today}, context_instance=RequestContext(request))
 
+def signature_accept(request, username, signature_key):
+	user = get_object_or_404(User, username=username)
+	today = timezone.localtime(timezone.now()).date()
+	return render_to_response('tablet/signature_accept.html', {'user':user, 'today':today, 'signature_key':signature_key}, context_instance=RequestContext(request))
+		
 # Copyright 2011 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

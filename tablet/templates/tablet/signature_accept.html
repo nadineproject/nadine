@@ -1,0 +1,42 @@
+<html>
+
+<head>
+<style>
+body {
+	background-color: #FFF;
+}
+.signature_box {
+   width: 65%;
+   margin: 0 auto;
+}
+.static-field {
+	margin: 0 0 20px 100px;
+	border-bottom: 1px solid #ccc;
+}
+.static-field div.label {
+	float: left;
+	margin: 0 0 0 -100px;
+}
+</style>
+</head>
+
+<body>
+<img src="/media/documents/ag1.jpg" width="100%"/>
+<img src="/media/documents/ag2.jpg" width="100%"/>
+<div class="signature_box">
+	<div data-role="fieldcontain" class="static-field">
+		<div class="label">Name:</div>
+		<span>{{ user.get_full_name }}</span>
+	</div>
+	<div data-role="fieldcontain" class="static-field">
+		<div class="label">Date:</div>
+		<span>{{ today }}</span>
+	</div>
+	<div data-role="fieldcontain" class="static-field">
+		<div class="label">Signature:</div>
+		<img src="/media/signatures/{{ signature_key }}.png"/>
+	</div>
+</div>
+</body>
+</html>
+
