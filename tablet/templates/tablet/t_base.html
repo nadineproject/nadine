@@ -1,28 +1,32 @@
+{% load staticfiles %}
+
 <!DOCTYPE html>
 <html lang="en" manifest="/cache.manifest">
 
 <head>
 	<meta charset="utf-8">
 	<title>{{ site.name }} | Front Desk</title>
-	<link rel="apple-touch-icon" href="{{ STATIC_URL }}images/apple-touch-icon-57x57.png">
-	<link rel="apple-touch-icon" sizes="57x57" href="{{ STATIC_URL }}images/apple-touch-icon-57x57.png">
-	<link rel="apple-touch-icon" sizes="76x76" href="{{ STATIC_URL }}images/apple-touch-icon-76x76.png">
-	<link rel="apple-touch-icon" sizes="152x152" href="{{ STATIC_URL }}images/apple-touch-icon-152x152.png" \>
+	<link rel="apple-touch-icon" href="{% static 'images/apple-touch-icon-57x57.png' %}"/>
+	<link rel="apple-touch-icon" sizes="57x57" href="{% static 'images/apple-touch-icon-57x57.png' %}"/>
+	<link rel="apple-touch-icon" sizes="76x76" href="{% static 'images/apple-touch-icon-76x76.png' %}"/>
+	<link rel="apple-touch-icon" sizes="152x152" href="{% static 'images/apple-touch-icon-152x152.png' %}"/>
 
-	<meta name="viewport" content="width=768, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=0"> 
-	<meta name="apple-mobile-web-app-capable" content="yes" />
-	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+	<meta name="viewport" content="width=768, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=0"/> 
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 	
-	<link rel="stylesheet" href="{{ STATIC_URL }}jquery.mobile-1.4.1.min.css" />
-	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}tablet.css" />
-
-	<script src="{{ STATIC_URL }}jquery-1.10.2.min.js"></script>
-	<script src="{{ STATIC_URL }}custom-scripting.js"></script>
-	<script src="{{ STATIC_URL }}jquery.mobile-1.4.1.min.js"></script>
+	<link rel="stylesheet" href="{% static 'jquery.mobile-1.4.1.min.css' %}"/>
+	<link rel="stylesheet" type="text/css" href="{% static 'tablet.css' %}"/>
+	
+	<script src="{% static 'jquery-1.10.2.min.js' %}"></script>
+	<script src="{% static 'jquery.mobile-1.4.1.min.js' %}"></script>
+	<script src="{% static 'custom-scripting.js' %}"></script>
 
 	<style>
 		{% block style %}{% endblock %}
 	</style>
+	
+	{% block extra_headers %}{% endblock %}
 </head>
 
 <body {%block sub-body %}{% endblock %}>
@@ -53,5 +57,8 @@
 		{% endif %}
 	</div>
 </body>
+
+{% block extrajs %}
+{% endblock %}
 
 </html>
