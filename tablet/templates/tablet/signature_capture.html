@@ -3,90 +3,62 @@
 
 {% block nav-members %} class="ui-btn-active" {% endblock %}
 
-{% block style %}
-	.page-container {
-	   margin-top: 10px;
-	   padding-top: 10px;
-	   margin-bottom: 10px;
-	}
-	.page {
-	   margin-left: auto;
-	   margin-right: auto;
-	   background-color: #FFF;
-	   width: 98%;
-	   border-radius: 4px;
-	   -webkit-box-shadow: 0 0 20px 0 #3D3D3D;
-	   box-shadow: 0 0 20px 0 #3D3D3D;
-	   overflow:hidden;
-	}
-	.signature_box {
-	   width: 65%;
-	   margin: 0 auto;
-	}
-	.static-field {
-		margin: 0 0 20px 100px;
-		border-bottom: 1px solid #ccc;
-	}
-	.static-field div.label {
-		float: left;
-		margin: 0 0 0 -100px;
-	}
-	canvas.jSignature {
-		background-color: #ccc;
-		border: 1px dashed #333 !important;
-		margin-top: 8px !important;
-	}
-	input.resetButton {
-		float: left;
-		margin: 12px 0 -44px 520px;
-	}
+{% block extra_headers %}
+	<link rel="stylesheet" type="text/css" href="{% static 'signature.css' %}"/>
 {% endblock %}
 
 {% block content %}
-	{{ form.media }}
-	<div class="page-container">
-		<div class="page">
-			<img src="/static/ag1.jpg" width="100%"/>
-		</div>
-	</div>
-	
-	<div class="page-container">
-		<div class="page">
-			<img src="/static/ag2.jpg" width="100%"/>
-			
-			<div class="signature_box">
-				<div data-role="fieldcontain" class="static-field">
-					<div class="label">Name:</div>
-					<span>{{ user.get_full_name }}</span>
-				</div>
-				<div data-role="fieldcontain" class="static-field">
-					<div class="label">Date:</div>
-					<span>{{ today }}</span>
-				</div>
-
-				<form action="{% url 'tablet.views.signature_capture' user.username %}" method="POST">
-					<div data-role="fieldcontain">
-						<label for="id_signature">Signature:</label>
-						<div class="jsign-wrapper">
-							<input id="id_signature" name="signature" type="hidden" value="[]" />
-							<div id="jsign_signature" class="jsign-container"></div>
-							<script type="text/javascript">
-								$("#jsign_signature").jSignature({"color": "30F", "height": 200, "UndoButton": false, "width": 500, "decor-color": "#DDD", "lineWidth": 0});$("#jsign_signature").jSignature("setData", [],"native");
-							</script>
-							<input type="submit" value="Accept"/>
-						</div>
-						{% csrf_token %}
-					</div>
-				</form>
+	{% if pdf_file %}
+		<div class="page-container">
+			<div class="page">
+				<img src="/media/{{ pdf_file.file }}" width="100%"/>
 			</div>
 		</div>
-	</div>
+		<form>
+			<input type="submit" value="Accept"/>
+		</form>
+	{% else %}
+		{{ form.media }}
+		<div class="page-container">
+			<div class="page">
+				<img src="/media/documents/ag1.jpg" width="100%"/>
+			</div>
+		</div>
+	
+		<div class="page-container">
+			<div class="page">
+				<img src="/media/documents/ag2.jpg" width="100%"/>
+			
+				<div class="signature_box">
+					<div data-role="fieldcontain" class="static-field">
+						<div class="label">Name:</div>
+						<span>{{ user.get_full_name }}</span>
+					</div>
+					<div data-role="fieldcontain" class="static-field">
+						<div class="label">Date:</div>
+						<span>{{ today }}</span>
+					</div>
+
+					<form action="{% url 'tablet.views.signature_capture' user.username %}" method="POST">
+						<div data-role="fieldcontain">
+							{% for field in form %}
+								{{ field.label_tag }}
+								{{ field }}
+							{% endfor %}
+							{% csrf_token %}
+						</div>
+						<input type="submit" value="Accept"/>
+					</form>
+				</div>
+			</div>
+		</div>
+	{% endif %}
+{% endblock %}
+
+{% block extrajs %}
 	<script>
 		$('document').ready(function () {
 			$('div.jsign-container').prepend('<input type="button" class="resetButton" value="X" onclick="$(\'canvas.jSignature\').jSignature(\'reset\')" />');
 		});
 	</script>
-{% endblock %}
-
-{% block extrajs %}
 {% endblock %}

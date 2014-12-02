@@ -1,10 +1,11 @@
-import os, pprint, traceback, usaepay
+import os, uuid, pprint, traceback, usaepay
 from datetime import datetime, time, date, timedelta
 
 from django.db import models
 from django.db.models import Q
 from django.contrib import admin
 from django.core import urlresolvers
+from django.core.files.base import ContentFile
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.conf import settings
@@ -775,9 +776,36 @@ class MemberNote(models.Model):
 	def __str__(self): 
 		return '%s - %s: %s' % (self.created.date(), self.member, self.note)
 
+class FileUploadManager(models.Manager):
+	def pdf_from_string(self, file_user, file_data, document_type, uploaded_by):
+		pdf_file = ContentFile(file_data)
+		file_name = document_type + ".pdf"
+		upload_obj = FileUpload(user=file_user, name=file_name, document_type=document_type, content_type="application/pdf", uploaded_by=uploaded_by)
+		upload_obj.file.save(file_name, pdf_file)
+		upload_obj.save()
+		return upload_obj
+	
+	def create_from_file(self, file_user, file_obj, document_type, uploaded_by):
+		file_name = self.file_name_from_document_type(file_obj.name, document_type)
+		upload_obj = FileUpload(user=file_user, file=file_obj, name=file_name, document_type=document_type, content_type=file_obj.content_type, uploaded_by=uploaded_by)
+		upload_obj.save()
+		return upload_obj
+
+	def file_name_from_document_type(self, filename, document_type):
+		if document_type and document_type != "None":
+			ext = filename.split('.')[-1]
+			if ext:
+				filename = "%s.%s" % (document_type, ext.lower())
+			else:
+				filename = document_type
+		return filename
+
 def user_file_upload_path(instance, filename):
-	upload_dir = "file_uploads/" + instance.user.username + "/"
-	filename = upload_dir + filename
+	ext = filename.split('.')[-1]
+	if ext:
+		filename = "file_uploads/%s/%s.%s" % (instance.user.username, uuid.uuid4(), ext)
+	else:
+		filename = "file_uploads/%s/%s" % (instance.user.username, uuid.uuid4())
 	return filename
 
 class FileUpload(models.Model):
@@ -815,5 +843,7 @@ class FileUpload(models.Model):
 
 	def __unicode__(self):
 		return '%s - %s: %s' % (self.uploadTS.date(), self.user, self.name)
+		
+	objects = FileUploadManager()
 
 # Copyright 2014 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

@@ -1,0 +1,52 @@
+{% load staticfiles %}
+<html>
+
+<head>
+	<style>
+		@page {
+			size: letter portrait;
+		}
+		.signature_box th {
+			margin-left: 100px;
+			width: 200px;
+			vertical-align: bottom;
+		}
+		.signature_box td {
+			border-bottom: 1px solid #ccc;
+			padding-top: 5px;
+			width: 400px;
+			vertical-align: bottom;
+		}
+		.signature_box img{
+			zoom: 50%;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="page1_content">
+		<img src="/media/documents/ag1.jpg" width="100%"/>
+	</div>
+	<pdf:nextpage>
+	<div id="page2_content">
+		<img src="/media/documents/ag2.jpg" width="100%"/>
+		<div class="signature_box">
+			<table>
+				<tr>
+					<th>Name:</th>
+					<td>{{ name }}</td>
+				</tr>
+				<tr>
+					<th>Date:</th>
+					<td>{{ date }}</td>
+				</tr>
+				<tr>
+					<th>Signature:</th>
+					<td><img src="/media/signatures/{{ signature_file }}"/></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</body>
+</html>
+

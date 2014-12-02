@@ -738,18 +738,12 @@ def member_files(request, member_id):
 		upload_obj.delete()
 	if 'file' in request.FILES:
 		try:
-			upload=request.FILES['file']
-			file_name = upload.name
+			upload = request.FILES['file']
 			file_user = User.objects.get(username=request.POST['user'])
 			doc_type = request.POST['doc_type']
-			if doc_type and doc_type != "None":
-				ext = file_name.split('.')[-1]
-				if ext:
-					file_name = "%s.%s" % (doc_type, ext.lower())
-				else:
-					file_name = doc_type
-			upload_obj = FileUpload(user=file_user, file=upload, name=file_name, document_type=doc_type, content_type=upload.content_type, uploaded_by=request.user)
-			upload_obj.save()
+			FileUpload.objects.create_from_file(file_user, upload, doc_type, request.user)
+			#upload_obj = FileUpload(user=file_user, file=upload, name=file_name, document_type=doc_type, content_type=upload.content_type, uploaded_by=request.user)
+			#upload_obj.save()
 		except Exception as e:
 			messages.add_message(request, messages.ERROR, "Could not upload file: (%s)" % e)
 	
