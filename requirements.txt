@@ -25,14 +25,12 @@ sqlparse==0.1.11
 wsgiref==0.1.2
 
 django-easy-pdf==0.1.0
+django-jsignature==0.7.6
 xhtml2pdf>=0.0.6
 reportlab>=2.7,<3
 
 # Uncomment if you are using Postgres
 #psycopg2==2.5.4
-
-# Django-JSignature Fork
-git+https://github.com/nadineproject/django-jsignature.git
 
 # Django-Gather -- not ready for prime time yet!
 #git+https://git@github.com/opendoor/django-gather.git
