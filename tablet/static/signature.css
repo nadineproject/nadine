@@ -1,0 +1,36 @@
+.page-container {
+	margin-top: 10px;
+	padding-top: 10px;
+	margin-bottom: 10px;
+}
+.page {
+	margin-left: auto;
+	margin-right: auto;
+	background-color: #FFF;
+	width: 98%;
+	border-radius: 4px;
+	-webkit-box-shadow: 0 0 20px 0 #3D3D3D;
+	box-shadow: 0 0 20px 0 #3D3D3D;
+	overflow:hidden;
+}
+.signature_box {
+	width: 65%;
+	margin: 0 auto;
+}
+.static-field {
+	margin: 0 0 20px 100px;
+	border-bottom: 1px solid #ccc;
+}
+.static-field div.label {
+	float: left;
+	margin: 0 0 0 -100px;
+}
+canvas.jSignature {
+	background-color: #ccc;
+	border: 1px dashed #333 !important;
+	margin-top: 8px !important;
+}
+input.resetButton {
+	float: left;
+	margin: 12px 0 -44px 520px;
+}

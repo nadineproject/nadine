@@ -158,23 +158,36 @@ def welcome(request, username):
 	return render_to_response('tablet/welcome.html', {'user':user, 'member':member, 'membership':membership, 
 		'motd':motd, 'timeout':timeout, 'usage_color':usage_color}, context_instance=RequestContext(request))
 
-def signature_capture(request, username):
+def document_list(request, username):
+	user = get_object_or_404(User, username=username)
+	signed_docs = []
+	for doc in FileUpload.objects.filter(user=user):
+		signed_docs.append(doc.document_type)
+	return render_to_response('tablet/document_list.html', {'user':user, 'signed_docs':signed_docs, 'document_types':FileUpload.DOC_TYPES}, context_instance=RequestContext(request))
+
+def document_view(request, username, doc_type):
+	user = get_object_or_404(User, username=username)
+	file_upload = get_object_or_404(FileUpload, user=user, document_type=doc_type)
+	#return render_to_response('tablet/documents_view.html', {'user':user, 'file_upload':file_upload}, context_instance=RequestContext(request))
+	media_url = settings.MEDIA_URL + str(file_upload.file)
+	return HttpResponseRedirect(media_url)
+
+def signature_capture(request, username, doc_type):
 	user = get_object_or_404(User, username=username)
 	today = timezone.localtime(timezone.now()).date()
 	pdf_file = None
 	form = SignatureForm(request.POST or None)
 	if form and form.has_signature():
 		signature_file = form.save_signature()
-		pdf_data = render_to_pdf('tablet/signature_render.html', {'name':user.get_full_name, 'date':today, 'signature_file':signature_file})
-		# TODO - dynamic document type
-		document_type = FileUpload.MEMBER_AGMT
-		pdf_file = FileUpload.objects.pdf_from_string(user, pdf_data, document_type, user)
-		# TODO - Delete signature file
-	return render_to_response('tablet/signature_capture.html', {'user':user, 'form':form, 'today':today, 'pdf_file':pdf_file}, context_instance=RequestContext(request))
+		pdf_data = render_to_pdf('tablet/signature_render.html', {'name':user.get_full_name, 'date':today, 'doc_type':doc_type, 'signature_file':signature_file})
+		pdf_file = FileUpload.objects.pdf_from_string(user, pdf_data, doc_type, user)
+		os.remove(form.signature_path())
+		return HttpResponseRedirect(reverse('tablet.views.document_list', kwargs={'username':user.username}))
+	return render_to_response('tablet/signature_capture.html', {'user':user, 'form':form, 'today':today, 'doc_type':doc_type}, context_instance=RequestContext(request))
 
-def signature_render(request, username, signature_file):
+def signature_render(request, username, doc_type, signature_file):
 	user = get_object_or_404(User, username=username)
 	today = timezone.localtime(timezone.now()).date()
-	return render_to_pdf_response(request, 'tablet/signature_render.html', {'name':user.get_full_name, 'date':today, 'signature_file':signature_file})
+	return render_to_pdf_response(request, 'tablet/signature_render.html', {'name':user.get_full_name, 'date':today, 'doc_type':doc_type, 'signature_file':signature_file})
 
 # Copyright 2011 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

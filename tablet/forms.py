@@ -8,13 +8,20 @@ from django.conf import settings
 
 class SignatureForm(forms.Form):
 	signature = JSignatureField()
+	file_name = None
 	
 	def has_signature(self):
 		return self.is_valid() and self.cleaned_data.get('signature')
 
+	def signature_file(self):
+		if not self.file_name:
+			self.file_name = "%s.png" % uuid.uuid4()
+		return self.file_name
+
+	def signature_path(self):
+		return os.path.join(settings.MEDIA_ROOT, "signatures/%s" % self.signature_file())
+
 	def save_signature(self):
 		signature_picture = draw_signature(self.cleaned_data.get('signature'))
-		signature_file = "%s.png" % uuid.uuid4()
-		signature_path = os.path.join(settings.MEDIA_ROOT, "signatures/%s" % signature_file)
-		signature_picture.save(signature_path)
-		return signature_file
+		signature_picture.save(self.signature_path())
+		return self.signature_file()
