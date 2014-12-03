@@ -160,9 +160,9 @@ def welcome(request, username):
 
 def document_list(request, username):
 	user = get_object_or_404(User, username=username)
-	signed_docs = []
+	signed_docs = {}
 	for doc in FileUpload.objects.filter(user=user):
-		signed_docs.append(doc.document_type)
+		signed_docs[doc.document_type] = doc
 	return render_to_response('tablet/document_list.html', {'user':user, 'signed_docs':signed_docs, 'document_types':FileUpload.DOC_TYPES}, context_instance=RequestContext(request))
 
 def document_view(request, username, doc_type):
