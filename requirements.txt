@@ -1,28 +1,18 @@
-Django==1.7
+Django>=1.7,<1.8
 MonthDelta==1.0b
-Pillow==2.5.3
-amqp==1.4.6
-celery==3.1.15
+Pillow==2.6.1
+celery==3.1.17
 django-celery==3.1.16
-django-debug-toolbar==1.2.1
+django-debug-toolbar==1.2.2
 django-localflavor-us==1.1
 django-taggit==0.12.2
 django-taggit-templatetags==0.4.6dev
-django-tastypie==0.12.0
-django-templatetag-sugar==1.0
-docopt==0.4.0
+django-tastypie==0.12.1
 feedparser==5.1.3
-kombu==3.0.23
-mailchimp==2.0.8
+mailchimp==2.0.9
 py4j==0.8.2.1
 pycrypto==2.6.1
-python-dateutil==2.2
-python-mimeparse==0.1.4
-pytz==2014.7
-requests==2.4.1
-simplejson==3.6.3
-sqlparse==0.1.11
-wsgiref==0.1.2
+pytz==2014.10
 
 django-easy-pdf==0.1.0
 django-jsignature==0.7.6
@@ -30,7 +20,7 @@ xhtml2pdf>=0.0.6
 reportlab>=2.7,<3
 
 # Uncomment if you are using Postgres
-#psycopg2==2.5.4
+psycopg2==2.5.4
 
 # Django-Gather -- not ready for prime time yet!
 #git+https://git@github.com/opendoor/django-gather.git
