@@ -29,7 +29,9 @@
 					</span>
 				</h3>
 			{% endif %} 
-
+			
+			<h3><a href="{% url 'tablet.views.document_list' user.username %}">Sign Documents</a></h3>
+			
 			{% if can_signin and not search_results %}
 				<div id="guestform-links">
 					<a href="#" data-role="button" data-inline="true" data-mini="true" id="guestform-show" class="showLink" onclick="showGuestForm();return false;">Is someone else paying today?</a>

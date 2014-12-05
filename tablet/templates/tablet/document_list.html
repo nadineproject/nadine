@@ -5,24 +5,27 @@
 
 {% block content %}
 	<h2>Sign Documents</h2>
-	<table>
+	<div style="margin-left: 3em;">
+	<table style="border: 1px solid black;">
 		<tr>
 			<th>Document</th>
 			<th>Status</th>
 		</tr>
 	{% for key, description in document_types %}
 		<tr>
-			<th>{{ description }}</th>
-			<td>
+			<td style="vertical-align:middle;">{{ description }}</td>
+			<td style="text-align: center;">
 				{% if key in signed_docs %}
-					<a href="{% url 'tablet.views.document_view' user.username key %}">Signed</a>
+					<!--a href="{% url 'tablet.views.document_view' user.username key %}">Signed</a>-->
+					<img src="{% static 'green_check.png' %}" height="32px">
 				{% else %}
 					<input type="button"
 						value="Sign"
-						onClick="parent.location='{% url 'tablet.views.signature_capture' user.username key %}'" >
+						onClick="parent.location='{% url 'tablet.views.signature_capture' user.username key %}'">
 				{% endif %}
 			</th>
 		</tr>
 	{% endfor %}
 	</table>
+	</div>
 {% endblock %}
