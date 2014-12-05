@@ -1,4 +1,6 @@
 import os, uuid
+import base64
+import StringIO
 
 from jsignature.forms import JSignatureField
 from jsignature.utils import draw_signature
@@ -21,6 +23,15 @@ class SignatureForm(forms.Form):
 	def signature_path(self):
 		return os.path.join(settings.MEDIA_ROOT, "signatures/%s" % self.signature_file())
 
+	def raw_signature_data(self):
+		signature_picture = draw_signature(self.cleaned_data.get('signature'))
+		output = StringIO.StringIO()
+		signature_picture.save(output, format="PNG")
+		contents = output.getvalue()
+		output.close()
+		image_data = base64.b64encode(contents)
+		return image_data
+		
 	def save_signature(self):
 		signature_picture = draw_signature(self.cleaned_data.get('signature'))
 		signature_picture.save(self.signature_path())
