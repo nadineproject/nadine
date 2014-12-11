@@ -8,7 +8,7 @@ from django.template import RequestContext, Template
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 from django.views.decorators.csrf import csrf_exempt
@@ -388,7 +388,9 @@ def events_google(request, location_slug=None):
 def file_view(request, disposition, username, file_name):
 	if not request.user.is_staff and not username == request.user.username:
 		return HttpResponseForbidden("Forbidden")
-	file_upload = get_object_or_404(FileUpload, user__username=username, name=file_name)
+	file_upload = FileUpload.objects.filter(user__username=username, name=file_name).first()
+	if not file_upload:
+		raise Http404
 	if disposition == None or not (disposition == "inline" or disposition == "attachment"):
 		disposition = "inline"
 	response = HttpResponse(file_upload.file, content_type=file_upload.content_type)
