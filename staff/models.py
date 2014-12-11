@@ -144,12 +144,20 @@ class MemberManager(models.Manager):
 		future_ending = Q(memberships__end_date__gt=timezone.now().date())
 		return Member.objects.exclude(memberships__isnull=True).filter(unending | future_ending).distinct()
 
+	def active_users(self):
+		return self.active_members().values('user')
+
 	def daily_members(self):
 		member_list = []
 		for active_member in self.active_members().order_by('user__first_name'):
 			if not active_member.last_membership().has_desk:
 				member_list.append(active_member)
 		return member_list
+		
+	def without_member_agreement(self):
+		active_agmts = FileUpload.objects.filter(document_type=FileUpload.MEMBER_AGMT, user__in=self.active_users()).distinct()
+		users_with_agmts = active_agmts.values('user')
+		return self.active_members().exclude(user__in=users_with_agmts)
 
 	def invalid_billing(self):
 		members = []
