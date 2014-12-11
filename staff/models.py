@@ -340,13 +340,13 @@ class Member(models.Model):
 		return DailyLog.objects.filter(guest_of=self).order_by('-visit_date')
 
 	def has_file_uploads(self):
-		return FileUpload.objects.filter(user=self.user) > 0
+		return FileUpload.objects.filter(user=self.user).count() > 0
 
 	def file_uploads(self):
 		files = {}
-		# Only want one (latest) of each document type
+		# Only want the latest one if there are duplicate file names
 		for f in FileUpload.objects.filter(user=self.user).order_by('uploadTS').reverse():
-			files[f.document_type] = f
+			files[f.name] = f
 		return files.values()
 
 	def member_since(self):
