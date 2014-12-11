@@ -1,4 +1,5 @@
 {% extends "staff/staff_base.html" %}
+{% load static %}
 
 {% block sub-title %}Files for {{ member.first_name }} {{ member.last_name }} | {% endblock %}
 
@@ -32,7 +33,7 @@ nav #members-tab { background: #FBD850; color: black; }
 		{% for f in files %}
 			<tr class="{% cycle 'row-even' 'row-odd' %}">
 				<td nowrap>{{ f.uploadTS }}</td>
-				<td style="text-align:right;"><a href="{% url 'members.views.file_view' 'inline' f.user f.name  %}">{{ f.name }}</a></td>
+				<td style="text-align:right;"><a href="{% get_media_prefix %}{{ f.file.name }}">{{ f.name }}</a></td>
 				<td>{{ f.content_type }}</td>
 				<td>{{ f.file.size | filesizeformat }}</td>
 				<td>{{ f.uploaded_by }}</td>
