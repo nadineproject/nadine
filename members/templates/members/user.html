@@ -207,7 +207,7 @@
 		   {% endif %}
 		</table>
 		
-		{% if user.profile.file_uploads %}
+		{% if user.profile.has_file_uploads %}
 			<h3>Private Documents</h3>
 			<ul>
 			{% for f in user.profile.file_uploads %}

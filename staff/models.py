@@ -339,8 +339,15 @@ class Member(models.Model):
 	def host_daily_logs(self):
 		return DailyLog.objects.filter(guest_of=self).order_by('-visit_date')
 
+	def has_file_uploads(self):
+		return FileUpload.objects.filter(user=self.user) > 0
+
 	def file_uploads(self):
-		return FileUpload.objects.filter(user=self.user).order_by('uploadTS')
+		files = {}
+		# Only want one (latest) of each document type
+		for f in FileUpload.objects.filter(user=self.user).order_by('uploadTS').reverse():
+			files[f.document_type] = f
+		return files.values()
 
 	def member_since(self):
 		first = self.first_visit()
