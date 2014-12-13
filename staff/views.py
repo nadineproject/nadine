@@ -28,23 +28,55 @@ from arpwatch import arp
 START_DATE_PARAM = 'start'
 END_DATE_PARAM = 'end'
 
-@login_required
-def members(request):
-	if not request.user.is_staff: return HttpResponseRedirect(reverse('members.views.user', args=[], kwargs={'username':request.user.username}))
-	plans = []
-	member_count = 0
-	for plan in MembershipPlan.objects.all().order_by('name'):
-		member_list = Member.objects.members_by_plan_id(plan.id);
-		member_count = member_count + len(member_list)
-		plans.append({ 'name':plan.name, 'id':plan.id, 'members':member_list, 'count':len(member_list)})
-	has_desk = Member.objects.members_with_desks()
-	plans.append({ 'name':'Has Desk', 'id':'desk', 'members':has_desk, 'count':len(has_desk)})
-	has_key = Member.objects.members_with_keys()
-	plans.append({ 'name':'Has Key', 'id':'key', 'members':has_key, 'count':len(has_key)})
-	has_mail = Member.objects.members_with_mail()
-	plans.append({ 'name':'Has Mail', 'id':'mail', 'members':has_mail, 'count':len(has_mail)})
-	
-	return render_to_response('staff/members.html', { 'plans': plans, 'member_count':member_count }, context_instance=RequestContext(request))
+@staff_member_required
+def members(request, group=None):
+	membership_plans = MembershipPlan.objects.all().order_by('name')
+	if not group:
+		first_plan = membership_plans.first()
+		if first_plan:
+			group = first_plan.name
+
+	group_list = []
+	for plan in membership_plans:
+		group_list.append(plan.name)
+	group_list.append("Has_Desk")
+	group_list.append("Has_Key")
+	group_list.append("Has_Mail")
+	group_list.append("No_Mem_Agmt")
+	group_list.append("No_Key_Agmt")
+
+	group_name = None
+	if group == "Has_Desk":
+		members = Member.objects.members_with_desks()
+		member_count = members.count()
+		group_name = "Members with a Desk"
+	elif group == "Has_Key":
+		members = Member.objects.members_with_keys()
+		member_count = members.count()
+		group_name = "Members with Keys"
+	elif group == "Has_Mail":
+		members = Member.objects.members_with_mail()
+		member_count = members.count()
+		group_name = "Members with Mail Service"
+	elif group == "No_Mem_Agmt":
+		members = Member.objects.without_member_agreement()
+		member_count = members.count()
+		group_name = "Missing Member Agreement"
+	elif group == "No_Key_Agmt":
+		members = Member.objects.without_key_agreement()
+		member_count = members.count()
+		group_name = "Missing Key Agreement"
+	else:
+		# Assume the group is a membership plan
+		members = Member.objects.members_by_plan(group);
+		member_count = len(members)
+		group_name = "%s Members" % group
+
+	# How many members do we have?
+	total_members = Member.objects.active_members().count()
+
+	return render_to_response('staff/members.html', { 'group':group, 'group_name':group_name, 'members':members, 'member_count':member_count,
+		'group_list': group_list, 'total_members':total_members }, context_instance=RequestContext(request))
 
 def member_bcc(request, plan_id):
 	plans = MembershipPlan.objects.all()
@@ -242,17 +274,21 @@ def onboard_task(request, id):
 	return render_to_response('staff/onboard_task.html', {'task': task}, context_instance=RequestContext(request))
 
 @staff_member_required
-def todo(request) :			
+def todo(request):
 	# Group & count by task
 	onboard_tasks = []
 	for task in Onboard_Task.objects.all().order_by('order'):
 		onboard_tasks.append((task, len(task.uncompleted_members())))
 
+	member_alerts = []
+	member_alerts.append(("No_Mem_Agmt", "Missing Member Agreement", Member.objects.without_member_agreement().count()))
+	member_alerts.append(("No_Key_Agmt", "Missing Key Agreement", Member.objects.without_key_agreement().count()))
+	
 	exit_tasks = []
 	for task in ExitTask.objects.all().order_by('order'):
 		exit_tasks.append((task, len(task.uncompleted_members())))
 	
-	return render_to_response('staff/todo.html', {'onboard_tasks':onboard_tasks, 'exit_tasks':exit_tasks, 'member_search_form':MemberSearchForm() }, context_instance=RequestContext(request))
+	return render_to_response('staff/todo.html', {'onboard_tasks':onboard_tasks, 'member_alerts':member_alerts, 'exit_tasks':exit_tasks, 'member_search_form':MemberSearchForm() }, context_instance=RequestContext(request))
 
 @staff_member_required
 def stats(request):		 

@@ -159,6 +159,11 @@ class MemberManager(models.Manager):
 		users_with_agmts = active_agmts.values('user')
 		return self.active_members().exclude(user__in=users_with_agmts)
 
+	def without_key_agreement(self):
+		active_agmts = FileUpload.objects.filter(document_type=FileUpload.KEY_AGMT, user__in=self.active_users()).distinct()
+		users_with_agmts = active_agmts.values('user')
+		return self.members_with_keys().exclude(user__in=users_with_agmts)
+
 	def invalid_billing(self):
 		members = []
 		for m in self.active_members():
@@ -168,7 +173,10 @@ class MemberManager(models.Manager):
 		
 	def recent_members(self, days):
 		return Member.objects.filter(user__date_joined__gt=timezone.localtime(timezone.now())- timedelta(days=days))
-		
+
+	def members_by_plan(self, plan):
+		return [m.member for m in Membership.objects.select_related('member').filter(membership_plan__name=plan).filter(Q(end_date__isnull=True, start_date__lte=timezone.now().date()) | Q(end_date__gt=timezone.now().date())).distinct().order_by('member__user__first_name')]
+
 	def members_by_plan_id(self, plan_id):
 		return [m.member for m in Membership.objects.select_related('member').filter(membership_plan=plan_id).filter(Q(end_date__isnull=True, start_date__lte=timezone.now().date()) | Q(end_date__gt=timezone.now().date())).distinct().order_by('member__user__first_name')]
 

@@ -2,18 +2,6 @@
 
 {% block sub-title %}Members | {% endblock %}
 
-{%block sub-head %}
-	<script>
-		$(function () {
-			{% if search_terms %}
-				jQuery('#tabs').tabs({ active: -1 });
-			{% else %} 
-				jQuery('#tabs').tabs({ active: 0 });
-			{% endif %} 
-		});
-	</script>
-{% endblock %}
-
 {% block style%}
 nav #members-tab { background: #FBD850; color: black; }
 {% endblock %}
@@ -21,26 +9,20 @@ nav #members-tab { background: #FBD850; color: black; }
 {% block content %}
 {% include "staff/member_menu.frag" %}  
 
-<h2>Member List [<i>{{member_count}} total</i> ]</h2>
+<h2>Member List [<i>{{total_members}} total</i> ]</h2>
 
-<div id="tabs">
-	<ul> 
-		{% for plan in plans %}
-			{% ifnotequal plan.count 0 %}		  
-				<li><a href="#tabs-{{forloop.counter}}">{{ plan.name }}</a></li>
-			{% endifnotequal %}
-		{% endfor%}
-	</ul>
-	{% for plan in plans %} 
-		{% ifnotequal plan.count 0 %}
-		<div id="tabs-{{forloop.counter}}">
-			<h3>{{ plan.name }}: <em>{{ plan.count }} member{{ plan.count|pluralize }}</em></h3>
-		{% with plan.members as members %}
-			{% include "staff/member_table.frag" %}
-		{% endwith %}
-		</div>
-		{% endifnotequal %}
-	{% endfor%}		
+<div style="float:right;">
+	<form id="group_form">
+	<strong>View: </strong>
+	<select name="group" OnChange="location.href=group_form.group.options[selectedIndex].value">
+		{% for g in group_list %}
+			<option value="{% url 'staff.views.members' g %}" {% if g == group %} SELECTED {% endif %}>{{ g }}</option>
+		{% endfor %}
+	</select>
+</form>
 </div>
+
+<h3>{{ group_name }}: <em>{{ member_count }} member{{ member_count|pluralize }}</em></h3>
+	{% include "staff/member_table.frag" %}
 
 {% endblock %}

@@ -10,13 +10,8 @@ nav #todo-tab { background: #FBD850; color: black; }
 {% block content %}
 {% include "staff/todo_menu.frag" %}  
 
-<h2>Onboard Task List:</h2>
+<h2>Onboard Tasks:</h2>
 <table>
-   <tr>
-      <th>Task</th>
-      <th>Number remaining</th>
-   </tr>
-
    {% for task, remaining in onboard_tasks %}
       <tr class="{% cycle 'row-even' 'row-odd' %}">
          <td align="left">
@@ -28,12 +23,21 @@ nav #todo-tab { background: #FBD850; color: black; }
    {% endfor %}
 </table>
 
-<h2>Exit Task List:</h2>
+<h2>Members Alerts:</h2>
 <table>
-   <tr>
-      <th>Task</th>
-      <th>Number remaining</th>
-   </tr>
+   {% for key, description, remaining in member_alerts %}
+      <tr class="{% cycle 'row-even' 'row-odd' %}">
+         <td align="left">
+            <a href="{% url 'staff.views.members' key %}">{{ description }}</a>
+         </td>
+         <td>{{ remaining }}</td>
+         <td></td>
+      </tr>
+   {% endfor %}
+</table>
+
+<h2>Exit Tasks:</h2>
+<table>
    {% for task, remaining in exit_tasks %}
       <tr class="{% cycle 'row-even' 'row-odd' %}">
          <td align="left">

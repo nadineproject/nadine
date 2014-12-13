@@ -2,7 +2,8 @@ from django.conf.urls import patterns, include, url
 
 urlpatterns = patterns('staff.views',
 	(r'^$', 'todo'),
-	(r'^member/$', 'members'),
+	(r'^members/$', 'members'),
+	(r'^members/(?P<group>[^/]+)/$', 'members'),
 	(r'^export/$', 'export_members'),
 	(r'^bcc/(?P<plan_id>\d+)/$', 'member_bcc'),
 	(r'^search/$', 'member_search'),
