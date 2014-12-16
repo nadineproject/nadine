@@ -1,5 +1,7 @@
-import os, uuid, pprint, traceback, usaepay
+import os, uuid, pprint, traceback
 from datetime import datetime, time, date, timedelta
+
+from staff import usaepay
 
 from django.db import models
 from django.db.models import Q
@@ -41,80 +43,12 @@ PAYMENT_CHOICES = (
 	('Waved', 'Payment Waved'),
 )
 
-class BillingLog(models.Model):
-	"""A record of when the billing was last calculated and whether it was successful"""
-	started = models.DateTimeField(auto_now_add=True)
-	ended = models.DateTimeField(blank=True, null=True)
-	successful = models.BooleanField(default=False)
-	note = models.TextField(blank=True, null=True)
-	
-	class Meta:
-	   ordering = ['-started']
-	   get_latest_by = 'started'
-	
-	def __unicode__(self):
-	   return 'BillingLog %s: %s' % (self.started, self.successful)
-	
-	def ended_date(self):
-	   if not self.ended: return None
-	   return datetime.date(self.ended)
-
-class Bill(models.Model):
-	"""A record of what fees a Member owes."""
-	bill_date = models.DateField(blank=False, null=False)
-	member = models.ForeignKey('Member', blank=False, null=False, related_name="bills")
-	amount = models.DecimalField(max_digits=7, decimal_places=2)
-	membership = models.ForeignKey('Membership', blank=True, null=True)
-	dropins = models.ManyToManyField('DailyLog', blank=True, null=True, related_name='bills')
-	guest_dropins = models.ManyToManyField('DailyLog', blank=True, null=True, related_name='guest_bills')
-	new_member_deposit = models.BooleanField(default=False, blank=False, null=False)
-	paid_by = models.ForeignKey('Member', blank=True, null=True, related_name='guest_bills')
-	
-	def overage_days(self):
-		return self.dropins.count() - self.membership.dropin_allowance
-
-	class Meta:
-		ordering= ['-bill_date']
-		get_latest_by = 'bill_date'
-		
-	def __unicode__(self):
-		return 'Bill %s [%s]: %s - $%s' % (self.id, self.bill_date, self.member, self.amount)
-	
-	@models.permalink
-	def get_absolute_url(self):
-		return ('staff.views.bill', (), { 'id':self.id })
-	
-	def get_admin_url(self):
-		return urlresolvers.reverse('admin:staff_bill_change', args=[self.id])
-
-class Transaction(models.Model):
-	"""A record of charges for a member."""
-	transaction_date = models.DateTimeField(auto_now_add=True)
-	member = models.ForeignKey('Member', blank=False, null=False)
-	TRANSACTION_STATUS_CHOICES = ( ('open', 'Open'), ('closed', 'Closed') )
-	status = models.CharField(max_length=10, choices=TRANSACTION_STATUS_CHOICES, blank=False, null=False, default='open')
-	bills = models.ManyToManyField(Bill, blank=False, null=False, related_name='transactions')
-	amount = models.DecimalField(max_digits=7, decimal_places=2)
-	note = models.TextField(blank=True, null=True)
-	
-	class Meta:
-		ordering= ['-transaction_date']
-	
-	def __unicode__(self):
-		return '%s: %s' % (self.member.full_name, self.amount)
-	
-	@models.permalink
-	def get_absolute_url(self):
-		return ('staff.views.transaction', (), { 'id':self.id })
-	
-	def get_admin_url(self):
-		return urlresolvers.reverse('admin:staff_transaction_change', args=[self.id])
-
 class HowHeard(models.Model):
 	"""A record of how a member discovered the space"""
 	name = models.CharField(max_length=128)
 	def __str__(self): return self.name
 	class Meta:
+		app_label = 'nadine'
 		ordering = ['name']
 
 class Industry(models.Model):
@@ -122,6 +56,7 @@ class Industry(models.Model):
 	name = models.CharField(max_length=128)
 	def __str__(self): return self.name
 	class Meta:
+		app_label = 'nadine'
 		verbose_name = "Industry"
 		verbose_name_plural = "Industries"
 		ordering = ['name']
@@ -130,6 +65,7 @@ class Neighborhood(models.Model):
 	name = models.CharField(max_length=128)
 	def __str__(self): return self.name
 	class Meta:
+		app_label = 'nadine'
 		ordering = ['name']
 
 class MemberManager(models.Manager):
@@ -221,6 +157,9 @@ class MemberManager(models.Manager):
 		return self.filter(fname_query | lname_query)
 
 	def get_by_natural_key(self, user_id): return self.get(user__id=user_id)
+
+	class Meta:
+		app_label = 'nadine'
 
 def user_photo_path(instance, filename):
 	ext = filename.split('.')[-1]
@@ -516,6 +455,7 @@ class Member(models.Model):
 		return ('staff.views.member_detail', (), { 'member_id':self.id })
 
 	class Meta:
+		app_label = 'nadine'
 		ordering = ['user__first_name', 'user__last_name']
 		get_latest_by = "last_modified"
 
@@ -565,38 +505,42 @@ class DailyLog(models.Model):
 		return urlresolvers.reverse('admin:staff_dailylog_change', args=[self.id])
 
 	class Meta:
+		app_label = 'nadine'
 		verbose_name = "Daily Log"
 		ordering = ['-visit_date', '-created']
+		class MembershipPlan(models.Model):
+			"""Options for monthly membership"""
+			name = models.CharField(max_length=16)
+			description = models.CharField(max_length=128, blank=True, null=True)
+			monthly_rate = models.IntegerField(default=0)
+			daily_rate = models.IntegerField(default=0)
+			dropin_allowance = models.IntegerField(default=0)
+			has_desk = models.NullBooleanField(default=False)
 
-class MembershipPlan(models.Model):
-	"""Options for monthly membership"""
-	name = models.CharField(max_length=16)
-	description = models.CharField(max_length=128, blank=True, null=True)
-	monthly_rate = models.IntegerField(default=0)
-	daily_rate = models.IntegerField(default=0)
-	dropin_allowance = models.IntegerField(default=0)
-	has_desk = models.NullBooleanField(default=False)
+			def __str__(self): return self.name
 
-	def __str__(self): return self.name
+			def get_admin_url(self):
+				return urlresolvers.reverse('admin:staff_membershipplan_change', args=[self.id])
 
-	def get_admin_url(self):
-		return urlresolvers.reverse('admin:staff_membershipplan_change', args=[self.id])
+			class Meta:
+				app_label = 'nadine'
+				verbose_name = "Membership Plan"
+				verbose_name_plural = "Membership Plans"
 
-	class Meta:
-		verbose_name = "Membership Plan"
-		verbose_name_plural = "Membership Plans"
+		class MembershipManager(models.Manager):
 
-class MembershipManager(models.Manager):
+			def by_date(self, target_date):
+				return self.filter(start_date__lte=target_date).filter(Q(end_date__isnull=True) | Q(end_date__gte=target_date))
 
-	def by_date(self, target_date):
-		return self.filter(start_date__lte=target_date).filter(Q(end_date__isnull=True) | Q(end_date__gte=target_date))
+			def create_with_plan(self, member, start_date, end_date, membership_plan, rate=-1, guest_of=None):
+				if rate < 0:
+					rate = membership_plan.monthly_rate 
+				self.create(member=member, start_date=start_date, end_date=end_date, membership_plan=membership_plan,
+					monthly_rate=rate, daily_rate=membership_plan.daily_rate, dropin_allowance=membership_plan.dropin_allowance,
+					has_desk=membership_plan.has_desk, guest_of=guest_of)
 
-	def create_with_plan(self, member, start_date, end_date, membership_plan, rate=-1, guest_of=None):
-		if rate < 0:
-			rate = membership_plan.monthly_rate 
-		self.create(member=member, start_date=start_date, end_date=end_date, membership_plan=membership_plan,
-			monthly_rate=rate, daily_rate=membership_plan.daily_rate, dropin_allowance=membership_plan.dropin_allowance,
-			has_desk=membership_plan.has_desk, guest_of=guest_of)
+				class Meta:
+					app_label = 'nadine'
 
 class Membership(models.Model):
 	"""A membership level which is billed monthly"""
@@ -649,7 +593,7 @@ class Membership(models.Model):
 		if not test_date:
 			test_date = date.today()		
 		return self.prev_billing_date(test_date) + MonthDelta(1)
-	
+
 	def get_allowance(self):
 		if self.guest_of:
 			m = self.guest_of.active_membership()
@@ -666,109 +610,10 @@ class Membership(models.Model):
 		return urlresolvers.reverse('admin:staff_membership_change', args=[self.id])
 
 	class Meta:
+		app_label = 'nadine'
 		verbose_name = "Membership"
 		verbose_name_plural = "Memberships"
 		ordering = ['start_date'];
-
-class ExitTaskManager(models.Manager):
-	def uncompleted_count(self):
-		count = 0;
-		for t in ExitTask.objects.all():
-			count += len(t.uncompleted_members())
-		return count
-
-class ExitTask(models.Model):
-	"""Tasks which are to be completed when a monthly member ends their memberships."""
-	name = models.CharField(max_length=64)
-	description = models.CharField(max_length=512)
-	order = models.SmallIntegerField()
-	has_desk_only = models.BooleanField(verbose_name="Only Applies to Members with Desks", default=False)
-	objects = ExitTaskManager()
-
-	def uncompleted_members(self):
-		eligable_members = [member for member in Member.objects.filter(memberships__isnull=False).exclude(exittaskcompleted__task=self).distinct() if not member.is_active()]
-		if self.has_desk_only:
-			eligable_members = [member for member in eligable_members if member.has_desk()]
-		return eligable_members
-
-	def completed_members(self):
-		return Member.objects.filter(memberships__end_date__gt=timezone.now().date()).filter(exittaskcompleted__task=self).distinct()
-
-	def __str__(self): return self.name
-
-	@models.permalink
-	def get_absolute_url(self): return ('staff.views.exit_task', (), { 'id':self.id })
-
-	class Meta:
-		ordering = ['order']
-
-class ExitTaskCompletedManager(models.Manager):
-	def for_member(self, task, member):
-		if self.filter(task=task, member=member).count() == 0: return None
-		return self.filter(task=task, member=member)[0]
-
-class ExitTaskCompleted(models.Model):
-	"""A record that an exit task has been completed"""
-	member = models.ForeignKey(Member)
-	task = models.ForeignKey(ExitTask)
-	completed_date = models.DateField(auto_now_add=True)
-	objects = ExitTaskCompletedManager()
-	def __str__(self): return '%s - %s - %s' % (self.member, self.task, self.completed_date)
-
-class Onboard_Task_Manager(models.Manager):
-	def uncompleted_count(self):
-		count = 0;
-		for t in Onboard_Task.objects.all():
-			count += t.uncompleted_members().count()
-		return count
-
-class Onboard_Task(models.Model):
-	"""Tasks which are to be completed when a new member joins the space."""
-	name = models.CharField(max_length=64)
-	description = models.CharField(max_length=512)
-	order = models.SmallIntegerField()
-	has_desk_only = models.BooleanField(verbose_name="Only Applies to Members with Desks", default=False)
-	objects = Onboard_Task_Manager()
-
-	def uncompleted_members(self):
-		eligable_members = Member.objects.active_members()
-		if self.has_desk_only:
-			eligable_members = eligable_members.filter(memberships__has_desk=True)
-		return eligable_members.exclude(onboard_task_completed__task=self).distinct()
-
-	def completed_members(self):
-		return Member.objects.filter(onboard_task_completed=self).distinct()
-
-	def __str__(self): return self.name
-
-	@models.permalink
-	def get_absolute_url(self): return ('staff.views.onboard_task', (), { 'id':self.id })
-
-	class Meta:
-		verbose_name = "On-boarding Task"
-		ordering = ['order']
-
-class Onboard_Task_Completed_Manager(models.Manager):
-	def for_member(self, task, member):
-		if self.filter(task=task, member=member).count() == 0: return None
-		return self.filter(task=task, member=member)[0]
-
-class Onboard_Task_Completed(models.Model):
-	"""A record that an onboard task has been completed"""
-	member = models.ForeignKey(Member)
-	task = models.ForeignKey(Onboard_Task)
-	completed_date = models.DateField(auto_now_add=True)
-	completed_by = models.ForeignKey(User, null=True)
-	objects = Onboard_Task_Completed_Manager()
-
-	class Meta:
-		unique_together = ("member", "task")
-
-	def __str__(self): 
-		if self.completed_by:
-			return '%s - %s on %s by %s' % (self.member, self.task, self.completed_date, self.completed_by)
-		else:
-			return '%s - %s on %s' % (self.member, self.task, self.completed_date)
 
 class SentEmailLog(models.Model):
 	created = models.DateTimeField(auto_now_add=True)
@@ -779,6 +624,9 @@ class SentEmailLog(models.Model):
 	note = models.TextField(blank=True, null=True)
 	def __str__(self): return '%s: %s' % (self.created, self.recipient)
 
+	class Meta:
+		app_label = 'nadine'
+
 class SecurityDeposit(models.Model):
 	member = models.ForeignKey('Member', blank=False, null=False)
 	received_date = models.DateField()
@@ -786,12 +634,18 @@ class SecurityDeposit(models.Model):
 	amount = models.PositiveSmallIntegerField(default=0)
 	note = models.CharField(max_length=128, blank=True, null=True)
 
+	class Meta:
+		app_label = 'nadine'
+
 class SpecialDay(models.Model):
 	member = models.ForeignKey('Member', blank=False, null=False)
 	year = models.PositiveSmallIntegerField(blank=True, null=True)
 	month = models.PositiveSmallIntegerField(blank=True, null=True)
 	day = models.PositiveSmallIntegerField(blank=True, null=True)
 	description = models.CharField(max_length=128, blank=True, null=True)
+
+	class Meta:
+		app_label = 'nadine'
 
 class MemberNote(models.Model):
 	created = models.DateTimeField(auto_now_add=True)
@@ -801,6 +655,9 @@ class MemberNote(models.Model):
 
 	def __str__(self): 
 		return '%s - %s: %s' % (self.created.date(), self.member, self.note)
+
+	class Meta:
+		app_label = 'nadine'
 
 class FileUploadManager(models.Manager):
 	def pdf_from_string(self, file_user, file_data, document_type, uploaded_by):
@@ -825,6 +682,9 @@ class FileUploadManager(models.Manager):
 			else:
 				filename = document_type
 		return filename
+
+	class Meta:
+		app_label = 'nadine'
 
 def user_file_upload_path(instance, filename):
 	ext = filename.split('.')[-1]
@@ -871,5 +731,8 @@ class FileUpload(models.Model):
 		return '%s - %s: %s' % (self.uploadTS.date(), self.user, self.name)
 		
 	objects = FileUploadManager()
+	
+	class Meta:
+		app_label = 'nadine'
 
 # Copyright 2014 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

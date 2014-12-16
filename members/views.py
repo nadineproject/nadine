@@ -23,7 +23,7 @@ from members.forms import EditProfileForm
 from members.models import HelpText, UserNotification
 from arpwatch import arp
 from arpwatch.models import ArpLog, UserDevice
-from staff.models import Member, Membership, Transaction, DailyLog
+from nadine.models import Member, Membership, Transaction, DailyLog
 from staff import usaepay, email
 from staff.forms import *
 

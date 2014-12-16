@@ -22,7 +22,7 @@ from django.utils import timezone
 
 import arp
 from arpwatch.models import UserDevice, ArpLog
-from staff.models import Member, Membership, DailyLog
+from nadine.models.core import Member, Membership, DailyLog
 from staff.templatetags import imagetags
 
 class ActivityModel(object):

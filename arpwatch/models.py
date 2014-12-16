@@ -10,7 +10,7 @@ from django.db import connection
 from django.db.models import Min, Max
 from django.utils import timezone
 
-from staff.models import Member, Membership
+from nadine.models.core import Member, Membership
 
 class UserDevice(models.Model):
 	user = models.ForeignKey(User, blank=True, null=True, unique=False)

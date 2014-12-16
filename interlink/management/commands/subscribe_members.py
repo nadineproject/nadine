@@ -9,7 +9,7 @@ logger = logging.getLogger()
 
 from django.core.management.base import BaseCommand, CommandError
 
-from staff.models import Member
+from nadine.models.core import Member
 from interlink.models import MailingList
 
 class Command(BaseCommand):

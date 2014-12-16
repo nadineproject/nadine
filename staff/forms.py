@@ -4,7 +4,7 @@ from django.utils.html import strip_tags
 from django.utils import timezone
 from taggit.forms import *
 
-from staff.models import *
+from nadine.models import *
 from staff import usaepay
 from staff import email
 import datetime, logging

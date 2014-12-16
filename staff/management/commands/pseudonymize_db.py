@@ -24,14 +24,14 @@ class Command(NoArgsCommand):
    def generate_phone_number(self): return '206-%s-%s' % (''.join([str(random.randint(0,9)) for x in range(3)]), ''.join([str(random.randint(0,9)) for x in range(4)]))
 
    def generate_email(self, member):
-      from staff.models import Member
+      from nadine.models import Member
       email = self.cons_email(member)
       while Member.objects.filter(user__email=email).count() > 0:
          email = self.cons_email(member)
       return email
 
    def generate_name(self, is_male):
-      from staff.models import Member
+      from nadine.models import Member
       first_name, last_name = self._cons_name(is_male)
       while Member.objects.filter(user__first_name=first_name, user__last_name=last_name).count() > 0: first_name, last_name = self._cons_name(is_male)
       return (first_name, last_name)
@@ -49,7 +49,7 @@ class Command(NoArgsCommand):
 
 
    def handle_noargs(self, **options):
-      from staff.models import Member, Transaction, DailyLog, Membership
+      from nadine.models import Member, Transaction, DailyLog, Membership
       from django.core.files import File
       pseudonymous_image = open('media/BlankIcon150x150.jpg', 'r')
 

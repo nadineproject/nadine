@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib.sites.models import Site
-from staff.models import Onboard_Task, Bill, ExitTask
+from nadine.models import Onboard_Task, Bill, ExitTask
 from staff.forms import MemberSearchForm
 from members.models import HelpText
 

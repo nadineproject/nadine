@@ -102,6 +102,7 @@ INSTALLED_APPS = (
 	'django.contrib.admin',
 	'django.contrib.humanize',
 	'django.contrib.staticfiles',
+	'nadine',
 	'taggit_templatetags',
 	'taggit',
 	'djcelery',
