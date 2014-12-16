@@ -164,7 +164,7 @@ class MemberManager(models.Manager):
 		users_with_agmts = active_agmts.values('user')
 		return self.members_with_keys().exclude(user__in=users_with_agmts)
 	
-	def missing_photos(self):
+	def missing_photo(self):
 		return self.active_members().filter(photo="")
 
 	def invalid_billing(self):
