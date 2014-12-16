@@ -163,6 +163,9 @@ class MemberManager(models.Manager):
 		active_agmts = FileUpload.objects.filter(document_type=FileUpload.KEY_AGMT, user__in=self.active_users()).distinct()
 		users_with_agmts = active_agmts.values('user')
 		return self.members_with_keys().exclude(user__in=users_with_agmts)
+	
+	def missing_photos(self):
+		return self.active_members().filter(photo="")
 
 	def invalid_billing(self):
 		members = []
