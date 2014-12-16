@@ -44,6 +44,7 @@ def members(request, group=None):
 	group_list.append("Has_Mail")
 	group_list.append("No_Mem_Agmt")
 	group_list.append("No_Key_Agmt")
+	group_list.append("No_Photo")
 
 	group_name = None
 	if group == "Has_Desk":
@@ -66,6 +67,10 @@ def members(request, group=None):
 		members = Member.objects.without_key_agreement()
 		member_count = members.count()
 		group_name = "Missing Key Agreement"
+	elif group == "No_Photo":
+		members = Member.objects.missing_photo()
+		member_count = members.count()
+		group_name = "No Photo"
 	else:
 		# Assume the group is a membership plan
 		members = Member.objects.members_by_plan(group);
@@ -283,6 +288,7 @@ def todo(request):
 	member_alerts = []
 	member_alerts.append(("No_Mem_Agmt", "Missing Member Agreement", Member.objects.without_member_agreement().count()))
 	member_alerts.append(("No_Key_Agmt", "Missing Key Agreement", Member.objects.without_key_agreement().count()))
+	member_alerts.append(("No_Photo", "No Photo", Member.objects.missing_photo().count()))
 	
 	exit_tasks = []
 	for task in ExitTask.objects.all().order_by('order'):
