@@ -15,8 +15,10 @@ nav #members-tab { background: #FBD850; color: black; }
 	<form id="group_form">
 	<strong>View: </strong>
 	<select name="group" OnChange="location.href=group_form.group.options[selectedIndex].value">
-		{% for g in group_list %}
-			<option value="{% url 'staff.views.members' g %}" {% if g == group %} SELECTED {% endif %}>{{ g }}</option>
+		{% for k, v in group_list %}
+			<option value="{% url 'staff.views.members' k %}" {% if k == group %} SELECTED {% endif %}>
+				{{ v }}
+			</option>
 		{% endfor %}
 	</select>
 </form>

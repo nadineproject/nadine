@@ -41,6 +41,44 @@ PAYMENT_CHOICES = (
 	('Waved', 'Payment Waved'),
 )
 
+class MemberGroups():
+	HAS_DESK = "has_desk"
+	HAS_KEY = "has_key"
+	HAS_MAIL = "has_mail"
+	NO_MEMBER_AGREEMENT = "no_mem_agmt"
+	NO_KEY_AGREEMENT = "no_key_agmt"
+	NO_PHOTO = "no_photo"
+	STALE_MEMBERSHIP = "stale"
+	
+	GROUP_DICT = {
+		HAS_DESK: "Members with a Desk",
+		HAS_KEY: "Members with Keys",
+		HAS_MAIL: "Members with Mail Service",
+		NO_MEMBER_AGREEMENT: "Missing Member Agreement", 
+		NO_KEY_AGREEMENT: "Missing Member Agreement",
+		NO_PHOTO: "No Photo",
+		STALE_MEMBERSHIP: "Stale Membership",
+	}
+	
+	@staticmethod
+	def get_members(group):
+		if group == MemberGroups.HAS_DESK:
+			return Member.objects.members_with_desks()
+		elif group == MemberGroups.HAS_KEY:
+			return Member.objects.members_with_keys()
+		elif group == MemberGroups.HAS_MAIL:
+			return Member.objects.members_with_mail()
+		elif group == MemberGroups.NO_MEMBER_AGREEMENT:
+			return Member.objects.missing_member_agreement()
+		elif group == MemberGroups.NO_KEY_AGREEMENT:
+			return Member.objects.missing_key_agreement()
+		elif group == MemberGroups.NO_PHOTO:
+			return Member.objects.missing_photo()
+		elif group == MemberGroups.STALE_MEMBERSHIP:
+			return Member.objects.stale_members()
+		else:
+			return None
+
 class BillingLog(models.Model):
 	"""A record of when the billing was last calculated and whether it was successful"""
 	started = models.DateTimeField(auto_now_add=True)
@@ -140,26 +178,25 @@ class MemberManager(models.Manager):
 			return Member.objects.all().count()
 
 	def active_members(self):
-		unending = Q(memberships__end_date__isnull=True)
-		future_ending = Q(memberships__end_date__gt=timezone.now().date())
-		return Member.objects.exclude(memberships__isnull=True).filter(unending | future_ending).distinct()
+		return Member.objects.filter(id__in=Membership.objects.active_memberships().values('member'))
 
 	def active_users(self):
 		return self.active_members().values('user')
 
 	def daily_members(self):
-		member_list = []
-		for active_member in self.active_members().order_by('user__first_name'):
-			if not active_member.last_membership().has_desk:
-				member_list.append(active_member)
-		return member_list
-		
-	def without_member_agreement(self):
+		return self.active_members().exclude(id__in=self.members_with_desks())
+
+	def stale_members(self):
+		three_months_ago = timezone.now() - MonthDelta(3)
+		recently_used = DailyLog.objects.filter(visit_date__gte=three_months_ago).values('member').distinct()
+		return self.daily_members().exclude(id__in=recently_used)
+
+	def missing_member_agreement(self):
 		active_agmts = FileUpload.objects.filter(document_type=FileUpload.MEMBER_AGMT, user__in=self.active_users()).distinct()
 		users_with_agmts = active_agmts.values('user')
-		return self.active_members().exclude(user__in=users_with_agmts)
+		return self.active_members().exclude(user__in=users_with_agmts) 
 
-	def without_key_agreement(self):
+	def missing_key_agreement(self):
 		active_agmts = FileUpload.objects.filter(document_type=FileUpload.KEY_AGMT, user__in=self.active_users()).distinct()
 		users_with_agmts = active_agmts.values('user')
 		return self.members_with_keys().exclude(user__in=users_with_agmts)
@@ -178,19 +215,24 @@ class MemberManager(models.Manager):
 		return Member.objects.filter(user__date_joined__gt=timezone.localtime(timezone.now())- timedelta(days=days))
 
 	def members_by_plan(self, plan):
-		return [m.member for m in Membership.objects.select_related('member').filter(membership_plan__name=plan).filter(Q(end_date__isnull=True, start_date__lte=timezone.now().date()) | Q(end_date__gt=timezone.now().date())).distinct().order_by('member__user__first_name')]
+		memberships = Membership.objects.active_memberships().filter(membership_plan__name=plan)
+		return Member.objects.filter(id__in=memberships.values('member'))
 
 	def members_by_plan_id(self, plan_id):
-		return [m.member for m in Membership.objects.select_related('member').filter(membership_plan=plan_id).filter(Q(end_date__isnull=True, start_date__lte=timezone.now().date()) | Q(end_date__gt=timezone.now().date())).distinct().order_by('member__user__first_name')]
+		memberships = Membership.objects.active_memberships().filter(membership_plan=plan_id)
+		return Member.objects.filter(id__in=memberships.values('member'))
 
 	def members_with_desks(self):
-		return Member.objects.filter(memberships__isnull=False).filter(Q(memberships__has_desk=True) & (Q(memberships__end_date__isnull=True) | Q(memberships__end_date__gt=timezone.now().date()))).distinct()
+		memberships = Membership.objects.active_memberships().filter(has_desk=True)
+		return Member.objects.filter(id__in=memberships.values('member'))
 
 	def members_with_keys(self):
-		return Member.objects.filter(memberships__isnull=False).filter(Q(memberships__has_key=True) & (Q(memberships__end_date__isnull=True) | Q(memberships__end_date__gt=timezone.now().date()))).distinct()
+		memberships = Membership.objects.active_memberships().filter(has_key=True)
+		return Member.objects.filter(id__in=memberships.values('member'))
 
 	def members_with_mail(self):
-		return Member.objects.filter(memberships__isnull=False).filter(Q(memberships__has_mail=True) & (Q(memberships__end_date__isnull=True) | Q(memberships__end_date__gt=timezone.now().date()))).distinct()
+		memberships = Membership.objects.active_memberships().filter(has_mail=True)
+		return Member.objects.filter(id__in=memberships.values('member'))
 
 	def members_by_neighborhood(self, hood, active_only=True):
 		if active_only:
@@ -598,6 +640,13 @@ class MembershipManager(models.Manager):
 			monthly_rate=rate, daily_rate=membership_plan.daily_rate, dropin_allowance=membership_plan.dropin_allowance,
 			has_desk=membership_plan.has_desk, guest_of=guest_of)
 
+	def active_memberships(self):
+		today = timezone.now().date()
+		current = Q(start_date__lte=today)
+		unending = Q(end_date__isnull=True)
+		future_ending = Q(end_date__gt=today)
+		return self.filter(current & (unending | future_ending)).distinct()
+
 class Membership(models.Model):
 	"""A membership level which is billed monthly"""
 	member = models.ForeignKey(Member, related_name="memberships")
@@ -647,7 +696,7 @@ class Membership(models.Model):
 
 	def next_billing_date(self, test_date=None):
 		if not test_date:
-			test_date = date.today()		
+			test_date = date.today()
 		return self.prev_billing_date(test_date) + MonthDelta(1)
 	
 	def get_allowance(self):

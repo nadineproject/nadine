@@ -1,8 +1,10 @@
 import os
 import traceback
+import operator
 import time as timeo
-from datetime import date, datetime, timedelta
 import calendar, json
+
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 from collections import namedtuple, OrderedDict
 from django.utils import timezone
@@ -36,41 +38,10 @@ def members(request, group=None):
 		if first_plan:
 			group = first_plan.name
 
-	group_list = []
-	for plan in membership_plans:
-		group_list.append(plan.name)
-	group_list.append("Has_Desk")
-	group_list.append("Has_Key")
-	group_list.append("Has_Mail")
-	group_list.append("No_Mem_Agmt")
-	group_list.append("No_Key_Agmt")
-	group_list.append("No_Photo")
-
-	group_name = None
-	if group == "Has_Desk":
-		members = Member.objects.members_with_desks()
+	members = MemberGroups.get_members(group)
+	if members:
 		member_count = members.count()
-		group_name = "Members with a Desk"
-	elif group == "Has_Key":
-		members = Member.objects.members_with_keys()
-		member_count = members.count()
-		group_name = "Members with Keys"
-	elif group == "Has_Mail":
-		members = Member.objects.members_with_mail()
-		member_count = members.count()
-		group_name = "Members with Mail Service"
-	elif group == "No_Mem_Agmt":
-		members = Member.objects.without_member_agreement()
-		member_count = members.count()
-		group_name = "Missing Member Agreement"
-	elif group == "No_Key_Agmt":
-		members = Member.objects.without_key_agreement()
-		member_count = members.count()
-		group_name = "Missing Key Agreement"
-	elif group == "No_Photo":
-		members = Member.objects.missing_photo()
-		member_count = members.count()
-		group_name = "No Photo"
+		group_name = MemberGroups.GROUP_DICT[group]
 	else:
 		# Assume the group is a membership plan
 		members = Member.objects.members_by_plan(group);
@@ -80,8 +51,19 @@ def members(request, group=None):
 	# How many members do we have?
 	total_members = Member.objects.active_members().count()
 
-	return render_to_response('staff/members.html', { 'group':group, 'group_name':group_name, 'members':members, 'member_count':member_count,
-		'group_list': group_list, 'total_members':total_members }, context_instance=RequestContext(request))
+	group_list = []
+	for plan in membership_plans:
+		plan_name = plan.name
+		plan_members = Member.objects.members_by_plan(plan_name)
+		if plan_members.count() > 0:
+			group_list.append((plan_name, "%s Members" % plan_name))
+	for g, d in sorted(MemberGroups.GROUP_DICT.items(), key=operator.itemgetter(0)):
+		group_list.append((g, d))
+
+	return render_to_response('staff/members.html', { 'group':group, 'group_name':group_name, 'members':members, 
+		'member_count':member_count, 'group_list':group_list, 'total_members':total_members 
+		}, context_instance=RequestContext(request)
+	)
 
 def member_bcc(request, plan_id):
 	plans = MembershipPlan.objects.all()
@@ -286,9 +268,10 @@ def todo(request):
 		onboard_tasks.append((task, len(task.uncompleted_members())))
 
 	member_alerts = []
-	member_alerts.append(("No_Mem_Agmt", "Missing Member Agreement", Member.objects.without_member_agreement().count()))
-	member_alerts.append(("No_Key_Agmt", "Missing Key Agreement", Member.objects.without_key_agreement().count()))
-	member_alerts.append(("No_Photo", "No Photo", Member.objects.missing_photo().count()))
+	member_alerts.append((MemberGroups.NO_MEMBER_AGREEMENT, "Missing Member Agreement", Member.objects.missing_member_agreement().count()))
+	member_alerts.append((MemberGroups.NO_KEY_AGREEMENT, "Missing Key Agreement", Member.objects.missing_key_agreement().count()))
+	member_alerts.append((MemberGroups.NO_PHOTO, "No Photo", Member.objects.missing_photo().count()))
+	member_alerts.append((MemberGroups.STALE_MEMBERSHIP, "Stale Membership", Member.objects.stale_members().count()))
 	
 	exit_tasks = []
 	for task in ExitTask.objects.all().order_by('order'):
