@@ -630,9 +630,6 @@ class MembershipPlan(models.Model):
 
 class MembershipManager(models.Manager):
 
-	def by_date(self, target_date):
-		return self.filter(start_date__lte=target_date).filter(Q(end_date__isnull=True) | Q(end_date__gte=target_date))
-
 	def create_with_plan(self, member, start_date, end_date, membership_plan, rate=-1, guest_of=None):
 		if rate < 0:
 			rate = membership_plan.monthly_rate 
@@ -640,11 +637,12 @@ class MembershipManager(models.Manager):
 			monthly_rate=rate, daily_rate=membership_plan.daily_rate, dropin_allowance=membership_plan.dropin_allowance,
 			has_desk=membership_plan.has_desk, guest_of=guest_of)
 
-	def active_memberships(self):
-		today = timezone.now().date()
-		current = Q(start_date__lte=today)
+	def active_memberships(self, target_date=None):
+		if not target_date:
+			target_date = timezone.now().date()
+		current = Q(start_date__lte=target_date)
 		unending = Q(end_date__isnull=True)
-		future_ending = Q(end_date__gt=today)
+		future_ending = Q(end_date__gt=target_date)
 		return self.filter(current & (unending | future_ending)).distinct()
 
 class Membership(models.Model):
@@ -664,10 +662,10 @@ class Membership(models.Model):
 	objects = MembershipManager()
 
 	def save(self, *args, **kwargs):
-		if Membership.objects.by_date(self.start_date).exclude(pk=self.pk).filter(member=self.member).count() != 0:
+		if Membership.objects.active_memberships(self.start_date).exclude(pk=self.pk).filter(member=self.member).count() != 0:
 			raise Exception('Already have a Membership for that start date')
-		if self.end_date and Membership.objects.by_date(self.end_date).exclude(pk=self.pk).filter(member=self.member).count() != 0:
-			raise Exception('Already have a Membership for that end date: %s' % Membership.objects.by_date(self.end_date).exclude(pk=self.pk).filter(member=self.member))
+		if self.end_date and Membership.objects.active_memberships(self.end_date).exclude(pk=self.pk).filter(member=self.member).count() != 0:
+			raise Exception('Already have a Membership for that end date')
 		if self.end_date and self.start_date > self.end_date:
 			raise Exception('A Membership cannot start after it ends')
 		super(Membership, self).save(*args, **kwargs)

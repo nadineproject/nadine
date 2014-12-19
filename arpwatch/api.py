@@ -35,7 +35,7 @@ class ActivityModel(object):
 		# These are the values which are directly exposed via the ActivityModel
 		members = Member.objects.active_members()
 		self.member_count = len(members)
-		self.full_time_count = Membership.objects.by_date(now).filter(has_desk=True).count()
+		self.full_time_count = Membership.objects.active_memberships().filter(has_desk=True).count()
 		self.part_time_count = self.member_count - self.full_time_count
 		self.device_count = len(ArpLog.objects.for_range(midnight, now))
 		self.dropin_count = DailyLog.objects.filter(visit_date__gt=midnight).count()

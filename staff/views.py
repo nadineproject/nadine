@@ -381,7 +381,7 @@ def calculate_monthly_low_high(plan_id, dates):
 	high = 0
 	low = 100000000
 	for working_date in dates:
-		num_residents = Membership.objects.by_date(working_date).filter(membership_plan=plan_id).count()
+		num_residents = Membership.objects.active_memberships(working_date).filter(membership_plan=plan_id).count()
 		high = max(high, num_residents)
 		low = min(low, num_residents)
 		avg = int(round((low + high) / 2))
@@ -398,7 +398,7 @@ def stats_history(request):
 		
 	monthly_stats = [{'start_date':d, 'end_date':beginning_of_next_month(d) - timedelta(days=1)} for d in first_days_in_months(start_date, end_date)]
 	for stat in monthly_stats:
-		stat['monthly_total'] = Membership.objects.by_date(stat['end_date']).count()
+		stat['monthly_total'] = Membership.objects.active_memberships(stat['end_date']).count()
 		stat['started'] = Membership.objects.filter(start_date__range=(stat['start_date'], stat['end_date'])).count()
 		stat['ended'] = Membership.objects.filter(end_date__range=(stat['start_date'], stat['end_date'])).count()
 	monthly_stats.reverse()
@@ -503,7 +503,7 @@ def stats_amv(request):
 	for day in days:
 		membership_count = 0
 		membership_income = 0
-		for membership in Membership.objects.by_date(day['date']):
+		for membership in Membership.objects.active_memberships(day['date']):
 			membership_count = membership_count + 1
 			membership_income = membership_income +  membership.monthly_rate
 		income_total = income_total + membership_income
@@ -531,7 +531,7 @@ def stats_income(request):
 	for day in days:
 		membership_count = 0
 		membership_income = 0
-		for membership in Membership.objects.by_date(day['date']):
+		for membership in Membership.objects.active_memberships(day['date']):
 			membership_count = membership_count + 1
 			membership_income = membership_income +  membership.monthly_rate
 		income_total = income_total + membership_income
@@ -557,7 +557,7 @@ def stats_members(request):
 	member_max = 0;
 	member_total = 0
 	for day in days:
-		day['members'] = Membership.objects.by_date(day['date']).count()
+		day['members'] = Membership.objects.active_memberships(day['date']).count()
 		member_total = member_total + day['members']
 		if day['members'] > member_max:
 			member_max = day['members']
@@ -634,10 +634,11 @@ def activity(request):
 	days = [{'date':start_date + timedelta(days=i)} for i in range((end_date - start_date).days) ]
 	days.reverse()
 	for day in days:
+		memberships = Membership.objects.active_memberships(day['date'])
 		day['daily_logs'] = DailyLog.objects.filter(visit_date=day['date']).count()
-		day['has_desk'] = Membership.objects.by_date(day['date']).filter(has_desk=True).count()
+		day['has_desk'] = memberships.filter(has_desk=True).count()
 		day['occupancy'] = day['daily_logs'] + day['has_desk']
-		day['membership'] = Membership.objects.by_date(day['date']).count()
+		day['membership'] = memberships.count()
 
 	max_membership = 0
 	max_has_desk = 0

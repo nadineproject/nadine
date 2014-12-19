@@ -276,7 +276,7 @@ def delete_notification(request, username):
 #	
 #	counts = {}
 #	counts['members'] = Member.objects.active_members().count()
-#	counts['full_time'] = Membership.objects.by_date(now).filter(has_desk=True).count()
+#	counts['full_time'] = Membership.objects.active_memberships(now).filter(has_desk=True).count()
 #	counts['part_time'] = counts['members'] - counts['full_time']
 #	counts['here_today'] = len(here_today)
 #	counts['devices'] = len(device_logs)
