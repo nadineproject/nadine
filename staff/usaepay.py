@@ -18,6 +18,13 @@ def getAllCustomers(username):
 	except:
 		return None
 
+def getAllEnabledCustomers():
+	try:
+		gateway = JavaGateway()
+		return gateway.entry_point.getEnabledCustomers()
+	except:
+		return None
+
 def auto_bill_enabled(username):
 	try:
 		gateway = JavaGateway()
