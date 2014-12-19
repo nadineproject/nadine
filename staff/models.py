@@ -55,7 +55,7 @@ class MemberGroups():
 		HAS_KEY: "Members with Keys",
 		HAS_MAIL: "Members with Mail Service",
 		NO_MEMBER_AGREEMENT: "Missing Member Agreement", 
-		NO_KEY_AGREEMENT: "Missing Member Agreement",
+		NO_KEY_AGREEMENT: "Missing Key Agreement",
 		NO_PHOTO: "No Photo",
 		STALE_MEMBERSHIP: "Stale Membership",
 	}
