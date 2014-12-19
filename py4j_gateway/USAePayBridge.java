@@ -90,7 +90,6 @@ public class USAePayBridge {
 		CustomerObjectArray customerArray = result.getCustomers();
 		return customerArray.getCustomers();
 	}
-	
 	public void enableCustomer(String user_id) throws Exception {
 		System.out.println("enableCustomer: " + user_id);
 		BigInteger customer_number = getCustomerNumber(user_id);
