@@ -32,9 +32,8 @@ END_DATE_PARAM = 'end'
 
 @staff_member_required
 def members(request, group=None):
-	membership_plans = MembershipPlan.objects.all().order_by('name')
 	if not group:
-		first_plan = membership_plans.first()
+		first_plan = MembershipPlan.objects.all().order_by('name').first()
 		if first_plan:
 			group = first_plan.name
 
@@ -50,30 +49,27 @@ def members(request, group=None):
 
 	# How many members do we have?
 	total_members = Member.objects.active_members().count()
-
-	group_list = []
-	for plan in membership_plans:
-		plan_name = plan.name
-		plan_members = Member.objects.members_by_plan(plan_name)
-		if plan_members.count() > 0:
-			group_list.append((plan_name, "%s Members" % plan_name))
-	for g, d in sorted(MemberGroups.GROUP_DICT.items(), key=operator.itemgetter(0)):
-		group_list.append((g, d))
+	group_list = MemberGroups.get_member_groups()
 
 	return render_to_response('staff/members.html', { 'group':group, 'group_name':group_name, 'members':members, 
 		'member_count':member_count, 'group_list':group_list, 'total_members':total_members 
 		}, context_instance=RequestContext(request)
 	)
 
-def member_bcc(request, plan_id):
-	plans = MembershipPlan.objects.all()
-	if plan_id == '0':
-		plan_name = 'All'
-		member_list = Member.objects.active_members()
+def member_bcc(request, group=None):
+	if not group:
+		group = MemberGroups.ALL
+		group_name = "All Members"
+		members = Member.objects.active_members()
+	elif group in MemberGroups.GROUP_DICT:
+		group_name = MemberGroups.GROUP_DICT[group]
+		members = MemberGroups.get_members(group)
 	else:
-		plan_name = MembershipPlan.objects.get(pk=plan_id)
-		member_list = Member.objects.members_by_plan_id(plan_id);
-	return render_to_response('staff/member_bcc.html', { 'plans':plans, 'plan':plan_name, 'members':member_list }, context_instance=RequestContext(request))
+		group_name = "%s Members" % group
+		members = Member.objects.members_by_plan(group);
+	group_list = MemberGroups.get_member_groups()
+	print group
+	return render_to_response('staff/member_bcc.html', { 'group':group, 'group_name':group_name, 'group_list':group_list, 'members':members }, context_instance=RequestContext(request))
 
 @staff_member_required
 def export_members(request):

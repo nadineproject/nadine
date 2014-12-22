@@ -1,4 +1,5 @@
 import os, uuid, pprint, traceback, usaepay
+import operator
 from datetime import datetime, time, date, timedelta
 
 from django.db import models
@@ -42,6 +43,7 @@ PAYMENT_CHOICES = (
 )
 
 class MemberGroups():
+	ALL = "all"
 	HAS_DESK = "has_desk"
 	HAS_KEY = "has_key"
 	HAS_MAIL = "has_mail"
@@ -59,10 +61,24 @@ class MemberGroups():
 		NO_PHOTO: "No Photo",
 		STALE_MEMBERSHIP: "Stale Membership",
 	}
-	
+
+	@staticmethod
+	def get_member_groups():
+		group_list = []
+		for plan in MembershipPlan.objects.all().order_by('name'):
+			plan_name = plan.name
+			plan_members = Member.objects.members_by_plan(plan_name)
+			if plan_members.count() > 0:
+				group_list.append((plan_name, "%s Members" % plan_name))
+		for g, d in sorted(MemberGroups.GROUP_DICT.items(), key=operator.itemgetter(0)):
+			group_list.append((g, d))
+		return group_list
+		
 	@staticmethod
 	def get_members(group):
-		if group == MemberGroups.HAS_DESK:
+		if group == MemberGroups.ALL:
+			return Member.objects.active_members() 
+		elif group == MemberGroups.HAS_DESK:
 			return Member.objects.members_with_desks()
 		elif group == MemberGroups.HAS_KEY:
 			return Member.objects.members_with_keys()
