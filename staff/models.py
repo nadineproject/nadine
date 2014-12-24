@@ -303,7 +303,6 @@ class Member(models.Model):
 	url_professional = models.URLField(blank=True, null=True)
 	url_facebook = models.URLField(blank=True, null=True)
 	url_twitter = models.URLField(blank=True, null=True)
-	url_biznik = models.URLField(blank=True, null=True)
 	url_linkedin = models.URLField(blank=True, null=True)
 	url_aboutme = models.URLField(blank=True, null=True)
 	url_github = models.URLField(blank=True, null=True)
