@@ -160,7 +160,8 @@ def welcome(request, username):
 
 def document_list(request, username):
 	user = get_object_or_404(User, username=username)
-	doc_types = FileUpload.DOC_TYPES
+	# Should be a more elegent way to remove the first element but this works too!
+	doc_types = (FileUpload.DOC_TYPES[1], FileUpload.DOC_TYPES[2], FileUpload.DOC_TYPES[3])
 	signed_docs = {}
 	for doc in FileUpload.objects.filter(user=user):
 		signed_docs[doc.document_type] = doc
