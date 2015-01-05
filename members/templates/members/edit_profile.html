@@ -13,7 +13,6 @@ nav #members-tab { background: #FBD850; color: black; }
 #id_url_professional { width: 32em; }
 #id_url_facebook { width: 32em; }
 #id_url_twitter { width: 32em; }
-#id_url_biznik { width: 32em; }
 #id_url_linkedin { width: 32em; }
 #id_url_aboutme { width: 32em; }
 #id_url_github { width: 32em; }
@@ -96,21 +95,16 @@ table td 	{text-align: left;}
 				<td>{{ profile_form.url_facebook.errors }}</td>
 			</tr>
 			<tr class="row-even">
-				<td><strong>Biznik Profile</strong>:</td>
-				<td>{{ profile_form.url_biznik }}</td>
-				<td>{{ profile_form.url_biznik.errors }}</td>
-			</tr>
-			<tr class="row-odd">
 				<td><strong>Linkedin Profile</strong>:</td>
 				<td>{{ profile_form.url_linkedin }}</td>
 				<td>{{ profile_form.url_linkedin.errors }}</td>
 			</tr>
-			<tr class="row-even">
+			<tr class="row-odd">
 				<td><strong>Github Profile</strong>:</td>
 				<td>{{ profile_form.url_github }}</td>
 				<td>{{ profile_form.url_github.errors }}</td>
 			</tr>
-			<tr class="row-odd">
+			<tr class="row-even">
 				<td><strong>About Me Profile</strong>:</td>
 				<td>{{ profile_form.url_aboutme }}</td>
 				<td>{{ profile_form.url_aboutme.errors }}</td>

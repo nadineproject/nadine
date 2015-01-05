@@ -38,12 +38,7 @@
          <td><a href="{{ member.url_twitter }}">{{ member.url_twitter }}</a></td>
       </tr>
    {% endif %}
-   {% if member.url_biznik %}
-      <tr>
-         <td>Biznik:</td>
-         <td><a href="{{ member.url_biznik }}">{{ member.url_biznik }}</a></td>
-      </tr>
-   {% endif %}
+
    {% if member.url_linkedin %}
       <tr>
          <td>Linkedin:</td>
