@@ -111,7 +111,7 @@ def staff(request):
 	if mailgun_data["from"] in bcc_list:
 		bcc_list.remove(mailgun_data["from"])
 	logger.debug("bcc list: %s" % bcc_list)
-	mailgun_data[bcc] = bcc_list
+	mailgun_data["bcc"] = bcc_list
 
 	# Send the message 
 	list_address = "staff@%s" % settings.MAILGUN_DOMAIN
@@ -134,7 +134,7 @@ def team(request):
 	if mailgun_data["from"] in bcc_list:
 		bcc_list.remove(mailgun_data["from"])
 	logger.debug("bcc list: %s" % bcc_list)
-	mailgun_data[bcc] = bcc_list
+	mailgun_data["bcc"] = bcc_list
 
 	# Send the message 
 	list_address = "team@%s" % settings.MAILGUN_DOMAIN
@@ -152,8 +152,7 @@ def test80085(request):
 		# mailgun requires a code 200 or it will continue to retry delivery
 		return HttpResponse(status=200)
 
-	bcc_list = ['jsayles@gmail.com', 'jessy@jessykate.com']
-	logger.debug("bcc list: %s" % bcc_list)
+	mailgun_data["bcc"] = ['jsayles@gmail.com', 'jessy@jessykate.com']
 
 	# Send the message 
 	list_address = "test80085@%s" % settings.MAILGUN_DOMAIN
