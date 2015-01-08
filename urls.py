@@ -38,7 +38,7 @@ urlpatterns = patterns('',
 
 	# Inbound Mailgun Emails
 	url(r'^mailgun/staff$', 'nadine.mailgun.staff'),
-	url(r'^mailgun/test80085$', 'nadine.mailgun.staff'),
+	url(r'^mailgun/test80085$', 'nadine.mailgun.test80085'),
 
 	url(r'^$', 'views.index'),
 )

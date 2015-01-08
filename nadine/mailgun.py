@@ -117,6 +117,10 @@ def staff(request):
 	list_address = "staff@%s" % settings.MAILGUN_DOMAIN
 	return mailgun_send(list_address, mailgun_data, attachments)
 	
+# mailgun setup example
+# match_recipient("test80085@(?P<location>.*?).mail.embassynetwork.com")
+# forward("https://embassynetwork.com/locations/\g<location>/email/test80085")
+
 @csrf_exempt
 def test80085(request):
 	mailgun_data = clean_incoming(request)
