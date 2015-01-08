@@ -256,6 +256,13 @@ class MemberManager(models.Manager):
 		else:
 			return Member.objects.filter(neighborhood=hood)
 
+	def managers(self):
+		if hasattr(settings, 'TEAM_MEMBERSHIP_PLAN'):
+			management_plan = MembershipPlan.objects.filter(name=settings.TEAM_MEMBERSHIP_PLAN).first()
+			memberships = Membership.objects.active_memberships().filter(membership_plan=management_plan)
+			return Member.objects.filter(id__in=memberships.values('member'))
+		return None
+
 	def unsubscribe_recent_dropouts(self):
 		"""Remove mailing list subscriptions from members whose memberships expired yesterday and they do not start a membership today"""
 		from interlink.models import MailingList
