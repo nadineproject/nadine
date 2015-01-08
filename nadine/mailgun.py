@@ -10,6 +10,9 @@ from django.views.decorators.csrf import csrf_exempt
 
 logger = logging.getLogger(__name__)
 
+class MailgunException(Exception):
+    pass
+
 def mailgun_send(list_address, mailgun_data, files_dict=None):
 	logger.debug("Mailgun send: %s" % mailgun_data)
 	logger.debug("Mailgun files: %s" % files_dict)
@@ -38,9 +41,10 @@ def mailgun_send(list_address, mailgun_data, files_dict=None):
 	logger.debug("Mailgun response: %s" % resp.text)
 	return HttpResponse(status=200)
 
+
 def clean_incoming(request):
 	if not request.POST:
-		return None
+		raise MailgunException("Request not a POST!")
 
 	header_txt = request.POST.get('message-headers')
 	message_headers = json.loads(header_txt)
@@ -49,14 +53,11 @@ def clean_incoming(request):
 	# A List-Id header will only be present if it has been added manually in
 	# this function, ie, if we have already processed this message. 
 	if request.POST.get('List-Id') or 'List-Id' in message_header_keys:
-		# mailgun requires a code 200 or it will continue to retry delivery
-		logger.debug('List-Id header was found! Dropping message silently')
-		return None
+		raise MailgunException("List-Id header was found!")
 
 	# If 'Auto-Submitted' in message_headers or message_headers['Auto-Submitted'] != 'no':
 	if 'Auto-Submitted' in message_header_keys: 
-		logger.info('message appears to be auto-submitted. reject silently')
-		return None
+		raise MailgunException("Message appears to be auto-submitted")
 
 	# Pull the variables out of the POST
 	recipient = request.POST.get('recipient')
@@ -86,33 +87,57 @@ def clean_incoming(request):
 		"text": body_plain,
 		"html": body_html,
 	}
-	return mailgun_data
+	
+	attachments = []
+	for attachment in request.FILES.values():
+		attachments.append(("inline", attachment))
+
+	return mailgun_data, attachments
 
 @csrf_exempt
 def staff(request):
-	mailgun_data = clean_incoming(request)
-	if not mailgun_data:
-		# Reject silently
+	try:
+		mailgun_data, attachments = clean_incoming(request)
+	except MailgunException as e:
+		# mailgun requires a code 200 or it will continue to retry delivery
 		return HttpResponse(status=200)
 
 	# Build our BCC list
 	# Remove duplicates and the sender
 	bcc_list = []
-	sender = request.POST.get('sender')
 	for user in User.objects.filter(is_staff=True, is_active=True):
 		if user.email not in bcc_list:
 			bcc_list.append(user.email)
-	if sender in bcc_list:
-		bcc_list.remove(sender)
+	if mailgun_data[from_address] in bcc_list:
+		bcc_list.remove(mailgun_data[from_address])
 	logger.debug("bcc list: %s" % bcc_list)
 	mailgun_data[bcc] = bcc_list
 
-	attachments = []
-	for attachment in request.FILES.values():
-		attachments.append(("inline", attachment))
-
 	# Send the message 
 	list_address = "staff@%s" % settings.MAILGUN_DOMAIN
+	return mailgun_send(list_address, mailgun_data, attachments)
+
+@csrf_exempt
+def team(request):
+	try:
+		mailgun_data, attachments = clean_incoming(request)
+	except MailgunException as e:
+		# mailgun requires a code 200 or it will continue to retry delivery
+		return HttpResponse(status=200)
+
+	# Build our BCC list
+	# Remove duplicates and the sender
+	bcc_list = []
+	for m in Member.objects.managers():
+		if m.user.email not in bcc_list:
+			bcc_list.append(m.user.email)
+	if mailgun_data[from_address] in bcc_list:
+		bcc_list.remove(mailgun_data[from_address])
+	logger.debug("bcc list: %s" % bcc_list)
+	mailgun_data[bcc] = bcc_list
+
+	# Send the message 
+	list_address = "team@%s" % settings.MAILGUN_DOMAIN
 	return mailgun_send(list_address, mailgun_data, attachments)
 	
 # mailgun setup example
@@ -121,17 +146,14 @@ def staff(request):
 
 @csrf_exempt
 def test80085(request):
-	mailgun_data = clean_incoming(request)
-	if not mailgun_data:
-		# Reject silently
+	try:
+		mailgun_data, attachments = clean_incoming(request)
+	except MailgunException as e:
+		# mailgun requires a code 200 or it will continue to retry delivery
 		return HttpResponse(status=200)
 
 	bcc_list = ['jsayles@gmail.com', 'jessy@jessykate.com']
 	logger.debug("bcc list: %s" % bcc_list)
-
-	attachments = []
-	for attachment in request.FILES.values():
-		attachments.append(("inline", attachment))
 
 	# Send the message 
 	list_address = "test80085@%s" % settings.MAILGUN_DOMAIN
