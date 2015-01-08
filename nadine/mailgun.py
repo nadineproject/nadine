@@ -108,8 +108,8 @@ def staff(request):
 	for user in User.objects.filter(is_staff=True, is_active=True):
 		if user.email not in bcc_list:
 			bcc_list.append(user.email)
-	if mailgun_data["from_address"] in bcc_list:
-		bcc_list.remove(mailgun_data["from_address"])
+	if mailgun_data["from"] in bcc_list:
+		bcc_list.remove(mailgun_data["from"])
 	logger.debug("bcc list: %s" % bcc_list)
 	mailgun_data[bcc] = bcc_list
 
@@ -131,8 +131,8 @@ def team(request):
 	for m in Member.objects.managers():
 		if m.user.email not in bcc_list:
 			bcc_list.append(m.user.email)
-	if mailgun_data["from_address"] in bcc_list:
-		bcc_list.remove(mailgun_data["from_address"])
+	if mailgun_data["from"] in bcc_list:
+		bcc_list.remove(mailgun_data["from"])
 	logger.debug("bcc list: %s" % bcc_list)
 	mailgun_data[bcc] = bcc_list
 
