@@ -256,10 +256,12 @@ class MemberManager(models.Manager):
 		else:
 			return Member.objects.filter(neighborhood=hood)
 
-	def managers(self):
+	def managers(self, include_future=False):
 		if hasattr(settings, 'TEAM_MEMBERSHIP_PLAN'):
 			management_plan = MembershipPlan.objects.filter(name=settings.TEAM_MEMBERSHIP_PLAN).first()
-			memberships = Membership.objects.active_memberships().filter(membership_plan=management_plan)
+			memberships = Membership.objects.active_memberships().filter(membership_plan=management_plan).distinct()
+			if include_future:
+				memberships = memberships | Membership.objects.future_memberships().filter(membership_plan=management_plan).distinct()
 			return Member.objects.filter(id__in=memberships.values('member'))
 		return None
 
@@ -666,6 +668,10 @@ class MembershipManager(models.Manager):
 		unending = Q(end_date__isnull=True)
 		future_ending = Q(end_date__gt=target_date)
 		return self.filter(current & (unending | future_ending)).distinct()
+
+	def future_memberships(self):
+		today = timezone.now().date()
+		return self.filter(start_date__gte=today)
 
 class Membership(models.Model):
 	"""A membership level which is billed monthly"""

@@ -128,7 +128,7 @@ def team(request):
 	# Build our BCC list
 	# Remove duplicates and the sender
 	bcc_list = []
-	for m in Member.objects.managers():
+	for m in Member.objects.managers(include_future=True):
 		if m.user.email not in bcc_list:
 			bcc_list.append(m.user.email)
 	if mailgun_data["from"] in bcc_list:
