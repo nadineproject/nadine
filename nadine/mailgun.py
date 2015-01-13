@@ -66,6 +66,7 @@ def clean_incoming(request):
 	subject = request.POST.get('subject')
 	body_plain = request.POST.get('body-plain')
 	body_html = request.POST.get('body-html')
+	logger.debug("from: %s, to: %s, subject: %s" % (recipient, from_address, subject))
 
 	# Prefix subject
 	# but only if the prefix string isn't already in the subject line (such as a reply)
