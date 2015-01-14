@@ -14,6 +14,13 @@ logger = logging.getLogger(__name__)
 class MailgunException(Exception):
     pass
 
+def strip_email(email):
+	if '<' in email and '>' in email:
+		start = email.find('<')
+		end = email.find('>')
+		return email[start+1:end]
+	return email
+
 def mailgun_send(list_address, mailgun_data, files_dict=None):
 	#logger.debug("Mailgun send: %s" % mailgun_data)
 	#logger.debug("Mailgun files: %s" % files_dict)
@@ -34,10 +41,14 @@ def mailgun_send(list_address, mailgun_data, files_dict=None):
 	# but seems to be common these days 
 	mailgun_data["h:Reply-To"] = list_address
 
-	if mailgun_data["to"] in mailgun_data["bcc"]:
-		mailgun_data["bcc"].remove(mailgun_data["to"])
-	if mailgun_data["from"] in mailgun_data["bcc"]:
-		mailgun_data["bcc"].remove(mailgun_data["from"])
+	# Make sure the from and to are not in the bcc
+	from_address = strip_email(mailgun_data["from"])
+	if from_address in mailgun_data["bcc"]:
+		mailgun_data["bcc"].remove(from_address)
+	recipient = strip_email(mailgun_data["to"])
+	if recipient in mailgun_data["bcc"]:
+		mailgun_data["bcc"].remove(recipient)
+	logger.debug("from: %s, to: %s, subject: %s" % (recipient, from_address, mailgun_data["subject"]))
 	logger.debug("bcc: %s" % mailgun_data["bcc"])
 
 	resp = requests.post("https://api.mailgun.net/v2/%s/messages" % settings.MAILGUN_DOMAIN,
@@ -72,7 +83,6 @@ def clean_incoming(request):
 	subject = request.POST.get('subject')
 	body_plain = request.POST.get('body-plain')
 	body_html = request.POST.get('body-html')
-	logger.debug("from: %s, to: %s, subject: %s" % (recipient, from_address, subject))
 
 	# Prefix subject
 	# but only if the prefix string isn't already in the subject line (such as a reply)
@@ -116,9 +126,6 @@ def staff(request):
 	for user in User.objects.filter(is_staff=True, is_active=True):
 		if user.email not in bcc_list:
 			bcc_list.append(user.email)
-	if mailgun_data["from"] in bcc_list:
-		bcc_list.remove(mailgun_data["from"])
-	logger.debug("bcc list: %s" % bcc_list)
 	mailgun_data["bcc"] = bcc_list
 
 	# Send the message 
