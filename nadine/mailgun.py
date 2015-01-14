@@ -15,8 +15,8 @@ class MailgunException(Exception):
     pass
 
 def mailgun_send(list_address, mailgun_data, files_dict=None):
-	logger.debug("Mailgun send: %s" % mailgun_data)
-	logger.debug("Mailgun files: %s" % files_dict)
+	#logger.debug("Mailgun send: %s" % mailgun_data)
+	#logger.debug("Mailgun files: %s" % files_dict)
 	
 	if settings.DEBUG:
 		if not hasattr(settings, 'MAILGUN_DEBUG') or settings.MAILGUN_DEBUG:
@@ -33,6 +33,12 @@ def mailgun_send(list_address, mailgun_data, files_dict=None):
 	# (http://www.gnu.org/software/mailman/mailman-admin/node11.html) 
 	# but seems to be common these days 
 	mailgun_data["h:Reply-To"] = list_address
+
+	if mailgun_data["to"] in mailgun_data["bcc"]:
+		mailgun_data["bcc"].remove(mailgun_data["to"])
+	if mailgun_data["from"] in mailgun_data["bcc"]:
+		mailgun_data["bcc"].remove(mailgun_data["from"])
+	logger.debug("bcc: %s" % mailgun_data["bcc"])
 
 	resp = requests.post("https://api.mailgun.net/v2/%s/messages" % settings.MAILGUN_DOMAIN,
 		auth=("api", settings.MAILGUN_API_KEY),
@@ -133,9 +139,6 @@ def team(request):
 	for m in Member.objects.managers(include_future=True):
 		if m.user.email not in bcc_list:
 			bcc_list.append(m.user.email)
-	if mailgun_data["from"] in bcc_list:
-		bcc_list.remove(mailgun_data["from"])
-	logger.debug("bcc list: %s" % bcc_list)
 	mailgun_data["bcc"] = bcc_list
 
 	# Send the message 
@@ -154,7 +157,7 @@ def test80085(request):
 		# mailgun requires a code 200 or it will continue to retry delivery
 		return HttpResponse(status=200)
 
-	mailgun_data["bcc"] = ['jsayles@gmail.com', 'jessy@jessykate.com']
+	mailgun_data["bcc"] = ['jsayles@gmail.com']
 
 	# Send the message 
 	list_address = "test80085@%s" % settings.MAILGUN_DOMAIN

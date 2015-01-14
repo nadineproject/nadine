@@ -34,6 +34,13 @@ def is_active_member(user):
 			return profile.is_active()
 	return False
 
+def is_manager(user):
+	if user and not user.is_anonymous():
+		profile = user.get_profile()
+		if profile:
+			return profile.is_manager()
+	return False
+
 @login_required
 def home(request):
 	title = "Home"
@@ -396,6 +403,13 @@ def file_view(request, disposition, username, file_name):
 	response = HttpResponse(file_upload.file, content_type=file_upload.content_type)
 	response['Content-Disposition'] = '%s; filename="%s"' % (disposition, file_upload.name)
 	return response
+
+@login_required
+@user_passes_test(is_manager, login_url='members.views.not_active')
+def manage_member(request, username):
+	user = get_object_or_404(User, username=username)
+	activity = DailyLog.objects.filter(member__user=user)[:10]
+	return render_to_response('members/manage_member.html', {'user':user, 'activity':activity}, context_instance=RequestContext(request))
 
 #@login_required
 #@user_passes_test(is_active_member, login_url='members.views.not_active')
