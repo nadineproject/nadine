@@ -142,7 +142,7 @@ def staff(request):
 	mailgun_data["to"] = ["staff@%s" % settings.MAILGUN_DOMAIN, ]
 
 	# Going out to all Users that are active and staff
-	mailgun_data["bcc"] = User.objects.filter(is_staff=True, is_active=True).values_list('email', flat=True)
+	mailgun_data["bcc"] = list(User.objects.filter(is_staff=True, is_active=True).values_list('email', flat=True))
 
 	# Send the message 
 	return mailgun_send(mailgun_data, attachments)
@@ -159,7 +159,7 @@ def team(request):
 	mailgun_data["to"] = ["team@%s" % settings.MAILGUN_DOMAIN, ]
 
 	# Goes out to all managers
-	mailgun_data["bcc"] = Member.objects.managers(include_future=True).values_list('user__email', flat=True)
+	mailgun_data["bcc"] = list(Member.objects.managers(include_future=True).values_list('user__email', flat=True))
 
 	# Send the message 
 	return mailgun_send(mailgun_data, attachments)
