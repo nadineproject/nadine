@@ -8,6 +8,9 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
+from django.template import Template, TemplateDoesNotExist, Context
+from django.template.loader import get_template
+
 from staff.models import Member
 
 logger = logging.getLogger(__name__)
@@ -20,16 +23,18 @@ def render_templates(context, email_key):
 	html_content = None
 
 	try:
-		text_template = get_template("emails/%s.txt" % email_key)
+		text_template = get_template("email/%s.txt" % email_key)
 		if text_template:
 			text_content = text_template.render(context)
 
-		html_template = get_template("emails/%s.html" % email_key)
+		html_template = get_template("email/%s.html" % email_key)
 		if html_template:
 			html_content = html_template.render(context)
 	except TemplateDoesNotExist:
 		pass
 
+	logger.debug("text_context: %s" % text_content)
+	logger.debug("html_content: %s" % html_content)
 	return (text_content, html_content)
 
 def mailgun_send(mailgun_data, files_dict=None):
