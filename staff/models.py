@@ -373,7 +373,7 @@ class Member(models.Model):
 		if len(bills) == 0: return None
 		return bills[0]
 
-	def all_memberships(self):
+	def membership_history(self):
 		return Membership.objects.filter(member=self).order_by('-start_date', 'end_date')
 
 	def last_membership(self):
@@ -383,7 +383,7 @@ class Member(models.Model):
 		return memberships[0]
 
 	def active_membership(self):
-		for membership in Membership.objects.filter(member=self).order_by('-start_date', 'end_date'):
+		for membership in self.membership_history():
 			if membership.is_active():
 				return membership
 		return None
@@ -409,8 +409,11 @@ class Member(models.Model):
 			activity.append(l)
 		return activity
 
+	def activity(self):
+		return DailyLog.objects.filter(member=self)
+
 	def paid_count(self):
-		return DailyLog.objects.filter(member=self, payment='Bill').count()
+		return self.activity().filter(payment='Bill').count()
 
 	def first_visit(self):
 		if Membership.objects.filter(member=self).count() > 0:
@@ -550,7 +553,7 @@ class Member(models.Model):
 
 	def membership_days(self):
 		total_days = 0
-		for membership in self.all_memberships():
+		for membership in self.membership_history():
 			end = membership.end_date
 			if not end: 
 				end = timezone.now().date()
