@@ -4,7 +4,7 @@ from operator import itemgetter, attrgetter
 from calendar import Calendar, HTMLCalendar
 
 from django.conf import settings
-from django.template import RequestContext, Template
+from django.template import RequestContext, Template, Context
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -14,6 +14,8 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.template.defaultfilters import slugify
+from django.contrib.sites.models import Site
+
 #from gather.models import Event, Location, EventAdminGroup
 #from gather.forms import EventForm
 #from gather.views import get_location
@@ -26,6 +28,7 @@ from arpwatch.models import ArpLog, UserDevice
 from staff.models import Member, Membership, Transaction, DailyLog
 from staff import usaepay, email
 from staff.forms import *
+from nadine import mailgun
 
 def is_active_member(user):
 	if user and not user.is_anonymous():
@@ -408,8 +411,14 @@ def file_view(request, disposition, username, file_name):
 @user_passes_test(is_manager, login_url='members.views.not_active')
 def manage_member(request, username):
 	user = get_object_or_404(User, username=username)
-	activity = DailyLog.objects.filter(member__user=user)[:10]
-	return render_to_response('members/manage_member.html', {'user':user, 'activity':activity}, context_instance=RequestContext(request))
+	c = Context({
+		'today': timezone.localtime(timezone.now()), 
+		'user': user, 
+		'domain': Site.objects.get_current().domain,
+		}) 
+	text_content, html_content = mailgun.render_templates(c, "manage_member")
+	#activity = DailyLog.objects.filter(member__user=user)[:10]
+	return render_to_response('members/manage_member.html', {'user':user, 'page_content':html_content}, context_instance=RequestContext(request))
 
 #@login_required
 #@user_passes_test(is_active_member, login_url='members.views.not_active')

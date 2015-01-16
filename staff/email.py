@@ -1,13 +1,17 @@
 import mailchimp
 import traceback
-
+import logging
 from datetime import datetime, time, date, timedelta
+
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.template.loader import render_to_string
+from django.template import Template, TemplateDoesNotExist, Context
 from django.core.mail import send_mail, EmailMessage
+from django.utils import timezone
+
 from staff.models import Member, DailyLog, SentEmailLog
-import logging
+from nadine import mailgun
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +47,10 @@ def send_manual(user, message):
 	if message == "new_key" or message == "all":
 		send_new_key(user)
 	return True
+
+#####################################################################
+#                        User Alerts
+#####################################################################
 
 def send_introduction(user):
 	site = Site.objects.get_current()
@@ -126,6 +134,10 @@ def send_contact_request(user, target):
 	message = render_to_string('email/contact_request.txt', {'user':user, 'target':target, 'site':site})
 	send(target.email, subject, message)
 
+#####################################################################
+#                        System Alerts
+#####################################################################
+
 def announce_new_user(user):
 	subject = "New User - %s" % (user.get_full_name())
 	message = "Team,\r\n\r\n \t%s just signed in for the first time! %s" % (user.get_full_name(), team_signature(user))
@@ -170,6 +182,29 @@ def announce_bad_email(user):
 	subject = "Email Problem - %s" % (user.get_full_name())
 	message = "Team,\r\n\r\n \tWe had a problem sending the introduction email to '%s'. %s" % (user.email, team_signature(user))
 	send_quietly(settings.TEAM_EMAIL_ADDRESS, subject, message)
+
+def manage_member_email(user):
+	subject = "Email Problem - %s" % (user.get_full_name())
+	c = Context({
+		'user': user, 
+		'domain': Site.objects.get_current().domain,
+		}) 
+	text_content, html_content = mailgun.render_templates(c, "manage_member")
+	logger.debug("text_context: %s" % text_content)
+	logger.debug("html_content: %s" % html_content)
+	
+	mailgun_data =  {"from": settings.EMAIL_ADDRESS,
+#		"to": [settings.TEAM_EMAIL_ADDRESS, ],
+		"to": [settings.EMAIL_ADDRESS, ],
+		"subject": subject,
+		"text": text_content,
+		"html": html_content,
+	}
+	mailgun.mailgun_send(mailgun_data)
+
+#####################################################################
+#                        Utilities
+#####################################################################
 
 def team_signature(user):
 	site = Site.objects.get_current()

@@ -1,0 +1,69 @@
+<style>
+table, th, td {
+   border: 1px solid black;
+	 text-align:center;
+}
+</style>
+
+<h2>{{ user.get_full_name }}</h2>
+	{% if user.profile.photo %}
+		<img width="170" src="https://{{domain}}{{ user.profile.photo.url }}">
+	{% else %}
+		<p>[ No photo for this user. ]</p>
+	{% endif %}
+
+<p></p>
+
+{% if user.profile.onboard_tasks_incomplete %}
+	<h3>Action Needed</h3>
+	<table style="width:100%;">
+	  <tr>
+	     <th>Task</th>
+	     <th>Action</th>
+	  </tr>
+	  {% for t in user.profile.onboard_tasks_incomplete %}
+	     <tr>
+	        <td style="width:95%;">{{ t.name }}</td>
+	        <td><input type="button" value="Done"/></td>
+	     </tr>
+	  {% endfor %}
+	</table>
+{% endif %}
+
+<h3>Recent Activity</h3>
+<table style="width:100%;">
+  <tr>
+     <th nowrap>Date</th>
+     <th>Payment</th>
+     <th>Guest of</th>
+     <th>Notes</th> 
+  </tr>
+  {% for log in user.profile.activity|slice:":10" %}
+     <tr>
+        <td>{{ log.visit_date|date:"M d, Y" }}</td>
+        <td>{{ log.payment }}</td>
+        <td>{{ log.guest_of|default:"&nbsp;" }}</td>
+        <td>{{ log.note }}&nbsp;</td>
+     </tr>
+	{% empty %}
+		<tr><td colspan="4"><i>There is no recorded activity for this user.</i></td></tr>
+  {% endfor %}
+</table>
+
+<h3>Membership History</h3>
+<table style="width:100%;">
+  <tr>
+     <th>Membership</th>
+     <th>Start</th>
+     <th>End</th> 
+  </tr>
+  {% for m in user.profile.membership_history %}
+     <tr>
+        <td>{{ m.membership_plan }}</td>
+        <td>{{ m.start_date }}</td>
+        <td>{{ m.end_date }}&nbsp;</td>
+     </tr>
+	{% empty %}
+		<tr><td colspan="4"><i>There is no membership history for this user.</i></td></tr>
+  {% endfor %}
+</table>
