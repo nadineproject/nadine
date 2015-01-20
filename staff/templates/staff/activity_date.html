@@ -28,7 +28,7 @@ nav #activity-tab { background: #FBD850; color: black; }
          <th>Member</th>
          <th>Payment</th>
          <th>Guest of</th>
-         <th>Notes</th> 
+         <th>Note</th> 
       </tr>
       {% for log in daily_logs %}
          <tr class="{% cycle 'row-even' 'row-odd' %}">
@@ -47,7 +47,7 @@ nav #activity-tab { background: #FBD850; color: black; }
          <td>{{ daily_log_form.member }}</td>
          <td>{{ daily_log_form.payment }}</td>
          <td>{{ daily_log_form.guest_of }}</td>
-         <td>{{ daily_log_form.notes }}</td>
+         <td>{{ daily_log_form.note }}</td>
          <td><input type="submit" value="Add" /></td>
       </tr>
       {% csrf_token %}
@@ -74,7 +74,7 @@ nav #activity-tab { background: #FBD850; color: black; }
 				<td style="text-align:left;"><a href="{% url 'staff.views.member_activity' member.id %}">{{ member }}</a></td>
 				<td>{{ daily_log_form.payment }}</td>
 				<td>{{ daily_log_form.guest_of }}</td>
-				<td>{{ daily_log_form.notes }}</td>
+				<td>{{ daily_log_form.note }}</td>
 	         <td><input type="submit" value="Add" /></td>
 				<td></td>
 			</tr>

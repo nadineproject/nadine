@@ -134,7 +134,7 @@ class DailyLogForm(forms.Form):
 	member = forms.ModelChoiceField(queryset=member_list, required=True)
 	payment = forms.ChoiceField(choices=PAYMENT_CHOICES, required=True)
 	guest_of = forms.ModelChoiceField(queryset=member_list, required=False)
-	notes = forms.CharField(required=False)
+	note = forms.CharField(required=False)
 
 	def save(self):
 		"Creates the Daily Log to track member activity"
@@ -144,7 +144,7 @@ class DailyLogForm(forms.Form):
 		daily_log.visit_date = self.cleaned_data['visit_date']
 		daily_log.payment = self.cleaned_data['payment']
 		daily_log.guest_of = self.cleaned_data['guest_of']
-		daily_log.notes = self.cleaned_data['notes']
+		daily_log.note = self.cleaned_data['note']
 		daily_log.save()
 		return daily_log
 
