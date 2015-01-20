@@ -452,13 +452,12 @@ class Member(models.Model):
 				return None
 
 	def membership_type(self):
-		# First check for existing monthly
-		memberships = Membership.objects.filter(member=self)
-		if self.last_membership():
+		active_membership = self.active_membership()
+		if active_membership:
+			return active_membership.membership_plan
+		else:
 			last_monthly = self.last_membership()
-			if last_monthly.end_date == None or last_monthly.end_date > timezone.now().date():
-				return last_monthly.membership_plan
-			else:
+			if last_monthly:
 				return "Ex" + str(last_monthly.membership_plan)
 
 		# Now check daily logs
