@@ -668,7 +668,7 @@ class MembershipManager(models.Manager):
 			target_date = timezone.now().date()
 		current = Q(start_date__lte=target_date)
 		unending = Q(end_date__isnull=True)
-		future_ending = Q(end_date__gt=target_date)
+		future_ending = Q(end_date__gte=target_date)
 		return self.filter(current & (unending | future_ending)).distinct()
 
 	def future_memberships(self):
