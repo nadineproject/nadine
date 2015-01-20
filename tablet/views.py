@@ -102,7 +102,14 @@ def post_create(request, username):
 			except:
 				logger.error("Could not send introduction email to %s" % user.email)
 			return HttpResponseRedirect(reverse('tablet.views.members', kwargs={}))
-	return render_to_response('tablet/post_create.html',{'user':user}, context_instance=RequestContext(request))
+	
+	search_results = None
+	if request.method == "POST":
+		member_search_form = MemberSearchForm(request.POST)
+		if member_search_form.is_valid(): 
+			search_results = Member.objects.search(member_search_form.cleaned_data['terms'], active_only=True)
+	
+	return render_to_response('tablet/post_create.html',{'user':user, 'search_results':search_results}, context_instance=RequestContext(request))
 
 def signin_user(request, username):
 	return signin_user_guest(request, username, None)
