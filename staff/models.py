@@ -391,16 +391,19 @@ class Member(models.Model):
 	def activity_this_month(self, test_date=None):
 		if not test_date:
 			test_date = date.today()
+			
 		membership = self.active_membership()
-		if not membership: 
-			# Not a member
-			return None
-		if membership.guest_of:
-			# Return host's activity
-			host = membership.guest_of
-			return host.activity_this_month()
-		month_start = membership.prev_billing_date(test_date)
+		if membership: 
+			if membership.guest_of:
+				# Return host's activity
+				host = membership.guest_of
+				return host.activity_this_month()
+			month_start = membership.prev_billing_date(test_date)
+		else:
+			# Just go back one month from this date since there isn't a membership to work with
+			month_start = test_date - MonthDelta(1)
 		#print month_start
+		
 		activity = []
 		for m in [self] + self.guests():
 			for l in DailyLog.objects.filter(member=m, payment='Bill', visit_date__gte=month_start):
