@@ -20,7 +20,7 @@ xhtml2pdf>=0.0.6
 reportlab>=2.7,<3
 
 # Uncomment if you are using Postgres
-psycopg2==2.5.4
+#psycopg2==2.5.4
 
 # Django-Gather -- not ready for prime time yet!
 #git+https://git@github.com/opendoor/django-gather.git
