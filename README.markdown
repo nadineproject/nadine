@@ -18,11 +18,12 @@ Create a virtual environment for the python project, pull down the code, and ins
 	source bin/activate
 	git clone https://github.com/nadineproject/nadine.git
 	cd nadine
+
+PostgreSQL:  Uncomment 'psycopg2' in the requirements.txt file and edit local_settings.py for your database settings.  Create a blank database and grant all permissions to whatever account/password combination you want to use for the app.
 	pip install -r requirements.txt
 
 Copy nadine/local_settings.dist to nadine/local_settings.py and edit it to reflect your local settings. 
-
-PostgreSQL:  Uncomment 'psycopg2' in the requirements.txt file and edit local_settings.py for your database settings.  Create a blank database and grant all permissions to whatever account/password combination you want to use for the app.
+	cp nadine/local_settings.dist nadine/local_settings.py
 
 Run Django's migrate command and create a superuser.  
 
