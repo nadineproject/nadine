@@ -4,6 +4,11 @@ This is the Django web project which runs behinds the scenes of coworking spaces
 
 Most of the action is in the staff application, where you'll find a member tracking and billing system.
 
+## Requirements
+
+* Phython (Probably comes with your system otherwise it can be downloaded from their [website](https://www.python.org/downloads/).)
+* virtualenv (install with `pip virtualenv`)
+
 ## Handy Installation Instructions
 
 Create a virtual environment for the python project, pull down the code, and install all the requirements
