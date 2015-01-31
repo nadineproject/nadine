@@ -11,7 +11,7 @@ Most of the action is in the staff application, where you'll find a member track
 
 ## Handy Installation Instructions
 
-Create a virtual environment for the python project, pull down the code, and install all the requirements
+Create a virtual environment for the python project and pull down the code.
 
 	virtualenv nadine
 	cd nadine
@@ -19,13 +19,18 @@ Create a virtual environment for the python project, pull down the code, and ins
 	git clone https://github.com/nadineproject/nadine.git
 	cd nadine
 
-PostgreSQL:  Uncomment 'psycopg2' in the requirements.txt file and edit local_settings.py for your database settings.  Create a blank database and grant all permissions to whatever account/password combination you want to use for the app.
-
-	pip install -r requirements.txt
-
-Copy nadine/local_settings.dist to nadine/local_settings.py and edit it to reflect your local settings. 
+Configure the local settings for your environment
 
 	cp nadine/local_settings.dist nadine/local_settings.py
+	vi nadine/local_settings.py
+
+PostgreSQL:  Uncomment 'psycopg2' in the requirements.txt file and edit local_settings.py for your database settings.  Create a blank database and grant all permissions to whatever account/password combination you want to use for the app.
+
+	psql -c "create database nadinedb"
+
+Install all the requirments 
+
+	pip install -r requirements.txt
 
 Run Django's migrate command and create a superuser.  
 
