@@ -1,4 +1,4 @@
-Django>=1.7,<1.8
+Django>=1.7.4,<1.8
 MonthDelta==1.0b
 Pillow==2.6.1
 celery==3.1.17
