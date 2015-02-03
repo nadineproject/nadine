@@ -13,14 +13,12 @@ mailchimp==2.0.9
 py4j==0.8.2.1
 pycrypto==2.6.1
 pytz==2014.10
+psycopg2==2.5.4
 
 django-easy-pdf==0.1.0
 django-jsignature==0.7.6
 xhtml2pdf>=0.0.6
 reportlab>=2.7,<3
-
-# Uncomment if you are using Postgres
-#psycopg2==2.5.4
 
 # Django-Gather -- not ready for prime time yet!
 #git+https://git@github.com/opendoor/django-gather.git
