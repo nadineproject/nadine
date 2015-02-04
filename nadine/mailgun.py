@@ -35,8 +35,8 @@ def render_templates(context, email_key):
 	except TemplateDoesNotExist:
 		pass
 
-	logger.debug("text_context: %s" % text_content)
-	logger.debug("html_content: %s" % html_content)
+	#logger.debug("text_context: %s" % text_content)
+	#logger.debug("html_content: %s" % html_content)
 	return (text_content, html_content)
 
 def mailgun_send(mailgun_data, files_dict=None):
@@ -69,14 +69,17 @@ def mailgun_send(mailgun_data, files_dict=None):
 	mailgun_data["h:Reply-To"] = to_address
 	mailgun_data["h:Precedence"] = "list"
 
-	# Make sure nothign goes out if the system is in debug mode
+	# Fire in the hole!
+	return mailgun_send_raw(mailgun_data, files_dict)
+
+def mailgun_send_raw(mailgun_data, files_dict=None):
+	# Make sure nothing goes out if the system is in debug mode
 	if settings.DEBUG:
 		if not hasattr(settings, 'MAILGUN_DEBUG') or settings.MAILGUN_DEBUG:
 			# We will see this message in the mailgun logs but nothing will actually be delivered
 			logger.debug("mailgun_send: setting testmode=yes")
 			mailgun_data["o:testmode"] = "yes"
 
-	# Fire in the hole!
 	resp = requests.post("https://api.mailgun.net/v2/%s/messages" % settings.MAILGUN_DOMAIN,
 		auth=("api", settings.MAILGUN_API_KEY),
 		data=mailgun_data, 
@@ -108,13 +111,7 @@ def clean_incoming(request):
 	subject = request.POST.get('subject')
 	body_plain = request.POST.get('body-plain')
 	body_html = request.POST.get('body-html')
-
-	# Prefix subject
-	# but only if the prefix string isn't already in the subject line (such as a reply)
-	#if subject.find(location.email_subject_prefix) < 0:
-	#	prefix = "["+location.email_subject_prefix + "] " 
-	#	subject = prefix + subject
-	#logger.debug("subject: %s" % subject)
+	logger.debug("Incoming from: %s, to: %s, subject: %s" % (from_address, recipient, subject))
 
 	# Add in a footer
 	text_footer = "\n\n-------------------------------------------\n*~*~*~* Sent through Nadine *~*~*~* "
@@ -146,7 +143,7 @@ def send_manage_member(user):
 		"text": text_content,
 		"html": html_content,
 	}
-	return mailgun_send(mailgun_data)
+	return mailgun_send_raw(mailgun_data)
 	
 def get_manage_member_content(user):
 	if settings.DEBUG: 
