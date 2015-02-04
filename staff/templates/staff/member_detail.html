@@ -501,7 +501,7 @@ function gotoEmailReset(emailAddress){
 					<td>{{ d.day }}</td>
 					<td>{% if d.year %}{{ d.year }}{% endif %}</td>
 					<td style="text-align:left;">{{ d.description }}</td>
-					<td style="text-align:right">[ <a href="{% url 'admin:staff_specialday_change' d.id %}">edit</a> ]</td>
+					<td style="text-align:right">[ <a href="{% url 'admin:nadine_specialday_change' d.id %}">edit</a> ]</td>
 				</tr>
 			{% endfor %}
 		<form action="." method=POST>
