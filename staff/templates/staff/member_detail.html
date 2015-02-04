@@ -471,7 +471,7 @@ function gotoEmailReset(emailAddress){
 					<td>{{ note.created|date:"M d, Y"}}</td>
 					<td>{% if note.created_by %}{{ note.created_by }} {% endif %}</td>
 					<td style="text-align:left;">{{ note.note }}</td>
-					<td style="text-align:right;" nowrap>[ <a href="{% url 'admin:staff_membernote_change' note.id %}">edit</a> ]</td>
+					<td style="text-align:right;" nowrap>[ <a href="{% url 'admin:nadine_membernote_change' note.id %}">edit</a> ]</td>
 				</tr>
 			{% endfor %}
 		<table>
