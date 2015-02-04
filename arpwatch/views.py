@@ -13,7 +13,7 @@ from arpwatch.forms import *
 from arpwatch.models import *
 from arpwatch import arp
 
-from staff.models import Member
+from nadine.models import Member
 
 @staff_member_required
 def index(request):

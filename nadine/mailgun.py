@@ -11,7 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.template import Template, TemplateDoesNotExist, Context
 from django.template.loader import get_template
 
-from staff.models import Member
+from nadine.models import Member
 
 logger = logging.getLogger(__name__)
 

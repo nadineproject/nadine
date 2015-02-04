@@ -1,7 +1,7 @@
 import time
 import logging
 import traceback
-from staff.models import Bill, BillingLog, Transaction, Member, Membership, DailyLog
+from nadine.models import Bill, BillingLog, Transaction, Member, Membership, DailyLog
 from django.conf import settings
 from django.db.models import Count, Q
 from django.core.exceptions import ObjectDoesNotExist

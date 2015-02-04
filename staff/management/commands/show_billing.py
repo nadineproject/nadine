@@ -17,7 +17,7 @@ class Command(BaseCommand):
    requires_model_validation = False
 
    def handle(self, *labels, **options):
-      from staff.models import Member
+      from nadine.models import Member
       from staff.billing import Run
       if not labels or len(labels) != 1: raise CommandError('Enter one argument, a user id.')
       member_id = int(labels[0])

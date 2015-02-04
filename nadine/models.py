@@ -1,4 +1,4 @@
-import os, uuid, pprint, traceback, usaepay
+import os, uuid, pprint, traceback
 import operator
 from datetime import datetime, time, date, timedelta
 
@@ -22,8 +22,9 @@ from taggit.models import TaggedItemBase
 import django.dispatch
 from django.dispatch import receiver
 from django.db.models.signals import pre_save, post_save
-
 from PIL import Image
+
+from staff import usaepay
 
 #from south.modelsinspector import add_introspection_rules
 #add_introspection_rules([], ["^django_localflavor_us\.models\.USStateField"])
@@ -139,7 +140,7 @@ class Bill(models.Model):
 		return ('staff.views.bill', (), { 'id':self.id })
 	
 	def get_admin_url(self):
-		return urlresolvers.reverse('admin:staff_bill_change', args=[self.id])
+		return urlresolvers.reverse('admin:nadine_bill_change', args=[self.id])
 
 class Transaction(models.Model):
 	"""A record of charges for a member."""
@@ -162,7 +163,7 @@ class Transaction(models.Model):
 		return ('staff.views.transaction', (), { 'id':self.id })
 	
 	def get_admin_url(self):
-		return urlresolvers.reverse('admin:staff_transaction_change', args=[self.id])
+		return urlresolvers.reverse('admin:nadine_transaction_change', args=[self.id])
 
 class HowHeard(models.Model):
 	"""A record of how a member discovered the space"""
@@ -363,7 +364,7 @@ class Member(models.Model):
 		return Bill.objects.filter(models.Q(member=self) | models.Q(paid_by=self)).filter(transactions=None).aggregate(models.Sum('amount'))['amount__sum']
 
 	def pay_bills_form(self):
-		from forms import PayBillsForm
+		from staff.forms import PayBillsForm
 		return PayBillsForm(initial={'member_id':self.id, 'amount':self.open_bills_amount })
 
 	def last_bill(self):
@@ -633,7 +634,7 @@ class DailyLog(models.Model):
 		return '%s - %s' % (self.visit_date, self.member)
 
 	def get_admin_url(self):
-		return urlresolvers.reverse('admin:staff_dailylog_change', args=[self.id])
+		return urlresolvers.reverse('admin:nadine_dailylog_change', args=[self.id])
 
 	class Meta:
 		verbose_name = "Daily Log"
@@ -651,7 +652,7 @@ class MembershipPlan(models.Model):
 	def __str__(self): return self.name
 
 	def get_admin_url(self):
-		return urlresolvers.reverse('admin:staff_membershipplan_change', args=[self.id])
+		return urlresolvers.reverse('admin:nadine_membershipplan_change', args=[self.id])
 
 	class Meta:
 		verbose_name = "Membership Plan"
@@ -743,7 +744,7 @@ class Membership(models.Model):
 		return '%s - %s - %s' % (self.start_date, self.member, self.membership_plan)
 
 	def get_admin_url(self):
-		return urlresolvers.reverse('admin:staff_membership_change', args=[self.id])
+		return urlresolvers.reverse('admin:nadine_membership_change', args=[self.id])
 
 	class Meta:
 		verbose_name = "Membership"
