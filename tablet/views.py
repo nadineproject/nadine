@@ -12,6 +12,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.loader import render_to_string
 from django.utils import timezone
+
+from nadine import mailgun
 from nadine.models import Member, DailyLog, Bill, FileUpload
 from staff.forms import NewUserForm, MemberSearchForm
 from arpwatch import arp
@@ -141,7 +143,8 @@ def signin_user_guest(request, username, guestof):
 				logger.error("Could not send introduction email to %s" % user.email)
 		else:
 			if member.onboard_tasks_to_complete() > 0:
-				email.announce_tasks_todo(user, member.onboard_tasks_incomplete())
+				#email.announce_tasks_todo(user, member.onboard_tasks_incomplete())
+				mailgun.send_manage_member(user)
 	return HttpResponseRedirect(reverse('tablet.views.welcome', kwargs={'username':username}))
 
 def welcome(request, username):

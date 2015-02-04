@@ -10,6 +10,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.template import Template, TemplateDoesNotExist, Context
 from django.template.loader import get_template
+from django.contrib.sites.models import Site
+from django.utils import timezone
 
 from nadine.models import Member
 
@@ -134,6 +136,29 @@ def clean_incoming(request):
 		attachments.append(("inline", attachment))
 
 	return (mailgun_data, attachments)
+
+def send_manage_member(user):
+	subject = "Incomplete Tasks - %s" % (user.get_full_name())
+	text_content, html_content = get_manage_member_content(user)
+	mailgun_data =  {"from": settings.EMAIL_ADDRESS,
+		"to": [settings.TEAM_EMAIL_ADDRESS, ],
+		"subject": subject,
+		"text": text_content,
+		"html": html_content,
+	}
+	return mailgun_send(mailgun_data)
+	
+def get_manage_member_content(user):
+	if settings.DEBUG: 
+		site_url = '' 
+	else: 
+		site_url = "https://" + Site.objects.get_current().domain
+	c = Context({
+		'today': timezone.localtime(timezone.now()), 
+		'user': user,
+		'site_url': site_url,
+		}) 
+	return render_templates(c, "manage_member")
 
 @csrf_exempt
 def staff(request):

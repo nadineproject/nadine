@@ -407,17 +407,22 @@ def file_view(request, disposition, username, file_name):
 	response['Content-Disposition'] = '%s; filename="%s"' % (disposition, file_upload.name)
 	return response
 
+@csrf_exempt
 @login_required
 @user_passes_test(is_manager, login_url='members.views.not_active')
 def manage_member(request, username):
 	user = get_object_or_404(User, username=username)
-	c = Context({
-		'today': timezone.localtime(timezone.now()), 
-		'user': user, 
-		'domain': Site.objects.get_current().domain,
-		}) 
-	text_content, html_content = mailgun.render_templates(c, "manage_member")
-	#activity = DailyLog.objects.filter(member__user=user)[:10]
+	
+	# Handle the buttons if a task is being marked done
+	if request.method == 'POST':
+		print request.POST
+		if 'save_onboard_task' in request.POST:
+			task = Onboard_Task.objects.get(pk=request.POST.get('task_id'))
+			Onboard_Task_Completed.objects.create(member=user.get_profile(), task=task, completed_by=request.user)
+	
+	# Render the email content in to a variable to make up the page content
+	text_content, html_content = mailgun.get_manage_member_content(user)
+	
 	return render_to_response('members/manage_member.html', {'user':user, 'page_content':html_content}, context_instance=RequestContext(request))
 
 #@login_required

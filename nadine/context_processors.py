@@ -6,7 +6,8 @@ from members.models import HelpText
 
 def site(request):
 	"""Adds a site context variable"""
-	return { 'site': Site.objects.get_current() }
+	site = Site.objects.get_current()
+	return { 'site': site }
 
 def nav_context(request):
 	"""Adds variables used by the nav bar"""
