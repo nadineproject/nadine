@@ -11,7 +11,7 @@ import django_localflavor_us.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        #('taggit', '0001_initial'),
+        ('taggit', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
