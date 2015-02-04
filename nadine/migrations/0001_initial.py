@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
-    state_operations = [
+    operations = [
         migrations.CreateModel(
             name='Bill',
             fields=[
@@ -393,7 +393,3 @@ class Migration(migrations.Migration):
             preserve_default=True,
         ),
     ]
-
-    operations = [
-        migrations.SeparateDatabaseAndState(state_operations=state_operations)
-     ]
