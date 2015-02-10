@@ -40,7 +40,7 @@ GENDER_CHOICES = (
 PAYMENT_CHOICES = (
 	('Bill', 'Billable'),
 	('Trial', 'Free Trial'),
-	('Waved', 'Payment Waved'),
+	('Waive', 'Payment Waived'),
 )
 
 class MemberGroups():

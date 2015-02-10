@@ -285,7 +285,7 @@ def stats(request):
 		if number_dict['month'] != month:
 			if number_dict['month'] != 'firstrun':
 				daily_logs_by_month.append(number_dict)
-			number_dict = {'month':month, 'Bill':0, 'Trial':0, 'Waved':0, 'total':1}
+			number_dict = {'month':month, 'Bill':0, 'Trial':0, 'Waive':0, 'total':1}
 			number_dict[daily_log.payment] = 1
 		else:
 			number_dict['total'] = number_dict['total'] + 1;
@@ -354,7 +354,7 @@ def stats_membership_history(request):
 			else:
 				month.data[plan.name] = '%s - %s' % (data[0], data[1])
 
-		month.data['visits'], month.data['trial'], month.data['waved'], month.data['billed'] = calculate_dropins(month.start_date, month.end_date)
+		month.data['visits'], month.data['trial'], month.data['waive'], month.data['billed'] = calculate_dropins(month.start_date, month.end_date)
 
 		year_histories = []
 		current_year = -1
@@ -370,7 +370,7 @@ def stats_membership_history(request):
 
 def calculate_dropins(start_date, end_date):
 	all_logs = DailyLog.objects.filter(visit_date__gte=start_date, visit_date__lte=end_date)
-	return (all_logs.filter(payment='Visit').distinct().count(), all_logs.filter(payment='Trial').distinct().count(), all_logs.filter(payment='Waved').distinct().count(), all_logs.filter(payment='Bill').distinct().count())
+	return (all_logs.filter(payment='Visit').distinct().count(), all_logs.filter(payment='Trial').distinct().count(), all_logs.filter(payment='Waive').distinct().count(), all_logs.filter(payment='Bill').distinct().count())
 
 def calculate_monthly_low_high(plan_id, dates):
 	"""returns a tuple of (min, max) for number of memberships in the date range of dates"""
@@ -716,7 +716,7 @@ def member_bills(request, member_id):
 @staff_member_required
 def member_activity(request, member_id):
 	member = get_object_or_404(Member, pk=member_id)
-	payment_types = ['Visit', 'Trial', 'Waved', 'Bill']
+	payment_types = ['Visit', 'Trial', 'Waive', 'Bill']
 	return render_to_response('staff/member_activity.html', {'payment_types':payment_types, 'member':member}, context_instance=RequestContext(request))
 
 @staff_member_required
@@ -724,7 +724,7 @@ def member_activity_json(request, member_id):
 	member = get_object_or_404(Member, pk=member_id)
 	response_data = {}
 	#response_data['member'] = model_to_dict(member)
-	#response_data['payment_types'] = ['Visit', 'Trial', 'Waved', 'Bill']
+	#response_data['payment_types'] = ['Visit', 'Trial', 'Waive', 'Bill']
 	response_data['daily_logs'] = serializers.serialize('json', member.daily_logs.all())
 	return HttpResponse(json.dumps(response_data), content_type="application/json")
 
