@@ -34,7 +34,14 @@ def is_active_member(user):
 	if user and not user.is_anonymous():
 		profile = user.get_profile()
 		if profile:
+			# If today is their Free Trial Day count them as active
+			if DailyLog.objects.filter(member=profile, payment='Trial', visit_date=datetime.today()).count() == 1:
+				return True
+			
+			# Check to make sure their currently an active member
 			return profile.is_active()
+			
+	# No user, no profile, no active
 	return False
 
 def is_manager(user):
