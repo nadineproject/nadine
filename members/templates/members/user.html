@@ -48,10 +48,10 @@
 
 <h2>{{ user.get_full_name }}</h2>
 
-{% if user.username == request.user.username or request.user.is_staff or request.user.is_manager %}
+{% if user.username == request.user.username or request.user.profile.is_manager %}
 	<dl>
 		<dt>Quicklinks:</dt>
-		{% if request.user.is_staff or request.user.is_manager %}
+		{% if request.user.profile.is_manager %}
 		<dd><a href="{% url 'members.views.manage_member' user.username %}">manage member</a></dd>
 		{% endif %}
 		{% if user.username == request.user.username or request.user.is_staff %}
