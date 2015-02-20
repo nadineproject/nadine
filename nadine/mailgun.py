@@ -144,7 +144,7 @@ def send_manage_member(user):
 		"html": html_content,
 	}
 	return mailgun_send_raw(mailgun_data)
-	
+
 def get_manage_member_content(user):
 	if settings.DEBUG: 
 		site_url = '' 
