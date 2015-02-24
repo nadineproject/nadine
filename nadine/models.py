@@ -26,6 +26,7 @@ from PIL import Image
 
 from staff import usaepay
 
+
 #from south.modelsinspector import add_introspection_rules
 #add_introspection_rules([], ["^django_localflavor_us\.models\.USStateField"])
 #add_introspection_rules([], ["^django_localflavor_us\.models\.PhoneNumberField"])
@@ -434,13 +435,36 @@ class Member(models.Model):
 	def has_file_uploads(self):
 		return FileUpload.objects.filter(user=self.user).count() > 0
 
+	def has_file(self, doc_type):
+		return FileUpload.objects.filter(user=self.user, document_type=doc_type).count() > 0
+
 	def file_uploads(self):
 		files = {}
-		# Only want the latest one if there are duplicate file names
+		# Only want the latest one if there are duplicates
 		for f in FileUpload.objects.filter(user=self.user).order_by('uploadTS').reverse():
 			files[f.name] = f
 		return files.values()
 
+	def files_by_type(self):
+		files = {}
+		# Only want the latest one if there are duplicates
+		for f in FileUpload.objects.filter(user=self.user).order_by('uploadTS').reverse():
+			files[f.document_type] = f
+		return files
+
+	def alerts_by_key(self, include_resolved=False):
+		if include_resolved:
+			alerts = MemberAlert.objects.filter(user=self.user)
+		else:
+			alerts = MemberAlert.objects.filter(user=self.user, resolved_ts__isnull=True, muted_ts__isnull=True)
+		alerts_by_key = {}
+		for alert in alerts:
+			if alert.key in alerts_by_key:
+				alerts_by_key[alert.key].append(alert)
+			else:
+				alerts_by_key[alert.key] = [alert]
+		return alerts_by_key
+		
 	def member_since(self):
 		first = self.first_visit()
 		if first == None: return None
@@ -720,6 +744,10 @@ class Membership(models.Model):
 			if test_date.month in [9, 4, 6, 11]: return True
 		return test_date.day == self.start_date.day
 
+	def is_change(self):
+		# If there is a membership ending the day before this one began then this one is a change
+		return Membership.objects.filter(member=self.member, end_date=self.start_date-timedelta(days=1)).count() > 0
+
 	def prev_billing_date(self, test_date=None):
 		if not test_date:
 			test_date = date.today()
@@ -750,6 +778,82 @@ class Membership(models.Model):
 		verbose_name = "Membership"
 		verbose_name_plural = "Memberships"
 		ordering = ['start_date'];
+
+class MemberAlertManager(models.Manager):
+	def users_missing_alert(key):
+		active = Member.objects.active_users()
+		completed = MemberAlert.objects.filter(key=key, resolved_ts__isnull=True, muted_ts__isnull=True)
+		return active.exclude(completed.values('user'))
+
+class MemberAlert(models.Model):
+	PAPERWORK = "paperwork"
+	MEMBER_INFO = "member_info"
+	MEMBER_AGREEMENT = "member_agreement"
+	TAKE_PHOTO = "take_photo"
+	UPLOAD_PHOTO = "upload_hoto"
+	POST_PHOTO = "post_photo"
+	ORIENTATION = "orientation"
+	KEY_AGREEMENT = "key_agreement"
+	STALE_MEMBER = "stale_member"
+	INVALID_BILLING = "invalid_billing"
+	REMOVE_PHOTO = "remove_photo"
+	RETURN_DOOR_KEY = "return_door_key"
+	RETURN_DESK_KEY = "return_desk_key"
+	
+	ALERT_CHOICES = (
+		(PAPERWORK, "Received Paperwork"),
+		(MEMBER_INFO, "Enter & File Member Information"),
+		(MEMBER_AGREEMENT, "Sign Membership Agreement"),
+		(TAKE_PHOTO, "Take Photo"),
+		(UPLOAD_PHOTO, "Upload Photo"),
+		(POST_PHOTO, "Print & Post Photo"),
+		(ORIENTATION, "New Member Orientation"),
+		(KEY_AGREEMENT, "Key Training & Agreement"),
+		(STALE_MEMBER, "Stale Membership"),
+		(INVALID_BILLING, "Missing Valid Billing"),
+		(REMOVE_PHOTO, "Remove Picture from Wall"),
+		(RETURN_DOOR_KEY, "Take Back Keycard"),
+		(RETURN_DESK_KEY, "Take Back Roller Drawer Key"),
+	)
+
+	created_ts = models.DateTimeField(auto_now_add=True)	
+	key = models.CharField(max_length=16, choices=ALERT_CHOICES)
+	user = models.ForeignKey(User)
+	resolved_ts = models.DateTimeField(null=True)
+	resolved_by = models.ForeignKey(User, related_name="resolved_by", null=True)
+	muted_ts = models.DateTimeField(null=True)
+	muted_by = models.ForeignKey(User, related_name="muted_by", null=True)
+	note = models.TextField(blank=True, null=True)
+	objects = MemberAlertManager()
+	
+	def resolve(self, user):
+		self.resolved_ts = timezone.now()
+		self.resolved_by = user
+		self.save()
+
+	def mute(self, user, note):
+		self.muted_ts = timezone.now()
+		self.muted_by = user
+		self.note = note
+		self.save()
+
+	def is_resolved(self):
+		return self.resolved_ts != None or self.is_muted()
+
+	def is_muted(self):
+		return self.muted_ts != None
+
+	def __unicode__(self):
+		return '%s - %s: %s' % (self.key, self.user, self.is_resolved())
+
+def membership_created_callback(sender, **kwargs):
+	print ("membership_created_callback")
+	created = kwargs['created']
+	if not created: return
+	membership = kwargs['instance']
+	from nadine import member_alerts
+	member_alerts.trigger_new_membership(membership.member.user)
+post_save.connect(membership_created_callback, sender=Membership)
 
 class ExitTaskManager(models.Manager):
 	def uncompleted_count(self):

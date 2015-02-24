@@ -16,41 +16,41 @@ admin.site.register(HowHeard)
 admin.site.register(MembershipPlan)
 
 class StyledAdmin(admin.ModelAdmin):
-   class Media:
-      css = { "all": ('local-admin.css', )}
+	class Media:
+		css = { "all": ('local-admin.css', )}
 
 class TransactionAdmin(StyledAdmin):
-   list_display = ('transaction_date', 'member', 'amount')
-   search_fields = ('member__user__first_name', 'member__user__last_name', 'amount')
-   raw_id_fields = ('bills', 'member')
+	list_display = ('transaction_date', 'member', 'amount')
+	search_fields = ('member__user__first_name', 'member__user__last_name', 'amount')
+	raw_id_fields = ('bills', 'member')
 admin.site.register(Transaction, TransactionAdmin)
 
 class BillAdmin(StyledAdmin):
-   list_display = ('bill_date', 'member', 'amount')
-   search_fields = ('member__user__first_name', 'member__user__last_name')
-   raw_id_fields = ('membership', 'dropins', 'guest_dropins')
+	list_display = ('bill_date', 'member', 'amount')
+	search_fields = ('member__user__first_name', 'member__user__last_name')
+	raw_id_fields = ('membership', 'dropins', 'guest_dropins')
 admin.site.register(Bill, BillAdmin)
 
 class BillingLogAdmin(StyledAdmin):
-   list_display = ('started', 'ended', 'note', 'successful')
+	list_display = ('started', 'ended', 'note', 'successful')
 admin.site.register(BillingLog, BillingLogAdmin)
 
 admin.site.unregister(User)
 class MemberInline(admin.StackedInline):
-   model = Member
-   max_num = 1
+	model = Member
+	max_num = 1
 class UserWithProfileAdmin(UserAdmin):
-   inlines = [MemberInline]
+	inlines = [MemberInline]
 admin.site.register(User, UserWithProfileAdmin)
 
 class DailyLogAdmin(StyledAdmin):
-   list_display = ('visit_date', 'member', 'guest_of', 'created')
-   search_fields = ('member__user__first_name', 'member__user__last_name', 'guest_of__user__first_name', 'guest_of__user__last_name')
+	list_display = ('visit_date', 'member', 'guest_of', 'created')
+	search_fields = ('member__user__first_name', 'member__user__last_name', 'guest_of__user__first_name', 'guest_of__user__last_name')
 admin.site.register(DailyLog, DailyLogAdmin)
 
 class MembershipAdmin(StyledAdmin):
-   list_display = ('member', 'start_date', 'end_date')
-   search_fields = ('member__user__first_name', 'member__user__last_name')
+	list_display = ('member', 'start_date', 'end_date')
+	search_fields = ('member__user__first_name', 'member__user__last_name')
 admin.site.register(Membership, MembershipAdmin)
 
 class SentEmailLogAdmin(StyledAdmin):
@@ -68,6 +68,12 @@ admin.site.register(SpecialDay, SpecialDayAdmin)
 class MemberNoteAdmin(StyledAdmin):
 	list_display=('created', 'member', 'created_by', 'note')
 admin.site.register(MemberNote, MemberNoteAdmin)
+
+class MemberAlertAdmin(StyledAdmin):
+	list_display=('created_ts', 'key', 'user', 'resolved_ts', 'resolved_by', 'muted_ts', 'muted_by', 'note')
+	search_fields = ('user__username', 'user__first_name', 'user__last_name')
+	list_filter=('key', )
+admin.site.register(MemberAlert, MemberAlertAdmin)
 
 class FileUploadAdmin(StyledAdmin):
 	list_display=('uploadTS', 'user', 'name')
