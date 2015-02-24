@@ -23,5 +23,5 @@ class Migration(migrations.Migration):
 			field=models.CharField(max_length=5, verbose_name=b'Payment', choices=[(b'Bill', b'Billable'), (b'Trial', b'Free Trial'), (b'Waive', b'Payment Waived')]),
 			preserve_default=True,
 		),
-			migrations.RunPython(forward),
+		migrations.RunPython(forward),
 	]
