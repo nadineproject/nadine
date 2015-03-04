@@ -1,20 +1,13 @@
 from django.conf import settings
 from django.contrib.sites.models import Site
-from nadine.models import Onboard_Task, Bill, ExitTask
 from staff.forms import MemberSearchForm
 from members.models import HelpText
 
 def site(request):
-	"""Adds a site context variable"""
 	site = Site.objects.get_current()
 	return { 'site': site }
 
 def nav_context(request):
-	"""Adds variables used by the nav bar"""
-	#billing_count = Bill.objects.filter(transactions__isnull=True).count()
-	#todo_count = Onboard_Task.objects.uncompleted_count() + ExitTask.objects.uncompleted_count()
-	#site_search_form = MemberSearchForm()
-	#return {'billing_count':billing_count, 'todo_count':todo_count, 'site_search_form':site_search_form }
 	site_search_form = MemberSearchForm()
 	return { 'site_search_form':site_search_form }
 
