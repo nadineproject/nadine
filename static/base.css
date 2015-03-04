@@ -210,3 +210,5 @@ table tr.row-even td { background: #eee; }
 }
 
 .row-even { background-color: #EEE; }
+
+.error { color: red; }
