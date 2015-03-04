@@ -142,8 +142,7 @@ def signin_user_guest(request, username, guestof):
 			except:
 				logger.error("Could not send introduction email to %s" % user.email)
 		else:
-			if member.onboard_tasks_to_complete() > 0:
-				#email.announce_tasks_todo(user, member.onboard_tasks_incomplete())
+			if member.open_alerts() > 0:
 				mailgun.send_manage_member(user)
 	return HttpResponseRedirect(reverse('tablet.views.welcome', kwargs={'username':username}))
 
