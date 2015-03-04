@@ -1,9 +1,9 @@
 {{ user.get_full_name }}
 
-{% if user.profile.onboard_tasks_incomplete %}
+{% if user.profile.open_alerts %}
 Action Needed
-{% for t in user.profile.onboard_tasks_incomplete %}
- - {{ t.name }}
+{% for a in user.profile.open_alerts %}
+ - {{ a.description }}
 {% endfor %}
 {% endif %}
 

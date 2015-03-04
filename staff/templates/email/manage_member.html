@@ -7,22 +7,20 @@
 
 <p></p>
 
-{% if user.profile.onboard_tasks_incomplete %}
+{% if user.profile.open_alerts %}
 	<h3>Action Needed</h3>
 	<table style="width:100%;">
-		<tr>
-			<th style="width: 50%; border-bottom: 1px solid gray; text-align:left;">Task</th>
-			<th style="border-bottom: 1px solid gray; text-align:left;">Action</th>
-		</tr>
-		{% for t in user.profile.onboard_tasks_incomplete %}
+		{% for alert in user.profile.open_alerts %}
 			<tr>
-				<td style="border-bottom: 1px solid gray; text-align:left;" nowrap>{{ t.name }}</td>
+				<td style="border-bottom: 1px solid gray; text-align:left;" nowrap>{{ alert.description }}</td>
 				<td style="border-bottom: 1px solid gray; text-align:left;">
+					{% if not alert.is_system_alert %}
 					<form action="{{ site_url }}{% url 'members.views.manage_member' user.username %}" method="POST">
-						<input name="task_id" value="{{ t.id }}" type="hidden" />
+						<input name="alert_id" value="{{ alert.id }}" type="hidden" />
 						<input name="username" value="{{ user.username }}" type="hidden" />
-						<input name="save_onboard_task" type="submit" Value="Done" />
+						<button type="submit" name="resolve_task" type="submit">Resolve</button>
 					</form>
+					{% endif %}
 				</td>
 			</tr>
 		{% endfor %}

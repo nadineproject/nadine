@@ -25,7 +25,7 @@ from members.forms import EditProfileForm
 from members.models import HelpText, UserNotification
 from arpwatch import arp
 from arpwatch.models import ArpLog, UserDevice
-from nadine.models import Member, Membership, Transaction, DailyLog
+from nadine.models import Member, MemberAlert, Membership, Transaction, DailyLog
 from staff import usaepay, email
 from staff.forms import *
 from nadine import mailgun
@@ -423,9 +423,9 @@ def manage_member(request, username):
 	# Handle the buttons if a task is being marked done
 	if request.method == 'POST':
 		print request.POST
-		if 'save_onboard_task' in request.POST:
-			task = Onboard_Task.objects.get(pk=request.POST.get('task_id'))
-			Onboard_Task_Completed.objects.create(member=user.get_profile(), task=task, completed_by=request.user)
+		if 'resolve_task' in request.POST:
+			alert = MemberAlert.objects.get(pk=request.POST.get('alert_id'))
+			alert.resolve(request.user)
 	
 	# Render the email content in to a variable to make up the page content
 	text_content, html_content = mailgun.get_manage_member_content(user)
