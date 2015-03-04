@@ -50,30 +50,43 @@ def forward(apps, schema_editor):
 		(RETURN_DESK_KEY, ExitTask.objects.filter(name="Take Back Roller Drawer Key")),
 	)
 	
-	print("\n    Processing completed on-boarding tasks... ")
+	fake_ts = timezone.make_aware(datetime(year=2015, month=01, day=01), timezone.get_current_timezone())
+
+	print("\n    Migrating completed on-boarding tasks... ")
 	for key, task in task_map:
 		completed_tasks = Onboard_Task_Completed.objects.filter(task=task)
 		for tc in completed_tasks:
 			dt = datetime.combine(tc.completed_date, time())
 			ts = timezone.make_aware(dt, timezone.get_current_timezone())
 			resolved_by = tc.completed_by
-			MemberAlert.objects.create(key=key, user=tc.member.user, resolved_ts=ts, resolved_by=resolved_by)
+			alert = MemberAlert.objects.create(key=key, user=tc.member.user, resolved_ts=ts, resolved_by=resolved_by)
+			alert.created_ts = fake_ts
+			alert.save()
 		print("    - %s: %s alerts created" % (key, completed_tasks.count()))
 
-	print("    Processing completed exit tasks... ")
+	print("    Migrating completed exit tasks... ")
 	for key, task in exit_task_map:
 		completed_tasks = ExitTaskCompleted.objects.filter(task=task)
 		for tc in completed_tasks:
 			dt = datetime.combine(tc.completed_date, time())
 			ts = timezone.make_aware(dt, timezone.get_current_timezone())
-			MemberAlert.objects.create(key=key, user=tc.member.user, resolved_ts=ts)
+			alert = MemberAlert.objects.create(created_ts="01/01/15", key=key, user=tc.member.user, resolved_ts=ts)
+			alert.created_ts = fake_ts
+			alert.save()
 		print("    - %s: %s alerts created" % (key, completed_tasks.count()))
 
-	print("    Processing all active members... ")
-	member_alerts.process_active_members()
+	# TODO - Recently excited members?
 
 def reverse(apps, schema_editor):
 	pass
+
+# This code violates the abstracted object model so this needs to be run manually after the data is migrated
+def post_migration():
+	from nadine.models import Member, MemberAlert
+	for member in Member.objects.active_members():
+		MemberAlert.objects.trigger_new_membership(member.user)
+		member.resolve_alerts(MemberAlert.POST_PHOTO)
+	MemberAlert.objects.trigger_stale_members()
 
 class Migration(migrations.Migration):
 
@@ -88,7 +101,7 @@ class Migration(migrations.Migration):
 			fields=[
 				('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
 				('created_ts', models.DateTimeField(auto_now_add=True)),
-				('key', models.CharField(max_length=16, choices=[(b'paperwork', b'Received Paperwork'), (b'member_info', b'Enter & File Member Information'), (b'member_agreement', b'Sign Membership Agreement'), (b'take_photo', b'Take Photo'), (b'upload_hoto', b'Upload Photo'), (b'post_photo', b'Print & Post Photo'), (b'orientation', b'New Member Orientation'), (b'key_agreement', b'Key Training & Agreement'), (b'stale_member', b'Stale Membership'), (b'invalid_billing', b'Missing Valid Billing'), (b'remove_photo', b'Remove Picture from Wall'), (b'return_door_key', b'Take Back Keycard'), (b'return_desk_key', b'Take Back Roller Drawer Key')])),
+				('key', models.CharField(max_length=16)),
 				('resolved_ts', models.DateTimeField(null=True)),
 				('muted_ts', models.DateTimeField(null=True)),
 				('note', models.TextField(null=True, blank=True)),

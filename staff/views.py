@@ -226,57 +226,76 @@ def bill(request, id):
 	bill = get_object_or_404(Bill, pk=id)
 	return render_to_response('staff/bill.html', { "bill":bill, 'new_member_deposit':settings.NEW_MEMBER_DEPOSIT }, context_instance=RequestContext(request))
 
-@staff_member_required
-def exit_task(request, id):
-	task = get_object_or_404(ExitTask, pk=id)
-	if request.method == 'POST':
-		if 'save_exit_task' in request.POST:
-			task = ExitTask.objects.get(pk=request.POST.get('task_id'))
-			member = Member.objects.get(user__username=request.POST.get('username'))
-			ExitTaskCompleted.objects.create(member=member, task=task)
-			return HttpResponseRedirect(reverse('staff.views.exit_task', kwargs={ 'id':id }))
-		elif 'Mark All' in request.POST:
-			for member in task.uncompleted_members():
-				update = ExitTaskCompleted.objects.create(member=member, task=task)
-			return HttpResponseRedirect(reverse('staff.views.exit_task', kwargs={ 'id':id }))
-	return render_to_response('staff/exit_task.html', {'task': task }, context_instance=RequestContext(request))
-
-@staff_member_required
-def onboard_task(request, id):
-	task = get_object_or_404(Onboard_Task, pk=id)
-	if request.method == 'POST':
-		if 'save_onboard_task' in request.POST:
-			task = Onboard_Task.objects.get(pk=request.POST.get('task_id'))
-			member = Member.objects.get(user__username=request.POST.get('username'))
-			Onboard_Task_Completed.objects.create(member=member, task=task, completed_by=request.user)
-			return HttpResponseRedirect(reverse('staff.views.onboard_task', kwargs={ 'id':id }))
-		elif 'Mark All' in request.POST:
-			for member in task.uncompleted_members():
-				update = Onboard_Task_Completed.objects.create(member=member, task=task, completed_by=request.user)
-			return HttpResponseRedirect(reverse('staff.views.onboard_task', kwargs={ 'id':id }))
-	return render_to_response('staff/onboard_task.html', {'task': task}, context_instance=RequestContext(request))
+# @staff_member_required
+# def exit_task(request, id):
+# 	task = get_object_or_404(ExitTask, pk=id)
+# 	if request.method == 'POST':
+# 		if 'save_exit_task' in request.POST:
+# 			task = ExitTask.objects.get(pk=request.POST.get('task_id'))
+# 			member = Member.objects.get(user__username=request.POST.get('username'))
+# 			ExitTaskCompleted.objects.create(member=member, task=task)
+# 			return HttpResponseRedirect(reverse('staff.views.exit_task', kwargs={ 'id':id }))
+# 		elif 'Mark All' in request.POST:
+# 			for member in task.uncompleted_members():
+# 				update = ExitTaskCompleted.objects.create(member=member, task=task)
+# 			return HttpResponseRedirect(reverse('staff.views.exit_task', kwargs={ 'id':id }))
+# 	return render_to_response('staff/exit_task.html', {'task': task }, context_instance=RequestContext(request))
+#
+# @staff_member_required
+# def onboard_task(request, id):
+# 	task = get_object_or_404(Onboard_Task, pk=id)
+# 	if request.method == 'POST':
+# 		if 'save_onboard_task' in request.POST:
+# 			task = Onboard_Task.objects.get(pk=request.POST.get('task_id'))
+# 			member = Member.objects.get(user__username=request.POST.get('username'))
+# 			Onboard_Task_Completed.objects.create(member=member, task=task, completed_by=request.user)
+# 			return HttpResponseRedirect(reverse('staff.views.onboard_task', kwargs={ 'id':id }))
+# 		elif 'Mark All' in request.POST:
+# 			for member in task.uncompleted_members():
+# 				update = Onboard_Task_Completed.objects.create(member=member, task=task, completed_by=request.user)
+# 			return HttpResponseRedirect(reverse('staff.views.onboard_task', kwargs={ 'id':id }))
+# 	return render_to_response('staff/onboard_task.html', {'task': task}, context_instance=RequestContext(request))
 
 @staff_member_required
 def todo(request):
-	# Group & count by task
-	onboard_tasks = []
-	for task in Onboard_Task.objects.all().order_by('order'):
-		onboard_tasks.append((task, len(task.uncompleted_members())))
-
 	member_alerts = []
-	member_alerts.append((MemberGroups.NO_MEMBER_AGREEMENT, "Missing Member Agreement", Member.objects.missing_member_agreement().count()))
-	member_alerts.append((MemberGroups.NO_KEY_AGREEMENT, "Missing Key Agreement", Member.objects.missing_key_agreement().count()))
-	member_alerts.append((MemberGroups.NO_PHOTO, "No Photo", Member.objects.missing_photo().count()))
-	member_alerts.append((MemberGroups.STALE_MEMBERSHIP, "Stale Membership", Member.objects.stale_members().count()))
-	
-	exit_tasks = []
-	for task in ExitTask.objects.all().order_by('order'):
-		exit_tasks.append((task, len(task.uncompleted_members())))
-	
-	return render_to_response('staff/todo.html', {'onboard_tasks':onboard_tasks, 'member_alerts':member_alerts, 'exit_tasks':exit_tasks, 'member_search_form':MemberSearchForm() }, context_instance=RequestContext(request))
+	for key, desc in MemberAlert.ALERT_DESCRIPTIONS:
+		count = MemberAlert.objects.unresolved(key).count()
+		member_alerts.append((key, desc, count))
+
+	return render_to_response('staff/todo.html', {'member_alerts':member_alerts}, context_instance=RequestContext(request))
 
 @staff_member_required
-def stats(request):		 
+def todo_detail(request, key):
+	if request.method == 'POST' and "action" in request.POST:
+		action = request.POST.get("action").lower()
+		try:
+			alert = get_object_or_404(MemberAlert, pk=request.POST.get("alert_id"))
+			note = None
+			if "note" in request.POST:
+				note = request.POST.get("note").strip()
+			if action == "resolve":
+				alert.resolve(request.user, note=note)
+				messages.add_message(request, messages.INFO, "Alert '%s:%s' resolved!" % (alert.user.username, alert.key))
+			elif action == "mute":
+				if note:
+					alert.mute(request.user, note=note)
+					messages.add_message(request, messages.INFO, "Alert '%s:%s' muted!" % (alert.user.username, alert.key))
+				else:
+					messages.add_message(request, messages.ERROR, "Note required to mute an alert!")
+		except Exception as e:
+			messages.add_message(request, messages.ERROR, "Could not %s alert: %s" % (action, e))
+		if "next" in request.POST:
+			next_url = request.POST.get("next")
+			return HttpResponseRedirect(next_url)
+
+	alerts = MemberAlert.objects.unresolved(key).order_by('user__first_name')
+	description = MemberAlert.getDescription(key)
+	is_system_alert = MemberAlert.isSystemAlert(key)
+	return render_to_response('staff/todo_detail.html', {'key': key, 'description':description, 'alerts':alerts, 'is_system_alert':is_system_alert}, context_instance=RequestContext(request))
+
+@staff_member_required
+def stats(request):
 	# Group the daily logs into months
 	daily_logs_by_month = []
 	number_dict = {'month':'firstrun'}

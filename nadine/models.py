@@ -1,5 +1,7 @@
 import os, uuid, pprint, traceback
 import operator
+import logging
+
 from datetime import datetime, time, date, timedelta
 
 from django.db import models
@@ -26,6 +28,7 @@ from PIL import Image
 
 from staff import usaepay
 
+logger = logging.getLogger(__name__)
 
 #from south.modelsinspector import add_introspection_rules
 #add_introspection_rules([], ["^django_localflavor_us\.models\.USStateField"])
@@ -464,7 +467,19 @@ class Member(models.Model):
 			else:
 				alerts_by_key[alert.key] = [alert]
 		return alerts_by_key
-		
+	
+	def alerts(self):
+		return MemberAlert.objects.filter(user=self.user).order_by('-created_ts')
+
+	def open_alerts(self):
+		return MemberAlert.objects.filter(user=self.user, resolved_ts__isnull=True, muted_ts__isnull=True).order_by('-created_ts')
+
+	def resolve_alerts(self, alert_key, resolved_by=None):
+		alerts = MemberAlert.objects.filter(user=self.user, key=alert_key, resolved_ts__isnull=True, muted_ts__isnull=True).order_by('-created_ts')
+		if alerts:
+			for alert in alerts:
+				alert.resolve(resolved_by)
+
 	def member_since(self):
 		first = self.first_visit()
 		if first == None: return None
@@ -615,12 +630,13 @@ class Member(models.Model):
 		ordering = ['user__first_name', 'user__last_name']
 		get_latest_by = "last_modified"
 
-# If a User gets created, make certain that it has a Member record
 def user_save_callback(sender, **kwargs):
 	user = kwargs['instance']
-	created = kwargs['created']
-	if Member.objects.filter(user=user).count() > 0: return
-	Member.objects.create(user=user)
+	# Make certain we have a Member record
+	if not Member.objects.filter(user=user).count() > 0:
+		Member.objects.create(user=user)
+	# Process the member alerts for this user
+	MemberAlert.objects.trigger_user_save(user)
 post_save.connect(user_save_callback, sender=User)
 
 # Add some handy methods to Django's User object
@@ -663,6 +679,11 @@ class DailyLog(models.Model):
 	class Meta:
 		verbose_name = "Daily Log"
 		ordering = ['-visit_date', '-created']
+
+def sign_in_callback(sender, **kwargs):
+	log = kwargs['instance']
+	MemberAlert.objects.trigger_sign_in(log.member.user)
+post_save.connect(sign_in_callback, sender=DailyLog)
 
 class MembershipPlan(models.Model):
 	"""Options for monthly membership"""
@@ -780,10 +801,103 @@ class Membership(models.Model):
 		ordering = ['start_date'];
 
 class MemberAlertManager(models.Manager):
-	def users_missing_alert(key):
-		active = Member.objects.active_users()
-		completed = MemberAlert.objects.filter(key=key, resolved_ts__isnull=True, muted_ts__isnull=True)
-		return active.exclude(completed.values('user'))
+	def unresolved(self, key, active_only=True):
+		unresolved = self.filter(key=key, resolved_ts__isnull=True, muted_ts__isnull=True)
+		if active_only:
+			active_users = Member.objects.active_users()
+			return unresolved.filter(user__in=active_users)
+		return unresolved
+
+	def trigger_stale_members(self):
+		for m in Member.objects.stale_members():
+			if not MemberAlert.objects.filter(user=m.user, key=MemberAlert.STALE_MEMBER, resolved_ts__isnull=True, muted_ts__isnull=True):
+				MemberAlert.objects.create(user=m.user, key=MemberAlert.STALE_MEMBER)
+
+	def trigger_new_membership(self, user):
+		logger.debug("trigger_new_membership: %s" % user)
+	
+		# Pull a bunch of data so we don't keep hitting the database
+		open_alerts = user.profile.alerts_by_key(include_resolved=False)
+		all_alerts = user.profile.alerts_by_key(include_resolved=True)
+		existing_files = user.profile.files_by_type()
+		#existing_memberships = user.profile.memberships()
+		
+		# Member Information
+		if not FileUpload.MEMBER_INFO in existing_files:
+			if not MemberAlert.PAPERWORK in open_alerts:
+				MemberAlert.objects.create(user=user, key=MemberAlert.PAPERWORK)
+			if not MemberAlert.PAPERWORK in open_alerts:
+				MemberAlert.objects.create(user=user, key=MemberAlert.MEMBER_INFO)
+
+		# Membership Agreement
+		if not FileUpload.MEMBER_AGMT in existing_files:
+			if not MemberAlert.MEMBER_AGREEMENT in open_alerts:
+				MemberAlert.objects.create(user=user, key=MemberAlert.MEMBER_AGREEMENT)
+	
+		# User Photo
+		if not user.profile.photo:
+			if not MemberAlert.TAKE_PHOTO in open_alerts:
+				MemberAlert.objects.create(user=user, key=MemberAlert.TAKE_PHOTO)
+			if not MemberAlert.UPLOAD_PHOTO in open_alerts:
+				MemberAlert.objects.create(user=user, key=MemberAlert.UPLOAD_PHOTO)
+		if not MemberAlert.POST_PHOTO in open_alerts:
+			MemberAlert.objects.create(user=user, key=MemberAlert.POST_PHOTO)
+
+		# New Member Orientation
+		if not MemberAlert.ORIENTATION in all_alerts:
+			MemberAlert.objects.create(user=user, key=MemberAlert.ORIENTATION)
+
+		# Key?  Check for a key agreement
+		last_membership = user.profile.last_membership()
+		if last_membership and last_membership.has_key:
+			if not FileUpload.KEY_AGMT in existing_files:
+				if not MemberAlert.KEY_AGREEMENT in open_alerts:
+					MemberAlert.objects.create(user=user, key=MemberAlert.KEY_AGREEMENT)
+
+	def trigger_exiting_membership(self, user):
+		open_alerts = user.profile.alerts_by_key(include_resolved=False)
+	
+		# Take down their photo.  First make sure we have a photo and not an open alert
+		if user.profile.photo and not MemberAlert.POST_PHOTO in open_alerts:
+			if not MemberAlert.REMOVE_PHOTO in open_alerts:
+				MemberAlert.objects.create(user=user, key=MemberAlert.REMOVE_PHOTO)
+
+		# Key?  Let's get it back!
+		last_membership = user.profile.last_membership()
+		if last_membership:
+			if last_membership.has_key:
+				if not MemberAlert.RETURN_DOOR_KEY in open_alerts:
+					MemberAlert.objects.create(user=user, key=MemberAlert.RETURN_DOOR_KEY)
+			if last_membership.has_desk:
+				if not MemberAlert.RETURN_DESK_KEY in open_alerts:
+					MemberAlert.objects.create(user=user, key=MemberAlert.RETURN_DESK_KEY)
+
+	def trigger_user_save(self, user):
+		logger.debug("trigger_user_save: %s" % user)
+		if user.profile.photo:
+			user.profile.resolve_alerts(MemberAlert.TAKE_PHOTO)
+			user.profile.resolve_alerts(MemberAlert.UPLOAD_PHOTO)
+
+	def trigger_file_upload(self, user):
+		logger.debug("trigger_file_upload: %s" % user)
+		existing_files = user.profile.files_by_type()
+	
+		# Resolve Member Info alert if the file is now present
+		if FileUpload.MEMBER_INFO in existing_files:
+			user.profile.resolve_alerts(MemberAlert.PAPERWORK)
+			user.profile.resolve_alerts(MemberAlert.MEMBER_INFO)
+
+		# Resolve Member Agreement alert if the file is now present
+		if FileUpload.MEMBER_AGMT in existing_files:
+			user.profile.resolve_alerts(MemberAlert.MEMBER_AGREEMENT)
+
+		# Resolve Key Agreement alert if the file is now present
+		if FileUpload.KEY_AGMT in existing_files:
+			user.profile.resolve_alerts(MemberAlert.KEY_AGREEMENT)
+
+	def trigger_sign_in(self, user):
+		logger.debug("trigger_sign_in: %s" % user)
+		user.profile.resolve_alerts(MemberAlert.STALE_MEMBER)
 
 class MemberAlert(models.Model):
 	PAPERWORK = "paperwork"
@@ -795,12 +909,12 @@ class MemberAlert(models.Model):
 	ORIENTATION = "orientation"
 	KEY_AGREEMENT = "key_agreement"
 	STALE_MEMBER = "stale_member"
-	INVALID_BILLING = "invalid_billing"
+	#INVALID_BILLING = "invalid_billing"
 	REMOVE_PHOTO = "remove_photo"
 	RETURN_DOOR_KEY = "return_door_key"
 	RETURN_DESK_KEY = "return_desk_key"
 	
-	ALERT_CHOICES = (
+	ALERT_DESCRIPTIONS = (
 		(PAPERWORK, "Received Paperwork"),
 		(MEMBER_INFO, "Enter & File Member Information"),
 		(MEMBER_AGREEMENT, "Sign Membership Agreement"),
@@ -810,14 +924,28 @@ class MemberAlert(models.Model):
 		(ORIENTATION, "New Member Orientation"),
 		(KEY_AGREEMENT, "Key Training & Agreement"),
 		(STALE_MEMBER, "Stale Membership"),
-		(INVALID_BILLING, "Missing Valid Billing"),
+		#(INVALID_BILLING, "Missing Valid Billing"),
 		(REMOVE_PHOTO, "Remove Picture from Wall"),
 		(RETURN_DOOR_KEY, "Take Back Keycard"),
 		(RETURN_DESK_KEY, "Take Back Roller Drawer Key"),
 	)
+	
+	# These alerts can be resolved by the system automatically
+	SYSTEM_ALERTS = [MEMBER_INFO, MEMBER_AGREEMENT, TAKE_PHOTO, UPLOAD_PHOTO, KEY_AGREEMENT, STALE_MEMBER]
+
+	@staticmethod
+	def getDescription(key):
+		for k, d in MemberAlert.ALERT_DESCRIPTIONS:
+			if k == key:
+				return d
+		return None
+
+	@staticmethod
+	def isSystemAlert(key):
+		return key in MemberAlert.SYSTEM_ALERTS
 
 	created_ts = models.DateTimeField(auto_now_add=True)	
-	key = models.CharField(max_length=16, choices=ALERT_CHOICES)
+	key = models.CharField(max_length=16)
 	user = models.ForeignKey(User)
 	resolved_ts = models.DateTimeField(null=True)
 	resolved_by = models.ForeignKey(User, related_name="resolved_by", null=True)
@@ -826,15 +954,24 @@ class MemberAlert(models.Model):
 	note = models.TextField(blank=True, null=True)
 	objects = MemberAlertManager()
 	
-	def resolve(self, user):
+	def description(self):
+		for k, d in MemberAlert.ALERT_DESCRIPTIONS:
+			if self.key == k:
+				return d
+		return None
+
+	def resolve(self, user, note=None):
 		self.resolved_ts = timezone.now()
 		self.resolved_by = user
+		if note:
+			self.note = note
 		self.save()
 
-	def mute(self, user, note):
+	def mute(self, user, note=None):
 		self.muted_ts = timezone.now()
 		self.muted_by = user
-		self.note = note
+		if note:
+			self.note = note
 		self.save()
 
 	def is_resolved(self):
@@ -842,6 +979,9 @@ class MemberAlert(models.Model):
 
 	def is_muted(self):
 		return self.muted_ts != None
+
+	def is_system_alert(self):
+		return self.key in MemberAlert.SYSTEM_ALERTS
 
 	def __unicode__(self):
 		return '%s - %s: %s' % (self.key, self.user, self.is_resolved())
@@ -851,8 +991,7 @@ def membership_created_callback(sender, **kwargs):
 	created = kwargs['created']
 	if not created: return
 	membership = kwargs['instance']
-	from nadine import member_alerts
-	member_alerts.trigger_new_membership(membership.member.user)
+	MemberAlert.objects.trigger_new_membership(membership.member.user)
 post_save.connect(membership_created_callback, sender=Membership)
 
 class ExitTaskManager(models.Manager):
@@ -1056,5 +1195,10 @@ class FileUpload(models.Model):
 		return '%s - %s: %s' % (self.uploadTS.date(), self.user, self.name)
 		
 	objects = FileUploadManager()
+
+def file_upload_callback(sender, **kwargs):
+	file_upload = kwargs['instance']
+	MemberAlert.objects.trigger_file_upload(file_upload.user)
+post_save.connect(file_upload_callback, sender=FileUpload)
 
 # Copyright 2014 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

@@ -1,0 +1,54 @@
+{% extends "staff/staff_base.html" %}
+
+{% block sub-title %}TODO | {% endblock %}
+
+{% block style%}
+nav #todo-tab { background: #FBD850; color: black; }
+{% endblock %}
+
+{% block content %}
+{% include "staff/todo_menu.frag" %}  
+
+<h2>TODO: {{ description }}</h2>
+
+{% if messages %}
+<div class="messages">
+	{% for message in messages %}
+		<div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+	{% endfor %}
+</div>
+{% endif %}
+
+{% if alerts %}
+	<table>
+		<tr>
+			<th>Member</th>
+			<th></th>
+		</tr>
+		{% for alert in alerts %}
+		<tr class="{% cycle 'row-even' 'row-odd' %}">
+			<td nowrap><a href="{% url 'staff.views.member_detail' alert.user.profile.id %}">{{ alert.user.get_full_name }}</a></td>
+			<td style="text-align: right;">
+				<form action="{% url 'staff.views.todo_detail' key %}" method="POST">
+					<input type="hidden" name="alert_id" value="{{ alert.id }}"/>
+					<button name="action" value="resolve" type="submit" {% if is_system_alert %} disabled{% endif %}>Resolve</button>
+					<button name="action" value="mute" type="submit" >Mute</button>
+					<input name="note" size="32"/>
+					{% csrf_token %}
+				</form>
+			</td>
+		</tr>
+		{% endfor %}
+	</table>
+
+	<!--
+	<form action="." method="POST">
+		<input name="Mark All" type="Submit" Value="Mark All Members Completed" onclick="return confirm('Are you sure?');">
+		{% csrf_token %}
+	</form>
+	-->
+{% else %}
+	<p style="font-size: 1.4em; font-weight: bold;">Nothing to do!  Yay!</p>
+{% endif %}
+
+{% endblock %}
