@@ -165,14 +165,6 @@ def announce_need_photo(user):
 	message = "Team,\r\n\r\n \t%s just signed in and we don't have a photo of them yet. %s" % (user.get_full_name(), team_signature(user))
 	send_quietly(settings.TEAM_EMAIL_ADDRESS, subject, message)
 
-def announce_tasks_todo(user, tasks):
-	subject = "Incomplete Tasks - %s" % (user.get_full_name())
-	task_string = "Incomplete Tasks:"
-	for t in tasks:
-		task_string = "%s\r\n\t- %s" % (task_string, t)
-	message = "Team,\r\n\r\n \t%s just signed in and we need to complete a few tasks.\r\n\r\n %s %s" % (user.get_full_name(), task_string, team_signature(user))
-	send_quietly(settings.TEAM_EMAIL_ADDRESS, subject, message)
-
 def announce_billing_disable(user):
 	subject = "Disabled Automatic Billing - %s" % (user.get_full_name())
 	message = "Team,\r\n\r\n \t%s just disabled their automatic billing through Nadine. %s" % (user.get_full_name(), team_signature(user))
