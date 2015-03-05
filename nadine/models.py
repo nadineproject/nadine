@@ -207,10 +207,19 @@ class MemberManager(models.Manager):
 	def daily_members(self):
 		return self.active_members().exclude(id__in=self.members_with_desks())
 
+	def exiting_members(self, day_window):
+		from_day = timezone.now() - timedelta(days=day_window)
+		to_day = timezone.now() + timedelta(days=day_window)
+		ending = Membership.objects.filter(end_date__gte=from_day, end_date__lte=to_day)
+		starting = Membership.objects.filter(start_date__gte=from_day, start_date__lte=to_day, end_date__isnull=True)
+		exiting = ending.exclude(member__in=starting.values('member'))
+		return Member.objects.filter(id__in=exiting.values('member'))
+		
 	def stale_members(self):
 		three_months_ago = timezone.now() - MonthDelta(3)
 		recently_used = DailyLog.objects.filter(visit_date__gte=three_months_ago).values('member').distinct()
-		return self.daily_members().exclude(id__in=recently_used)
+		memberships = Membership.objects.active_memberships().filter(start_date__lte=three_months_ago, has_desk=False)
+		return Member.objects.filter(id__in=memberships.values('member')).exclude(id__in=recently_used)
 
 	def missing_member_agreement(self):
 		active_agmts = FileUpload.objects.filter(document_type=FileUpload.MEMBER_AGMT, user__in=self.active_users()).distinct()
@@ -808,10 +817,45 @@ class MemberAlertManager(models.Manager):
 			return unresolved.filter(user__in=active_users)
 		return unresolved
 
-	def trigger_stale_members(self):
+	def trigger_nightly_check(self):
+		# Check for exiting members (one week back, one week in to the future)
+		exiting_members = Member.objects.exiting_members(7)
+		for m in exiting_members:
+			self.trigger_exiting_membership(m.user)
+
+		# Check for stale membership
 		for m in Member.objects.stale_members():
 			if not MemberAlert.objects.filter(user=m.user, key=MemberAlert.STALE_MEMBER, resolved_ts__isnull=True, muted_ts__isnull=True):
 				MemberAlert.objects.create(user=m.user, key=MemberAlert.STALE_MEMBER)
+
+		# Expire old and unresolved alerts
+		#active_users = Member.objects.active_users()
+		#exiting_users = exiting_members.values('user')
+		#to_clean = [MemberAlert.PAPERWORK, MemberAlert.MEMBER_INFO, MemberAlert.MEMBER_AGREEMENT, MemberAlert.TAKE_PHOTO, 
+		#	MemberAlert.UPLOAD_PHOTO, MemberAlert.POST_PHOTO, MemberAlert.ORIENTATION, MemberAlert.KEY_AGREEMENT]
+		#for key in to_clean:
+		#	for alert in self.unresolved(key):
+		#		if not alert.user in exiting_users:
+		#			if not alert.user in active_users:
+		#				alert.mute(None, note="membership ended")
+
+	def trigger_exiting_membership(self, user):
+		open_alerts = user.profile.alerts_by_key(include_resolved=False)
+	
+		# Take down their photo.  First make sure we have a photo and not an open alert
+		if user.profile.photo and not MemberAlert.POST_PHOTO in open_alerts:
+			if not MemberAlert.REMOVE_PHOTO in open_alerts:
+				MemberAlert.objects.create(user=user, key=MemberAlert.REMOVE_PHOTO)
+
+		# Key?  Let's get it back!
+		last_membership = user.profile.last_membership()
+		if last_membership:
+			if last_membership.has_key:
+				if not MemberAlert.RETURN_DOOR_KEY in open_alerts:
+					MemberAlert.objects.create(user=user, key=MemberAlert.RETURN_DOOR_KEY)
+			if last_membership.has_desk:
+				if not MemberAlert.RETURN_DESK_KEY in open_alerts:
+					MemberAlert.objects.create(user=user, key=MemberAlert.RETURN_DESK_KEY)
 
 	def trigger_new_membership(self, user):
 		logger.debug("trigger_new_membership: %s" % user)
@@ -853,24 +897,6 @@ class MemberAlertManager(models.Manager):
 			if not FileUpload.KEY_AGMT in existing_files:
 				if not MemberAlert.KEY_AGREEMENT in open_alerts:
 					MemberAlert.objects.create(user=user, key=MemberAlert.KEY_AGREEMENT)
-
-	def trigger_exiting_membership(self, user):
-		open_alerts = user.profile.alerts_by_key(include_resolved=False)
-	
-		# Take down their photo.  First make sure we have a photo and not an open alert
-		if user.profile.photo and not MemberAlert.POST_PHOTO in open_alerts:
-			if not MemberAlert.REMOVE_PHOTO in open_alerts:
-				MemberAlert.objects.create(user=user, key=MemberAlert.REMOVE_PHOTO)
-
-		# Key?  Let's get it back!
-		last_membership = user.profile.last_membership()
-		if last_membership:
-			if last_membership.has_key:
-				if not MemberAlert.RETURN_DOOR_KEY in open_alerts:
-					MemberAlert.objects.create(user=user, key=MemberAlert.RETURN_DOOR_KEY)
-			if last_membership.has_desk:
-				if not MemberAlert.RETURN_DESK_KEY in open_alerts:
-					MemberAlert.objects.create(user=user, key=MemberAlert.RETURN_DESK_KEY)
 
 	def trigger_user_save(self, user):
 		logger.debug("trigger_user_save: %s" % user)

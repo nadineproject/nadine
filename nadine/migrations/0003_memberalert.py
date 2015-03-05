@@ -86,7 +86,7 @@ def post_migration():
 	for member in Member.objects.active_members():
 		MemberAlert.objects.trigger_new_membership(member.user)
 		member.resolve_alerts(MemberAlert.POST_PHOTO)
-	MemberAlert.objects.trigger_stale_members()
+	MemberAlert.objects.trigger_nightly_check()
 
 class Migration(migrations.Migration):
 

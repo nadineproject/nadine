@@ -53,6 +53,11 @@ def regular_checkins():
 	#			email.announce_member_checkin(membership.member.user)
 
 @shared_task
+def member_alert_check():
+	from nadine.models import MemberAlert
+	MemberAlert.objects.trigger_nightly_check()
+
+@shared_task
 def unsubscribe_recent_dropouts_task():
 	"""A recurring task which checks for members who need to be unsubscribed from mailing lists"""
 	from nadine.models import Member
