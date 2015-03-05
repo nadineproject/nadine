@@ -484,6 +484,7 @@ class Member(models.Model):
 		return MemberAlert.objects.filter(user=self.user, resolved_ts__isnull=True, muted_ts__isnull=True).order_by('-created_ts')
 
 	def resolve_alerts(self, alert_key, resolved_by=None):
+		logger.debug("resolve_alerts: user=%s, key=%s, resolved_by=%s" % (self.user, alert_key, resolved_by))
 		alerts = MemberAlert.objects.filter(user=self.user, key=alert_key, resolved_ts__isnull=True, muted_ts__isnull=True).order_by('-created_ts')
 		if alerts:
 			for alert in alerts:
