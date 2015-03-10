@@ -7,8 +7,6 @@ from django.db import models, migrations
 from django.db.models import Q
 from django.conf import settings
 
-from nadine import member_alerts
-
 # Copied over from the model
 PAPERWORK = "paperwork"
 MEMBER_INFO = "member_info"
