@@ -6,8 +6,8 @@ Most of the action is in the staff application, where you'll find a member track
 
 ## Requirements
 
-* Phython (Probably comes with your system otherwise it can be downloaded from their [website](https://www.python.org/downloads/).)
-* virtualenv (install with `pip virtualenv`)
+* Python (Probably comes with your system otherwise it can be downloaded from their [website](https://www.python.org/downloads/).)
+* Virtualenv (install with `pip virtualenv`)
 * XCode if you are on Mac OS X 
 * Postgresql
 
