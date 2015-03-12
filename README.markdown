@@ -10,6 +10,7 @@ Most of the action is in the staff application, where you'll find a member track
 * Virtualenv (install with `pip virtualenv`)
 * XCode if you are on Mac OS X 
 * Postgresql
+* Does not play nice with SQLite
 
 ## Handy Installation Instructions
 
