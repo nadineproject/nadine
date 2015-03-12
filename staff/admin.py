@@ -86,9 +86,19 @@ admin.site.register(MemberNote, MemberNoteAdmin)
 
 
 class MemberAlertAdmin(StyledAdmin):
+    def unresolve(self, request, queryset):
+        for alert in queryset:
+            alert.resolved_ts = None
+            alert.resolved_by = None
+            alert.muted_ts = None
+            alert.muted_by = None
+            alert.save()
+        self.message_user(request, "Alerts Unresolved")
+
     list_display = ('created_ts', 'key', 'user', 'resolved_ts', 'resolved_by', 'muted_ts', 'muted_by', 'note')
     search_fields = ('user__username', 'user__first_name', 'user__last_name')
     list_filter = ('key', )
+    actions = ["unresolve", ]
 admin.site.register(MemberAlert, MemberAlertAdmin)
 
 
