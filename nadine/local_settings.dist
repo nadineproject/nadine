@@ -5,8 +5,6 @@ PRODUCTION = False
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-APPLICATION_DIR = os.path.dirname(globals()['__file__'])
-
 # Admins
 ADMINS = (
     ('YOU', 'you@yourdomain.com'),
@@ -22,14 +20,6 @@ DATABASES = {
         'PASSWORD': 'password'
     }
 }
-
-# Working with SQLite
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': APPLICATION_DIR + '/../databases/nadine.db',
-#     }
-# }
 
 # CACHE_BACKEND = 'dummy:///'
 CACHE_BACKEND = 'locmem:///'
