@@ -19,3 +19,4 @@ media/arp/import.log
 .settings
 celerybeat-schedule.db
 django.log
+databases

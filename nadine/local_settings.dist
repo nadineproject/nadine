@@ -1,6 +1,11 @@
+import datetime
+import os
+
 PRODUCTION = False
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+
+APPLICATION_DIR = os.path.dirname(globals()['__file__'])
 
 # Admins
 ADMINS = (
@@ -10,29 +15,37 @@ MANAGERS = ADMINS
 SERVER_EMAIL = 'nadine@officenomads.com'
 
 DATABASES = {
-	'default': {
-		'ENGINE':'django.db.backends.postgresql_psycopg2',
-		'NAME':'nadinedb',
-		'USER':'postgres',
-		'PASSWORD':'password'
-	}
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'nadinedb',
+        'USER': 'postgres',
+        'PASSWORD': 'password'
+    }
 }
 
-#CACHE_BACKEND = 'dummy:///'
+# Working with SQLite
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': APPLICATION_DIR + '/../databases/nadine.db',
+#     }
+# }
+
+# CACHE_BACKEND = 'dummy:///'
 CACHE_BACKEND = 'locmem:///'
 
 # Make this unique, and don't share it with anybody.
 # http://www.miniwebtool.com/django-secret-key-generator/
 SECRET_KEY = 'ZZZ'
 
-USA_EPAY_URL='www.usaepay.com'
-USA_EPAY_KEY='XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
-USA_EPAY_KEY2='XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
-USA_EPAY_PIN2='1234'
+USA_EPAY_URL = 'www.usaepay.com'
+USA_EPAY_KEY = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+USA_EPAY_KEY2 = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+USA_EPAY_PIN2 = '1234'
 
-MAILCHIMP_API_KEY="goMonkeygo"
-MAILCHIMP_NEWSLETTER_KEY="melikekey"
-MAILCHIMP_WEBHOOK_KEY="hookedonhooks"
+MAILCHIMP_API_KEY = "goMonkeygo"
+MAILCHIMP_NEWSLETTER_KEY = "melikekey"
+MAILCHIMP_WEBHOOK_KEY = "hookedonhooks"
 
 DEFAULT_FROM_EMAIL = "something@example.com"
 EMAIL_ADDRESS = "something@example.com"
@@ -41,12 +54,11 @@ EMAIL_HOST_PASSWORD = "password"
 EMAIL_HOST_USER = "username"
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_SUBJECT_PREFIX = "[COWORKING] " # or None if you want no subject prefix
+EMAIL_SUBJECT_PREFIX = "[COWORKING] "  # or None if you want no subject prefix
 
 TEAM_EMAIL_ADDRESS = "team@officenomads.com"
 TEAM_MEMBERSHIP_PLAN = "ON Team"
 
-import datetime
 BILLING_START_DATE = datetime.date(2009, 11, 17)
 NEW_MEMBER_DEPOSIT = 500
 NON_MEMBER_DROPIN_FEE = 25

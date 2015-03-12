@@ -30,49 +30,54 @@ from arpwatch import arp
 
 logger = logging.getLogger(__name__)
 
-def index(request):
-	if not request.user.is_authenticated(): return HttpResponseRedirect(reverse('django.contrib.auth.views.login'))
 
-	ip = None
-	x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-	if x_forwarded_for:
-		ip = x_forwarded_for.split(',')[0]
-	else:
-		ip = request.META.get('REMOTE_ADDR')
-	if ip:
-		arp.register_user_ip(request.user, ip)
-		#device = arp.device_by_ip(ip)
-		#if device and not device.user:
-		#	return HttpResponseRedirect(reverse('members.views.user_devices'))
-	
-	if request.user.is_staff: return HttpResponseRedirect(reverse('staff.views.todo'))
-	
-	return HttpResponseRedirect(reverse('members.views.home'))
+def index(request):
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect(reverse('django.contrib.auth.views.login'))
+
+    ip = None
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    if ip:
+        arp.register_user_ip(request.user, ip)
+        #device = arp.device_by_ip(ip)
+        # if device and not device.user:
+        #	return HttpResponseRedirect(reverse('members.views.user_devices'))
+
+    if request.user.is_staff:
+        return HttpResponseRedirect(reverse('staff.views.todo'))
+
+    return HttpResponseRedirect(reverse('members.views.home'))
+
 
 @csrf_protect
-def password_reset(request, is_admin_site=False, template_name='registration/password_reset_form.html', email_template_name='registration/password_reset_email.html', password_reset_form=PasswordResetForm, token_generator=default_token_generator,post_reset_redirect=None):
-	if post_reset_redirect is None: post_reset_redirect = reverse('django.contrib.auth.views.password_reset_done')
-	if request.method == 'GET' and request.GET.get('email',None):
-		form = password_reset_form(initial={'email':request.GET.get('email')})
-	elif request.method == "POST":
-		email = request.POST.get('email')
-		logger.info("Resetting password for '%s'" % email)
-		form = password_reset_form(request.POST)
-		print form.is_valid()
-		if form.is_valid():
-			opts = {}
-			opts['use_https'] = request.is_secure()
-			opts['token_generator'] = token_generator
-			if is_admin_site:
-				opts['domain_override'] = request.META['HTTP_HOST']
-			else:
-				opts['email_template_name'] = email_template_name
-				if not Site._meta.installed:
-					opts['domain_override'] = RequestSite(request).domain
-			form.save(**opts)
-			return HttpResponseRedirect(post_reset_redirect)
-	else:
-		form = password_reset_form()
-	return render_to_response(template_name, {'form': form}, context_instance=RequestContext(request))
+def password_reset(request, is_admin_site=False, template_name='registration/password_reset_form.html', email_template_name='registration/password_reset_email.html', password_reset_form=PasswordResetForm, token_generator=default_token_generator, post_reset_redirect=None):
+    if post_reset_redirect is None:
+        post_reset_redirect = reverse('django.contrib.auth.views.password_reset_done')
+    if request.method == 'GET' and request.GET.get('email', None):
+        form = password_reset_form(initial={'email': request.GET.get('email')})
+    elif request.method == "POST":
+        email = request.POST.get('email')
+        logger.info("Resetting password for '%s'" % email)
+        form = password_reset_form(request.POST)
+        print form.is_valid()
+        if form.is_valid():
+            opts = {}
+            opts['use_https'] = request.is_secure()
+            opts['token_generator'] = token_generator
+            if is_admin_site:
+                opts['domain_override'] = request.META['HTTP_HOST']
+            else:
+                opts['email_template_name'] = email_template_name
+                if not Site._meta.installed:
+                    opts['domain_override'] = RequestSite(request).domain
+            form.save(**opts)
+            return HttpResponseRedirect(post_reset_redirect)
+    else:
+        form = password_reset_form()
+    return render_to_response(template_name, {'form': form}, context_instance=RequestContext(request))
 
 # Copyright 2010 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
