@@ -1008,7 +1008,7 @@ class MemberAlert(models.Model):
     )
 
     # These alerts can be resolved by the system automatically
-    SYSTEM_ALERTS = [MEMBER_INFO, MEMBER_AGREEMENT, TAKE_PHOTO, UPLOAD_PHOTO, KEY_AGREEMENT, STALE_MEMBER]
+    SYSTEM_ALERTS = [MEMBER_INFO, MEMBER_AGREEMENT, UPLOAD_PHOTO, KEY_AGREEMENT, STALE_MEMBER]
 
     @staticmethod
     def getDescription(key):
