@@ -45,7 +45,10 @@ def sso(request):
         'external_id': request.user.id,
         'username': request.user.username,
         'name': request.user.get_full_name(),
-        'avatar_url':request.build_absolute_uri(request.user.profile.photo.url)
+        'avatar_url': request.build_absolute_uri(request.user.profile.photo.url),
+        'avatar_force_update': True,
+        'admin': request.user.is_staff,
+        'moderator': request.user.is_staff
     }
 
     return_payload = base64.encodestring(urllib.urlencode(params))
