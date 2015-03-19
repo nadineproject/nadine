@@ -28,6 +28,9 @@ DEBUG = False
 MOTD = "Enjoy your day at Office Nomads!"
 MOTD_TIMEOUT = 5000
 
+DISCOURSE_BASE_URL = 'http://your-discourse-site.com'
+DISCOURSE_SSO_SECRET = 'paste_your_secret_here'
+
 # Local time zone for this installation. Choices can be found here:
 # http://www.postgresql.org/docs/8.1/static/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE
 # although not all variations may be possible on all operating systems.

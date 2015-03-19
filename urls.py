@@ -34,12 +34,16 @@ urlpatterns = patterns('',
                        url(r'^reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$', 'django.contrib.auth.views.password_reset_confirm', {'template_name': 'password_reset_confirm.html'}, 'password_reset_confirm'),
                        url(r'^reset/complete/$', 'django.contrib.auth.views.password_reset_complete', {'template_name': 'password_reset_complete.html'}, 'password_reset_complete'),
 
-                       url(r'^api/', include(API.urls)),
+                       # API URLs
+                       #url(r'^api/', include(API.urls)),
 
                        # Inbound Mailgun Emails
                        url(r'^mailgun/staff$', 'nadine.mailgun.staff'),
                        url(r'^mailgun/team$', 'nadine.mailgun.team'),
                        url(r'^mailgun/test80085$', 'nadine.mailgun.test80085'),
+
+                       # Discourse discussion group
+                       url(r'^discourse/sso$', 'nadine.discourse.sso'),
 
                        url(r'^$', 'views.index'),
                        )

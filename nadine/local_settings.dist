@@ -37,6 +37,9 @@ MAILCHIMP_API_KEY = "goMonkeygo"
 MAILCHIMP_NEWSLETTER_KEY = "melikekey"
 MAILCHIMP_WEBHOOK_KEY = "hookedonhooks"
 
+DISCOURSE_BASE_URL = 'http://your-discourse-site.com'
+DISCOURSE_SSO_SECRET = 'paste_your_secret_here'
+
 DEFAULT_FROM_EMAIL = "something@example.com"
 EMAIL_ADDRESS = "something@example.com"
 EMAIL_HOST = "smtp.example.com"
