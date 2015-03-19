@@ -5,6 +5,8 @@ import urllib
 
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
+from django.core.urlresolvers import reverse
+
 from django.conf import settings
 
 from urlparse import parse_qs
@@ -42,6 +44,8 @@ def sso(request):
         'email': request.user.email,
         'external_id': request.user.id,
         'username': request.user.username,
+        'name': request.user.get_full_name(),
+        'avatar_url':request.build_absolute_uri(request.user.profile.photo.url)
     }
 
     return_payload = base64.encodestring(urllib.urlencode(params))
