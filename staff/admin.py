@@ -7,9 +7,6 @@ from django.contrib.auth.admin import UserAdmin
 from nadine.models import *
 
 # Register the objects with the admin interface
-admin.site.register(Onboard_Task)
-admin.site.register(Onboard_Task_Completed)
-admin.site.register(ExitTask)
 admin.site.register(Neighborhood)
 admin.site.register(Industry)
 admin.site.register(HowHeard)

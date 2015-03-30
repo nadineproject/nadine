@@ -240,36 +240,6 @@ def bill(request, id):
     bill = get_object_or_404(Bill, pk=id)
     return render_to_response('staff/bill.html', {"bill": bill, 'new_member_deposit': settings.NEW_MEMBER_DEPOSIT}, context_instance=RequestContext(request))
 
-# @staff_member_required
-# def exit_task(request, id):
-# 	task = get_object_or_404(ExitTask, pk=id)
-# 	if request.method == 'POST':
-# 		if 'save_exit_task' in request.POST:
-# 			task = ExitTask.objects.get(pk=request.POST.get('task_id'))
-# 			member = Member.objects.get(user__username=request.POST.get('username'))
-# 			ExitTaskCompleted.objects.create(member=member, task=task)
-# 			return HttpResponseRedirect(reverse('staff.views.exit_task', kwargs={ 'id':id }))
-# 		elif 'Mark All' in request.POST:
-# 			for member in task.uncompleted_members():
-# 				update = ExitTaskCompleted.objects.create(member=member, task=task)
-# 			return HttpResponseRedirect(reverse('staff.views.exit_task', kwargs={ 'id':id }))
-# 	return render_to_response('staff/exit_task.html', {'task': task }, context_instance=RequestContext(request))
-#
-# @staff_member_required
-# def onboard_task(request, id):
-# 	task = get_object_or_404(Onboard_Task, pk=id)
-# 	if request.method == 'POST':
-# 		if 'save_onboard_task' in request.POST:
-# 			task = Onboard_Task.objects.get(pk=request.POST.get('task_id'))
-# 			member = Member.objects.get(user__username=request.POST.get('username'))
-# 			Onboard_Task_Completed.objects.create(member=member, task=task, completed_by=request.user)
-# 			return HttpResponseRedirect(reverse('staff.views.onboard_task', kwargs={ 'id':id }))
-# 		elif 'Mark All' in request.POST:
-# 			for member in task.uncompleted_members():
-# 				update = Onboard_Task_Completed.objects.create(member=member, task=task, completed_by=request.user)
-# 			return HttpResponseRedirect(reverse('staff.views.onboard_task', kwargs={ 'id':id }))
-# 	return render_to_response('staff/onboard_task.html', {'task': task}, context_instance=RequestContext(request))
-
 
 @staff_member_required
 def todo(request):
@@ -634,13 +604,7 @@ def member_detail(request, member_id):
     email_logs = SentEmailLog.objects.filter(member=member).order_by('created').reverse()
 
     if request.method == 'POST':
-        if 'save_onboard_task' in request.POST:
-            task = Onboard_Task.objects.get(pk=request.POST.get('task_id'))
-            Onboard_Task_Completed.objects.create(member=member, task=task, completed_by=request.user)
-        elif 'save_exit_task' in request.POST:
-            task = ExitTask.objects.get(pk=request.POST.get('task_id'))
-            ExitTaskCompleted.objects.create(member=member, task=task)
-        elif 'send_manual_email' in request.POST:
+        if 'send_manual_email' in request.POST:
             key = request.POST.get('message_key')
             email.send_manual(member.user, key)
         elif 'add_note' in request.POST:

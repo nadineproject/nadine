@@ -229,15 +229,6 @@ class MembershipForm(forms.Form):
         if note:
             MemberNote.objects.create(member=membership.member, created_by=self.created_by, note=note)
 
-        # If this is a new membership and they have an old membership that is at least 5 days old
-        # Then remove all the onboarding tasks and the exit tasks so they have a clean slate
-        if adding and last_membership and last_membership.end_date:
-            if last_membership.end_date < timezone.now().date() - timedelta(5):
-                for completed_task in Onboard_Task_Completed.objects.filter(member=membership.member):
-                    completed_task.delete()
-                for completed_task in ExitTaskCompleted.objects.filter(member=membership.member):
-                    completed_task.delete()
-
         if adding:
             email.send_new_membership(membership.member.user)
 
