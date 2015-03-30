@@ -834,7 +834,11 @@ class MemberAlertManager(models.Manager):
         # Check for exiting members (one week back, one week in to the future)
         exiting_members = Member.objects.exiting_members(7)
         for m in exiting_members:
-            self.trigger_exiting_membership(m.user)
+            exit_alerts = [MemberAlert.REMOVE_PHOTO, MemberAlert.RETURN_DOOR_KEY, MemberAlert.RETURN_DESK_KEY]
+            last_week = timezone.now() - timedelta(days=7)
+            # Only trigger exiting memership if no exit alerts were created in the last week
+            if MemberAlert.objects.filter(user=m.user, key__in=exit_alerts, created_ts__gte=last_week).count() == 0:
+                self.trigger_exiting_membership(m.user)
 
         # Check for stale membership
         for m in Member.objects.stale_members():
