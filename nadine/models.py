@@ -914,7 +914,8 @@ class MemberAlertManager(models.Manager):
         open_alerts = user.profile.alerts_by_key(include_resolved=False)
         all_alerts = user.profile.alerts_by_key(include_resolved=True)
         existing_files = user.profile.files_by_type()
-        #existing_memberships = user.profile.memberships()
+        existing_memberships = user.profile.memberships.all().order_by('start_date')
+        new_membership = existing_memberships.last()
 
         # Member Information
         if not FileUpload.MEMBER_INFO in existing_files:
@@ -934,7 +935,7 @@ class MemberAlertManager(models.Manager):
                 MemberAlert.objects.create(user=user, key=MemberAlert.TAKE_PHOTO)
             if not MemberAlert.UPLOAD_PHOTO in open_alerts:
                 MemberAlert.objects.create(user=user, key=MemberAlert.UPLOAD_PHOTO)
-        if not MemberAlert.POST_PHOTO in open_alerts:
+        if not new_membership.is_change() and not MemberAlert.POST_PHOTO in open_alerts:
             MemberAlert.objects.create(user=user, key=MemberAlert.POST_PHOTO)
 
         # New Member Orientation
@@ -942,8 +943,7 @@ class MemberAlertManager(models.Manager):
             MemberAlert.objects.create(user=user, key=MemberAlert.ORIENTATION)
 
         # Key?  Check for a key agreement
-        last_membership = user.profile.last_membership()
-        if last_membership and last_membership.has_key:
+        if new_membership.has_key:
             if not FileUpload.KEY_AGMT in existing_files:
                 if not MemberAlert.KEY_AGREEMENT in open_alerts:
                     MemberAlert.objects.create(user=user, key=MemberAlert.KEY_AGREEMENT)
