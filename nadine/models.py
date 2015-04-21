@@ -836,7 +836,7 @@ class MemberAlertManager(models.Manager):
         for m in exiting_members:
             exit_alerts = [MemberAlert.REMOVE_PHOTO, MemberAlert.RETURN_DOOR_KEY, MemberAlert.RETURN_DESK_KEY]
             last_week = timezone.now() - timedelta(days=7)
-            # Only trigger exiting memership if no exit alerts were created in the last week
+            # Only trigger exiting membership if no exit alerts were created in the last week
             if MemberAlert.objects.filter(user=m.user, key__in=exit_alerts, created_ts__gte=last_week).count() == 0:
                 self.trigger_exiting_membership(m.user)
 
