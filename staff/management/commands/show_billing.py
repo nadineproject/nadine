@@ -15,7 +15,7 @@ from django.utils import timezone
 class Command(BaseCommand):
     help = "Shows the billing information for a given user."
     args = "[user_id]"
-    requires_model_validation = False
+    requires_system_checks = False
 
     def handle(self, *labels, **options):
         from nadine.models import Member

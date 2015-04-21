@@ -15,7 +15,7 @@ from interlink.models import MailingList
 
 class Command(BaseCommand):
     help = "Subscribes every user with an active membership to a mailing list."
-    requires_model_validation = True
+    requires_system_checks = True
 
     def print_usage(self):
         print './manage.py subscribe_members <mailing-list-id>'

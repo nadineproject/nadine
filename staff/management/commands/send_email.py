@@ -12,7 +12,7 @@ from django.core.management.base import BaseCommand, CommandError
 class Command(BaseCommand):
     help = "Sends system emails to given user."
     args = "[username] [message]"
-    requires_model_validation = False
+    requires_system_checks = False
 
     def print_keys(self):
         print("Valid Message Keys: ")

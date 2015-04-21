@@ -20,7 +20,7 @@ COMPANY_SUFFIXES = ['corp', 'llc', 'inc', 'gmb', 'universal', 'limited', 'partne
 class Command(NoArgsCommand):
     help = "Destructively changes the database to remove identifying information.  Used when creating test fixtures."
 
-    requires_model_validation = True
+    requires_system_checks = True
 
     def generate_phone_number(self): return '206-%s-%s' % (''.join([str(random.randint(0, 9)) for x in range(3)]), ''.join([str(random.randint(0, 9)) for x in range(4)]))
 

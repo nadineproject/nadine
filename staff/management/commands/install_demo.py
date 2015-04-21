@@ -17,7 +17,7 @@ from interlink.models import MailingList, IncomingMail, OutgoingMail
 class Command(BaseCommand):
     help = "Destructively resets the database and installs some demonstration data."
     args = ""
-    requires_model_validation = True
+    requires_system_checks = True
 
     def handle(self, *labels, **options):
         if settings.PRODUCTION:

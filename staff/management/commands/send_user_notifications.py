@@ -8,7 +8,7 @@ from staff import tasks
 class Command(NoArgsCommand):
     help = "Send User Notification Emails."
 
-    requires_model_validation = True
+    requires_system_checks = True
 
     def handle_noargs(self, **options):
         tasks.send_notifications()

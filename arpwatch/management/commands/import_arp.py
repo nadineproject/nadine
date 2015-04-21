@@ -12,7 +12,7 @@ from arpwatch import arp
 class Command(NoArgsCommand):
     help = "Import new arplogs"
 
-    requires_model_validation = True
+    requires_system_checks = True
 
     def handle_noargs(self, **options):
         arp.import_all()

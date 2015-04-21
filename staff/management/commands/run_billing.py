@@ -13,7 +13,7 @@ from staff import billing
 class Command(NoArgsCommand):
     help = "Runs the billing calculator."
 
-    requires_model_validation = True
+    requires_system_checks = True
 
     def handle_noargs(self, **options):
         billing.run_billing()
