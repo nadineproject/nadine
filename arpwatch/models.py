@@ -30,7 +30,7 @@ class UserDevice(models.Model):
 class UserRemoteAddr(models.Model):
     logintime = models.DateTimeField(blank=False)
     user = models.ForeignKey(User, blank=False, null=False, unique=False)
-    ip_address = models.IPAddressField(blank=False, null=False)
+    ip_address = models.GenericIPAddressField(blank=False, null=False)
 
     class Meta:
         ordering = ['-logintime']
@@ -72,7 +72,7 @@ class ArpLog_Manager(models.Manager):
 class ArpLog(models.Model):
     runtime = models.DateTimeField(blank=False, db_index=True)
     device = models.ForeignKey(UserDevice, null=False)
-    ip_address = models.IPAddressField(blank=False, null=False, db_index=True)
+    ip_address = models.GenericIPAddressField(blank=False, null=False, db_index=True)
 
     objects = ArpLog_Manager()
 

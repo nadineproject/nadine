@@ -133,8 +133,8 @@ class Bill(models.Model):
     member = models.ForeignKey('Member', blank=False, null=False, related_name="bills")
     amount = models.DecimalField(max_digits=7, decimal_places=2)
     membership = models.ForeignKey('Membership', blank=True, null=True)
-    dropins = models.ManyToManyField('DailyLog', blank=True, null=True, related_name='bills')
-    guest_dropins = models.ManyToManyField('DailyLog', blank=True, null=True, related_name='guest_bills')
+    dropins = models.ManyToManyField('DailyLog', related_name='bills')
+    guest_dropins = models.ManyToManyField('DailyLog', related_name='guest_bills')
     new_member_deposit = models.BooleanField(default=False, blank=False, null=False)
     paid_by = models.ForeignKey('Member', blank=True, null=True, related_name='guest_bills')
 
@@ -340,7 +340,7 @@ class Member(models.Model):
     """A person who has used the space and may or may not have a monthly membership"""
     objects = MemberManager()
 
-    user = models.ForeignKey(User, unique=True, blank=False, related_name="user")
+    user = models.OneToOneField(User, blank=False, related_name="user")
     email2 = models.EmailField("Alternate Email", blank=True, null=True)
     phone = PhoneNumberField(blank=True, null=True)
     phone2 = PhoneNumberField("Alternate Phone", blank=True, null=True)

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django import forms
-from django.forms.util import ErrorList
+from django.forms.utils import ErrorList
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
 
