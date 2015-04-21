@@ -1,0 +1,337 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
+from django.db import models, migrations
+import nadine.models
+from django.conf import settings
+import taggit.managers
+import django_localflavor_us.models
+
+
+class Migration(migrations.Migration):
+
+    replaces = [(b'nadine', '0001_initial'), (b'nadine', '0002_auto_20150210_1136'), (b'nadine', '0003_memberalert'), (b'nadine', '0004_auto_20150330_1157'), (b'nadine', '0005_auto_20150421_0930')]
+
+    dependencies = [
+        ('taggit', '0001_initial'),
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+    ]
+
+    operations = [
+        migrations.CreateModel(
+            name='Bill',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('bill_date', models.DateField()),
+                ('amount', models.DecimalField(max_digits=7, decimal_places=2)),
+                ('new_member_deposit', models.BooleanField(default=False)),
+            ],
+            options={
+                'ordering': ['-bill_date'],
+                'get_latest_by': 'bill_date',
+            },
+        ),
+        migrations.CreateModel(
+            name='BillingLog',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('started', models.DateTimeField(auto_now_add=True)),
+                ('ended', models.DateTimeField(null=True, blank=True)),
+                ('successful', models.BooleanField(default=False)),
+                ('note', models.TextField(null=True, blank=True)),
+            ],
+            options={
+                'ordering': ['-started'],
+                'get_latest_by': 'started',
+            },
+        ),
+        migrations.CreateModel(
+            name='DailyLog',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('visit_date', models.DateField(verbose_name=b'Date')),
+                ('payment', models.CharField(max_length=5, verbose_name=b'Payment', choices=[(b'Bill', b'Billable'), (b'Trial', b'Free Trial'), (b'Waved', b'Payment Waved')])),
+                ('note', models.CharField(max_length=128, verbose_name=b'Note', blank=b'True')),
+                ('created', models.DateTimeField(auto_now_add=True)),
+            ],
+            options={
+                'ordering': ['-visit_date', '-created'],
+                'verbose_name': 'Daily Log',
+            },
+        ),
+        migrations.CreateModel(
+            name='FileUpload',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('uploadTS', models.DateTimeField(auto_now_add=True)),
+                ('name', models.CharField(max_length=64)),
+                ('content_type', models.CharField(max_length=64)),
+                ('file', models.FileField(upload_to=nadine.models.user_file_upload_path)),
+                ('document_type', models.CharField(default=None, max_length=200, null=True, blank=True, choices=[(b'Member_Information', b'Member Information'), (b'Member_Agreement', b'Membership Agreement'), (b'Key_Agreement', b'Key Holder Agreement'), (b'Event_Host_Agreement', b'Event Host Agreement')])),
+                ('uploaded_by', models.ForeignKey(related_name='uploaded_by', to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='HowHeard',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=128)),
+            ],
+            options={
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='Industry',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=128)),
+            ],
+            options={
+                'ordering': ['name'],
+                'verbose_name': 'Industry',
+                'verbose_name_plural': 'Industries',
+            },
+        ),
+        migrations.CreateModel(
+            name='Member',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('email2', models.EmailField(max_length=75, null=True, verbose_name=b'Alternate Email', blank=True)),
+                ('phone', django_localflavor_us.models.PhoneNumberField(max_length=20, null=True, blank=True)),
+                ('phone2', django_localflavor_us.models.PhoneNumberField(max_length=20, null=True, verbose_name=b'Alternate Phone', blank=True)),
+                ('address1', models.CharField(max_length=128, blank=True)),
+                ('address2', models.CharField(max_length=128, blank=True)),
+                ('city', models.CharField(max_length=128, blank=True)),
+                ('state', models.CharField(max_length=2, blank=True)),
+                ('zipcode', models.CharField(max_length=5, blank=True)),
+                ('url_personal', models.URLField(null=True, blank=True)),
+                ('url_professional', models.URLField(null=True, blank=True)),
+                ('url_facebook', models.URLField(null=True, blank=True)),
+                ('url_twitter', models.URLField(null=True, blank=True)),
+                ('url_linkedin', models.URLField(null=True, blank=True)),
+                ('url_aboutme', models.URLField(null=True, blank=True)),
+                ('url_github', models.URLField(null=True, blank=True)),
+                ('gender', models.CharField(default=b'U', max_length=1, choices=[(b'U', b'Unknown'), (b'M', b'Male'), (b'F', b'Female'), (b'O', b'Other')])),
+                ('has_kids', models.NullBooleanField()),
+                ('self_employed', models.NullBooleanField()),
+                ('company_name', models.CharField(max_length=128, null=True, blank=True)),
+                ('promised_followup', models.DateField(null=True, blank=True)),
+                ('last_modified', models.DateField(auto_now=True)),
+                ('photo', models.ImageField(null=True, upload_to=nadine.models.user_photo_path, blank=True)),
+                ('valid_billing', models.BooleanField(default=False)),
+                ('howHeard', models.ForeignKey(blank=True, to='nadine.HowHeard', null=True)),
+                ('industry', models.ForeignKey(blank=True, to='nadine.Industry', null=True)),
+            ],
+            options={
+                'ordering': ['user__first_name', 'user__last_name'],
+                'get_latest_by': 'last_modified',
+            },
+        ),
+        migrations.CreateModel(
+            name='MemberNote',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('created', models.DateTimeField(auto_now_add=True)),
+                ('note', models.TextField(null=True, blank=True)),
+                ('created_by', models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True)),
+                ('member', models.ForeignKey(to='nadine.Member')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Membership',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('start_date', models.DateField(db_index=True)),
+                ('end_date', models.DateField(db_index=True, null=True, blank=True)),
+                ('monthly_rate', models.IntegerField(default=0)),
+                ('dropin_allowance', models.IntegerField(default=0)),
+                ('daily_rate', models.IntegerField(default=0)),
+                ('has_desk', models.BooleanField(default=False)),
+                ('has_key', models.BooleanField(default=False)),
+                ('has_mail', models.BooleanField(default=False)),
+                ('guest_of', models.ForeignKey(related_name='monthly_guests', blank=True, to='nadine.Member', null=True)),
+                ('member', models.ForeignKey(related_name='memberships', to='nadine.Member')),
+            ],
+            options={
+                'ordering': ['start_date'],
+                'verbose_name': 'Membership',
+                'verbose_name_plural': 'Memberships',
+            },
+        ),
+        migrations.CreateModel(
+            name='MembershipPlan',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=16)),
+                ('description', models.CharField(max_length=128, null=True, blank=True)),
+                ('monthly_rate', models.IntegerField(default=0)),
+                ('daily_rate', models.IntegerField(default=0)),
+                ('dropin_allowance', models.IntegerField(default=0)),
+                ('has_desk', models.NullBooleanField(default=False)),
+            ],
+            options={
+                'verbose_name': 'Membership Plan',
+                'verbose_name_plural': 'Membership Plans',
+            },
+        ),
+        migrations.CreateModel(
+            name='Neighborhood',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=128)),
+            ],
+            options={
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='SecurityDeposit',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('received_date', models.DateField()),
+                ('returned_date', models.DateField(null=True, blank=True)),
+                ('amount', models.PositiveSmallIntegerField(default=0)),
+                ('note', models.CharField(max_length=128, null=True, blank=True)),
+                ('member', models.ForeignKey(to='nadine.Member')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='SentEmailLog',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('created', models.DateTimeField(auto_now_add=True)),
+                ('recipient', models.EmailField(max_length=75)),
+                ('subject', models.CharField(max_length=128, null=True, blank=True)),
+                ('success', models.NullBooleanField(default=False)),
+                ('note', models.TextField(null=True, blank=True)),
+                ('member', models.ForeignKey(to='nadine.Member', null=True)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='SpecialDay',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('year', models.PositiveSmallIntegerField(null=True, blank=True)),
+                ('month', models.PositiveSmallIntegerField(null=True, blank=True)),
+                ('day', models.PositiveSmallIntegerField(null=True, blank=True)),
+                ('description', models.CharField(max_length=128, null=True, blank=True)),
+                ('member', models.ForeignKey(to='nadine.Member')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Transaction',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('transaction_date', models.DateTimeField(auto_now_add=True)),
+                ('status', models.CharField(default=b'open', max_length=10, choices=[(b'open', b'Open'), (b'closed', b'Closed')])),
+                ('amount', models.DecimalField(max_digits=7, decimal_places=2)),
+                ('note', models.TextField(null=True, blank=True)),
+                ('bills', models.ManyToManyField(related_name='transactions', to=b'nadine.Bill')),
+                ('member', models.ForeignKey(to='nadine.Member')),
+            ],
+            options={
+                'ordering': ['-transaction_date'],
+            },
+        ),
+        migrations.AddField(
+            model_name='membership',
+            name='membership_plan',
+            field=models.ForeignKey(to='nadine.MembershipPlan', null=True),
+        ),
+        migrations.AddField(
+            model_name='member',
+            name='neighborhood',
+            field=models.ForeignKey(blank=True, to='nadine.Neighborhood', null=True),
+        ),
+        migrations.AddField(
+            model_name='member',
+            name='tags',
+            field=taggit.managers.TaggableManager(to='taggit.Tag', through='taggit.TaggedItem', blank=True, help_text='A comma-separated list of tags.', verbose_name='Tags'),
+        ),
+        migrations.AddField(
+            model_name='member',
+            name='user',
+            field=models.ForeignKey(related_name='user', to=settings.AUTH_USER_MODEL, unique=True),
+        ),
+        migrations.AddField(
+            model_name='dailylog',
+            name='guest_of',
+            field=models.ForeignKey(related_name='guest_of', verbose_name=b'Guest Of', blank=True, to='nadine.Member', null=True),
+        ),
+        migrations.AddField(
+            model_name='dailylog',
+            name='member',
+            field=models.ForeignKey(related_name='daily_logs', verbose_name=b'Member', to='nadine.Member', unique_for_date=b'visit_date'),
+        ),
+        migrations.AddField(
+            model_name='bill',
+            name='dropins',
+            field=models.ManyToManyField(related_name='bills', null=True, to=b'nadine.DailyLog', blank=True),
+        ),
+        migrations.AddField(
+            model_name='bill',
+            name='guest_dropins',
+            field=models.ManyToManyField(related_name='guest_bills', null=True, to=b'nadine.DailyLog', blank=True),
+        ),
+        migrations.AddField(
+            model_name='bill',
+            name='member',
+            field=models.ForeignKey(related_name='bills', to='nadine.Member'),
+        ),
+        migrations.AddField(
+            model_name='bill',
+            name='membership',
+            field=models.ForeignKey(blank=True, to='nadine.Membership', null=True),
+        ),
+        migrations.AddField(
+            model_name='bill',
+            name='paid_by',
+            field=models.ForeignKey(related_name='guest_bills', blank=True, to='nadine.Member', null=True),
+        ),
+        migrations.AlterField(
+            model_name='dailylog',
+            name='payment',
+            field=models.CharField(max_length=5, verbose_name=b'Payment', choices=[(b'Bill', b'Billable'), (b'Trial', b'Free Trial'), (b'Waive', b'Payment Waived')]),
+        ),
+        migrations.CreateModel(
+            name='MemberAlert',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('created_ts', models.DateTimeField(auto_now_add=True)),
+                ('key', models.CharField(max_length=16)),
+                ('resolved_ts', models.DateTimeField(null=True)),
+                ('muted_ts', models.DateTimeField(null=True)),
+                ('note', models.TextField(null=True, blank=True)),
+                ('muted_by', models.ForeignKey(related_name='muted_by', to=settings.AUTH_USER_MODEL, null=True)),
+                ('resolved_by', models.ForeignKey(related_name='resolved_by', to=settings.AUTH_USER_MODEL, null=True)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+            ],
+        ),
+        migrations.AlterField(
+            model_name='member',
+            name='email2',
+            field=models.EmailField(max_length=254, null=True, verbose_name=b'Alternate Email', blank=True),
+        ),
+        migrations.AlterField(
+            model_name='member',
+            name='user',
+            field=models.OneToOneField(related_name='user', to=settings.AUTH_USER_MODEL),
+        ),
+        migrations.AlterField(
+            model_name='sentemaillog',
+            name='recipient',
+            field=models.EmailField(max_length=254),
+        ),
+        migrations.AlterField(
+            model_name='bill',
+            name='dropins',
+            field=models.ManyToManyField(related_name='bills', to=b'nadine.DailyLog'),
+        ),
+        migrations.AlterField(
+            model_name='bill',
+            name='guest_dropins',
+            field=models.ManyToManyField(related_name='guest_bills', to=b'nadine.DailyLog'),
+        ),
+    ]
