@@ -114,7 +114,7 @@ def import_file(file):
 
 
 def import_file(file, runtime):
-    with transaction.commit_on_success():
+    with transaction.atomic():
         for chunk in file.chunks():
             for line in chunk.splitlines():
                 # Expect line like:
