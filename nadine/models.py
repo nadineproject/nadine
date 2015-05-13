@@ -828,9 +828,9 @@ class MemberAlertManager(models.Manager):
 
     def unresolved(self, key, active_only=True):
         unresolved = self.filter(key=key, resolved_ts__isnull=True, muted_ts__isnull=True)
-        # Persistant alerts apply even if a member is inactive
-        persistant = key in MemberAlert.PERSISTANT_ALERTS
-        if active_only and not persistant:
+        # Persistent alerts apply even if a member is inactive
+        persistent = key in MemberAlert.PERSISTENT_ALERTS
+        if active_only and not persistent:
             active_users = Member.objects.active_users()
             return unresolved.filter(user__in=active_users)
         return unresolved
@@ -983,7 +983,7 @@ class MemberAlert(models.Model):
     SYSTEM_ALERTS = [MEMBER_INFO, MEMBER_AGREEMENT, UPLOAD_PHOTO, KEY_AGREEMENT, STALE_MEMBER]
 
     # These alerts apply to even inactive members
-    PERSISTANT_ALERTS = [REMOVE_PHOTO, RETURN_DOOR_KEY, RETURN_DESK_KEY]
+    PERSISTENT_ALERTS = [REMOVE_PHOTO, RETURN_DOOR_KEY, RETURN_DESK_KEY]
 
     @staticmethod
     def getDescription(key):
