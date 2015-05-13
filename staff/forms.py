@@ -156,9 +156,17 @@ class DailyLogForm(forms.Form):
         "Creates the Daily Log to track member activity"
         if not self.is_valid():
             raise Exception('The form must be valid in order to save')
+
+        # Make sure there isn't another log for this member on this day
+        m = self.cleaned_data['member']
+        v = self.cleaned_data['visit_date']
+        daily_log = DailyLog.objects.filter(member=m, visit_date=v)
+        if daily_log:
+            raise Exception('Member already signed in')
+
         daily_log = DailyLog()
-        daily_log.member = self.cleaned_data['member']
-        daily_log.visit_date = self.cleaned_data['visit_date']
+        daily_log.member = m
+        daily_log.visit_date = v
         daily_log.payment = self.cleaned_data['payment']
         daily_log.guest_of = self.cleaned_data['guest_of']
         daily_log.note = self.cleaned_data['note']
