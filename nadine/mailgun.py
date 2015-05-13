@@ -173,15 +173,20 @@ def staff(request):
         # mailgun requires a code 200 or it will continue to retry delivery
         return HttpResponse(status=200)
 
-    # Hard code the recipient to be this address
-    mailgun_data["to"] = ["staff@%s" % settings.MAILGUN_DOMAIN, ]
-
+    # Pull the list this should go to and set them in the BCC
     # Going out to all Users that are active and staff
-    mailgun_data["bcc"] = list(User.objects.filter(is_staff=True, is_active=True).values_list('email', flat=True))
+    bcc_list = list(User.objects.filter(is_staff=True, is_active=True).values_list('email', flat=True))
+    mailgun_data["bcc"] = bcc_list
+
+    # This goes out to staff and anyone that isn't already in the BCC list
+    to_list = ["staff@%s" % settings.MAILGUN_DOMAIN, ]
+    for to in mailgun_data["to"]:
+        if not to in bcc_list:
+            to_list.append(to)
+    mailgun_data["to"] = to_list
 
     # Send the message
     return mailgun_send(mailgun_data, attachments)
-
 
 @csrf_exempt
 def team(request):
