@@ -46,9 +46,14 @@ $(document).ready(function() {
 
 <h2>{% if membership %} Update {% else %} Add {% endif %} Membership for <a href="{% url 'staff.views.member_detail' member.id %}">{{ member }}</a></h2>
 
-{% if page_message %}
-	<p id="page-message">{{ page_message|safe }}</p>
+{% if messages %}
+<div class="messages">
+	{% for message in messages %}
+		<div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+	{% endfor %}
+</div>
 {% endif %}
+
 
 <div id="membership_form">
 	<form name="membership_form" enctype="multipart/form-data" action='.' method='post'>
@@ -56,8 +61,8 @@ $(document).ready(function() {
 		{{ membership_form.member }}
 		<table id="membership">
 			<tr class="row-odd">
-				<td>Membership Plan</td>
-				<td>
+				<td nowrap>Membership Plan</td>
+				<td style="text-align:left;">
 					{% if membership %}
 						{{ membership.membership_plan }} 
 						{{ membership_form.membership_plan.as_hidden }}
@@ -65,10 +70,11 @@ $(document).ready(function() {
 						{{ membership_form.membership_plan }}
 					{% endif %}
 				</td>
+				<td style="width:60%;">{{ membership_form.membership_plan.errors }}</td>
 			</tr>
 			<tr class="row-even">
-				<td>Start Date</td>
-				<td>
+				<td nowrap>Start Date</td>
+				<td style="text-align:left;">
 					{% if membership %}
 						{{ membership.start_date }}
 						{{ membership_form.start_date.as_hidden }}
@@ -76,14 +82,16 @@ $(document).ready(function() {
 						{{ membership_form.start_date }}
 					{% endif %}
 				</td>
+				<td>{{ membership_form.start_date.errors }}</td>
 			</tr>
 			<tr class="row-odd">
-				<td>End Date</td>
-				<td>{{ membership_form.end_date }} [ <a id="end_last">last</a> | <a id="end_today">today</a> ]</td>
+				<td nowrap>End Date</td>
+				<td style="text-align:left;">{{ membership_form.end_date }} [ <a id="end_last">last</a> | <a id="end_today">today</a> ]</td>
+				<td>{{ membership_form.end_date.errors }}</td>
 			</tr>
 			<tr class="row-even">
-				<td>Monthly Rate</td>
-				<td>
+				<td nowrap>Monthly Rate</td>
+				<td style="text-align:left;">
 					{% if membership %}
 						{{ membership.monthly_rate }}
 						{{ membership_form.monthly_rate.as_hidden }}
@@ -91,10 +99,11 @@ $(document).ready(function() {
 						{{ membership_form.monthly_rate }} 
 					{% endif %}
 				</td>
+				<td>{{ membership_form.monthly_rate.errors }}</td>
 			</tr>
 			<tr class="row-odd">
-				<td>Drop-in Allowance</td>
-				<td>
+				<td nowrap>Drop-in Allowance</td>
+				<td style="text-align:left;">
 					{% if membership %}
 						{{ membership.dropin_allowance }}
 						{{ membership_form.dropin_allowance.as_hidden }}
@@ -102,10 +111,11 @@ $(document).ready(function() {
 						{{ membership_form.dropin_allowance }} 
 					{% endif %}
 				</td>
+				<td>{{ membership_form.dropin_allowance.errors }}</td>
 			</tr>
 			<tr class="row-even">
-				<td>Daily Rate</td>
-				<td>
+				<td nowrap>Daily Rate</td>
+				<td style="text-align:left;">
 					{% if membership %}
 						{{ membership.daily_rate }}
 						{{ membership_form.daily_rate.as_hidden }}
@@ -113,10 +123,11 @@ $(document).ready(function() {
 						{{ membership_form.daily_rate }} 
 					{% endif %}
 				</td>
+				<td>{{ membership_form.daily_rate.errors }}</td>
 			</tr>
 			<tr class="row-odd">
-				<td>Extras</td>
-				<td>
+				<td nowrap>Extras</td>
+				<td style="text-align:left;">
 					{% if membership %}
 						{% if membership.has_desk %}<span style="margin-right:2em;">&check; Desk</span>{% endif %}
 						{% if membership.has_key %}<span style="margin-right:2em;">&check; Key</span>{% endif %}
@@ -130,14 +141,17 @@ $(document).ready(function() {
 						<span style="margin-right:2em;">{{ membership_form.has_mail }} Mail</span>
 					{% endif %}
 				</td>
+				<td></td>
 			</tr>
 			<tr class="row-even">
 				<td>Guest Of</td>
-				<td>{{ membership_form.guest_of }}</td>
+				<td style="text-align:left;">{{ membership_form.guest_of }}</td>
+				<td>{{ membership_form.guest_of.errors }}</td>
 			</tr>
 			<tr class="row-odd">
 				<td>Note</td>
-				<td>{{ membership_form.note }}</td>
+				<td style="text-align:left;">{{ membership_form.note }}</td>
+				<td>{{ membership_form.note.errors }}</td>
 			</tr>
 	      <tr><td></td><td><input type="submit" value="Submit" /></td></tr>
 	   </table>
@@ -148,13 +162,6 @@ $(document).ready(function() {
 <div id="membership_list">
 </div>
 
-<!-- Display form errors if there are some -->
-<div id="form_errors">
-{% for field in membership_form %}
-   {% if field.errors %}
-      {{ field.label_tag }}: {{ field.errors }}
-   {% endif %}
-{% endfor %}
-</div>
+
 
 {% endblock %}

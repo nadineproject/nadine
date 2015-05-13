@@ -721,14 +721,16 @@ def activity_for_date(request, activity_date):
     if request.method == 'POST':
         daily_log_form = DailyLogForm(request.POST, request.FILES)
         if daily_log_form.is_valid():
-            page_message = 'Activity was recorded!'
-            daily_log_form.save()
-    else:
-        daily_log_form = DailyLogForm(initial={'visit_date': activity_date})
+            try:
+                daily_log_form.save()
+                messages.add_message(request, messages.INFO, "Activity was recorded!")
+            except Exception as e:
+                messages.add_message(request, messages.ERROR, e)
 
+    daily_log_form = DailyLogForm(initial={'visit_date': activity_date})
     not_signed_in = arp.not_signed_in(activity_date)
 
-    return render_to_response('staff/activity_date.html', {'daily_logs': daily_logs, 'not_signed_in': not_signed_in, 'daily_log_form': daily_log_form, 'page_message': page_message, 'activity_date': activity_date, 'next_date': activity_date + timedelta(days=1), 'previous_date': activity_date - timedelta(days=1), }, context_instance=RequestContext(request))
+    return render_to_response('staff/activity_date.html', {'daily_logs': daily_logs, 'not_signed_in': not_signed_in, 'daily_log_form': daily_log_form, 'activity_date': activity_date, 'next_date': activity_date + timedelta(days=1), 'previous_date': activity_date - timedelta(days=1), }, context_instance=RequestContext(request))
 
 
 @staff_member_required
@@ -761,30 +763,6 @@ def member_activity_json(request, member_id):
 
 
 @staff_member_required
-def member_membership(request, member_id):
-    member = get_object_or_404(Member, pk=member_id)
-
-    if request.method == 'POST':
-        membership_form = MembershipForm(request.POST, request.FILES)
-        if membership_form.is_valid():
-            membership_form.created_by = request.user
-            membership_form.save()
-            return HttpResponseRedirect(reverse('staff.views.member_detail', args=[], kwargs={'member_id': member.id}))
-
-    # Send them to the update page if we don't have an end date
-    if (member.last_membership() and not member.last_membership().end_date):
-        return HttpResponseRedirect(reverse('staff.views.membership', args=[], kwargs={'membership_id': member.last_membership().id}))
-
-    start = today = timezone.localtime(timezone.now()).date()
-    last_membership = member.last_membership()
-    if last_membership and last_membership.end_date and last_membership.end_date > today - timedelta(days=10):
-        start = (member.last_membership().end_date + timedelta(days=1))
-    last = start + MonthDelta(1) - timedelta(days=1)
-    return render_to_response('staff/membership.html', {'member': member, 'membership_plans': MembershipPlan.objects.all(),
-                                                        'membership_form': MembershipForm(initial={'member': member_id, 'start_date': start}), 'today': today.isoformat(), 'last': last.isoformat()}, context_instance=RequestContext(request))
-
-
-@staff_member_required
 def member_files(request, member_id):
     member = get_object_or_404(Member, pk=member_id)
 
@@ -810,14 +788,47 @@ def member_files(request, member_id):
 
 
 @staff_member_required
+def member_membership(request, member_id):
+    member = get_object_or_404(Member, pk=member_id)
+
+    start = today = timezone.localtime(timezone.now()).date()
+    last_membership = member.last_membership()
+    if last_membership and last_membership.end_date and last_membership.end_date > today - timedelta(days=10):
+        start = (member.last_membership().end_date + timedelta(days=1))
+    last = start + MonthDelta(1) - timedelta(days=1)
+    
+    if request.method == 'POST':
+        membership_form = MembershipForm(request.POST, request.FILES)
+        try:
+            if membership_form.is_valid():
+                membership_form.created_by = request.user
+                membership_form.save()
+                return HttpResponseRedirect(reverse('staff.views.member_detail', args=[], kwargs={'member_id': member.id}))
+        except Exception as e:
+            messages.add_message(request, messages.ERROR, e)
+    else:
+        membership_form = MembershipForm(initial={'member': member_id, 'start_date': start})
+
+    # Send them to the update page if we don't have an end date
+    if (member.last_membership() and not member.last_membership().end_date):
+        return HttpResponseRedirect(reverse('staff.views.membership', args=[], kwargs={'membership_id': member.last_membership().id}))
+
+    return render_to_response('staff/membership.html', {'member': member, 'membership_plans': MembershipPlan.objects.all(),
+                                                        'membership_form': membership_form, 'today': today.isoformat(), 'last': last.isoformat()}, context_instance=RequestContext(request))
+
+
+@staff_member_required
 def membership(request, membership_id):
     membership = get_object_or_404(Membership, pk=membership_id)
 
     if request.method == 'POST':
         membership_form = MembershipForm(request.POST, request.FILES)
-        if membership_form.is_valid():
-            membership_form.save()
-            return HttpResponseRedirect(reverse('staff.views.member_detail', args=[], kwargs={'member_id': membership.member.id}))
+        try:
+            if membership_form.is_valid():
+                membership_form.save()
+                return HttpResponseRedirect(reverse('staff.views.member_detail', args=[], kwargs={'member_id': membership.member.id}))
+        except Exception as e:
+            messages.add_message(request, messages.ERROR, e)
     else:
         membership_form = MembershipForm(initial={'membership_id': membership.id, 'member': membership.member.id, 'membership_plan': membership.membership_plan,
                                                   'start_date': membership.start_date, 'end_date': membership.end_date, 'monthly_rate': membership.monthly_rate, 'dropin_allowance': membership.dropin_allowance,
