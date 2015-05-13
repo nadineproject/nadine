@@ -1,3 +1,5 @@
+{% load static %}
+
 <h2>{{ user.get_full_name }}</h2>
 	{% if user.profile.photo %}
 		<img width="170" src="{{ site_url }}{{ user.profile.photo.url }}">
@@ -14,12 +16,14 @@
 			<tr>
 				<td style="border-bottom: 1px solid gray; text-align:left;" nowrap>{{ alert.description }}</td>
 				<td style="border-bottom: 1px solid gray; text-align:left;">
-					{% if not alert.is_system_alert %}
-					<form action="{{ site_url }}{% url 'members.views.manage_member' user.username %}" method="POST">
-						<input name="alert_id" value="{{ alert.id }}" type="hidden" />
-						<input name="username" value="{{ user.username }}" type="hidden" />
-						<button type="submit" name="resolve_task" type="submit">Resolve</button>
-					</form>
+					{% if alert.is_system_alert %}
+						[ SYSTEM ]
+					{% else %}
+						<form action="{{ site_url }}{% url 'members.views.manage_member' user.username %}" method="POST">
+							<input name="alert_id" value="{{ alert.id }}" type="hidden" />
+							<input name="username" value="{{ user.username }}" type="hidden" />
+							<button type="submit" name="resolve_task" type="submit">Resolve</button>
+						</form>
 					{% endif %}
 				</td>
 			</tr>
@@ -64,3 +68,23 @@
 		<tr><td style="border-bottom: 1px solid gray; text-align:left;" colspan="4"><i>There is no membership history for this user.</i></td></tr>
 	{% endfor %}
 </table>
+
+<h3>Files</h3>
+<table style="width:100%;">
+	<tr>
+		<th style="border-bottom: 1px solid gray; text-align:left;" nowrap>Uploaded</th>
+		<th style="border-bottom: 1px solid gray; text-align:left;">File Name</th>
+		<th style="border-bottom: 1px solid gray; text-align:left;">Uploaded By</th>
+	</tr>
+	{% for f in user.profile.file_uploads %}
+		<tr>
+			<td style="border-bottom: 1px solid gray; text-align:left;">{{ f.uploadTS|date:"M d, Y" }}</td>
+			<td style="border-bottom: 1px solid gray; text-align:left;"><a href="{{ site_url }}{% get_media_prefix %}{{ f.file.name }}">{{ f.name }}</a></td>
+			<td style="border-bottom: 1px solid gray; text-align:left;">{{ f.uploaded_by }}</td>
+		</tr>
+	{% empty %}
+		<tr><td colspan="4" style="border-bottom: 1px solid gray; text-align:left;"><i>There are no files uploaded for this user.</i></td></tr>
+	{% endfor %}
+</table>
+
+
