@@ -637,14 +637,17 @@ class Member(models.Model):
         ordering = ['user__first_name', 'user__last_name']
         get_latest_by = "last_modified"
 
+def profile_save_callback(sender, **kwargs):
+    profile = kwargs['instance']
+    # Process the member alerts
+    MemberAlert.objects.trigger_profile_save(profile)
+post_save.connect(profile_save_callback, sender=Member)
 
 def user_save_callback(sender, **kwargs):
     user = kwargs['instance']
     # Make certain we have a Member record
     if not Member.objects.filter(user=user).count() > 0:
         Member.objects.create(user=user)
-    # Process the member alerts for this user
-    MemberAlert.objects.trigger_user_save(user)
 post_save.connect(user_save_callback, sender=User)
 
 # Add some handy methods to Django's User object
@@ -915,11 +918,11 @@ class MemberAlertManager(models.Manager):
                 if not MemberAlert.KEY_AGREEMENT in open_alerts:
                     MemberAlert.objects.create(user=user, key=MemberAlert.KEY_AGREEMENT)
 
-    def trigger_user_save(self, user):
-        logger.debug("trigger_user_save: %s" % user)
-        if user.profile.photo:
-            user.profile.resolve_alerts(MemberAlert.TAKE_PHOTO)
-            user.profile.resolve_alerts(MemberAlert.UPLOAD_PHOTO)
+    def trigger_profile_save(self, profile):
+        logger.debug("trigger_profile_save: %s" % profile)
+        if profile.photo:
+            profile.resolve_alerts(MemberAlert.TAKE_PHOTO)
+            profile.resolve_alerts(MemberAlert.UPLOAD_PHOTO)
 
     def trigger_file_upload(self, user):
         logger.debug("trigger_file_upload: %s" % user)
