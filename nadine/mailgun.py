@@ -196,11 +196,16 @@ def team(request):
         # mailgun requires a code 200 or it will continue to retry delivery
         return HttpResponse(status=200)
 
-    # Hard code the recipient to be this address
-    mailgun_data["to"] = ["team@%s" % settings.MAILGUN_DOMAIN, ]
-
     # Goes out to all managers
-    mailgun_data["bcc"] = list(Member.objects.managers(include_future=True).values_list('user__email', flat=True))
+    bcc_list = list(Member.objects.managers(include_future=True).values_list('user__email', flat=True))
+    mailgun_data["bcc"] = bcc_list
+
+    # Hard code the recipient to be this address
+    to_list = ["team@%s" % settings.MAILGUN_DOMAIN, ]
+    for to in mailgun_data["to"]:
+        if not to in bcc_list:
+            to_list.append(to)
+    mailgun_data["to"] = to_list
 
     # Send the message
     return mailgun_send(mailgun_data, attachments)
