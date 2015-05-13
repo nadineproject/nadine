@@ -239,10 +239,14 @@ class MemberManager(models.Manager):
         exiting = ending.exclude(member__in=starting.values('member'))
         return Member.objects.filter(id__in=exiting.values('member'))
 
-    def stale_members(self):
+    def stale_member_date(self):
         three_months_ago = timezone.now() - MonthDelta(3)
-        recently_used = DailyLog.objects.filter(visit_date__gte=three_months_ago).values('member').distinct()
-        memberships = Membership.objects.active_memberships().filter(start_date__lte=three_months_ago, has_desk=False)
+        return three_months_ago
+
+    def stale_members(self):
+        smd = self.stale_member_date()
+        recently_used = DailyLog.objects.filter(visit_date__gte=smd).values('member').distinct()
+        memberships = Membership.objects.active_memberships().filter(start_date__lte=smd, has_desk=False)
         return Member.objects.filter(id__in=memberships.values('member')).exclude(id__in=recently_used)
 
     def missing_member_agreement(self):
@@ -846,8 +850,10 @@ class MemberAlertManager(models.Manager):
                 self.trigger_exiting_membership(m.user)
 
         # Check for stale membership
+        smd = Member.objects.stale_member_date()
         for m in Member.objects.stale_members():
-            if not MemberAlert.objects.filter(user=m.user, key=MemberAlert.STALE_MEMBER, resolved_ts__isnull=True, muted_ts__isnull=True):
+            existing_alerts = MemberAlert.objects.filter(user=m.user, key=MemberAlert.STALE_MEMBER, created_ts__gte=smd)
+            if not existing_alerts:
                 MemberAlert.objects.create(user=m.user, key=MemberAlert.STALE_MEMBER)
 
         # Expire old and unresolved alerts
