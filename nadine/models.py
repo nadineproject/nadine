@@ -265,8 +265,10 @@ class MemberManager(models.Manager):
     def invalid_billing(self):
         members = []
         for m in self.active_members():
-            if not m.has_valid_billing():
-                members.append(m)
+            membership = m.active_membership()
+            if membership.monthly_rate > 0:
+                if not m.has_valid_billing():
+                    members.append(m)
         return members
 
     def recent_members(self, days):

@@ -135,7 +135,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 	{% endfor %}
 </ul>
 
-<h2>{{ invalid_members.count }} Active Members with Invalid Billing Profiles</h2>
+<h2>{{ invalid_members.count }} Invalid Billing Profiles</h2>
 <table>
 	{% for member in invalid_members %}
 		<tr class="{% cycle 'row-odd' 'row-even' %}">
