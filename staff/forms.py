@@ -111,6 +111,8 @@ class MemberEditForm(forms.Form):
 
         user = User.objects.get(username=self.cleaned_data['username'])
 
+        print self.cleaned_data
+        
         user.first_name=self.cleaned_data['first_name']
         user.last_name=self.cleaned_data['last_name']
         user.email=self.cleaned_data['email']
@@ -139,7 +141,8 @@ class MemberEditForm(forms.Form):
         profile.has_kids = self.cleaned_data['has_kids']
         profile.self_emplyed = self.cleaned_data['self_employed']
         profile.company_name = self.cleaned_data['company_name']
-        profile.photo = self.cleaned_data['photo']
+        if self.cleaned_data['photo']:
+            profile.photo = self.cleaned_data['photo']
         profile.save()
 
 class DailyLogForm(forms.Form):
