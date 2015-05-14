@@ -63,18 +63,19 @@ function gotoEmailReset(emailAddress){
 	<h2>{{ member.first_name }} {{ member.last_name }} {% if member.is_active %} - <i>{{ member.membership_type }}</i> {% endif %}</h2>
 	<div id="quick-links">
 		<a href="{% url 'staff.views.member_activity' member.id %}">activity</a> |
-		<a href="{% url 'staff.views.member_bills' member.id %}">bills</a> |
-		<!--<a href="{% url 'staff.views.member_transactions' member.id %}">transactions</a> | -->
 		<a href="{% url 'staff.views.member_files' member.id %}">files</a> |
-		<a href="{% url 'views.password_reset' %}?email={{ member.email }}">pw reset</a> |
 		<a href="{% url 'members.views.user' member.user.username %}">profile</a> |
 		<a href="{% url 'staff.views.usaepay_user' member.user.username %}">usaepay</a> |
-		<a href="{% url 'admin:auth_user_change' member.user.id %}">edit member</a> |
+		<a href="{% url 'admin:auth_user_change' member.user.id %}">admin</a> |
+		<!--<a href="{% url 'admin:auth_user_change' member.user.id %}history/">change history</a> | -->
+		<a href="{% url 'staff.views.member_edit' member.user.username %}">edit member</a>
+		<!--
 		{% if member.is_active %}
 			<a href="{% url 'staff.views.membership' member.last_membership.id %}">update membership</a>
 		{% else %}	
 			<a href="{% url 'staff.views.member_membership' member.id %}">add membership</a>
 		{% endif %}
+		-->
 	</div>
 </div>
 
@@ -300,6 +301,11 @@ function gotoEmailReset(emailAddress){
 </div>
 
 <div id="tabs-2">
+	<div id="quick-links">
+		<strong>More Info:</strong>
+		<a href="{% url 'staff.views.member_bills' member.id %}">bills</a> |
+		<a href="{% url 'staff.views.member_transactions' member.id %}">transactions</a>
+	</div>
 	<!-- Billing Profile -->
 	<h2>Billing Profile</h2>
 	{% include "members/billing_profile.frag" %}
@@ -362,6 +368,10 @@ function gotoEmailReset(emailAddress){
 
 <div id="tabs-3">
 	<!-- Email Logs -->
+	<div id="quick-links">
+		<strong>Actions:</strong>
+		<a href="{% url 'views.password_reset' %}?email={{ member.email }}">password reset</a>
+	</div>
 	<h2>Email Logs</h2>
 	<div>
 		{% if email_logs %}
@@ -559,4 +569,5 @@ function gotoEmailReset(emailAddress){
 </div>
 
 </div>
+
 {% endblock %}

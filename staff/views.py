@@ -111,18 +111,47 @@ def security_deposits(request):
 
 
 @staff_member_required
-def signup(request):
-    page_message = None
-    if request.method == 'POST':
-        member_signup_form = MemberSignupForm(request.POST, request.FILES)
-        if member_signup_form.is_valid():
-            user = member_signup_form.save()
-            page_message = 'The user was successfully created: [<a href="%s">see detail</a>]' % (user.get_absolute_url())
-            member_signup_form = MemberSignupForm()
-    else:
-        member_signup_form = MemberSignupForm()
+def member_edit(request, username):
+    user = get_object_or_404(User, username=username)
 
-    return render_to_response('staff/signup.html', {'member_signup_form': member_signup_form, 'page_message': page_message}, context_instance=RequestContext(request))
+    if request.method == 'POST':
+        edit_form = MemberEditForm(request.POST, request.FILES)
+        if edit_form.is_valid():
+            edit_form.save()
+            messages.add_message(request, messages.INFO, "Member Updated")
+            return HttpResponseRedirect(reverse('staff.views.member_detail_user', args=[], kwargs={'username': username}))
+    else:
+        member_data={'username': username,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'email': user.email,
+            'email2': user.profile.email2,
+            'phone': user.profile.phone,
+            'phone2': user.profile.phone2,
+            'address1': user.profile.address1,
+            'address2': user.profile.address2,
+            'city': user.profile.city,
+            'state': user.profile.state,
+            'zipcode': user.profile.zipcode,
+            'company_name': user.profile.company_name,
+            'url_personal': user.profile.url_personal,
+            'url_professional': user.profile.url_professional,
+            'url_facebook': user.profile.url_facebook,
+            'url_twitter': user.profile.url_twitter,
+            'url_linkedin': user.profile.url_linkedin,
+            'url_github': user.profile.url_github,
+            'url_aboutme': user.profile.url_aboutme,
+            'gender': user.profile.gender,
+            'howHeard': user.profile.howHeard,
+            'industry': user.profile.industry,
+            'neighborhood': user.profile.neighborhood,
+            'has_kids': user.profile.has_kids,
+            'self_employed': user.profile.self_employed,
+            'photo': user.profile.photo,
+        }
+        edit_form = MemberEditForm(initial=member_data)
+    
+    return render_to_response('staff/member_edit.html', { 'user':user, 'member':user.profile, 'edit_form': edit_form }, context_instance=RequestContext(request))
 
 
 @staff_member_required

@@ -159,7 +159,7 @@ table td:first-child, table td:last-child { text-align: left; }
 table td { text-align: center; border-bottom: 1px solid #ccc; padding: 0.5em; }
 table tr.row-even td { background: #eee; }
 #billing-logs-table th:first-child, #billing-logs-table td:first-child { width: 40%; }
-#signup tr td:first-child { width: 30%; }
+#member-edit tr td:first-child { width: 30%; }
 
 .columns { margin: 1em 0; }
 .columns .c1 { float: left; width: 50%; }

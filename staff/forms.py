@@ -75,27 +75,27 @@ class MemberSearchForm(forms.Form):
     terms = forms.CharField(max_length=100)
 
 
-class MemberSignupForm(forms.Form):
-    username = forms.RegexField(max_length=30, regex=r'^[\w.@+-]+$', help_text="Required. 30 characters or fewer. Letters, digits and @/./+/-/_ only.", error_messages={'invalid': "This value may contain only letters, numbers and @/./+/-/_ characters."}, label="Username *")
-    first_name = forms.CharField(max_length=100, label="First name *")
-    last_name = forms.CharField(max_length=100, label="Last name *")
-    email = forms.EmailField(max_length=100, label="Email *")
-    email2 = forms.EmailField(max_length=100, required=False)
-    phone = forms.CharField(max_length=100, required=False)
-    phone2 = forms.CharField(max_length=100, required=False)
-    address1 = forms.CharField(max_length=100, required=False)
-    address2 = forms.CharField(max_length=100, required=False)
-    city = forms.CharField(max_length=100, required=False)
-    state = forms.CharField(max_length=100, required=False)
-    zipcode = forms.CharField(max_length=100, required=False)
-    company_name = forms.CharField(max_length=100, required=False)
-    url_personal = forms.URLField(required=False)
-    url_professional = forms.URLField(required=False)
-    url_facebook = forms.URLField(required=False)
-    url_twitter = forms.URLField(required=False)
-    url_linkedin = forms.URLField(required=False)
-    url_github = forms.URLField(required=False)
-    url_aboutme = forms.URLField(required=False)
+class MemberEditForm(forms.Form):
+    username = forms.CharField(widget=forms.TextInput(attrs={'readonly':'readonly'}))
+    first_name = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}))
+    last_name = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}))
+    email = forms.EmailField(widget=forms.TextInput(attrs={'size': '50'}))
+    email2 = forms.EmailField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
+    phone = forms.CharField(widget=forms.TextInput(attrs={'size': '10'}), required=False)
+    phone2 = forms.CharField(widget=forms.TextInput(attrs={'size': '10'}), required=False)
+    address1 = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
+    address2 = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
+    city = forms.CharField(widget=forms.TextInput(attrs={'size': '20'}), required=False)
+    state = forms.CharField(widget=forms.TextInput(attrs={'size': '5'}), required=False)
+    zipcode = forms.CharField(widget=forms.TextInput(attrs={'size': '10'}), required=False)
+    company_name = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
+    url_personal = forms.URLField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
+    url_professional = forms.URLField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
+    url_facebook = forms.URLField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
+    url_twitter = forms.URLField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
+    url_linkedin = forms.URLField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
+    url_github = forms.URLField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
+    url_aboutme = forms.URLField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
     gender = forms.ChoiceField(choices=GENDER_CHOICES, required=False)
     howHeard = forms.ModelChoiceField(label="How heard", queryset=HowHeard.objects.all(), required=False)
     industry = forms.ModelChoiceField(queryset=Industry.objects.all(), required=False)
@@ -104,45 +104,43 @@ class MemberSignupForm(forms.Form):
     self_employed = forms.NullBooleanField(required=False)
     photo = forms.ImageField(required=False)
 
-    def clean_username(self):
-        data = self.cleaned_data['username']
-        if User.objects.filter(username=data).count() > 0:
-            raise forms.ValidationError("That username is already in use.")
-        return data
-
     def save(self):
         "Creates the User and Member records with the field data and returns the user"
         if not self.is_valid():
             raise Exception('The form must be valid in order to save')
-        user = User(username=self.cleaned_data['username'], first_name=self.cleaned_data['first_name'], last_name=self.cleaned_data['last_name'], email=self.cleaned_data['email'])
-        user.save()
-        member = user.get_profile()
-        member.email2 = self.cleaned_data['email2']
-        member.phone = self.cleaned_data['phone']
-        member.phone = self.cleaned_data['phone2']
-        member.address1 = self.cleaned_data['address1']
-        member.address2 = self.cleaned_data['address2']
-        member.city = self.cleaned_data['city']
-        member.state = self.cleaned_data['state']
-        member.zipcode = self.cleaned_data['zipcode']
-        member.url_personal = self.cleaned_data['url_personal']
-        member.url_professional = self.cleaned_data['url_professional']
-        member.url_facebook = self.cleaned_data['url_facebook']
-        member.url_twitter = self.cleaned_data['url_twitter']
-        member.url_linkedin = self.cleaned_data['url_linkedin']
-        member.url_github = self.cleaned_data['url_github']
-        member.url_aboutme = self.cleaned_data['url_aboutme']
-        member.gender = self.cleaned_data['gender']
-        member.howHeard = self.cleaned_data['howHeard']
-        member.industry = self.cleaned_data['industry']
-        member.neighborhood = self.cleaned_data['neighborhood']
-        member.has_kids = self.cleaned_data['has_kids']
-        member.self_emplyed = self.cleaned_data['self_employed']
-        member.company_name = self.cleaned_data['company_name']
-        member.photo = self.cleaned_data['photo']
-        member.save()
-        return user
 
+        user = User.objects.get(username=self.cleaned_data['username'])
+
+        user.first_name=self.cleaned_data['first_name']
+        user.last_name=self.cleaned_data['last_name']
+        user.email=self.cleaned_data['email']
+        user.save()
+
+        profile = user.get_profile()
+        profile.email2 = self.cleaned_data['email2']
+        profile.phone = self.cleaned_data['phone']
+        profile.phone2 = self.cleaned_data['phone2']
+        profile.address1 = self.cleaned_data['address1']
+        profile.address2 = self.cleaned_data['address2']
+        profile.city = self.cleaned_data['city']
+        profile.state = self.cleaned_data['state']
+        profile.zipcode = self.cleaned_data['zipcode']
+        profile.url_personal = self.cleaned_data['url_personal']
+        profile.url_professional = self.cleaned_data['url_professional']
+        profile.url_facebook = self.cleaned_data['url_facebook']
+        profile.url_twitter = self.cleaned_data['url_twitter']
+        profile.url_linkedin = self.cleaned_data['url_linkedin']
+        profile.url_github = self.cleaned_data['url_github']
+        profile.url_aboutme = self.cleaned_data['url_aboutme']
+        profile.gender = self.cleaned_data['gender']
+        profile.howHeard = self.cleaned_data['howHeard']
+        profile.industry = self.cleaned_data['industry']
+        profile.neighborhood = self.cleaned_data['neighborhood']
+        profile.has_kids = self.cleaned_data['has_kids']
+        profile.self_emplyed = self.cleaned_data['self_employed']
+        profile.company_name = self.cleaned_data['company_name']
+        profile.photo = self.cleaned_data['photo']
+        profile.save()
 
 class DailyLogForm(forms.Form):
     member_list = Member.objects.all()
