@@ -4,7 +4,8 @@ from celery import shared_task
 from datetime import datetime, timedelta
 from django.utils import timezone
 
-from nadine.models.core import Member, Membership, DailyLog, BillingLog
+from nadine.models.core import Member, Membership, DailyLog
+from nadine.models.payment import BillingLog
 from members.models import UserNotification
 
 from arpwatch import arp
