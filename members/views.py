@@ -26,7 +26,9 @@ from members.forms import EditProfileForm
 from members.models import HelpText, UserNotification
 from arpwatch import arp
 from arpwatch.models import ArpLog, UserDevice
-from nadine.models import Member, MemberAlert, Membership, Transaction, DailyLog
+from nadine.models.core import Member, Membership, DailyLog
+from nadine.models.payment import Transaction
+from nadine.models.alerts import MemberAlert
 from staff import usaepay, email
 from staff.forms import *
 from nadine import mailgun

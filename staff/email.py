@@ -10,7 +10,7 @@ from django.template import Template, TemplateDoesNotExist, Context
 from django.core.mail import send_mail, EmailMessage
 from django.utils import timezone
 
-from nadine.models import Member, DailyLog, SentEmailLog
+from nadine.models.core import Member, DailyLog, SentEmailLog
 from nadine import mailgun
 
 logger = logging.getLogger(__name__)

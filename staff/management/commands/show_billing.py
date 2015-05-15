@@ -18,7 +18,7 @@ class Command(BaseCommand):
     requires_system_checks = False
 
     def handle(self, *labels, **options):
-        from nadine.models import Member
+        from nadine.models.core import Member
         from staff.billing import Run
         if not labels or len(labels) != 1:
             raise CommandError('Enter one argument, a user id.')

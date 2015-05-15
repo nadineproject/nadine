@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.utils.html import strip_tags
 from taggit.forms import *
 from members.models import *
-from nadine.models import *
+from nadine.models.core import Member, HowHeard, Industry, Neighborhood, GENDER_CHOICES
 import datetime
 from django_localflavor_us.us_states import STATE_CHOICES
 

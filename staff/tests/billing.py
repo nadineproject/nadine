@@ -9,7 +9,8 @@ from django.utils import timezone
 import staff.billing as billing
 from interlink.models import MailingList
 from staff.views import beginning_of_next_month, first_days_in_months
-from nadine.models import *
+from nadine.models.core import *
+from nadine.models.payment import *
 
 
 def print_user_data(user):

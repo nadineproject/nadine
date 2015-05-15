@@ -23,7 +23,9 @@ from django.core import serializers
 from django.forms.models import model_to_dict
 from monthdelta import MonthDelta, monthmod
 from py4j.java_gateway import JavaGateway
-from nadine.models import *
+from nadine.models.core import *
+from nadine.models.payment import *
+from nadine.models.alerts import *
 from staff.forms import *
 from staff import billing, user_reports, email, usaepay
 from arpwatch import arp

@@ -13,7 +13,7 @@ from arpwatch.forms import *
 from arpwatch.models import *
 from arpwatch import arp
 
-from nadine.models import Member
+from nadine.models.core import Member
 
 
 @staff_member_required

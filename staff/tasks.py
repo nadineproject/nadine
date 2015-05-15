@@ -1,9 +1,12 @@
 from __future__ import absolute_import
+
 from celery import shared_task
 from datetime import datetime, timedelta
-from nadine.models import Member, Membership, DailyLog, BillingLog
-from members.models import UserNotification
 from django.utils import timezone
+
+from nadine.models.core import Member, Membership, DailyLog, BillingLog
+from members.models import UserNotification
+
 from arpwatch import arp
 from staff import email, billing
 
@@ -58,14 +61,14 @@ def regular_checkins():
 
 @shared_task
 def member_alert_check():
-    from nadine.models import MemberAlert
+    from nadine.models.alerts import MemberAlert
     MemberAlert.objects.trigger_nightly_check()
 
 
 @shared_task
 def unsubscribe_recent_dropouts_task():
     """A recurring task which checks for members who need to be unsubscribed from mailing lists"""
-    from nadine.models import Member
+    from nadine.models.core import Member
     Member.objects.unsubscribe_recent_dropouts()
 
 

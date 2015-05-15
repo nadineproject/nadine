@@ -9,7 +9,7 @@ from django.core.management import call_command
 from django.core import mail
 from django.utils import timezone
 
-from nadine.models import Member, MembershipPlan, Membership
+from nadine.models.core import Member, MembershipPlan, Membership
 
 from interlink.tests.test_utils import create_user
 from interlink.models import MailingList, IncomingMail, OutgoingMail

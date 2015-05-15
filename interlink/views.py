@@ -7,7 +7,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponseRedirect
 
 from interlink.models import MailingList, IncomingMail
-from nadine.models import Member
+from nadine.models.core import Member
 
 
 @staff_member_required

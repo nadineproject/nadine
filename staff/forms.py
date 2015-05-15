@@ -4,9 +4,11 @@ from django.utils.html import strip_tags
 from django.utils import timezone
 from taggit.forms import *
 
-from nadine.models import *
+from nadine.models.core import *
+from nadine.models.payment import *
 from staff import usaepay
 from staff import email
+
 import datetime
 import logging
 

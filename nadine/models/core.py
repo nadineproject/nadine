@@ -33,9 +33,6 @@ from staff import usaepay
 
 logger = logging.getLogger(__name__)
 
-#from south.modelsinspector import add_introspection_rules
-#add_introspection_rules([], ["^django_localflavor_us\.models\.USStateField"])
-#add_introspection_rules([], ["^django_localflavor_us\.models\.PhoneNumberField"])
 
 GENDER_CHOICES = (
     ('U', 'Unknown'),
@@ -105,82 +102,6 @@ class MemberGroups():
             return None
 
 
-class BillingLog(models.Model):
-
-    """A record of when the billing was last calculated and whether it was successful"""
-    started = models.DateTimeField(auto_now_add=True)
-    ended = models.DateTimeField(blank=True, null=True)
-    successful = models.BooleanField(default=False)
-    note = models.TextField(blank=True, null=True)
-
-    class Meta:
-        ordering = ['-started']
-        get_latest_by = 'started'
-
-    def __unicode__(self):
-        return 'BillingLog %s: %s' % (self.started, self.successful)
-
-    def ended_date(self):
-        if not self.ended:
-            return None
-        return datetime.date(self.ended)
-
-
-class Bill(models.Model):
-
-    """A record of what fees a Member owes."""
-    bill_date = models.DateField(blank=False, null=False)
-    member = models.ForeignKey('Member', blank=False, null=False, related_name="bills")
-    amount = models.DecimalField(max_digits=7, decimal_places=2)
-    membership = models.ForeignKey('Membership', blank=True, null=True)
-    dropins = models.ManyToManyField('DailyLog', related_name='bills')
-    guest_dropins = models.ManyToManyField('DailyLog', related_name='guest_bills')
-    new_member_deposit = models.BooleanField(default=False, blank=False, null=False)
-    paid_by = models.ForeignKey('Member', blank=True, null=True, related_name='guest_bills')
-
-    def overage_days(self):
-        return self.dropins.count() - self.membership.dropin_allowance
-
-    class Meta:
-        ordering = ['-bill_date']
-        get_latest_by = 'bill_date'
-
-    def __unicode__(self):
-        return 'Bill %s [%s]: %s - $%s' % (self.id, self.bill_date, self.member, self.amount)
-
-    @models.permalink
-    def get_absolute_url(self):
-        return ('staff.views.bill', (), {'id': self.id})
-
-    def get_admin_url(self):
-        return urlresolvers.reverse('admin:nadine_bill_change', args=[self.id])
-
-
-class Transaction(models.Model):
-
-    """A record of charges for a member."""
-    transaction_date = models.DateTimeField(auto_now_add=True)
-    member = models.ForeignKey('Member', blank=False, null=False)
-    TRANSACTION_STATUS_CHOICES = (('open', 'Open'), ('closed', 'Closed'))
-    status = models.CharField(max_length=10, choices=TRANSACTION_STATUS_CHOICES, blank=False, null=False, default='open')
-    bills = models.ManyToManyField(Bill, blank=False, null=False, related_name='transactions')
-    amount = models.DecimalField(max_digits=7, decimal_places=2)
-    note = models.TextField(blank=True, null=True)
-
-    class Meta:
-        ordering = ['-transaction_date']
-
-    def __unicode__(self):
-        return '%s: %s' % (self.member.full_name, self.amount)
-
-    @models.permalink
-    def get_absolute_url(self):
-        return ('staff.views.transaction', (), {'id': self.id})
-
-    def get_admin_url(self):
-        return urlresolvers.reverse('admin:nadine_transaction_change', args=[self.id])
-
-
 class HowHeard(models.Model):
 
     """A record of how a member discovered the space"""
@@ -189,6 +110,7 @@ class HowHeard(models.Model):
     def __str__(self): return self.name
 
     class Meta:
+        app_label = 'nadine'
         ordering = ['name']
 
 
@@ -200,6 +122,7 @@ class Industry(models.Model):
     def __str__(self): return self.name
 
     class Meta:
+        app_label = 'nadine'
         verbose_name = "Industry"
         verbose_name_plural = "Industries"
         ordering = ['name']
@@ -211,6 +134,7 @@ class Neighborhood(models.Model):
     def __str__(self): return self.name
 
     class Meta:
+        app_label = 'nadine'
         ordering = ['name']
 
 
@@ -393,10 +317,12 @@ class Member(models.Model):
 
     def all_bills(self):
         """Returns all of the open bills, both for this member and any bills for other members which are marked to be paid by this member."""
+        from nadine.models.payment import Bill
         return Bill.objects.filter(models.Q(member=self) | models.Q(paid_by=self)).order_by('-bill_date')
 
     def open_bills(self):
         """Returns all of the open bills, both for this member and any bills for other members which are marked to be paid by this member."""
+        from nadine.models.payment import Bill
         return Bill.objects.filter(models.Q(member=self) | models.Q(paid_by=self)).filter(transactions=None).order_by('bill_date')
 
     def open_bill_amount(self):
@@ -407,6 +333,7 @@ class Member(models.Model):
 
     def open_bills_amount(self):
         """Returns the amount of all of the open bills, both for this member and any bills for other members which are marked to be paid by this member."""
+        from nadine.models.payment import Bill
         return Bill.objects.filter(models.Q(member=self) | models.Q(paid_by=self)).filter(transactions=None).aggregate(models.Sum('amount'))['amount__sum']
 
     def pay_bills_form(self):
@@ -416,6 +343,7 @@ class Member(models.Model):
     def last_bill(self):
         """Returns the latest Bill, or None if the member has not been billed.
         NOTE: This does not (and should not) return bills which are for other members but which are to be paid by this member."""
+        from nadine.models.payment import Bill
         bills = Bill.objects.filter(member=self)
         if len(bills) == 0:
             return None
@@ -500,6 +428,7 @@ class Member(models.Model):
         return files
 
     def alerts_by_key(self, include_resolved=False):
+        from nadine.models.alerts import MemberAlert
         if include_resolved:
             alerts = MemberAlert.objects.filter(user=self.user)
         else:
@@ -513,13 +442,16 @@ class Member(models.Model):
         return alerts_by_key
 
     def alerts(self):
+        from nadine.models.alerts import MemberAlert
         return MemberAlert.objects.filter(user=self.user).order_by('-created_ts')
 
     def open_alerts(self):
+        from nadine.models.alerts import MemberAlert
         return MemberAlert.objects.filter(user=self.user, resolved_ts__isnull=True, muted_ts__isnull=True).order_by('-created_ts')
 
     def resolve_alerts(self, alert_key, resolved_by=None):
         logger.debug("resolve_alerts: user=%s, key=%s, resolved_by=%s" % (self.user, alert_key, resolved_by))
+        from nadine.models.alerts import MemberAlert
         alerts = MemberAlert.objects.filter(user=self.user, key=alert_key, resolved_ts__isnull=True, muted_ts__isnull=True).order_by('-created_ts')
         if alerts:
             for alert in alerts:
@@ -618,6 +550,7 @@ class Member(models.Model):
         return total_days
 
     def average_bill(self):
+        from nadine.models.payment import Bill
         bills = Bill.objects.filter(member=self)
         if bills:
             bill_totals = 0
@@ -640,12 +573,14 @@ class Member(models.Model):
         return ('staff.views.member_detail', (), {'member_id': self.id})
 
     class Meta:
+        app_label = 'nadine'
         ordering = ['user__first_name', 'user__last_name']
         get_latest_by = "last_modified"
 
 def profile_save_callback(sender, **kwargs):
     profile = kwargs['instance']
     # Process the member alerts
+    from nadine.models.alerts import MemberAlert
     MemberAlert.objects.trigger_profile_save(profile)
 post_save.connect(profile_save_callback, sender=Member)
 
@@ -697,12 +632,14 @@ class DailyLog(models.Model):
         return urlresolvers.reverse('admin:nadine_dailylog_change', args=[self.id])
 
     class Meta:
+        app_label = 'nadine'
         verbose_name = "Daily Log"
         ordering = ['-visit_date', '-created']
 
 
 def sign_in_callback(sender, **kwargs):
     log = kwargs['instance']
+    from nadine.models.alerts import MemberAlert
     MemberAlert.objects.trigger_sign_in(log.member.user)
 post_save.connect(sign_in_callback, sender=DailyLog)
 
@@ -723,6 +660,7 @@ class MembershipPlan(models.Model):
         return urlresolvers.reverse('admin:nadine_membershipplan_change', args=[self.id])
 
     class Meta:
+        app_label = 'nadine'
         verbose_name = "Membership Plan"
         verbose_name_plural = "Membership Plans"
 
@@ -825,236 +763,10 @@ class Membership(models.Model):
         return urlresolvers.reverse('admin:nadine_membership_change', args=[self.id])
 
     class Meta:
+        app_label = 'nadine'
         verbose_name = "Membership"
         verbose_name_plural = "Memberships"
         ordering = ['start_date']
-
-
-class MemberAlertManager(models.Manager):
-
-    def unresolved(self, key, active_only=True):
-        unresolved = self.filter(key=key, resolved_ts__isnull=True, muted_ts__isnull=True)
-        # Persistent alerts apply even if a member is inactive
-        persistent = key in MemberAlert.PERSISTENT_ALERTS
-        if active_only and not persistent:
-            active_users = Member.objects.active_users()
-            return unresolved.filter(user__in=active_users)
-        return unresolved
-
-    def trigger_nightly_check(self):
-        # Check for exiting members (one week back, one week in to the future)
-        exiting_members = Member.objects.exiting_members(7)
-        for m in exiting_members:
-            exit_alerts = [MemberAlert.REMOVE_PHOTO, MemberAlert.RETURN_DOOR_KEY, MemberAlert.RETURN_DESK_KEY]
-            last_week = timezone.now() - timedelta(days=7)
-            # Only trigger exiting membership if no exit alerts were created in the last week
-            if MemberAlert.objects.filter(user=m.user, key__in=exit_alerts, created_ts__gte=last_week).count() == 0:
-                self.trigger_exiting_membership(m.user)
-
-        # Check for stale membership
-        smd = Member.objects.stale_member_date()
-        for m in Member.objects.stale_members():
-            existing_alerts = MemberAlert.objects.filter(user=m.user, key=MemberAlert.STALE_MEMBER, created_ts__gte=smd)
-            if not existing_alerts:
-                MemberAlert.objects.create(user=m.user, key=MemberAlert.STALE_MEMBER)
-
-        # Expire old and unresolved alerts
-        #active_users = Member.objects.active_users()
-        #exiting_users = exiting_members.values('user')
-        # to_clean = [MemberAlert.PAPERWORK, MemberAlert.MEMBER_INFO, MemberAlert.MEMBER_AGREEMENT, MemberAlert.TAKE_PHOTO,
-        #	MemberAlert.UPLOAD_PHOTO, MemberAlert.POST_PHOTO, MemberAlert.ORIENTATION, MemberAlert.KEY_AGREEMENT]
-        # for key in to_clean:
-        #	for alert in self.unresolved(key):
-        #		if not alert.user in exiting_users:
-        #			if not alert.user in active_users:
-        #				alert.mute(None, note="membership ended")
-
-    def trigger_exiting_membership(self, user):
-        open_alerts = user.profile.alerts_by_key(include_resolved=False)
-
-        # Take down their photo.  First make sure we have a photo and not an open alert
-        if user.profile.photo and not MemberAlert.POST_PHOTO in open_alerts:
-            if not MemberAlert.REMOVE_PHOTO in open_alerts:
-                MemberAlert.objects.create(user=user, key=MemberAlert.REMOVE_PHOTO)
-
-        # Key?  Let's get it back!
-        last_membership = user.profile.last_membership()
-        if last_membership:
-            if last_membership.has_key:
-                if not MemberAlert.RETURN_DOOR_KEY in open_alerts:
-                    MemberAlert.objects.create(user=user, key=MemberAlert.RETURN_DOOR_KEY)
-            if last_membership.has_desk:
-                if not MemberAlert.RETURN_DESK_KEY in open_alerts:
-                    MemberAlert.objects.create(user=user, key=MemberAlert.RETURN_DESK_KEY)
-
-    def trigger_new_membership(self, user):
-        logger.debug("trigger_new_membership: %s" % user)
-
-        # Pull a bunch of data so we don't keep hitting the database
-        open_alerts = user.profile.alerts_by_key(include_resolved=False)
-        all_alerts = user.profile.alerts_by_key(include_resolved=True)
-        existing_files = user.profile.files_by_type()
-        existing_memberships = user.profile.memberships.all().order_by('start_date')
-        new_membership = existing_memberships.last()
-
-        # Member Information
-        if not FileUpload.MEMBER_INFO in existing_files:
-            if not MemberAlert.PAPERWORK in open_alerts:
-                MemberAlert.objects.create(user=user, key=MemberAlert.PAPERWORK)
-            if not MemberAlert.PAPERWORK in open_alerts:
-                MemberAlert.objects.create(user=user, key=MemberAlert.MEMBER_INFO)
-
-        # Membership Agreement
-        if not FileUpload.MEMBER_AGMT in existing_files:
-            if not MemberAlert.MEMBER_AGREEMENT in open_alerts:
-                MemberAlert.objects.create(user=user, key=MemberAlert.MEMBER_AGREEMENT)
-
-        # User Photo
-        if not user.profile.photo:
-            if not MemberAlert.TAKE_PHOTO in open_alerts:
-                MemberAlert.objects.create(user=user, key=MemberAlert.TAKE_PHOTO)
-            if not MemberAlert.UPLOAD_PHOTO in open_alerts:
-                MemberAlert.objects.create(user=user, key=MemberAlert.UPLOAD_PHOTO)
-        if not new_membership.is_change() and not MemberAlert.POST_PHOTO in open_alerts:
-            MemberAlert.objects.create(user=user, key=MemberAlert.POST_PHOTO)
-
-        # New Member Orientation
-        if not MemberAlert.ORIENTATION in all_alerts:
-            MemberAlert.objects.create(user=user, key=MemberAlert.ORIENTATION)
-
-        # Key?  Check for a key agreement
-        if new_membership.has_key:
-            if not FileUpload.KEY_AGMT in existing_files:
-                if not MemberAlert.KEY_AGREEMENT in open_alerts:
-                    MemberAlert.objects.create(user=user, key=MemberAlert.KEY_AGREEMENT)
-
-    def trigger_profile_save(self, profile):
-        logger.debug("trigger_profile_save: %s" % profile)
-        if profile.photo:
-            profile.resolve_alerts(MemberAlert.TAKE_PHOTO)
-            profile.resolve_alerts(MemberAlert.UPLOAD_PHOTO)
-
-    def trigger_file_upload(self, user):
-        logger.debug("trigger_file_upload: %s" % user)
-        existing_files = user.profile.files_by_type()
-
-        # Resolve Member Info alert if the file is now present
-        if FileUpload.MEMBER_INFO in existing_files:
-            user.profile.resolve_alerts(MemberAlert.PAPERWORK)
-            user.profile.resolve_alerts(MemberAlert.MEMBER_INFO)
-
-        # Resolve Member Agreement alert if the file is now present
-        if FileUpload.MEMBER_AGMT in existing_files:
-            user.profile.resolve_alerts(MemberAlert.MEMBER_AGREEMENT)
-
-        # Resolve Key Agreement alert if the file is now present
-        if FileUpload.KEY_AGMT in existing_files:
-            user.profile.resolve_alerts(MemberAlert.KEY_AGREEMENT)
-
-    def trigger_sign_in(self, user):
-        logger.debug("trigger_sign_in: %s" % user)
-        user.profile.resolve_alerts(MemberAlert.STALE_MEMBER)
-
-
-class MemberAlert(models.Model):
-    PAPERWORK = "paperwork"
-    MEMBER_INFO = "member_info"
-    MEMBER_AGREEMENT = "member_agreement"
-    TAKE_PHOTO = "take_photo"
-    UPLOAD_PHOTO = "upload_hoto"
-    POST_PHOTO = "post_photo"
-    ORIENTATION = "orientation"
-    KEY_AGREEMENT = "key_agreement"
-    STALE_MEMBER = "stale_member"
-    #INVALID_BILLING = "invalid_billing"
-    REMOVE_PHOTO = "remove_photo"
-    RETURN_DOOR_KEY = "return_door_key"
-    RETURN_DESK_KEY = "return_desk_key"
-
-    ALERT_DESCRIPTIONS = (
-        (PAPERWORK, "Received Paperwork"),
-        (MEMBER_INFO, "Enter & File Member Information"),
-        (MEMBER_AGREEMENT, "Sign Membership Agreement"),
-        (TAKE_PHOTO, "Take Photo"),
-        (UPLOAD_PHOTO, "Upload Photo"),
-        (POST_PHOTO, "Print & Post Photo"),
-        (ORIENTATION, "New Member Orientation"),
-        (KEY_AGREEMENT, "Key Training & Agreement"),
-        (STALE_MEMBER, "Stale Membership"),
-        #(INVALID_BILLING, "Missing Valid Billing"),
-        (REMOVE_PHOTO, "Remove Picture from Wall"),
-        (RETURN_DOOR_KEY, "Take Back Keycard"),
-        (RETURN_DESK_KEY, "Take Back Roller Drawer Key"),
-    )
-
-    # These alerts can be resolved by the system automatically
-    SYSTEM_ALERTS = [MEMBER_INFO, MEMBER_AGREEMENT, UPLOAD_PHOTO, KEY_AGREEMENT, STALE_MEMBER]
-
-    # These alerts apply to even inactive members
-    PERSISTENT_ALERTS = [REMOVE_PHOTO, RETURN_DOOR_KEY, RETURN_DESK_KEY]
-
-    @staticmethod
-    def getDescription(key):
-        for k, d in MemberAlert.ALERT_DESCRIPTIONS:
-            if k == key:
-                return d
-        return None
-
-    @staticmethod
-    def isSystemAlert(key):
-        return key in MemberAlert.SYSTEM_ALERTS
-
-    created_ts = models.DateTimeField(auto_now_add=True)
-    key = models.CharField(max_length=16)
-    user = models.ForeignKey(User)
-    resolved_ts = models.DateTimeField(null=True)
-    resolved_by = models.ForeignKey(User, related_name="resolved_by", null=True)
-    muted_ts = models.DateTimeField(null=True)
-    muted_by = models.ForeignKey(User, related_name="muted_by", null=True)
-    note = models.TextField(blank=True, null=True)
-    objects = MemberAlertManager()
-
-    def description(self):
-        for k, d in MemberAlert.ALERT_DESCRIPTIONS:
-            if self.key == k:
-                return d
-        return None
-
-    def resolve(self, user, note=None):
-        self.resolved_ts = timezone.now()
-        self.resolved_by = user
-        if note:
-            self.note = note
-        self.save()
-
-    def mute(self, user, note=None):
-        self.muted_ts = timezone.now()
-        self.muted_by = user
-        if note:
-            self.note = note
-        self.save()
-
-    def is_resolved(self):
-        return self.resolved_ts != None or self.is_muted()
-
-    def is_muted(self):
-        return self.muted_ts != None
-
-    def is_system_alert(self):
-        return self.key in MemberAlert.SYSTEM_ALERTS
-
-    def __unicode__(self):
-        return '%s - %s: %s' % (self.key, self.user, self.is_resolved())
-
-
-def membership_created_callback(sender, **kwargs):
-    print ("membership_created_callback")
-    created = kwargs['created']
-    if not created:
-        return
-    membership = kwargs['instance']
-    MemberAlert.objects.trigger_new_membership(membership.member.user)
-post_save.connect(membership_created_callback, sender=Membership)
 
 
 class SentEmailLog(models.Model):
@@ -1173,6 +885,7 @@ class FileUpload(models.Model):
 
 def file_upload_callback(sender, **kwargs):
     file_upload = kwargs['instance']
+    from nadine.models.alerts import MemberAlert
     MemberAlert.objects.trigger_file_upload(file_upload.user)
 post_save.connect(file_upload_callback, sender=FileUpload)
 

@@ -17,7 +17,8 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 
 from nadine import mailgun
-from nadine.models import Member, DailyLog, Bill, FileUpload
+from nadine.models.core import Member, DailyLog, FileUpload
+from nadine.models.payment import Bill
 from staff.forms import NewUserForm, MemberSearchForm
 from arpwatch import arp
 from staff import email
