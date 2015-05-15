@@ -63,7 +63,7 @@ def regular_checkins():
 @shared_task
 def member_alert_check():
     from nadine.models.alerts import MemberAlert
-    MemberAlert.objects.trigger_nightly_check()
+    MemberAlert.objects.trigger_periodic_check()
 
 
 @shared_task

@@ -27,7 +27,7 @@ class MemberAlertManager(models.Manager):
             return unresolved.filter(user__in=active_users)
         return unresolved
 
-    def trigger_nightly_check(self):
+    def trigger_periodic_check(self):
         # Check for exiting members (one week back, one week in to the future)
         exiting_members = Member.objects.exiting_members(7)
         for m in exiting_members:
