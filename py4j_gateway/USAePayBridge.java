@@ -3,7 +3,7 @@ import com.usaepay.api.jaxws.*;
 import java.math.BigInteger;
 import java.util.*;
 import java.lang.reflect.*;
-import sun.misc.BASE64Decoder;
+import javax.xml.bind.DatatypeConverter;
 
 public class USAePayBridge {
 	private UeSoapServerPortType client;
@@ -34,8 +34,7 @@ public class USAePayBridge {
 		//System.out.println("getTransactionReport: " + start);
 		String format = "csv";
 		String response = client.getTransactionReport(token, start, end, report_type, format);
-		BASE64Decoder decoder = new BASE64Decoder();
-		byte[] decodedBytes = decoder.decodeBuffer(response);
+		byte[] decodedBytes = DatatypeConverter.parseBase64Binary(response);
 		String compiled_report = new String(decodedBytes);
 		//System.out.println(compiled_report);
 		return compiled_report;
