@@ -922,6 +922,7 @@ def usaepay_transactions(request, year, month, day):
     error = None
     transactions = []
     other_transactions = []
+    settled_checks = []
     totals = {'amex_count':0, 'amex_total':0, 'visamc_count':0, 'visamc_total':0, 'ach_count':0, 'ach_total':0, 'total_count':0, 'total':0}
     try:
         for t in usaepay.get_transactions(year, month, day):
@@ -941,15 +942,18 @@ def usaepay_transactions(request, year, month, day):
                     totals['ach_total'] = totals['ach_total'] + t['amount']
             else:
                 other_transactions.append(t)
+        
+        # Pull the settled checks seperately
+        settled_checks = usaepay.get_checks_settled_by_date(year, month, day)
     except Exception as e:
         print e
         error = 'Could not connect to USAePay Gateway!'
 
     # Sort our transactions by card_type
     transactions = sorted(transactions, key=lambda t: t['card_type'])
-
+    
     return render_to_response('staff/usaepay_transactions.html', {'date': d, 'error': error, 'transactions': transactions, 
-                                                                  'other_transactions': other_transactions, 'totals':totals,
+                                                                  'other_transactions': other_transactions, 'settled_checks':settled_checks, 'totals':totals,
                                                                   'next_date': d + timedelta(days=1), 'previous_date': d - timedelta(days=1)}, context_instance=RequestContext(request))
 
 

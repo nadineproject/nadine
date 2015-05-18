@@ -1,4 +1,4 @@
-import base64
+import base64, csv
 from py4j.java_gateway import JavaGateway
 from Crypto.Cipher import AES
 from django.conf import settings
@@ -58,6 +58,23 @@ def get_transactions(year, month, day):
                                  'card_type': card_type, 'status': status, 'amount': amount})
     return transactions
 
+def get_checks_settled_by_date(year, month, day):
+    gateway = JavaGateway()
+    report = gateway.entry_point.getTransactionReport("check:settled by date", year, month, day)
+    row_list = list(csv.reader(report.splitlines(), delimiter=','))
+    row_list.pop(0)
+    results = []
+    for row in row_list:
+        results.append({'date':row[1], 'name':row[2], 'status':row[9], 'amount':row[10], 'processed':row[13]})
+    # We pull another report to find any returned checks
+    # I'm not sure why this isn't in the error report but I have to go through all transactions
+    report = gateway.entry_point.getTransactionReport("check:All Transactions by Date", year, month, day)
+    row_list = list(csv.reader(report.splitlines(), delimiter=','))
+    row_list.pop(0)
+    for row in row_list:
+        if row[9] == "Returned":
+            results.append({'date':row[1], 'name':row[2], 'status':row[9], 'amount':row[10], 'processed':row[13]})
+    return results
 
 def authorize(username, auth_code):
     crypto = AES.new(settings.USA_EPAY_KEY, AES.MODE_ECB)

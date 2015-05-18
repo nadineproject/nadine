@@ -3,6 +3,7 @@ import com.usaepay.api.jaxws.*;
 import java.math.BigInteger;
 import java.util.*;
 import java.lang.reflect.*;
+import sun.misc.BASE64Decoder;
 
 public class USAePayBridge {
 	private UeSoapServerPortType client;
@@ -24,6 +25,20 @@ public class USAePayBridge {
 		search.add(new SearchParam("created", "gte", start));
 		search.add(new SearchParam("created", "lte", end));
 		return searchTransactions(search);
+	}
+
+	public String getTransactionReport(String report_type, String year, String month, String day) throws Exception {
+		String[] dates = getDateRange(year, month, day);
+		String start = year + "-" + month + "-" + day;
+		String end = start;
+		//System.out.println("getTransactionReport: " + start);
+		String format = "csv";
+		String response = client.getTransactionReport(token, start, end, report_type, format);
+		BASE64Decoder decoder = new BASE64Decoder();
+		byte[] decodedBytes = decoder.decodeBuffer(response);
+		String compiled_report = new String(decodedBytes);
+		//System.out.println(compiled_report);
+		return compiled_report;
 	}
 
 	public List searchTransactions(SearchParamArray search) throws Exception {

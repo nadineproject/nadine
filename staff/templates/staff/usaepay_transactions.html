@@ -67,6 +67,29 @@ nav #billing-tab { background: #FBD850; color: black; }
 	</tr>
 </table>
 
+{% if settled_checks %}
+<h3>Cleared ACH</h3>
+<table>
+	<tr>
+		<th>Name</th>
+		<th>Amount</th>
+		<th>Status</th>
+		<th>Processed</th>
+		<th></th>
+	</tr>
+
+	{% for c in settled_checks %}
+		<tr class="{% cycle 'row-even' 'row-odd' %}">
+			<td>{{ c.name }}</td>
+			<td>${{ c.amount|floatformat:2 }}</td>
+			<td>{{ c.status }}</td>
+			<td>{{ c.processed }}</td>
+			<td></td>
+		</tr>
+	{% endfor %}
+</table>
+{% endif %}
+
 {% if other_transactions %}
 <h3>Other Transactions</h3>
 <table>
