@@ -13,8 +13,14 @@ from django.conf import settings
 from django.utils import timezone
 
 from nadine.models.core import Member, Membership, FileUpload
+from nadine import mailgun
 
 logger = logging.getLogger(__name__)
+
+# Exiting members is defined by a specific window.  If a new membership
+# is added within this window then it is a change not an exit.
+# This is the amount of days before and after that create our window.
+EXITING_MEMBER_WINDOW = 4
 
 class MemberAlertManager(models.Manager):
 
@@ -28,13 +34,12 @@ class MemberAlertManager(models.Manager):
         return unresolved
 
     def trigger_periodic_check(self):
-        # Check for exiting members (one week back, one week in to the future)
-        exiting_members = Member.objects.exiting_members(7)
+        # Check for exiting members (3 days back, 3 days forward)
+        exiting_members = Member.objects.exiting_members(EXITING_MEMBER_WINDOW)
         for m in exiting_members:
-            exit_alerts = [MemberAlert.REMOVE_PHOTO, MemberAlert.RETURN_DOOR_KEY, MemberAlert.RETURN_DESK_KEY]
-            last_week = timezone.now() - timedelta(days=7)
+            start = timezone.now() - timedelta(days=EXITING_MEMBER_WINDOW)
             # Only trigger exiting membership if no exit alerts were created in the last week
-            if MemberAlert.objects.filter(user=m.user, key__in=exit_alerts, created_ts__gte=last_week).count() == 0:
+            if MemberAlert.objects.filter(user=m.user, key__in=MemberAlert.PERSISTENT_ALERTS, created_ts__gte=start).count() == 0:
                 self.trigger_exiting_membership(m.user)
 
         # Check for stale membership
@@ -78,6 +83,10 @@ class MemberAlertManager(models.Manager):
                     user.profile.resolve_alerts(MemberAlert.ASSIGN_MAILBOX)
                 elif not MemberAlert.REMOVE_MAILBOX in open_alerts:
                     MemberAlert.objects.create(user=user, key=MemberAlert.REMOVE_MAILBOX)
+        
+        # Send an email to the team announcing their exit
+        mailgun.send_manage_member(user, subject="Exiting Member")
+
 
     def trigger_new_membership(self, user):
         logger.debug("trigger_new_membership: %s" % user)
@@ -255,11 +264,16 @@ class MemberAlert(models.Model):
         app_label = 'nadine'
 
 
-def membership_created_callback(sender, **kwargs):
-    print ("membership_created_callback")
-    created = kwargs['created']
-    if not created:
-        return
+def membership_callback(sender, **kwargs):
+    print ("membership_callback")
     membership = kwargs['instance']
-    MemberAlert.objects.trigger_new_membership(membership.member.user)
-post_save.connect(membership_created_callback, sender=Membership)
+    created = kwargs['created']
+    if created:
+        MemberAlert.objects.trigger_new_membership(membership.member.user)
+    else:
+        # If this membership has an end date that puts it outside our exiting membership window
+        # we are going to go straight to the exiting member logic from here
+        window_start = timezone.now() - timedelta(days=EXITING_MEMBER_WINDOW)
+        if membership.end_date and membership.end_date < window_start.date():
+            MemberAlert.objects.trigger_exiting_membership(membership.member.user)
+post_save.connect(membership_callback, sender=Membership)

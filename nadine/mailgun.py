@@ -140,8 +140,10 @@ def clean_incoming(request):
     return (mailgun_data, attachments)
 
 
-def send_manage_member(user):
-    subject = "Incomplete Tasks - %s" % (user.get_full_name())
+def send_manage_member(user, subject=None):
+    if subject == None:
+        subject = "Incomplete Tasks"
+    subject = "%s - %s" % (subject, user.get_full_name())
     text_content, html_content = get_manage_member_content(user)
     mailgun_data = {"from": settings.EMAIL_ADDRESS,
                     "to": [settings.TEAM_EMAIL_ADDRESS, ],
