@@ -1,4 +1,5 @@
 {% extends "staff/staff_base.html" %}
+{% load billing_tags %}
 {% load list_tags %}
 
 {% block sub-title %}Bills | {% endblock %}
@@ -51,7 +52,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 		<h1>{{ bill_date }}</h1>
 		<ul id="bill-list">
 		{% for member in member_list %}
-			<li {% if not member.has_valid_billing %}style="color:red;"{% endif %}><span style="color:black">
+			<li style="color:{% valid_billing_color member %};"><span style="color:black">
 				<form class="pay-bill-form" action="." method="post">
 					<div>
 					<a class="bill-detail-toggle" id="bill-details-toggle-{{member.id}}" href="." onclick="toggleBillDetails('{{member.id}}'); return false;">[+]</a>&nbsp;

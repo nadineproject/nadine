@@ -513,6 +513,11 @@ class Member(models.Model):
         if host:
             return host.has_valid_billing()
         return self.valid_billing
+    
+    def has_billing_profile(self):
+        if usaepay.getAllCustomers(self.user.username):
+            return True
+        return False
 
     def guests(self):
         guests = []
