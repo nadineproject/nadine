@@ -72,6 +72,12 @@ class MemberAlertManager(models.Manager):
             if last_membership.has_desk:
                 if not MemberAlert.RETURN_DESK_KEY in open_alerts:
                     MemberAlert.objects.create(user=user, key=MemberAlert.RETURN_DESK_KEY)
+            if last_membership.has_mail:
+                if MemberAlert.ASSIGN_MAILBOX in open_alerts:
+                    # We never assigned a mailbox so we can just resolve that now
+                    user.profile.resolve_alerts(MemberAlert.ASSIGN_MAILBOX)
+                elif not MemberAlert.REMOVE_MAILBOX in open_alerts:
+                    MemberAlert.objects.create(user=user, key=MemberAlert.REMOVE_MAILBOX)
 
     def trigger_new_membership(self, user):
         logger.debug("trigger_new_membership: %s" % user)
@@ -114,6 +120,15 @@ class MemberAlertManager(models.Manager):
                 if not MemberAlert.KEY_AGREEMENT in open_alerts:
                     MemberAlert.objects.create(user=user, key=MemberAlert.KEY_AGREEMENT)
 
+        # Assign a mailbox if this membership comes with mail
+        if new_membership.has_mail:
+            if MemberAlert.REMOVE_MAILBOX in open_alerts:
+                # No need to remove the mailbox since their new membership has mail
+                user.profile.resolve_alerts(MemberAlert.REMOVE_MAILBOX)
+            else:
+                if not MemberAlert.ASSIGN_MAILBOX in open_alerts:
+                    MemberAlert.objects.create(user=user, key=MemberAlert.ASSIGN_MAILBOX)
+
     def trigger_profile_save(self, profile):
         logger.debug("trigger_profile_save: %s" % profile)
         if profile.photo:
@@ -153,9 +168,11 @@ class MemberAlert(models.Model):
     KEY_AGREEMENT = "key_agreement"
     STALE_MEMBER = "stale_member"
     #INVALID_BILLING = "invalid_billing"
+    ASSIGN_MAILBOX = "assign_mailbox"
     REMOVE_PHOTO = "remove_photo"
     RETURN_DOOR_KEY = "return_door_key"
     RETURN_DESK_KEY = "return_desk_key"
+    REMOVE_MAILBOX = "remove_mailbox"
 
     ALERT_DESCRIPTIONS = (
         (PAPERWORK, "Received Paperwork"),
@@ -168,16 +185,18 @@ class MemberAlert(models.Model):
         (KEY_AGREEMENT, "Key Training & Agreement"),
         (STALE_MEMBER, "Stale Membership"),
         #(INVALID_BILLING, "Missing Valid Billing"),
+        (ASSIGN_MAILBOX, "Assign a Mailbox"),
         (REMOVE_PHOTO, "Remove Picture from Wall"),
         (RETURN_DOOR_KEY, "Take Back Keycard"),
         (RETURN_DESK_KEY, "Take Back Roller Drawer Key"),
+        (REMOVE_MAILBOX, "Remove Mailbox"),
     )
 
     # These alerts can be resolved by the system automatically
     SYSTEM_ALERTS = [MEMBER_INFO, MEMBER_AGREEMENT, UPLOAD_PHOTO, KEY_AGREEMENT, STALE_MEMBER]
 
     # These alerts apply to even inactive members
-    PERSISTENT_ALERTS = [REMOVE_PHOTO, RETURN_DOOR_KEY, RETURN_DESK_KEY]
+    PERSISTENT_ALERTS = [REMOVE_PHOTO, RETURN_DOOR_KEY, RETURN_DESK_KEY, REMOVE_MAILBOX]
 
     @staticmethod
     def getDescription(key):
