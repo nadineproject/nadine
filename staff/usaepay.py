@@ -3,7 +3,6 @@ from py4j.java_gateway import JavaGateway
 from Crypto.Cipher import AES
 from django.conf import settings
 
-
 def disableAutoBilling(username):
     try:
         gateway = JavaGateway()
@@ -47,10 +46,6 @@ def get_transactions(year, month, day):
     if gateway_transactions:
         for t in gateway_transactions:
             username = t.getCustomerID()
-            try:
-                member = Member.objects.get(user__username=username)
-            except:
-                member = None
             card_type = t.getCreditCardData().getCardType()
             if not card_type:
                 card_type = "ACH"
@@ -59,7 +54,7 @@ def get_transactions(year, month, day):
                 status = status.split()[0]
             amount = t.getDetails().getAmount()
             description = t.getDetails().getDescription()
-            transactions.append({'member': member, 'transaction': t, 'username': username, 'description': description,
+            transactions.append({'username': username, 'transaction': t, 'description': description,
                                  'card_type': card_type, 'status': status, 'amount': amount})
     return transactions
 
