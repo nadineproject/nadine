@@ -921,24 +921,35 @@ def usaepay_transactions(request, year, month, day):
     d = date(year=int(year), month=int(month), day=int(day))
     error = None
     transactions = []
-    gateway_transactions = None
+    other_transactions = []
+    totals = {'amex_count':0, 'amex_total':0, 'visamc_count':0, 'visamc_total':0, 'ach_count':0, 'ach_total':0, 'total_count':0, 'total':0}
     try:
-        gateway = JavaGateway()
-        gateway_transactions = gateway.entry_point.getTransactions(year, month, day)
-    except:
+        for t in usaepay.get_transactions(year, month, day):
+            # Settled or Submitted trasactions
+            if t['status'].startswith('S'):
+                transactions.append(t)
+                totals['total_count'] = totals['total_count'] + 1
+                totals['total'] = totals['total'] + t['amount']
+                if t['card_type'] == "A":
+                    totals['amex_count'] = totals['amex_count'] + 1
+                    totals['amex_total'] = totals['amex_total'] + t['amount']
+                elif t['card_type'] == "V" or t['card_type'] == "M":
+                    totals['visamc_count'] = totals['visamc_count'] + 1
+                    totals['visamc_total'] = totals['visamc_total'] + t['amount']
+                elif t['card_type'] == "ACH":
+                    totals['ach_count'] = totals['ach_count'] + 1
+                    totals['ach_total'] = totals['ach_total'] + t['amount']
+            else:
+                other_transactions.append(t)
+    except Exception as e:
+        print e
         error = 'Could not connect to USAePay Gateway!'
 
-    if gateway_transactions:
-        for t in gateway_transactions:
-            username = t.getCustomerID()
-            try:
-                member = Member.objects.get(user__username=username)
-            except:
-                member = None
-            transactions.append({'member': member, 'transaction': t, 'username': username, 'description': t.getDetails().getDescription(),
-                                 'card_type': t.getCreditCardData().getCardType(), 'status': t.getStatus(), 'amount': t.getDetails().getAmount()})
+    # Sort our transactions by card_type
+    transactions = sorted(transactions, key=lambda t: t['card_type'])
 
-    return render_to_response('staff/usaepay_transactions.html', {'date': d, 'error': error, 'transactions': transactions,
+    return render_to_response('staff/usaepay_transactions.html', {'date': d, 'error': error, 'transactions': transactions, 
+                                                                  'other_transactions': other_transactions, 'totals':totals,
                                                                   'next_date': d + timedelta(days=1), 'previous_date': d - timedelta(days=1)}, context_instance=RequestContext(request))
 
 

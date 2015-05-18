@@ -39,12 +39,57 @@ nav #billing-tab { background: #FBD850; color: black; }
 			<td><a href="{% url 'staff.views.member_detail_user' t.username %}">{{ t.username }}</a></td>
 			<td>{{ t.description }}</td>
 			<td>{{ t.card_type }}</td>
-			<td>{{ t.status  | truncatewords:1}}</td>
-			<td>${{ t.amount }}</td>
-			<td>{% if t.member.open_bill_amount %} ${{ t.member.open_bill_amount }} {% endif %}</td>
+			<td>{{ t.status}}</td>
+			<td>${{ t.amount|floatformat:2 }}</td>
+			<td>{% if t.member.open_bill_amount %} ${{ t.member.open_bill_amount|floatformat:2 }} {% endif %}&nbsp;</td>
 			<td></td>
 		</tr>
 	{% endfor %}
 </table>
+
+<h3>Totals</h3>
+<table style="margin-left:32px; width:100px;">
+	<tr>
+		<td><strong>American Express</strong> ({{totals.amex_count}}):</td>
+		<td style="text-align:right;">${{totals.amex_total|floatformat:2}}</td>
+	</tr>
+	<tr>
+		<td><strong>Visa/MC</strong> ({{totals.visamc_count}}):</td>
+		<td style="text-align:right;">${{totals.visamc_total|floatformat:2}}</td>
+	</tr>
+	<tr>
+		<td><strong>ACH</strong> ({{totals.ach_count}}):</td>
+		<td style="text-align:right;">${{totals.ach_total|floatformat:2}}</td>
+	</tr>
+	<tr>
+		<td><strong>Total</strong> ({{totals.total_count}}):</td>
+		<td style="text-align:right;"><strong>${{totals.total|floatformat:2}}</strong></td>
+	</tr>
+</table>
+
+{% if other_transactions %}
+<h3>Other Transactions</h3>
+<table>
+	<tr>
+		<th>Member</th>
+		<th>Description</th>
+		<th>Type</th>
+		<th>Status</th>
+		<th>Amount</th>
+		<th></th>
+	</tr>
+
+	{% for t in other_transactions %}
+		<tr class="{% cycle 'row-even' 'row-odd' %}">
+			<td><a href="{% url 'staff.views.member_detail_user' t.username %}">{{ t.username }}</a></td>
+			<td>{{ t.description }}</td>
+			<td>{{ t.card_type }}</td>
+			<td>{{ t.status}}</td>
+			<td>${{ t.amount|floatformat:2 }}</td>
+			<td></td>
+		</tr>
+	{% endfor %}
+</table>
+{% endif %}
 
 {% endblock %}

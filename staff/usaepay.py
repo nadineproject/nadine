@@ -40,6 +40,30 @@ def auto_bill_enabled(username):
     return False
 
 
+def get_transactions(year, month, day):
+    transactions = []
+    gateway = JavaGateway()
+    gateway_transactions = gateway.entry_point.getTransactions(year, month, day)
+    if gateway_transactions:
+        for t in gateway_transactions:
+            username = t.getCustomerID()
+            try:
+                member = Member.objects.get(user__username=username)
+            except:
+                member = None
+            card_type = t.getCreditCardData().getCardType()
+            if not card_type:
+                card_type = "ACH"
+            status = t.getStatus()
+            if status and ' ' in status:
+                status = status.split()[0]
+            amount = t.getDetails().getAmount()
+            description = t.getDetails().getDescription()
+            transactions.append({'member': member, 'transaction': t, 'username': username, 'description': description,
+                                 'card_type': card_type, 'status': status, 'amount': amount})
+    return transactions
+
+
 def authorize(username, auth_code):
     crypto = AES.new(settings.USA_EPAY_KEY, AES.MODE_ECB)
     decripted_username = urlsafe_b64decode(crypto.decrypt(auth_code))
