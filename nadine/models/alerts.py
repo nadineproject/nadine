@@ -12,8 +12,7 @@ from django.db.models.signals import post_save
 from django.conf import settings
 from django.utils import timezone
 
-from nadine.models.core import Member, Membership, FileUpload
-from nadine import mailgun
+    from nadine import mailgun
 
 logger = logging.getLogger(__name__)
 
@@ -62,12 +61,7 @@ class MemberAlertManager(models.Manager):
 
     def trigger_exiting_membership(self, user):
         open_alerts = user.profile.alerts_by_key(include_resolved=False)
-
-        # Take down their photo.  First make sure we have a photo and not an open alert
-        if user.profile.photo and not MemberAlert.POST_PHOTO in open_alerts:
-            if not MemberAlert.REMOVE_PHOTO in open_alerts:
-                MemberAlert.objects.create(user=user, key=MemberAlert.REMOVE_PHOTO)
-
+        
         # Key?  Let's get it back!
         last_membership = user.profile.last_membership()
         if last_membership:
@@ -83,6 +77,11 @@ class MemberAlertManager(models.Manager):
                     user.profile.resolve_alerts(MemberAlert.ASSIGN_MAILBOX)
                 elif not MemberAlert.REMOVE_MAILBOX in open_alerts:
                     MemberAlert.objects.create(user=user, key=MemberAlert.REMOVE_MAILBOX)
+        
+        # Take down their photo. 
+        if user.profile.photo and not MemberAlert.POST_PHOTO in open_alerts:
+            if not MemberAlert.objects.filter(user=user, key=MemberAlert.REMOVE_PHOTO, created_ts__gte=last_membership.start_date):
+                MemberAlert.objects.create(user=user, key=MemberAlert.REMOVE_PHOTO)
         
         # Send an email to the team announcing their exit
         mailgun.send_manage_member(user, subject="Exiting Member")
