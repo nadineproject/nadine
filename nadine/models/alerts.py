@@ -12,7 +12,7 @@ from django.db.models.signals import post_save
 from django.conf import settings
 from django.utils import timezone
 
-    from nadine import mailgun
+from nadine import mailgun
 
 logger = logging.getLogger(__name__)
 
