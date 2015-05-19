@@ -12,6 +12,7 @@ from django.db.models.signals import post_save
 from django.conf import settings
 from django.utils import timezone
 
+from nadine.models.core import Member, Membership, FileUpload
 from nadine import mailgun
 
 logger = logging.getLogger(__name__)
