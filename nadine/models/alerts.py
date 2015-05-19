@@ -61,31 +61,39 @@ class MemberAlertManager(models.Manager):
         #				alert.mute(None, note="membership ended")
 
     def trigger_exiting_membership(self, user):
+        new_alerts = False
         open_alerts = user.profile.alerts_by_key(include_resolved=False)
         
         # Key?  Let's get it back!
         last_membership = user.profile.last_membership()
         if last_membership:
             if last_membership.has_key:
-                if not MemberAlert.RETURN_DOOR_KEY in open_alerts:
+                if not MemberAlert.objects.filter(user=user, key=MemberAlert.RETURN_DOOR_KEY, created_ts__gte=last_membership.start_date):
                     MemberAlert.objects.create(user=user, key=MemberAlert.RETURN_DOOR_KEY)
+                    new_alerts = True
             if last_membership.has_desk:
-                if not MemberAlert.RETURN_DESK_KEY in open_alerts:
+                if not MemberAlert.objects.filter(user=user, key=MemberAlert.RETURN_DESK_KEY, created_ts__gte=last_membership.start_date):
                     MemberAlert.objects.create(user=user, key=MemberAlert.RETURN_DESK_KEY)
+                    new_alerts = True
             if last_membership.has_mail:
                 if MemberAlert.ASSIGN_MAILBOX in open_alerts:
                     # We never assigned a mailbox so we can just resolve that now
                     user.profile.resolve_alerts(MemberAlert.ASSIGN_MAILBOX)
-                elif not MemberAlert.REMOVE_MAILBOX in open_alerts:
+                elif not MemberAlert.objects.filter(user=user, key=MemberAlert.REMOVE_MAILBOX, created_ts__gte=last_membership.start_date):
                     MemberAlert.objects.create(user=user, key=MemberAlert.REMOVE_MAILBOX)
+                    new_alerts = True
         
         # Take down their photo. 
-        if user.profile.photo and not MemberAlert.POST_PHOTO in open_alerts:
-            if not MemberAlert.objects.filter(user=user, key=MemberAlert.REMOVE_PHOTO, created_ts__gte=last_membership.start_date):
+        if user.profile.photo:
+            if MemberAlert.POST_PHOTO in open_alerts:
+                user.profile.resolve_alerts(MemberAlert.POST_PHOTO)
+            elif not MemberAlert.objects.filter(user=user, key=MemberAlert.REMOVE_PHOTO, created_ts__gte=last_membership.start_date):
                 MemberAlert.objects.create(user=user, key=MemberAlert.REMOVE_PHOTO)
+                new_alerts = True
         
         # Send an email to the team announcing their exit
-        mailgun.send_manage_member(user, subject="Exiting Member")
+        if new_alerts:
+            mailgun.send_manage_member(user, subject="Exiting Member")
 
 
     def trigger_new_membership(self, user):
