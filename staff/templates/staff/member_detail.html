@@ -68,14 +68,12 @@ function gotoEmailReset(emailAddress){
 		<a href="{% url 'staff.views.usaepay_user' member.user.username %}">usaepay</a> |
 		<a href="{% url 'admin:auth_user_change' member.user.id %}">admin</a> |
 		<!--<a href="{% url 'admin:auth_user_change' member.user.id %}history/">change history</a> | -->
-		<a href="{% url 'staff.views.member_edit' member.user.username %}">edit member</a>
-		<!--
+		<a href="{% url 'staff.views.member_edit' member.user.username %}">edit member</a> |
 		{% if member.is_active %}
 			<a href="{% url 'staff.views.membership' member.last_membership.id %}">update membership</a>
 		{% else %}	
 			<a href="{% url 'staff.views.member_membership' member.id %}">add membership</a>
 		{% endif %}
-		-->
 	</div>
 </div>
 
