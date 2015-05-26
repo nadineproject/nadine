@@ -23,6 +23,12 @@ nav #billing-tab { background: #FBD850; color: black; }
 	<div style="text-align:center; font-size:150%; color:red">{{ error }}</div>
 {% endif %}
 
+<h3>Settled Transactions</h3>
+
+{% if not transactions %}
+	<i>No Transactions</i>
+{% else %}
+
 <table>
 	<tr>
 		<th>Member</th>
@@ -31,7 +37,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 		<th>Status</th>
 		<th>Amount</th>
 		<th>Owed</th>
-		<th></th>
+		<th>Action</th>
 	</tr>
 
 	{% for t in transactions %}
@@ -41,8 +47,20 @@ nav #billing-tab { background: #FBD850; color: black; }
 			<td>{{ t.card_type }}</td>
 			<td>{{ t.status}}</td>
 			<td>${{ t.amount|floatformat:2 }}</td>
-			<td>{% if t.member.open_bill_amount %} ${{ t.member.open_bill_amount|floatformat:2 }} {% endif %}&nbsp;</td>
-			<td></td>
+			<td>{% if t.open_bill_amount %} ${{ t.open_bill_amount|floatformat:2 }} {% endif %}</td>
+			<td style="text-align:center;">
+				{% if t.open_bill_amount %}
+					{% if t.open_bill_amount != t.amount %}
+						[ <font color="red">OVER</font> ]
+					{% else %}
+						<form action="{% url 'staff.views.bills_pay_all' t.username %}" method="POST">
+							<input type="hidden" name="next" value="{{request.path}}" />
+							<input type="submit" value="Paid" />
+							{% csrf_token %}
+						</form>
+						{% endif %}
+				{% endif %}
+			<td>
 		</tr>
 	{% endfor %}
 </table>
@@ -66,6 +84,8 @@ nav #billing-tab { background: #FBD850; color: black; }
 		<td style="text-align:right;"><strong>${{totals.total|floatformat:2}}</strong></td>
 	</tr>
 </table>
+
+{% endif %}
 
 {% if settled_checks %}
 <h3>Cleared ACH</h3>
@@ -107,7 +127,15 @@ nav #billing-tab { background: #FBD850; color: black; }
 			<td><a href="{% url 'staff.views.member_detail_user' t.username %}">{{ t.username }}</a></td>
 			<td>{{ t.description }}</td>
 			<td>{{ t.card_type }}</td>
-			<td>{{ t.status}}</td>
+			<td>
+				{% if t.status == "Authorized" %}
+					<font color="green">Authorized</font>
+				{% elif t.status == "Declined" or t.status == "Error"%}
+					<font color="red">{{ t.status}}</font>
+				{% else %}
+					{{ t.status}}
+				{% endif %}
+			</td>
 			<td>${{ t.amount|floatformat:2 }}</td>
 			<td></td>
 		</tr>

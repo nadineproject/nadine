@@ -231,6 +231,28 @@ def bills(request):
     invalids = Member.objects.invalid_billing()
     return render_to_response('staff/bills.html', {'bills': ordered_bills, 'page_message': page_message, 'invalid_members': invalids}, context_instance=RequestContext(request))
 
+@staff_member_required
+def bills_pay_all(request, username):
+    user = get_object_or_404(User, username=username)
+    member = user.get_profile()
+    amount = member.open_bill_amount()
+    
+    # Save all the bills!
+    if amount > 0:
+        transaction = Transaction(member=member, status='closed', amount=amount)
+        transaction.save()
+        for bill in member.open_bills():
+            transaction.bills.add(bill)
+    
+    # Where to next?
+    if request.method == 'POST':
+        if 'next' in request.POST:
+            next_url = request.POST.get("next")
+        else:
+            next_url = reverse('staff.views.bills')
+    
+    return HttpResponseRedirect(next_url)
+
 
 @staff_member_required
 def bill_list(request):
@@ -926,10 +948,11 @@ def usaepay_transactions(request, year, month, day):
     totals = {'amex_count':0, 'amex_total':0, 'visamc_count':0, 'visamc_total':0, 'ach_count':0, 'ach_total':0, 'total_count':0, 'total':0}
     try:
         for t in usaepay.get_transactions(year, month, day):
-            # Pull the member
+            # Pull the member and the amount they owe
             member = Member.objects.filter(user__username = t['username']).first()
             if member:
                 t['member'] = member
+                t['open_bill_amount'] = member.open_bill_amount()
 
             # Total up all the Settled transactions
             if t['status'] == ("Settled"):
