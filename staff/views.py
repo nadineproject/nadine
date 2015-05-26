@@ -926,8 +926,13 @@ def usaepay_transactions(request, year, month, day):
     totals = {'amex_count':0, 'amex_total':0, 'visamc_count':0, 'visamc_total':0, 'ach_count':0, 'ach_total':0, 'total_count':0, 'total':0}
     try:
         for t in usaepay.get_transactions(year, month, day):
-            # Settled or Submitted trasactions
-            if t['status'].startswith('S'):
+            # Pull the member
+            member = Member.objects.filter(user__username = t['username']).first()
+            if member:
+                t['member'] = member
+
+            # Total up all the Settled transactions
+            if t['status'] == ("Settled"):
                 transactions.append(t)
                 totals['total_count'] = totals['total_count'] + 1
                 totals['total'] = totals['total'] + t['amount']
