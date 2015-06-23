@@ -23,7 +23,7 @@ REPORT_FIELDS = (
 
 
 def getDefaultForm():
-    start = timezone.now().date() - timedelta(days=30)
+    start = timezone.now().date() - timedelta(days=7)
     end = timezone.now().date()
     form_data = {'report': 'NEW_MEMBER', 'order_by': 'JOINED', 'active_only': False, 'start_date': start, 'end_date': end}
     return UserReportForm(form_data)
