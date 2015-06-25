@@ -16,7 +16,7 @@ nav #members-tab { background: #FBD850; color: black; }
 #id_url_linkedin { width: 32em; }
 #id_url_aboutme { width: 32em; }
 #id_url_github { width: 32em; }
-table td 	{text-align: left;}
+table td    {text-align: left;}
 {% endblock %}
 
 {% block content %}
@@ -26,134 +26,134 @@ table td 	{text-align: left;}
 <p align="center"><em>NOTE: Items in <strong>bold</strong> are viewable by all active members.</em></p>
 
 <div id="profile_form">
-	<form enctype="multipart/form-data" action='.' method='post'>
-		{{ profile_form.member_id }}
-		<h3>Contact Information</h3>
-	   <table id="contact">
-			<tr class="row-even">
-				<td>Address 1:</td>
-				<td>{{ profile_form.address1 }}</td>
-				<td>{{ profile_form.address1.errors }}</td>
-			</tr>
-			<tr class="row-odd">
-				<td>Address 2:</td>
-				<td>{{ profile_form.address2 }}</td>
-				<td>{{ profile_form.address2.errors }}</td>
-			</tr>
-			<tr class="row-even">
-				<td>City:</td>
-				<td>{{ profile_form.city }}</td>
-				<td>{{ profile_form.city.errors }}</td>
-			</tr>
-			<tr class="row-odd">
-				<td>State:</td>
-				<td>{{ profile_form.state }}</td>
-				<td>{{ profile_form.state.errors }}</td>
-			</tr>
-			<tr class="row-even">
-				<td>zipcode:</td>
-				<td>{{ profile_form.zipcode }}</td>
-				<td>{{ profile_form.zipcode.errors }}</td>
-			</tr>
-			<tr class="row-odd">
-				<td>Primary Phone:</td>
-				<td>{{ profile_form.phone }}</td>
-				<td>{{ profile_form.phone.errors }}</td>
-			</tr>
-			<tr class="row-even">
-				<td>Alternate Phone:</td>
-				<td>{{ profile_form.phone2 }}</td>
-				<td>{{ profile_form.phone2.errors }}</td>
-			</tr>
-			<tr class="row-odd">
-				<td>Alternate Email:</td>
-				<td>{{ profile_form.email2 }}</td>
-				<td>{{ profile_form.email2.errors }}</td>
-			</tr>
-		</table>
-		
-		<h3>Websites &amp; Other Profiles</h3>
-	   <table id="websites">
-			<tr class="row-even">
-				<td><strong>Professional Website</strong>:</td>
-				<td>{{ profile_form.url_professional }}</td>
-				<td width="200px">{{ profile_form.url_professional.errors }}</td>
-			</tr>
-			<tr class="row-odd">
-				<td><strong>Personal Website</strong>:</td>
-				<td>{{ profile_form.url_personal }}</td>
-				<td>{{ profile_form.url_personal.errors }}</td>
-			</tr>
-			<tr class="row-even">
-				<td><strong>Twitter</strong>:</td>
-				<td>{{ profile_form.url_twitter }}</td>
-				<td>{{ profile_form.url_twitter.errors }}</td>
-			</tr>
-			<tr class="row-odd">
-				<td><strong>Facebook</strong>:</td>
-				<td>{{ profile_form.url_facebook }}</td>
-				<td>{{ profile_form.url_facebook.errors }}</td>
-			</tr>
-			<tr class="row-even">
-				<td><strong>Linkedin Profile</strong>:</td>
-				<td>{{ profile_form.url_linkedin }}</td>
-				<td>{{ profile_form.url_linkedin.errors }}</td>
-			</tr>
-			<tr class="row-odd">
-				<td><strong>Github Profile</strong>:</td>
-				<td>{{ profile_form.url_github }}</td>
-				<td>{{ profile_form.url_github.errors }}</td>
-			</tr>
-			<tr class="row-even">
-				<td><strong>About Me Profile</strong>:</td>
-				<td>{{ profile_form.url_aboutme }}</td>
-				<td>{{ profile_form.url_aboutme.errors }}</td>
-			</tr>
-		</table>
+    <form enctype="multipart/form-data" action='.' method='post'>
+        {{ profile_form.member_id }}
+        <h3>Contact Information</h3>
+        <table id="contact">
+            <tr class="row-even">
+                <td>Address 1:</td>
+                <td>{{ profile_form.address1 }}</td>
+                <td>{{ profile_form.address1.errors }}</td>
+            </tr>
+            <tr class="row-odd">
+                <td>Address 2:</td>
+                <td>{{ profile_form.address2 }}</td>
+                <td>{{ profile_form.address2.errors }}</td>
+            </tr>
+            <tr class="row-even">
+                <td>City:</td>
+                <td>{{ profile_form.city }}</td>
+                <td>{{ profile_form.city.errors }}</td>
+            </tr>
+            <tr class="row-odd">
+                <td>State:</td>
+                <td>{{ profile_form.state }}</td>
+                <td>{{ profile_form.state.errors }}</td>
+            </tr>
+            <tr class="row-even">
+                <td>zipcode:</td>
+                <td>{{ profile_form.zipcode }}</td>
+                <td>{{ profile_form.zipcode.errors }}</td>
+            </tr>
+            <tr class="row-odd">
+                <td>Primary Phone:</td>
+                <td>{{ profile_form.phone }}</td>
+                <td>{{ profile_form.phone.errors }}</td>
+            </tr>
+            <tr class="row-even">
+                <td>Alternate Phone:</td>
+                <td>{{ profile_form.phone2 }}</td>
+                <td>{{ profile_form.phone2.errors }}</td>
+            </tr>
+            <tr class="row-odd">
+                <td>Alternate Email:</td>
+                <td>{{ profile_form.email2 }}</td>
+                <td>{{ profile_form.email2.errors }}</td>
+            </tr>
+        </table>
+        
+        <h3>Websites &amp; Other Profiles</h3>
+       <table id="websites">
+            <tr class="row-even">
+                <td><strong>Professional Website</strong>:</td>
+                <td>{{ profile_form.url_professional }}</td>
+                <td width="200px">{{ profile_form.url_professional.errors }}</td>
+            </tr>
+            <tr class="row-odd">
+                <td><strong>Personal Website</strong>:</td>
+                <td>{{ profile_form.url_personal }}</td>
+                <td>{{ profile_form.url_personal.errors }}</td>
+            </tr>
+            <tr class="row-even">
+                <td><strong>Twitter</strong>:</td>
+                <td>{{ profile_form.url_twitter }}</td>
+                <td>{{ profile_form.url_twitter.errors }}</td>
+            </tr>
+            <tr class="row-odd">
+                <td><strong>Facebook</strong>:</td>
+                <td>{{ profile_form.url_facebook }}</td>
+                <td>{{ profile_form.url_facebook.errors }}</td>
+            </tr>
+            <tr class="row-even">
+                <td><strong>Linkedin Profile</strong>:</td>
+                <td>{{ profile_form.url_linkedin }}</td>
+                <td>{{ profile_form.url_linkedin.errors }}</td>
+            </tr>
+            <tr class="row-odd">
+                <td><strong>Github Profile</strong>:</td>
+                <td>{{ profile_form.url_github }}</td>
+                <td>{{ profile_form.url_github.errors }}</td>
+            </tr>
+            <tr class="row-even">
+                <td><strong>About Me Profile</strong>:</td>
+                <td>{{ profile_form.url_aboutme }}</td>
+                <td>{{ profile_form.url_aboutme.errors }}</td>
+            </tr>
+        </table>
 
-		<h3>Other Information</h3>
-	   <table id="otherinfo">
-			<tr class="row-even">
-				<td><strong>Company Name:</strong></td>
-				<td>{{ profile_form.company_name }}</td>
-				<td>{{ profile_form.company_name.errors }}</td>
-			</tr>
-			<tr class="row-odd">
-				<td><strong>What industry are you in?</strong></td>
-				<td>{{ profile_form.industry }}</td>
-				<td>{{ profile_form.industry.errors }}</td>
-			</tr>
-			<tr class="row-even">
-				<td><strong>Neighborhood:</strong>:</td>
-				<td>{{ profile_form.neighborhood }}</td>
-				<td width="300px">{{ profile_form.neighborhood.errors }}</td>
-			</tr>
-			<tr class="row-odd">
-				<td>Do you have children?</td>
-				<td>{{ profile_form.has_kids }}</td>
-				<td>{{ profile_form.has_kids.errors }}</td>
-			</tr>
-			<tr class="row-even">
-				<td>Are you self employed?</td>
-				<td>{{ profile_form.self_employed }}</td>
-				<td>{{ profile_form.self_employed.errors }}</td>
-			</tr>
-			<tr class="row-odd">
-				<td>How did you hear about us?</td>
-				<td>{{ profile_form.howHeard }}</td>
-				<td>{{ profile_form.howHeard.errors }}</td>
-			</tr>
-			<tr class="row-even">
-				<td>Gender:</td>
-				<td>{{ profile_form.gender }}</td>
-				<td width="300px">{{ profile_form.gender.errors }}</td>
-			</tr>
+        <h3>Other Information</h3>
+        <table id="otherinfo">
+            <tr class="row-even">
+                <td><strong>Company Name:</strong></td>
+                <td>{{ profile_form.company_name }}</td>
+                <td>{{ profile_form.company_name.errors }}</td>
+            </tr>
+            <tr class="row-odd">
+                <td><strong>What industry are you in?</strong></td>
+                <td>{{ profile_form.industry }}</td>
+                <td>{{ profile_form.industry.errors }}</td>
+            </tr>
+            <tr class="row-even">
+                <td><strong>Neighborhood:</strong>:</td>
+                <td>{{ profile_form.neighborhood }}</td>
+                <td width="300px">{{ profile_form.neighborhood.errors }}</td>
+            </tr>
+            <tr class="row-odd">
+                <td>Do you have children?</td>
+                <td>{{ profile_form.has_kids }}</td>
+                <td>{{ profile_form.has_kids.errors }}</td>
+            </tr>
+            <tr class="row-even">
+                <td>Are you self employed?</td>
+                <td>{{ profile_form.self_employed }}</td>
+                <td>{{ profile_form.self_employed.errors }}</td>
+            </tr>
+            <tr class="row-odd">
+                <td>How did you hear about us?</td>
+                <td>{{ profile_form.howHeard }}</td>
+                <td>{{ profile_form.howHeard.errors }}</td>
+            </tr>
+            <tr class="row-even">
+                <td>Gender:</td>
+                <td>{{ profile_form.gender }}</td>
+                <td width="300px">{{ profile_form.gender.errors }}</td>
+            </tr>
 
-		</table>
+        </table>
 
-		<p align="center"><input type="submit" value="Update Your Profile" /></p>
-	   {% csrf_token %}
-	</form>
+        <p align="center"><input type="submit" value="Update Your Profile" /></p>
+        {% csrf_token %}
+    </form>
 </div>
 
 {% endblock %}
