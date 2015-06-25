@@ -85,8 +85,8 @@ def user_signin(request, username):
     membership = member.active_membership()
 
     can_signin = False
-    last_membership = member.last_membership()
-    if not last_membership or last_membership.end_date or not last_membership.has_desk:
+    active_membership = member.active_membership()
+    if not active_membership or active_membership.end_date or not active_membership.has_desk:
         if not DailyLog.objects.filter(member=member, visit_date=timezone.localtime(timezone.now()).date()):
             can_signin = True
 
