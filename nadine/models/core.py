@@ -270,7 +270,7 @@ class Member(models.Model):
     """A person who has used the space and may or may not have a monthly membership"""
     objects = MemberManager()
 
-    user = models.OneToOneField(User, blank=False, related_name="user")
+    user = models.OneToOneField(User, blank=False)
     email2 = models.EmailField("Alternate Email", blank=True, null=True)
     phone = PhoneNumberField(blank=True, null=True)
     phone2 = PhoneNumberField("Alternate Phone", blank=True, null=True)
@@ -288,7 +288,7 @@ class Member(models.Model):
     url_github = models.URLField(blank=True, null=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default="U")
     howHeard = models.ForeignKey(HowHeard, blank=True, null=True)
-    #referred_by = models.ForeignKey(User, verbose_name="Referred By", related_name="referred_by", blank=True, null=True)
+    #referred_by = models.ForeignKey(User, verbose_name="Referred By", related_name="referral", blank=True, null=True)
     industry = models.ForeignKey(Industry, blank=True, null=True)
     neighborhood = models.ForeignKey(Neighborhood, blank=True, null=True)
     has_kids = models.NullBooleanField(blank=True, null=True)
@@ -601,7 +601,6 @@ User.get_profile = lambda self: Member.objects.get_or_create(user=self)[0]
 User.get_absolute_url = lambda self: Member.objects.get(user=self).get_absolute_url()
 User.profile = property(User.get_profile)
 
-
 @receiver(post_save, sender=Member)
 def size_images(sender, instance, **kwargs):
     if instance.photo:
@@ -618,6 +617,20 @@ def size_images(sender, instance, **kwargs):
             new_image = image.resize((new_x, new_y), Image.ANTIALIAS)
             new_image.save(instance.photo.path, image.format)
         image.close()
+
+
+#class EmergencyContact(models.Model):
+#    user = models.OneToOneField(User, blank=False)
+#    name = models.CharField(max_length=254, blank=True)
+#    relationship = models.CharField(max_length=254, blank=True)
+#    phone = PhoneNumberField(blank=True, null=True)
+#    email = models.EmailField(blank=True, null=True)
+#    last_updated = models.DateTimeField(auto_now_add=True)
+
+#def emergency_callback_save_callback(sender, **kwargs):
+#    contact = kwargs['instance']
+#    contact.last_updated = timezone.now()
+#pre_save.connect(emergency_callback_save_callback, sender=EmergencyContact)
 
 
 class DailyLog(models.Model):
