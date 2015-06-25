@@ -133,7 +133,9 @@ def user(request, username):
     member = get_object_or_404(Member, user=user)
     activity = DailyLog.objects.filter(member=member, payment='Bill', bills__isnull=True, visit_date__gt=timezone.now().date() - timedelta(days=31))
     guest_activity = DailyLog.objects.filter(guest_of=member, payment='Bill', guest_bills__isnull=True, visit_date__gte=timezone.now().date() - timedelta(days=31))
-    return render_to_response('members/user.html', {'user': user, 'member': member, 'activity': activity, 'guest_activity': guest_activity, 'settings': settings}, context_instance=RequestContext(request))
+    emergency_contact = user.get_emergency_contact()
+    return render_to_response('members/user.html', {'user': user, 'member': member, 'emergency_contact': emergency_contact, 'activity': activity, 
+                              'guest_activity': guest_activity, 'settings': settings}, context_instance=RequestContext(request))
 
 
 @login_required
@@ -158,7 +160,6 @@ def mail_message(request, id):
 @login_required
 def edit_profile(request, username):
     user = get_object_or_404(User, username=username)
-    member = user.get_profile()
 
     if request.method == 'POST':
         profile_form = EditProfileForm(request.POST, request.FILES)
@@ -166,13 +167,19 @@ def edit_profile(request, username):
             profile_form.save()
             return HttpResponseRedirect(reverse('members.views.user', kwargs={'username': user.username}))
     else:
-        profile_form = EditProfileForm(initial={'member_id': member.id, 'phone': member.phone, 'phone2': member.phone2, 'email2': member.email2,
-                                                'address1': member.address1, 'address2': member.address2, 'city': member.city, 'state': member.state, 'zipcode': member.zipcode,
-                                                'company_name': member.company_name, 'url_personal': member.url_personal, 'url_professional': member.url_professional,
-                                                'url_facebook': member.url_facebook, 'url_twitter': member.url_twitter,
-                                                'url_linkedin': member.url_linkedin, 'url_aboutme': member.url_aboutme, 'url_github': member.url_github,
-                                                'gender': member.gender, 'howHeard': member.howHeard, 'industry': member.industry, 'neighborhood': member.neighborhood,
-                                                'has_kids': member.has_kids, 'self_employed': member.self_employed})
+        profile = user.get_profile()
+        emergency_contact = user.get_emergency_contact()
+        profile_form = EditProfileForm(initial={'member_id': profile.id, 'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email,
+                                                'phone': profile.phone, 'phone2': profile.phone2, 'email2': profile.email2,
+                                                'address1': profile.address1, 'address2': profile.address2, 'city': profile.city, 'state': profile.state, 'zipcode': profile.zipcode,
+                                                'company_name': profile.company_name, 'url_personal': profile.url_personal, 'url_professional': profile.url_professional,
+                                                'url_facebook': profile.url_facebook, 'url_twitter': profile.url_twitter,
+                                                'url_linkedin': profile.url_linkedin, 'url_aboutme': profile.url_aboutme, 'url_github': profile.url_github,
+                                                'gender': profile.gender, 'howHeard': profile.howHeard, 'industry': profile.industry, 'neighborhood': profile.neighborhood,
+                                                'has_kids': profile.has_kids, 'self_employed': profile.self_employed,
+                                                'emergency_name': emergency_contact.name, 'emergency_relationship': emergency_contact.relationship, 
+                                                'emergency_phone': emergency_contact.phone, 'emergency_email': emergency_contact.email, 
+                                            })
 
     return render_to_response('members/edit_profile.html', {'user': user, 'profile_form': profile_form}, context_instance=RequestContext(request))
 

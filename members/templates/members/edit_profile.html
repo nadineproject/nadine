@@ -31,6 +31,26 @@ table td    {text-align: left;}
         <h3>Contact Information</h3>
         <table id="contact">
             <tr class="row-even">
+                <td><strong>First Name:</strong></td>
+                <td>{{ profile_form.first_name }}</td>
+                <td>{{ profile_form.first_name.errors }}</td>
+            </tr>
+            <tr class="row-odd">
+                <td><strong>Last Name:</strong></td>
+                <td>{{ profile_form.last_name }}</td>
+                <td>{{ profile_form.last_name.errors }}</td>
+            </tr>
+            <tr class="row-even">
+                <td>Primary Email Address:</td>
+                <td>{{ profile_form.email }}</td>
+                <td>{{ profile_form.email.errors }}</td>
+            </tr>
+            <tr class="row-odd">
+                <td>Alternate Email:</td>
+                <td>{{ profile_form.email2 }}</td>
+                <td>{{ profile_form.email2.errors }}</td>
+            </tr>
+            <tr class="row-even">
                 <td>Address 1:</td>
                 <td>{{ profile_form.address1 }}</td>
                 <td>{{ profile_form.address1.errors }}</td>
@@ -64,11 +84,6 @@ table td    {text-align: left;}
                 <td>Alternate Phone:</td>
                 <td>{{ profile_form.phone2 }}</td>
                 <td>{{ profile_form.phone2.errors }}</td>
-            </tr>
-            <tr class="row-odd">
-                <td>Alternate Email:</td>
-                <td>{{ profile_form.email2 }}</td>
-                <td>{{ profile_form.email2.errors }}</td>
             </tr>
         </table>
         
@@ -148,9 +163,33 @@ table td    {text-align: left;}
                 <td>{{ profile_form.gender }}</td>
                 <td width="300px">{{ profile_form.gender.errors }}</td>
             </tr>
-
         </table>
 
+        <h3>Emergency Contact Information</h3>
+        <a name="emergency_contact"></a>
+        <table id="otherinfo">
+            <tr class="row-even">
+                <td>Name:</td>
+                <td>{{ profile_form.emergency_name }}</td>
+                <td>{{ profile_form.emergency_name.errors }}</td>
+            </tr>
+            <tr class="row-even">
+                <td>Relationship:</td>
+                <td>{{ profile_form.emergency_relationship }}</td>
+                <td>{{ profile_form.emergency_relationship.errors }}</td>
+            </tr>
+            <tr class="row-even">
+                <td>Phone:</td>
+                <td>{{ profile_form.emergency_phone }}</td>
+                <td>{{ profile_form.emergency_phone.errors }}</td>
+            </tr>
+            <tr class="row-even">
+                <td>Email:</td>
+                <td>{{ profile_form.emergency_email }}</td>
+                <td>{{ profile_form.emergency_email.errors }}</td>
+            </tr>
+        </table>
+        
         <p align="center"><input type="submit" value="Update Your Profile" /></p>
         {% csrf_token %}
     </form>

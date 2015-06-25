@@ -10,6 +10,12 @@ from django_localflavor_us.us_states import STATE_CHOICES
 
 class EditProfileForm(forms.Form):
     member_id = forms.IntegerField(required=True, min_value=0, widget=forms.HiddenInput)
+
+    first_name = forms.CharField(max_length=100, required=True)
+    last_name = forms.CharField(max_length=100, required=True)
+    email = forms.EmailField(widget=forms.TextInput(attrs={'size': '50'}), required=True)
+    email2 = forms.EmailField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
+    
     address1 = forms.CharField(max_length=100, required=False)
     address2 = forms.CharField(max_length=100, required=False)
     city = forms.CharField(max_length=100, required=False)
@@ -17,7 +23,6 @@ class EditProfileForm(forms.Form):
     zipcode = forms.CharField(max_length=5, required=False)
     phone = forms.CharField(max_length=20, required=False)
     phone2 = forms.CharField(max_length=20, required=False)
-    email2 = forms.EmailField(max_length=100, required=False)
     company_name = forms.CharField(max_length=100, required=False)
     url_personal = forms.URLField(required=False)
     url_professional = forms.URLField(required=False)
@@ -33,40 +38,59 @@ class EditProfileForm(forms.Form):
     has_kids = forms.NullBooleanField(required=False)
     self_employed = forms.NullBooleanField(required=False)
 
+    emergency_name = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}), label="Name", required=False)
+    emergency_relationship = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}), label="Relationship", required=False)
+    emergency_phone = forms.CharField(widget=forms.TextInput(attrs={'size': '16'}), label="Phone", required=False)
+    emergency_email = forms.EmailField(widget=forms.TextInput(attrs={'size': '50'}), label="E-mail", required=False)
+
     def save(self):
         if not self.is_valid():
             raise Exception('The form must be valid in order to save')
 
         # Pull the profile to edit
         member_id = self.cleaned_data['member_id']
-        member = Member.objects.get(id=member_id)
-        if not member_id or not member:
+        profile = Member.objects.get(id=member_id)
+        if not member_id or not profile:
             raise Exception('Can not find profile to edit')
 
-        # Update all the fields
-        member.phone = self.cleaned_data['phone']
-        member.phone2 = self.cleaned_data['phone2']
-        member.email2 = self.cleaned_data['email2']
-        member.address1 = self.cleaned_data['address1']
-        member.address2 = self.cleaned_data['address2']
-        member.city = self.cleaned_data['city']
-        member.state = self.cleaned_data['state']
-        member.zipcode = self.cleaned_data['zipcode']
-        member.url_personal = self.cleaned_data['url_personal']
-        member.url_professional = self.cleaned_data['url_professional']
-        member.url_facebook = self.cleaned_data['url_facebook']
-        member.url_twitter = self.cleaned_data['url_twitter']
-        member.url_linkedin = self.cleaned_data['url_linkedin']
-        member.url_aboutme = self.cleaned_data['url_aboutme']
-        member.url_github = self.cleaned_data['url_github']
-        member.gender = self.cleaned_data['gender']
-        member.howHeard = self.cleaned_data['howHeard']
-        member.industry = self.cleaned_data['industry']
-        member.neighborhood = self.cleaned_data['neighborhood']
-        member.has_kids = self.cleaned_data['has_kids']
-        member.self_emplyed = self.cleaned_data['self_employed']
-        member.company_name = self.cleaned_data['company_name']
-
-        # Fire in the hole!
-        member.save()
-        return member
+        # User data
+        user = profile.user
+        user.first_name = self.cleaned_data['first_name']
+        user.last_name = self.cleaned_data['last_name']
+        user.email = self.cleaned_data['email']
+        user.save()
+        
+        # Profile data
+        profile.phone = self.cleaned_data['phone']
+        profile.phone2 = self.cleaned_data['phone2']
+        profile.email2 = self.cleaned_data['email2']
+        profile.address1 = self.cleaned_data['address1']
+        profile.address2 = self.cleaned_data['address2']
+        profile.city = self.cleaned_data['city']
+        profile.state = self.cleaned_data['state']
+        profile.zipcode = self.cleaned_data['zipcode']
+        profile.url_personal = self.cleaned_data['url_personal']
+        profile.url_professional = self.cleaned_data['url_professional']
+        profile.url_facebook = self.cleaned_data['url_facebook']
+        profile.url_twitter = self.cleaned_data['url_twitter']
+        profile.url_linkedin = self.cleaned_data['url_linkedin']
+        profile.url_aboutme = self.cleaned_data['url_aboutme']
+        profile.url_github = self.cleaned_data['url_github']
+        profile.gender = self.cleaned_data['gender']
+        profile.howHeard = self.cleaned_data['howHeard']
+        profile.industry = self.cleaned_data['industry']
+        profile.neighborhood = self.cleaned_data['neighborhood']
+        profile.has_kids = self.cleaned_data['has_kids']
+        profile.self_emplyed = self.cleaned_data['self_employed']
+        profile.company_name = self.cleaned_data['company_name']
+        profile.save()
+        
+        # Emergency Contact data
+        emergency_contact = user.get_emergency_contact()
+        emergency_contact.name=self.cleaned_data['emergency_name']
+        emergency_contact.relationship=self.cleaned_data['emergency_relationship']
+        emergency_contact.phone=self.cleaned_data['emergency_phone']
+        emergency_contact.email=self.cleaned_data['emergency_email']
+        emergency_contact.save()
+        
+        return profile

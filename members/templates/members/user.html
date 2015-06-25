@@ -87,9 +87,10 @@
         <ul>
             <li><a href="#tabs-0">Member Profile</a></li>
             <li><a href="#tabs-1">Private Details</a></li>
-            <li><a href="#tabs-2">Membership History</a></li>
-            <li><a href="#tabs-3">Daily Activity</a></li>
-            <li><a href="#tabs-4">Billing</a></li>
+            <li><a href="#tabs-2">Documents</a></li>
+            <li><a href="#tabs-3">Membership History</a></li>
+            <li><a href="#tabs-4">Daily Activity</a></li>
+            <li><a href="#tabs-5">Billing</a></li>
         </ul>
     
     <div id="tabs-0">
@@ -98,7 +99,10 @@
     </div>
     
     <div id="tabs-1">
-        <h3>Private Details</h3>
+        <h3>
+            Private Details
+            (<a href="{% url 'members.views.edit_profile' user.username %}">edit</a>)
+        </h3>
         <table>
             <!-- Username -->
             <tr>
@@ -212,17 +216,54 @@
             {% endif %}
         </table>
         
-        {% if user.profile.has_file_uploads %}
-            <h3>Private Documents</h3>
-            <ul>
-            {% for f in user.profile.file_uploads %}
-                <li><a href="{% url 'members.views.file_view' 'inline' f.user f.name     %}">{{ f.name }}</a></li>
-            {% endfor %}
-            </ul>
+        <h3>
+            Emergency Contact 
+            (<a href="{% url 'members.views.edit_profile' user.username %}#emergency_contact">edit</a>)
+        </h3>
+        {% if not emergency_contact.name %}
+            <p style="font-style: italic; color:red; padding-left: 2em;">No Emergency Contact Information</p>
+        {% else %}
+            <table>
+                <tr>
+                    <td>Name</td>
+                    <td>{{ emergency_contact.name }}</td>
+                </tr>
+                <tr>
+                    <td>Relationship</td>
+                    <td>{{ emergency_contact.relationship }}</td>
+                </tr>
+                <tr>
+                    <td>Phone</td>
+                    <td>{{ emergency_contact.phone }}</td>
+                </tr>
+                <tr>
+                    <td>E-mail</td>
+                    <td>{{ emergency_contact.email }}</td>
+                </tr>
+            </table>
         {% endif %}
+        
+        
     </div>
     
     <div id="tabs-2">
+        {% if user.profile.has_file_uploads %}
+            <h3>Private Documents</h3>
+            <table>
+            {% for f in user.profile.file_uploads %}
+                <tr>
+                    <td>{{ f.uploadTS }}</td>
+                    <!--<td>{{ f.document_type }}</td>-->
+                    <td>
+                        <a href="{% url 'members.views.file_view' 'inline' f.user f.name     %}">{{ f.name }}</a>
+                    </td>
+                <tr>
+            {% endfor %}
+            </table>
+        {% endif %}
+    </div>
+    
+    <div id="tabs-3">
         <h3>Membership History</h3>
         {% if user.profile.memberships.all %}
         <table>
@@ -248,7 +289,7 @@
         {% endif %}     
     </div>
 
-    <div id="tabs-3">
+    <div id="tabs-4">
         {% if member.is_active %}
             <h3>Visits This Cycle</h3>
             <div style="font-weight:bold; padding-left:1em; font-size:120%">
@@ -309,7 +350,7 @@
   </div>
 
 
-    <div id="tabs-4">
+    <div id="tabs-5">
         <h3>Billing Profile</h3>
         <table width="65%">
         <tr>
