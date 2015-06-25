@@ -106,6 +106,11 @@ class MemberEditForm(forms.Form):
     self_employed = forms.NullBooleanField(required=False)
     photo = forms.ImageField(required=False)
 
+    emergency_name = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}), label="Emergency Contact", required=False)
+    emergency_relationship = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}), label="Relationship", required=False)
+    emergency_phone = forms.CharField(widget=forms.TextInput(attrs={'size': '16'}), label="Phone", required=False)
+    emergency_email = forms.EmailField(widget=forms.TextInput(attrs={'size': '50'}), label="E-mail", required=False)
+    
     def save(self):
         "Creates the User and Member records with the field data and returns the user"
         if not self.is_valid():
@@ -146,6 +151,13 @@ class MemberEditForm(forms.Form):
         if self.cleaned_data['photo']:
             profile.photo = self.cleaned_data['photo']
         profile.save()
+        
+        emergency_contact = user.get_emergency_contact()
+        emergency_contact.name=self.cleaned_data['emergency_name']
+        emergency_contact.relationship=self.cleaned_data['emergency_relationship']
+        emergency_contact.phone=self.cleaned_data['emergency_phone']
+        emergency_contact.email=self.cleaned_data['emergency_email']
+        emergency_contact.save()
 
 class DailyLogForm(forms.Form):
     member_list = Member.objects.all()

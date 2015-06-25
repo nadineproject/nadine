@@ -235,6 +235,32 @@ function gotoEmailReset(emailAddress){
             </tr>
         {% endif %}
     </table>
+    
+    <div style="padding-top: 1em;">
+    <strong>Emergency Contact</strong>
+    {% if not emergency_contact.name %}
+        <p style="font-style: italic; color:red; padding-left: 2em;">No Emergency Contact Information</p>
+    {% else %}
+        <table>
+            <tr>
+                <td>Name</td>
+                <td>{{ emergency_contact.name }}</td>
+            </tr>
+            <tr>
+                <td>Relationship</td>
+                <td>{{ emergency_contact.relationship }}</td>
+            </tr>
+            <tr>
+                <td>Phone</td>
+                <td>{{ emergency_contact.phone }}</td>
+            </tr>
+            <tr>
+                <td>E-mail</td>
+                <td>{{ emergency_contact.email }}</td>
+            </tr>
+        </table>
+    {% endif %}
+    </div>
 </div>
 
 <div id="tabs-1">

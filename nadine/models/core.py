@@ -599,6 +599,7 @@ post_save.connect(user_save_callback, sender=User)
 # Add some handy methods to Django's User object
 User.get_profile = lambda self: Member.objects.get_or_create(user=self)[0]
 User.get_absolute_url = lambda self: Member.objects.get(user=self).get_absolute_url()
+User.get_emergency_contact = lambda self: EmergencyContact.objects.get_or_create(user=self)[0]
 User.profile = property(User.get_profile)
 
 @receiver(post_save, sender=Member)
@@ -619,18 +620,18 @@ def size_images(sender, instance, **kwargs):
         image.close()
 
 
-#class EmergencyContact(models.Model):
-#    user = models.OneToOneField(User, blank=False)
-#    name = models.CharField(max_length=254, blank=True)
-#    relationship = models.CharField(max_length=254, blank=True)
-#    phone = PhoneNumberField(blank=True, null=True)
-#    email = models.EmailField(blank=True, null=True)
-#    last_updated = models.DateTimeField(auto_now_add=True)
+class EmergencyContact(models.Model):
+    user = models.OneToOneField(User, blank=False)
+    name = models.CharField(max_length=254, blank=True)
+    relationship = models.CharField(max_length=254, blank=True)
+    phone = PhoneNumberField(blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
+    last_updated = models.DateTimeField(auto_now_add=True)
 
-#def emergency_callback_save_callback(sender, **kwargs):
-#    contact = kwargs['instance']
-#    contact.last_updated = timezone.now()
-#pre_save.connect(emergency_callback_save_callback, sender=EmergencyContact)
+def emergency_callback_save_callback(sender, **kwargs):
+    contact = kwargs['instance']
+    contact.last_updated = timezone.now()
+pre_save.connect(emergency_callback_save_callback, sender=EmergencyContact)
 
 
 class DailyLog(models.Model):

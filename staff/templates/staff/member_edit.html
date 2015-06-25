@@ -25,7 +25,12 @@ nav #members-tab { background: #FBD850; color: black; }
 	<form enctype="multipart/form-data" action='.' method='post'>
 	   <table id="member-edit">
 	      {% for field in edit_form %}
-	         <tr class="{% cycle 'row-even' 'row-odd' %}">
+            {% if field.label == 'Emergency Contact' %}
+               <tr class="row-even">
+                  <th colspan="3" style="text-align:center;">---Emergency Contact Information ---</th>
+               </tr>
+            {% endif %}
+	         <tr class="{% cycle 'row-odd' 'row-even' %}">
 	            <td>{{ field.label_tag }}</td>
 	            <td style="text-align:left;">
                   {{ field }}
@@ -39,7 +44,7 @@ nav #members-tab { background: #FBD850; color: black; }
 	         </tr>
 	      {% endfor %}
 	      <tr>
-				<td colspan="3" style="text-align: center;">
+				<td  class="row-even" colspan="3" style="text-align: center;">
 					<button type="submit">Save Changes</button>
 					<button onclick="window.location='{% url 'staff.views.member_detail' member.id %}'; return false;">Cancel</button>
 				</td>

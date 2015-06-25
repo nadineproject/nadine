@@ -123,6 +123,7 @@ def member_edit(request, username):
             messages.add_message(request, messages.INFO, "Member Updated")
             return HttpResponseRedirect(reverse('staff.views.member_detail_user', args=[], kwargs={'username': username}))
     else:
+        emergency_contact = user.get_emergency_contact()
         member_data={'username': username,
             'first_name': user.first_name,
             'last_name': user.last_name,
@@ -150,6 +151,10 @@ def member_edit(request, username):
             'has_kids': user.profile.has_kids,
             'self_employed': user.profile.self_employed,
             'photo': user.profile.photo,
+            'emergency_name': emergency_contact.name,
+            'emergency_relationship': emergency_contact.relationship,
+            'emergency_phone': emergency_contact.phone,
+            'emergency_email': emergency_contact.email,
         }
         edit_form = MemberEditForm(initial=member_data)
     
@@ -653,6 +658,7 @@ def member_detail_user(request, username):
 def member_detail(request, member_id):
     member = get_object_or_404(Member, pk=member_id)
     #daily_logs = DailyLog.objects.filter(member=member).order_by('visit_date').reverse()
+    emergency_contact = member.user.get_emergency_contact()
     memberships = Membership.objects.filter(member=member).order_by('start_date').reverse()
     email_logs = SentEmailLog.objects.filter(member=member).order_by('created').reverse()
 
@@ -677,7 +683,8 @@ def member_detail(request, member_id):
     email_keys = email.valid_message_keys()
     email_keys.remove("all")
 
-    return render_to_response('staff/member_detail.html', {'member': member, 'memberships': memberships, 'email_logs': email_logs, 'email_keys': email_keys, 'settings': settings}, context_instance=RequestContext(request))
+    return render_to_response('staff/member_detail.html', {'member': member, 'emergency_contact': emergency_contact,
+        'memberships': memberships, 'email_logs': email_logs, 'email_keys': email_keys, 'settings': settings}, context_instance=RequestContext(request))
 
 
 def date_range_from_request(request):
