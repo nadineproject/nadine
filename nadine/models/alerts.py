@@ -72,6 +72,9 @@ class MemberAlertManager(models.Manager):
                     MemberAlert.objects.create(user=user, key=MemberAlert.RETURN_DOOR_KEY)
                     new_alerts = True
             if last_membership.has_desk:
+                if MemberAlert.ASSIGN_CABINET in open_alerts:
+                    # We never assigned a mailbox so we can just resolve that now
+                    user.profile.resolve_alerts(MemberAlert.ASSIGN_CABINET)
                 if not MemberAlert.objects.filter(user=user, key=MemberAlert.RETURN_DESK_KEY, created_ts__gte=last_membership.start_date):
                     MemberAlert.objects.create(user=user, key=MemberAlert.RETURN_DESK_KEY)
                     new_alerts = True
@@ -138,6 +141,15 @@ class MemberAlertManager(models.Manager):
                     MemberAlert.objects.create(user=user, key=MemberAlert.KEY_AGREEMENT)
 
         # Assign a mailbox if this membership comes with mail
+        if new_membership.has_desk:
+            if MemberAlert.RETURN_DESK_KEY in open_alerts:
+                # No need to return the key since their new membership has a desk
+                user.profile.resolve_alerts(MemberAlert.RETURN_DESK_KEY)
+            else:
+                if not MemberAlert.ASSIGN_CABINET in open_alerts:
+                    MemberAlert.objects.create(user=user, key=MemberAlert.ASSIGN_CABINET)
+
+        # Assign a mailbox if this membership comes with mail
         if new_membership.has_mail:
             if MemberAlert.REMOVE_MAILBOX in open_alerts:
                 # No need to remove the mailbox since their new membership has mail
@@ -185,6 +197,7 @@ class MemberAlert(models.Model):
     KEY_AGREEMENT = "key_agreement"
     STALE_MEMBER = "stale_member"
     #INVALID_BILLING = "invalid_billing"
+    ASSIGN_CABINET = "assign_cabinet"
     ASSIGN_MAILBOX = "assign_mailbox"
     REMOVE_PHOTO = "remove_photo"
     RETURN_DOOR_KEY = "return_door_key"
@@ -202,10 +215,11 @@ class MemberAlert(models.Model):
         (KEY_AGREEMENT, "Key Training & Agreement"),
         (STALE_MEMBER, "Stale Membership"),
         #(INVALID_BILLING, "Missing Valid Billing"),
+        (ASSIGN_CABINET, "Assign a File Cabinet"),
         (ASSIGN_MAILBOX, "Assign a Mailbox"),
         (REMOVE_PHOTO, "Remove Picture from Wall"),
         (RETURN_DOOR_KEY, "Take Back Keycard"),
-        (RETURN_DESK_KEY, "Take Back Roller Drawer Key"),
+        (RETURN_DESK_KEY, "Take Back File Cabinet Key"),
         (REMOVE_MAILBOX, "Remove Mailbox"),
     )
 
