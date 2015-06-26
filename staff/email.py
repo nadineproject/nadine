@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 def valid_message_keys():
     return ["all", "introduction", "newsletter", "new_membership", "first_day_checkin",
             "exit_survey", "member_survey", "no_return", "checkin", "invalid_billing", "new_key",
-            "no_signin", "no_device"]
+            "no_signin", "no_device", "edit_profile"]
 
 
 def send_manual(user, message):
@@ -48,6 +48,8 @@ def send_manual(user, message):
         send_no_device(user)
     if message == "new_key" or message == "all":
         send_new_key(user)
+    if message == "edit_profile" or message == "all":
+        send_edit_profile(user)
     return True
 
 #####################################################################
@@ -148,6 +150,12 @@ def send_contact_request(user, target):
     subject = "%s: %s wants to connect!" % (site.name, user.get_full_name())
     message = render_to_string('email/contact_request.txt', {'user': user, 'target': target, 'site': site})
     send(target.email, subject, message)
+
+def send_edit_profile(user):
+    site = Site.objects.get_current()
+    subject = "Please update your Nadine profile" 
+    message = render_to_string('email/edit_profile.txt', {'user': user, 'site': site})
+    send(user.email, subject, message)
 
 #####################################################################
 #                        System Alerts

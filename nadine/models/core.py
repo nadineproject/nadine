@@ -404,6 +404,27 @@ class Member(models.Model):
             else:
                 return None
 
+    def duration(self):
+        return timezone.now().date() - self.first_visit()
+    
+    def duration_str(self):
+        monthdelta, timedelta = monthmod(self.first_visit(), timezone.now().date())
+        months = monthdelta.months
+        days = timedelta.days
+        years = months/12
+        month_remainder = months - (years * 12)
+        retval = ""
+        if months < 12:
+            retval ="%d months" % months
+        else:
+            if years == 1 :
+                retval = "1 year"
+            elif years > 1:
+                retval = "%d years" % years
+            if month_remainder > 1:
+                retval += " and %d months" % month_remainder
+        return retval
+
     def host_daily_logs(self):
         return DailyLog.objects.filter(guest_of=self).order_by('-visit_date')
 
