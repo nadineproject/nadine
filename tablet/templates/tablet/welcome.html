@@ -18,9 +18,9 @@
 	</div>
 	{% endif %}
 	<div style="font-size:150%;">
-        {% autoescape off %}
-		{{ motd }}
-        {% endautoescape %}
+		{% autoescape off %}
+			{{ motd.message }}
+		{% endautoescape %}
 		<p style="padding-left:3em;">
 			-- The Office Nomads Team
 		</p>
@@ -53,6 +53,7 @@
 	});
 	</script>
 	<script>
-		setTimeout(function () {window.location.href = "{% url 'tablet.views.members' %}"; }, {{timeout}}); //will call the function after 5 secs.
+		//will call the function after 5 secs
+		setTimeout(function () { window.location.href = "{% url 'tablet.views.members' %}"; }, {{ motd.delay_ms }});
 	</script>
 {% endblock %}

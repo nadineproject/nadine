@@ -19,6 +19,7 @@ from django.utils import timezone
 from nadine import mailgun
 from nadine.models.core import Member, DailyLog, FileUpload
 from nadine.models.payment import Bill
+from members.models import MOTD
 from staff.forms import NewUserForm, MemberSearchForm
 from arpwatch import arp
 from staff import email
@@ -176,10 +177,10 @@ def welcome(request, username):
                 usage_color = "orange"
             else:
                 usage_color = "green"
-    motd = settings.MOTD
-    timeout = settings.MOTD_TIMEOUT
+    motd = MOTD.objects.for_today()
+    print motd
     return render_to_response('tablet/welcome.html', {'user': user, 'member': member, 'membership': membership,
-                                                      'motd': motd, 'timeout': timeout, 'usage_color': usage_color}, context_instance=RequestContext(request))
+                                                      'motd': motd, 'usage_color': usage_color}, context_instance=RequestContext(request))
 
 
 def document_list(request, username):
