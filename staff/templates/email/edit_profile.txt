@@ -1,7 +1,7 @@
 {% load i18n %}{% autoescape off %}
 Hi {{ user.first_name }},
 
-You have been a coming to {{ site.name }} for {{ user.profile.duration_str }}!  In an effort to keep our data up to date we would like to encourage you to update your Nadine profile, and emergency contact information. It's easy to edit. Just log in to Nadine and go to your profile. There is a link to Nadine on our website or you can use the link below.
+You have been a coming to {{ site.name }} for {{ user.profile.duration_str }} now!  In an effort to keep our data up to date we would like to encourage you to update your Nadine profile and emergency contact information. It's easy to edit. Go to the "Member Login" link on our website or use the one below.
 
 https://{{ site.domain }}{% url 'members.views.profile_redirect' %}
 
