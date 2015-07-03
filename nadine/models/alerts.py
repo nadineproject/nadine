@@ -17,12 +17,21 @@ from nadine import mailgun
 
 logger = logging.getLogger(__name__)
 
-# Exiting members is defined by a specific window.  If a new membership
-# is added within this window then it is a change not an exit.
-# This is the amount of days before and after that create our window.
-EXITING_MEMBER_WINDOW = 4
-
 class MemberAlertManager(models.Manager):
+
+    def create_if_not_open(self, user, key):
+        unresolved = self.filter(user=user, key=key, resolved_ts__isnull=True, muted_ts__isnull=True)
+        if unresolved.count() == 0:
+            MemberAlert.objects.create(user=user, key=key)
+            return True
+        return False
+        
+    def create_if_new(self, user, key, new_since):
+        old_alerts = MemberAlert.objects.filter(user=user, key=key, created_ts__gte=new_since)
+        if old_alerts.count() == 0:
+            MemberAlert.objects.create(user=user, key=key)
+            return True
+        return False
 
     def unresolved(self, key, active_only=True):
         unresolved = self.filter(key=key, resolved_ts__isnull=True, muted_ts__isnull=True)
@@ -34,20 +43,21 @@ class MemberAlertManager(models.Manager):
         return unresolved
 
     def trigger_periodic_check(self):
-        # Check for exiting members (3 days back, 3 days forward)
-        exiting_members = Member.objects.exiting_members(EXITING_MEMBER_WINDOW)
+        # Check for exiting members in the coming week
+        exit_date = timezone.now() + timedelta(days=5)
+        exiting_members = Member.objects.exiting_members(exit_date)
         for m in exiting_members:
-            start = timezone.now() - timedelta(days=EXITING_MEMBER_WINDOW)
             # Only trigger exiting membership if no exit alerts were created in the last week
+            start = timezone.now() - timedelta(days=5)
             if MemberAlert.objects.filter(user=m.user, key__in=MemberAlert.PERSISTENT_ALERTS, created_ts__gte=start).count() == 0:
-                self.trigger_exiting_membership(m.user)
+                self.trigger_exiting_membership(m.user, exit_date)
 
         # Check for stale membership
         smd = Member.objects.stale_member_date()
         for m in Member.objects.stale_members():
             existing_alerts = MemberAlert.objects.filter(user=m.user, key=MemberAlert.STALE_MEMBER, created_ts__gte=smd)
             if not existing_alerts:
-                MemberAlert.objects.create(user=m.user, key=MemberAlert.STALE_MEMBER)
+                MemberAlert.objects.create_if_not_open(user=m.user, key=MemberAlert.STALE_MEMBER)
 
         # Expire old and unresolved alerts
         #active_users = Member.objects.active_users()
@@ -60,29 +70,31 @@ class MemberAlertManager(models.Manager):
         #			if not alert.user in active_users:
         #				alert.mute(None, note="membership ended")
 
-    def trigger_exiting_membership(self, user):
+    def trigger_exiting_membership(self, user, day=None):
+        if day == None:
+            day = timezone.now()
+
         new_alerts = False
         open_alerts = user.profile.alerts_by_key(include_resolved=False)
         
         # Key?  Let's get it back!
-        last_membership = user.profile.last_membership()
-        if last_membership:
-            if last_membership.has_key:
-                if not MemberAlert.objects.filter(user=user, key=MemberAlert.RETURN_DOOR_KEY, created_ts__gte=last_membership.start_date):
-                    MemberAlert.objects.create(user=user, key=MemberAlert.RETURN_DOOR_KEY)
+        membership = user.profile.membership_for_day(day)
+        if membership:
+            if membership.has_key:
+                if MemberAlert.objects.create_if_new(user, MemberAlert.RETURN_DOOR_KEY, membership.start_date):
                     new_alerts = True
-            if last_membership.has_desk:
+            if membership.has_desk:
                 if MemberAlert.ASSIGN_CABINET in open_alerts:
                     # We never assigned a mailbox so we can just resolve that now
                     user.profile.resolve_alerts(MemberAlert.ASSIGN_CABINET)
-                if not MemberAlert.objects.filter(user=user, key=MemberAlert.RETURN_DESK_KEY, created_ts__gte=last_membership.start_date):
+                if not MemberAlert.objects.filter(user=user, key=MemberAlert.RETURN_DESK_KEY, created_ts__gte=membership.start_date):
                     MemberAlert.objects.create(user=user, key=MemberAlert.RETURN_DESK_KEY)
                     new_alerts = True
-            if last_membership.has_mail:
+            if membership.has_mail:
                 if MemberAlert.ASSIGN_MAILBOX in open_alerts:
                     # We never assigned a mailbox so we can just resolve that now
                     user.profile.resolve_alerts(MemberAlert.ASSIGN_MAILBOX)
-                elif not MemberAlert.objects.filter(user=user, key=MemberAlert.REMOVE_MAILBOX, created_ts__gte=last_membership.start_date):
+                elif not MemberAlert.objects.filter(user=user, key=MemberAlert.REMOVE_MAILBOX, created_ts__gte=membership.start_date):
                     MemberAlert.objects.create(user=user, key=MemberAlert.REMOVE_MAILBOX)
                     new_alerts = True
         
@@ -90,13 +102,15 @@ class MemberAlertManager(models.Manager):
         if user.profile.photo:
             if MemberAlert.POST_PHOTO in open_alerts:
                 user.profile.resolve_alerts(MemberAlert.POST_PHOTO)
-            elif not MemberAlert.objects.filter(user=user, key=MemberAlert.REMOVE_PHOTO, created_ts__gte=last_membership.start_date):
+            elif not MemberAlert.objects.filter(user=user, key=MemberAlert.REMOVE_PHOTO, created_ts__gte=membership.start_date):
                 MemberAlert.objects.create(user=user, key=MemberAlert.REMOVE_PHOTO)
                 new_alerts = True
         
         # Send an email to the team announcing their exit
         if new_alerts:
-            mailgun.send_manage_member(user, subject="Exiting Member")
+            end = membership.end_date
+            subject = "Exiting Member: %s/%s/%s" % (end.month, end.day, end.year)
+            mailgun.send_manage_member(user, subject=subject)
 
 
     def trigger_new_membership(self, user):
@@ -293,9 +307,8 @@ def membership_callback(sender, **kwargs):
     if created:
         MemberAlert.objects.trigger_new_membership(membership.member.user)
     else:
-        # If this membership has an end date that puts it outside our exiting membership window
-        # we are going to go straight to the exiting member logic from here
-        window_start = timezone.now() - timedelta(days=EXITING_MEMBER_WINDOW)
+        # If this membership is older then a week we'll go straight to exiting member logic
+        window_start = timezone.now() - timedelta(days=5)
         if membership.end_date and membership.end_date < window_start.date():
             MemberAlert.objects.trigger_exiting_membership(membership.member.user)
 post_save.connect(membership_callback, sender=Membership)

@@ -155,12 +155,17 @@ class MemberManager(models.Manager):
     def daily_members(self):
         return self.active_members().exclude(id__in=self.members_with_desks())
 
-    def exiting_members(self, day_window):
-        from_day = timezone.now() - timedelta(days=day_window)
-        to_day = timezone.now() + timedelta(days=day_window)
-        ending = Membership.objects.filter(end_date__gte=from_day, end_date__lte=to_day)
-        starting = Membership.objects.filter(start_date__gte=from_day, start_date__lte=to_day, end_date__isnull=True)
-        exiting = ending.exclude(member__in=starting.values('member'))
+    def exiting_members(self, day=None):
+        if day == None:
+            day = timezone.now()
+        next_day = day + timedelta(days=1)
+
+        # Exiting members are here today and gone tomorrow.  Pull up all the active
+        # memberships for today and remove the list of active members tomorrow.
+        today_memberships = Membership.objects.active_memberships(day)
+        tomorrow_memberships = Membership.objects.active_memberships(next_day)
+        exiting = today_memberships.exclude(member__in=tomorrow_memberships.values('member'))
+        
         return Member.objects.filter(id__in=exiting.values('member'))
 
     def stale_member_date(self):
@@ -364,6 +369,9 @@ class Member(models.Model):
             if membership.is_active():
                 return membership
         return None
+
+    def membership_for_day(self, day):
+        return Membership.objects.active_memberships(target_date=day).filter(member=self).first()
 
     def activity_this_month(self, test_date=None):
         if not test_date:
