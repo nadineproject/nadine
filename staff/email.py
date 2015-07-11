@@ -206,6 +206,13 @@ def announce_bad_email(user):
     send_quietly(settings.TEAM_EMAIL_ADDRESS, subject, message)
 
 
+def announce_anniversary(user):
+    subject = "Anniversary - %s" % (user.get_full_name())
+    duration = user.profile.duration_str()
+    message = "Team,\r\n\r\n \t%s has been with us now for %s! %s" % (user.get_full_name(), duration, team_signature(user))
+    send_quietly(settings.TEAM_EMAIL_ADDRESS, subject, message)
+
+
 def manage_member_email(user):
     subject = "Email Problem - %s" % (user.get_full_name())
     c = Context({

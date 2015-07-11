@@ -81,6 +81,14 @@ def make_backup():
 
 
 @shared_task
+def anniversary_checkin():
+    from nadine.models.core import Member
+    for m in Member.objects.active_members():
+        if m.duration().days % 365 == 0:
+            email.announce_anniversary(m.user)
+            email.send_edit_profile(m.user)
+
+@shared_task
 def send_notifications():
     here_today = arp.users_for_day()
     for n in UserNotification.objects.filter(sent_date__isnull=True):
