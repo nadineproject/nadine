@@ -88,6 +88,16 @@ def anniversary_checkin():
             email.announce_anniversary(m.user)
             email.send_edit_profile(m.user)
 
+
+@shared_task
+def announce_special_days():
+    from nadine.models.core import Member
+    for m in Member.objects.active_members():
+        for sd in SpecialDay.objects.filter(member=m):
+            if sd.month == today.month and sd.day == today.day:
+                email.announce_special_day(m.user, sd)
+
+
 @shared_task
 def send_notifications():
     here_today = arp.users_for_day()

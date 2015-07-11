@@ -213,6 +213,12 @@ def announce_anniversary(user):
     send_quietly(settings.TEAM_EMAIL_ADDRESS, subject, message)
 
 
+def announce_special_day(user, special_day):
+    subject = "Special Day - %s" % (user.get_full_name())
+    message = "Team,\r\n\r\n \tToday is a special day for %s. Today is their %s! %s" % (user.get_full_name(), special_day.description.lower(), team_signature(user))
+    send_quietly(settings.TEAM_EMAIL_ADDRESS, subject, message)
+
+
 def manage_member_email(user):
     subject = "Email Problem - %s" % (user.get_full_name())
     c = Context({
