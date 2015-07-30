@@ -1,5 +1,8 @@
-import datetime
 import os
+import datetime
+
+ROOT = os.path.dirname(os.path.abspath(__file__))
+path = lambda *a: os.path.join(ROOT, *a)
 
 PRODUCTION = False
 DEBUG = True
@@ -38,6 +41,10 @@ USA_EPAY_PIN2 = '1234'
 MAILCHIMP_API_KEY = "goMonkeygo"
 MAILCHIMP_NEWSLETTER_KEY = "melikekey"
 MAILCHIMP_WEBHOOK_KEY = "hookedonhooks"
+
+XERO_CONSUMER_KEY = "secretkey"
+XERO_PRIVATE_KEY = "/keys/xero_private.pem"
+XERO_API_URL = "https://api.xero.com/api.xro/2.0/"
 
 DISCOURSE_BASE_URL = 'http://your-discourse-site.com'
 DISCOURSE_SSO_SECRET = 'paste_your_secret_here'

@@ -11,7 +11,6 @@ django-tastypie==0.12.1
 mailchimp==2.0.9
 MonthDelta==1.0b0
 py4j==0.8.2.1
-pycrypto==2.6.1
 pytz==2015.4
 requests==2.7.0
 django-easy-pdf==0.1.0
@@ -20,3 +19,11 @@ xhtml2pdf>=0.0.6
 reportlab>=2.7,<3
 feedparser
 pip-tools
+
+# TODO - Evaluate use of this library 
+pycrypto==2.6.1
+
+# Libraries for Xero
+pyxero==0.7.0
+cryptography==0.9.3
+PyJWT==1.4.0

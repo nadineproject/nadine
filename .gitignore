@@ -20,3 +20,4 @@ media/arp/import.log
 celerybeat-schedule.db
 django.log
 databases
+xero_privatekey.pem
