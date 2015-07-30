@@ -42,9 +42,13 @@ MAILCHIMP_API_KEY = "goMonkeygo"
 MAILCHIMP_NEWSLETTER_KEY = "melikekey"
 MAILCHIMP_WEBHOOK_KEY = "hookedonhooks"
 
+# Xero Integration Settings
+# Generate an RSA key and register it with Xero as a private application.
+# openssl genrsa -out privatekey.pem 1024
+# openssl req -new -x509 -key privatekey.pem -out publickey.cer -days 1825
+# openssl pkcs12 -export -out public_privatekey.pfx -inkey privatekey.pem -in publickey.cer
 XERO_CONSUMER_KEY = "secretkey"
-XERO_PRIVATE_KEY = "/keys/xero_private.pem"
-XERO_API_URL = "https://api.xero.com/api.xro/2.0/"
+XERO_PRIVATE_KEY = "/keys/privatekey.pem"
 
 DISCOURSE_BASE_URL = 'http://your-discourse-site.com'
 DISCOURSE_SSO_SECRET = 'paste_your_secret_here'
