@@ -3,27 +3,32 @@ Pillow==2.9.0
 psycopg2==2.6.1
 celery==3.1.18
 django-celery==3.1.16
-django-debug-toolbar==1.3.2
 django-localflavor-us==1.1
-django-taggit==0.16.1
+django-taggit==0.16.2
 django-taggit-templatetags==0.4.6dev
-django-tastypie==0.12.1
 mailchimp==2.0.9
 MonthDelta==1.0b0
 py4j==0.8.2.1
 pytz==2015.4
 requests==2.7.0
-django-easy-pdf==0.1.0
-django-jsignature==0.8
+
+# For document signing
+# Newer versions may not work so be cautious when upgrading
 xhtml2pdf>=0.0.6
 reportlab>=2.7,<3
-feedparser
-pip-tools
+django-easy-pdf==0.1.0
+django-jsignature==0.8
 
-# TODO - Evaluate use of this library 
-pycrypto==2.6.1
+# A few handy tools
+django-debug-toolbar
+pip-tools
 
 # Libraries for Xero
 pyxero==0.7.0
 cryptography==0.9.3
 PyJWT==1.4.0
+
+# TODO - Evaluate use of these libraries 
+feedparser
+pycrypto==2.6.1
+django-tastypie==0.12.1
