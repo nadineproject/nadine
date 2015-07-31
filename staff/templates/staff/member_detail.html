@@ -66,6 +66,7 @@ function gotoEmailReset(emailAddress){
         <a href="{% url 'staff.views.member_files' member.id %}">files</a> |
         <a href="{% url 'members.views.user' member.user.username %}">profile</a> |
         <a href="{% url 'staff.views.usaepay_user' member.user.username %}">usaepay</a> |
+        <a href="{% url 'staff.views.xero_user' member.user.username %}">xero</a> |
         <a href="{% url 'admin:auth_user_change' member.user.id %}">admin</a> |
         <!--<a href="{% url 'admin:auth_user_change' member.user.id %}history/">change history</a> | -->
         <a href="{% url 'staff.views.member_edit' member.user.username %}">edit member</a> |

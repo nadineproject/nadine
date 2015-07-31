@@ -4,6 +4,8 @@ from xero.auth import PrivateCredentials
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
+from nadine.models.core import XeroContact
+
 XERO_ERROR_MESSAGES = {
     'no_key': 'Please set your XERO_CONSUMER_KEY setting.',
     'no_secret': 'Please set your XERO_PRIVATE_KEY setting. Must be a path to your privatekey.pem',
@@ -22,8 +24,8 @@ def test_xero_connection():
     return False
 
 class XeroAPI:
+    
     def __init__(self):
-
         consumer_key = getattr(settings, 'XERO_CONSUMER_KEY', None)
         if consumer_key is None:
             raise ImproperlyConfigured(XERO_ERROR_MESSAGES['no_key'])
@@ -39,11 +41,27 @@ class XeroAPI:
         self.xero = Xero(self.credentials)
 
     def get_all_contacts(self):
-        xero = self.xero
-        return xero.contacts.all()
-    
+        return self.xero.contacts.all()
+
+    def find_contacts(self, user):
+        return self.xero.contacts.filter(Name__contains=user.last_name)
+
+    def get_contact(self, user):
+        xero_contact = XeroContact.objects.filter(user=user).first()
+        if xero_contact:
+            search = self.xero.contacts.get(xero_contact.xero_id)
+            if search and len(search) == 1:
+                return search[0]
+        return None
+
+    def save_contact(self, user):
+        contact_data = self.get_contact(user)
+        # TODO fill contact data with data from user
+        # This is just a test --JLS
+        self.xero.contacts.save_or_put(contact_data)
+
     def create_invoice(self):
-        # Clearly jsut a test -- JLS
+        # Clearly just a test -- JLS
         xero = self.xero
         invoice = {
                     u'Status': u'DRAFT',

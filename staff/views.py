@@ -26,6 +26,7 @@ from py4j.java_gateway import JavaGateway
 from nadine.models.core import *
 from nadine.models.payment import *
 from nadine.models.alerts import *
+from nadine.xero_api import XeroAPI
 from staff.forms import *
 from staff import billing, user_reports, email, usaepay
 from arpwatch import arp
@@ -949,6 +950,25 @@ def usaepay_user(request, username):
             error = 'Could not pull customers!'
 
     return render_to_response('staff/usaepay.html', {'username': username, 'error': error, 'customers': customers}, context_instance=RequestContext(request))
+
+
+@staff_member_required
+def xero_user(request, username):
+    user = get_object_or_404(User, username=username)
+    xero_contact = XeroContact.objects.filter(user=user).first()
+    if request.method == 'POST':
+        if 'xero_id' in request.POST:
+            xero_id = request.POST.get('xero_id')
+            if xero_contact:
+                xero_contact.xero_id = xero_id
+                xero_contact.save()
+            else:
+                xero_contact = XeroContact.objects.create(user=user, xero_id=xero_id)
+    xero_contact_search = None
+    if not xero_contact:
+        xero_api = XeroAPI()
+        xero_contact_search = xero_api.find_contacts(user)
+    return render_to_response('staff/xero.html', {'user': user, 'xero_contact': xero_contact, 'xero_contact_search': xero_contact_search}, context_instance=RequestContext(request))
 
 
 @staff_member_required

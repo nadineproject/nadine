@@ -663,6 +663,14 @@ def emergency_callback_save_callback(sender, **kwargs):
 pre_save.connect(emergency_callback_save_callback, sender=EmergencyContact)
 
 
+class XeroContact(models.Model):
+    user = models.OneToOneField(User, related_name="xero_contact")
+    xero_id = models.CharField(max_length=64)
+    last_sync = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return '%s - %s' % (self.user.username, self.xero_id)
+
 class DailyLog(models.Model):
 
     """A visit by a member"""

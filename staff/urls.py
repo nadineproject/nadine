@@ -48,6 +48,7 @@ urlpatterns = patterns('staff.views',
                        (r'^usaepay/(?P<username>[^/]+)/$', 'usaepay_user'),
                        (r'^usaepay/t/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', 'usaepay_transactions'),
                        (r'^usaepay/t/today/$', 'usaepay_transactions_today'),
+                       (r'^xero/(?P<username>[^/]+)/$', 'xero_user'),
                        (r'^ip/$', 'view_ip'),
                        )
 

@@ -1,0 +1,58 @@
+{% extends "staff/staff_base.html" %}
+{% load static %}
+
+{% block sub-title %}Xero for {{ member.first_name }} {{ member.last_name }} | {% endblock %}
+
+{% block style %}
+nav #members-tab { background: #FBD850; color: black; }
+{% endblock %}
+
+{% block content %}
+{% include "staff/member_menu.frag" %}	 
+
+<h2>Xero Data for <a href="{% url 'staff.views.member_detail_user' user.username %}">{{ user.get_full_name }}</a>:</h2>
+
+{% if messages %}
+<div class="messages">
+	{% for message in messages %}
+		<div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+	{% endfor %}
+</div>
+{% endif %}
+
+{% if xero_contact %}
+	<table>
+		<tr>
+			<th>ContactID</th>
+			<!--<th>Last Sync</th>-->
+		</tr>
+		<tr>
+			<td nowrap>{{ xero_contact.xero_id }}</td>
+			<!--<td>{{ xero_contact.last_sync }}</td>-->
+		</tr>
+	</table>
+{% else %}
+	<h3>Xero Contact Not Found - Searching</h3>
+	<table>
+		<tr>
+			<th>Name</th>
+			<th>ContactID</th>
+			<th></th>
+		</tr>
+		{% for c in xero_contact_search %}
+			<tr class="{% cycle 'row-even' 'row-odd' %}">
+				<td>{{ c.Name }}</td>
+				<td>{{ c.ContactID }}</td>
+				<td>
+					<form method="POST" action="." onSubmit="return confirm('Are you sure?');">
+						<input type="hidden" name="xero_id" value="{{ c.ContactID }}"/>
+						<input type="Submit" name="action" value="Link"/>
+						{% csrf_token %}
+					</form>
+				</td>
+			</tr>
+		{% endfor %}
+	</table>
+{% endif %}
+
+{% endblock %}
