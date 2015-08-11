@@ -60,6 +60,12 @@ class XeroAPI:
         # This is just a test --JLS
         self.xero.contacts.save_or_put(contact_data)
 
+    def get_invoices(self, user):
+        xero_contact = XeroContact.objects.filter(user=user).first()
+        if not xero_contact:
+            return None
+        return self.xero.invoices.filter(Contact_ContactID=xero_contact.xero_id)
+
     def create_invoice(self):
         # Clearly just a test -- JLS
         xero = self.xero

@@ -964,11 +964,15 @@ def xero_user(request, username):
                 xero_contact.save()
             else:
                 xero_contact = XeroContact.objects.create(user=user, xero_id=xero_id)
+    invoices = None
     xero_contact_search = None
+    xero_api = XeroAPI()
     if not xero_contact:
-        xero_api = XeroAPI()
         xero_contact_search = xero_api.find_contacts(user)
-    return render_to_response('staff/xero.html', {'user': user, 'xero_contact': xero_contact, 'xero_contact_search': xero_contact_search}, context_instance=RequestContext(request))
+    else:
+        invoices = xero_api.get_invoices(user)
+        invoices.reverse()
+    return render_to_response('staff/xero.html', {'user': user, 'xero_contact': xero_contact, 'invoices': invoices, 'xero_contact_search': xero_contact_search}, context_instance=RequestContext(request))
 
 
 @staff_member_required

@@ -20,19 +20,8 @@ nav #members-tab { background: #FBD850; color: black; }
 </div>
 {% endif %}
 
-{% if xero_contact %}
-	<table>
-		<tr>
-			<th>ContactID</th>
-			<!--<th>Last Sync</th>-->
-		</tr>
-		<tr>
-			<td nowrap>{{ xero_contact.xero_id }}</td>
-			<!--<td>{{ xero_contact.last_sync }}</td>-->
-		</tr>
-	</table>
-{% else %}
-	<h3>Xero Contact Not Found - Searching</h3>
+{% if not xero_contact %}
+	<h3>Contact Not Found - Searching</h3>
 	<table>
 		<tr>
 			<th>Name</th>
@@ -50,6 +39,44 @@ nav #members-tab { background: #FBD850; color: black; }
 						{% csrf_token %}
 					</form>
 				</td>
+			</tr>
+		{% endfor %}
+		<form method="POST" action=".">
+		<tr class="{% cycle 'row-even' 'row-odd' %}">
+			<td></td>
+			<td><input name="xero_id" size="45" value="{{ c.ContactID }}"/></td>
+			<td><input type="Submit" name="action" value="Link"/></td>
+		</tr>
+		{% csrf_token %}
+	</form>
+	</table>
+{% else %}
+	<table>
+		<tr>
+			<th>ContactID</th>
+			<!--<th>Last Sync</th>-->
+		</tr>
+		<tr>
+			<td nowrap><a href="https://go.xero.com/Contacts/View.aspx?contactID={{ xero_contact.xero_id }}">{{ xero_contact.xero_id }}</a></td>
+			<!--<td>{{ xero_contact.last_sync }}</td>-->
+		</tr>
+	</table>
+
+	<h3>Invoices</h3>
+	<table>
+		<tr>
+			<th>Date</th>
+			<th>Invoice</th>
+			<th>Amount</th>
+			<th>Status</th>
+			<th></th>
+		{% for i in invoices %}
+			<tr>
+				<td>{{ i.DateString|slice:"10" }}</td>
+				<td><a href="https://go.xero.com/AccountsReceivable/View.aspx?InvoiceID={{ i.InvoiceID }}">{{ i.InvoiceNumber }}</a></td>
+				<td>${{ i.Total }}0</td>
+				<td>{{ i.Status }}</td>
+				<td></td>
 			</tr>
 		{% endfor %}
 	</table>
