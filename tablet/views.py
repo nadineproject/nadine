@@ -99,8 +99,13 @@ def user_signin(request, username):
     else:
         member_search_form = MemberSearchForm()
 
+    # Look up previous hosts for his member
+    guest_days = DailyLog.objects.filter(member__user__username=username, guest_of__isnull=False).values("guest_of")
+    previous_hosts = Member.objects.active_members().filter(id__in=guest_days)
+
     return render_to_response('tablet/user_signin.html', {'user': user, 'member': member, 'can_signin': can_signin,
-                                                          'membership': membership, 'member': member, 'member_search_form': member_search_form, 'search_results': search_results}, context_instance=RequestContext(request))
+                                                          'membership': membership, 'member': member, 'previous_hosts':previous_hosts,
+                                                          'member_search_form': member_search_form, 'search_results': search_results}, context_instance=RequestContext(request))
 
 
 def post_create(request, username):

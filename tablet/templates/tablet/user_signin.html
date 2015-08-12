@@ -45,6 +45,16 @@
 	{% if can_signin %}
 		<div id="guestform" {% if not search_results %} class="hidden" {% endif %} >
 			<h3>Which member is paying for you today?</h3>
+			{% if previous_hosts %}
+				<div id="member-list">
+					<ul data-role="listview" data-inset="true" data-filter="false">
+						{% for member in previous_hosts %}
+							<li style="padding: 0.5em;"><a href="{% url 'tablet.views.signin_user_guest' user.username member.user %}" data-transition="fade">{{ member.full_name }}</a></li>
+						{% endfor %}
+					</ul>
+				</div>
+			{% endif %}
+			
 			{% if search_results %}
 				<div id="member-list">
 					<ul data-role="listview" data-inset="true" data-filter="false">
@@ -61,7 +71,7 @@
 						{% csrf_token %}
 					</form>
 				</div>
-			{% endif %}  
+			{% endif %}
 		</div>
 
 		<div id="signin" data-theme="a" {% if search_results %} class="hidden" {% endif %}>
