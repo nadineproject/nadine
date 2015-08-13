@@ -2,7 +2,11 @@ from xero import Xero
 from xero.auth import PrivateCredentials
 
 from django.conf import settings
+from django.utils import timezone
+from django.contrib.auth.models import User
 from django.core.exceptions import ImproperlyConfigured
+
+from xml.dom.minidom import parse, parseString
 
 from nadine.models.core import XeroContact
 
@@ -54,11 +58,63 @@ class XeroAPI:
                 return search[0]
         return None
 
-    def save_contact(self, user):
-        contact_data = self.get_contact(user)
-        # TODO fill contact data with data from user
-        # This is just a test --JLS
-        self.xero.contacts.save_or_put(contact_data)
+    def save_contact(self, contact_data):
+        print contact_data
+        contact_id = None
+        try:
+            result = self.xero.contacts.save(contact_data)
+            if len(result) == 1:
+                contact_id = result[0]['ContactID']
+        except Exception as e:
+            raise Exception("Xero Contact Save Failed", e)
+        return contact_id
+
+    def add_contact(self, contact_data):
+        print contact_data
+        contact_id = None
+        try:
+            result = self.xero.contacts.put(contact_data)
+            print result
+            if len(result) == 1:
+                contact_id = result[0]['ContactID']
+        except Exception as e:
+            raise Exception("Xero Contact Save Failed", e)
+        return contact_id
+
+    def save_or_put_contact(self, contact_data):
+        print contact_data
+        contact_id = None
+        try:
+            result = self.xero.contacts.save_or_put(contact_data)
+            print result
+            xml = result[3]['xml']
+            dom = parseString(xml)
+            id_elm = dom.getElementsByTagName('ContactID')
+            if id_elm and len(id_elm) > 0:
+                contact_id = id_elm[0].firstChild.nodeValue
+        except Exception as e:
+            raise Exception("Xero Contact Save Failed", e)
+        return contact_id
+
+    def sync_user_data(self, user):
+        xero_contact = XeroContact.objects.filter(user=user).first()
+        
+        contact_data = {}
+        contact_data['Name'] = user.get_full_name()
+        contact_data['FirstName'] = user.first_name
+        contact_data['LastName'] = user.last_name
+        contact_data['EmailAddress'] = user.email
+        contact_data['AccountNumber'] = user.username
+        if xero_contact:
+            contact_data['ContactID'] = xero_contact.xero_id
+            xero_id = self.save_contact(contact_data)
+        else:
+            xero_id = self.add_contact(contact_data)
+            xero_contact = XeroContact.objects.create(user=user, xero_id=xero_id)
+            
+        # Update the sync timestamp
+        xero_contact.last_sync = timezone.now()
+        xero_contact.save()
 
     def get_invoices(self, user):
         xero_contact = XeroContact.objects.filter(user=user).first()

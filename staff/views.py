@@ -955,24 +955,34 @@ def usaepay_user(request, username):
 @staff_member_required
 def xero_user(request, username):
     user = get_object_or_404(User, username=username)
-    xero_contact = XeroContact.objects.filter(user=user).first()
-    if request.method == 'POST':
-        if 'xero_id' in request.POST:
-            xero_id = request.POST.get('xero_id')
-            if xero_contact:
-                xero_contact.xero_id = xero_id
-                xero_contact.save()
-            else:
-                xero_contact = XeroContact.objects.create(user=user, xero_id=xero_id)
-    invoices = None
-    xero_contact_search = None
     xero_api = XeroAPI()
+    
+    if request.method == 'POST':
+        action = request.POST.get('action').lower()
+        if action == "link":
+            if 'xero_id' in request.POST:
+                xero_id = request.POST.get('xero_id').strip()
+                if len(xero_id) > 0:
+                    try:
+                        if len(xero_api.xero.contacts.get(xero_id)) == 1:
+                            XeroContact.objects.create(user=user, xero_id=xero_id)
+                    except Exception:
+                        pass
+        elif action == "sync" or action == "add":
+            xero_api.sync_user_data(user)
+
+    invoices = None
+    xero_contact_data = None
+    xero_contact_search = None
+    xero_contact = XeroContact.objects.filter(user=user).first()
     if not xero_contact:
         xero_contact_search = xero_api.find_contacts(user)
     else:
         invoices = xero_api.get_invoices(user)
         invoices.reverse()
-    return render_to_response('staff/xero.html', {'user': user, 'xero_contact': xero_contact, 'invoices': invoices, 'xero_contact_search': xero_contact_search}, context_instance=RequestContext(request))
+        xero_contact_data = xero_api.get_contact(user)
+    return render_to_response('staff/xero.html', {'user': user, 'xero_contact': xero_contact, 'invoices': invoices, 
+        'xero_contact_data': xero_contact_data, 'xero_contact_search': xero_contact_search}, context_instance=RequestContext(request))
 
 
 @staff_member_required

@@ -33,7 +33,7 @@ nav #members-tab { background: #FBD850; color: black; }
 				<td>{{ c.Name }}</td>
 				<td>{{ c.ContactID }}</td>
 				<td>
-					<form method="POST" action="." onSubmit="return confirm('Are you sure?');">
+					<form method="POST" action="." onSubmit="return confirm('Are you sure you want to link {{ user.get_full_name }} to this Xero contact?');">
 						<input type="hidden" name="xero_id" value="{{ c.ContactID }}"/>
 						<input type="Submit" name="action" value="Link"/>
 						{% csrf_token %}
@@ -43,22 +43,52 @@ nav #members-tab { background: #FBD850; color: black; }
 		{% endfor %}
 		<form method="POST" action=".">
 		<tr class="{% cycle 'row-even' 'row-odd' %}">
-			<td></td>
+			<td nowrap>Add Contact Manually</td>
 			<td><input name="xero_id" size="45" value="{{ c.ContactID }}"/></td>
 			<td><input type="Submit" name="action" value="Link"/></td>
 		</tr>
 		{% csrf_token %}
-	</form>
+		</form>
+		<form method="POST" action="." onSubmit="return confirm('Are you sure you want to add {{ user.get_full_name }} to Xero?');">
+		<tr>
+			<td colspan="3" style="text-align:center;">
+				<input type="hidden" name="action" value="add">
+				<input type="Submit" value="Create New Xero Contact"/>
+			</td>
+		</tr>
+		{% csrf_token %}
+		</form>
 	</table>
 {% else %}
 	<table>
 		<tr>
-			<th>ContactID</th>
-			<!--<th>Last Sync</th>-->
+			<th>Name</th>
+			<td nowrap>{{ xero_contact_data.Name }}</a></td>
 		</tr>
 		<tr>
+			<th>ContactID</th>
 			<td nowrap><a href="https://go.xero.com/Contacts/View.aspx?contactID={{ xero_contact.xero_id }}">{{ xero_contact.xero_id }}</a></td>
-			<!--<td>{{ xero_contact.last_sync }}</td>-->
+		</tr>
+		<tr>
+			<th>Account Number</th>
+			<td nowrap>{{ xero_contact_data.AccountNumber }}</a></td>
+		</tr>
+		<tr>
+			<th>Email</th>
+			<td nowrap>{{ xero_contact_data.EmailAddress }}</a></td>
+		</tr>
+		<tr>
+			<th>Last Sync</th>
+			<td>{{ xero_contact.last_sync }}</td>
+		</tr>
+		<tr>
+			<th></th>
+			<td>
+				<form method="POST" action=".">
+					<input type="Submit" name="action" value="Sync"/>
+					{% csrf_token %}
+				</form>
+			</td>
 		</tr>
 	</table>
 
