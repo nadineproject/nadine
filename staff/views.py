@@ -972,6 +972,7 @@ def xero_user(request, username):
             xero_api.sync_user_data(user)
 
     invoices = None
+    repeating_invoices = None
     xero_contact_data = None
     xero_contact_search = None
     xero_contact = XeroContact.objects.filter(user=user).first()
@@ -980,8 +981,9 @@ def xero_user(request, username):
     else:
         invoices = xero_api.get_invoices(user)
         invoices.reverse()
+        repeating_invoices = xero_api.get_repeating_invoices(user)
         xero_contact_data = xero_api.get_contact(user)
-    return render_to_response('staff/xero.html', {'user': user, 'xero_contact': xero_contact, 'invoices': invoices, 
+    return render_to_response('staff/xero.html', {'user': user, 'xero_contact': xero_contact, 'invoices': invoices, 'repeating_invoices':repeating_invoices,
         'xero_contact_data': xero_contact_data, 'xero_contact_search': xero_contact_search}, context_instance=RequestContext(request))
 
 

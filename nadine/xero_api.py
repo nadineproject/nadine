@@ -6,6 +6,8 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.core.exceptions import ImproperlyConfigured
 
+import pytz
+from datetime import datetime, time, date, timedelta
 from xml.dom.minidom import parse, parseString
 
 from nadine.models.core import XeroContact
@@ -121,6 +123,27 @@ class XeroAPI:
         if not xero_contact:
             return None
         return self.xero.invoices.filter(Contact_ContactID=xero_contact.xero_id)
+
+    def get_repeating_invoices(self, user):
+        xero_data = None
+        xero_contact = XeroContact.objects.filter(user=user).first()
+        if xero_contact:
+            xero_data = self.xero.repeatinginvoices.filter(Contact_ContactID=xero_contact.xero_id)
+            if xero_data:
+                for invoice in xero_data:
+                    nsd = invoice['Schedule']['NextScheduledDate']
+                    # Example: '1440417600000+1200' = 08/25/2015 tz=Pacific/LA
+                    unix_time = int(nsd[6:len(nsd)-10])
+                    # The UTC offset comes in with the date but I'm not sure how to convert that
+                    # We know it's coming in NZ time -- JLS
+                    dt = datetime.fromtimestamp(unix_time)
+                    tz = pytz.timezone("Pacific/Auckland")
+                    tz_dt = tz.localize(dt)
+                    local_dt = timezone.localtime(tz_dt)
+                    # Fuck it!  I'm just adding a day
+                    invoice['NextScheduledDate'] = dt + timedelta(days=1)
+            print xero_data
+        return xero_data
 
     def create_invoice(self):
         # Clearly just a test -- JLS

@@ -92,12 +92,36 @@ nav #members-tab { background: #FBD850; color: black; }
 		</tr>
 	</table>
 
+	<h3>Repeating Invoices</h3>
+	<table>
+		<tr>
+			<th>Next Date</th>
+			<th>Description</th>
+			<th>Total</th>
+			<th></th>
+			<th></th>
+		{% for i in repeating_invoices %}
+			<tr>
+				<td>{{ i.NextScheduledDate|date:"Y-m-d" }}</td>
+				<td>
+					{% for l in i.LineItems %}
+						{{ l.Description }}
+						{% if not forloop.last %}{% ifequal forloop.revcounter 2 %} and {% else %}, {% endifequal %}{% else %}{% endif %}
+					{% endfor %}
+				</td>
+				<td>${{ i.Total }}0</td>
+				<td><a href="https://go.xero.com/RepeatTransactions/Edit.aspx?type=AR&invoiceID={{ i.ID }}">Edit</a></td>
+				<td></td>
+			</tr>
+		{% endfor %}
+	</table>
+	
 	<h3>Invoices</h3>
 	<table>
 		<tr>
 			<th>Date</th>
 			<th>Invoice</th>
-			<th>Amount</th>
+			<th>Total</th>
 			<th>Status</th>
 			<th></th>
 		{% for i in invoices %}
