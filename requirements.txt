@@ -28,6 +28,10 @@ pyxero==0.7.0
 cryptography==0.9.3
 PyJWT==1.4.0
 
+# Libraries for Arpwatch
+pysnmp==4.2.5
+pysnmp-mibs==0.1.4
+
 # TODO - Evaluate use of these libraries 
 feedparser
 pycrypto==2.6.1

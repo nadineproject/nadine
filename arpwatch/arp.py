@@ -2,6 +2,8 @@ import time
 import logging
 from datetime import datetime, time, date, timedelta
 
+from pysnmp.entity.rfc3413.oneliner import cmdgen
+
 from django.conf import settings
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
@@ -127,14 +129,36 @@ def import_file(file, runtime):
                     log_message("Data For This Time Already Loaded: %s" % runtime)
                     return
 
-                # User Device
-                if UserDevice.objects.filter(mac_address=mac).count() > 0:
-                    device = UserDevice.objects.get(mac_address=mac)
-                else:
-                    device = UserDevice.objects.create(mac_address=mac)
+                log_data(runtime, ip, mac)
 
-                # ArpLog
-                ArpLog.objects.create(runtime=runtime, ip_address=ip, device=device)
+def import_snmp():
+    runtime = timezone.now()
+    
+    cmdGen = cmdgen.CommandGenerator()
+    errorIndication, errorStatus, errorIndex, varBinds = cmdGen.nextCmd(
+        cmdgen.CommunityData(settings.ARPWATCH_SNMP_COMMUNITY),
+        cmdgen.UdpTransportTarget((settings.ARPWATCH_SNMP_SERVER, 161)),
+        cmdgen.MibVariable('IP-MIB', 'ipNetToMediaPhysAddress'),
+        lookupNames=True, lookupValues=True
+    )
+    
+    for row in varBinds:
+        for name, val in row:
+            ip = name.prettyPrint().split('\"')[3]
+            mac = val.prettyPrint()
+            if ip.startswith(settings.ARPWATCH_NETWORK_PREFIX):
+                log_data(runtime, ip, mac)
+
+
+def log_data(runtime, ip, mac):
+    # User Device
+    if UserDevice.objects.filter(mac_address=mac).count() > 0:
+        device = UserDevice.objects.get(mac_address=mac)
+    else:
+        device = UserDevice.objects.create(mac_address=mac)
+
+    # ArpLog
+    return ArpLog.objects.create(runtime=runtime, ip_address=ip, device=device)
 
 
 def day_is_complete(day_str):
