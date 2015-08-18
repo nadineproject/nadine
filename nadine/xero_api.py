@@ -142,7 +142,7 @@ class XeroAPI:
                     local_dt = timezone.localtime(tz_dt)
                     # Fuck it!  I'm just adding a day
                     invoice['NextScheduledDate'] = dt + timedelta(days=1)
-            print xero_data
+            #print xero_data
         return xero_data
 
     def create_invoice(self):
