@@ -4,11 +4,11 @@ psycopg2==2.6.1
 celery==3.1.18
 django-celery==3.1.16
 django-localflavor-us==1.1
-django-taggit==0.16.2
+django-taggit==0.17.0
 django-taggit-templatetags==0.4.6dev
 mailchimp==2.0.9
 MonthDelta==1.0b0
-py4j==0.8.2.1
+py4j==0.9
 pytz==2015.4
 requests==2.7.0
 
@@ -25,7 +25,7 @@ pip-tools
 
 # Libraries for Xero
 pyxero==0.7.0
-cryptography==0.9.3
+cryptography==1.0
 PyJWT==1.4.0
 
 # Libraries for Arpwatch
