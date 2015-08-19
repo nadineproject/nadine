@@ -6,12 +6,14 @@ import datetime
 import logging
 import tempfile
 import shutil
+import csv
 
 logger = logging.getLogger(__name__)
 
 from django.conf import settings
 from django.utils import timezone
 
+from nadine.models.core import Member, EmergencyContact
 
 class BackupError(Exception):
     pass
@@ -169,3 +171,67 @@ class BackupManager(object):
             self.remove_old_files()
 
         return os.path.join(settings.BACKUP_ROOT, backup_path)
+
+    def export_active_users(self):
+        filename = settings.BACKUP_ROOT + 'active_members.csv'
+
+        csv_data = [[
+            'username', 
+            'first_name', 
+            'last_name', 
+            'email',
+            'email2',
+            'phone',
+            'phone2',
+            'address1',
+            'address2',
+            'city',
+            'state',
+            'zipcode',
+            'has_key',
+            'emergency_contact',
+            'ec_relationship',
+            'ec_phone',
+            'ec_email',
+        ]]
+        for member in Member.objects.active_members():
+            user = member.user
+            ec = EmergencyContact.objects.filter(user=user).first()
+            membership = member.active_membership()
+            row = [
+                user.username,
+                user.first_name,
+                user.last_name,
+                user.email,
+                member.email2,
+                member.phone,
+                member.phone2,
+                member.address1,
+                member.address2,
+                member.city,
+                member.state,
+                member.zipcode,
+            
+            ]
+
+            if membership.has_key:
+                row.append('True')
+            else:
+                row.append('')
+
+            if ec and ec.name:
+                row.append(ec.name)
+                row.append(ec.relationship)
+                row.append(ec.phone)
+                row.append(ec.email)
+            else:
+                row.append('None')
+                row.append('')
+                row.append('')
+                row.append('')
+
+            csv_data.append(row)
+
+        with open(filename, 'wb') as f:
+            writer = csv.writer(f)
+            writer.writerows(csv_data)

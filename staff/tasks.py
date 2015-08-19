@@ -81,6 +81,13 @@ def make_backup():
 
 
 @shared_task
+def export_active_users():
+    from staff.backup import BackupManager
+    manager = BackupManager()
+    manager.export_active_users()
+
+
+@shared_task
 def anniversary_checkin():
     from nadine.models.core import Member
     for m in Member.objects.active_members():
