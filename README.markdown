@@ -14,11 +14,22 @@ Most of the action is in the staff application, where you'll find a member track
 
 ## Handy Installation Instructions
 
-Create a virtual environment for the python project and pull down the code.
+Install the required systems
+
+	apt-get install postgresql postgresql-server-dev-all python-pip python-dev libffi-dev git
+
+Install virtualenv using python pip to work on a sandbox
+
+	pip install virtualenv
+
+Create a virtual environment for the python project
 
 	virtualenv nadine
 	cd nadine
 	source bin/activate
+	
+Dowload the nadine source code from github
+
 	git clone https://github.com/nadineproject/nadine.git
 	cd nadine
 
@@ -42,7 +53,7 @@ Run Django's migrate command and create a superuser.
 
 At this point you can run the server
 
-	./manage.py runserver 0.0.0.0:8000
+	./manage.py runserver
 	Visit your installation of Nadine at http://127.0.0.1:8000/
 
 You will need to edit the django_sites database in the admin site unless your site is at example.com.
