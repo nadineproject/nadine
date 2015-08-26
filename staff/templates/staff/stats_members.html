@@ -3,16 +3,17 @@
 {% block sub-title %}Stats | Members | {% endblock %}
 
 {% block sub-head %}
-	<script src="{{ STATIC_URL }}RGraph/libraries/RGraph.common.core.js" ></script>
-	<script src="{{ STATIC_URL }}RGraph/libraries/RGraph.common.dynamic.js"></script>
-	<script src="{{ STATIC_URL }}RGraph/libraries/RGraph.common.tooltips.js" ></script>
-	<script src="{{ STATIC_URL }}RGraph/libraries/RGraph.common.effects.js" ></script>
-	<script src="{{ STATIC_URL }}RGraph/libraries/RGraph.line.js" ></script>
+	<link rel="stylesheet" href="{{ STATIC_URL }}c3/c3.min.css" />
+	<link rel="stylesheet" href="{{ STATIC_URL }}themes/custom-staff/jquery-ui-1.10.4.custom.css" />
+	<script src="{{ STATIC_URL }}c3/date.min.js"></script>
+	<script src="{{ STATIC_URL }}c3/d3.min.js" charset="utf-8"></script>
+	<script src="{{ STATIC_URL }}c3/c3.min.js"></script>
 {% endblock %}
 
 {% block style%}
-nav #stats-tab { background: #FBD850; color: black; }
-#stats span { font-size: 1.2em; padding: 10px; }
+	nav #stats-tab { background: #FBD850; color: black; }
+	#stats span { font-size: 1.2em; padding: 10px; }
+	.c3-tooltip-container { width: 200px; }
 {% endblock %}
 
 {% block content %} 
@@ -24,54 +25,98 @@ nav #stats-tab { background: #FBD850; color: black; }
 </div>
 
 <div>min = {{min}}, max = {{max}}, avg={{avg}}</div>
-    
-    <canvas id="cvs" width="800" height="500">[No canvas support]</canvas>
-    
-    <script>
-        window.onload = function ()
-        {
-            var data = [{% for day in days %}{{day.members}},{% endfor %}];
-            var labels = ['{{ start }}', '{{ end }}'];
+<div id="chart"></div>
 
-            var myLine = new RGraph.Line('cvs', [{{avg}}, {{avg}}], data)
-                .Set('labels', labels)
-                .Set('gutter.left', 60)
-                .Set('gutter.right', 45)
-                .Set('gutter.bottom', 20)
-                .Set('colors', ['red', 'black'])
-                //.Set('units.pre', '$')
-                .Set('linewidth', 2)
-                //.Set('hmargin', 15)
-                .Set('text.color', '#333')
-                .Set('text.font', 'Arial')
-                //.Set('background.grid.autofit', true)
-                //.Set('background.grid.autofit.numvlines', {{ days|length }})
-                .Set('chart.ymin', {{min}})
-                .Set('shadow', true)
-                .Set('shadow.color', 'rgba(20,20,20,0.3)')
-                .Set('shadow.blur',  10)
-                .Set('shadow.offsetx', 0)
-                .Set('shadow.offsety', 0)
-                .Set('background.grid.vlines', false)
-                .Set('background.grid.border', true)
-                .Set('noxaxis', false)
-                .Set('axis.color', '#666')
-                .Set('text.color', '#666')
-                //.Set('spline', true)
+  <script>
+    $(function() {
+      var json;
+	  var startDate = new Date('{{ start }}');
+      var endDate = new Date('{{ end }}');
 
-            /**
-            * Use the Trace animation to show the chart
-            */
-            if (ISOLD) {
-                // IE7/8 don't support shadow blur, so set custom shadow properties
-                myLine.Set('chart.shadow.offsetx', 3)
-                    .Set('chart.shadow.offsety', 3)
-                    .Set('chart.shadow.color', '#aaa')
-                    .Draw();
-            } else {
-                RGraph.Effects.Line.jQuery.UnfoldFromCenterTrace(myLine, {'duration': 1000});
-            }
+      $('#id_start').datepicker({ dateFormat: "yy-mm-dd" });
+      $('#id_end').datepicker({ dateFormat: "yy-mm-dd" });
+
+      json = getChartData(startDate, endDate);
+	  console.log(json);
+      renderChart(json);
+    });
+  </script>
+
+  <script>
+    var calcMMM = function(data) {
+      var max;
+      var min;
+      var count;
+
+      var total = data.reduce(function(prev, curr, index) {
+        if (index === 0) {
+          max = curr;
+          min = curr;
+        } else {
+          if (curr > max) {
+            max = curr;
+          } 
+          if (curr < min) {
+            min = curr;
+          }
         }
-    </script>
+        count = index;
+        return prev + curr;
+      });
+      return {
+        min: min,
+        max: max,
+        mean: Math.round(total/count)
+      }
+    }
 
+    var getChartData = function(startDate, endDate) {
+		console.log("startDate=" + startDate);
+		console.log("endDate=" + endDate);
+      var data = [{% for day in days %}{{day.members}},{% endfor %}];
+      startDate.add({days: -1});
+      var jsonData = data.map(function(item, index) {
+        startDate.add({days: 1});
+        return {
+          date: startDate.toString('yyyy-MM-dd'),
+          dailyMembers: item
+        }
+      });
+      return jsonData;
+    }
+
+    var renderChart = function(chartData) {
+      var chart = c3.generate({
+        size: {
+          width: 800
+        },
+        bindTo: '#chart',
+        data: {
+          json: chartData,
+          keys: {
+              x: 'date',
+              value: ['dailyMembers']
+          },
+          type: 'line'
+        },
+        axis: {
+          x: {
+            type: 'timeseries',
+            tick: {
+              format: '%Y-%m-%d'
+            }
+          }
+        },
+        grid: {
+          y: {
+            lines: [
+              {value: {{min}}, text: 'min'},
+              {value: {{max}}, text: 'max'},
+              {value: {{avg}}, text: 'avg'}
+            ]
+          }
+        }
+      });
+    }
+  </script>
 {% endblock %}
