@@ -6,9 +6,9 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.core.exceptions import ImproperlyConfigured
 
-HID_DOOR_IP = "172.16.5.20"
-HID_DOOR_USER = "admin"
-HID_DOOR_PASS = "kickstart"
+#HID_DOOR_IP = "172.16.5.20"
+#HID_DOOR_USER = "user"
+#HID_DOOR_PASS = "password"
 
 UNLOCK_COMMAND = 'unlockDoor'
 LOCK_COMMAND = 'lockDoor'
@@ -32,13 +32,17 @@ def lockDoor():
 class DoorController:
     
     def __init__(self):
-        consumer_key = getattr(settings, 'HID_DOOR_IP', None)
-        if consumer_key is None:
-            raise ImproperlyConfigured(XERO_ERROR_MESSAGES['no_key'])
+        self.door_ip = getattr(settings, 'HID_DOOR_IP', None)
+        if self.door_ip is None:
+            raise ImproperlyConfigured("Missing HID_DOOR_IP setting")
 
-        private_key = getattr(settings, 'XERO_PRIVATE_KEY', None)
-        if private_key is None:
-            raise ImproperlyConfigured(XERO_ERROR_MESSAGES['no_secret'])
+        self.door_user = getattr(settings, 'HID_DOOR_USER', None)
+        if self.door_user is None:
+            raise ImproperlyConfigured("Missing HID_DOOR_USER setting")
+
+        self.door_pass = getattr(settings, 'HID_DOOR_PASS', None)
+        if self.door_pas is None:
+            raise ImproperlyConfigured("Missing HID_DOOR_PAS setting")
 
 def send_xml(xml, door_ip, username, password):
 	door_url = "https://%s/cgi-bin/vertx_xml.cgi" % door_ip
