@@ -18,12 +18,14 @@ LOCK_COMMAND = 'lockDoor'
 ###############################################################################################################
 
 def unlockDoor():
-	xml = door_command_xml(UNLOCK_COMMAND)
-	return send_xml(xml, HID_DOOR_IP, HID_DOOR_USER, HID_DOOR_PASS)
+    xml = door_command_xml(UNLOCK_COMMAND)
+    controller = DoorController()
+    return controller.send_xml(xml)
 
 def lockDoor():
-	xml = door_command_xml(LOCK_COMMAND)
-	return send_xml(xml, HID_DOOR_IP, HID_DOOR_USER, HID_DOOR_PASS)
+    xml = door_command_xml(LOCK_COMMAND)
+    controller = DoorController()
+    return controller.send_xml(xml)
 
 ###############################################################################################################
 # Communication Logic
@@ -42,51 +44,51 @@ class DoorController:
 
         self.door_pass = getattr(settings, 'HID_DOOR_PASS', None)
         if self.door_pas is None:
-            raise ImproperlyConfigured("Missing HID_DOOR_PAS setting")
+            raise ImproperlyConfigured("Missing HID_DOOR_PASS setting")
 
-def send_xml(xml, door_ip, username, password):
-	door_url = "https://%s/cgi-bin/vertx_xml.cgi" % door_ip
-	xml_str = ElementTree.tostring(xml, encoding='utf8', method='xml')
-	xml_data = urllib.urlencode({'XML': xml_str})
-	request = urllib2.Request(door_url, xml_data)
-	base64string = base64.encodestring('%s:%s' % (username, password)).replace('\n', '')
-	request.add_header("Authorization", "Basic %s" % base64string) 
-	context = ssl._create_unverified_context()  
-	result = urllib2.urlopen(request, context=context)
-	return_code = result.getcode()
-	return_xml = result.read()
-	result.close()
-	return (return_code, return_xml)
+    def send_xml(xml, door_ip, username, password):
+        door_url = "https://%s/cgi-bin/vertx_xml.cgi" % self.door_ip
+        xml_str = ElementTree.tostring(xml, encoding='utf8', method='xml')
+        xml_data = urllib.urlencode({'XML': xml_str})
+        request = urllib2.Request(door_url, xml_data)
+        base64string = base64.encodestring('%s:%s' % (self.door_user, self.door_pass)).replace('\n', '')
+        request.add_header("Authorization", "Basic %s" % base64string) 
+        context = ssl._create_unverified_context()  
+        result = urllib2.urlopen(request, context=context)
+        return_code = result.getcode()
+        return_xml = result.read()
+        result.close()
+        return (return_code, return_xml)
 
 ###############################################################################################################
 # XML Functions
 ###############################################################################################################
 
 def root_elm():
-	return ElementTree.Element('VertXMessage')
+    return ElementTree.Element('VertXMessage')
 
 def list_doors_xml():
-	# <hid:Doors action="LR" responseFormat="status" />
-	root = root_elm()
-	door_element = ElementTree.SubElement(root, 'hid:Doors')
-	door_element.set('action', 'LR')
-	door_element.set('responseFormat', 'status')
-	return root
+    # <hid:Doors action="LR" responseFormat="status" />
+    root = root_elm()
+    door_element = ElementTree.SubElement(root, 'hid:Doors')
+    door_element.set('action', 'LR')
+    door_element.set('responseFormat', 'status')
+    return root
 
 def list_credentials_xml(recordOffset, recordCount):
-	# <hid:Credentials action="LR" responseFormat="expanded" recordOffset="0" recordCount="10"/>
-	root = root_elm()
-	elm = ElementTree.SubElement(root, 'hid:Credentials')
-	elm.set('action', 'LR')
-	elm.set('responseFormat', 'expanded')
-	elm.set('recordOffset', str(recordOffset))
-	elm.set('recordCount', str(recordCount))
-	return root
+    # <hid:Credentials action="LR" responseFormat="expanded" recordOffset="0" recordCount="10"/>
+    root = root_elm()
+    elm = ElementTree.SubElement(root, 'hid:Credentials')
+    elm.set('action', 'LR')
+    elm.set('responseFormat', 'expanded')
+    elm.set('recordOffset', str(recordOffset))
+    elm.set('recordCount', str(recordCount))
+    return root
 
 def door_command_xml(command):
-	# <hid:Doors action="CM" command="unlockDoor"/>
-	root = root_elm()
-	door_element = ElementTree.SubElement(root, 'hid:Doors')
-	door_element.set('action', 'CM')
-	door_element.set('command', command)
-	return root
+    # <hid:Doors action="CM" command="unlockDoor"/>
+    root = root_elm()
+    door_element = ElementTree.SubElement(root, 'hid:Doors')
+    door_element.set('action', 'CM')
+    door_element.set('command', command)
+    return root
