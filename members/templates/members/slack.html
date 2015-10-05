@@ -1,0 +1,30 @@
+{% extends "members/u_base.html" %}
+
+{% block content %}
+
+	<h2>Office Nomads Slack Team</h2>
+
+	{% if messages %}
+		<div class="messages">
+			{% for message in messages %}
+				<div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+			{% endfor %}
+		</div>
+	{% else %}
+		<p>
+			We have a slack team set up for all members.  You can request an invitation here and then
+			you will be sent an email giving you 	instructions on how to finish the registration process.  You can use slack
+			either through the website below or using the various <a href="https://slack.com/apps">desktop and mobile apps</a>.
+			But first you need to request an invite and join the team.  We still have the old school 
+			<a href="{% url 'members.views.chat' %}">irc chat</a> if you prefer that form of communication.
+		</p>
+		<div style="text-align: center">
+			<form action="." method="POST">
+				<input type="submit" value="Request Invite"/>
+				{% csrf_token %}
+			</form>
+			<h3>Team Location: <a href="https://officenomads.slack.com/">https://officenomads.slack.com/</a></h3>
+		</div>
+	{% endif %}
+
+{% endblock %}

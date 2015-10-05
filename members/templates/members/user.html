@@ -41,9 +41,9 @@
 
 {% block content %}
       {% if user.profile.photo %}
-      <div class="member-photo">      
+      <div class="member-photo">
          <a href="{{ user.profile.photo.url }}"><img src="{{ user.profile.photo.url|fit_image:"170x170" }}"></a>
-        </div>        
+      </div>
       {% endif %}
 
 <h2>{{ user.get_full_name }}</h2>

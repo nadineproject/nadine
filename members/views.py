@@ -16,6 +16,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.template.defaultfilters import slugify
 from django.contrib.sites.models import Site
+from django.contrib import messages
 
 #from gather.models import Event, Location, EventAdminGroup
 #from gather.forms import EventForm
@@ -31,8 +32,9 @@ from nadine.models.payment import Transaction
 from nadine.models.alerts import MemberAlert
 from staff import usaepay, email
 from staff.forms import *
-from nadine import mailgun
 
+from nadine import mailgun
+from nadine.slack_api import SlackAPI
 
 def is_active_member(user):
     if user and not user.is_anonymous():
@@ -160,6 +162,9 @@ def mail_message(request, id):
 @login_required
 def edit_profile(request, username):
     user = get_object_or_404(User, username=username)
+    if not user == request.user:
+        if not request.user.is_staff:
+            return HttpResponseRedirect(reverse('members.views.user', kwargs={'username': request.user.username}))
 
     if request.method == 'POST':
         profile_form = EditProfileForm(request.POST, request.FILES)
@@ -185,11 +190,30 @@ def edit_profile(request, username):
 
 
 @login_required
+def slack(request, username):
+    user = get_object_or_404(User, username=username)
+    if not user == request.user:
+        if not request.user.is_staff:
+            return HttpResponseRedirect(reverse('members.views.user', kwargs={'username': request.user.username}))
+
+    if request.method == 'POST':
+        try:
+            slack_api = SlackAPI()
+            slack_api.invite_user(user)
+            messages.add_message(request, messages.INFO, "Slack Invitation Sent.  Check your email for further instructions.")
+        except Exception as e:
+            messages.add_message(request, messages.ERROR, "Failed to send invitation: %s" % e)
+
+    return render_to_response('members/slack.html', {'user': user}, context_instance=RequestContext(request))
+
+
+@login_required
 def receipt(request, username, id):
     user = get_object_or_404(User, username=username)
     if not user == request.user:
         if not request.user.is_staff:
             return HttpResponseRedirect(reverse('members.views.user', kwargs={'username': request.user.username}))
+
     transaction = get_object_or_404(Transaction, id=id)
     if not user.profile == transaction.member:
         if not request.user.is_staff:
@@ -263,7 +287,10 @@ def delete_tag(request, username, tag):
 
 @login_required
 def user_devices(request):
-    user = request.user
+    user = get_object_or_404(User, username=username)
+    if not user == request.user:
+        if not request.user.is_staff:
+            return HttpResponseRedirect(reverse('members.views.user', kwargs={'username': request.user.username}))
     profile = user.get_profile()
 
     error = None
@@ -346,9 +373,9 @@ def delete_notification(request, username):
 @login_required
 def disable_billing(request, username):
     user = get_object_or_404(User, username=username)
-    email.announce_billing_disable(user)
     if user == request.user or request.user.is_staff:
         usaepay.disableAutoBilling(username)
+        email.announce_billing_disable(user)
     return HttpResponseRedirect(reverse('members.views.user', kwargs={'username': request.user.username}))
 
 
