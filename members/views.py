@@ -204,7 +204,7 @@ def slack(request, username):
         except Exception as e:
             messages.add_message(request, messages.ERROR, "Failed to send invitation: %s" % e)
 
-    return render_to_response('members/slack.html', {'user': user}, context_instance=RequestContext(request))
+    return render_to_response('members/slack.html', {'user': user, 'team_url':settings.SLACK_TEAM_URL}, context_instance=RequestContext(request))
 
 
 @login_required

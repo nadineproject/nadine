@@ -2,7 +2,7 @@
 
 {% block content %}
 
-	<h2>Office Nomads Slack Team</h2>
+	<h2>Slack Team</h2>
 
 	{% if messages %}
 		<div class="messages">
@@ -23,7 +23,7 @@
 				<input type="submit" value="Request Invite"/>
 				{% csrf_token %}
 			</form>
-			<h3>Team Location: <a href="https://officenomads.slack.com/">https://officenomads.slack.com/</a></h3>
+			<h3>Team Location: <a href="{{ team_url }}">{{ team_url }}</a></h3>
 		</div>
 	{% endif %}
 

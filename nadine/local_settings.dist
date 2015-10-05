@@ -50,6 +50,9 @@ MAILCHIMP_WEBHOOK_KEY = "hookedonhooks"
 XERO_CONSUMER_KEY = "secretkey"
 XERO_PRIVATE_KEY = "/keys/privatekey.pem"
 
+SLACK_API_TOKEN = "your token"
+SLACK_TEAM_URL = "https://nadine.slack.com/"
+
 DISCOURSE_BASE_URL = 'http://your-discourse-site.com'
 DISCOURSE_SSO_SECRET = 'paste_your_secret_here'
 
