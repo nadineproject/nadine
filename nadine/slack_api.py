@@ -566,7 +566,7 @@ class SlackAPI:
         return None
 
     def invite_user(self, user):
-        response = self.users.invite(user.email, first_name=user.first_name, last_name='last_name')
+        response = self.users.invite(user.email, first_name=user.first_name, last_name=user.last_name)
         return response.ok
 
     def disable_user(self, user):
