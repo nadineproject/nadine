@@ -285,7 +285,12 @@ function gotoEmailReset(emailAddress){
 
         {% for membership in memberships %}
             <tr class="{% cycle 'row-even' 'row-odd' %}">
-                <td>{{ membership.membership_plan }}</td>
+                <td nowrap>
+                    {{ membership.membership_plan }}
+                    {% if membership.guest_of %}
+                     (<a href="{% url 'staff.views.member_detail' membership.guest_of.id %}">{{ membership.guest_of.user.username }}</a>)
+                    {% endif %}
+                </td>
                 <td>${{ membership.monthly_rate }}</td>
                 <td><a href="{{ membership.get_admin_url }}">{{ membership.start_date }}</a></td>
                 <td>{% if membership.end_date %}{{ membership.end_date }}{% endif %}</td>
