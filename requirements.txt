@@ -1,16 +1,16 @@
 Django>=1.8,<1.9
-Pillow==2.9.0
+Pillow==3.0
 psycopg2==2.6.1
 celery==3.1.18
-django-celery==3.1.16
+django-celery==3.1.17
 django-localflavor-us==1.1
-django-taggit==0.17.0
+django-taggit==0.17.1
 django-taggit-templatetags==0.4.6dev
 mailchimp==2.0.9
 MonthDelta==1.0b0
 py4j==0.9
-pytz==2015.4
-requests==2.7.0
+pytz==2015.6
+requests==2.8.1
 
 # For document signing
 # Newer versions may not work so be cautious when upgrading
@@ -25,12 +25,12 @@ pip-tools
 
 # Libraries for Xero
 pyxero==0.7.0
-cryptography==1.0
+cryptography==1.0.2
 PyJWT==1.4.0
 
 # Libraries for Arpwatch
-pysnmp==4.2.5
-pysnmp-mibs==0.1.4
+pysnmp==4.3
+pysnmp-mibs==0.1.5
 
 # TODO - Evaluate use of these libraries 
 feedparser
