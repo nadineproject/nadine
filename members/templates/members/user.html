@@ -57,7 +57,7 @@
         {% if user.username == request.user.username or request.user.is_staff %}
         <dd><a href="{% url 'members.views.edit_profile' user.username %}">edit profile</a></dd>
         <dd><a href="{% url 'members.views.user_tags' user.username %}">edit tags</a></dd>
-        <dd><a href="{% url 'members.views.user_devices' %}">register device</a></dd>
+        <dd><a href="{% url 'members.views.user_devices' user.username %}">register device</a></dd>
         {% endif %}
     </dl>
 {% endif %}
