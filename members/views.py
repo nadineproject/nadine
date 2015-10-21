@@ -282,11 +282,11 @@ def delete_tag(request, username, tag):
         if not request.user.is_staff:
             return HttpResponseRedirect(reverse('members.views.user', kwargs={'username': request.user.username}))
     user.get_profile().tags.remove(tag)
-    return HttpResponseRedirect(reverse('members.views.user_tags', kwargs={'username': request.user.username}))
+    return HttpResponseRedirect(reverse('members.views.user_tags', kwargs={'username': username}))
 
 
 @login_required
-def user_devices(request):
+def user_devices(request, username):
     user = get_object_or_404(User, username=username)
     if not user == request.user:
         if not request.user.is_staff:
