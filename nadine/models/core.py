@@ -6,6 +6,7 @@ import operator
 import logging
 
 from datetime import datetime, time, date, timedelta
+from dateutil.relativedelta import relativedelta
 
 from django.db import models
 from django.db.models import Q
@@ -413,25 +414,35 @@ class Member(models.Model):
                 return None
 
     def duration(self):
-        return timezone.now().date() - self.first_visit()
+        return relativedelta(timezone.now().date(), self.first_visit())
     
-    def duration_str(self):
-        monthdelta, timedelta = monthmod(self.first_visit(), timezone.now().date())
-        months = monthdelta.months
-        days = timedelta.days
-        years = months/12
-        month_remainder = months - (years * 12)
+    def duration_str(self, include_days=False):
         retval = ""
-        if months < 12:
-            retval ="%d months" % months
-        else:
-            if years == 1 :
+        delta = self.duration()
+        if delta.years:
+            if delta.years == 1:
                 retval = "1 year"
-            elif years > 1:
-                retval = "%d years" % years
-            if month_remainder > 1:
-                retval += " and %d months" % month_remainder
+            else:
+                retval = "%d years" % delta.years
+            if delta.months or delta.days:
+                retval += " and "
+        if delta.months:
+            if delta.months == 1:
+                retval += "1 month"
+            else:
+                retval += "%d months" % delta.months
+            if include_days and delta.days:
+                retval += " and "
+        if include_days and delta.days:
+            if delta.days == 1:
+                retval += "1 day"
+            else:
+                retval += "%d days" % delta.days
         return retval
+
+    def is_anniversary(self):
+        
+        return 
 
     def host_daily_logs(self):
         return DailyLog.objects.filter(guest_of=self).order_by('-visit_date')

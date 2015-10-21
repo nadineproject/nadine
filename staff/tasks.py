@@ -2,6 +2,7 @@ from __future__ import absolute_import
 
 from celery import shared_task
 from datetime import datetime, timedelta
+
 from django.utils import timezone
 
 from nadine.models.core import Member, Membership, DailyLog
@@ -89,9 +90,10 @@ def export_active_users():
 
 @shared_task
 def anniversary_checkin():
-    from nadine.models.core import Member
-    for m in Member.objects.active_members():
-        if m.duration().days % 365 == 0:
+from nadine.models.core import Member
+for m in Member.objects.active_members():
+    d = m.duration()
+    if d.years and not d.months and not d.days:
             email.announce_anniversary(m.user)
             email.send_edit_profile(m.user)
 
