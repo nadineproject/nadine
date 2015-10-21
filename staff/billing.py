@@ -212,11 +212,11 @@ def run_billing(bill_time=None):
                         transaction.bills = [day.bill]
                         transaction.save()
 
-            # Now calculate a bill for non-member drop-ins if they exist and it has been two weeks since we billed them
+            # Now calculate a bill for non-member drop-ins if they exist.
             bill_dropins, guest_bill_dropins = run.non_member_daily_logs()
             if len(bill_dropins) > 0 or len(guest_bill_dropins) > 0:
-                time_to_bill_guests = len(guest_bill_dropins) > 0 and (bill_date - guest_bill_dropins[0].visit_date) >= timedelta(weeks=2)
-                time_to_bill_dropins = len(bill_dropins) > 0 and (bill_date - bill_dropins[0].visit_date) >= timedelta(weeks=2)
+                time_to_bill_guests = len(guest_bill_dropins) > 0 and (bill_date - guest_bill_dropins[0].visit_date) >= timedelta(days=1)
+                time_to_bill_dropins = len(bill_dropins) > 0 and (bill_date - bill_dropins[0].visit_date) >= timedelta(days=1)
                 if time_to_bill_guests or time_to_bill_dropins:
                     bill_amount = (len(bill_dropins) + len(guest_bill_dropins)) * settings.NON_MEMBER_DROPIN_FEE
                     last_day = run.days[len(run.days) - 1]
