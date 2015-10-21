@@ -90,12 +90,12 @@ def export_active_users():
 
 @shared_task
 def anniversary_checkin():
-from nadine.models.core import Member
-for m in Member.objects.active_members():
-    d = m.duration()
-    if d.years and not d.months and not d.days:
-            email.announce_anniversary(m.user)
-            email.send_edit_profile(m.user)
+    from nadine.models.core import Member
+    for m in Member.objects.active_members():
+        d = m.duration()
+        if d.years and not d.months and not d.days:
+                email.announce_anniversary(m.user)
+                email.send_edit_profile(m.user)
 
 
 @shared_task
