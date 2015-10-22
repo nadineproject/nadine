@@ -120,7 +120,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 
 					<div style="margin-left:5em;">
 					<form action="{% url 'staff.views.toggle_billing_flag' member.id %}" onSubmit="return confirm('Are you sure?');">
-						{% if member.valid_billing %}
+						{% if member.has_valid_billing %}
 							<input type="submit" value="Flag Invalid Billing Profile">
 						{% else %}
 							<input type="submit" value="Clear Invalid Billing Flag">

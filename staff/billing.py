@@ -166,7 +166,7 @@ def run_billing(bill_time=None):
     billing_success = False
     bill_count = 0
     try:
-            # This should be changed to "all members w/ activity or an active membership"
+        # This should be changed to "all members w/ activity"
         for member in Member.objects.all():
             last_bill = member.last_bill()
             if last_bill:

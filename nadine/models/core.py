@@ -304,7 +304,7 @@ class Member(models.Model):
     last_modified = models.DateField(auto_now=True, editable=False)
     photo = models.ImageField(upload_to=user_photo_path, blank=True, null=True)
     tags = TaggableManager(blank=True)
-    valid_billing = models.BooleanField(default=False)
+    valid_billing = models.NullBooleanField(blank=True, null=True)
 
     @property
     def first_name(self): return smart_str(self.user.first_name)
@@ -552,6 +552,11 @@ class Member(models.Model):
         host = self.is_guest()
         if host:
             return host.has_valid_billing()
+        if self.valid_billing is None:
+            logger.debug("%s: Null Valid Billing" % self)
+            # TODO - Check for valid billing
+            self.valid_billing = False
+            #self.save()
         return self.valid_billing
     
     def has_billing_profile(self):
