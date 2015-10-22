@@ -94,8 +94,8 @@ def anniversary_checkin():
     for m in Member.objects.active_members():
         d = m.duration()
         if d.years and not d.months and not d.days:
-                email.announce_anniversary(m.user)
-                email.send_edit_profile(m.user)
+            email.announce_anniversary(m.user)
+            email.send_edit_profile(m.user)
 
 
 @shared_task
