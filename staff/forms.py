@@ -160,11 +160,12 @@ class MemberEditForm(forms.Form):
         emergency_contact.save()
 
 class DailyLogForm(forms.Form):
-    member_list = Member.objects.all()
+    member_id = forms.IntegerField(required=True, min_value=0, widget=forms.HiddenInput)
     visit_date = forms.DateField(widget=forms.HiddenInput())
-    member = forms.ModelChoiceField(queryset=member_list, required=True)
     payment = forms.ChoiceField(choices=PAYMENT_CHOICES, required=True)
-    guest_of = forms.ModelChoiceField(queryset=member_list, required=False)
+    #member_list = Member.objects.all()
+    #member = forms.ModelChoiceField(queryset=member_list, required=True)
+    #guest_of = forms.ModelChoiceField(queryset=member_list, required=False)
     note = forms.CharField(required=False)
 
     def save(self):
@@ -173,7 +174,7 @@ class DailyLogForm(forms.Form):
             raise Exception('The form must be valid in order to save')
 
         # Make sure there isn't another log for this member on this day
-        m = self.cleaned_data['member']
+        m = Member.objects.get(pk=self.cleaned_data['member_id'])
         v = self.cleaned_data['visit_date']
         daily_log = DailyLog.objects.filter(member=m, visit_date=v)
         if daily_log:
@@ -183,7 +184,7 @@ class DailyLogForm(forms.Form):
         daily_log.member = m
         daily_log.visit_date = v
         daily_log.payment = self.cleaned_data['payment']
-        daily_log.guest_of = self.cleaned_data['guest_of']
+        #daily_log.guest_of = self.cleaned_data['guest_of']
         daily_log.note = self.cleaned_data['note']
         daily_log.save()
         return daily_log

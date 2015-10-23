@@ -47,19 +47,6 @@ nav #activity-tab { background: #FBD850; color: black; }
             <td></td>
          </tr>
       {% endfor %}
-
-      <!-- The form to add a new daily log -->
-      <form enctype="multipart/form-data" action='.' method='post'>
-      {{ daily_log_form.visit_date }}
-      <tr class="{% cycle 'row-even' 'row-odd' %}">
-         <td>{{ daily_log_form.member }}</td>
-         <td>{{ daily_log_form.payment }}</td>
-         <td>{{ daily_log_form.guest_of }}</td>
-         <td>{{ daily_log_form.note }}</td>
-         <td><input type="submit" value="Add" /></td>
-      </tr>
-      {% csrf_token %}
-      </form>
   </table>
   <div style="font-weight:bold; text-align:right;">{{ daily_logs | length }} records found</div>
 </div>
@@ -71,19 +58,17 @@ nav #activity-tab { background: #FBD850; color: black; }
 		<tr>
 			<th>Member</th>
 			<th>Payment</th>
-			<th>Guest of</th>
 			<th>Notes</th> 
 		</tr>
 		{% for member in not_signed_in %}
 			<form enctype="multipart/form-data" action='.' method='post'>
 			{{ daily_log_form.visit_date }}
-			<input type="hidden" id="id_member" name="member" value="{{member.id}}">
+			<input type="hidden" name="member_id" value="{{member.id}}">
 			<tr class="{% cycle 'row-even' 'row-odd' %}">
 				<td style="text-align:left;"><a href="{% url 'staff.views.member_activity' member.id %}">{{ member }}</a></td>
 				<td>{{ daily_log_form.payment }}</td>
-				<td>{{ daily_log_form.guest_of }}</td>
 				<td>{{ daily_log_form.note }}</td>
-	         <td><input type="submit" value="Add" /></td>
+				<td><input type="submit" value="Add" /></td>
 				<td></td>
 			</tr>
 			{% csrf_token %}
@@ -91,8 +76,8 @@ nav #activity-tab { background: #FBD850; color: black; }
 		{% endfor %}
 	</table>
 	<div style="font-weight:bold; text-align:right;">{{ not_signed_in | length }} records found</div>
-{% endif %}
 </div>
+{% endif %}
 
 <!-- Display form errors if there are some -->
 <div id="form_errors">

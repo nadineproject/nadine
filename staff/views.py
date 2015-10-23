@@ -790,7 +790,6 @@ def activity_today(request):
 def activity_for_date(request, activity_date):
     daily_logs = DailyLog.objects.filter(visit_date=activity_date).reverse()
 
-    page_message = None
     if request.method == 'POST':
         daily_log_form = DailyLogForm(request.POST, request.FILES)
         if daily_log_form.is_valid():
@@ -799,8 +798,11 @@ def activity_for_date(request, activity_date):
                 messages.add_message(request, messages.INFO, "Activity was recorded!")
             except Exception as e:
                 messages.add_message(request, messages.ERROR, e)
+        else: 
+            print "Fuck You"
 
     daily_log_form = DailyLogForm(initial={'visit_date': activity_date})
+    #daily_log_form = None
     not_signed_in = arp.not_signed_in(activity_date)
 
     return render_to_response('staff/activity_date.html', {'daily_logs': daily_logs, 'not_signed_in': not_signed_in, 'daily_log_form': daily_log_form, 'activity_date': activity_date, 'next_date': activity_date + timedelta(days=1), 'previous_date': activity_date - timedelta(days=1), }, context_instance=RequestContext(request))
