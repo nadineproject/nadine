@@ -554,15 +554,22 @@ class Member(models.Model):
             return host.has_valid_billing()
         if self.valid_billing is None:
             logger.debug("%s: Null Valid Billing" % self)
-            # TODO - Check for valid billing
-            self.valid_billing = False
-            #self.save()
+            if self.has_new_card():
+                logger.debug("%s: Found new card.  Marking billing valid." % self)
+                self.valid_billing = True
+                self.save()
+            else:
+                self.valid_billing = False
         return self.valid_billing
-    
+
     def has_billing_profile(self):
         if usaepay.getAllCustomers(self.user.username):
             return True
         return False
+
+    def has_new_card(self):
+        # Check for a new card.  WARNING: kinda expensive
+        return usaepay.has_new_card(self.user.username)
 
     def guests(self):
         guests = []

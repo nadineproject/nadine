@@ -132,6 +132,22 @@ public class USAePayBridge {
 		}
 	}
 	
+	public List getCustomerHistory(Integer customer_number) throws Exception {
+		System.out.println("getCustomerHistory: " + customer_number);
+		BigInteger big_num = BigInteger.valueOf(customer_number.intValue());
+		TransactionSearchResult result = client.getCustomerHistory(token, big_num);
+		TransactionObjectArray transactionArray = result.getTransactions();
+		return transactionArray.getTransactions();
+	}
+
+	public List getCustomerHistory(String user_id) throws Exception {
+		System.out.println("getCustomerHistory: " + user_id);
+		BigInteger customer_number = getCustomerNumber(user_id);
+		TransactionSearchResult result = client.getCustomerHistory(token, customer_number);
+		TransactionObjectArray transactionArray = result.getTransactions();
+		return transactionArray.getTransactions();
+	}
+	
 	public BigInteger getCustomerNumber(String user_id) throws Exception {
 		BigInteger n = client.searchCustomerID(token, user_id);
 		System.out.println("getCustomerNumber: " + user_id + " = " + n);

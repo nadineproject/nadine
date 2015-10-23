@@ -1,4 +1,5 @@
 import base64, csv
+from datetime import datetime, timedelta
 from py4j.java_gateway import JavaGateway
 from Crypto.Cipher import AES
 from django.conf import settings
@@ -40,11 +41,45 @@ def auto_bill_enabled(username):
 
 
 def get_transactions(year, month, day):
-    transactions = []
     gateway = JavaGateway()
-    gateway_transactions = gateway.entry_point.getTransactions(year, month, day)
-    if gateway_transactions:
-        for t in gateway_transactions:
+    raw_transactions = gateway.entry_point.getTransactions(year, month, day)
+    clean_transactions = clean_transaction_list(raw_transactions)
+    return clean_transactions
+
+
+def get_history(username):
+    # Searches all the history for all the customers for this user
+    # Returns a dictionary of {cust_num: transactions}
+    history = {}
+    try:
+        gateway = JavaGateway()
+        for cust in gateway.entry_point.getAllCustomers(username):
+            cust_num = cust.getCustNum()
+            raw_transactions = gateway.entry_point.getCustomerHistory(int(cust_num))
+            clean_transactions = clean_transaction_list(raw_transactions)
+            history[cust_num] = clean_transactions
+    except:
+        return None
+    
+    return history
+
+
+def has_new_card(username):
+    history = get_history(username)
+    for cust_num, transactions in history.items():
+        # New cards have only a few transactions and one
+        # is an autorization within one week
+        if len(transactions) <= 3:
+            auth = transactions[0]['status'] == 'Authorized'
+            recent = datetime.now() - transactions[0]['date_time'] <= timedelta(weeks=1)
+            return auth and recent
+    return False
+
+
+def clean_transaction_list(transactions):
+    transaction_list = []
+    if transactions:
+        for t in transactions:
             username = t.getCustomerID()
             card_type = t.getCreditCardData().getCardType()
             if not card_type:
@@ -54,9 +89,11 @@ def get_transactions(year, month, day):
                 status = status.split()[0]
             amount = t.getDetails().getAmount()
             description = t.getDetails().getDescription()
-            transactions.append({'username': username, 'transaction': t, 'description': description,
+            date_time = datetime.strptime(t.getDateTime(), '%Y-%m-%d %H:%M:%S')
+            transaction_list.append({'username': username, 'transaction': t, 'date_time':date_time, 'description': description,
                                  'card_type': card_type, 'status': status, 'amount': amount})
-    return transactions
+    return transaction_list
+
 
 def get_checks_settled_by_date(year, month, day):
     gateway = JavaGateway()
