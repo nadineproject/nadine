@@ -930,6 +930,8 @@ def view_user_reports(request):
 
 @staff_member_required
 def usaepay_user(request, username):
+    user = get_object_or_404(User, username=username)
+    
     error = None
     customers = None
     gateway = None
@@ -951,7 +953,10 @@ def usaepay_user(request, username):
         except:
             error = 'Could not pull customers!'
 
-    return render_to_response('staff/usaepay.html', {'username': username, 'error': error, 'customers': customers}, context_instance=RequestContext(request))
+    if 'UMerror' in request.GET:
+        error = request.GET.get('UMerror')
+
+    return render_to_response('staff/usaepay.html', {'user': user, 'error': error, 'customers': customers, 'settings':settings }, context_instance=RequestContext(request))
 
 
 @staff_member_required

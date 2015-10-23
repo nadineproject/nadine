@@ -5,12 +5,12 @@ nav #members-tab { background: #FBD850; color: black; }
 #content td { white-space:nowrap; }
 {% endblock %}
 
-{% block sub-title %}USAePay Customers | {% endblock %}
+{% block sub-title %}USAePay Customers | {{ user }} | {% endblock %}
 
 {% block content %}
 {% include "staff/member_menu.frag" %}	 
 
-<h2>USAePay Customers - {{ username }}</h2>
+<h2>USAePay Customers - <a href="{% url 'staff.views.member_detail_user' user.username %}">{{ user.get_full_name }}</a></h2>
 
 {% if error %}
 	<div style="text-align:center; font-size:150%; color:red">{{ error }}</div>
@@ -50,4 +50,221 @@ nav #members-tab { background: #FBD850; color: black; }
 		<td></td>
 </table>
 
+<h3>Add New Billing Profile</h3>
+
+<form name="ccform" action="https://www.usaepay.com/gate.php" method="POST" 
+onSubmit="return validateForm()">
+
+<input type="hidden" name="UMkey" value="{{ settings.USA_EPAY_KEY }}">
+<input type="hidden" name="UMredir" value="https://apps.officenomads.com{% url 'staff.views.usaepay_user' user.username %}">
+<input type="hidden" name="UMdescription" value="Office Nomads Billing Authorization">
+<input type="hidden" name="UMcustid" value="{{ user.username }}">
+<input type="hidden" name="UMcommand" value="AuthOnly">
+<input type="hidden" name="UMamount" value="1.00">
+<input type="hidden" name="UMinvoice" value="1617">
+<input type="hidden" name="UMaddcustomer" value="yes">
+<input type="hidden" name="UMschedule" value="disabled">
+<input type="hidden" name="UMsoftware" value="nadine">
+<input type="hidden" name="UMcustreceipt" value="yes">
+<input type="hidden" name="UMcardpresent" value="true">
+<input type="hidden" name="UMbillphone" value="{{ user.profile.phone }}">
+<input type="hidden" name="UMname" value="{{ user.profile.full_name }}">
+<input type="hidden" name="UMemail" value="{{ user.email }}">
+<input type="hidden" name="username" value="{{ user.username }}">
+<input type="hidden" name="auth" value="{{ user.profile.usaepay_auth }}">
+<!--<input type="hidden" name="UMtestmode" value="true">-->
+
+<table border=1 width="80%">
+
+<tr>
+	<td>First Name</td>
+	<td><input type="text" name="UMbillfname" size="40" value="{{ user.first_name }}"></td>
+</tr>
+<tr>
+	<td>Last Name</td>
+	<td><input type="text" name="UMbilllname" size="40" value="{{ user.last_name }}"></td>
+</tr>
+<tr>
+	<td>Company</td>
+	<td><input type="text" name="UMbillcompany" size="40" value=""></td>
+</tr>
+<tr>
+	<td>Street</td>
+	<td><input type="text" name="UMstreet" size="40" value="{{ user.profile.address1 }}"></td>
+</tr>
+<tr>
+	<td>Zip</td>
+	<td><input type="text" name="UMzip" size="9" maxlength="5" value="{{ user.profile.zipcode }}"></td>
+</tr>
+
+<tr>
+	<td>Card Number</td>
+	<td><input type="text" name="UMcard" size="40"></td>
+</tr>
+<tr>
+	<td>Expire Date (MM/YY)</td>
+	<td>
+		<input type="text" name="UMexpirM" size="2" maxlength="2">/
+		<input type="text" name="UMexpirY" size="2" maxlength="2">
+		<input type="hidden" name="UMexpir" value="">
+	</td>
+</tr>
+<tr>
+	<td>CVV</td>
+	<td><input type="text" name="UMcvv" size="4"></td>
+</tr>
+
+<tr>
+	<td>Bank Routing number</td>
+	<td><input type="text" name="UMrouting" size="40"></td>
+</tr>
+<tr>
+	<td>Checking Account Number</td>
+	<td><input type="text" name="UMaccount" size="40"></td>
+</tr>
+
+<tr>
+	<td colspan="2" style="text-align: center;">
+		<input type="submit" value="Create New Billing Profile">
+	</td>
+</tr>
+
+</table>
+</form>
+
+{% endblock %}
+
+{%block sub-head %}
+<script>
+	function validateForm() {
+	    var CCN = trimBetweenSpaces(trimBegEndSpaces(stripOffNonDigit(document.ccform.UMcard.value)));
+	    var expireDate = trimBetweenSpaces(trimBegEndSpaces(stripOffNonDigit(document.ccform.UMexpirM.value + document.ccform.UMexpirY.value)));
+	    var bankRouting = trimBetweenSpaces(trimBegEndSpaces(document.ccform.UMrouting.value));
+	    var bankAccount = trimBetweenSpaces(trimBegEndSpaces(document.ccform.UMaccount.value));
+	    var name = document.ccform.UMname.value;
+	    var street = document.ccform.UMstreet.value;
+	    var zip = trimBetweenSpaces(trimBegEndSpaces(stripOffNonDigit(document.ccform.UMzip.value)));
+
+	    if (CCN.length == 0 || expireDate.Length == 0) {
+	        if (bankRouting.length == 0 ||
+	            bankAccount.length == 0 ||
+	            SSN.length == 0 ||
+	            dlNum.length == 0 ||
+	            dlState.length == 0) {
+	            alert("Error: missing values.\nYou have not included any Credit Card or Check information.");
+	            document.ccform.UMcard.focus == true;
+	            return false;
+	        }
+	    } else {
+	        if (expireDate.length !=	 4) {
+	            alert("Error: Incorrect expire date.\nThere should be 4 digits in the expire date idicating mm/yy.");
+	            document.ccform.UMexpirM.focus == true;
+	            return false;
+	        }
+	        document.ccform.UMexpir.value = expireDate;
+	    }
+
+	    if (name.length == 0 || !isAlphaSymbols(name, ".,' ")) {
+	        alert("Please fill out the name field.\nThe name field can only have Alpha Characters!");
+	        document.ccform.UMname.focus == true;
+	        return false;
+	    }
+
+	    /*
+	    if (street.length == 0) {
+	        alert("Please fill out the street field.");
+	        document.ccform.UMstreet.focus == true;
+	        return false;
+	    }
+
+	    if (zip.length == 0 || zip.length < 5) {
+	        alert("Please fill out the zip field which should be 5 digits.");
+	        document.ccform.UMzip.focus == true;
+	        return false;
+	    }
+	    */
+
+	    return true;
+	}
+
+	// Return true if a string is combination of alpha and given symbols.
+	function isAlphaSymbols(objValue, symbols) {
+	    var ch
+
+	    for (var i = 0; i < objValue.length; i++) {
+	        ch = objValue.charAt(i)
+	        if (isAlphaChar(ch) == false) {
+	            if (symbols.indexOf(ch) < 0)
+	                return false
+	        }
+	    }
+	    return true
+	}
+
+	// Return true of a character is an alphabet.
+	function isAlphaChar(ch) {
+	    return ((ch >= "A" && ch <= "Z") || (ch >= "a" && ch <= "z"))
+	}
+
+	// Stiff off any non digit char
+	function stripOffNonDigit(objValue) {
+	    var ch
+	    var tempStr = new String()
+
+	    for (var i = 0; i < objValue.length; i++) {
+	        if (isDigitChar(objValue.charAt(i)) == true)
+	            tempStr = tempStr + objValue.charAt(i)
+	    }
+
+	    return tempStr
+	}
+
+	// Return true if a character is a digit.
+	function isDigitChar(ch) {
+	    return (ch >= "0" && ch <= "9")
+	}
+
+	// Removes leading and trailing blanks from a value
+	function trimBegEndSpaces(object_value) {
+	    var leading_blanks = 0
+	    var string_end = (object_value.length) - 1
+	    if (string_end < 0) string_end = 0
+
+	    // find first nonblank: start with first character and scan forwards
+	    while (leading_blanks <= string_end && object_value.charAt(leading_blanks) == " ") {
+	        leading_blanks++
+	    }
+
+	    // find last nonblank: start with last character and scan backwards
+	    while (string_end > leading_blanks && object_value.charAt(string_end) == " ") {
+	        string_end--
+	    }
+
+	    return object_value = object_value.substring(leading_blanks, string_end + 1)
+	}
+
+	// Remove any additional spaces
+	function trimBetweenSpaces(objValue) {
+	    var blankExists = false
+	    var newValue = new String()
+	    var ch
+
+	    for (var i = 0; i < objValue.length; i++) {
+	        ch = objValue.charAt(i)
+	        if (ch == " ") {
+	            if (blankExists == false) {
+	                blankExists = true
+	                newValue = newValue + ch
+	            }
+	        } else {
+	            newValue = newValue + ch
+	            blankExists = false
+	        }
+	    }
+	    if (newValue == null)
+	        return objValue
+	    else
+	        return newValue
+	}
+</script>
 {% endblock %}
