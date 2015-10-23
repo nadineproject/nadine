@@ -1,7 +1,7 @@
 {% extends "staff/staff_base.html" %}
 {% load static %}
 
-{% block sub-title %}Xero for {{ member.first_name }} {{ member.last_name }} | {% endblock %}
+{% block sub-title %}Xero | {{ user }} | {% endblock %}
 
 {% block style %}
 nav #members-tab { background: #FBD850; color: black; }
@@ -10,7 +10,7 @@ nav #members-tab { background: #FBD850; color: black; }
 {% block content %}
 {% include "staff/member_menu.frag" %}	 
 
-<h2>Xero Data for <a href="{% url 'staff.views.member_detail_user' user.username %}">{{ user }}</a>:</h2>
+<h2>Xero Data - <a href="{% url 'staff.views.member_detail_user' user.username %}">{{ user.get_full_name }}</a>:</h2>
 
 {% if messages %}
 <div class="messages">
