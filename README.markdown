@@ -35,7 +35,7 @@ Dowload the nadine source code from github
 
 Configure the local settings for your environment
 
-	cp nadine/local_settings.dist nadine/local_settings.py
+	cp nadine/local_settings.example nadine/local_settings.py
 	vi nadine/local_settings.py
 
 Create a blank database and grant all permissions to whatever account/password combination you want to use.

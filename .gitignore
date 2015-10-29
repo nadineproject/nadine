@@ -21,3 +21,4 @@ celerybeat-schedule.db
 django.log
 databases
 xero_privatekey.pem
+newrelic.ini
