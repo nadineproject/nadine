@@ -22,3 +22,4 @@ django.log
 databases
 xero_privatekey.pem
 newrelic.ini
+newrelic-celery.ini
