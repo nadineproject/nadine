@@ -33,7 +33,7 @@ def keymaster(request):
         gatekeeper = Gatekeeper.objects.by_ip(ip)
         if not gatekeeper:
             raise Exception("No Gatekeeper for incoming IP (%s)" % ip)
-        print "Incoming message from: %s" % ip
+        #print "Incoming message from: %s" % ip
 
         # Encrypted message is in 'message' POST variable
         if not 'message' in request.POST:
@@ -41,13 +41,9 @@ def keymaster(request):
         encrypted_message = request.POST['message']
 
         # Decrypt the message
-        incoming_message = gatekeeper.decrypt_message(encrypted_message)
+        incoming_message = request.POST['message']
+        response_message = gatekeeper.process_message(incoming_message)
     except Exception as e:
         return JsonResponse({'error': str(e)})
-    print "Message: %s" % incoming_message
 
-    #new_codes = DoorCode.objects.all()
-    #response = {'new_codes': new_codes}
-    
-    response_message = gatekeeper.encrypt_message("Are you the Gatekeeper?")
     return JsonResponse({'message':response_message})

@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('ip_address', models.GenericIPAddressField(unique=True)),
                 ('encryption_key', models.CharField(max_length=128)),
-                ('accessed_ts', models.DateTimeField(auto_now=True)),
+                ('access_ts', models.DateTimeField(auto_now=True)),
                 ('is_enabled', models.BooleanField(default=False)),
             ],
         ),
