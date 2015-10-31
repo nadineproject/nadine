@@ -26,33 +26,22 @@ def get_client_ip(request):
         ip = request.META.get('REMOTE_ADDR')
     return ip
 
-def get_gatekeeper_message(request):
-    # Verify the IP address of the gatekeeper
-    ip = get_client_ip(request)
-    if not ip == settings.HID_GATEKEEPER_IP:
-        raise Exception("invalid IP (%s)" % ip)
-    print "Incoming message from: %s" % ip
-    
-    # Grab our encryption key
-    encryption_key = settings.HID_ENCRYPTION_KEY
-    if not encryption_key:
-        raise Exception("No encryption key")
-
-    # Encrypted message is in 'message' POST variable
-    if not 'message' in request.POST:
-        raise Exception("No message in POST")
-
-    # Decrypt the message
-    encrypted_message = request.POST['message']
-    f = Fernet(encryption_key)
-    decrypted_message = f.decrypt(bytes(encrypted_message))
-
-    return decrypted_message
-
 @csrf_exempt
 def keymaster(request):
     try:
-        incoming_message = get_gatekeeper_message(request)
+        ip = get_client_ip(request)
+        gatekeeper = Gatekeeper.objects.by_ip(ip)
+        if not gatekeeper:
+            raise Exception("No Gatekeeper for incoming IP (%s)" % ip)
+        print "Incoming message from: %s" % ip
+
+        # Encrypted message is in 'message' POST variable
+        if not 'message' in request.POST:
+            raise Exception("No message in POST")
+        encrypted_message = request.POST['message']
+
+        # Decrypt the message
+        incoming_message = gatekeeper.decrypt_message(encrypted_message)
     except Exception as e:
         return JsonResponse({'error': str(e)})
     print "Message: %s" % incoming_message
@@ -60,4 +49,5 @@ def keymaster(request):
     #new_codes = DoorCode.objects.all()
     #response = {'new_codes': new_codes}
     
-    return JsonResponse({'success':True})
+    response_message = gatekeeper.encrypt_message("Are you the Gatekeeper?")
+    return JsonResponse({'message':response_message})
