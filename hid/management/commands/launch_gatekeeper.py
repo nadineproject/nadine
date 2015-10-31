@@ -16,7 +16,7 @@ from hid.models import Gatekeeper
 class Command(BaseCommand):
     help = "Launch the Gatekeeper"
     args = ""
-    requires_system_checks = True
+    requires_system_checks = False
 
     def handle(self, *labels, **options):
         poll_delay = getattr(settings, 'HID_POLL_DELAY_SEC', 60)
