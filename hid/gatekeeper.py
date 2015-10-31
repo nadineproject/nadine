@@ -2,6 +2,7 @@
 
 import os, sys, time, base64
 import ssl, urllib, urllib2, requests
+from datetime import datetime
 
 from django.conf import settings
 from django.utils import timezone
@@ -15,6 +16,7 @@ class GateKeeper:
         self.encryption_key = getattr(settings, 'HID_ENCRYPTION_KEY', None)
         if self.encryption_key is None:
             raise ImproperlyConfigured("Missing HID_ENCRYPTION_KEY setting")
+        self.fernet = Fernet(self.encryption_key)
 
         self.keymaster_url = getattr(settings, 'HID_KEYMASTER_URL', None)
         if self.keymaster_url is None:
@@ -23,8 +25,7 @@ class GateKeeper:
         self.poll_delay = getattr(settings, 'HID_POLL_DELAY_SEC', 60)
 
     def transmit_message(self, message):
-        f = Fernet(self.encryption_key)
-        encrypted_message = f.encrypt(message)
+        encrypted_message = self.fernet.encrypt(message)
         return requests.post(self.keymaster_url, data={'message':encrypted_message})
 
 
@@ -34,11 +35,12 @@ if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "nadine.settings")
 
     try:
+        print "Starting up Gatekeeper..."
         gatekeeper = GateKeeper()
         while True:
             message = "Hello World"
             response = gatekeeper.transmit_message(message)
-            print response.text
+            print "%s: response = %s" %(datetime.now(), response.text)
             time.sleep(gatekeeper.poll_delay)
     except ImproperlyConfigured as e:
-        print e
+        print "Error: %s" % str(e)
