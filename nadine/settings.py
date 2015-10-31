@@ -116,6 +116,7 @@ INSTALLED_APPS = (
     'taggit_templatetags',
     'taggit',
     'djcelery',
+    'hid',
     #'debug_toolbar',
 )
 

@@ -62,7 +62,7 @@ onSubmit="return validateForm()">
 <input type="hidden" name="UMcommand" value="AuthOnly">
 <input type="hidden" name="UMamount" value="1.00">
 <input type="hidden" name="UMinvoice" value="1617">
-<input type="hidden" name="UMaddcustomer" value="yes">
+<!--<input type="hidden" name="UMaddcustomer" value="yes">-->
 <input type="hidden" name="UMschedule" value="disabled">
 <input type="hidden" name="UMsoftware" value="nadine">
 <input type="hidden" name="UMcustreceipt" value="yes">
@@ -76,6 +76,18 @@ onSubmit="return validateForm()">
 
 <table border=1 width="80%">
 
+<tr>
+	<td>USAePay Customer</td>
+	<td>
+		<select name="UMcustnum">
+			{% for cust in customers reversed %}
+				<option {% if cust.isEnabled %} SELECTED {% endif %}>
+					{{ cust.getCustNum }}
+				</option>
+			{% endfor %}
+			<option value="">Add New Customer</option>
+		</select>
+</tr>
 <tr>
 	<td>First Name:</td>
 	<td><input type="text" name="UMbillfname" size="40" value="{{ user.first_name }}"></td>
