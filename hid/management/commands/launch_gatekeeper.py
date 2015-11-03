@@ -25,7 +25,7 @@ class Command(BaseCommand):
             raise ImproperlyConfigured("Missing HID_KEYMASTER_URL setting")
         encryption_key = getattr(settings, 'HID_ENCRYPTION_KEY', None)
         if encryption_key is None:
-            print "Example Key: %s" % Fernet.generate_key()
+            print "No encyrption key.  Use manage.py generate_key to create a new one"
             raise ImproperlyConfigured("Missing HID_ENCRYPTION_KEY setting")
     
         gatekeeper = Gatekeeper(encryption_key=encryption_key)
