@@ -4,7 +4,7 @@ import urllib
 import sys
 import datetime
 
-from django.conf imprt settings
+from django.conf import settings
 from django.core.management.base import NoArgsCommand, CommandError
 
 from arpwatch import arp
