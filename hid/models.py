@@ -14,6 +14,12 @@ from cryptography.fernet import Fernet
 logger = logging.getLogger(__name__)
 
 
+class Messages(object):
+    TEST_QUESTION = "Are you the Keymaster?"
+    TEST_RESPONSE = "Are you the Gatekeeper?"
+    PULL_CONFIGURATION = "pull_configuration"
+    SEND_NEW_DATA = "send_new_data"
+
 class GatekeeperManager(models.Manager):
     
     def by_ip(self, ip):
@@ -46,7 +52,7 @@ class Gatekeeper(models.Model):
         f = Fernet(bytes(self.encryption_key))
         ten_minutes = 10 * 60
         return f.decrypt(bytes(message), ttl=ten_minutes)
-    
+
     def encrypt_message(self, message):
         if not self.encryption_key:
             raise Exception("No encryption key")
@@ -57,32 +63,37 @@ class Gatekeeper(models.Model):
         incoming_message = self.decrypt_message(message)
 
         outgoing_message = "No message"
-        if incoming_message == "Are you the Keymaster?":
-            # Sent at the 
-            outgoing_message = "Are you the Gatekeeper?"
-        else:
-            try:
-                json_message = json.loads(incoming_message)
-                outgoing_message = self.process_json_message(json_message)
-            except ValueError, e:
-                outgoing_message = "Invalid message"
+        if incoming_message == Messages.TEST_QUESTION:
+            outgoing_message = Messages.TEST_RESPONSE
+        elif incoming_message == Messages.PULL_CONFIGURATION:
+            outgoing_message = self.pull_config()
+        elif incoming_message == Messages.SEND_NEW_DATA:
+            outgoing_message = self.send_new_data()
         
         return self.encrypt_message(outgoing_message)
     
-    def process_json_message(self, json_message):
-        
-        new_codes = DoorCode.objects.all()
-        return "{'foo': 'bar'}"
-    
+    def pull_config(self):
+        doors = []
+        for d in Door.objects.filter(gatekeeper=self):
+            door = {'name': d.name, 'ip_address':d.ip_address, 'username': d.username, 'password': d.password}
+            doors.append(door)
+        return json.dumps(doors)
+
+    def send_new_data(self):
+        return "no new data"
+
     def __str__(self): 
         return self.ip_address
 
 class Door(models.Model):
-    created = models.DateTimeField(auto_now_add=True)
-    description = models.CharField(max_length=128)
-    stub = models.CharField(max_length=16)
+    name = models.CharField(max_length=16, unique=True)
+    gatekeeper = models.ForeignKey(Gatekeeper)
+    username = models.CharField(max_length=32)
+    password = models.CharField(max_length=32)
+    ip_address = models.GenericIPAddressField()
+
     def __str__(self): 
-        return self.description
+        return self.name
 
 class DoorCode(models.Model):
     created_ts = models.DateTimeField(auto_now_add=True)

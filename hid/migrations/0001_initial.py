@@ -16,9 +16,10 @@ class Migration(migrations.Migration):
             name='Door',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('description', models.CharField(max_length=128)),
-                ('stub', models.CharField(max_length=16)),
+                ('name', models.CharField(unique=True, max_length=16)),
+                ('username', models.CharField(max_length=32)),
+                ('password', models.CharField(max_length=32)),
+                ('ip_address', models.GenericIPAddressField()),
             ],
         ),
         migrations.CreateModel(
@@ -45,5 +46,10 @@ class Migration(migrations.Migration):
                 ('access_ts', models.DateTimeField(auto_now=True)),
                 ('is_enabled', models.BooleanField(default=False)),
             ],
+        ),
+        migrations.AddField(
+            model_name='door',
+            name='gatekeeper',
+            field=models.ForeignKey(to='hid.Gatekeeper'),
         ),
     ]
