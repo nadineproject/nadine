@@ -1,3 +1,4 @@
+import json
 import logging
 
 from datetime import datetime, time, date, timedelta
@@ -55,12 +56,24 @@ class Gatekeeper(models.Model):
     def process_message(self, message):
         incoming_message = self.decrypt_message(message)
 
-        outgoing_message = None
+        outgoing_message = "No message"
         if incoming_message == "Are you the Keymaster?":
+            # Sent at the 
             outgoing_message = "Are you the Gatekeeper?"
+        else:
+            try:
+                json_message = json.loads(incoming_message)
+                outgoing_message = self.process_json_message(json_message)
+            except ValueError, e:
+                outgoing_message = "Invalid message"
         
         return self.encrypt_message(outgoing_message)
+    
+    def process_json_message(self, json_message):
         
+        new_codes = DoorCode.objects.all()
+        return "{'foo': 'bar'}"
+    
     def __str__(self): 
         return self.ip_address
 

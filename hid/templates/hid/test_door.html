@@ -1,0 +1,50 @@
+{% extends "staff/staff_base.html" %}
+
+{% block sub-title %} HID Doors | {% endblock %}
+
+{% block content %} 
+{% include "hid/doors_menu.frag" %}
+
+<h3>HID Doors</h3>
+
+<div style="margin-left:2em;">
+	<form method="POST" action=".">
+		<table>
+		<tr>
+			<th>IP Address</th>
+			<td><input name="ip_address" size="64" value="{{ ip_address }}"/></td>
+			<td></td>
+		</tr>
+		<tr>
+			<th>Username</th>
+			<td><input name="username" size="64" value="{{ username }}"/></td>
+			<td></td>
+		</tr>
+		<tr>
+			<th>Password</th>
+			<td><input name="password" size="64" value="{{ password }}"/></td>
+			<td></td>
+		</tr>
+		<tr>
+			<th>XML Request</th>
+			<td><textarea name="xml_request" cols="64" rows="16"/>{{ xml_request }}</textarea></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td style="text-align: center;">
+				<input type="submit" value="Submit" />
+			</td>
+			<td></td>
+		</tr>
+		<tr>
+			<th>XML Response</th>
+			<td><textarea name="xml_response" cols="64" rows="16"/>{{ xml_response }}</textarea></td>
+			<td></td>
+		</tr>
+		</table>
+	{% csrf_token %}
+	</form>
+</div>
+
+{% endblock %}

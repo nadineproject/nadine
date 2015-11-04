@@ -1,11 +1,12 @@
 from django.conf.urls import patterns, include, url
 from django.conf import settings
 
-from arpwatch.models import *
+from hid.models import *
 
-urlpatterns = patterns('',
-                       url(r'^$', 'hid.views.index'),
+urlpatterns = patterns('hid.views',
+                       url(r'^$', 'index'),
+                       url(r'^test_door/$', 'test_door'),
                        
                        # Are you the Keymaster?
-                       url(r'^keymaster/$', 'hid.views.keymaster'),
+                       url(r'^keymaster/$', 'keymaster'),
 )

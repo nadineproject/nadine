@@ -10,13 +10,34 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
-from cryptography.fernet import Fernet
-
+from hid.hid_control import DoorController
 from hid.models import *
 
 @staff_member_required
 def index(request):
     return render_to_response('hid/index.html', {}, context_instance=RequestContext(request))
+
+@staff_member_required
+def test_door(request):
+    ip_address = request.POST.get("ip_address", "")
+    username = request.POST.get("username", "")
+    password = request.POST.get("password", "")
+    xml_request = request.POST.get("xml_request", "")
+    xml_response = ""
+    if len(xml_request) > 0:
+        start_ts = timezone.now()
+        controller = DoorController(ip_address, username, password)
+        response_code, xml_response = controller.send_xml_str(xml_request)
+        response_time = timezone.now() - start_ts
+        print "response code: %d, response time: %s" % (response_code, response_time)
+    return render_to_response('hid/test_door.html', { 'ip_address': ip_address,
+        'username': username, 'password':password, 'xml_request':xml_request, 'xml_response':xml_response
+    }, context_instance=RequestContext(request))
+
+
+######################################################################
+# Keymaster API 
+######################################################################
 
 def get_client_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
