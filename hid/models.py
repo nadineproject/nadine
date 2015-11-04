@@ -18,7 +18,9 @@ class Messages(object):
     TEST_QUESTION = "Are you the Keymaster?"
     TEST_RESPONSE = "Are you the Gatekeeper?"
     PULL_CONFIGURATION = "pull_configuration"
-    SEND_NEW_DATA = "send_new_data"
+    PULL_DOOR_CODES = "pull_door_codes"
+    MARK_SUCCESS = "mark_success"
+    SUCCESS_RESPONSE = "OK"
 
 class GatekeeperManager(models.Manager):
     
@@ -41,9 +43,11 @@ class GatekeeperManager(models.Manager):
 class Gatekeeper(models.Model):
     objects = GatekeeperManager()
     
+    description = models.CharField(max_length=64)
     ip_address = models.GenericIPAddressField(blank=False, null=False, unique=True)
     encryption_key = models.CharField(max_length=128)
     access_ts = models.DateTimeField(auto_now=True)
+    success_ts = models.DateTimeField(null=True, blank=True)
     is_enabled = models.BooleanField(default=False)
 
     def decrypt_message(self, message):
@@ -67,20 +71,36 @@ class Gatekeeper(models.Model):
             outgoing_message = Messages.TEST_RESPONSE
         elif incoming_message == Messages.PULL_CONFIGURATION:
             outgoing_message = self.pull_config()
-        elif incoming_message == Messages.SEND_NEW_DATA:
-            outgoing_message = self.send_new_data()
+        elif incoming_message == Messages.PULL_DOOR_CODES:
+            outgoing_message = self.pull_door_codes()
+        elif incoming_message == Messages.MARK_SUCCESS:
+            outgoing_message = self.mark_success()
         
         return self.encrypt_message(outgoing_message)
     
     def pull_config(self):
         doors = []
         for d in Door.objects.filter(gatekeeper=self):
-            door = {'name': d.name, 'ip_address':d.ip_address, 'username': d.username, 'password': d.password}
+            door = {'name':d.name, 'ip_address':d.ip_address, 'username':d.username, 'password':d.password}
             doors.append(door)
         return json.dumps(doors)
 
-    def send_new_data(self):
-        return "no new data"
+    def pull_door_codes(self):
+        new_codes = DoorCode.objects.filter(modified_ts__gt=self.success_ts)
+        if not new_codes:
+            return "{}"
+            
+        codes = []
+        for c in DoorCode.objects.all():
+            u = c.user
+            code = {'username':u.username, 'first_name': u.first_name, 'last_name':u.last_name, 'code':c.code}
+            codes.append(code)
+        return json.dumps(codes)
+
+    def mark_success(self):
+        self.success_ts = timezone.now()
+        self.save()
+        return SUCCESS_RESPONSE
 
     def __str__(self): 
         return self.ip_address
@@ -96,18 +116,10 @@ class Door(models.Model):
         return self.name
 
 class DoorCode(models.Model):
-    created_ts = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name="+")
     modified_ts = models.DateTimeField(auto_now=True)
-    door = models.ForeignKey(Door)
     user = models.ForeignKey(User)
-    code = models.CharField(max_length=16, unique=True, db_index=True)
-    start = models.DateTimeField(null=False)
-    end = models.DateTimeField(null=True, blank=True)
-    sync_ts = models.DateTimeField(blank=True, null=True)
-
-    def is_synced(self):
-        return sync_ts != None
+    code = models.CharField(max_length=16, unique=True)
 
     def __str__(self): 
         return '%s - %s: %s' % (self.user, self.door, self.code)

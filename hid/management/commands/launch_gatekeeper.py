@@ -55,7 +55,7 @@ class GatekeeperConnection():
             door = Door(name=d['name'], ip_address=d['ip_address'], username=d['username'], password=d['password'])
             self.doors.append(door)
 
-    def process_response(self, response):
+    def process_door_codes(self, response):
         print "Response: %s" % response
 
 
@@ -72,18 +72,25 @@ class Command(BaseCommand):
             connection = GatekeeperConnection()
             
             # Test the connection
-            connection_test = connection.send_message(Messages.TEST_QUESTION)
-            if connection_test == Messages.TEST_RESPONSE:
+            response = connection.send_message(Messages.TEST_QUESTION)
+            if response == Messages.TEST_RESPONSE:
                 print "Connection successfull!"
+            else:
+                raise Exception("Could not connect to Keymaster")
 
             # Pull the configuration
-            configuration = connection.send_message(Messages.PULL_CONFIGURATION)
-            connection.process_configuration(configuration)
+            print "Pulling door configuration..."
+            response = connection.send_message(Messages.PULL_CONFIGURATION)
+            connection.process_configuration(response)
+            print "Configuring %d doors" % len(connection.doors)
             
             # Now loop and get new commands
             while True:
-                response = connection.send_message(Messages.SEND_NEW_DATA)
-                connection.process_response(response)
+                response = connection.send_message(Messages.PULL_DOOR_CODES)
+                connection.process_door_codes(response)
+                response = connection.send_message(Messages.MARK_SUCCESS)
+                if not response == Messages.SUCCESS_RESPONSE:
+                    raise Exception("Did not receive proper success response!")
                 time.sleep(poll_delay)
         except Exception as e:
             print "Error: %s" % str(e)
