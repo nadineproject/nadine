@@ -1,3 +1,4 @@
+import logging
 import ssl, urllib, urllib2, base64
 from xml.etree import ElementTree
 
@@ -6,6 +7,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.core.exceptions import ImproperlyConfigured
 
+logger = logging.getLogger(__name__)
 
 ###############################################################################################################
 # Communication Logic
@@ -19,6 +21,7 @@ class DoorController:
         self.door_pass = password
 
     def send_xml_str(self, xml_str):
+        logger.debug("Sending: %s" % xml_str)
         door_url = "https://%s/cgi-bin/vertx_xml.cgi" % self.door_ip
         xml_data = urllib.urlencode({'XML': xml_str})
         request = urllib2.Request(door_url, xml_data)
@@ -29,11 +32,22 @@ class DoorController:
         return_code = result.getcode()
         return_xml = result.read()
         result.close()
+        logger.debug("Response code: %d" % return_code)
+        logger.debug("Response: %s" % return_xml)
         return (return_code, return_xml)
 
     def send_xml(self, xml):
         xml_str = ElementTree.tostring(xml, encoding='utf8', method='xml')
         return self.send_xml_str(xml_str)
+    
+    def test_connection(self):
+        test_xml = list_doors()
+        code, response = self.send_xml(test_xml)
+        if code != 200:
+            raise Exception("Did not receive 200 return code")
+        error = get_error(response)
+        if error:
+            raise Exception("Received an error: %s" % error)
 
 ###############################################################################################################
 # Helper Functions
@@ -60,6 +74,12 @@ def add_door_code(user, door_code):
 #     controller = DoorController()
 #     return controller.send_xml(xml)
 
+def get_error(xml_str):
+    if "errorMessage" in xml_str:
+        e_start = xml_str.index('errorMessage') + 14
+        e_end = xml_str.index('"', e_start)
+        return xml_str[e_start:e_end]
+
 ###############################################################################################################
 # Base XML Functions
 ###############################################################################################################
@@ -77,6 +97,7 @@ def root_elm():
 def doors_elm(action):
     root = root_elm()
     elm = ElementTree.SubElement(root, 'hid:Doors')
+    elm.set('action', action)
     return (root, elm)
 
 # <hid:Doors action="LR" responseFormat="status" />
@@ -89,7 +110,7 @@ def list_doors():
 # <hid:Doors action="CM" command="unlockDoor"/>
 def door_command(command):
     root, elm = doors_elm('CM')
-    door_element.set('command', command)
+    elm.set('command', command)
     return root
 
 

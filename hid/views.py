@@ -13,9 +13,11 @@ from django.views.decorators.csrf import csrf_exempt
 from hid.hid_control import DoorController
 from hid.models import *
 
+
 @staff_member_required
 def index(request):
     return render_to_response('hid/index.html', {}, context_instance=RequestContext(request))
+
 
 @staff_member_required
 def test_door(request):
@@ -39,6 +41,7 @@ def test_door(request):
 # Keymaster API 
 ######################################################################
 
+
 def get_client_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
@@ -47,6 +50,7 @@ def get_client_ip(request):
         ip = request.META.get('REMOTE_ADDR')
     return ip
 
+
 @csrf_exempt
 def keymaster(request):
     try:
@@ -54,7 +58,7 @@ def keymaster(request):
         gatekeeper = Gatekeeper.objects.by_ip(ip)
         if not gatekeeper:
             raise Exception("No Gatekeeper for incoming IP (%s)" % ip)
-        #print "Incoming message from: %s" % ip
+        logger.debug("Incoming connection from: %s" % ip)
 
         # Encrypted message is in 'message' POST variable
         if not 'message' in request.POST:
@@ -63,7 +67,8 @@ def keymaster(request):
 
         # Decrypt the message
         incoming_message = request.POST['message']
-        response_message = gatekeeper.process_message(incoming_message)
+        keymaster = Keymaster(gatekeeper)
+        response_message = keymaster.process_message(incoming_message)
     except Exception as e:
         return JsonResponse({'error': str(e)})
 
