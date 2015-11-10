@@ -26,19 +26,28 @@ class DoorController:
 
     def send_xml_str(self, xml_str):
         logger.debug("Sending: %s" % xml_str)
+        
         xml_data = urllib.urlencode({'XML': xml_str})
         request = urllib2.Request(self.door_url(), xml_data)
         base64string = base64.encodestring('%s:%s' % (self.door_user, self.door_pass)).replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string) 
         context = ssl._create_unverified_context()
         context.set_ciphers('RC4-SHA')
+        
         result = urllib2.urlopen(request, context=context)
         return_code = result.getcode()
         return_xml = result.read()
         result.close()
+        
         logger.debug("Response code: %d" % return_code)
         logger.debug("Response: %s" % return_xml)
-        return (return_code, return_xml)
+        if return_code != 200:
+            raise Exception("Did not receive 200 return code")
+        error = get_error(return_xml)
+        if error:
+            raise Exception("Received an error: %s" % error)
+        
+        return return_xml
 
     def send_xml(self, xml):
         xml_str = ElementTree.tostring(xml, encoding='utf8', method='xml')
@@ -46,12 +55,23 @@ class DoorController:
     
     def test_connection(self):
         test_xml = list_doors()
-        code, response = self.send_xml(test_xml)
-        if code != 200:
-            raise Exception("Did not receive 200 return code")
-        error = get_error(response)
-        if error:
-            raise Exception("Received an error: %s" % error)
+        self.send_xml(test_xml)
+
+    def pull_events(self, recordCount):
+        # First pull the overview to get the current recordmarker and timestamp
+        event_xml_str = self.send_xml(list_events())
+        event_xml = ElementTree.fromstring(event_xml_str)
+        rm = event_xml[0].attrib['currentRecordMarker']
+        ts = event_xml[0].attrib['currentTimestamp']
+        
+        events = []
+        event_xml_str = self.send_xml(list_events(recordCount, rm, ts))
+        event_xml = ElementTree.fromstring(event_xml_str)
+        for child in event_xml[0]:
+            event_str = get_event_detail(child.attrib)
+            events.append(event_str)
+        return events
+
 
 ###############################################################################################################
 # Helper Functions
@@ -78,6 +98,8 @@ def add_door_code(user, door_code):
 #     controller = DoorController()
 #     return controller.send_xml(xml)
 
+# <hid:Error action="RS" elementType="hid:EventMessages" errorCode="5013" errorReporter="vertx" errorMessage="Error getting event history"/>
+# Just using strings on this guy to keep things simple
 def get_error(xml_str):
     if "errorMessage" in xml_str:
         e_start = xml_str.index('errorMessage') + 14
@@ -218,6 +240,70 @@ def assign_credential():
 def remove_credential():
     pass
 
+###############################################################################################################
+# Event Commands
+###############################################################################################################
+
+
+def event_elm(action):
+    root = root_elm()
+    elm = ElementTree.SubElement(root, 'hid:EventMessages')
+    elm.set('action', action)
+    return (root, elm)
+
+# <hid:EventMessages action="DR"/>
+def display_recent():
+    root, elm = event_elm('DR')
+    return root
+
+# <hid:EventMessages action="LR" recordCount="1" historyRecordMarker="2233" historyTimestamp="1428541357"/>
+def list_events(recordCount=None, recordMarker=None, timestamp=None):
+    root, elm = event_elm('LR')
+    if recordCount:
+        elm.set('recordCount', str(recordCount))
+    if recordMarker:
+        elm.set('historyRecordMarker', str(recordMarker))
+    if timestamp:
+        elm.set('historyTimestamp', str(timestamp))
+    return root
+
+event_details = {}
+event_details["1022"] = "Denied Access - Card Not Found"
+event_details["1023"] = "Denied Access - Access PIN Not Found"
+event_details["2020"] = "Granted Access"
+event_details["2021"] = "Granted Access -  Extended Time"
+event_details["2024"] = "Denied Access - Schedule "
+event_details["2029"] = "Denied Access - Wrong PIN"
+event_details["2036"] = "Denied Access - Card Expired"
+event_details["2042"] = "Denied Access - PIN Lockout"
+event_details["2043"] = "Denied Access - Unassigned Card"
+event_details["2044"] = "Denied Access - Unassigned Access PIN"
+event_details["2046"] = "Denied Access - PIN Expired"
+event_details["4034"] = "Alarm Acknowledged"
+event_details["4035"] = "Door Locked-Scheduled"
+event_details["4036"] = "Door Unlocked-Scheduled"
+event_details["4041"] = "Door Forced Alarm"
+event_details["4042"] = "Door Held Alarm"
+event_details["4043"] = "Tamper Switch Alarm"
+event_details["4044"] = "Input A Alarm"
+event_details["4045"] = "Input B Alarm"
+event_details["7020"] = "Time Set"
+event_details["12031"] = "Granted Access - Manual"
+event_details["12032"] = "Door Unlocked"
+event_details["12033"] = "Door Locked"
+
+def get_event_detail(event_dict):
+    type = event_dict['eventType']
+    # The two most common events  
+    if type == "1022":
+        event_text = "Card Not Found (%s) " % event_dict['rawCardNumber']
+    elif type == "2020":
+        event_text = "Access Granted (%s %s)" % (event_dict['forename'], event_dict['surname'])
+    else:
+        event_text = event_details[type]
+    return "%s: %s" % (event_dict['timestamp'], event_text)
+
+#<?xml version="1.0" encoding="UTF-8"?><VertXMessage xmlns:hid="http://www.hidcorp.com/VertX"><hid:EventMessages action="RL" historyRecordMarker="0" historyTimestamp="947256029" recordCount="16" moreRecords="false" ><hid:EventMessage readerAddress="0" ioState="0" eventType="4034" timestamp="2000-01-20T02:22:57" /><hid:EventMessage readerAddress="0" rawCardNumber="010F2B8E" eventType="1022" timestamp="2000-01-01T00:13:34" /><hid:EventMessage readerAddress="0" cardholderID="1" forename="Jacob" surname="Sayles" eventType="2020" timestamp="2000-01-01T00:13:23" /><hid:EventMessage readerAddress="0" rawCardNumber="009B4C9B" eventType="1022" timestamp="2000-01-01T00:13:11" /><hid:EventMessage readerAddress="0" commandStatus="true" eventType="12031" timestamp="2000-01-01T00:13:02" /><hid:EventMessage readerAddress="0" commandStatus="true" eventType="12033" timestamp="2000-01-01T00:12:58" /><hid:EventMessage readerAddress="0" rawCardNumber="010F2B8E" eventType="1022" timestamp="2000-01-01T00:12:14" /><hid:EventMessage readerAddress="0" rawCardNumber="009B4C9B" eventType="1022" timestamp="2000-01-01T00:12:05" /><hid:EventMessage readerAddress="0" cardholderID="1" forename="Jacob" surname="Sayles" eventType="2020" timestamp="2000-01-01T00:11:57" /><hid:EventMessage readerAddress="0" rawCardNumber="01D609AD" eventType="1022" timestamp="2000-01-01T00:10:33" /><hid:EventMessage readerAddress="0" rawCardNumber="010F2B8E" eventType="1022" timestamp="2000-01-01T00:10:25" /><hid:EventMessage readerAddress="0" rawCardNumber="009B4C9B" eventType="1022" timestamp="2000-01-01T00:10:20" /><hid:EventMessage readerAddress="0" commandStatus="true" eventType="12032" timestamp="2000-01-01T00:10:14" /><hid:EventMessage readerAddress="0" ioState="0" eventType="4034" timestamp="2000-01-01T00:03:14" /><hid:EventMessage readerAddress="0" ioState="0" eventType="4034" timestamp="2000-01-01T00:00:52" /><hid:EventMessage readerAddress="0" ioState="0" eventType="4034" timestamp="2000-01-07T14:40:29" /></hid:EventMessages></VertXMessage>
 
 ###############################################################################################################
 # RoleSet Commands
