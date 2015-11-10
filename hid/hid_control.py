@@ -20,14 +20,18 @@ class DoorController:
         self.door_user = username
         self.door_pass = password
 
+    def door_url(self):
+        door_url = "https://%s/cgi-bin/vertx_xml.cgi" % self.door_ip
+        return door_url
+
     def send_xml_str(self, xml_str):
         logger.debug("Sending: %s" % xml_str)
-        door_url = "https://%s/cgi-bin/vertx_xml.cgi" % self.door_ip
         xml_data = urllib.urlencode({'XML': xml_str})
-        request = urllib2.Request(door_url, xml_data)
+        request = urllib2.Request(self.door_url(), xml_data)
         base64string = base64.encodestring('%s:%s' % (self.door_user, self.door_pass)).replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string) 
-        context = ssl._create_unverified_context()  
+        context = ssl._create_unverified_context()
+        context.set_ciphers('RC4-SHA')
         result = urllib2.urlopen(request, context=context)
         return_code = result.getcode()
         return_xml = result.read()
