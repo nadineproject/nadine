@@ -123,7 +123,7 @@ class GatekeeperManager(models.Manager):
             logger.error("Multiple Gatekeepers returned for IP: %s" % ip)
         except ObjectDoesNotExist as de:
             # The first time we see a message from a given IP we create a disabled gatekeeper
-            self.create(ip_address=ip, is_enabled=False)
+            self.create(ip_address=ip, description="New Gatekeeper", is_enabled=False)
             
         return None
     
