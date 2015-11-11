@@ -57,6 +57,30 @@ class DoorController:
         test_xml = list_doors()
         self.send_xml(test_xml)
 
+    def load_cardholders(self):
+        people = {}
+        offset = 0
+        count = 10
+        moreRecords = True
+        while moreRecords:
+            logger.debug("offset: %d, count: %d" % (offset, count))
+            xml_str = self.send_xml(list_cardholders(offset, count))
+            xml = ElementTree.fromstring(xml_str)
+            for child in xml[0]:
+                person = child.attrib
+                cardholderID = person['cardholderID']
+                username = person['custom1']
+                full_name = "%s %s " % (person['forename'], person['surname'])
+                people[cardholderID] = {'username': username, 'full_name': full_name}
+            returned = int(xml[0].attrib['recordCount'])
+            logger.debug("returned: %d cardholders" % returned)
+            if count > returned:
+                moreRecords = False
+            else:
+                offset = offset + count
+        self.cardholders = people
+        logger.debug(self.cardholders)
+
     def pull_events(self, recordCount):
         # First pull the overview to get the current recordmarker and timestamp
         event_xml_str = self.send_xml(list_events())
