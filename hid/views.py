@@ -60,16 +60,12 @@ def keymaster(request):
             raise Exception("No Gatekeeper for incoming IP (%s)" % ip)
         logger.debug("Incoming connection from: %s" % ip)
 
-        # Encrypted message is in 'message' POST variable
-        if not 'message' in request.POST:
-            raise Exception("No message in POST")
-        encrypted_message = request.POST['message']
-
-        # Decrypt the message
-        incoming_message = request.POST['message']
         keymaster = Keymaster(gatekeeper)
-        response_message = keymaster.process_message(incoming_message)
+        connection = keymaster.encrypted_connection
+        incoming_message = connection.receive_message(request)
+        outgoing_message = keymaster.process_message(incoming_message)
+        encrypted_response = connection.encrypt_message(outgoing_message)
     except Exception as e:
         return JsonResponse({'error': str(e)})
 
-    return JsonResponse({'message':response_message})
+    return JsonResponse({'message':encrypted_response})

@@ -57,6 +57,11 @@ class DoorController:
         test_xml = list_doors()
         self.send_xml(test_xml)
 
+    def get_cardholders(self):
+        if not 'cardholders' in self.__dict__:
+            self.load_cardholders()
+        return self.cardholders
+
     def load_cardholders(self):
         people = {}
         offset = 0
@@ -69,9 +74,9 @@ class DoorController:
             for child in xml[0]:
                 person = child.attrib
                 cardholderID = person['cardholderID']
-                username = person['custom1']
-                full_name = "%s %s " % (person['forename'], person['surname'])
-                people[cardholderID] = {'username': username, 'full_name': full_name}
+                person['username'] = person['custom1']
+                person['full_name'] = "%s %s " % (person['forename'], person['surname'])
+                people[cardholderID] = person
             returned = int(xml[0].attrib['recordCount'])
             logger.debug("returned: %d cardholders" % returned)
             if count > returned:

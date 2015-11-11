@@ -62,14 +62,22 @@ class EncryptedConnection(object):
 
         return None
 
+    def receive_message(self, request):
+        # Encrypted message is in 'message' POST variable
+        if not request.method == 'POST':
+            raise Exception("Must be POST")
+        if not 'message' in request.POST:
+            raise Exception("No message in POST")
+        encrypted_message = request.POST['message']
+        return self.decrypt_message(encrypted_message)
+
 
 class Keymaster(object):
     def __init__(self, gatekeeper):
         self.gatekeeper = gatekeeper
         self.encrypted_connection = self.gatekeeper.get_encrypted_connection()
 
-    def process_message(self, message):
-        incoming_message = self.encrypted_connection.decrypt_message(message)
+    def process_message(self, incoming_message):
         logger.debug("Incoming Message: '%s' " % incoming_message)
         
         outgoing_message = "No message"
@@ -84,7 +92,7 @@ class Keymaster(object):
             outgoing_message = Messages.SUCCESS_RESPONSE
         
         logger.debug("Outgoing Message: '%s' " % outgoing_message)
-        return self.encrypted_connection.encrypt_message(outgoing_message)
+        return outgoing_message
 
     def pull_config(self):
         doors = []
@@ -175,6 +183,7 @@ class Gatekeeper(models.Model):
             logger.info("Testing Door: %s" % name)
             controller = door.get_controller()
             controller.test_connection()
+            controller.load_cardholders()
 
     def process_door_codes(self, response):
         logger.debug("process_door_codes: %s" % response)
