@@ -73,10 +73,13 @@ class DoorController:
             xml = ElementTree.fromstring(xml_str)
             for child in xml[0]:
                 person = child.attrib
-                cardholderID = person['cardholderID']
-                person['username'] = person['custom1']
-                person['full_name'] = "%s %s " % (person['forename'], person['surname'])
-                people[cardholderID] = person
+                if 'custom1' in person:
+                    # All valid users will have a custom1 field.
+                    # Ignore the rest.
+                    cardholderID = person['cardholderID']
+                    person['username'] = person['custom1']
+                    person['full_name'] = "%s %s " % (person['forename'], person['surname'])
+                    people[cardholderID] = person
             returned = int(xml[0].attrib['recordCount'])
             logger.debug("returned: %d cardholders" % returned)
             if count > returned:
