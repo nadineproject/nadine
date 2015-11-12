@@ -19,6 +19,11 @@ class DoorController:
         self.door_ip = ip_address
         self.door_user = username
         self.door_pass = password
+        self.clear_data()
+
+    def clear_data(self):
+        self.cardholders_by_id = {}
+        self.cardholders_by_username = {}
 
     def door_url(self):
         door_url = "https://%s/cgi-bin/vertx_xml.cgi" % self.door_ip
@@ -57,8 +62,14 @@ class DoorController:
         test_xml = list_doors()
         self.send_xml(test_xml)
 
+    def add_cardholder(self, cardholder):
+        if 'cardholderID' in cardholder:
+            self.cardholders_by_id[cardholder['cardholderID']] = cardholder
+        if 'username' in cardholder:
+            self.cardholders_by_username[cardholder['username']] = cardholder
+
     def load_cardholders(self):
-        people = {}
+        self.clear_data()
         offset = 0
         count = 10
         moreRecords = True
@@ -71,37 +82,29 @@ class DoorController:
                 cardholderID = person['cardholderID']
                 person['full_name'] = "%s %s " % (person['forename'], person['surname'])
                 if 'custom1' in person:
-                    person['username'] = person['custom1']
-                people[cardholderID] = person
+                    username = person['custom1']
+                    person['username'] = username
+                    self.cardholders_by_username = person
+                self.cardholders_by_id[cardholderID] = person
             returned = int(xml[0].attrib['recordCount'])
             logger.debug("returned: %d cardholders" % returned)
             if count > returned:
                 moreRecords = False
             else:
                 offset = offset + count
-        self.cardholders = people
-        logger.debug(self.cardholders)
 
-    def get_cardholders(self):
-        if not 'cardholders' in self.__dict__:
-            self.load_cardholders()
-        return self.cardholders
-
-    def get_cardholder_by_id(self, id):
-        chs = self.get_cardholders()
-        if id in chs:
-            return chs[id]
+    def get_cardholder_by_id(self, cardholderID):
+        if cardholderID in self.cardholders_by_id:
+            return self.cardholders_by_id[cardholderID]
         return None
-    
+
     def get_cardholder_by_username(self, username):
-        for person in self.get_cardholders():
-            if 'username' in person and person['username'] == username:
-                return person
+        if username in self.cardholders_by_username:
+            return self.cardholders_by_username[username]
         return None
 
     def load_credentials(self):
         # This method pulls all the credentials and infuses the cardholders with their card numbers.
-        people = self.get_cardholders()
         offset = 0
         count = 10
         moreRecords = True
@@ -113,13 +116,42 @@ class DoorController:
                 if 'cardholderID' in card:
                     cardholderID = card['cardholderID']
                     cardNumber = card['rawCardNumber']
-                    people[cardholderID]['cardNumber'] = cardNumber
+                    cardholder = self.get_cardholder_by_id(cardholderID)
+                    if cardholder:
+                        cardholder['cardNumber'] = cardNumber
             returned = int(xml[0].attrib['recordCount'])
             logger.debug("returned: %d credentials" % returned)
             if count > returned:
                 moreRecords = False
             else:
                 offset = offset + count
+
+    def process_door_codes(self, door_codes):
+        changes = []
+        for new_code in door_codes:
+            username = new_code['username']
+            cardholder = self.get_cardholder_by_username(username)
+            #print "username: %s, cardholder: %s" % (username, cardholder)
+            if cardholder:
+                if cardholder['cardNumber'] != new_code['code']:
+                    cardholder['action'] = 'change'
+                    cardholder['new_code'] = new_code['code']
+                    changes.append(cardholder)
+                else:
+                    cardholder['action'] = 'no_change'
+            else:
+                new_cardholder = {'action':'add', 'username':username}
+                new_cardholder['forname'] = new_code['first_name']
+                new_cardholder['surname'] = new_code['last_name']
+                new_cardholder['new_code'] = new_code['code']
+                changes.append(new_cardholder)
+        # Now loop through all the cardholders and any that don't have an action
+        # are in the controller but not in the given list.  Remove them.
+        for cardholder in self.cardholders_by_id.values():
+            if not 'action' in cardholder:
+                cardholder['action'] = 'delete'
+                changes.append(cardholder)
+        return changes
 
     def pull_events(self, recordCount):
         # First pull the overview to get the current recordmarker and timestamp

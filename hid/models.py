@@ -203,26 +203,10 @@ class Gatekeeper(models.Model):
 
     def process_door_codes(self, door_codes, all=False):
         doorcode_json = json.loads(door_codes)
-        logger.debug("process_door_codes: %s" % doorcode_json)
-        adds = []
-        changes = []
-        deletes = []
-        for door_code in doorcode_json:
-            print door_code
-            username = door_code['username']
-            code = door_code['code']
-            for door_name, door in self.get_doors().items():
-                controller = door.get_controller()
-                cardholder = controller.get_cardholder_by_username(username)
-                if cardholder:
-                    if cardholder['cardNumber'] != code:
-                        changes.append({'door':door_name, 'cardholderID':cardholder['cardholderID'], 'code':code})
-                else:
-                    adds.append({'door':door_name, 'username':username, 'code':code, 'first_name':door_code['first_name'], 'last_name':door_code['last_name']})
-        print "Adds: %d" % len(adds)
-        print "Changes: %d" % len(changes)
-        print "Deletes: %d" % len(deletes)
-        print adds
+        for door_name, door in self.get_doors().items():
+            controller = door.get_controller()
+            changes = controller.process_door_codes(doorcode_json)
+            print changes
 
     def __str__(self): 
         return self.description
