@@ -102,13 +102,11 @@ class Keymaster(object):
         return json.dumps(doors)
 
     def pull_door_codes(self):
-        if self.gatekeeper.success_ts:
-            new_codes = DoorCode.objects.filter(modified_ts__gt=self.gatekeeper.success_ts)
-        else:
-            new_codes = DoorCode.objects.all()
-        if not new_codes:
-            return "{}"
-            
+        if self.gatekeeper.sync_ts:
+            if DoorCode.objects.filter(modified_ts__gt=self.gatekeeper.sync_ts).count() == 0:
+                # Nothing to do here
+                return []
+        # Pull all the codes and send them back
         codes = []
         for c in DoorCode.objects.all():
             u = c.user
@@ -157,14 +155,18 @@ class Gatekeeper(models.Model):
     ip_address = models.GenericIPAddressField(blank=False, null=False, unique=True)
     encryption_key = models.CharField(max_length=128)
     access_ts = models.DateTimeField(auto_now=True)
-    success_ts = models.DateTimeField(null=True, blank=True)
+    sync_ts = models.DateTimeField(null=True, blank=True)
     is_enabled = models.BooleanField(default=False)
 
     def set_keymaster_url(self, keymaster_url):
         self.keymaster_url = keymaster_url
 
     def mark_success(self):
-        self.success_ts = timezone.now()
+        self.sync_ts = timezone.now()
+        self.save()
+
+    def force_sync(self):
+        self.sync_ts = None
         self.save()
 
     def get_encrypted_connection(self):
@@ -172,7 +174,7 @@ class Gatekeeper(models.Model):
             self.keymaster_url = None
         return EncryptedConnection(self.encryption_key, keymaster_url=self.keymaster_url)
 
-    def process_configuration(self, configuration):
+    def configure_doors(self, configuration):
         self.doors = {}
         config_json = json.loads(configuration)
         logger.debug("Configuration: %s" % config_json)
@@ -180,15 +182,47 @@ class Gatekeeper(models.Model):
             name = d['name']
             door = Door(name=name, ip_address=d['ip_address'], username=d['username'], password=d['password'])
             self.doors[name] = door
-            logger.info("Testing Door: %s" % name)
-            controller = door.get_controller()
-            controller.test_connection()
-            controller.load_cardholders()
+            #controller = door.get_controller()
+            #controller.test_connection()
 
-    def process_door_codes(self, response):
-        logger.debug("process_door_codes: %s" % response)
-        for code in response:
-            pass
+    def load_data(self):
+        for door in self.get_doors().values():
+            controller = door.get_controller()
+            controller.load_cardholders()
+            controller.load_credentials()
+
+    def get_doors(self):
+        if not 'doors' in self.__dict__:
+            raise Exception("Doors not configured")
+        return self.doors
+
+    def get_door(self, door_name):
+        if 'door_name' not in self.get_doors():
+            raise Exception("Door not found")
+        return self.doors[door_name]
+
+    def process_door_codes(self, door_codes, all=False):
+        doorcode_json = json.loads(door_codes)
+        logger.debug("process_door_codes: %s" % doorcode_json)
+        adds = []
+        changes = []
+        deletes = []
+        for door_code in doorcode_json:
+            print door_code
+            username = door_code['username']
+            code = door_code['code']
+            for door_name, door in self.get_doors().items():
+                controller = door.get_controller()
+                cardholder = controller.get_cardholder_by_username(username)
+                if cardholder:
+                    if cardholder['cardNumber'] != code:
+                        changes.append({'door':door_name, 'cardholderID':cardholder['cardholderID'], 'code':code})
+                else:
+                    adds.append({'door':door_name, 'username':username, 'code':code, 'first_name':door_code['first_name'], 'last_name':door_code['last_name']})
+        print "Adds: %d" % len(adds)
+        print "Changes: %d" % len(changes)
+        print "Deletes: %d" % len(deletes)
+        print adds
 
     def __str__(self): 
         return self.description
@@ -217,4 +251,4 @@ class DoorCode(models.Model):
     code = models.CharField(max_length=16, unique=True)
 
     def __str__(self): 
-        return '%s - %s: %s' % (self.user, self.door, self.code)
+        return '%s: %s' % (self.user, self.code)

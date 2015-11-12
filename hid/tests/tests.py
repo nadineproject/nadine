@@ -35,10 +35,10 @@ class KeymasterTestCase(TestCase):
     def test_mark_success(self):
         start_ts = timezone.now()
         gatekeeper = Gatekeeper.objects.by_ip(self.ip_address)
-        self.assertTrue(gatekeeper.success_ts == None)
+        self.assertTrue(gatekeeper.sync_ts == None)
         message = Messages.MARK_SUCCESS
         keymaster = Keymaster(gatekeeper)
         response = keymaster.process_message(message)
         self.assertEqual(response, Messages.SUCCESS_RESPONSE)
-        self.assertFalse(gatekeeper.success_ts == None)
-        self.assertTrue(gatekeeper.success_ts > start_ts)
+        self.assertFalse(gatekeeper.sync_ts == None)
+        self.assertTrue(gatekeeper.sync_ts > start_ts)

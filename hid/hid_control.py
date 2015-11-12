@@ -57,11 +57,6 @@ class DoorController:
         test_xml = list_doors()
         self.send_xml(test_xml)
 
-    def get_cardholders(self):
-        if not 'cardholders' in self.__dict__:
-            self.load_cardholders()
-        return self.cardholders
-
     def load_cardholders(self):
         people = {}
         offset = 0
@@ -73,13 +68,11 @@ class DoorController:
             xml = ElementTree.fromstring(xml_str)
             for child in xml[0]:
                 person = child.attrib
+                cardholderID = person['cardholderID']
+                person['full_name'] = "%s %s " % (person['forename'], person['surname'])
                 if 'custom1' in person:
-                    # All valid users will have a custom1 field.
-                    # Ignore the rest.
-                    cardholderID = person['cardholderID']
                     person['username'] = person['custom1']
-                    person['full_name'] = "%s %s " % (person['forename'], person['surname'])
-                    people[cardholderID] = person
+                people[cardholderID] = person
             returned = int(xml[0].attrib['recordCount'])
             logger.debug("returned: %d cardholders" % returned)
             if count > returned:
@@ -88,6 +81,45 @@ class DoorController:
                 offset = offset + count
         self.cardholders = people
         logger.debug(self.cardholders)
+
+    def get_cardholders(self):
+        if not 'cardholders' in self.__dict__:
+            self.load_cardholders()
+        return self.cardholders
+
+    def get_cardholder_by_id(self, id):
+        chs = self.get_cardholders()
+        if id in chs:
+            return chs[id]
+        return None
+    
+    def get_cardholder_by_username(self, username):
+        for person in self.get_cardholders():
+            if 'username' in person and person['username'] == username:
+                return person
+        return None
+
+    def load_credentials(self):
+        # This method pulls all the credentials and infuses the cardholders with their card numbers.
+        people = self.get_cardholders()
+        offset = 0
+        count = 10
+        moreRecords = True
+        while moreRecords:
+            xml_str = self.send_xml(list_credentials(offset, count))
+            xml = ElementTree.fromstring(xml_str)
+            for child in xml[0]:
+                card = child.attrib
+                if 'cardholderID' in card:
+                    cardholderID = card['cardholderID']
+                    cardNumber = card['rawCardNumber']
+                    people[cardholderID]['cardNumber'] = cardNumber
+            returned = int(xml[0].attrib['recordCount'])
+            logger.debug("returned: %d credentials" % returned)
+            if count > returned:
+                moreRecords = False
+            else:
+                offset = offset + count
 
     def pull_events(self, recordCount):
         # First pull the overview to get the current recordmarker and timestamp
