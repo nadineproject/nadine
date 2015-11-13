@@ -20,13 +20,13 @@ class DoorControllerTestCase(SimpleTestCase):
     
     def test_process_codes(self):
         self.controller.clear_data()
-        self.controller.add_cardholder({"cardholderID":"1", "username":"jacob", "forname":"Jacob", "surname":"Sayles", "cardNumber":"123456"})  # No Change
-        self.controller.add_cardholder({"cardholderID":"2", "username":"susan", "forname":"Susan", "surname":"Dorsch", "cardNumber":"111111"})  # Change
-        self.controller.add_cardholder({"cardholderID":"3", "username":"bob_smith", "forname":"Bob", "surname":"Smith", "cardNumber":"666666"}) # Delete
+        self.controller.save_cardholder({"cardholderID":"1", "username":"jacob", "forname":"Jacob", "surname":"Sayles", "cardNumber":"123456"})  # No Change
+        self.controller.save_cardholder({"cardholderID":"2", "username":"susan", "forname":"Susan", "surname":"Dorsch", "cardNumber":"111111"})  # Change
+        self.controller.save_cardholder({"cardholderID":"3", "username":"bob_smith", "forname":"Bob", "surname":"Smith", "cardNumber":"666666"}) # Delete
         new_codes = [
-            {'username':'jacob', 'first_name':'Jacob', 'last_name':'Sayles', 'code':'123456'},      # No Change
-            {'username':'susan', 'first_name':'Susan', 'last_name':'Dorsch', 'code':'222222'},      # Change
-            {'username':'fred_jones', 'first_name':'Fred', 'last_name':'Jones', 'code':'7777777'},  # Add
+            {'username':'jacob', 'first_name':'Jacob', 'last_name':'Sayles', 'code':'123456'},     # No Change
+            {'username':'susan', 'first_name':'Susan', 'last_name':'Dorsch', 'code':'222222'},     # Change
+            {'username':'fred_jones', 'first_name':'Fred', 'last_name':'Jones', 'code':'7777777'}, # Add
         ]
         
         # Process the changes

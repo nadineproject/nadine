@@ -48,7 +48,7 @@ class DoorController:
         logger.debug("Response: %s" % return_xml)
         if return_code != 200:
             raise Exception("Did not receive 200 return code")
-        error = get_error(return_xml)
+        error = get_attribute(return_xml, "errorMessage")
         if error:
             raise Exception("Received an error: %s" % error)
         
@@ -62,7 +62,7 @@ class DoorController:
         test_xml = list_doors()
         self.send_xml(test_xml)
 
-    def add_cardholder(self, cardholder):
+    def save_cardholder(self, cardholder):
         if 'cardholderID' in cardholder:
             self.cardholders_by_id[cardholder['cardholderID']] = cardholder
         if 'username' in cardholder:
@@ -74,7 +74,7 @@ class DoorController:
         count = 10
         moreRecords = True
         while moreRecords:
-            logger.debug("offset: %d, count: %d" % (offset, count))
+            #logger.debug("offset: %d, count: %d" % (offset, count))
             xml_str = self.send_xml(list_cardholders(offset, count))
             xml = ElementTree.fromstring(xml_str)
             for child in xml[0]:
@@ -84,8 +84,7 @@ class DoorController:
                 if 'custom1' in person:
                     username = person['custom1']
                     person['username'] = username
-                    self.cardholders_by_username = person
-                self.cardholders_by_id[cardholderID] = person
+                self.save_cardholder(person)
             returned = int(xml[0].attrib['recordCount'])
             logger.debug("returned: %d cardholders" % returned)
             if count > returned:
@@ -105,6 +104,7 @@ class DoorController:
 
     def load_credentials(self):
         # This method pulls all the credentials and infuses the cardholders with their card numbers.
+        self.load_cardholders()
         offset = 0
         count = 10
         moreRecords = True
@@ -125,8 +125,10 @@ class DoorController:
                 moreRecords = False
             else:
                 offset = offset + count
+        logger.debug(self.cardholders_by_id)
 
     def process_door_codes(self, door_codes):
+        self.load_credentials()
         changes = []
         for new_code in door_codes:
             username = new_code['username']
@@ -143,6 +145,7 @@ class DoorController:
                 new_cardholder = {'action':'add', 'username':username}
                 new_cardholder['forname'] = new_code['first_name']
                 new_cardholder['surname'] = new_code['last_name']
+                new_cardholder['full_name'] = "%s %s" % (new_code['first_name'], new_code['last_name'])
                 new_cardholder['new_code'] = new_code['code']
                 changes.append(new_cardholder)
         # Now loop through all the cardholders and any that don't have an action
@@ -152,6 +155,36 @@ class DoorController:
                 cardholder['action'] = 'delete'
                 changes.append(cardholder)
         return changes
+
+    def process_changes(self, change_list):
+        for change in change_list:
+            action = change['action']
+            logger.debug("%s: %s" % (action, change['full_name']))
+            if action == 'add':
+                logger.debug("")
+                self.add_cardholder(change['forname'], change['surname'], change['username'], change['new_code'])
+            elif action == 'change':
+                self.change_cardholder(change['cardholderID'], change['cardNumber'], change['new_code'])
+            elif action == 'delete':
+                self.delete_cardholder(change['cardholderID'], change['cardNumber'])
+                pass
+
+    def add_cardholder(self, forname, surname, username, cardNumber):
+        response = self.send_xml(create_cardholder(forname, surname, username))
+        cardholderID = get_attribute(response, 'cardholderID')
+        logger.debug("New Cardholder: username: %s, cardholderID: %s" % (username, cardholderID)) 
+        self.send_xml(create_credential(cardNumber))
+        self.send_xml(assign_credential(cardholderID, cardNumber))
+        self.send_xml(add_roleset(cardholderID))
+
+    def change_cardholder(self, cardholderID, oldCardNumber, newCardNumber):
+        self.send_xml(delete_credential(oldCardNumber))
+        self.send_xml(create_credential(newCardNumber))
+        self.send_xml(assign_credential(cardholderID, newCardNumber))
+
+    def delete_cardholder(self, cardholderID, cardNumber):
+        self.send_xml(delete_credential(cardNumber))
+        self.send_xml(delete_cardholder(cardholderID))
 
     def pull_events(self, recordCount):
         # First pull the overview to get the current recordmarker and timestamp
@@ -173,16 +206,16 @@ class DoorController:
 # Helper Functions
 ###############################################################################################################
 
+# Pull a specific attribute out of a big xml string
+def get_attribute(xml_str, attribute):
+    if attribute in xml_str:
+        e_start = xml_str.index(attribute) + 14
+        e_end = xml_str.index('"', e_start)
+        return xml_str[e_start:e_end]
+
 def send_xml(ip_address, username, password, xml_str):
     controller = DoorController(ip_address, username, password)
     return controller.send_xml_str(xml_str)
-
-def add_door_code(user, door_code):
-    # Create cardholder
-    # Create credential
-    # Assign credential
-    # Assign schedule
-    pass
 
 # def unlockDoor():
 #     xml = door_command_xml("unlockDoor")
@@ -193,14 +226,6 @@ def add_door_code(user, door_code):
 #     xml = door_command_xml("lockDoor")
 #     controller = DoorController()
 #     return controller.send_xml(xml)
-
-# <hid:Error action="RS" elementType="hid:EventMessages" errorCode="5013" errorReporter="vertx" errorMessage="Error getting event history"/>
-# Just using strings on this guy to keep things simple
-def get_error(xml_str):
-    if "errorMessage" in xml_str:
-        e_start = xml_str.index('errorMessage') + 14
-        e_end = xml_str.index('"', e_start)
-        return xml_str[e_start:e_end]
 
 ###############################################################################################################
 # Base XML Functions
@@ -274,11 +299,10 @@ def list_cardholders(recordOffset, recordCount):
 #                     custom2="c2"
 #                     phone="800-555-1212" />
 # </hid:Cardholders>
-def create_cardholder(first_name, last_name, email, username):
+def create_cardholder(first_name, last_name, username):
     root, elm = cardholder_child_elm('AD')
     elm.set('forename', first_name)
     elm.set('surname', last_name)
-    elm.set('email', email)
     elm.set('custom1', username)
     return root
 
@@ -327,14 +351,20 @@ def create_credential(cardNumber):
 # <hid:Credentials action="UD" rawCardNumber="012345AB" isCard="true">
 #     <hid:Credential cardholderID="647"/>
 # </hid:Credentials>
-def assign_credential():
-    pass
+def assign_credential(cardholderID, cardNumber):
+    root, parent = credentials_parent_elm('UD')
+    parent.set('isCard', 'true')
+    parent.set('rawCardNumber', cardNumber)
+    child = ElementTree.SubElement(parent, "hid:Credential")
+    child.set('cardholderID', cardholderID)
+    return root
 
-# <hid:Credentials action="UD" rawCardNumber="012345AB" isCard="true">
-#     <hid:Credential cardholderID="647"/>
-# </hid:Credentials>
-def remove_credential():
-    pass
+# <hid:Credentials action="DD" rawCardNumber="111111" isCard="true"></hid:Credentials>
+def delete_credential(cardNumber):
+    root, parent = credentials_parent_elm('DD')
+    parent.set('isCard', 'true')
+    parent.set('rawCardNumber', cardNumber)
+    return root
 
 ###############################################################################################################
 # Event Commands
@@ -405,20 +435,23 @@ def get_event_detail(event_dict):
 # RoleSet Commands
 ###############################################################################################################
 
-
-def rollset_elm(action):
-    root = root_elm()
-    elm = ElementTree.SubElement(root, 'hid:RoleSet')
-    elm.set('action', action)
-    return (root, elm)
-
 # <hid:RoleSet action="UD" roleSetID="1">
 #     <hid:Roles>
 #         <hid:Role roleID="1" scheduleID="1" resourceID="0"/>
 #     </hid:Roles>
 # </hid:RoleSet>
-def assign_roll():
-    pass
+
+def add_roleset(roleID):
+    root = root_elm()
+    rollset = ElementTree.SubElement(root, 'hid:RoleSet')
+    rollset.set('action', 'UD')
+    rollset.set('roleSetID', roleID)
+    rolls = ElementTree.SubElement(rollset, 'hid:Roles')
+    roll = ElementTree.SubElement(rolls, 'hid:Role')
+    roll.set('roleID', roleID)
+    roll.set('scheduleID', '1')
+    roll.set('resourceID', '0')
+    return root
 
 
 ###############################################################################################################
@@ -439,6 +472,7 @@ def list_schedules(recordOffset, recordCount):
     elm.set('recordCount', str(recordCount))
     return root
 
+# <hid:Schedules action="UD" recordOffset="0" recordCount="10"/>
 def assign_schedule():
     pass
 

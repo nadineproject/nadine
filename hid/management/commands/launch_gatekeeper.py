@@ -8,10 +8,16 @@ from hid.models import Gatekeeper, Door, Messages
 
 class Command(BaseCommand):
     help = "Launch the Gatekeeper"
-    args = ""
+    args = "[forceSync]"
     requires_system_checks = False
 
-    def handle(self, *labels, **options):
+    def handle(self, *args, **options):
+        forcesync = False
+        for arg in args:
+            if arg == "forcesync":
+                print "Forcing full sync!"
+                forcesync = True
+
         poll_delay = getattr(settings, 'HID_POLL_DELAY_SEC', 60)
 
         try:
@@ -37,13 +43,19 @@ class Command(BaseCommand):
             print "Configured %d doors" % len(gatekeeper.doors)
 
             # Load the data to test the configuration
-            print "Loading data from doors..."
-            gatekeeper.load_data()
+            #print "Loading data from doors..."
+            #gatekeeper.load_data()
+            
 
             # Now loop and get new commands
             while True:
-                print "Contacting the Keymaster..."
-                response = connection.send_message(Messages.PULL_DOOR_CODES)
+                if forcesync:
+                    message = Messages.FORCE_SYNC
+                    forcesync = False
+                else:
+                    message = Messages.PULL_DOOR_CODES
+                print "Contacting the Keymaster: %s" % message
+                response = connection.send_message(message)
                 if len(response) > 2:
                     print "Received new door codes to process"
                     gatekeeper.process_door_codes(response)

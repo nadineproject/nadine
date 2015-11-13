@@ -24,6 +24,7 @@ class Messages(object):
     TEST_RESPONSE = "Are you the Gatekeeper?"
     PULL_CONFIGURATION = "pull_configuration"
     PULL_DOOR_CODES = "pull_door_codes"
+    FORCE_SYNC = "force_sync"
     MARK_SUCCESS = "mark_success"
     SUCCESS_RESPONSE = "OK"
 
@@ -87,6 +88,8 @@ class Keymaster(object):
             outgoing_message = self.pull_config()
         elif incoming_message == Messages.PULL_DOOR_CODES:
             outgoing_message = self.pull_door_codes()
+        elif incoming_message == Messages.FORCE_SYNC:
+            outgoing_message = self.pull_door_codes(forceSync=True)
         elif incoming_message == Messages.MARK_SUCCESS:
             self.gatekeeper.mark_success()
             outgoing_message = Messages.SUCCESS_RESPONSE
@@ -101,11 +104,12 @@ class Keymaster(object):
             doors.append(door)
         return json.dumps(doors)
 
-    def pull_door_codes(self):
-        if self.gatekeeper.sync_ts:
-            if DoorCode.objects.filter(modified_ts__gt=self.gatekeeper.sync_ts).count() == 0:
-                # Nothing to do here
-                return []
+    def pull_door_codes(self, forceSync=False):
+        if not forceSync:
+            if self.gatekeeper.sync_ts:
+                if DoorCode.objects.filter(modified_ts__gt=self.gatekeeper.sync_ts).count() == 0:
+                    # Nothing to do here
+                    return []
         # Pull all the codes and send them back
         codes = []
         for c in DoorCode.objects.all():
@@ -188,7 +192,6 @@ class Gatekeeper(models.Model):
     def load_data(self):
         for door in self.get_doors().values():
             controller = door.get_controller()
-            controller.load_cardholders()
             controller.load_credentials()
 
     def get_doors(self):
@@ -203,10 +206,12 @@ class Gatekeeper(models.Model):
 
     def process_door_codes(self, door_codes, all=False):
         doorcode_json = json.loads(door_codes)
+        logger.debug(doorcode_json)
         for door_name, door in self.get_doors().items():
             controller = door.get_controller()
             changes = controller.process_door_codes(doorcode_json)
-            print changes
+            logger.debug("Changes: %s: " % changes)
+            controller.process_changes(changes)
 
     def __str__(self): 
         return self.description
