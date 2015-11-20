@@ -1,7 +1,6 @@
 import base64, csv
 from datetime import datetime, timedelta
 from py4j.java_gateway import JavaGateway
-from Crypto.Cipher import AES
 from django.conf import settings
 
 def disableAutoBilling(username):
@@ -113,14 +112,14 @@ def get_checks_settled_by_date(year, month, day):
             results.append({'date':row[1], 'name':row[2], 'status':row[9], 'amount':row[10], 'processed':row[13]})
     return results
 
-def authorize(username, auth_code):
-    crypto = AES.new(settings.USA_EPAY_KEY, AES.MODE_ECB)
-    decripted_username = urlsafe_b64decode(crypto.decrypt(auth_code))
-    padded_username = username[:16].zfill(16)
-    return decripted_username == padded_username
-
 
 def get_auth_code(username):
-    crypto = AES.new(settings.USA_EPAY_KEY, AES.MODE_ECB)
+    from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+    from cryptography.hazmat.backends import default_backend
     padded_username = username[:16].zfill(16)
-    return base64.urlsafe_b64encode(crypto.encrypt(padded_username))
+    aes = algorithms.AES(settings.USA_EPAY_KEY)
+    backend = default_backend()
+    cipher = Cipher(aes, modes.ECB(), backend=backend)
+    encryptor = cipher.encryptor()
+    ct = encryptor.update(str(padded_username)) + encryptor.finalize()
+    return base64.urlsafe_b64encode(ct)
