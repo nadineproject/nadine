@@ -189,6 +189,12 @@ class Gatekeeper(models.Model):
             #controller = door.get_controller()
             #controller.test_connection()
 
+    def sync_clocks(self):
+        for door in self.get_doors().values():
+            controller = door.get_controller()
+            set_time_xml = hid_control.set_time()
+            controller.send_xml(set_time_xml)
+
     def load_data(self):
         for door in self.get_doors().values():
             controller = door.get_controller()

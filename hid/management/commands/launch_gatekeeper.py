@@ -42,10 +42,9 @@ class Command(BaseCommand):
                 return
             print "Configured %d doors" % len(gatekeeper.doors)
 
-            # Load the data to test the configuration
-            #print "Loading data from doors..."
-            #gatekeeper.load_data()
-            
+            # Set the time on each door
+            print "Syncing the door clocks..."
+            gatekeeper.sync_clocks()
 
             # Now loop and get new commands
             while True:

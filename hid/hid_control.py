@@ -1,5 +1,6 @@
 import logging
 import ssl, urllib, urllib2, base64
+from datetime import datetime
 from xml.etree import ElementTree
 
 from django.conf import settings
@@ -442,6 +443,7 @@ def get_event_detail(event_dict):
 # </hid:RoleSet>
 
 def add_roleset(roleID):
+    # This adds a basic schedule and rollset that equal "24x7" on a factory system
     root = root_elm()
     rollset = ElementTree.SubElement(root, 'hid:RoleSet')
     rollset.set('action', 'UD')
@@ -478,3 +480,40 @@ def assign_schedule():
 
 def remove_schedule():
     pass
+
+
+###############################################################################################################
+# System Commands
+###############################################################################################################
+
+
+# <hid:Time action="UD"
+#           month="6"
+#           dayOfMonth="26"
+#           year="2015"
+#           hour="19"
+#           minute="37"
+#           second="00"
+#           TZ="CST6CDT,M3.2.0/2,M11.1.0/2"
+#           TZCode="062" />
+def set_time(current_time=None):
+    if current_time == None:
+        current_time = datetime.now()
+    root = root_elm()
+    elm = ElementTree.SubElement(root, 'hid:Time')
+    elm.set('action', 'UD')
+    elm.set('year', str(current_time.year))
+    elm.set('month', str(current_time.month))
+    elm.set('dayOfMonth', str(current_time.day))
+    elm.set('hour', str(current_time.hour))
+    elm.set('minute', str(current_time.minute))
+    elm.set('second', str(current_time.second))
+    return root
+
+# <hid:System action="CM" command="restartNetwork"/>
+def restart_network():
+    root = root_elm()
+    elm = ElementTree.SubElement(root, 'hid:System')
+    elm.set('action', 'CM')
+    elm.set('command', 'restartNetwork')
+    return root
