@@ -21,6 +21,7 @@ from django.db.models import Sum
 from django.conf import settings
 from django.core import serializers
 from django.forms.models import model_to_dict
+
 from monthdelta import MonthDelta, monthmod
 from py4j.java_gateway import JavaGateway
 from nadine.models.core import *
@@ -120,9 +121,12 @@ def member_edit(request, username):
     if request.method == 'POST':
         edit_form = MemberEditForm(request.POST, request.FILES)
         if edit_form.is_valid():
-            edit_form.save()
-            messages.add_message(request, messages.INFO, "Member Updated")
-            return HttpResponseRedirect(reverse('staff.views.member_detail_user', args=[], kwargs={'username': username}))
+            try:
+                edit_form.save()
+                messages.add_message(request, messages.INFO, "Member Updated")
+                return HttpResponseRedirect(reverse('staff.views.member_detail_user', args=[], kwargs={'username': username}))
+            except Exception as e:
+                messages.add_message(request, messages.ERROR, e)
     else:
         emergency_contact = user.get_emergency_contact()
         member_data={'username': username,
