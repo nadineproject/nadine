@@ -86,11 +86,14 @@ def clean_transaction_list(transactions):
             status = t.getStatus()
             if status and ' ' in status:
                 status = status.split()[0]
+            transaction_type = t.getTransactionType()
             amount = t.getDetails().getAmount()
+            if transaction_type == 'Credit':
+                amount = -1 * amount
             description = t.getDetails().getDescription()
             date_time = datetime.strptime(t.getDateTime(), '%Y-%m-%d %H:%M:%S')
             transaction_list.append({'username': username, 'transaction': t, 'date_time':date_time, 'description': description,
-                                 'card_type': card_type, 'status': status, 'amount': amount})
+                                 'card_type': card_type, 'status': status, 'transaction_type':transaction_type, 'amount': amount})
     return transaction_list
 
 
