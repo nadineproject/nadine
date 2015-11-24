@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, date
 from django.test import TestCase
 from django.utils import timezone
 
-from hid.models import Messages, EncryptedConnection, Keymaster, Gatekeeper
+from keymaster.models import Messages, EncryptedConnection, Keymaster, Gatekeeper
 
 from cryptography.fernet import Fernet
 

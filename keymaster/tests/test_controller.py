@@ -1,8 +1,8 @@
 from django.test import SimpleTestCase
 from django.utils import timezone
 
-from hid.hid_control import DoorController
-from hid.models import Messages, EncryptedConnection, Keymaster, Gatekeeper
+from keymaster.hid_control import DoorController
+from keymaster.models import Messages, EncryptedConnection, Keymaster, Gatekeeper
 
 class DoorControllerTestCase(SimpleTestCase):
     ip_address = "127.0.0.1"
@@ -30,7 +30,7 @@ class DoorControllerTestCase(SimpleTestCase):
         ]
         
         # Process the changes
-        changes = self.controller.process_door_codes(new_codes)
+        changes = self.controller.process_door_codes(new_codes, load_credentials=False)
         self.assertEqual(len(changes), 3)
         for change in changes:
             username = change['username']

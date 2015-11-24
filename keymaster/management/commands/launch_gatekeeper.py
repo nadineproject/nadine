@@ -4,7 +4,7 @@ import traceback
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
-from hid.models import Gatekeeper, Door, Messages
+from keymaster.models import Gatekeeper, Door, Messages
 
 class Command(BaseCommand):
     help = "Launch the Gatekeeper"

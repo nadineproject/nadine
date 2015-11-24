@@ -10,13 +10,13 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
-from hid.hid_control import DoorController
-from hid.models import *
+from keymaster.hid_control import DoorController
+from keymaster.models import *
 
 
 @staff_member_required
 def index(request):
-    return render_to_response('hid/index.html', {}, context_instance=RequestContext(request))
+    return render_to_response('keymaster/index.html', {}, context_instance=RequestContext(request))
 
 
 @staff_member_required
@@ -32,7 +32,7 @@ def test_door(request):
         response_code, xml_response = controller.send_xml_str(xml_request)
         response_time = timezone.now() - start_ts
         print "response code: %d, response time: %s" % (response_code, response_time)
-    return render_to_response('hid/test_door.html', { 'ip_address': ip_address,
+    return render_to_response('keymaster/test_door.html', { 'ip_address': ip_address,
         'username': username, 'password':password, 'xml_request':xml_request, 'xml_response':xml_response
     }, context_instance=RequestContext(request))
 

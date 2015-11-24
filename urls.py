@@ -20,7 +20,7 @@ urlpatterns = patterns('',
                        url(r'^staff/', include('staff.urls')),
                        url(r'^member/', include('members.urls')),
                        url(r'^interlink/', include('interlink.urls')),
-                       url(r'^doors/', include('hid.urls')),
+                       url(r'^doors/', include('keymaster.urls')),
                        url(r'^logs/', include('arpwatch.urls')),
                        url(r'^tablet/', include('tablet.urls')),
 

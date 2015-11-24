@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from hid.models import *
+from keymaster.models import *
 
 class GatekeeperAdmin(admin.ModelAdmin):
     def force_sync(self, request, queryset):

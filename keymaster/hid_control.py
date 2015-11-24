@@ -128,8 +128,9 @@ class DoorController:
                 offset = offset + count
         logger.debug(self.cardholders_by_id)
 
-    def process_door_codes(self, door_codes):
-        self.load_credentials()
+    def process_door_codes(self, door_codes, load_credentials=True):
+        if load_credentials:
+            self.load_credentials()
         changes = []
         for new_code in door_codes:
             username = new_code['username']

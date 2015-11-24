@@ -40,13 +40,13 @@ class Migration(migrations.Migration):
                 ('ip_address', models.GenericIPAddressField(unique=True)),
                 ('encryption_key', models.CharField(max_length=128)),
                 ('access_ts', models.DateTimeField(auto_now=True)),
-                ('success_ts', models.DateTimeField(null=True, blank=True)),
+                ('sync_ts', models.DateTimeField(null=True, blank=True)),
                 ('is_enabled', models.BooleanField(default=False)),
             ],
         ),
         migrations.AddField(
             model_name='door',
             name='gatekeeper',
-            field=models.ForeignKey(to='hid.Gatekeeper'),
+            field=models.ForeignKey(to='keymaster.Gatekeeper'),
         ),
     ]

@@ -11,8 +11,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.utils import timezone
 
-from hid import hid_control
-from hid.hid_control import DoorController
+from keymaster.hid_control import DoorController
 
 from cryptography.fernet import Fernet
 
