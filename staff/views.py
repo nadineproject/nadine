@@ -1007,46 +1007,45 @@ def usaepay_transactions_today(request):
 @staff_member_required
 def usaepay_transactions(request, year, month, day):
     d = date(year=int(year), month=int(month), day=int(day))
+    transactions = usaepay.get_transactions(year, month, day)
     error = None
-    transactions = []
+    amex = []
+    visamc = []
+    ach = []
     other_transactions = []
-    settled_checks = []
-    totals = {'amex_count':0, 'amex_total':0, 'visamc_count':0, 'visamc_total':0, 'ach_count':0, 'ach_total':0, 'total_count':0, 'total':0}
+    totals = {'amex_total':0, 'visamc_total':0, 'ach_total':0, 'total':0, 'total_count':len(transactions)}
     try:
-        for t in usaepay.get_transactions(year, month, day):
+        # Pull the settled checks seperately
+        settled_checks = usaepay.get_checks_settled_by_date(year, month, day)
+        
+        for t in transactions:
             # Pull the member and the amount they owe
             member = Member.objects.filter(user__username = t['username']).first()
             if member:
                 t['member'] = member
                 t['open_bill_amount'] = member.open_bill_amount()
+                t['xero_invoices'] = member.open_xero_invoices()
 
             # Total up all the Settled transactions
-            if t['status'] == ("Settled"):
-                transactions.append(t)
-                totals['total_count'] = totals['total_count'] + 1
+            if t['transaction_type'] == "Sale" and t['status'] != "Declined":
                 totals['total'] = totals['total'] + t['amount']
                 if t['card_type'] == "A":
-                    totals['amex_count'] = totals['amex_count'] + 1
+                    amex.append(t)
                     totals['amex_total'] = totals['amex_total'] + t['amount']
                 elif t['card_type'] == "V" or t['card_type'] == "M":
-                    totals['visamc_count'] = totals['visamc_count'] + 1
+                    visamc.append(t)
                     totals['visamc_total'] = totals['visamc_total'] + t['amount']
                 elif t['card_type'] == "ACH":
-                    totals['ach_count'] = totals['ach_count'] + 1
+                    ach.append(t)
                     totals['ach_total'] = totals['ach_total'] + t['amount']
             else:
                 other_transactions.append(t)
         
-        # Pull the settled checks seperately
-        settled_checks = usaepay.get_checks_settled_by_date(year, month, day)
     except Exception as e:
         print e
         error = 'Could not connect to USAePay Gateway!'
-
-    # Sort our transactions by card_type
-    transactions = sorted(transactions, key=lambda t: t['card_type'])
     
-    return render_to_response('staff/usaepay_transactions.html', {'date': d, 'error': error, 'transactions': transactions, 
+    return render_to_response('staff/charges.html', {'date': d, 'error': error, 'amex': amex, 'visamc': visamc, 'ach':ach,
                                                                   'other_transactions': other_transactions, 'settled_checks':settled_checks, 'totals':totals,
                                                                   'next_date': d + timedelta(days=1), 'previous_date': d - timedelta(days=1)}, context_instance=RequestContext(request))
 

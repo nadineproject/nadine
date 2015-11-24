@@ -11,7 +11,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 {% include "staff/billing_menu.frag" %}	 
 
 <h2>
-	USAePay Transactions - {{ date|date:"M d, Y" }}
+	Daily Charges - {{ date|date:"M d, Y" }}
 	<span style="float:right;">	
 	<a href="{% url 'staff.views.usaepay_transactions' previous_date.year previous_date.month previous_date.day %}">&larr;</a>
 	<a href="{% url 'staff.views.usaepay_transactions_today' %}">&bull;</a>
@@ -23,68 +23,24 @@ nav #billing-tab { background: #FBD850; color: black; }
 	<div style="text-align:center; font-size:150%; color:red">{{ error }}</div>
 {% endif %}
 
-<h3>Settled Transactions</h3>
+<p>Total {{totals.total_count}} Transactions: ${{totals.total|floatformat:2}}</p>
 
-{% if not transactions %}
-	<i>No Transactions</i>
-{% else %}
+{% if amex %}
+	{% with "AMEX" as name and amex as transactions and totals.amex_total as total %}
+		{% include "staff/charges_table.frag" %}
+	{% endwith %}
+{% endif %}
 
-<table>
-	<tr>
-		<th>Member</th>
-		<th>Description</th>
-		<th>Type</th>
-		<th>Status</th>
-		<th>Amount</th>
-		<th>Owed</th>
-		<th>Action</th>
-	</tr>
+{% if visamc %}
+	{% with "VISA/MC" as name and visamc as transactions and totals.visamc_total as total %}
+		{% include "staff/charges_table.frag" %}
+	{% endwith %}
+{% endif %}
 
-	{% for t in transactions %}
-		<tr class="{% cycle 'row-even' 'row-odd' %}">
-			<td><a href="{% url 'staff.views.member_detail_user' t.username %}">{{ t.username }}</a></td>
-			<td>{{ t.description }}</td>
-			<td>{{ t.card_type }}</td>
-			<td>{{ t.status}}</td>
-			<td>${{ t.amount|floatformat:2 }}</td>
-			<td>{% if t.open_bill_amount %} ${{ t.open_bill_amount|floatformat:2 }} {% endif %}</td>
-			<td style="text-align:center;">
-				{% if t.open_bill_amount %}
-					{% if t.open_bill_amount != t.amount %}
-						[ <font color="red">OVER</font> ]
-					{% else %}
-						<form action="{% url 'staff.views.bills_pay_all' t.username %}" method="POST">
-							<input type="hidden" name="next" value="{{request.path}}" />
-							<input type="submit" value="Paid" />
-							{% csrf_token %}
-						</form>
-						{% endif %}
-				{% endif %}
-			<td>
-		</tr>
-	{% endfor %}
-</table>
-
-<h3>Totals</h3>
-<table style="margin-left:32px; width:100px;">
-	<tr>
-		<td><strong>American Express</strong> ({{totals.amex_count}}):</td>
-		<td style="text-align:right;">${{totals.amex_total|floatformat:2}}</td>
-	</tr>
-	<tr>
-		<td><strong>Visa/MC</strong> ({{totals.visamc_count}}):</td>
-		<td style="text-align:right;">${{totals.visamc_total|floatformat:2}}</td>
-	</tr>
-	<tr>
-		<td><strong>ACH</strong> ({{totals.ach_count}}):</td>
-		<td style="text-align:right;">${{totals.ach_total|floatformat:2}}</td>
-	</tr>
-	<tr>
-		<td><strong>Total</strong> ({{totals.total_count}}):</td>
-		<td style="text-align:right;"><strong>${{totals.total|floatformat:2}}</strong></td>
-	</tr>
-</table>
-
+{% if ACH %}
+	{% with "ACH" as name and ach as transactions and totals.ach_total as total %}
+		{% include "staff/charges_table.frag" %}
+	{% endwith %}
 {% endif %}
 
 {% if settled_checks %}
@@ -116,6 +72,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 	<tr>
 		<th>Member</th>
 		<th>Description</th>
+		<th>Card</th>
 		<th>Type</th>
 		<th>Status</th>
 		<th>Amount</th>
@@ -127,6 +84,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 			<td><a href="{% url 'staff.views.member_detail_user' t.username %}">{{ t.username }}</a></td>
 			<td>{{ t.description }}</td>
 			<td>{{ t.card_type }}</td>
+			<td>{{ t.transaction_type }}</td>
 			<td>
 				{% if t.status == "Authorized" %}
 					<font color="green">Authorized</font>
