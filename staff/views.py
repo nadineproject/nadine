@@ -423,7 +423,7 @@ def stats_membership_history(request):
     for month in month_histories:
         dates = [date(month.year, month.month, i) for i in range(1, month.days_in_month + 1)]
 
-        for plan in MembershipPlan.objects.all():
+        for plan in MembershipPlan.objects.filter(enabled=True):
             data = calculate_monthly_low_high(plan.id, dates)
             if average_only:
                 month.data[plan.name] = data[2]
@@ -891,8 +891,8 @@ def member_membership(request, member_id):
     # Send them to the update page if we don't have an end date
     if (member.last_membership() and not member.last_membership().end_date):
         return HttpResponseRedirect(reverse('staff.views.membership', args=[], kwargs={'membership_id': member.last_membership().id}))
-
-    return render_to_response('staff/membership.html', {'member': member, 'membership_plans': MembershipPlan.objects.all(),
+    plans = MembershipPlan.objects.filter(enabled=True).order_by('name')
+    return render_to_response('staff/membership.html', {'member': member, 'membership_plans': plans,
                                                         'membership_form': membership_form, 'today': today.isoformat(), 'last': last.isoformat()}, context_instance=RequestContext(request))
 
 

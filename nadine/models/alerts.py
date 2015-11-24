@@ -77,32 +77,33 @@ class MemberAlertManager(models.Manager):
         new_alerts = False
         open_alerts = user.profile.alerts_by_key(include_resolved=False)
         
-        # Key?  Let's get it back!
         membership = user.profile.membership_for_day(day)
-        if membership:
-            if membership.has_key:
-                if MemberAlert.objects.create_if_new(user, MemberAlert.RETURN_DOOR_KEY, membership.start_date):
-                    new_alerts = True
-            if membership.has_desk:
-                if MemberAlert.ASSIGN_CABINET in open_alerts:
-                    # We never assigned a mailbox so we can just resolve that now
-                    user.profile.resolve_alerts(MemberAlert.ASSIGN_CABINET)
-                if not MemberAlert.objects.filter(user=user, key=MemberAlert.RETURN_DESK_KEY, created_ts__gte=membership.start_date):
-                    MemberAlert.objects.create(user=user, key=MemberAlert.RETURN_DESK_KEY)
-                    new_alerts = True
-            if membership.has_mail:
-                if MemberAlert.ASSIGN_MAILBOX in open_alerts:
-                    # We never assigned a mailbox so we can just resolve that now
-                    user.profile.resolve_alerts(MemberAlert.ASSIGN_MAILBOX)
-                elif not MemberAlert.objects.filter(user=user, key=MemberAlert.REMOVE_MAILBOX, created_ts__gte=membership.start_date):
-                    MemberAlert.objects.create(user=user, key=MemberAlert.REMOVE_MAILBOX)
-                    new_alerts = True
-        
+        if not membership:
+            membership = user.profile.last_membership()
+
+        if membership.has_key:
+            if MemberAlert.objects.create_if_new(user, MemberAlert.RETURN_DOOR_KEY, membership.start_date):
+                new_alerts = True
+        if membership.has_desk:
+            if MemberAlert.ASSIGN_CABINET in open_alerts:
+                # We never assigned a mailbox so we can just resolve that now
+                user.profile.resolve_alerts(MemberAlert.ASSIGN_CABINET)
+            if not MemberAlert.objects.filter(user=user, key=MemberAlert.RETURN_DESK_KEY, created_ts__gte=membership.start_date):
+                MemberAlert.objects.create(user=user, key=MemberAlert.RETURN_DESK_KEY)
+                new_alerts = True
+        if membership.has_mail:
+            if MemberAlert.ASSIGN_MAILBOX in open_alerts:
+                # We never assigned a mailbox so we can just resolve that now
+                user.profile.resolve_alerts(MemberAlert.ASSIGN_MAILBOX)
+            elif not MemberAlert.objects.filter(user=user, key=MemberAlert.REMOVE_MAILBOX, created_ts__gte=membership.start_date):
+                MemberAlert.objects.create(user=user, key=MemberAlert.REMOVE_MAILBOX)
+                new_alerts = True
+    
         # Take down their photo. 
         if user.profile.photo:
             if MemberAlert.POST_PHOTO in open_alerts:
                 user.profile.resolve_alerts(MemberAlert.POST_PHOTO)
-            elif not MemberAlert.objects.filter(user=user, key=MemberAlert.REMOVE_PHOTO, created_ts__gte=membership.start_date):
+            elif not MemberAlert.REMOVE_PHOTO in open_alerts:
                 MemberAlert.objects.create(user=user, key=MemberAlert.REMOVE_PHOTO)
                 new_alerts = True
         

@@ -192,7 +192,7 @@ class DailyLogForm(forms.Form):
 
 class MembershipForm(forms.Form):
     member_list = Member.objects.all()
-    plan_list = MembershipPlan.objects.all()
+    plan_list = MembershipPlan.objects.filter(enabled=True).order_by('name')
     membership_id = forms.IntegerField(required=False, min_value=0, widget=forms.HiddenInput)
     member = forms.IntegerField(required=True, min_value=0, widget=forms.HiddenInput)
     membership_plan = forms.ModelChoiceField(queryset=plan_list, required=True)

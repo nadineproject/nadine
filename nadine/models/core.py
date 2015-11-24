@@ -72,7 +72,7 @@ class MemberGroups():
     @staticmethod
     def get_member_groups():
         group_list = []
-        for plan in MembershipPlan.objects.all().order_by('name'):
+        for plan in MembershipPlan.objects.filter(enabled=True).order_by('name'):
             plan_name = plan.name
             plan_members = Member.objects.members_by_plan(plan_name)
             if plan_members.count() > 0:
@@ -732,6 +732,7 @@ class MembershipPlan(models.Model):
     daily_rate = models.IntegerField(default=0)
     dropin_allowance = models.IntegerField(default=0)
     has_desk = models.NullBooleanField(default=False)
+    enabled = models.BooleanField(default=True)
 
     def __str__(self): return self.name
 
