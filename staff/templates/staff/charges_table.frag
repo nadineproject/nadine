@@ -1,4 +1,4 @@
-<h3>{{ name }} Sales</h3>
+<h3>{{ name }}</h3>
 <table>
     <tr class="row-even">
         <th>Member</th>
@@ -16,7 +16,7 @@
             <td><a href="{% url 'staff.views.member_detail_user' t.username %}">{{ t.username }}</a></td>
             <td>{{ t.description }}</td>
             <!--<td>{{ t.card_type }}</td>-->
-            <td>{{ t.status}}</td>
+            <td {% if t.status == "Authorized" %} style="color:green;"{% endif %}>{{ t.status }}</td>
             <td {% if t.open_bill_amount and t.open_bill_amount != t.amount %} style="color:red;" {% endif %}>
                 {{ t.amount|floatformat:2 }}
             </td>
@@ -25,7 +25,7 @@
             </td>
             <td>
                 {% for i in t.xero_invoices %}
-                    <a href="https://go.xero.com/AccountsReceivable/View.aspx?InvoiceID={{ i.InvoiceID }}" target="_new">{{ i.InvoiceNumber }}</a>
+                    <a href="https://go.xero.com/AccountsReceivable/View.aspx?InvoiceID={{ i.InvoiceID }}" target="_new">{{ i.InvoiceNumber }}</a><br>
                 {% endfor %}
             </td>
             <td style="text-align:center;">
@@ -36,12 +36,23 @@
                         {% csrf_token %}
                     </form>
                 {% endif %}
+                {% ifequal "Authorized" t.status %}
+                <!--
+                    <form action="." method="POST">
+                        <input type="hidden" name="transaction_id" value="{{ t.transaction_id }}" />
+                        <input type="submit" value="Void" />
+                        {% csrf_token %}
+                    </form>
+                -->
+                {% endifequal %} 
             </td>
         </tr>
     {% endfor %}
     
     <tr class="row-even">
-        <td colspan="3" style="text-align:right;"><strong>{{ transactions|length }} {{ name }} Transactions</strong></td>
+        <td><strong>{{ transactions|length }} Transactions</strong></td>
+        <td></td>
+        <td style="text-align:right;"><strong>Total</strong></td>
         <td>${{total|floatformat:2}}</td>
         <td colspan="3"></td>
     </tr>

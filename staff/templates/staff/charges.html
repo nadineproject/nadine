@@ -88,7 +88,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 			<td>
 				{% if t.status == "Authorized" %}
 					<font color="green">Authorized</font>
-				{% elif t.status == "Declined" or t.status == "Error"%}
+				{% elif t.status == "Declined" or t.status == "Error" or t.status == "Voided"%}
 					<font color="red">{{ t.status}}</font>
 				{% else %}
 					{{ t.status}}
