@@ -79,22 +79,28 @@ def clean_transaction_list(transactions):
     transaction_list = []
     if transactions:
         for t in transactions:
-            username = t.getCustomerID()
-            card_type = t.getCreditCardData().getCardType()
-            if not card_type:
-                card_type = "ACH"
-            status = t.getStatus()
-            if status and ' ' in status:
-                status = status.split()[0]
-            transaction_type = t.getTransactionType()
-            amount = t.getDetails().getAmount()
-            if transaction_type == 'Credit':
-                amount = -1 * amount
-            description = t.getDetails().getDescription()
-            date_time = datetime.strptime(t.getDateTime(), '%Y-%m-%d %H:%M:%S')
-            transaction_list.append({'username': username, 'transaction': t, 'date_time':date_time, 'description': description,
-                                 'card_type': card_type, 'status': status, 'transaction_type':transaction_type, 'amount': amount})
+            clean_t = clean_transaction(t)
+            transaction_list.append(clean_t)
     return transaction_list
+
+
+def clean_transaction(t):
+        username = t.getCustomerID()
+        card_type = t.getCreditCardData().getCardType()
+        if not card_type:
+            card_type = "ACH"
+        status = t.getStatus()
+        if status and ' ' in status:
+            status = status.split()[0]
+        transaction_type = t.getTransactionType()
+        amount = t.getDetails().getAmount()
+        if transaction_type == 'Credit':
+            amount = -1 * amount
+        description = t.getDetails().getDescription()
+        date_time = datetime.strptime(t.getDateTime(), '%Y-%m-%d %H:%M:%S')
+        transaction_id = t.getResponse().getRefNum()
+        return {'transaction_id': transaction_id, 'username': username, 'transaction': t, 'date_time':date_time, 'description': description,
+                'card_type': card_type, 'status': status, 'transaction_type':transaction_type, 'amount': amount}
 
 
 def get_checks_settled_by_date(year, month, day):
@@ -114,6 +120,26 @@ def get_checks_settled_by_date(year, month, day):
         if row[9] == "Returned":
             results.append({'date':row[1], 'name':row[2], 'status':row[9], 'amount':row[10], 'processed':row[13]})
     return results
+
+
+def get_transaction(transaction_id):
+    try:
+        gateway = JavaGateway()
+        transaction = gateway.entry_point.getTransaction(transaction_id)
+        return clean_transaction(transaction)
+    except:
+        return None
+
+
+def void_transaction(username, transaction_id):
+    try:
+        gateway = JavaGateway()
+        t = clean_transaction(gateway.entry_point.getTransaction(transaction_id))
+        if t['username'] == username and t['status'] == "Authorized":
+            return gateway.entry_point.voidTransaction(transaction_id)
+    except:
+        pass
+    return False
 
 
 def get_auth_code(username):

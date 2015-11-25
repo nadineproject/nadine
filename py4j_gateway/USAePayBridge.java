@@ -162,6 +162,18 @@ public class USAePayBridge {
 		return dates;
 	}
 
+	public TransactionObject getTransaction(Integer transaction_id) throws Exception {
+		System.out.println("getTransaction: " + transaction_id);
+		BigInteger big_num = BigInteger.valueOf(transaction_id.intValue());
+		return client.getTransaction(token, big_num);
+	}
+	
+	public boolean voidTransaction(Integer transaction_id) throws Exception {
+		System.out.println("voidTransaction: " + transaction_id);
+		BigInteger big_num = BigInteger.valueOf(transaction_id.intValue());
+		return client.voidTransaction(token, big_num);
+	}
+
 	public static void main(String[] args) {
 		String url = args[0];
 		String key = args[1];
