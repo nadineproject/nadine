@@ -1014,6 +1014,7 @@ def usaepay_transactions(request, year, month, day):
     ach = []
     other_transactions = []
     totals = {'amex_total':0, 'visamc_total':0, 'ach_total':0, 'total':0, 'total_count':len(transactions)}
+    open_xero_invoices = XeroAPI().get_open_invoices_by_user()
     try:
         # Pull the settled checks seperately
         settled_checks = usaepay.get_checks_settled_by_date(year, month, day)
@@ -1024,7 +1025,7 @@ def usaepay_transactions(request, year, month, day):
             if member:
                 t['member'] = member
                 t['open_bill_amount'] = member.open_bill_amount()
-                t['xero_invoices'] = member.open_xero_invoices()
+                t['xero_invoices'] = open_xero_invoices.get(t['username'])
 
             # Total up all the Settled transactions
             if t['transaction_type'] == "Sale" and t['status'] != "Declined":

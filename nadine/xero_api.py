@@ -123,11 +123,27 @@ class XeroAPI:
             return None
         return self.xero.invoices.filter(Contact_ContactID=xero_contact.xero_id)
 
-    def get_open_invoices(self, user):
-        xero_contact = XeroContact.objects.filter(user=user).first()
-        if not xero_contact:
-            return None
-        return self.xero.invoices.filter(Contact_ContactID=xero_contact.xero_id, Status="AUTHORISED")
+    def get_open_invoices(self, user=None):
+        if user:
+            xero_contact = XeroContact.objects.filter(user=user).first()
+            if not xero_contact:
+                return None
+            return self.xero.invoices.filter(Contact_ContactID=xero_contact.xero_id, Status="AUTHORISED")
+        return self.xero.invoices.filter(Status="AUTHORISED")
+
+    def get_open_invoices_by_user(self):
+        invoices = {}
+        for i in self.get_open_invoices(user=None):
+            contact_id = i['Contact']['ContactID']
+            contact = XeroContact.objects.filter(xero_id=contact_id).first()
+            username = "None"
+            if contact:
+                username = contact.user.username
+            if username in invoices:
+                invoices[username].append(i)
+            else:
+                invoices[username] = [i]
+        return invoices
 
     def get_repeating_invoices(self, user):
         xero_data = None
