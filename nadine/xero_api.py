@@ -12,11 +12,6 @@ from xml.dom.minidom import parse, parseString
 
 from nadine.models.core import XeroContact
 
-XERO_ERROR_MESSAGES = {
-    'no_key': 'Please set your XERO_CONSUMER_KEY setting.',
-    'no_secret': 'Please set your XERO_PRIVATE_KEY setting. Must be a path to your privatekey.pem',
-}
-
 def test_xero_connection():
     api = XeroAPI()
     try:
@@ -32,13 +27,17 @@ def test_xero_connection():
 class XeroAPI:
     
     def __init__(self):
+        self.deposit_account = getattr(settings, 'XERO_DEPOSIT_ACCOUNT', None)
+        if self.deposit_account is None:
+            raise ImproperlyConfigured("Please set your XERO_DEPOSIT_ACCOUNT setting.")
+
         consumer_key = getattr(settings, 'XERO_CONSUMER_KEY', None)
         if consumer_key is None:
-            raise ImproperlyConfigured(XERO_ERROR_MESSAGES['no_key'])
+            raise ImproperlyConfigured("Please set your XERO_CONSUMER_KEY setting.")
 
         private_key = getattr(settings, 'XERO_PRIVATE_KEY', None)
         if private_key is None:
-            raise ImproperlyConfigured(XERO_ERROR_MESSAGES['no_secret'])
+            raise ImproperlyConfigured("Please set your XERO_PRIVATE_KEY setting. Must be a path to your privatekey.pem")
 
         with open(private_key) as keyfile:
             rsa_key = keyfile.read()
