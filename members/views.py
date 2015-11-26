@@ -211,7 +211,7 @@ def slack(request, username):
 def slack_bots(request):
     text = request.POST.get("text")
     slack_api = SlackAPI()
-    slack_api.chat.post_message("#General", text as_user="Nadine")
+    slack_api.chat.post_message("#General", text, as_user="Nadine")
     return JsonResponse({})
 
 @login_required
