@@ -209,7 +209,7 @@ def slack(request, username):
 
 def slack_bots(request):
     print request
-    return JsonResponse({"text": "I know you are but what am I?!? :poop:"})
+    return JsonResponse({ "text": "African or European?" })
 
 @login_required
 def receipt(request, username, id):
