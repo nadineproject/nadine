@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404
+from django.http import JsonResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 from django.views.decorators.csrf import csrf_exempt
@@ -206,6 +207,9 @@ def slack(request, username):
 
     return render_to_response('members/slack.html', {'user': user, 'team_url':settings.SLACK_TEAM_URL}, context_instance=RequestContext(request))
 
+def slack_bots(request):
+    print request
+    return JsonResponse({"text": "I know you are but what am I?!? :poop:"})
 
 @login_required
 def receipt(request, username, id):
