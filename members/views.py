@@ -209,8 +209,10 @@ def slack(request, username):
 
 @csrf_exempt
 def slack_bots(request):
-    print request.POST
-    return JsonResponse({ "text": "African or European?" })
+    text = request.POST.get("text")
+    slack_api = SlackAPI()
+    slack_api.chat.post_message("#General", text as_user="Nadine")
+    return JsonResponse({})
 
 @login_required
 def receipt(request, username, id):
