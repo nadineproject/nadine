@@ -207,6 +207,7 @@ def slack(request, username):
 
     return render_to_response('members/slack.html', {'user': user, 'team_url':settings.SLACK_TEAM_URL}, context_instance=RequestContext(request))
 
+@csrf_exempt
 def slack_bots(request):
     print request.POST
     return JsonResponse({ "text": "African or European?" })
