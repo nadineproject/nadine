@@ -209,9 +209,13 @@ def slack(request, username):
 
 @csrf_exempt
 def slack_bots(request):
-    text = request.POST.get("text")[7:]
-    slack_api = SlackAPI()
-    slack_api.chat.post_message("#General", text, as_user="Nadine")
+    # Stupid chat bot
+    try:
+        text = request.POST.get("text")[7:]
+        slack_api = SlackAPI()
+        slack_api.chat.post_message("#General", text, as_user="Nadine")
+    except Exception as e:
+        return JsonResponse({'text': str(e)})
     return JsonResponse({})
 
 @login_required
