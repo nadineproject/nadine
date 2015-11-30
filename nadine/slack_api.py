@@ -575,3 +575,8 @@ class SlackAPI:
         if not slack_id:
             raise Exception("User not found")
         return self.api.post('users.admin.setInactive', data={'user':slack_id})
+
+    def post_message(self, message, channel=None):
+        if not channel:
+            channel = "#General"
+        self.chat.post_message(channel, message, as_user="Nadine")

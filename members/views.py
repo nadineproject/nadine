@@ -212,8 +212,7 @@ def slack_bots(request):
     # Stupid chat bot
     try:
         text = request.POST.get("text")[7:]
-        slack_api = SlackAPI()
-        slack_api.chat.post_message("#General", text, as_user="Nadine")
+        SlackAPI().post_message(text)
     except Exception as e:
         return JsonResponse({'text': str(e)})
     return JsonResponse({})
