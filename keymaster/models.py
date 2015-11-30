@@ -11,6 +11,9 @@ from django.contrib.auth.models import User
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.utils import timezone
 
+from keymaster import hid_control
+from keymaster.hid_control import DoorController
+
 from cryptography.fernet import Fernet
 
 logger = logging.getLogger(__name__)
@@ -210,7 +213,7 @@ class Gatekeeper(models.Model):
         doorcode_json = json.loads(door_codes)
         logger.debug(doorcode_json)
         for door in self.get_doors().values():
-            door.process_changes(doorcode_json)
+            door.process_door_codes(doorcode_json)
 
     def __str__(self): 
         return self.description
@@ -235,10 +238,9 @@ class Door(models.Model):
 
     def get_controller(self):
         if not 'controller' in self.__dict__:
-            if self.controller_type == ControllerType.HID:
-                from keymaster.hid_control import DoorController
+            if self.door_type == DoorTypes.HID:
                 self.controller = DoorController(self.ip_address, self.username, self.password)
-            elif self.controller_type == ControllerType.MAYPI:
+            elif self.door_type == DoorTypes.MAYPI:
                 raise NotImplementedError
         return self.controller
     
