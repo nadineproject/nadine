@@ -1,4 +1,4 @@
 <div class="submenu">
-    <a href="{% url 'hid.views.index' %}">home</a> |
-    <a href="{% url 'hid.views.test_door' %}">test door</a>
+    <a href="{% url 'keymaster.views.index' %}">home</a> |
+    <a href="{% url 'keymaster.views.test_door' %}">test door</a>
 </div>
