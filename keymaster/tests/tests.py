@@ -16,6 +16,7 @@ class EncryptedConnectionTestCase(TestCase):
         message = "This is a test"
         encrypted_message = connection.encrypt_message(message)
         decrypted_message = connection.decrypt_message(encrypted_message)
+        self.assertNotEqual(message, encrypted_message)
         self.assertEqual(message, decrypted_message)
 
 

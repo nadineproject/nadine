@@ -11,8 +11,6 @@ from django.contrib.auth.models import User
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.utils import timezone
 
-from keymaster.hid_control import DoorController
-
 from cryptography.fernet import Fernet
 
 logger = logging.getLogger(__name__)
@@ -99,7 +97,7 @@ class Keymaster(object):
     def pull_config(self):
         doors = []
         for d in Door.objects.filter(gatekeeper=self.gatekeeper):
-            door = {'name':d.name, 'ip_address':d.ip_address, 'username':d.username, 'password':d.password}
+            door = {'name':d.name, 'door_type':d.door_type, 'ip_address':d.ip_address, 'username':d.username, 'password':d.password}
             doors.append(door)
         return json.dumps(doors)
 
@@ -120,6 +118,7 @@ class Keymaster(object):
 
 class GatekeeperManager(models.Manager):
     
+    # Pull an object from the database linked by the incoming IP address
     def by_ip(self, ip):
         try:
             gatekeeper = self.get(ip_address=ip)
@@ -136,6 +135,7 @@ class GatekeeperManager(models.Manager):
             
         return None
     
+    # Create an instance from values in our system settings file
     def from_settings(self):
         encryption_key = getattr(settings, 'HID_ENCRYPTION_KEY', None)
         if encryption_key is None:
@@ -177,27 +177,24 @@ class Gatekeeper(models.Model):
             self.keymaster_url = None
         return EncryptedConnection(self.encryption_key, keymaster_url=self.keymaster_url)
 
-    def configure_doors(self, configuration):
+    def configure_doors(self, configuration, test_connection=False):
         self.doors = {}
         config_json = json.loads(configuration)
         logger.debug("Configuration: %s" % config_json)
         for d in config_json:
             name = d['name']
-            door = Door(name=name, ip_address=d['ip_address'], username=d['username'], password=d['password'])
+            door = Door(name=name, door_type= d['door_type'], ip_address=d['ip_address'], username=d['username'], password=d['password'])
             self.doors[name] = door
-            #controller = door.get_controller()
-            #controller.test_connection()
+            if test_connection:
+                door.test_connection()
 
     def sync_clocks(self):
         for door in self.get_doors().values():
-            controller = door.get_controller()
-            set_time_xml = hid_control.set_time()
-            controller.send_xml(set_time_xml)
+            door.sync_clock()
 
     def load_data(self):
         for door in self.get_doors().values():
-            controller = door.get_controller()
-            controller.load_credentials()
+            door.load_credentials()
 
     def get_doors(self):
         if not 'doors' in self.__dict__:
@@ -212,18 +209,25 @@ class Gatekeeper(models.Model):
     def process_door_codes(self, door_codes, all=False):
         doorcode_json = json.loads(door_codes)
         logger.debug(doorcode_json)
-        for door_name, door in self.get_doors().items():
-            controller = door.get_controller()
-            changes = controller.process_door_codes(doorcode_json)
-            logger.debug("Changes: %s: " % changes)
-            controller.process_changes(changes)
+        for door in self.get_doors().values():
+            door.process_changes(doorcode_json)
 
     def __str__(self): 
         return self.description
 
 
+class DoorTypes(object):
+    HID = "hid"
+    MAYPI = "maypi"
+    
+    CHOICES = (
+        (HID, "Hid Controller"),
+        (MAYPI, "Maypi Controller"),
+    )
+
 class Door(models.Model):
     name = models.CharField(max_length=16, unique=True)
+    door_type = models.CharField(max_length=16, choices=DoorTypes.CHOICES)
     gatekeeper = models.ForeignKey(Gatekeeper)
     username = models.CharField(max_length=32)
     password = models.CharField(max_length=32)
@@ -231,8 +235,31 @@ class Door(models.Model):
 
     def get_controller(self):
         if not 'controller' in self.__dict__:
-            self.controller = DoorController(self.ip_address, self.username, self.password)
+            if self.controller_type == ControllerType.HID:
+                from keymaster.hid_control import DoorController
+                self.controller = DoorController(self.ip_address, self.username, self.password)
+            elif self.controller_type == ControllerType.MAYPI:
+                raise NotImplementedError
         return self.controller
+    
+    def test_connection(self):
+        controller = self.get_controller()
+        controller.test_connection()
+        
+    def sync_clock(self):
+        controller = self.get_controller()
+        set_time_xml = hid_control.set_time()
+        controller.send_xml(set_time_xml)
+    
+    def load_credentials(self): 
+        controller = self.get_controller()
+        controller.load_credentials()
+    
+    def process_door_codes(self, doorcode_json):
+        controller = self.get_controller()
+        changes = controller.process_door_codes(doorcode_json)
+        logger.debug("Changes: %s: " % changes)
+        controller.process_changes(changes)
     
     def __str__(self): 
         return "%s: %s" % (self.gatekeeper.description, self.name)
