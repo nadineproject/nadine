@@ -7,6 +7,17 @@
 
 <h3>HID Doors</h3>
 
-<i>Comming soon....</i>
+{% for gatekeeper in gatekeepers %}
+<div>
+	<h4>{{ gatekeeper.description }}</h4>
+	{{ gatekeeper.ip_address }}
+	<div><em>Last access:</em> {{ gatekeeper.access_ts }}</div>
+	<div><em>Last sync:</em> {{ gatekeeper.sync_ts }} 
+		{% if gatekeeper.sync_ts < twoMinutesAgo %}
+		<span class="ui-state-error">INACTIVE</span>
+		{% endif %}
+	</div>
+</div>
+{% endfor %}
 
 {% endblock %}

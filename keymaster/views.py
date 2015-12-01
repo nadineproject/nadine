@@ -16,7 +16,11 @@ from keymaster.models import *
 
 @staff_member_required
 def index(request):
-    return render_to_response('keymaster/index.html', {}, context_instance=RequestContext(request))
+    gatekeepers = Gatekeeper.objects.all
+    twoMinutesAgo = timezone.now() - timedelta(minutes=2)
+    return render_to_response('keymaster/index.html', 
+        {'gatekeepers': gatekeepers, 'twoMinutesAgo': twoMinutesAgo}, 
+        context_instance=RequestContext(request))
 
 
 @staff_member_required
