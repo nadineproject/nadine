@@ -75,6 +75,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 		<th>Card</th>
 		<th>Type</th>
 		<th>Status</th>
+		<th>Note</th>
 		<th>Amount</th>
 		<th></th>
 	</tr>
@@ -94,6 +95,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 					{{ t.status}}
 				{% endif %}
 			</td>
+			<td>{{ t.note }}</td>
 			<td>${{ t.amount|floatformat:2 }}</td>
 			<td></td>
 		</tr>
