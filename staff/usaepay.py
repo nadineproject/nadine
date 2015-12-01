@@ -99,8 +99,11 @@ def clean_transaction(t):
         description = t.getDetails().getDescription()
         date_time = datetime.strptime(t.getDateTime(), '%Y-%m-%d %H:%M:%S')
         transaction_id = t.getResponse().getRefNum()
+        note = ""
+        if status == "Error":
+            note = t.getResponse().getError()
         return {'transaction_id': transaction_id, 'username': username, 'transaction': t, 'date_time':date_time, 'description': description,
-                'card_type': card_type, 'status': status, 'transaction_type':transaction_type, 'amount': amount}
+                'card_type': card_type, 'status': status, 'transaction_type':transaction_type, 'note':note, 'amount': amount}
 
 
 def get_checks_settled_by_date(year, month, day):
