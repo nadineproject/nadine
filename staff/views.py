@@ -1007,15 +1007,18 @@ def usaepay_transactions_today(request):
 @staff_member_required
 def usaepay_transactions(request, year, month, day):
     d = date(year=int(year), month=int(month), day=int(day))
-    transactions = usaepay.get_transactions(year, month, day)
     error = None
     amex = []
     visamc = []
     ach = []
+    settled_checks = []
     other_transactions = []
-    totals = {'amex_total':0, 'visamc_total':0, 'ach_total':0, 'total':0, 'total_count':len(transactions)}
+    totals = {'amex_total':0, 'visamc_total':0, 'ach_total':0, 'total':0}
     open_xero_invoices = XeroAPI().get_open_invoices_by_user()
     try:
+        transactions = usaepay.get_transactions(year, month, day)
+        totals['total_count'] = len(transactions)
+        
         # Pull the settled checks seperately
         settled_checks = usaepay.get_checks_settled_by_date(year, month, day)
         
@@ -1028,7 +1031,7 @@ def usaepay_transactions(request, year, month, day):
                 t['xero_invoices'] = open_xero_invoices.get(t['username'])
 
             # Total up all the Settled transactions
-            if t['transaction_type'] == "Sale" and t['status'] != "Declined":
+            if t['transaction_type'] == "Sale" and t['status'] != "Declined" and t['status'] != "Error":
                 totals['total'] = totals['total'] + t['amount']
                 if t['card_type'] == "A":
                     amex.append(t)
@@ -1040,6 +1043,7 @@ def usaepay_transactions(request, year, month, day):
                     ach.append(t)
                     totals['ach_total'] = totals['ach_total'] + t['amount']
             else:
+                print t
                 other_transactions.append(t)
         
     except Exception as e:
