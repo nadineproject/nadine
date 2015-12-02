@@ -31,11 +31,12 @@ from arpwatch.models import ArpLog, UserDevice
 from nadine.models.core import Member, Membership, DailyLog
 from nadine.models.payment import Transaction
 from nadine.models.alerts import MemberAlert
-from staff import usaepay, email
+from staff import email
 from staff.forms import *
 
 from nadine import mailgun
 from nadine.slack_api import SlackAPI
+from nadine.utils.usaepay_api import EPayAPI
 
 def is_active_member(user):
     if user and not user.is_anonymous():
@@ -384,7 +385,8 @@ def delete_notification(request, username):
 def disable_billing(request, username):
     user = get_object_or_404(User, username=username)
     if user == request.user or request.user.is_staff:
-        usaepay.disableAutoBilling(username)
+        epay_api = EPayAPI()
+        epay_api.disableAutoBilling(username)
         email.announce_billing_disable(user)
     return HttpResponseRedirect(reverse('members.views.user', kwargs={'username': request.user.username}))
 

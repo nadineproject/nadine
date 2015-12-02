@@ -30,7 +30,7 @@ from django.dispatch import receiver
 from django.db.models.signals import pre_save, post_save
 from PIL import Image
 
-from staff import usaepay
+from nadine.utils.usaepay_api import EPayAPI
 
 logger = logging.getLogger(__name__)
 
@@ -568,13 +568,22 @@ class Member(models.Model):
         return self.valid_billing
 
     def has_billing_profile(self):
-        if usaepay.getAllCustomers(self.user.username):
-            return True
+        try:
+            epay_api = EPayAPI()
+            if epay_api.getAllCustomers(self.user.username):
+                return True
+        except Exception:
+            pass
         return False
 
     def has_new_card(self):
         # Check for a new card.  WARNING: kinda expensive
-        return usaepay.has_new_card(self.user.username)
+        try:
+            epay_api = EPayAPI()
+            return epay_api.has_new_card(self.user.username)
+        except Exception:
+            pass
+        return False
 
     def guests(self):
         guests = []
@@ -589,10 +598,12 @@ class Member(models.Model):
     def __str__(self): return '%s %s' % (smart_str(self.user.first_name), smart_str(self.user.last_name))
 
     def usaepay_auth(self):
-        return usaepay.get_auth_code(self.user.username)
+        epay_api = EPayAPI()
+        return epay_api.get_auth_code(self.user.username)
 
     def auto_bill_enabled(self):
-        return usaepay.auto_bill_enabled(self.user.username)
+        epay_api = EPayAPI()
+        return epay_api.auto_bill_enabled(self.user.username)
 
     def member_notes(self):
         return MemberNote.objects.filter(member=self)

@@ -6,7 +6,7 @@ from taggit.forms import *
 
 from nadine.models.core import *
 from nadine.models.payment import *
-from staff import usaepay
+from nadine.utils.usaepay_api import EPayAPI
 from staff import email
 
 import datetime
@@ -229,8 +229,12 @@ class MembershipForm(forms.Form):
 
         # Any change triggers disabling of the automatic billing
         username = membership.member.user.username
-        usaepay.disableAutoBilling(username)
-        logger.debug("Automatic Billing Disabled for '%s'" % username)
+        try:
+            epay_api = EPayAPI()
+            epay_api.disableAutoBilling(username)
+            logger.debug("Automatic Billing Disabled for '%s'" % username)
+        except Exception as e:
+            logger.error(e)
 
         # We need to look at their last membership but we'll wait until after the save
         last_membership = membership.member.last_membership()

@@ -24,12 +24,15 @@ from django.forms.models import model_to_dict
 
 from monthdelta import MonthDelta, monthmod
 from py4j.java_gateway import JavaGateway
+
 from nadine.models.core import *
 from nadine.models.payment import *
 from nadine.models.alerts import *
 from nadine.xero_api import XeroAPI
+from nadine.utils.usaepay_api import EPayAPI
+
 from staff.forms import *
-from staff import billing, user_reports, email, usaepay
+from staff import billing, user_reports, email
 from arpwatch import arp
 
 START_DATE_PARAM = 'start'
@@ -938,22 +941,21 @@ def usaepay_user(request, username):
     
     error = None
     customers = None
-    gateway = None
-
+    epay_api = None
     try:
-        gateway = JavaGateway()
+        epay_api = EPayAPI()
     except:
         error = 'Could not connect to USAePay Gateway!'
 
     if not error and 'disable_all' in request.POST:
         try:
-            gateway.entry_point.disableAll(username)
+            epay_api.disableAutoBilling(username)
         except:
             error = 'Could not disable billing!'
 
     if not error:
         try:
-            customers = gateway.entry_point.getAllCustomers(username)
+            customers = epay_api.getAllCustomers(username)
         except:
             error = 'Could not pull customers!'
 
@@ -1016,11 +1018,12 @@ def usaepay_transactions(request, year, month, day):
     totals = {'amex_total':0, 'visamc_total':0, 'ach_total':0, 'total':0}
     open_xero_invoices = XeroAPI().get_open_invoices_by_user()
     try:
-        transactions = usaepay.get_transactions(year, month, day)
+        epay_api = EPayAPI()
+        transactions = epay_api.get_transactions(year, month, day)
         totals['total_count'] = len(transactions)
         
         # Pull the settled checks seperately
-        settled_checks = usaepay.get_checks_settled_by_date(year, month, day)
+        settled_checks = epay_api.get_checks_settled_by_date(year, month, day)
         
         for t in transactions:
             # Pull the member and the amount they owe
@@ -1058,10 +1061,11 @@ def usaepay_transactions(request, year, month, day):
 @staff_member_required
 def usaepay_members(request):
     members = []
+    epay_api = EPayAPI()
     for m in Member.objects.active_members():
         username = m.user.username
         print username
-        customers = usaepay.getAllCustomers(username)
+        customers = epay_api.getAllCustomers(username)
         if customers:
             for c in customers:
                 if c.isEnabled():
