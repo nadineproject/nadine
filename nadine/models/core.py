@@ -343,7 +343,7 @@ class Member(models.Model):
         return Bill.objects.filter(models.Q(member=self) | models.Q(paid_by=self)).filter(transactions=None).aggregate(models.Sum('amount'))['amount__sum']
 
     def open_xero_invoices(self):
-        from nadine.xero_api import XeroAPI
+        from nadine.utils.xero_api import XeroAPI
         xero_api = XeroAPI()
         return xero_api.get_open_invoices(self.user)
         
