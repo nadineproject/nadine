@@ -28,7 +28,7 @@ from py4j.java_gateway import JavaGateway
 from nadine.models.core import *
 from nadine.models.payment import *
 from nadine.models.alerts import *
-from nadine.xero_api import XeroAPI
+from nadine.utils.xero_api import XeroAPI
 from nadine.utils.usaepay_api import EPayAPI
 
 from staff.forms import *
