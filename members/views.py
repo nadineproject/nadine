@@ -35,7 +35,7 @@ from staff import email
 from staff.forms import *
 
 from nadine import mailgun
-from nadine.slack_api import SlackAPI
+from nadine.utils.slack_api import SlackAPI
 from nadine.utils.usaepay_api import EPayAPI
 
 def is_active_member(user):
