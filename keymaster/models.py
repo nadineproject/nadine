@@ -275,3 +275,29 @@ class DoorCode(models.Model):
 
     def __str__(self): 
         return '%s: %s' % (self.user, self.code)
+
+class DoorEventTypes(object):
+    UNKNOWN = "0"
+    UNRECOGNIZED = "1"
+    GRANTED = "2"
+    DENIED = "3"
+    LOCKED = "4"
+    UNLOCKED = "5"
+    
+    CHOICES = (
+        (UNKNOWN, 'Unknown'),
+        (UNRECOGNIZED, 'Unrecognized Card'),
+        (GRANTED, 'Access Granted'),
+        (GRANTED, 'Access Denied'),
+        (LOCKED, 'Door Locked'),
+        (UNLOCKED, 'Door Unlocked'),
+    )
+
+class DoorLog(models.Model):
+    timestamp = models.DateTimeField(null=False)
+    door = models.ForeignKey(Door, null=False)
+    user = models.ForeignKey(User, null=True, db_index=True)
+    code = models.CharField(max_length=16)
+    event_type = models.CharField(max_length=1, choices=DoorEventTypes.CHOICES, default=DoorEventTypes.UNKNOWN, null=False)
+    event_description = models.CharField(max_length=256)
+    
