@@ -7,13 +7,13 @@
 
 <h3>HID Doors</h3>
 
-{% for gatekeeper in gatekeepers %}
+{% for keymaster in keymasters %}
 <div>
-	<h4>{{ gatekeeper.description }}</h4>
-	{{ gatekeeper.ip_address }}
-	<div><em>Last access:</em> {{ gatekeeper.access_ts }}</div>
-	<div><em>Last sync:</em> {{ gatekeeper.sync_ts }} 
-		{% if gatekeeper.sync_ts < twoMinutesAgo %}
+	<h4>{{ keymaster.description }}</h4>
+	{{ keymaster.gatekeeper_ip }}
+	<div><em>Last access:</em> {{ keymaster.access_ts }}</div>
+	<div><em>Last sync:</em> {{ keymaster.sync_ts }} 
+		{% if keymaster.sync_ts < twoMinutesAgo %}
 		<span class="ui-state-error">INACTIVE</span>
 		{% endif %}
 	</div>

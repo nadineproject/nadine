@@ -10,16 +10,16 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
-from keymaster.hid_control import DoorController
-from keymaster.models import *
+from doors.keymaster.hid_control import DoorController
+from doors.keymaster.models import *
 
 
 @staff_member_required
 def index(request):
-    gatekeepers = Gatekeeper.objects.all
+    keymasters = Keymaster.objects.all()
     twoMinutesAgo = timezone.now() - timedelta(minutes=2)
     return render_to_response('keymaster/index.html', 
-        {'gatekeepers': gatekeepers, 'twoMinutesAgo': twoMinutesAgo}, 
+        {'keymasters': keymasters, 'twoMinutesAgo': twoMinutesAgo}, 
         context_instance=RequestContext(request))
 
 
@@ -59,13 +59,12 @@ def get_client_ip(request):
 def keymaster(request):
     try:
         ip = get_client_ip(request)
-        gatekeeper = Gatekeeper.objects.by_ip(ip)
-        if not gatekeeper:
-            raise Exception("No Gatekeeper for incoming IP (%s)" % ip)
+        keymaster = Keymaster.objects.by_ip(ip)
+        if not keymaster:
+            raise Exception("No Keymaster for incoming IP (%s)" % ip)
         logger.debug("Incoming connection from: %s" % ip)
 
-        keymaster = Keymaster(gatekeeper)
-        connection = keymaster.encrypted_connection
+        connection = keymaster.get_encrypted_connection()
         incoming_message = connection.receive_message(request)
         outgoing_message = keymaster.process_message(incoming_message)
         encrypted_response = connection.encrypt_message(outgoing_message)

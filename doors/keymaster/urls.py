@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 from django.conf import settings
 
-urlpatterns = patterns('keymaster.views',
+urlpatterns = patterns('doors.keymaster.views',
                        url(r'^$', 'index'),
                        url(r'^test_door/$', 'test_door'),
                        

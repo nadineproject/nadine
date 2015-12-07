@@ -3,11 +3,6 @@ import ssl, urllib, urllib2, base64
 from datetime import datetime
 from xml.etree import ElementTree
 
-from django.conf import settings
-from django.utils import timezone
-from django.contrib.auth.models import User
-from django.core.exceptions import ImproperlyConfigured
-
 logger = logging.getLogger(__name__)
 
 ###############################################################################################################

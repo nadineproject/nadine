@@ -17,6 +17,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(unique=True, max_length=16)),
+                ('door_type', models.CharField(max_length=16, choices=[(b'hid', b'Hid Controller'), (b'maypi', b'Maypi Controller')])),
                 ('username', models.CharField(max_length=32)),
                 ('password', models.CharField(max_length=32)),
                 ('ip_address', models.GenericIPAddressField()),
@@ -33,11 +34,23 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='Gatekeeper',
+            name='DoorEvent',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('timestamp', models.DateTimeField()),
+                ('code', models.CharField(max_length=16)),
+                ('event_type', models.CharField(default=b'0', max_length=1, choices=[(b'0', b'Unknown Command'), (b'1', b'Unrecognized Card'), (b'2', b'Access Granted'), (b'3', b'Access Denied'), (b'4', b'Door Locked'), (b'5', b'Door Unlocked')])),
+                ('event_description', models.CharField(max_length=256)),
+                ('door', models.ForeignKey(to='keymaster.Door')),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Keymaster',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('description', models.CharField(max_length=64)),
-                ('ip_address', models.GenericIPAddressField(unique=True)),
+                ('gatekeeper_ip', models.GenericIPAddressField(unique=True)),
                 ('encryption_key', models.CharField(max_length=128)),
                 ('access_ts', models.DateTimeField(auto_now=True)),
                 ('sync_ts', models.DateTimeField(null=True, blank=True)),
@@ -46,7 +59,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='door',
-            name='gatekeeper',
-            field=models.ForeignKey(to='keymaster.Gatekeeper'),
+            name='keymaster',
+            field=models.ForeignKey(to='keymaster.Keymaster'),
         ),
     ]
