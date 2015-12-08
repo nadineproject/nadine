@@ -29,13 +29,14 @@ Gatekeeper runs two processes: one to poll the keymaster for changes to make (su
 `
 
 * Create your config file (gw_config.json):
-`
+
+``
 {
    "ENCRYPTION_KEY": "Your KEY",
    "KEYMASTER_URL": "http://127.0.0.1:8000/doors/keymaster/",
    "POLL_DELAY_SEC": 60
 }
-`
+``
 
 * Install neccessary libraries
 `
