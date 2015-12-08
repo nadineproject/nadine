@@ -30,7 +30,7 @@ Gatekeeper runs two processes: one to poll the keymaster for changes to make (su
 
 ````
 {
-   "ENCRYPTION_KEY": "Your KEY",
+   "ENCRYPTION_KEY": "THE_KEY_YOU_GENERATED",
    "KEYMASTER_URL": "http://127.0.0.1:8000/doors/keymaster/",
    "POLL_DELAY_SEC": 60
 }
@@ -39,7 +39,7 @@ Gatekeeper runs two processes: one to poll the keymaster for changes to make (su
 * Install neccessary libraries:
 `pip install flask cryptography requests`
 
-* Run the app
+* Run the app:
 `./gateway_app.py`
 
 ### Adding a new Gatekeer
