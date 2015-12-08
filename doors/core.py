@@ -20,6 +20,35 @@ class Messages(object):
     SUCCESS_RESPONSE = "OK"
 
 
+
+class DoorTypes(object):
+    HID = "hid"
+    MAYPI = "maypi"
+    
+    CHOICES = (
+        (HID, "Hid Controller"),
+        (MAYPI, "Maypi Controller"),
+    )
+
+
+class DoorEventTypes(object):
+    UNKNOWN = "0"
+    UNRECOGNIZED = "1"
+    GRANTED = "2"
+    DENIED = "3"
+    LOCKED = "4"
+    UNLOCKED = "5"
+    
+    CHOICES = (
+        (UNKNOWN, 'Unknown Command'),
+        (UNRECOGNIZED, 'Unrecognized Card'),
+        (GRANTED, 'Access Granted'),
+        (DENIED, 'Access Denied'),
+        (LOCKED, 'Door Locked'),
+        (UNLOCKED, 'Door Unlocked'),
+    )
+
+
 class EncryptedConnection(object):
     def __init__(self, encryption_key, keymaster_url=None, ttl=600):
         if not encryption_key:
@@ -74,7 +103,7 @@ class Door(object):
 
     def get_controller(self):
         if not 'controller' in self.__dict__:
-            if self.door_type == "hid":
+            if self.door_type == DoorTypes.HID:
                 self.controller = DoorController(self.ip_address, self.username, self.password)
             else:
                 raise NotImplementedError
