@@ -24,9 +24,7 @@ Gatekeeper runs two processes: one to poll the keymaster for changes to make (su
 ### Gatekeeper Setup
 
 * Generate an encrytion key:
-`
-./manage.py generate_key
-`
+`./manage.py generate_key`
 
 * Create your config file (gw_config.json):
 
@@ -39,14 +37,10 @@ Gatekeeper runs two processes: one to poll the keymaster for changes to make (su
 ````
 
 * Install neccessary libraries:
-`
-pip install flask cryptography requests
-`
+`pip install flask cryptography requests`
 
 * Run the app
-`
-./gateway_app.py
-`
+`./gateway_app.py`
 
 ### Adding a new Gatekeer
 
