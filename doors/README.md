@@ -23,17 +23,36 @@ Gatekeeper runs two processes: one to poll the keymaster for changes to make (su
 
 ### Gatekeeper Setup
 
-Set up the django instance just like you would the main application.  But all you really need to do is
-run the managment command 'launch_gatekeeper'. 
+* Generate an encrytion key:
+`
+./manage.py generate_key
+`
 
-Requires flask and cryptography
+* Create your config file (gw_config.json):
+`
+{
+   "ENCRYPTION_KEY": "Your KEY",
+   "KEYMASTER_URL": "http://127.0.0.1:8000/doors/keymaster/",
+   "POLL_DELAY_SEC": 60
+}
+`
+
+* Install neccessary libraries
+`
+pip install flask cryptography requests
+`
+
+* Run the app
+`
+./gateway_app.py
+`
 
 ### Adding a new Gatekeer
 
-The first time a Gatekeeper contacts the Keymaster the IP address of the Gatekeeper is stored in the Keymaster and disabled.  To enable this Gatekeeper, you need to save the shared secret key in the Keymaster database and mark the Gatekeeper enabled.
+The first time a Gatekeeper contacts the Keymaster the IP address of the Gatekeeper is stored in the Keymaster and disabled.  To enable, you need to save the shared secret key in the Keymaster database and mark the Gatekeeper enabled.
 
 ####TODO: 
- * Magic Key
+ * Magic Key (toggle lock/unlock)
  * Event Proxy / Logging
  * New Code Mode
  * Find & fill in missing logs

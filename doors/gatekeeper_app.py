@@ -1,25 +1,16 @@
 #!/usr/bin/env python
+import sys
+import json
 import time
 import traceback
 
 from core import Messages, EncryptedConnection, Gatekeeper
 
-# HID Door System
-# Encryption Key must be a URL-safe base64-encoded 32-byte key.
-# https://cryptography.io/en/latest/fernet/
-ENCRYPTION_KEY = "tsw8ZGfhS72NyQGBYYUwk1OLYOW45hS4XvUQA07qrDc="
-KEYMASTER_URL = "http://127.0.0.1:8000/doors/keymaster/"
-POLL_DELAY_SEC = 60
-# TODO - Move settings to settings file
-
 class GatekeeperApp(object):
-    def run(self):
-        # Start with a full sync
-        forcesync = True
-        
+    def run(self, initialSync):
         try:
             print "Starting up Gatekeeper..."
-            connection = EncryptedConnection(ENCRYPTION_KEY, KEYMASTER_URL)
+            connection = EncryptedConnection(config['ENCRYPTION_KEY'], config['KEYMASTER_URL'])
             gatekeeper = Gatekeeper(connection)
             
             # Test the connection
@@ -45,9 +36,9 @@ class GatekeeperApp(object):
 
             # Now loop and get new commands
             while True:
-                if forcesync:
+                if config['initialSync']:
                     message = Messages.FORCE_SYNC
-                    forcesync = False
+                    config['initialSync'] = False
                 else:
                     message = Messages.PULL_DOOR_CODES
                 print "Contacting the Keymaster: %s" % message
@@ -61,11 +52,18 @@ class GatekeeperApp(object):
                         raise Exception("Did not receive proper success response!")
                 else:
                     print "No new door codes"
-                time.sleep(POLL_DELAY_SEC)
+                print "sleeping %d seconds" % config['POLL_DELAY_SEC']
+                time.sleep(config['POLL_DELAY_SEC'])
         except Exception as e:
             traceback.print_exc()
             print "Error: %s" % str(e)
         
 if __name__ == "__main__":
+    # Load our configuration
+    with open('gw_config.json', 'r') as f:
+        config = json.load(f)
+    config['initialSync'] = "-s" in sys.argv
+    
+    # Run the app
     app = GatekeeperApp()
-    app.run()
+    app.run(config)
