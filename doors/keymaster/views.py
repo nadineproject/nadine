@@ -36,6 +36,9 @@ def test_door(request):
         response_code, xml_response = controller.send_xml_str(xml_request)
         response_time = timezone.now() - start_ts
         print "response code: %d, response time: %s" % (response_code, response_time)
+    else:
+        # Start with the basic framework    
+        xml_request = '<?xml version="1.0" encoding="UTF-8"?>\n<VertXMessage>\n\n</VertXMessage>'
     return render_to_response('keymaster/test_door.html', { 'ip_address': ip_address,
         'username': username, 'password':password, 'xml_request':xml_request, 'xml_response':xml_response
     }, context_instance=RequestContext(request))
