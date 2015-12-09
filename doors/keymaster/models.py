@@ -66,6 +66,15 @@ class Keymaster(models.Model):
         elif incoming_message == Messages.MARK_SUCCESS:
             self.gatekeeper.mark_success()
             outgoing_message = Messages.SUCCESS_RESPONSE
+        else:
+            try:
+                json_message = json.loads(incoming_message)
+                print json_message
+                # TODO save object
+                outgoing_message = Messages.SUCCESS_RESPONSE
+            except ValueError:
+                pass
+                
         
         logger.debug("Outgoing Message: '%s' " % outgoing_message)
         return outgoing_message
