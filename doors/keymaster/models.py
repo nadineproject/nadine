@@ -59,12 +59,12 @@ class Keymaster(models.Model):
             outgoing_message = Messages.TEST_RESPONSE
         elif incoming_message == Messages.PULL_CONFIGURATION:
             outgoing_message = self.pull_config()
+        elif incoming_message == Messages.CHECK_DOOR_CODES:
+            outgoing_message = self.check_door_codes()
         elif incoming_message == Messages.PULL_DOOR_CODES:
             outgoing_message = self.pull_door_codes()
-        elif incoming_message == Messages.FORCE_SYNC:
-            outgoing_message = self.pull_door_codes(forceSync=True)
         elif incoming_message == Messages.MARK_SUCCESS:
-            self.gatekeeper.mark_success()
+            self.mark_success()
             outgoing_message = Messages.SUCCESS_RESPONSE
         else:
             try:
@@ -86,12 +86,13 @@ class Keymaster(models.Model):
             doors.append(door)
         return json.dumps(doors)
 
-    def pull_door_codes(self, forceSync=False):
-        if not forceSync:
-            if self.sync_ts:
-                if DoorCode.objects.filter(modified_ts__gt=self.sync_ts).count() == 0:
-                    # Nothing to do here
-                    return []
+    def check_door_codes(self):
+        # Return True if there are new codes since the last sync
+        if not self.sync_ts or DoorCode.objects.filter(modified_ts__gt=self.sync_ts).count() > 0:
+            return Messages.NEW_DATA
+        return Messages.NO_NEW_DATA
+
+    def pull_door_codes(self):
         # Pull all the codes and send them back
         codes = []
         for c in DoorCode.objects.all():
