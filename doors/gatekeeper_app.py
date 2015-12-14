@@ -8,7 +8,7 @@ from core import Messages, EncryptedConnection, Gatekeeper
 from heartbeat import HeartBeat
 
 class GatekeeperApp(object):
-    def run(self, config, initialSync):
+    def run(self, config, syncClocks, initialSync):
         try:
             print "Starting up Gatekeeper..."
             connection = EncryptedConnection(config['ENCRYPTION_KEY'], config['KEYMASTER_URL'])
@@ -38,19 +38,29 @@ class GatekeeperApp(object):
             if initialSync:
                 gatekeeper.pull_door_codes()
             
-            heartbeat = None
-            while True:
-                if not heartbeat or not heartbeat.is_alive():
-                    print "Starting Heart Beat..."
-                    heartbeat = HeartBeat(connection, config['POLL_DELAY_SEC'])
-                    heartbeat.setDaemon(True)
-                    heartbeat.start()
+            try:
+                heartbeat = None
+                while True:
+                    if not heartbeat or not heartbeat.is_alive():
+                        print "Starting Heart Beat..."
+                        heartbeat = HeartBeat(connection, config['POLL_DELAY_SEC'])
+                        heartbeat.setDaemon(True)
+                        heartbeat.start()
                 
-                if heartbeat.new_data:
-                    print "Pulling door codes..."
-                    gatekeeper.pull_door_codes()
-                    heartbeat.all_clear()
-        
+                    if heartbeat.new_data:
+                        print "Pulling door codes..."
+                        gatekeeper.pull_door_codes()
+                        heartbeat.all_clear()
+                
+                    time.sleep(.1)
+            except KeyboardInterrupt:
+                print " Keyboard Interupt!"
+                print "Shutting down..."
+                if heartbeat and heartbeat.is_alive():
+                    heartbeat.stop()
+                    heartbeat.join()
+                print "Done!"
+
         except Exception as e:
             traceback.print_exc()
             print "Error: %s" % str(e)
@@ -63,7 +73,8 @@ if __name__ == "__main__":
     
     # Pull the command line args
     initialSync = "-s" in sys.argv
+    syncClocks = "-c" in sys.argv
 
     # Start the application
     app = GatekeeperApp()
-    app.run(config, initialSync)
+    app.run(config, syncClocks, initialSync)
