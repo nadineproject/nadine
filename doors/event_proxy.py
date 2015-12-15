@@ -1,41 +1,70 @@
 #!/usr/bin/env python
+import threading
+import Queue
+
 import sys
 import json
 import time
 import traceback
 
-from core import Messages, EncryptedConnection
+import cherrypy
+
+from core import Messages, EncryptedConnection, DoorEventTypes
 
 ################################################################################
 # The Web Application
 ################################################################################
-
-from flask import Flask, request
-webapp = Flask(__name__)
-
-@webapp.route('/event_proxy')
-def event_proxy():
-    webapp.proxy.send(request.args)
-    return "OK"
-
-################################################################################
-# Our Proxy Object
-################################################################################
-
-class Proxy(object):
-    def __init__(self, connection):
+class EventProxy(threading.Thread):
+    def __init__(self, queue, special_codes, doors, users, connection):
+        threading.Thread.__init__(self)
+        self.queue = queue
+        self.special_codes = special_codes
+        self.doors = doors
+        self.users = users
         self.connection = connection
+
+    @cherrypy.expose
+    def index(self):
+        return "I'm the event proxy!"
     
-    def send(self, args):
-        event = args.get('event', 'unknown')
-        door = args.get('door', 'unknown')
-        code = args.get('code', 'unknown')
-        print "Incoming Event: %s, Door: %s, Code: %s" % (event, door, code)
-        proxy_dict = {'event': event, 'door':door, 'code':code}
+    # This is the one that takes the event data from the doors
+    @cherrypy.expose
+    def event_proxy(self, **args):
+        print args
+        # event = args.get('event', 'unknown')
+        # door = args.get('door', 'unknown')
+        # code = args.get('code', 'unknown')
+        # print("Incoming Event: %s, Door: %s, Code: %s" % (event, door, code))
+        proxy_dict = self.event_for_keymaster_from_hid_args(args)
+        
         proxy_data = json.dumps(proxy_dict)
-        print proxy_data
+        print(proxy_data)
         response = self.connection.send_message(proxy_data)
-        print "Keymaster Response: %s" % response
+        print("Keymaster Response: %s" % response)
+        return "Here's where I would actually process the stuff"
+
+    def run(self):
+        cherrypy.quickstart(self)
+
+    def event_for_keymaster_from_hid_args(self, args):
+        #Args that come from the reader: firstname, lastname, cardnumber, doorname, action
+        if args["action"] == "GRANTED":
+            event_type = DoorEventTypes.GRANTED
+        elif args["action"] == "DENIED":
+            event_type = DoorEventTypes.DENIED
+        else:
+            event_type = DoorEventTypes.UNKNOWN
+        new_args = {
+            "event_type": event_type,
+            "event_description": str(args),
+        }
+        if "doorname" in args && args["doorname"] in self.doors:
+            new_args["door_id"] = self.doors[args["doorname"]]
+        if "lastname" in args && args["lastname"] in self.users:
+            new_args["user_id"] = self.users[args["lastname"]]
+        if "cardnumber" in args:
+            new_args["code"] = args["cardnumber"]
+        return new_args
 
 ################################################################################
 # Main method 
@@ -56,10 +85,16 @@ if __name__ == "__main__":
     else:
         raise Exception("Could not connect to Keymaster")
     
-    # Create our proxy
-    proxy = Proxy(connection)
-    webapp.proxy = proxy
+    queue = Queue.PriorityQueue()
     
-    # Running on http://localhost:5000/
-    print "Starting up Event Proxy..."
-    webapp.run(host='0.0.0.0', debug=debug)
+    doors = {'FrontDoor': 1}
+    users = {'mike': 1}
+    special_codes = ['abc']
+    
+    # Create our proxy
+    proxy = EventProxy(queue, special_codes, doors, users, connection)
+    proxy.setDaemon(True)
+    proxy.start()
+
+    while True:
+        time.sleep(.1)
