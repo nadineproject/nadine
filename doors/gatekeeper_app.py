@@ -5,9 +5,10 @@ import time
 import traceback
 
 from core import Messages, EncryptedConnection, Gatekeeper
+from heartbeat import HeartBeat
 
 class GatekeeperApp(object):
-    def run(self, initialSync):
+    def run(self, config, syncClocks, initialSync):
         try:
             print "Starting up Gatekeeper..."
             connection = EncryptedConnection(config['ENCRYPTION_KEY'], config['KEYMASTER_URL'])
@@ -19,7 +20,7 @@ class GatekeeperApp(object):
                 print "Connection successfull!"
             else:
                 raise Exception("Could not connect to Keymaster")
-
+            
             # Pull the configuration
             print "Pulling door configuration..."
             response = connection.send_message(Messages.PULL_CONFIGURATION)
@@ -29,41 +30,51 @@ class GatekeeperApp(object):
                 print "No doors to program.  Exiting"
                 return
             print "Configured %d doors" % len(gatekeeper.doors)
-
+            
             # Set the time on each door
-            print "Syncing the door clocks..."
-            gatekeeper.sync_clocks()
+            #print "Syncing the door clocks..."
+            #gatekeeper.sync_clocks()
+            
+            if initialSync:
+                gatekeeper.pull_door_codes()
+            
+            try:
+                heartbeat = None
+                while True:
+                    if not heartbeat or not heartbeat.is_alive():
+                        print "Starting Heart Beat..."
+                        heartbeat = HeartBeat(connection, config['POLL_DELAY_SEC'])
+                        heartbeat.setDaemon(True)
+                        heartbeat.start()
+                
+                    if heartbeat.new_data:
+                        print "Pulling door codes..."
+                        gatekeeper.pull_door_codes()
+                        heartbeat.all_clear()
+                
+                    time.sleep(.1)
+            except KeyboardInterrupt:
+                print " Keyboard Interupt!"
+                print "Shutting down..."
+                if heartbeat and heartbeat.is_alive():
+                    heartbeat.stop()
+                    heartbeat.join()
+                print "Done!"
 
-            # Now loop and get new commands
-            while True:
-                if config['initialSync']:
-                    message = Messages.FORCE_SYNC
-                    config['initialSync'] = False
-                else:
-                    message = Messages.PULL_DOOR_CODES
-                print "Contacting the Keymaster: %s" % message
-                response = connection.send_message(message)
-                if len(response) > 2:
-                    print "Received new door codes to process"
-                    gatekeeper.process_door_codes(response)
-                    print "Success!  Sending confirmation."
-                    response = connection.send_message(Messages.MARK_SUCCESS)
-                    if not response == Messages.SUCCESS_RESPONSE:
-                        raise Exception("Did not receive proper success response!")
-                else:
-                    print "No new door codes"
-                print "sleeping %d seconds" % config['POLL_DELAY_SEC']
-                time.sleep(config['POLL_DELAY_SEC'])
         except Exception as e:
             traceback.print_exc()
             print "Error: %s" % str(e)
-        
+
+
 if __name__ == "__main__":
-    # Load our configuration
+    # Pull the config
     with open('gw_config.json', 'r') as f:
         config = json.load(f)
-    config['initialSync'] = "-s" in sys.argv
     
-    # Run the app
+    # Pull the command line args
+    initialSync = "-s" in sys.argv
+    syncClocks = "-c" in sys.argv
+
+    # Start the application
     app = GatekeeperApp()
-    app.run(config)
+    app.run(config, syncClocks, initialSync)

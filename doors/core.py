@@ -14,11 +14,12 @@ class Messages(object):
     TEST_QUESTION = "Are you the Keymaster?"
     TEST_RESPONSE = "Are you the Gatekeeper?"
     PULL_CONFIGURATION = "pull_configuration"
+    CHECK_DOOR_CODES = "check_door_codes"
     PULL_DOOR_CODES = "pull_door_codes"
-    FORCE_SYNC = "force_sync"
+    NEW_DATA = "new_data"
+    NO_NEW_DATA = "no_new_data"
     MARK_SUCCESS = "mark_success"
     SUCCESS_RESPONSE = "OK"
-
 
 
 class DoorTypes(object):
@@ -162,8 +163,9 @@ class Gatekeeper(object):
             raise Exception("Door not found")
         return self.doors[door_name]
 
-    def process_door_codes(self, door_codes, all=False):
-        doorcode_json = json.loads(door_codes)
+    def pull_door_codes(self):
+        response = self.encrypted_connection.send_message(Messages.PULL_DOOR_CODES)
+        doorcode_json = json.loads(response)
         logger.debug(doorcode_json)
         for door in self.get_doors().values():
             door.process_door_codes(doorcode_json)
