@@ -12,16 +12,13 @@ class HeartBeat(threading.Thread):
         self.connection = connection
         self.poll_delay_sec = poll_delay_sec
         self.new_data = False
-        self.shutdown = False
 
 
     def run(self):
+        self.running = True
         print("Polling every %d seconds" % self.poll_delay_sec)
 
-        while True:
-            if self.shutdown:
-                break
-            
+        while self.running:
             if not self.new_data:
                 print("Contacting the Keymaster...")
                 response = self.connection.send_message(Messages.CHECK_DOOR_CODES)
@@ -43,4 +40,4 @@ class HeartBeat(threading.Thread):
 
     def stop(self):
         self.poll_delay_sec = 0.1
-        self.shutdown = True
+        self.running = False

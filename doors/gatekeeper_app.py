@@ -32,9 +32,11 @@ class GatekeeperApp(object):
             print "Configured %d doors" % len(gatekeeper.doors)
             
             # Set the time on each door
-            #print "Syncing the door clocks..."
-            #gatekeeper.sync_clocks()
+            if syncClocks:
+                print "Syncing the door clocks..."
+                gatekeeper.sync_clocks()
             
+            # Pull new data if requested
             if initialSync:
                 gatekeeper.pull_door_codes()
             
