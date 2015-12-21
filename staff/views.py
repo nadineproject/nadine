@@ -936,36 +936,6 @@ def view_user_reports(request):
 
 
 @staff_member_required
-def usaepay_user(request, username):
-    user = get_object_or_404(User, username=username)
-    
-    error = None
-    customers = None
-    epay_api = None
-    try:
-        epay_api = EPayAPI()
-    except:
-        error = 'Could not connect to USAePay Gateway!'
-
-    if not error and 'disable_all' in request.POST:
-        try:
-            epay_api.disableAutoBilling(username)
-        except:
-            error = 'Could not disable billing!'
-
-    if not error:
-        try:
-            customers = epay_api.getAllCustomers(username)
-        except:
-            error = 'Could not pull customers!'
-
-    if 'UMerror' in request.GET:
-        error = request.GET.get('UMerror')
-
-    return render_to_response('staff/usaepay.html', {'user': user, 'error': error, 'customers': customers, 'settings':settings }, context_instance=RequestContext(request))
-
-
-@staff_member_required
 def xero_user(request, username):
     user = get_object_or_404(User, username=username)
     xero_api = XeroAPI()
@@ -998,6 +968,39 @@ def xero_user(request, username):
         xero_contact_data = xero_api.get_contact(user)
     return render_to_response('staff/xero.html', {'user': user, 'xero_contact': xero_contact, 'invoices': invoices, 'repeating_invoices':repeating_invoices,
         'xero_contact_data': xero_contact_data, 'xero_contact_search': xero_contact_search}, context_instance=RequestContext(request))
+
+
+@staff_member_required
+def usaepay_user(request, username):
+    user = get_object_or_404(User, username=username)
+    
+    # When we add a card we POST to USAePay and it comes back to this page
+    # Any errors will be communicated to us in this GET variable
+    if 'UMerror' in request.GET:
+        messages.add_message(request, messages.ERROR, request.GET.get('UMerror'))
+    
+    customers = None
+    history = None
+    try:
+        epay_api = EPayAPI()
+        
+        if 'disable_all' in request.POST:
+            epay_api.disableAutoBilling(username)
+        
+        customer_id = request.POST.get("customer_id", None)
+        action = request.POST.get("action", "")
+        if customer_id:
+            if action == "verify":
+                pass
+            elif action == "delete":
+                pass
+        
+        # Lastly pull all customers for this user
+        customers, history = epay_api.get_history(username)
+    except Exception as e:
+        messages.add_message(request, messages.ERROR, e)
+    
+    return render_to_response('staff/usaepay.html', {'user': user, 'customers':customers, 'history': history, 'settings':settings }, context_instance=RequestContext(request))
 
 
 @staff_member_required
@@ -1078,9 +1081,9 @@ def usaepay_members(request):
 
 @staff_member_required
 def usaepay_void(request):
-    epay_api = EPayAPI()
     transaction = None
     try:
+        epay_api = EPayAPI()
         if 'transaction_id' in request.POST:
             transaction_id = int(request.POST.get('transaction_id'))
             transaction = epay_api.get_transaction(transaction_id)

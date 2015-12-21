@@ -43,12 +43,13 @@ class EPayAPI:
         # Searches all the history for all the customers for this user
         # Returns a dictionary of {cust_num: transactions}
         history = {}
-        for cust in self.entry_point.getAllCustomers(username):
+        customers = self.entry_point.getAllCustomers(username)
+        for cust in customers:
             cust_num = cust.getCustNum()
             raw_transactions = self.entry_point.getCustomerHistory(int(cust_num))
             clean_transactions = clean_transaction_list(raw_transactions)
-            history[cust_num] = clean_transactions    
-        return history
+            history[cust_num] = clean_transactions
+        return (customers, history)
 
 
     def has_new_card(self, username):
@@ -91,6 +92,7 @@ class EPayAPI:
         if t['username'] == username and t['status'] == "Authorized":
             return self.entry_point.voidTransaction(transaction_id)
         return False
+
 
     def get_auth_code(self, username):
         from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
