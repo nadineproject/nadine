@@ -29,22 +29,22 @@
                 {% endfor %}
             </td>
             <td style="text-align:center;">
+                <a href="{% url 'staff.views.usaepay_user' t.username %}" target="new"><input type="button" value="U"></a>
+                <a href="{% url 'staff.views.xero_user' t.username %}" target="new"><input type="button" value="X"></a>
+                {% ifequal "Authorized" t.status %}
+                    <form action="{% url 'staff.views.usaepay_void' %}" method="POST" style="display:inline;">
+                        <input type="hidden" name="transaction_id" value="{{ t.transaction_id }}" />
+                        <input type="submit" value="Void"/>
+                        {% csrf_token %}
+                    </form>
+                {% endifequal %} 
                 {% if t.open_bill_amount %}
-                    <form action="{% url 'staff.views.bills_pay_all' t.username %}" method="POST">
+                    <form action="{% url 'staff.views.bills_pay_all' t.username %}" method="POST" style="display:inline;">
                         <input type="hidden" name="next" value="{{request.path}}" />
-                        <input type="submit" value="Paid" />
+                        <input type="submit" value="Paid"/>
                         {% csrf_token %}
                     </form>
                 {% endif %}
-                {% ifequal "Authorized" t.status %}
-                <!--
-                    <form action="." method="POST">
-                        <input type="hidden" name="transaction_id" value="{{ t.transaction_id }}" />
-                        <input type="submit" value="Void" />
-                        {% csrf_token %}
-                    </form>
-                -->
-                {% endifequal %} 
             </td>
         </tr>
     {% endfor %}

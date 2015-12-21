@@ -1031,7 +1031,10 @@ def usaepay_transactions(request, year, month, day):
             if member:
                 t['member'] = member
                 t['open_bill_amount'] = member.open_bill_amount()
-                t['xero_invoices'] = open_xero_invoices.get(t['username'])
+                t['xero_invoices'] = open_xero_invoices.get(t['username'], [])
+                for i in t['xero_invoices']:
+                    if i['AmountDue'] != t['amount']:
+                        t['xero_invoices'].remove(i)
 
             # Total up all the Settled transactions
             if t['transaction_type'] == "Sale" and t['status'] != "Declined" and t['status'] != "Error":
@@ -1054,8 +1057,8 @@ def usaepay_transactions(request, year, month, day):
         error = 'Could not connect to USAePay Gateway!'
     
     return render_to_response('staff/charges.html', {'date': d, 'error': error, 'amex': amex, 'visamc': visamc, 'ach':ach,
-                                                                  'other_transactions': other_transactions, 'settled_checks':settled_checks, 'totals':totals,
-                                                                  'next_date': d + timedelta(days=1), 'previous_date': d - timedelta(days=1)}, context_instance=RequestContext(request))
+                                                      'other_transactions': other_transactions, 'settled_checks':settled_checks, 'totals':totals,
+                                                      'next_date': d + timedelta(days=1), 'previous_date': d - timedelta(days=1)}, context_instance=RequestContext(request))
 
 
 @staff_member_required
@@ -1071,6 +1074,25 @@ def usaepay_members(request):
                 if c.isEnabled():
                     members.append({'member': m, 'username': username, 'next': c.getNext(), 'customer_number': c.getCustNum()})
     return render_to_response('staff/usaepay_members.html', {'members': members}, context_instance=RequestContext(request))
+
+
+@staff_member_required
+def usaepay_void(request):
+    epay_api = EPayAPI()
+    transaction = None
+    try:
+        if 'transaction_id' in request.POST:
+            transaction_id = int(request.POST.get('transaction_id'))
+            transaction = epay_api.get_transaction(transaction_id)
+    
+            if 'username' in request.POST and 'confirmed' in request.POST:
+                username = request.POST.get('username')
+                epay_api.void_transaction(self, username, transaction_id)
+                return HttpResponseRedirect(reverse('staff.views.usaepay_transactions_today'))
+    except Exception as e:
+        messages.add_message(request, messages.ERROR, e)
+    
+    return render_to_response('staff/usaepay_void.html', {'transaction':transaction}, context_instance=RequestContext(request))
 
 
 def view_ip(request):

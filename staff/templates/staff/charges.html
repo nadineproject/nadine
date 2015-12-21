@@ -11,7 +11,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 {% include "staff/billing_menu.frag" %}	 
 
 <h2>
-	Daily Charges - {{ date|date:"M d, Y" }}
+	Daily Charges - {{ date|date:"l, M dS" }}
 	<span style="float:right;">	
 	<a href="{% url 'staff.views.usaepay_transactions' previous_date.year previous_date.month previous_date.day %}">&larr;</a>
 	<a href="{% url 'staff.views.usaepay_transactions_today' %}">&bull;</a>
@@ -23,7 +23,13 @@ nav #billing-tab { background: #FBD850; color: black; }
 	<div style="text-align:center; font-size:150%; color:red">{{ error }}</div>
 {% endif %}
 
-<p>Total {{totals.total_count}} Transactions: ${{totals.total|floatformat:2}}</p>
+<p>
+    <div style="float:right;">
+        <a href="https://go.xero.com/AccountsReceivable/Search.aspx?invoiceStatus=INVOICESTATUS%2fAUTHORISED" target="new">Xero Invoices</a> |
+        <a href="https://secure.usaepay.com/console/batch" target="new">USAePay Batch</a>
+    </div>
+    Total {{totals.total_count}} Transactions: ${{totals.total|floatformat:2}}
+</p>
 
 {% if amex %}
 	{% with "AMEX" as name and amex as transactions and totals.amex_total as total %}

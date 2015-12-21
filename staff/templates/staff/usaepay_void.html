@@ -1,0 +1,45 @@
+{% extends "staff/staff_base.html" %}
+
+{% block style %}
+nav #billing-tab { background: #FBD850; color: black; }
+{% endblock %}
+
+{% block sub-title %}USAePay Void Authorization | {% endblock %}
+
+{% block content %}
+{% include "staff/billing_menu.frag" %}	 
+
+<h2>USAePay Void Authorization</h2>
+
+{% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+
+{% if not transaction %}
+    No Transaction!
+{% else %}
+    <h3>Transaction Details</h3>
+    <div style="margin-left: 2em;">
+        <strong>Date: </strong> {{ transaction.date_time }}<br>
+        <strong>User: </strong> {{ transaction.username }}<br>
+        <strong>Description: </strong> {{ transaction.description}}<br>
+        <strong>Amount: </strong> ${{ transaction.amount }}<br>
+    </div>
+    
+    <h3>Are you sure?</h3>
+    <div style="margin-left: 2em;">
+        <form action="." method="POST">
+            <input type="hidden" name="transaction_id" value="{{ transaction.transaction_id }}" />
+            <input type="hidden" name="username" value="{{ transaction.username }}" />
+            <input type="submit" name="confirmed" value="Void Transaction"/>
+            {% csrf_token %}
+        </form>
+    </div>
+{% endif %}
+
+{% endblock %}
