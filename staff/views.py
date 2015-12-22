@@ -979,7 +979,6 @@ def usaepay_user(request, username):
     if 'UMerror' in request.GET:
         messages.add_message(request, messages.ERROR, request.GET.get('UMerror'))
     
-    customers = None
     history = None
     try:
         epay_api = EPayAPI()
@@ -989,18 +988,25 @@ def usaepay_user(request, username):
         
         customer_id = request.POST.get("customer_id", None)
         action = request.POST.get("action", "")
+        print "action: %s" % action
+        print "cust: %s " % customer_id
         if customer_id:
-            if action == "verify":
+            if action == "verify_profile":
+                # Run a $1.00 authorization to verify this profile works
                 pass
-            elif action == "delete":
+            elif action == "delete_profile":
+                pass
+            elif action == "manual_charge":
+                pass
+            elif action == "edit_recurring":
                 pass
         
         # Lastly pull all customers for this user
-        customers, history = epay_api.get_history(username)
+        history = epay_api.get_history(username)
     except Exception as e:
         messages.add_message(request, messages.ERROR, e)
     
-    return render_to_response('staff/usaepay.html', {'user': user, 'customers':customers, 'history': history, 'settings':settings }, context_instance=RequestContext(request))
+    return render_to_response('staff/usaepay.html', {'user': user, 'history': history, 'settings':settings }, context_instance=RequestContext(request))
 
 
 @staff_member_required

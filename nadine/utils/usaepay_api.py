@@ -48,8 +48,8 @@ class EPayAPI:
             cust_num = cust.getCustNum()
             raw_transactions = self.entry_point.getCustomerHistory(int(cust_num))
             clean_transactions = clean_transaction_list(raw_transactions)
-            history[cust_num] = clean_transactions
-        return (customers, history)
+            history[cust] = clean_transactions
+        return history
 
 
     def has_new_card(self, username):
