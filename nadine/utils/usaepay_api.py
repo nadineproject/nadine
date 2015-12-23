@@ -2,6 +2,7 @@ import base64, csv
 from datetime import datetime, timedelta
 from py4j.java_gateway import JavaGateway
 from django.conf import settings
+from collections import OrderedDict
 
 class EPayAPI:
     
@@ -20,7 +21,6 @@ class EPayAPI:
 
     def getAllCustomers(self, username):
         return self.entry_point.getAllCustomers(username)
-
 
     def getAllEnabledCustomers(self):
         return self.entry_point.getEnabledCustomers()
@@ -60,7 +60,7 @@ class EPayAPI:
     def get_history(self, username):
         # Searches all the history for all the customers for this user
         # Returns a dictionary of {cust_num: transactions}
-        history = {}
+        history = OrderedDict()
         customers = self.entry_point.getAllCustomers(username)
         for cust in customers:
             cust_num = cust.getCustNum()
