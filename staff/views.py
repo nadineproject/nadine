@@ -999,7 +999,11 @@ def usaepay_user(request, username):
             elif action == "manual_charge":
                 pass
             elif action == "edit_recurring":
-                pass
+                next_date = request.POST.get("next_date")
+                description = request.POST.get("description")
+                amount = request.POST.get("amount")
+                enabled = request.POST.get("enabled", "") == "on"
+                epay_api.update_recurring(customer_id, enabled, next_date, description, amount)
         
         # Lastly pull all customers for this user
         history = epay_api.get_history(username)

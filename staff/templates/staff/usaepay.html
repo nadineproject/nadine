@@ -65,14 +65,14 @@ nav #billing-tab { background: #FBD850; color: black; }
 
     <input type="button" id="edit_profile_button" value="Edit Automatic Billing" onclick="editProfile()">
 
-    <input type="button" id="manual_charge_button" value="Manually Charge" onclick="manualCharge();">
-
     <form id="delete_profile_form" method="POST" action="." style="display:inline;" onSubmit="return confirm('Are you sure?');">
         <input type="hidden" name="action" value="delete_profile">
         <input type="hidden" name="customer_id" value="">
         <input type="submit" name="delete_profile" value="Delete Profile">
         {% csrf_token %}
     </form>
+
+    <input type="button" id="manual_charge_button" value="Manually Charge" onclick="manualCharge();">
 
     <form id="verify_profile_button" method="POST" action="." style="display:inline;">
         <input type="hidden" name="customer_id" value="">

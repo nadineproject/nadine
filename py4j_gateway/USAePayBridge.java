@@ -174,6 +174,19 @@ public class USAePayBridge {
 		return client.voidTransaction(token, big_num);
 	}
 
+	public boolean updateCustomer(Integer customer_number, Map<String, String> fields) throws Exception {
+		BigInteger custnum = BigInteger.valueOf(customer_number.intValue());
+ 
+		// Create array of fields to update
+		FieldValueArray updateData = new FieldValueArray();
+		for (Map.Entry<String, String> entry : fields.entrySet()) {
+			FieldValue fv = new FieldValue(entry.getKey(), entry.getValue());
+			updateData.add(fv);
+		}
+		
+		return client.quickUpdateCustomer(token, custnum, updateData);
+	}
+	
 	public static void main(String[] args) {
 		String url = args[0];
 		String key = args[1];

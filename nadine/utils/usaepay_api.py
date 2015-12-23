@@ -33,6 +33,24 @@ class EPayAPI:
         return False
 
 
+    def update_customer(self, customer_id, address, zip_code, email):
+        fields = self.gateway.jvm.java.util.HashMap()
+        fields['Address'] = address
+        fields['Zip'] = zip_code
+        fields['Email'] = email
+        return self.entry_point.updateCustomer(customer_id, fields)
+
+
+    def update_recurring(self, customer_id, enabled, next_date, description, amount):
+        fields = self.gateway.jvm.java.util.HashMap()
+        fields['Enabled'] = str(enabled)
+        fields['Next'] = next_date
+        fields['Description'] = description
+        fields['Amount'] = amount
+        fields['SendReceipt'] = 'True'
+        return self.entry_point.updateCustomer(int(customer_id), fields)
+
+
     def get_transactions(self, year, month, day):
         raw_transactions = self.entry_point.getTransactions(year, month, day)
         clean_transactions = clean_transaction_list(raw_transactions)
@@ -62,6 +80,10 @@ class EPayAPI:
                 recent = datetime.now() - transactions[0]['date_time'] <= timedelta(weeks=1)
                 return auth and recent
         return False
+
+
+    def update_customer(self, custID, fields):
+        pass
 
 
     def get_checks_settled_by_date(self, year, month, day):
