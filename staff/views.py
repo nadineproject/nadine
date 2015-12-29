@@ -1064,7 +1064,6 @@ def usaepay_transactions(request, year, month, day):
                     ach.append(t)
                     totals['ach_total'] = totals['ach_total'] + t['amount']
             else:
-                print t
                 other_transactions.append(t)
         
     except Exception as e:
