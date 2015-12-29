@@ -22,8 +22,16 @@ public class USAePayBridge {
 		String end = dates[1];
 		System.out.println("getTransactions: " + start);
 		SearchParamArray search = new SearchParamArray();
-		search.add(new SearchParam("created", "gte", start));
-		search.add(new SearchParam("created", "lte", end));
+		SearchParam p1 = new SearchParam();
+		p1.setField("created");
+		p1.setType("gte");
+		p1.setValue(start);
+		SearchParam p2 = new SearchParam();
+		p2.setField("created");
+		p2.setType("lte");
+		p2.setValue(end);
+		search.add(p1);
+		seach.add(p2);
 		return searchTransactions(search);
 	}
 
@@ -185,6 +193,26 @@ public class USAePayBridge {
 		}
 		
 		return client.quickUpdateCustomer(token, custnum, updateData);
+	}
+	
+	public TransactionResponse authorize(Integer customer_number) throws Exception {
+		BigInteger custnum = BigInteger.valueOf(customer_number.intValue());
+		
+		TransactionDetail details = new TransactionDetail();
+		details.setAmount(1.00);
+		details.setDescription("Office Nomads Authorization");
+		
+		CustomerTransactionRequest request = new CustomerTransactionRequest();
+		request.setCommand("AuthOnly");
+		request.setCustReceipt(True);
+		request.setDetails(details);
+		
+		// Set payment method to select the default
+		int paymentMethodID = 0;
+		
+		TransactionResponse response = client.runCustomerTransaction(token, custNum, paymentMethodID, request);
+		
+		return response;
 	}
 	
 	public static void main(String[] args) {
