@@ -65,6 +65,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 
     <input type="button" id="edit_profile_button" value="Edit Automatic Billing" onclick="editProfile()">
 
+    <!--
     <form id="delete_profile_form" method="POST" action="." style="display:inline;" onSubmit="return confirm('Are you sure?');">
         <input type="hidden" name="action" value="delete_profile">
         <input type="hidden" name="customer_id" value="">
@@ -79,6 +80,7 @@ nav #billing-tab { background: #FBD850; color: black; }
         <input type="submit" name="verify_profile" value="Run Authorization">
         {% csrf_token %}
     </form>
+    -->
     
      <input id="clear_button" type="button" value="Clear Selection" onclick="clearCustomerSelect(); return false;">
 </div>
@@ -150,14 +152,14 @@ nav #billing-tab { background: #FBD850; color: black; }
             <input type="hidden" name="action" value="edit_recurring">
             <table>
                 <tr>
-                    <th>Enabled</th>
-                    <th>Next Date</th>
+                    <th style="width:12px;">Enabled</th>
+                    <th style="">Next Date</th>
                     <th>Description</th>
                     <th>Amount</th>
                     <th></th>
                 </tr>
                 <tr>
-                    <td style="width:1%;">
+                    <td style="text-align:center;">
                         <input name="enabled" type="checkbox" {% if customer.isEnabled %} CHECKED {% endif %} />
                     </td>
                     <td>
