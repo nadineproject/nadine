@@ -39,9 +39,13 @@ def membership_save_callback(sender, **kwargs):
     created = kwargs['created']
     if not created:
         return
+
     # If the member is just switching from one membership to another, don't change subscriptions
-    if Membership.objects.filter(member=membership.member, end_date=membership.start_date - timedelta(days=1)).count() != 0:
-        return
+    # But if this membership is created in the past there is no way to know what they want so subscribe them
+    if membership.start_date <= timezone.now().date():
+        if Membership.objects.filter(member=membership.member, end_date=membership.start_date - timedelta(days=1)).count() != 0:
+            return
+
     mailing_lists = MailingList.objects.filter(is_opt_out=True)
     for ml in mailing_lists:
         ml.subscribers.add(membership.member.user)
