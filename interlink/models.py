@@ -42,7 +42,7 @@ def membership_save_callback(sender, **kwargs):
 
     # If the member is just switching from one membership to another, don't change subscriptions
     # But if this membership is created in the past there is no way to know what they want so subscribe them
-    if membership.start_date <= timezone.now().date():
+    if membership.start_date >= timezone.now().date():
         if Membership.objects.filter(member=membership.member, end_date=membership.start_date - timedelta(days=1)).count() != 0:
             return
 
