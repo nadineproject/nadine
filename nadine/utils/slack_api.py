@@ -572,7 +572,7 @@ class SlackAPI:
     def invite_user_quiet(self, user):
         try:
             self.invite_user(user)
-        except Exception:
+        except:
             pass
 
     def disable_user(self, user):

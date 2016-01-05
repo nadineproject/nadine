@@ -53,7 +53,7 @@ def membership_save_callback(sender, **kwargs):
         
     # If this is their first membership, also invite them to Slack
     if Membership.objects.filter(member=membership.member).count() == 1:
-        slack_api.invite_user_quiet(membership.member.user)
+        SlackAPI().invite_user_quiet(membership.member.user)
     
 post_save.connect(membership_save_callback, sender=Membership)
 
