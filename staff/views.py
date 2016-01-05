@@ -1109,6 +1109,12 @@ def usaepay_void(request):
     return render_to_response('staff/usaepay_void.html', {'transaction':transaction}, context_instance=RequestContext(request))
 
 
+@staff_member_required
+def slack_users(request):
+    expired_users = Member.objects.expired_slack_users()
+    slack_users = SlackAPI().users.list().body['members']
+    return render_to_response('staff/slack_users.html', {'expired_users':expired_users, 'slack_users':slack_users, 'slack_url':settings.SLACK_TEAM_URL}, context_instance=RequestContext(request))
+
 def view_ip(request):
     ip = None
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')

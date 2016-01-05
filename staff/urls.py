@@ -50,6 +50,7 @@ urlpatterns = patterns('staff.views',
                        (r'^charges/t/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', 'usaepay_transactions'),
                        (r'^charges/t/today/$', 'usaepay_transactions_today'),
                        (r'^xero/(?P<username>[^/]+)/$', 'xero_user'),
+                       (r'^slack_users/$', 'slack_users'),
                        (r'^ip/$', 'view_ip'),
                        )
 

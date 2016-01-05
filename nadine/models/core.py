@@ -182,15 +182,15 @@ class MemberManager(models.Manager):
         return Member.objects.filter(id__in=exiting.values('member'))
 
     def expired_slack_users(self):
-        expired_emails = []
+        expired_users = []
         active_emails =self.active_member_emails(include_email2=True)
         slack_users = SlackAPI().users.list()
         for u in slack_users.body['members']:
-            if 'profile' in u and 'email' in u['profile']:
+            if 'profile' in u and 'real_name' in u and 'email' in u['profile']:
                 email = u['profile']['email']
-                if email not in active_emails:
-                    expired_emails.append(email)
-        return expired_emails
+                if email not in active_emails and 'nadine' not in email:
+                    expired_users.append({'email':email, 'real_name':u['real_name']})
+        return expired_users
 
     def stale_member_date(self):
         three_months_ago = timezone.now() - MonthDelta(3)
