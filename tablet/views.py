@@ -159,7 +159,7 @@ def signin_user_guest(request, username, guestof):
                 email.announce_free_trial(user)
                 email.send_introduction(user)
                 email.subscribe_to_newsletter(user)
-                SlackAPI().invite_user(user)
+                #SlackAPI().invite_user(user)
             except:
                 logger.error("Could not send introduction email to %s" % user.email)
         else:
