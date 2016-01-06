@@ -1112,8 +1112,16 @@ def usaepay_void(request):
 @staff_member_required
 def slack_users(request):
     expired_users = Member.objects.expired_slack_users()
+    slack_emails = []
     slack_users = SlackAPI().users.list().body['members']
-    return render_to_response('staff/slack_users.html', {'expired_users':expired_users, 'slack_users':slack_users, 'slack_url':settings.SLACK_TEAM_URL}, context_instance=RequestContext(request))
+    for u in slack_users:
+        if 'profile' in u and 'email' in u['profile'] and u['profile']['email']:
+            slack_emails.append(u['profile']['email'])
+    non_slack_users = Member.objects.active_members().exclude(user__email__in=slack_emails)
+    return render_to_response('staff/slack_users.html', {'expired_users':expired_users, 
+                                                         'slack_users':slack_users, 
+                                                         'non_slack_users':non_slack_users, 
+                                                         'slack_url':settings.SLACK_TEAM_URL}, context_instance=RequestContext(request))
 
 def view_ip(request):
     ip = None

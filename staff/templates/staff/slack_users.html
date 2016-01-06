@@ -19,6 +19,16 @@ nav #lists-tab { background: #FBD850; color: black; }
 {% endfor %}
 </ul>
 
+<h2>Non Slack Users ({{ non_slack_users|length }})</h2>
+<ul>
+{% for m in non_slack_users %}
+	<li>
+		<strong><a href="{% url 'staff.views.member_detail' m.id %}">{{ m.full_name }}</a></strong>: 
+		{{ m.email }}</a> 
+	</li>
+{% endfor %}
+</ul>
+
 <h2>All Slack Users ({{ slack_users|length }})</h2>
 <ul>
 {% for u in slack_users %}
@@ -30,6 +40,4 @@ nav #lists-tab { background: #FBD850; color: black; }
 	{% endif %}
 {% endfor %}
 </ul>
-
-
 {% endblock %}
