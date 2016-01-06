@@ -29,8 +29,8 @@
                 {% endfor %}
             </td>
             <td style="text-align:center;">
-                <a href="{% url 'staff.views.usaepay_user' t.username %}" target="new"><input type="button" value="U"></a>
-                <a href="{% url 'staff.views.xero_user' t.username %}" target="new"><input type="button" value="X"></a>
+                <a href="{% url 'staff.views.usaepay_user' t.username %}"><input type="button" value="U"></a>
+                <a href="{% url 'staff.views.xero_user' t.username %}"><input type="button" value="X"></a>
                 {% ifequal "Authorized" t.status %}
                     <form action="{% url 'staff.views.usaepay_void' %}" method="POST" style="display:inline;">
                         <input type="hidden" name="transaction_id" value="{{ t.transaction_id }}" />

@@ -174,6 +174,39 @@ public class USAePayBridge {
 		return client.voidTransaction(token, big_num);
 	}
 
+	public boolean updateCustomer(Integer customer_number, Map<String, String> fields) throws Exception {
+		BigInteger custnum = BigInteger.valueOf(customer_number.intValue());
+ 
+		// Create array of fields to update
+		FieldValueArray updateData = new FieldValueArray();
+		for (Map.Entry<String, String> entry : fields.entrySet()) {
+			FieldValue fv = new FieldValue(entry.getKey(), entry.getValue());
+			updateData.add(fv);
+		}
+		
+		return client.quickUpdateCustomer(token, custnum, updateData);
+	}
+
+	public TransactionResponse authorize(Integer customer_number) throws Exception {
+		BigInteger custnum = BigInteger.valueOf(customer_number.intValue());
+		
+		TransactionDetail details = new TransactionDetail();
+		details.setAmount(1.00);
+		details.setDescription("Office Nomads Authorization");
+		
+		CustomerTransactionRequest request = new CustomerTransactionRequest();
+		request.setCommand("AuthOnly");
+		request.setCustReceipt(True);
+		request.setDetails(details);
+		
+		// Set payment method to select the default
+		int paymentMethodID = 0;
+		
+		TransactionResponse response = client.runCustomerTransaction(token, customer_number, paymentMethodID, request);
+		
+		return response;
+	}
+
 	public static void main(String[] args) {
 		String url = args[0];
 		String key = args[1];

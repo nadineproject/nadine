@@ -83,7 +83,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 		<th>Status</th>
 		<th>Note</th>
 		<th>Amount</th>
-		<th></th>
+		<th>Action</th>
 	</tr>
 
 	{% for t in other_transactions %}
@@ -103,7 +103,10 @@ nav #billing-tab { background: #FBD850; color: black; }
 			</td>
 			<td>{{ t.note }}</td>
 			<td>${{ t.amount|floatformat:2 }}</td>
-			<td></td>
+			<td style="text-align:center;">
+				<a href="{% url 'staff.views.usaepay_user' t.username %}"><input type="button" value="U"></a>
+				<a href="{% url 'staff.views.xero_user' t.username %}"><input type="button" value="X"></a>
+			</td>
 		</tr>
 	{% endfor %}
 </table>

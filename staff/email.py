@@ -10,6 +10,7 @@ from django.template import Template, TemplateDoesNotExist, Context
 from django.core.mail import send_mail, EmailMessage
 from django.utils import timezone
 
+from nadine.utils.slack_api import SlackAPI
 from nadine.models.core import Member, DailyLog, SentEmailLog
 from nadine import mailgun
 
@@ -19,7 +20,7 @@ logger = logging.getLogger(__name__)
 def valid_message_keys():
     return ["all", "introduction", "newsletter", "new_membership", "first_day_checkin",
             "exit_survey", "member_survey", "no_return", "checkin", "invalid_billing", "new_key",
-            "no_signin", "no_device", "edit_profile"]
+            "no_signin", "no_device", "edit_profile", "slack_invite"]
 
 
 def send_manual(user, message):
@@ -50,6 +51,8 @@ def send_manual(user, message):
         send_new_key(user)
     if message == "edit_profile" or message == "all":
         send_edit_profile(user)
+    if message == "slack_invite":
+        SlackAPI().invite_user(user)
     return True
 
 #####################################################################

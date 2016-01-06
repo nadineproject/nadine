@@ -936,36 +936,6 @@ def view_user_reports(request):
 
 
 @staff_member_required
-def usaepay_user(request, username):
-    user = get_object_or_404(User, username=username)
-    
-    error = None
-    customers = None
-    epay_api = None
-    try:
-        epay_api = EPayAPI()
-    except:
-        error = 'Could not connect to USAePay Gateway!'
-
-    if not error and 'disable_all' in request.POST:
-        try:
-            epay_api.disableAutoBilling(username)
-        except:
-            error = 'Could not disable billing!'
-
-    if not error:
-        try:
-            customers = epay_api.getAllCustomers(username)
-        except:
-            error = 'Could not pull customers!'
-
-    if 'UMerror' in request.GET:
-        error = request.GET.get('UMerror')
-
-    return render_to_response('staff/usaepay.html', {'user': user, 'error': error, 'customers': customers, 'settings':settings }, context_instance=RequestContext(request))
-
-
-@staff_member_required
 def xero_user(request, username):
     user = get_object_or_404(User, username=username)
     xero_api = XeroAPI()
@@ -998,6 +968,51 @@ def xero_user(request, username):
         xero_contact_data = xero_api.get_contact(user)
     return render_to_response('staff/xero.html', {'user': user, 'xero_contact': xero_contact, 'invoices': invoices, 'repeating_invoices':repeating_invoices,
         'xero_contact_data': xero_contact_data, 'xero_contact_search': xero_contact_search}, context_instance=RequestContext(request))
+
+
+@staff_member_required
+def usaepay_user(request, username):
+    user = get_object_or_404(User, username=username)
+    
+    # When we add a card we POST to USAePay and it comes back to this page
+    # Any errors will be communicated to us in this GET variable
+    if 'UMerror' in request.GET:
+        messages.add_message(request, messages.ERROR, request.GET.get('UMerror'))
+    
+    history = None
+    try:
+        epay_api = EPayAPI()
+        
+        if 'disable_all' in request.POST:
+            epay_api.disableAutoBilling(username)
+        
+        customer_id = request.POST.get("customer_id", None)
+        action = request.POST.get("action", "")
+        #print "action: %s" % action
+        #print "cust: %s " % customer_id
+        if customer_id:
+            if action == "verify_profile":
+                # Run a $1.00 authorization to verify this profile works
+                pass
+            elif action == "delete_profile":
+                # TODO
+                pass
+            elif action == "manual_charge":
+                # TODO
+                pass
+            elif action == "edit_recurring":
+                next_date = request.POST.get("next_date")
+                description = request.POST.get("description")
+                amount = request.POST.get("amount")
+                enabled = request.POST.get("enabled", "") == "on"
+                epay_api.update_recurring(customer_id, enabled, next_date, description, amount)
+        
+        # Lastly pull all customers for this user
+        history = epay_api.get_history(username)
+    except Exception as e:
+        messages.add_message(request, messages.ERROR, e)
+    
+    return render_to_response('staff/usaepay.html', {'user': user, 'history': history, 'settings':settings }, context_instance=RequestContext(request))
 
 
 @staff_member_required
@@ -1049,7 +1064,6 @@ def usaepay_transactions(request, year, month, day):
                     ach.append(t)
                     totals['ach_total'] = totals['ach_total'] + t['amount']
             else:
-                print t
                 other_transactions.append(t)
         
     except Exception as e:
@@ -1078,9 +1092,9 @@ def usaepay_members(request):
 
 @staff_member_required
 def usaepay_void(request):
-    epay_api = EPayAPI()
     transaction = None
     try:
+        epay_api = EPayAPI()
         if 'transaction_id' in request.POST:
             transaction_id = int(request.POST.get('transaction_id'))
             transaction = epay_api.get_transaction(transaction_id)
@@ -1094,6 +1108,20 @@ def usaepay_void(request):
     
     return render_to_response('staff/usaepay_void.html', {'transaction':transaction}, context_instance=RequestContext(request))
 
+
+@staff_member_required
+def slack_users(request):
+    expired_users = Member.objects.expired_slack_users()
+    slack_emails = []
+    slack_users = SlackAPI().users.list().body['members']
+    for u in slack_users:
+        if 'profile' in u and 'email' in u['profile'] and u['profile']['email']:
+            slack_emails.append(u['profile']['email'])
+    non_slack_users = Member.objects.active_members().exclude(user__email__in=slack_emails)
+    return render_to_response('staff/slack_users.html', {'expired_users':expired_users, 
+                                                         'slack_users':slack_users, 
+                                                         'non_slack_users':non_slack_users, 
+                                                         'slack_url':settings.SLACK_TEAM_URL}, context_instance=RequestContext(request))
 
 def view_ip(request):
     ip = None

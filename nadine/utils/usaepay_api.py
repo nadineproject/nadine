@@ -2,6 +2,7 @@ import base64, csv
 from datetime import datetime, timedelta
 from py4j.java_gateway import JavaGateway
 from django.conf import settings
+from collections import OrderedDict
 
 class EPayAPI:
     
@@ -21,7 +22,6 @@ class EPayAPI:
     def getAllCustomers(self, username):
         return self.entry_point.getAllCustomers(username)
 
-
     def getAllEnabledCustomers(self):
         return self.entry_point.getEnabledCustomers()
 
@@ -33,6 +33,24 @@ class EPayAPI:
         return False
 
 
+    def update_customer(self, customer_id, address, zip_code, email):
+        fields = self.gateway.jvm.java.util.HashMap()
+        fields['Address'] = address
+        fields['Zip'] = zip_code
+        fields['Email'] = email
+        return self.entry_point.updateCustomer(customer_id, fields)
+
+
+    def update_recurring(self, customer_id, enabled, next_date, description, amount):
+        fields = self.gateway.jvm.java.util.HashMap()
+        fields['Enabled'] = str(enabled)
+        fields['Next'] = next_date
+        fields['Description'] = description
+        fields['Amount'] = amount
+        fields['SendReceipt'] = 'True'
+        return self.entry_point.updateCustomer(int(customer_id), fields)
+
+
     def get_transactions(self, year, month, day):
         raw_transactions = self.entry_point.getTransactions(year, month, day)
         clean_transactions = clean_transaction_list(raw_transactions)
@@ -42,12 +60,13 @@ class EPayAPI:
     def get_history(self, username):
         # Searches all the history for all the customers for this user
         # Returns a dictionary of {cust_num: transactions}
-        history = {}
-        for cust in self.entry_point.getAllCustomers(username):
+        history = OrderedDict()
+        customers = self.entry_point.getAllCustomers(username)
+        for cust in customers:
             cust_num = cust.getCustNum()
             raw_transactions = self.entry_point.getCustomerHistory(int(cust_num))
             clean_transactions = clean_transaction_list(raw_transactions)
-            history[cust_num] = clean_transactions    
+            history[cust] = clean_transactions
         return history
 
 
@@ -61,6 +80,10 @@ class EPayAPI:
                 recent = datetime.now() - transactions[0]['date_time'] <= timedelta(weeks=1)
                 return auth and recent
         return False
+
+
+    def update_customer(self, custID, fields):
+        pass
 
 
     def get_checks_settled_by_date(self, year, month, day):
@@ -91,6 +114,7 @@ class EPayAPI:
         if t['username'] == username and t['status'] == "Authorized":
             return self.entry_point.voidTransaction(transaction_id)
         return False
+
 
     def get_auth_code(self, username):
         from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes

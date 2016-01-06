@@ -17,6 +17,7 @@ from django.utils.html import strip_tags
 from django.utils import timezone
 
 from nadine.models.core import Member, Membership
+from nadine.utils.slack_api import SlackAPI
 from interlink.message import MailingListMessage
 
 logger = logging.getLogger(__name__)
@@ -39,12 +40,21 @@ def membership_save_callback(sender, **kwargs):
     created = kwargs['created']
     if not created:
         return
+    
     # If the member is just switching from one membership to another, don't change subscriptions
-    if Membership.objects.filter(member=membership.member, end_date=membership.start_date - timedelta(days=1)).count() != 0:
-        return
+    # But if this membership is created in the past there is no way to know what they want so subscribe them
+    if membership.start_date >= timezone.now().date():
+        if Membership.objects.filter(member=membership.member, end_date=membership.start_date - timedelta(days=1)).count() != 0:
+            return
+    
     mailing_lists = MailingList.objects.filter(is_opt_out=True)
     for ml in mailing_lists:
         ml.subscribers.add(membership.member.user)
+        
+    # If this is their first membership, also invite them to Slack
+    if Membership.objects.filter(member=membership.member).count() == 1:
+        SlackAPI().invite_user_quiet(membership.member.user)
+    
 post_save.connect(membership_save_callback, sender=Membership)
 
 
