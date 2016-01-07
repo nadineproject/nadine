@@ -403,9 +403,9 @@ class MonthHistory:
 
 @staff_member_required
 def stats_membership_history(request):
-    if 'start_date' in request.REQUEST:
+    if 'start_date' in request.POST:
         try:
-            start_date = datetime.datetime.strptime(request.REQUEST.get('start_date'), "%m-%Y").date()
+            start_date = datetime.datetime.strptime(request.POST.get('start_date'), "%m-%Y").date()
         except:
             return render_to_response('staff/stats_membership_history.html', {'page_message': "Invalid Start Date!  Example: '01-2012'."}, context_instance=RequestContext(request))
     else:
@@ -415,7 +415,7 @@ def stats_membership_history(request):
     end_date = timezone.now().date()
     end_month = date(year=end_date.year, month=end_date.month, day=1)
 
-    average_only = 'average_only' in request.REQUEST
+    average_only = 'average_only' in request.POST
     working_month = start_month
     month_histories = []
     while working_month <= end_month:
