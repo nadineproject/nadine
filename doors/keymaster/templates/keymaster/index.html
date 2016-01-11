@@ -1,6 +1,10 @@
 {% extends "staff/staff_base.html" %}
 
-{% block sub-title %} HID Doors | {% endblock %}
+{% block sub-title %} Doors | {% endblock %}
+
+{% block style %}
+nav #doors-tab { background: #FBD850; color: black; }
+{% endblock %}
 
 {% block content %} 
 {% include "keymaster/doors_menu.frag" %}
