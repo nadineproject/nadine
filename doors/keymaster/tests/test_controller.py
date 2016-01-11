@@ -1,8 +1,9 @@
 from django.test import SimpleTestCase
 from django.utils import timezone
 
-from keymaster.hid_control import DoorController
-from keymaster.models import Messages, EncryptedConnection, Keymaster, Gatekeeper
+from doors.keymaster.hid_control import DoorController
+from doors.keymaster.models import Keymaster
+from doors.core import Messages, EncryptedConnection, Gatekeeper
 
 class DoorControllerTestCase(SimpleTestCase):
     ip_address = "127.0.0.1"

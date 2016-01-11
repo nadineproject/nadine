@@ -11,10 +11,9 @@ from django.contrib.auth.models import User
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.utils import timezone
 
-import hid_control
-from hid_control import DoorController
+from doors.keymaster import hid_control
+from doors.keymaster.hid_control import DoorController
 from doors.core import DoorTypes, DoorEventTypes, Messages, EncryptedConnection
-
 
 logger = logging.getLogger(__name__)
 
