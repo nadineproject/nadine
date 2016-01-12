@@ -1,7 +1,7 @@
 from django.test import SimpleTestCase
 from django.utils import timezone
 
-from doors.keymaster.hid_control import DoorController
+from doors.hid_control import DoorController
 from doors.keymaster.models import Keymaster
 from doors.core import Messages, EncryptedConnection, Gatekeeper
 
