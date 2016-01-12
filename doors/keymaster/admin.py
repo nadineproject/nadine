@@ -12,8 +12,13 @@ class KeymasterAdmin(admin.ModelAdmin):
     search_fields = ('gatekeeper_ip', 'is_enabled')
     actions = ["force_sync", ]
 
+class DoorEventAdmin(admin.ModelAdmin):
+    list_display = ('timestamp', 'door', 'event_type', 'user', 'code', 'event_description', )
+    list_filter = ('door', 'event_type', )
+    search_fields = ('user', 'code')
+
 admin.site.register(Keymaster, KeymasterAdmin)
+admin.site.register(DoorEvent, DoorEventAdmin)
 admin.site.register(Door)
 admin.site.register(DoorCode)
-admin.site.register(DoorEvent)
 
