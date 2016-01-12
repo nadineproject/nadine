@@ -16,6 +16,7 @@ class DoorEventAdmin(admin.ModelAdmin):
     list_display = ('timestamp', 'door', 'event_type', 'user', 'code', 'event_description', )
     list_filter = ('door', 'event_type', )
     search_fields = ('user', 'code')
+    ordering = ['-timestamp']
 
 admin.site.register(Keymaster, KeymasterAdmin)
 admin.site.register(DoorEvent, DoorEventAdmin)
