@@ -32,7 +32,8 @@ Gatekeeper runs two processes: one to poll the keymaster for changes to make (su
 {
    "ENCRYPTION_KEY": "THE_KEY_YOU_GENERATED",
    "KEYMASTER_URL": "http://127.0.0.1:8000/doors/keymaster/",
-   "POLL_DELAY_SEC": 60
+   "KEYMASTER_POLL_DELAY_SEC": 5,
+   "DOOR_POLL_DELAY_SEC": 20
 }
 ````
 
