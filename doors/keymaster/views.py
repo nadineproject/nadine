@@ -10,7 +10,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
-from doors.keymaster.hid_control import DoorController
+from doors.hid_control import DoorController
 from doors.keymaster.models import *
 
 
@@ -66,10 +66,33 @@ def keymaster(request):
         if not keymaster:
             raise Exception("No Keymaster for incoming IP (%s)" % ip)
         logger.debug("Incoming connection from: %s" % ip)
-
+        
+        # Decrypt the incoming message
         connection = keymaster.get_encrypted_connection()
         incoming_message = connection.receive_message(request)
-        outgoing_message = keymaster.process_message(incoming_message)
+        logger.debug("Incoming Message: '%s' " % incoming_message)
+        
+        # Process the incoming message
+        if incoming_message == Messages.TEST_QUESTION:
+            outgoing_message = Messages.TEST_RESPONSE
+        elif incoming_message == Messages.PULL_CONFIGURATION:
+            outgoing_message = keymaster.pull_config()
+        elif incoming_message == Messages.CHECK_DOOR_CODES:
+            outgoing_message = keymaster.check_door_codes()
+        elif incoming_message == Messages.PULL_DOOR_CODES:
+            outgoing_message = keymaster.pull_door_codes()
+        elif incoming_message == Messages.PUSH_EVENT_LOGS:
+            incoming_data = connection.data
+            #logger.debug("Incoming Data: '%s' " % incoming_data)
+            outgoing_message = keymaster.process_event_logs(incoming_data)
+        elif incoming_message == Messages.MARK_SUCCESS:
+            keymaster.mark_success()
+            outgoing_message = Messages.SUCCESS_RESPONSE
+        else:
+            raise Exception("Invalid Message")
+        logger.debug("Outgoing Message: '%s' " % outgoing_message)
+        
+        # Encrypt our response
         encrypted_response = connection.encrypt_message(outgoing_message)
     except Exception as e:
         return JsonResponse({'error': str(e)})

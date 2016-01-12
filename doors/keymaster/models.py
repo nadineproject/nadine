@@ -11,8 +11,6 @@ from django.contrib.auth.models import User
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.utils import timezone
 
-from doors.keymaster import hid_control
-from doors.keymaster.hid_control import DoorController
 from doors.core import DoorTypes, DoorEventTypes, Messages, EncryptedConnection
 
 logger = logging.getLogger(__name__)
@@ -50,38 +48,11 @@ class Keymaster(models.Model):
     def get_encrypted_connection(self):
         return EncryptedConnection(self.encryption_key)
 
-    def process_message(self, incoming_message):
-        logger.debug("Incoming Message: '%s' " % incoming_message)
-        
-        outgoing_message = "No message"
-        if incoming_message == Messages.TEST_QUESTION:
-            outgoing_message = Messages.TEST_RESPONSE
-        elif incoming_message == Messages.PULL_CONFIGURATION:
-            outgoing_message = self.pull_config()
-        elif incoming_message == Messages.CHECK_DOOR_CODES:
-            outgoing_message = self.check_door_codes()
-        elif incoming_message == Messages.PULL_DOOR_CODES:
-            outgoing_message = self.pull_door_codes()
-        elif incoming_message == Messages.MARK_SUCCESS:
-            self.mark_success()
-            outgoing_message = Messages.SUCCESS_RESPONSE
-        else:
-            try:
-                json_message = json.loads(incoming_message)
-                print json_message
-                # TODO save object
-                outgoing_message = Messages.SUCCESS_RESPONSE
-            except ValueError:
-                pass
-                
-        
-        logger.debug("Outgoing Message: '%s' " % outgoing_message)
-        return outgoing_message
-
     def pull_config(self):
         doors = []
         for d in Door.objects.filter(keymaster=self):
             door = {'name':d.name, 'door_type':d.door_type, 'ip_address':d.ip_address, 'username':d.username, 'password':d.password}
+            door['last_event_ts'] = d.get_last_event_ts()
             doors.append(door)
         return json.dumps(doors)
 
@@ -99,6 +70,32 @@ class Keymaster(models.Model):
             code = {'username':u.username, 'first_name': u.first_name, 'last_name':u.last_name, 'code':c.code}
             codes.append(code)
         return json.dumps(codes)
+
+    def process_event_logs(self, event_logs):
+        if not event_logs:
+            raise Exception("process_event_logs: No event logs to process!")
+        logger.debug("process_event_logs: %d logs to process" % len(event_logs))
+
+        for door_name, events_to_process in event_logs.items():
+            door = Door.objects.get(name=door_name)
+            last_ts = door.get_last_event_ts()
+            for event in events_to_process:
+                timestamp = event['timestamp']
+                if timestamp == last_ts:
+                    # We have caught up with the logs so we can stop now
+                    break
+                
+                description = event['description']
+                event_type = event['door_event_type']
+                door_code = event.get('rawCardNumber', None)
+                user = None
+                if door_code:
+                    c = DoorCode.objects.filter(code=door_code).first()
+                    if c:
+                        user = c.user
+                DoorEvent.objects.create(timestamp=timestamp, door=door, user=user, code=door_code, event_type=event_type, event_description=description)
+        
+        return Messages.SUCCESS_RESPONSE
 
     def mark_success(self):
         self.sync_ts = timezone.now()
@@ -120,8 +117,20 @@ class Door(models.Model):
     password = models.CharField(max_length=32)
     ip_address = models.GenericIPAddressField()
     
+    def get_last_event(self):
+        return DoorEvent.objects.filter(door=self).order_by('timestamp').reverse().first()
+    
+    def get_last_event_ts(self):
+        # Convert the last event timestamp to the format we get from the doors
+        ts = None
+        last_event = self.get_last_event()
+        if last_event and last_event.timestamp:
+            tz = timezone.get_current_timezone()
+            ts = str(last_event.timestamp.astimezone(tz))[:19].replace(" ", "T")
+        return ts
+    
     def __str__(self): 
-        return "%s: %s" % (self.keymaster.description, self.name)
+        return self.name
 
 
 class DoorCode(models.Model):
@@ -138,7 +147,11 @@ class DoorEvent(models.Model):
     timestamp = models.DateTimeField(null=False)
     door = models.ForeignKey(Door, null=False)
     user = models.ForeignKey(User, null=True, db_index=True)
-    code = models.CharField(max_length=16)
+    code = models.CharField(max_length=16, null=True)
     event_type = models.CharField(max_length=1, choices=DoorEventTypes.CHOICES, default=DoorEventTypes.UNKNOWN, null=False)
     event_description = models.CharField(max_length=256)
+    
+    def __str__(self): 
+        return '%s: %s' % (self.door, self.event_description)
+    
     

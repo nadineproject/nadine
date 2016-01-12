@@ -5,7 +5,7 @@ import time
 import traceback
 
 from core import Messages, EncryptedConnection, Gatekeeper
-from heartbeat import HeartBeat
+from threads import Heartbeat, EventWatcher
 
 class GatekeeperApp(object):
     def run(self, config, syncClocks, initialSync):
@@ -15,17 +15,11 @@ class GatekeeperApp(object):
             gatekeeper = Gatekeeper(connection)
             
             # Test the connection
-            response = connection.send_message(Messages.TEST_QUESTION)
-            if response == Messages.TEST_RESPONSE:
-                print "Connection successfull!"
-            else:
-                raise Exception("Could not connect to Keymaster")
+            if gatekeeper.test_keymaster_connection():
+                print "Keymaster connection successfull!"
             
             # Pull the configuration
-            print "Pulling door configuration..."
-            response = connection.send_message(Messages.PULL_CONFIGURATION)
-            #print response
-            gatekeeper.configure_doors(response)
+            gatekeeper.configure_doors()
             if len(gatekeeper.doors) == 0:
                 print "No doors to program.  Exiting"
                 return
@@ -33,34 +27,50 @@ class GatekeeperApp(object):
             
             # Set the time on each door
             if syncClocks:
-                print "Syncing the door clocks..."
                 gatekeeper.sync_clocks()
             
             # Pull new data if requested
             if initialSync:
                 gatekeeper.pull_door_codes()
+                gatekeeper.push_event_logs()
             
             try:
                 heartbeat = None
+                event_watcher = None
                 while True:
+                    # Keep our heartbeat alive
                     if not heartbeat or not heartbeat.is_alive():
-                        print "Starting Heart Beat..."
-                        heartbeat = HeartBeat(connection, config['POLL_DELAY_SEC'])
+                        print "Starting Heartbeat..."
+                        heartbeat = Heartbeat(connection, config['KEYMASTER_POLL_DELAY_SEC'])
                         heartbeat.setDaemon(True)
                         heartbeat.start()
-                
+                    
+                    # Keep our event watcher alive
+                    if not event_watcher or not event_watcher.is_alive():
+                        print "Starting Event Watcher..."
+                        event_watcher = EventWatcher(gatekeeper, config['DOOR_POLL_DELAY_SEC'])
+                        event_watcher.setDaemon(True)
+                        event_watcher.start()
+                    
                     if heartbeat.new_data:
-                        print "Pulling door codes..."
                         gatekeeper.pull_door_codes()
                         heartbeat.all_clear()
-                
+                    
+                    if event_watcher.new_data:
+                        gatekeeper.push_event_logs()
+                        event_watcher.all_clear()
+                    
                     time.sleep(.1)
             except KeyboardInterrupt:
                 print " Keyboard Interupt!"
-                print "Shutting down..."
+                print "Shutting down Heartbeat..."
                 if heartbeat and heartbeat.is_alive():
                     heartbeat.stop()
-                    heartbeat.join()
+                    #heartbeat.join()
+                print "Shutting down Event Watcher..."
+                if event_watcher and event_watcher.is_alive():
+                    event_watcher.stop()
+                    #event_watcher.join()
                 print "Done!"
 
         except Exception as e:

@@ -1,10 +1,11 @@
 import json
 import logging
 import requests
+import traceback
 from datetime import datetime, time, date, timedelta
 
-from keymaster import hid_control
-from keymaster.hid_control import DoorController
+import hid_control
+from hid_control import DoorController
 from cryptography.fernet import Fernet
 
 logger = logging.getLogger(__name__)
@@ -16,6 +17,7 @@ class Messages(object):
     PULL_CONFIGURATION = "pull_configuration"
     CHECK_DOOR_CODES = "check_door_codes"
     PULL_DOOR_CODES = "pull_door_codes"
+    PUSH_EVENT_LOGS = "push_event_logs"
     NEW_DATA = "new_data"
     NO_NEW_DATA = "no_new_data"
     MARK_SUCCESS = "mark_success"
@@ -58,6 +60,8 @@ class EncryptedConnection(object):
         self.farnet = Fernet(bytes(encryption_key))
         self.ttl = ttl
         self.keymaster_url = keymaster_url
+        self.message = None
+        self.data = None
 
     def decrypt_message(self, message):
         return self.farnet.decrypt(bytes(message), ttl=self.ttl)
@@ -65,17 +69,22 @@ class EncryptedConnection(object):
     def encrypt_message(self, message):
         return self.farnet.encrypt(bytes(message))
 
-    def send_message(self, message):
+    def send_message(self, message, data=None):
         # Encrypt the message
         encrypted_message = self.encrypt_message(message)
         
-        # Send the message 
-        response = requests.post(self.keymaster_url, data={'message':encrypted_message})
+        # Send the message
+        request_package = {'message':encrypted_message}
+        if data:
+            request_package['data'] = self.encrypt_message(data)
+        #print "request: %s" % request_package
+        response = requests.post(self.keymaster_url, data=request_package)
         
         # Process the response
         response_json = response.json()
         if 'error' in response_json:
             error = response_json['error']
+            traceback.print_exc()
             raise Exception(error)
 
         if 'message' in response_json:
@@ -91,16 +100,25 @@ class EncryptedConnection(object):
         if not 'message' in request.POST:
             raise Exception("No message in POST")
         encrypted_message = request.POST['message']
-        return self.decrypt_message(encrypted_message)
+        self.message = self.decrypt_message(encrypted_message)
+        
+        # Encrypted data is in 'data' POST variable
+        if 'data' in request.POST:
+            encrypted_data = request.POST['data']
+            decrypted_data = self.decrypt_message(encrypted_data)
+            self.data = json.loads(decrypted_data)
+        
+        return self.message
 
 
 class Door(object):
-    def __init__(self, name, door_type, ip_address, username, password):
+    def __init__(self, name, door_type, ip_address, username, password, last_event_ts):
         self.name = name
         self.door_type = door_type
         self.ip_address = ip_address
         self.username = username
         self.password = password
+        self.last_event_ts = last_event_ts
 
     def get_controller(self):
         if not 'controller' in self.__dict__:
@@ -128,24 +146,42 @@ class Door(object):
         changes = controller.process_door_codes(doorcode_json)
         logger.debug("Changes: %s: " % changes)
         controller.process_changes(changes)
+    
+    def pull_event_logs(self, record_count=100):
+        controller = self.get_controller()
+        return controller.pull_events(record_count)
 
 
 class Gatekeeper(object):
     def __init__(self, encrypted_connection):
         self.encrypted_connection = encrypted_connection
 
-    def configure_doors(self, configuration, test_connection=False):
+    def test_keymaster_connection(self):
+        response = self.encrypted_connection.send_message(Messages.TEST_QUESTION)
+        if not response == Messages.TEST_RESPONSE:
+            raise Exception("Could not connect to Keymaster")
+
+    def configure_doors(self, test_connection=False):
+        print "Gatekeeper: Pulling door configuration..."
         self.doors = {}
+        configuration = self.encrypted_connection.send_message(Messages.PULL_CONFIGURATION)
         config_json = json.loads(configuration)
         logger.debug("Configuration: %s" % config_json)
         for d in config_json:
-            name = d['name']
-            door = Door(name=name, door_type= d['door_type'], ip_address=d['ip_address'], username=d['username'], password=d['password'])
+            name = d.get('name')
+            door = Door(name=name,
+                        door_type= d.get('door_type'),
+                        ip_address=d.get('ip_address'),
+                        username=d.get('username'),
+                        password=d.get('password'),
+                        last_event_ts = d.get('last_event_ts'),
+                   )
             self.doors[name] = door
             if test_connection:
                 door.test_connection()
 
     def sync_clocks(self):
+        print "Gatekeeper: Syncing the door clocks..."
         for door in self.get_doors().values():
             door.sync_clock()
 
@@ -159,16 +195,37 @@ class Gatekeeper(object):
         return self.doors
 
     def get_door(self, door_name):
-        if 'door_name' not in self.get_doors():
+        if door_name not in self.get_doors():
             raise Exception("Door not found")
         return self.doors[door_name]
 
     def pull_door_codes(self):
+        print "Gatekeeper: Pulling door codes..."
         response = self.encrypted_connection.send_message(Messages.PULL_DOOR_CODES)
         doorcode_json = json.loads(response)
         logger.debug(doorcode_json)
         for door in self.get_doors().values():
             door.process_door_codes(doorcode_json)
+
+    def pull_event_logs(self, record_count=100):
+        print "Gatekeeper: Pulling event logs..."
+        event_logs = {}
+        for door_name, door in self.get_doors().items():
+            print "Gatekeeper: Pulling %d logs from '%s'" % (record_count, door_name)
+            door_logs = door.pull_event_logs(record_count)
+            event_logs[door_name] = door_logs
+        return event_logs
+
+    def push_event_logs(self, record_count=100):
+        print "Gatekeeper: Pushing event logs to keymaster..."
+        event_logs = self.pull_event_logs(record_count)
+        json_data = json.dumps(event_logs)
+        response = self.encrypted_connection.send_message(Messages.PUSH_EVENT_LOGS, data=json_data)
+        if not response == Messages.SUCCESS_RESPONSE:
+            raise Exception ("push_event_logs: Invalid response (%s)" % response)
+        
+        # Reconfigure the doors to get the latest timestamps
+        self.configure_doors()
 
     def __str__(self): 
         return self.description
