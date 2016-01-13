@@ -74,16 +74,28 @@ class Keymaster(models.Model):
     def process_event_logs(self, event_logs):
         if not event_logs:
             raise Exception("process_event_logs: No event logs to process!")
-        logger.debug("process_event_logs: %d logs to process" % len(event_logs))
+        #logger.debug("process_event_logs: %d doors to process" % len(event_logs))
 
         for door_name, events_to_process in event_logs.items():
             door = Door.objects.get(name=door_name)
             last_ts = door.get_last_event_ts()
+            logger.debug("Processing events for %s.  Last TS = %s" % (door_name, last_ts))
             for event in events_to_process:
+                print event
                 timestamp = event['timestamp']
                 if timestamp == last_ts:
                     # We have caught up with the logs so we can stop now
                     break
+                    # TODO - If we dont' reach this point ever we should signal to the 
+                    # Gatekeeper that we needed more logs.  
+                
+                # Convert the timestamp string to a datetime object
+                # Assert the timezone is the local timezone for this timestamp
+                print timestamp
+                tz = timezone.get_current_timezone()
+                naive_timestamp = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S")
+                tz_timestamp = tz.localize(naive_timestamp)
+                print tz_timestamp
                 
                 description = event['description']
                 event_type = event['door_event_type']
@@ -93,8 +105,8 @@ class Keymaster(models.Model):
                     c = DoorCode.objects.filter(code=door_code).first()
                     if c:
                         user = c.user
-                DoorEvent.objects.create(timestamp=timestamp, door=door, user=user, code=door_code, event_type=event_type, event_description=description)
-        
+                new_event = DoorEvent.objects.create(timestamp=tz_timestamp, door=door, user=user, code=door_code, event_type=event_type, event_description=description)
+                print new_event
         return Messages.SUCCESS_RESPONSE
 
     def mark_success(self):
