@@ -41,7 +41,7 @@ There is a bug in the HID controllers that doesn't allow for this feature to wor
    "KEYMASTER_URL": "http://127.0.0.1:8000/doors/keymaster/",
    "KEYMASTER_POLL_DELAY_SEC": 5,
    "EVENT_POLL_DELAY_SEC": 20,
-   "EVENT_SYNC_COUNT": 100,
+   "EVENT_SYNC_COUNT": 100
 }
 ````
 
@@ -56,8 +56,7 @@ There is a bug in the HID controllers that doesn't allow for this feature to wor
 The first time a Gatekeeper contacts the Keymaster the IP address of the Gatekeeper is stored in the Keymaster and disabled.  To enable, you need to save the shared secret key in the Keymaster database and mark the Gatekeeper enabled.
 
 #### TODO: 
+
  * Magic Key (toggle lock/unlock)
- * Event Proxy / Logging
- * New Code Mode
- * Find & fill in missing logs
- * Scheduled Lock & Unlock (maybe)
+ * New Code Mode (Adding cards to user)
+ * Scheduled Lock & Unlock
