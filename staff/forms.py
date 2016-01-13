@@ -34,38 +34,53 @@ class NewUserForm(forms.Form):
     first_name = forms.CharField(max_length=100, label="First name *", required=True, widget=forms.TextInput(attrs={'autocapitalize': "words"}))
     last_name = forms.CharField(max_length=100, label="Last name *", required=True, widget=forms.TextInput(attrs={'autocapitalize': "words"}))
     email = forms.EmailField(max_length=100, label="Email *", required=True)
-    #phone = forms.CharField(max_length=100, required=False)
+    
+    def clean_first_name(self):
+        return self.cleaned_data['first_name'].strip().title()
+    
+    def clean_last_name(self):
+        return self.cleaned_data['last_name'].strip().title()
+    
+    def clean_email(self):
+        email = self.cleaned_data['email'].strip().lower()
+        if User.objects.filter(email=email).count() > 0:
+            raise forms.ValidationError("Email address '%s' already in use." % email)
+        return email
 
+    def create_username(self, suffix=""):
+        clean_first = self.cleaned_data['first_name'].strip().lower()
+        clean_last = self.cleaned_data['last_name'].strip().lower()
+        username = "%s_%s%s" % (clean_first, clean_last, suffix)
+        clean_username = username.replace(" ", "_")
+        clean_username = clean_username.replace(".", "_")
+        clean_username = clean_username.replace("-", "_")
+        clean_username = clean_username.replace("@", "")
+        clean_username = clean_username.replace("+", "")
+        return clean_username
+    
     def save(self):
         "Creates the User and Member records with the field data and returns the user"
         if not self.is_valid():
             raise Exception('The form must be valid in order to save')
-
-        first = self.cleaned_data['first_name'].strip().title()
-        if len(first) == 0:
-            raise forms.ValidationError("First Name Required.")
-        last = self.cleaned_data['last_name'].strip().title()
-        if len(last) == 0:
-            raise forms.ValidationError("Last Name Required.")
-        email = self.cleaned_data['email'].strip().lower()
-        if len(email) == 0:
-            raise forms.ValidationError("Email Required.")
-        if User.objects.filter(email=email).count() > 0:
-            raise forms.ValidationError("Email address '%s' already in use." % email)
-        username = "%s_%s" % (first.lower(), last.lower())
-        if User.objects.filter(username=username).count() > 0:
-            raise forms.ValidationError("Username '%s' already in use." % username)
-
+        
+        # Generate a unique username
+        tries = 1
+        username = self.create_username()
+        while User.objects.filter(username=username).count() > 0:
+            tries = tries + 1
+            username = self.create_username(suffix=tries)
+        
+        first = self.cleaned_data['first_name']
+        last = self.cleaned_data['last_name']
+        email = self.cleaned_data['email']
+        
         user = User(username=username, first_name=first, last_name=last, email=email)
         password = User.objects.make_random_password(length=32)
         user.set_password(password)
         user.save()
-        #member = user.get_profile()
-        #member.phone = self.cleaned_data['phone'].strip()
-        # member.save()
-
+        
         return user
-
+    
     class Meta:
         widgets = {
             'first_name': forms.TextInput(attrs={'autocapitalize': 'on', 'autocorrect': 'off'}),
