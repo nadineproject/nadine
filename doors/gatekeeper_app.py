@@ -41,7 +41,7 @@ class GatekeeperApp(object):
                     # Keep our heartbeat alive
                     if not heartbeat or not heartbeat.is_alive():
                         print "Starting Heartbeat..."
-                        poll_delay = config.get('KEYMASTER_POLL_DELAY_SEC', default=5)
+                        poll_delay = config.get('KEYMASTER_POLL_DELAY_SEC', 5)
                         heartbeat = Heartbeat(connection, poll_delay)
                         heartbeat.setDaemon(True)
                         heartbeat.start()
@@ -49,7 +49,7 @@ class GatekeeperApp(object):
                     # Keep our event watcher alive
                     if not event_watcher or not event_watcher.is_alive():
                         print "Starting Event Watcher..."
-                        poll_delay = config.get('EVENT_POLL_DELAY_SEC', default=10)
+                        poll_delay = config.get('EVENT_POLL_DELAY_SEC', 10)
                         event_watcher = EventWatcher(gatekeeper, poll_delay)
                         event_watcher.setDaemon(True)
                         event_watcher.start()
@@ -59,7 +59,7 @@ class GatekeeperApp(object):
                         heartbeat.all_clear()
                     
                     if event_watcher.new_data:
-                        cnt = config.get('EVENT_SYNC_COUNT', default=100)
+                        cnt = config.get('EVENT_SYNC_COUNT', 100)
                         gatekeeper.push_event_logs(record_count=cnt)
                         event_watcher.all_clear()
                     
