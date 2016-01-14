@@ -17,6 +17,8 @@ class Heartbeat(threading.Thread):
         print("Heartbeat: polling every %d seconds" % self.poll_delay_sec)
 
         while self.running:
+            time.sleep(self.poll_delay_sec)
+
             if not self.new_data:
                 print("Heartbeat: Contacting the Keymaster...")
                 response = self.connection.send_message(Messages.CHECK_DOOR_CODES)
@@ -26,7 +28,6 @@ class Heartbeat(threading.Thread):
                 else:
                     print("Heartbeat: No new door codes")
             
-            time.sleep(self.poll_delay_sec)
 
     def all_clear(self):
         response = self.connection.send_message(Messages.MARK_SUCCESS)
