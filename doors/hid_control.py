@@ -229,7 +229,7 @@ class DoorController:
         
         cardholder = self.get_cardholder_by_id(event_dict.get('cardholderID'))
         if cardholder:
-            event_dict['cardNumber'] = cardholder['cardNumber']
+            event_dict['cardNumber'] = cardholder.get('cardNumber')
             event_dict['cardHolder'] = cardholder
         
         return event_dict
