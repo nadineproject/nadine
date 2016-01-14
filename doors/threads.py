@@ -53,6 +53,8 @@ class EventWatcher(threading.Thread):
         print("EventWatcher: Polling every %d seconds" % self.poll_delay_sec)
 
         while self.running:
+            time.sleep(self.poll_delay_sec)
+            
             if not self.new_data:
                 print("EventWatcher: Polling the doors for events...")
                 event_logs = self.gatekeeper.pull_event_logs(1)
@@ -65,10 +67,7 @@ class EventWatcher(threading.Thread):
                             break
                 if not self.new_data:
                     print("EventWatcher: No new event logs")
-                
-            
-            time.sleep(self.poll_delay_sec)
-
+    
     def all_clear(self):
         print("EventWatcher: all clear")
         self.new_data = False

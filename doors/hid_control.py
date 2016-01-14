@@ -197,9 +197,36 @@ class DoorController:
         event_xml_str = self.send_xml(list_events(recordCount, rm, ts))
         event_xml = ElementTree.fromstring(event_xml_str)
         for child in event_xml[0]:
-            event = get_event_detail(child.attrib)
+            event = self.get_event_detail(child.attrib)
             events.append(event)
         return events
+    
+    def get_event_detail(self, event_dict):
+        from core import DoorEventTypes
+        hid_event_code = event_dict['eventType']
+        if hid_event_code == "1022":
+            description = "Card Not Found (%s) " % event_dict['rawCardNumber']
+            door_event_type = DoorEventTypes.UNRECOGNIZED
+        elif hid_event_code == "2036" or hid_event_code == "2043":
+            description = "Access Denied (%s) " % event_dict['rawCardNumber']
+            door_event_type = DoorEventTypes.DENIED
+        elif hid_event_code == "2020" or hid_event_code == "2021":
+            description = "Access Granted (%s %s)" % (event_dict['forename'], event_dict['surname'])
+            cardholder = self.get_cardholder_by_id(event_dict['cardholderID'])
+            print cardholder
+            door_event_type = DoorEventTypes.GRANTED
+        elif hid_event_code == "4036" or hid_event_code == "12032":
+            description = "Door Unlocked"
+            door_event_type = DoorEventTypes.UNLOCKED
+        elif hid_event_code == "4035" or hid_event_code == "12033":
+            description = "Door Locked"
+            door_event_type = DoorEventTypes.LOCKED
+        else:
+            description = event_details[hid_event_code]
+            door_event_type = DoorEventTypes.UNKNOWN
+        event_dict['description'] = description
+        event_dict['door_event_type'] = door_event_type
+        return event_dict
 
 
 ###############################################################################################################
@@ -417,33 +444,6 @@ event_details["7020"] = "Time Set"
 event_details["12031"] = "Granted Access - Manual"
 event_details["12032"] = "Door Unlocked"
 event_details["12033"] = "Door Locked"
-
-def get_event_detail(event_dict):
-    from core import DoorEventTypes
-    hid_event_code = event_dict['eventType']
-    if hid_event_code == "1022":
-        description = "Card Not Found (%s) " % event_dict['rawCardNumber']
-        door_event_type = DoorEventTypes.UNRECOGNIZED
-    elif hid_event_code == "2036" or hid_event_code == "2043":
-        description = "Access Denied (%s) " % event_dict['rawCardNumber']
-        door_event_type = DoorEventTypes.DENIED
-    elif hid_event_code == "2020" or hid_event_code == "2021":
-        description = "Access Granted (%s %s)" % (event_dict['forename'], event_dict['surname'])
-        cardholder = self.get_cardholder_by_id(event_dict['cardholderID'])
-        print cardholder
-        door_event_type = DoorEventTypes.GRANTED
-    elif hid_event_code == "4036" or hid_event_code == "12032":
-        description = "Door Unlocked"
-        door_event_type = DoorEventTypes.UNLOCKED
-    elif hid_event_code == "4035" or hid_event_code == "12033":
-        description = "Door Locked"
-        door_event_type = DoorEventTypes.LOCKED
-    else:
-        description = event_details[hid_event_code]
-        door_event_type = DoorEventTypes.UNKNOWN
-    event_dict['description'] = description
-    event_dict['door_event_type'] = door_event_type
-    return event_dict
 
 #<?xml version="1.0" encoding="UTF-8"?><VertXMessage xmlns:hid="http://www.hidcorp.com/VertX"><hid:EventMessages action="RL" historyRecordMarker="0" historyTimestamp="947256029" recordCount="16" moreRecords="false" ><hid:EventMessage readerAddress="0" ioState="0" eventType="4034" timestamp="2000-01-20T02:22:57" /><hid:EventMessage readerAddress="0" rawCardNumber="010F2B8E" eventType="1022" timestamp="2000-01-01T00:13:34" /><hid:EventMessage readerAddress="0" cardholderID="1" forename="Jacob" surname="Sayles" eventType="2020" timestamp="2000-01-01T00:13:23" /><hid:EventMessage readerAddress="0" rawCardNumber="009B4C9B" eventType="1022" timestamp="2000-01-01T00:13:11" /><hid:EventMessage readerAddress="0" commandStatus="true" eventType="12031" timestamp="2000-01-01T00:13:02" /><hid:EventMessage readerAddress="0" commandStatus="true" eventType="12033" timestamp="2000-01-01T00:12:58" /><hid:EventMessage readerAddress="0" rawCardNumber="010F2B8E" eventType="1022" timestamp="2000-01-01T00:12:14" /><hid:EventMessage readerAddress="0" rawCardNumber="009B4C9B" eventType="1022" timestamp="2000-01-01T00:12:05" /><hid:EventMessage readerAddress="0" cardholderID="1" forename="Jacob" surname="Sayles" eventType="2020" timestamp="2000-01-01T00:11:57" /><hid:EventMessage readerAddress="0" rawCardNumber="01D609AD" eventType="1022" timestamp="2000-01-01T00:10:33" /><hid:EventMessage readerAddress="0" rawCardNumber="010F2B8E" eventType="1022" timestamp="2000-01-01T00:10:25" /><hid:EventMessage readerAddress="0" rawCardNumber="009B4C9B" eventType="1022" timestamp="2000-01-01T00:10:20" /><hid:EventMessage readerAddress="0" commandStatus="true" eventType="12032" timestamp="2000-01-01T00:10:14" /><hid:EventMessage readerAddress="0" ioState="0" eventType="4034" timestamp="2000-01-01T00:03:14" /><hid:EventMessage readerAddress="0" ioState="0" eventType="4034" timestamp="2000-01-01T00:00:52" /><hid:EventMessage readerAddress="0" ioState="0" eventType="4034" timestamp="2000-01-07T14:40:29" /></hid:EventMessages></VertXMessage>
 
