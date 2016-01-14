@@ -94,6 +94,8 @@ class EncryptedConnection(object):
         return None
 
     def receive_message(self, request):
+        logger.debug("receive_message: %s" % request)
+        
         # Encrypted message is in 'message' POST variable
         if not request.method == 'POST':
             raise Exception("Must be POST")
