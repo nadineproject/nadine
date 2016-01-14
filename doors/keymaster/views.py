@@ -95,6 +95,7 @@ def keymaster(request):
         # Encrypt our response
         encrypted_response = connection.encrypt_message(outgoing_message)
     except Exception as e:
+        logger.error(e)
         return JsonResponse({'error': str(e)})
 
     return JsonResponse({'message':encrypted_response})
