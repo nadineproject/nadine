@@ -206,14 +206,14 @@ class DoorController:
         hid_event_code = event_dict['eventType']
         if hid_event_code == "1022":
             description = "Card Not Found (%s) " % event_dict['rawCardNumber']
+            event_dict['cardNumber'] = event_dict['rawCardNumber']
             door_event_type = DoorEventTypes.UNRECOGNIZED
         elif hid_event_code == "2036" or hid_event_code == "2043":
             description = "Access Denied (%s) " % event_dict['rawCardNumber']
+            event_dict['cardNumber'] = event_dict['rawCardNumber']
             door_event_type = DoorEventTypes.DENIED
         elif hid_event_code == "2020" or hid_event_code == "2021":
             description = "Access Granted (%s %s)" % (event_dict['forename'], event_dict['surname'])
-            cardholder = self.get_cardholder_by_id(event_dict['cardholderID'])
-            print cardholder
             door_event_type = DoorEventTypes.GRANTED
         elif hid_event_code == "4036" or hid_event_code == "12032":
             description = "Door Unlocked"
@@ -226,6 +226,13 @@ class DoorController:
             door_event_type = DoorEventTypes.UNKNOWN
         event_dict['description'] = description
         event_dict['door_event_type'] = door_event_type
+        
+        cardholder = self.get_cardholder_by_id(event_dict.get('cardholderID'))
+        print cardholder
+        if cardholder:
+            event_dict['cardNumber'] = cardholder['cardNumber']
+            event_dict['cardHolder'] = cardholder
+        
         return event_dict
 
 

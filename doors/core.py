@@ -161,7 +161,7 @@ class Gatekeeper(object):
         if not response == Messages.TEST_RESPONSE:
             raise Exception("Could not connect to Keymaster")
 
-    def configure_doors(self, test_connection=False):
+    def configure_doors(self):
         print "Gatekeeper: Pulling door configuration..."
         self.doors = {}
         configuration = self.encrypted_connection.send_message(Messages.PULL_CONFIGURATION)
@@ -176,9 +176,9 @@ class Gatekeeper(object):
                         password=d.get('password'),
                         last_event_ts = d.get('last_event_ts'),
                    )
+            logger.debug("Gatekeeper: Loading credentials for '%s'" % name)
+            door.load_credentials()
             self.doors[name] = door
-            if test_connection:
-                door.test_connection()
 
     def sync_clocks(self):
         print "Gatekeeper: Syncing the door clocks..."
