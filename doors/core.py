@@ -102,7 +102,9 @@ class EncryptedConnection(object):
         if not 'message' in request.POST:
             raise Exception("No message in POST")
         encrypted_message = request.POST['message']
+        logger.debug("Encrypted message: %s" % encrypted_message)
         self.message = self.decrypt_message(encrypted_message)
+        logger.debug("Decrypted message: %s" % self.message)
         
         # Encrypted data is in 'data' POST variable
         if 'data' in request.POST:
