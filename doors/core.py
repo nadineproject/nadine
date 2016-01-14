@@ -67,7 +67,8 @@ class EncryptedConnection(object):
         logger.debug("message=%s" % message)
         logger.debug("ttl=%s" % self.ttl)
         logger.debug("key=%s" % self.encryption_key)
-        return self.farnet.decrypt(bytes(message), ttl=self.ttl)
+        #return self.farnet.decrypt(bytes(message), ttl=self.ttl)
+        return self.farnet.decrypt(bytes(message))
 
     def encrypt_message(self, message):
         return self.farnet.encrypt(bytes(message))
