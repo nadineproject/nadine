@@ -81,7 +81,7 @@ class Keymaster(models.Model):
             last_ts = door.get_last_event_ts()
             logger.debug("Processing events for '%s'. Last TS = %s" % (door_name, last_ts))
             for event in events_to_process:
-                print "New Event: %s" % event
+                #print "New Event: %s" % event
                 timestamp = event['timestamp']
                 if timestamp == last_ts:
                     # We have caught up with the logs so we can stop now

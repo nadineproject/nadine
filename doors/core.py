@@ -64,11 +64,9 @@ class EncryptedConnection(object):
         self.data = None
 
     def decrypt_message(self, message):
-        logger.debug("message=%s" % message)
-        logger.debug("ttl=%s" % self.ttl)
-        logger.debug("key=%s" % self.encryption_key)
-        #return self.farnet.decrypt(bytes(message), ttl=self.ttl)
-        return self.farnet.decrypt(bytes(message))
+        # If you are getting a blank exception when this runs it might be because the encrypted message
+        # was created in the future.  Check the time of the machine encrypting the message and try again --JLS
+        return self.farnet.decrypt(bytes(message), ttl=self.ttl)
 
     def encrypt_message(self, message):
         return self.farnet.encrypt(bytes(message))
@@ -106,9 +104,9 @@ class EncryptedConnection(object):
         if not 'message' in request.POST:
             raise Exception("No message in POST")
         encrypted_message = request.POST['message']
-        logger.debug("Encrypted message: %s" % encrypted_message)
+        #logger.debug("Encrypted message: %s" % encrypted_message)
         self.message = self.decrypt_message(encrypted_message)
-        logger.debug("Decrypted message: %s" % self.message)
+        #logger.debug("Decrypted message: %s" % self.message)
         
         # Encrypted data is in 'data' POST variable
         if 'data' in request.POST:

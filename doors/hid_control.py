@@ -228,7 +228,6 @@ class DoorController:
         event_dict['door_event_type'] = door_event_type
         
         cardholder = self.get_cardholder_by_id(event_dict.get('cardholderID'))
-        print cardholder
         if cardholder:
             event_dict['cardNumber'] = cardholder['cardNumber']
             event_dict['cardHolder'] = cardholder
