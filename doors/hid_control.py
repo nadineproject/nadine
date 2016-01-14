@@ -429,6 +429,8 @@ def get_event_detail(event_dict):
         door_event_type = DoorEventTypes.DENIED
     elif hid_event_code == "2020" or hid_event_code == "2021":
         description = "Access Granted (%s %s)" % (event_dict['forename'], event_dict['surname'])
+        cardholder = self.get_cardholder_by_id(event_dict['cardholderID'])
+        print cardholder
         door_event_type = DoorEventTypes.GRANTED
     elif hid_event_code == "4036" or hid_event_code == "12032":
         description = "Door Unlocked"
