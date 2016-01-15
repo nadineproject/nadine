@@ -1,0 +1,36 @@
+{% extends "staff/staff_base.html" %}
+
+{% block sub-title %} Doors | {% endblock %}
+
+{% block style %}
+nav #doors-tab { background: #FBD850; color: black; }
+{% endblock %}
+
+{% block content %} 
+{% include "keymaster/doors_menu.frag" %}
+
+<h3>Add a Key</h3>
+
+<div style="margin-left:2em;">
+	<form method="POST" action=".">
+		<table>
+		<tr>
+			<th>User</th>
+			<th>Code</th>
+			<th></th>
+			<th></th>
+		</tr>
+		<tr>
+			<td><input name="user" size="16" value="{{ user }}"/></td>
+			<td><input name="code" size="16" value="{{ code }}"/></td>
+			<td style="text-align: center;">
+				<input type="submit" value="Add" />
+			</td>
+			<td></td>
+		</tr>
+	</table>
+	{% csrf_token %}
+	</form>
+</div>
+
+{% endblock %}

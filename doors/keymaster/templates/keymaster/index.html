@@ -9,17 +9,28 @@ nav #doors-tab { background: #FBD850; color: black; }
 {% block content %} 
 {% include "keymaster/doors_menu.frag" %}
 
-<h3>HID Doors</h3>
+{% if not keymasters %}
+	<h3>No Keymasters!</h3>
+{% endif %}
 
 {% for keymaster in keymasters %}
-<div>
-	<h4>{{ keymaster.description }}</h4>
-	{{ keymaster.gatekeeper_ip }}
-	<div><em>Last access:</em> {{ keymaster.access_ts }}</div>
-	<div><em>Last sync:</em> {{ keymaster.sync_ts }} 
-		{% if keymaster.sync_ts < twoMinutesAgo %}
-		<span class="ui-state-error">INACTIVE</span>
+<h3>{{ keymaster.description }}</h3>
+<div style="padding:10px;">
+	<div><strong>Gatekeeper:</strong> {{ keymaster.gatekeeper_ip }}</div>
+	<div><strong>Last sync:</strong> {{ keymaster.sync_ts }}</div>
+	<div>
+		<strong>Last access:</strong> {{ keymaster.access_ts }}
+		{% if keymaster.access_ts < twoMinutesAgo %}
+			<span class="ui-state-error">INACTIVE</span>
 		{% endif %}
+	</div>
+	<div>
+		<strong>Recent Events:</strong>
+		<ul>
+			{% for event in events %}
+				<li>{{ event.timestamp }}: {{ event.event_description }}</li>
+			{% endfor %}
+		</ul>
 	</div>
 </div>
 {% endfor %}

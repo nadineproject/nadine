@@ -11,16 +11,25 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
 from doors.hid_control import DoorController
-from doors.keymaster.models import *
+from doors.keymaster.models import Keymaster, Door, DoorEvent
 
 
 @staff_member_required
 def index(request):
-    keymasters = Keymaster.objects.all()
+    keymasters = Keymaster.objects.filter(is_enabled=True)
     twoMinutesAgo = timezone.now() - timedelta(minutes=2)
+    events = DoorEvent.objects.all().order_by('timestamp').reverse()[:10]
     return render_to_response('keymaster/index.html', 
-        {'keymasters': keymasters, 'twoMinutesAgo': twoMinutesAgo}, 
+        {'keymasters': keymasters, 
+         'twoMinutesAgo': twoMinutesAgo,
+         'events': events,
+        }, 
         context_instance=RequestContext(request))
+
+
+@staff_member_required
+def add_key(request):
+    return render_to_response('keymaster/add_key.html', {}, context_instance=RequestContext(request))
 
 
 @staff_member_required
