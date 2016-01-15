@@ -13,6 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from doors.hid_control import DoorController
 from doors.keymaster.models import Keymaster, Door, DoorEvent
+from doors.core import EncryptedConnection, Messages
 
 logger = logging.getLogger(__name__)
 
