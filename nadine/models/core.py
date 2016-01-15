@@ -219,7 +219,7 @@ class MemberManager(models.Manager):
         members = []
         for m in self.active_members():
             membership = m.active_membership()
-            if membership.monthly_rate > 0:
+            if membership and membership.monthly_rate > 0:
                 if not m.has_valid_billing():
                     members.append(m)
         return members
