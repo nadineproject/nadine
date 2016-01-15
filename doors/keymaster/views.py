@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timedelta, date
 
 from django.conf import settings
@@ -12,6 +13,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 from doors.hid_control import DoorController
 from doors.keymaster.models import Keymaster, Door, DoorEvent
+
+logger = logging.getLogger(__name__)
 
 
 @staff_member_required
