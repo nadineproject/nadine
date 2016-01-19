@@ -38,23 +38,12 @@ nav #doors-tab { background: #FBD850; color: black; }
 {% else %}
 	<div style="margin-left:2em;">
 		<form method="POST" action=".">
-			<table>
-			<tr>
-				<th>Username</th>
-				<th>Code</th>
-				<th></th>
-				<th></th>
-			</tr>
-			<tr>
-				<td><input name="username" size="16" value="{{ username }}"/></td>
-				<td><input name="code" size="16" value="{{ code }}"/></td>
-				<td style="text-align: center;">
-					<input type="submit" value="Add" />
-				</td>
-				<td></td>
-			</tr>
-		</table>
-		{% csrf_token %}
+			<strong>Username:</strong>
+			<input name="username" size="16" value="{{ username }}"/>
+			<strong>Key Code:</strong>
+			<td><input name="code" size="16" value="{{ code }}"/></td>
+			<input type="submit" value="Add Key" />
+			{% csrf_token %}
 		</form>
 	</div>
 {% endif %}

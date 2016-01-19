@@ -43,6 +43,10 @@ def user_keys(request, username):
     tenMinutesAgo = timezone.now() - timedelta(minutes=10)
     potential_keys = DoorEvent.objects.filter(timestamp__gte=tenMinutesAgo, event_type=DoorEventTypes.UNRECOGNIZED)
     
+    if 'code_id' in request.POST and request.POST.get('action') == "Delete":
+        door_code = get_object_or_404(DoorCode, id=request.POST.get('code_id'))
+        door_code.delete()
+    
     if not 'view_all_logs' in request.GET:
         logs = logs[:10]
     return render_to_response('keymaster/user_keys.html', {'user':user, 'keys':keys, 'logs':logs, 'potential_keys':potential_keys}, context_instance=RequestContext(request))

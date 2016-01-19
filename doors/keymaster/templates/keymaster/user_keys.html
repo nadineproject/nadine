@@ -32,7 +32,11 @@ nav #doors-tab { background: #FBD850; color: black; }
 			<td>{{ key.created_by }}</td>
 			<td style="text-align:center;">{{ key.code }}</td>
 			<td>
-				<input type="button" value="Delete"/>
+				<form action="." method="POST" onSubmit="return confirm('Are you sure?');">
+					<input type="hidden" name="code_id" value="{{ key.id }}">
+					<input name="action" type="submit" value="Delete"/>
+					{% csrf_token %}
+				</form>
 			</td>
 		</tr>
 	{% endfor %}
