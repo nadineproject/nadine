@@ -190,7 +190,8 @@ class DoorController:
         self.send_xml(assign_credential(cardholderID, newCardNumber))
 
     def delete_cardholder(self, cardholderID, cardNumber):
-        self.send_xml(delete_credential(cardNumber))
+        if cardNumber:
+            self.send_xml(delete_credential(cardNumber))
         self.send_xml(delete_cardholder(cardholderID))
 
     def pull_events(self, recordCount):
