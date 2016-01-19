@@ -1,0 +1,91 @@
+{% extends "staff/staff_base.html" %}
+
+{% block sub-title %} Doors | {% endblock %}
+
+{% block style %}
+nav #doors-tab { background: #FBD850; color: black; }
+{% endblock %}
+
+{% block content %} 
+{% include "keymaster/doors_menu.frag" %}
+
+<h2>Keys for {{ user.get_full_name }}</h2>
+
+{% if messages %}
+	<div class="messages">
+		{% for message in messages %}
+			<div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+		{% endfor %}
+	</div>
+{% endif %}
+
+<table>
+	<tr>
+		<th>Last Modified</th>
+		<th>Created by</th>
+		<th>Code</th>
+		<th></th>
+	</tr>
+	{% for key in keys %}
+		<tr>
+			<td nowrap>{{ key.modified_ts }}</td>
+			<td>{{ key.created_by }}</td>
+			<td style="text-align:center;">{{ key.code }}</td>
+			<td>
+				<input type="button" value="Delete"/>
+			</td>
+		</tr>
+	{% endfor %}
+</table>
+
+<h3>Add a Key</h3>
+{% if potential_keys %}
+	<ul>
+	{% for event in potential_keys %}
+		<li>
+			Unrecognized key <em>'{{ event.code }}' seen at <strong>{{ event.door.name }}</strong>.
+			<form method="POST" action="{% url 'doors.keymaster.views.add_key' %}">
+				<input type="hidden" name="username" value="{{ user.username }}"/></td>
+				<input type="hidden" name="code" value="{{ event.code }}"/>
+				<input type="submit" value="Add" />
+			{% csrf_token %}
+			</form>
+		</li>
+	{% endfor %}
+{% endif %}
+
+<div style="margin-left:2em;">
+	<form method="POST" action="{% url 'doors.keymaster.views.add_key' %}">
+		<input type="hidden" name="username" value="{{ user.username }}"/></td>
+		<strong>Code:</strong>
+		<input name="code" size="16" value="{{ code }}"/>
+		<input type="submit" value="Add" />
+	{% csrf_token %}
+	</form>
+</div>
+
+{% if logs %}
+	<h3>
+		Access Logs ({{ logs|length }})
+		[ <a href="?view_all_logs=true">view all</a> ]
+	</h3>
+	<table>
+		<tr>
+			<th>Timestamp</th>
+			<th>Door</th>
+			<th>Event</th>
+			<th>Description</th>
+		</tr>
+		{% for log in logs %}
+			<tr>
+				<td nowrap>{{ log.timestamp }}</td>
+				<td>{{ log.door }}</td>
+				<td>{{ log.event_type }}</td>
+				<td>{{ log.event_description }}</td>
+			</tr>
+		{% endfor %}
+	</table>
+{% endif %}
+
+
+{% endblock %}

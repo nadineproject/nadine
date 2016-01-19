@@ -7,13 +7,16 @@ from django.template import Context, loader
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.http import Http404, HttpResponseServerError, HttpResponseRedirect, HttpResponsePermanentRedirect
+from django.core.urlresolvers import reverse
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib import messages
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User
 
 from doors.hid_control import DoorController
-from doors.keymaster.models import Keymaster, Door, DoorEvent
-from doors.core import EncryptedConnection, Messages
+from doors.keymaster.models import Keymaster, Door, DoorCode, DoorEvent
+from doors.core import EncryptedConnection, Messages, DoorEventTypes
 
 logger = logging.getLogger(__name__)
 
@@ -32,8 +35,54 @@ def index(request):
 
 
 @staff_member_required
+def user_keys(request, username):
+    user = get_object_or_404(User, username=username)
+    keys = DoorCode.objects.filter(user=user)
+    logs = DoorEvent.objects.filter(user=user)
+    
+    tenMinutesAgo = timezone.now() - timedelta(minutes=10)
+    potential_keys = DoorEvent.objects.filter(timestamp__gte=tenMinutesAgo, event_type=DoorEventTypes.UNRECOGNIZED)
+    
+    if not 'view_all_logs' in request.GET:
+        logs = logs[:10]
+    return render_to_response('keymaster/user_keys.html', {'user':user, 'keys':keys, 'logs':logs, 'potential_keys':potential_keys}, context_instance=RequestContext(request))
+
+
+@staff_member_required
 def add_key(request):
-    return render_to_response('keymaster/add_key.html', {}, context_instance=RequestContext(request))
+    username = request.POST.get("username", "")
+    code = request.POST.get("code", "")
+    
+    # Try and find one and only one user for this username
+    user = None
+    if username:
+        user_search = User.objects.filter(username=username)
+        if not user_search:
+            messages.add_message(request, messages.ERROR, "Could not find user for username '%s'" % username)
+        elif user_search.count() > 1:
+            messages.add_message(request, messages.ERROR, "More then one user found for username '%s'" % username)
+        else:
+            user = user_search.first()
+    
+    # Make sure this door code isn't used by anyone else
+    if code:
+        if DoorCode.objects.filter(code=code).count() > 0:
+            messages.add_message(request, messages.ERROR, "Door code '%s' already in use!" % code)
+            code = ""
+    
+    # If we have enough information construct a door_code
+    # but don't save it until we get user confirmation
+    door_code = None
+    if user and code:
+        door_code = DoorCode(created_by=request.user, user=user, code=code)
+        print door_code
+    
+    # Save the code if we've received user confirmation
+    if door_code and 'add_door_code' in request.POST:
+        door_code.save()
+        return HttpResponseRedirect(reverse('door.views.user_keys', kwargs={'username': user.username}))
+    
+    return render_to_response('keymaster/add_key.html', {'username':username, 'code':code, 'door_code':door_code}, context_instance=RequestContext(request))
 
 
 @staff_member_required
