@@ -65,7 +65,7 @@ class Keymaster(models.Model):
     def pull_door_codes(self):
         # Pull all the codes and send them back
         codes = []
-        for c in DoorCode.objects.all():
+        for c in DoorCode.objects.all().order_by('user__username'):
             u = c.user
             code = {'username':u.username, 'first_name': u.first_name, 'last_name':u.last_name, 'code':c.code}
             codes.append(code)
