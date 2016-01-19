@@ -60,9 +60,9 @@ class DoorController:
 
     def save_cardholder(self, cardholder):
         if 'cardholderID' in cardholder:
-            self.cardholders_by_id[cardholder['cardholderID']] = cardholder
+            self.cardholders_by_id[cardholder.get('cardholderID')] = cardholder
         if 'username' in cardholder:
-            self.cardholders_by_username[cardholder['username']] = cardholder
+            self.cardholders_by_username[cardholder.get('username')] = cardholder
 
     def load_cardholders(self):
         self.clear_data()
@@ -129,11 +129,12 @@ class DoorController:
         
         changes = []
         for new_code in door_codes:
-            username = new_code['username']
+            username = new_code.get('username')
             cardholder = self.get_cardholder_by_username(username)
             #print "username: %s, cardholder: %s" % (username, cardholder)
             if cardholder:
-                if cardholder['cardNumber'] != new_code['code']:
+                card_number = cardholder.get('cardNumber')
+                if card_number and card_number != new_code.get('code'):
                     cardholder['action'] = 'change'
                     cardholder['new_code'] = new_code['code']
                     changes.append(cardholder)
@@ -141,10 +142,10 @@ class DoorController:
                     cardholder['action'] = 'no_change'
             else:
                 new_cardholder = {'action':'add', 'username':username}
-                new_cardholder['forname'] = new_code['first_name']
-                new_cardholder['surname'] = new_code['last_name']
-                new_cardholder['full_name'] = "%s %s" % (new_code['first_name'], new_code['last_name'])
-                new_cardholder['new_code'] = new_code['code']
+                new_cardholder['forname'] = new_code.get('first_name')
+                new_cardholder['surname'] = new_code.get('last_name')
+                new_cardholder['full_name'] = "%s %s" % (new_code.get('first_name'), new_code.get('last_name'))
+                new_cardholder['new_code'] = new_code.get('code')
                 changes.append(new_cardholder)
         
         # Now loop through all the cardholders and any that don't have an action
@@ -158,15 +159,15 @@ class DoorController:
 
     def process_changes(self, change_list):
         for change in change_list:
-            action = change['action']
-            logger.debug("%s: %s" % (action, change['full_name']))
+            action = change.get('action')
+            logger.debug("%s: %s" % (action, change.get('full_name')))
             if action == 'add':
                 logger.debug("")
-                self.add_cardholder(change['forname'], change['surname'], change['username'], change['new_code'])
+                self.add_cardholder(change.get('forname'), change.get('surname'), change.get('username'), change.get('new_code'))
             elif action == 'change':
-                self.change_cardholder(change['cardholderID'], change['cardNumber'], change['new_code'])
+                self.change_cardholder(change.get('cardholderID'), change.get('cardNumber'), change.get('new_code'))
             elif action == 'delete':
-                self.delete_cardholder(change['cardholderID'], change['cardNumber'])
+                self.delete_cardholder(change.get('cardholderID'), change.get('cardNumber'))
                 pass
 
     def add_cardholder(self, forname, surname, username, cardNumber):
@@ -203,17 +204,17 @@ class DoorController:
     
     def get_event_detail(self, event_dict):
         from core import DoorEventTypes
-        hid_event_code = event_dict['eventType']
+        hid_event_code = event_dict.get('eventType')
         if hid_event_code == "1022":
-            description = "Card Not Found (%s) " % event_dict['rawCardNumber']
-            event_dict['cardNumber'] = event_dict['rawCardNumber']
+            description = "Card Not Found (%s) " % event_dict.get('rawCardNumber')
+            event_dict['cardNumber'] = event_dict.get('rawCardNumber')
             door_event_type = DoorEventTypes.UNRECOGNIZED
         elif hid_event_code == "2036" or hid_event_code == "2043":
-            description = "Access Denied (%s) " % event_dict['rawCardNumber']
-            event_dict['cardNumber'] = event_dict['rawCardNumber']
+            description = "Access Denied (%s) " % event_dict.get('rawCardNumber')
+            event_dict['cardNumber'] = event_dict.get('rawCardNumber')
             door_event_type = DoorEventTypes.DENIED
         elif hid_event_code == "2020" or hid_event_code == "2021":
-            description = "Access Granted (%s %s)" % (event_dict['forename'], event_dict['surname'])
+            description = "Access Granted (%s %s)" % (event_dict.get('forename'), event_dict.get('surname'))
             door_event_type = DoorEventTypes.GRANTED
         elif hid_event_code == "4036" or hid_event_code == "12032":
             description = "Door Unlocked"
@@ -222,7 +223,7 @@ class DoorController:
             description = "Door Locked"
             door_event_type = DoorEventTypes.LOCKED
         else:
-            description = event_details[hid_event_code]
+            description = event_details.get(hid_event_code)
             door_event_type = DoorEventTypes.UNKNOWN
         event_dict['description'] = description
         event_dict['door_event_type'] = door_event_type
