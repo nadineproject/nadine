@@ -8,7 +8,7 @@ from core import Messages, EncryptedConnection, Gatekeeper
 from threads import Heartbeat, EventWatcher
 
 class GatekeeperApp(object):
-    def run(self, config, syncClocks, initialSync):
+    def run(self, config, syncClocks, initialSync, clearCodes):
         try:
             print "Starting up Gatekeeper..."
             connection = EncryptedConnection(config['ENCRYPTION_KEY'], config['KEYMASTER_URL'])
@@ -28,6 +28,11 @@ class GatekeeperApp(object):
             # Set the time on each door
             if syncClocks:
                 gatekeeper.sync_clocks()
+            
+            # Clear out all the door codes if requested
+            if clearCodes:
+                gatekeeper.clear_all_codes()
+                initialSync = True
             
             # Pull new data if requested
             if initialSync:
@@ -87,9 +92,10 @@ if __name__ == "__main__":
         config = json.load(f)
     
     # Pull the command line args
-    initialSync = "-s" in sys.argv
-    syncClocks = "-c" in sys.argv
+    initialSync = "--sync" in sys.argv
+    syncClocks = "--set-time" in sys.argv
+    clearCodes = "--clear-all" in sys.argv
 
     # Start the application
     app = GatekeeperApp()
-    app.run(config, syncClocks, initialSync)
+    app.run(config, syncClocks, initialSync, clearCodes)

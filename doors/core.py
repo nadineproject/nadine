@@ -145,6 +145,10 @@ class Door(object):
         controller = self.get_controller()
         controller.load_credentials()
     
+    def clear_door_codes(self): 
+        controller = self.get_controller()
+        controller.clear_door_codes()
+
     def process_door_codes(self, doorcode_json):
         controller = self.get_controller()
         changes = controller.process_door_codes(doorcode_json)
@@ -192,6 +196,11 @@ class Gatekeeper(object):
     def load_data(self):
         for door in self.get_doors().values():
             door.load_credentials()
+
+    def clear_all_codes(self):
+        print "Gatekeeper: Clearing all door codes..."
+        for door in self.get_doors().values():
+            door.clear_door_codes()
 
     def get_doors(self):
         if not 'doors' in self.__dict__:

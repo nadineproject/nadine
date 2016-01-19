@@ -110,8 +110,8 @@ class DoorController:
             for child in xml[0]:
                 card = child.attrib
                 if 'cardholderID' in card:
-                    cardholderID = card['cardholderID']
-                    cardNumber = card['rawCardNumber']
+                    cardholderID = card.get('cardholderID')
+                    cardNumber = card.get('rawCardNumber')
                     cardholder = self.get_cardholder_by_id(cardholderID)
                     if cardholder:
                         cardholder['cardNumber'] = cardNumber
@@ -123,6 +123,12 @@ class DoorController:
                 offset = offset + count
         logger.debug(self.cardholders_by_id)
 
+    def clear_door_codes(self):
+        self.load_credentials()
+        for cardholderID, cardholder in self.cardholders_by_id.items():
+            cardNumber = cardholder.get('cardNumber')
+            self.delete_cardholder(cardholderID, cardNumber)
+    
     def process_door_codes(self, door_codes, load_credentials=True):
         if load_credentials:
             self.load_credentials()
