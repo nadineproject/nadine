@@ -15,7 +15,7 @@ class Messages(object):
     TEST_QUESTION = "Are you the Keymaster?"
     TEST_RESPONSE = "Are you the Gatekeeper?"
     PULL_CONFIGURATION = "pull_configuration"
-    CHECK_DOOR_CODES = "check_door_codes"
+    CHECK_IN = "check_in"
     PULL_DOOR_CODES = "pull_door_codes"
     PUSH_EVENT_LOGS = "push_event_logs"
     NEW_DATA = "new_data"

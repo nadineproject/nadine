@@ -21,7 +21,7 @@ class Heartbeat(threading.Thread):
 
             if not self.new_data:
                 print("Heartbeat: Contacting the Keymaster...")
-                response = self.connection.send_message(Messages.CHECK_DOOR_CODES)
+                response = self.connection.send_message(Messages.CHECK_IN)
                 if response == Messages.NEW_DATA:
                     print("Heartbeat: There is new data to be processed")
                     self.new_data = True

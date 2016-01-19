@@ -143,7 +143,7 @@ def keymaster(request):
             outgoing_message = Messages.TEST_RESPONSE
         elif incoming_message == Messages.PULL_CONFIGURATION:
             outgoing_message = keymaster.pull_config()
-        elif incoming_message == Messages.CHECK_DOOR_CODES:
+        elif incoming_message == Messages.CHECK_IN:
             outgoing_message = keymaster.check_door_codes()
         elif incoming_message == Messages.PULL_DOOR_CODES:
             outgoing_message = keymaster.pull_door_codes()
