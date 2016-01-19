@@ -185,7 +185,7 @@ class DoorController:
         self.send_xml(add_roleset(cardholderID))
 
     def change_cardholder(self, cardholderID, oldCardNumber, newCardNumber):
-        if cardNumber:
+        if oldCardNumber:
             self.send_xml(delete_credential(oldCardNumber))
         self.send_xml(create_credential(newCardNumber))
         self.send_xml(assign_credential(cardholderID, newCardNumber))
