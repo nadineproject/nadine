@@ -84,7 +84,7 @@ def add_key(request):
     # Save the code if we've received user confirmation
     if door_code and 'add_door_code' in request.POST:
         door_code.save()
-        return HttpResponseRedirect(reverse('door.views.user_keys', kwargs={'username': user.username}))
+        return HttpResponseRedirect(reverse('doors.views.user_keys', kwargs={'username': user.username}))
     
     return render_to_response('keymaster/add_key.html', {'username':username, 'code':code, 'door_code':door_code}, context_instance=RequestContext(request))
 
