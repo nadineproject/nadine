@@ -46,7 +46,7 @@ nav #doors-tab { background: #FBD850; color: black; }
 <div style="margin-left:2em;">
 
 	{% if potential_key %}
-		Unrecognized key <em>'{{ potential_key.code }}' 
+		Unrecognized key <em>'{{ potential_key.code }}'</em>
 		read at <strong>{{ potential_key.door.name }}</strong> 
 		at {{ potential_key.timestamp|date:"h:i a" }}
 		<form method="POST" action="{% url 'doors.keymaster.views.add_key' %}" style="display:inline;">
