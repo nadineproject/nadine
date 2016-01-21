@@ -156,6 +156,9 @@ class DoorCode(models.Model):
     user = models.ForeignKey(User)
     code = models.CharField(max_length=16, unique=True)
 
+    def get_last_event(self):
+        return DoorEvent.objects.filter(code=self.code).order_by('timestamp').reverse().first()
+
     def __str__(self): 
         return '%s: %s' % (self.user, self.code)
 

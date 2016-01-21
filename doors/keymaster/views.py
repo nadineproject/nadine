@@ -54,6 +54,13 @@ def user_keys(request, username):
 
 
 @staff_member_required
+def user_list(request):
+    order_by = request.GET.get("order_by", "user__username")
+    codes = DoorCode.objects.all().order_by(order_by)
+    return render_to_response('keymaster/user_list.html', {'codes':codes}, context_instance=RequestContext(request))
+
+
+@staff_member_required
 def add_key(request):
     username = request.POST.get("username", "")
     code = request.POST.get("code", "")

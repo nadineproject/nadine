@@ -4,6 +4,7 @@ from django.conf import settings
 urlpatterns = patterns('doors.keymaster.views',
                        url(r'^$', 'index'),
                        url(r'^keys/(?P<username>[^/]+)/$', 'user_keys'),
+                       url(r'^users/$', 'user_list'),
                        url(r'^add_key/$', 'add_key'),
                        url(r'^test_door/$', 'test_door'),
                        
