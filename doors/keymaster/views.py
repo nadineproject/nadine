@@ -14,7 +14,6 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 
-from doors.hid_control import DoorController
 from doors.keymaster.models import Keymaster, Door, DoorCode, DoorEvent
 from doors.core import EncryptedConnection, Messages, DoorEventTypes
 from staff import email

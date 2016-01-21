@@ -1,11 +1,10 @@
+import abc
 import json
 import logging
 import requests
 import traceback
 from datetime import datetime, time, date, timedelta
 
-import hid_control
-from hid_control import DoorController
 from cryptography.fernet import Fernet
 
 logger = logging.getLogger(__name__)
@@ -27,10 +26,12 @@ class Messages(object):
 class DoorTypes(object):
     HID = "hid"
     MAYPI = "maypi"
+    TEST = "test"
     
     CHOICES = (
         (HID, "Hid Controller"),
         (MAYPI, "Maypi Controller"),
+        (TEST, "Test Controller"),
     )
 
 
@@ -115,55 +116,110 @@ class EncryptedConnection(object):
         return self.message
 
 
-class Door(object):
-    def __init__(self, name, door_type, ip_address, username, password, last_event_ts):
-        self.name = name
-        self.door_type = door_type
-        self.ip_address = ip_address
-        self.username = username
-        self.password = password
-        self.last_event_ts = last_event_ts
+class DoorController(object):
+     
+    def __init__(self, ip_address, username, password):
+        self.door_ip = ip_address
+        self.door_user = username
+        self.door_pass = password
+        self.clear_data()
 
-    def get_controller(self):
-        if not 'controller' in self.__dict__:
-            if self.door_type == DoorTypes.HID:
-                self.controller = DoorController(self.ip_address, self.username, self.password)
-            else:
-                raise NotImplementedError
-        return self.controller
-    
+    def door_url(self):
+        door_url = "https://%s/cgi-bin/vertx_xml.cgi" % self.door_ip
+        return door_url
+
+    def clear_data(self):
+        self.cardholders_by_id = {}
+        self.cardholders_by_username = {}
+
+    def save_cardholder(self, cardholder):
+        if 'cardholderID' in cardholder:
+            self.cardholders_by_id[cardholder.get('cardholderID')] = cardholder
+        if 'username' in cardholder:
+            self.cardholders_by_username[cardholder.get('username')] = cardholder
+
+    def get_cardholder_by_id(self, cardholderID):
+        if cardholderID in self.cardholders_by_id:
+            return self.cardholders_by_id[cardholderID]
+        return None
+
+    def get_cardholder_by_username(self, username):
+        if username in self.cardholders_by_username:
+            return self.cardholders_by_username[username]
+        return None
+
+    @abc.abstractmethod
     def test_connection(self):
-        controller = self.get_controller()
-        controller.test_connection()
-        
-    def sync_clock(self):
-        controller = self.get_controller()
-        set_time_xml = hid_control.set_time()
-        controller.send_xml(set_time_xml)
+       """Tests the connection with the door."""
     
-    def load_credentials(self): 
-        controller = self.get_controller()
-        controller.load_credentials()
+    @abc.abstractmethod
+    def set_time(self):
+        """Set the door time."""
     
-    def clear_door_codes(self): 
-        controller = self.get_controller()
-        controller.clear_door_codes()
+    @abc.abstractmethod
+    def load_cardholders(self):
+        """Load the cardholder data from the door."""
+    
+    @abc.abstractmethod
+    def load_credentials(self):
+        """Load the credential data from the door."""
+    
+    @abc.abstractmethod
+    def clear_door_codes(self):
+        """Clear all data from the door."""
+    
+    @abc.abstractmethod
+    def process_door_codes(self, door_codes, load_credentials=True):
+        """Process the given set of door codes and make any changes in the door."""
+    
+    @abc.abstractmethod
+    def process_changes(self, change_list):
+        """Process the changes at the door."""
 
-    def process_door_codes(self, doorcode_json):
-        controller = self.get_controller()
-        changes = controller.process_door_codes(doorcode_json)
-        logger.debug("Changes: %s: " % changes)
-        controller.process_changes(changes)
+    @abc.abstractmethod
+    def pull_events(self, recordCount):
+        """Pull the requested number of the most door events."""
+
+
+class TestDoorController(DoorController):
+
+    def test_connection(self):
+       """Tests the connection with the door."""
+       return True
     
-    def pull_event_logs(self, record_count=100):
-        controller = self.get_controller()
-        return controller.pull_events(record_count)
+    def load_cardholders(self):
+        """Load the cardholder data from the door."""
+        pass
+    
+    def set_time(self):
+        """Set the door time."""
+        pass
+    
+    def load_credentials(self):
+        """Load the credential data from the door."""
+        pass
+    
+    def clear_door_codes(self):
+        """Clear all data from the door."""
+        pass
+    
+    def process_door_codes(self, door_codes, load_credentials=True):
+        """Determin the changes needed given this list of new door codes."""
+        return []
+    
+    def process_changes(self, change_list):
+        """Process the changes at the door."""
+        pass
+    
+    def pull_events(self, recordCount):
+        """Pull the requested number of the most door events."""
+        return []
 
 
 class Gatekeeper(object):
     def __init__(self, encrypted_connection):
         self.encrypted_connection = encrypted_connection
-
+    
     def test_keymaster_connection(self):
         response = self.encrypted_connection.send_message(Messages.TEST_QUESTION)
         if not response == Messages.TEST_RESPONSE:
@@ -175,60 +231,75 @@ class Gatekeeper(object):
         configuration = self.encrypted_connection.send_message(Messages.PULL_CONFIGURATION)
         config_json = json.loads(configuration)
         logger.debug("Configuration: %s" % config_json)
-        for d in config_json:
-            name = d.get('name')
-            door = Door(name=name,
-                        door_type= d.get('door_type'),
-                        ip_address=d.get('ip_address'),
-                        username=d.get('username'),
-                        password=d.get('password'),
-                        last_event_ts = d.get('last_event_ts'),
-                   )
+        for door_info in config_json:
+            name = door_info.get('name')
+            door_type= door_info.get('door_type')
+            ip_address=door_info.get('ip_address')
+            username=door_info.get('username')
+            password=door_info.get('password')
+            
+            # Find our controller for this door
+            if door_type == DoorTypes.HID:
+                from hid_control import HIDDoorController
+                controller = HIDDoorController(ip_address, username, password)
+            elif door_type == DoorTypes.TEST:
+                controller = TestDoorController(ip_address, username, password)
+            else:
+                raise NotImplementedError
+            door_info['controller'] = controller
+
             logger.debug("Gatekeeper: Loading credentials for '%s'" % name)
-            door.load_credentials()
-            self.doors[name] = door
-
-    def sync_clocks(self):
-        print "Gatekeeper: Syncing the door clocks..."
-        for door in self.get_doors().values():
-            door.sync_clock()
-
-    def load_data(self):
-        for door in self.get_doors().values():
-            door.load_credentials()
-
-    def clear_all_codes(self):
-        print "Gatekeeper: Clearing all door codes..."
-        for door in self.get_doors().values():
-            door.clear_door_codes()
-
+            controller.load_credentials()
+            self.doors[name] = door_info
+    
     def get_doors(self):
         if not 'doors' in self.__dict__:
             raise Exception("Doors not configured")
         return self.doors
-
+    
     def get_door(self, door_name):
         if door_name not in self.get_doors():
             raise Exception("Door not found")
         return self.doors[door_name]
-
+    
+    def sync_clocks(self):
+        print "Gatekeeper: Syncing the door clocks..."
+        for door in self.get_doors().values():
+            controller = door['controller']
+            controller.set_time()
+    
+    def load_data(self):
+        for door in self.get_doors().values():
+            controller = door['controller']
+            controller.load_credentials()
+    
+    def clear_all_codes(self):
+        print "Gatekeeper: Clearing all door codes..."
+        for door in self.get_doors().values():
+            controller = door['controller']
+            door.clear_door_codes()
+    
     def pull_door_codes(self):
         print "Gatekeeper: Pulling door codes..."
         response = self.encrypted_connection.send_message(Messages.PULL_DOOR_CODES)
         doorcode_json = json.loads(response)
         logger.debug(doorcode_json)
         for door in self.get_doors().values():
-            door.process_door_codes(doorcode_json)
-
+            controller = door['controller']
+            changes = controller.process_door_codes(doorcode_json)
+            logger.debug("Changes: %s: " % changes)
+            controller.process_changes(changes)
+    
     def pull_event_logs(self, record_count=100):
         print "Gatekeeper: Pulling event logs..."
         event_logs = {}
         for door_name, door in self.get_doors().items():
             print "Gatekeeper: Pulling %d logs from '%s'" % (record_count, door_name)
-            door_logs = door.pull_event_logs(record_count)
+            controller = door['controller']
+            door_logs = controller.pull_events(record_count)
             event_logs[door_name] = door_logs
         return event_logs
-
+    
     def push_event_logs(self, record_count=100):
         print "Gatekeeper: Pushing event logs to keymaster..."
         event_logs = self.pull_event_logs(record_count)
@@ -239,6 +310,6 @@ class Gatekeeper(object):
         
         # Reconfigure the doors to get the latest timestamps
         self.configure_doors()
-
+    
     def __str__(self): 
         return self.description

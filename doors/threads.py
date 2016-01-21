@@ -2,7 +2,7 @@ import sys
 import time
 import threading
 
-from core import Messages, Door
+from core import Messages
 
 class Heartbeat(threading.Thread):
 
@@ -61,8 +61,9 @@ class EventWatcher(threading.Thread):
                 for door_name, logs in event_logs.items():
                     if logs and len(logs) == 1 and 'timestamp' in logs[0]:
                         door = self.gatekeeper.get_door(door_name)
-                        #print "EventWatcher: %s ?= %s" % (logs[0]['timestamp'], door.last_event_ts)
-                        if logs[0]['timestamp'] != door.last_event_ts:
+                        last_event_ts = door.get("last_event_ts")
+                        #print "EventWatcher: %s ?= %s" % (logs[0]['timestamp'], last_event_ts)
+                        if logs[0]['timestamp'] != last_event_ts:
                             self.new_data = True
                             break
                 if not self.new_data:
