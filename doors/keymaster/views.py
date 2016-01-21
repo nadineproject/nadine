@@ -17,6 +17,7 @@ from django.contrib.auth.models import User
 from doors.hid_control import DoorController
 from doors.keymaster.models import Keymaster, Door, DoorCode, DoorEvent
 from doors.core import EncryptedConnection, Messages, DoorEventTypes
+from staff import email
 
 logger = logging.getLogger(__name__)
 
@@ -79,12 +80,12 @@ def add_key(request):
     door_code = None
     if user and code:
         door_code = DoorCode(created_by=request.user, user=user, code=code)
-        print door_code
     
     # Save the code if we've received user confirmation
     if door_code and 'add_door_code' in request.POST:
         door_code.save()
-        return HttpResponseRedirect(reverse('doors.views.user_keys', kwargs={'username': user.username}))
+        email.announce_new_key(user)
+        return HttpResponseRedirect(reverse('doors.keymaster.views.user_keys', kwargs={'username': user.username}))
     
     return render_to_response('keymaster/add_key.html', {'username':username, 'code':code, 'door_code':door_code}, context_instance=RequestContext(request))
 
