@@ -42,32 +42,30 @@ nav #doors-tab { background: #FBD850; color: black; }
 	{% endfor %}
 </table>
 
-<h3>Add a Key</h3>
+<h3>Assign a New Key</h3>
 <div style="margin-left:2em;">
 
-	{% if potential_keys %}
-		<ul>
-		{% for event in potential_keys %}
-			<li>
-				Unrecognized key <em>'{{ event.code }}' seen at <strong>{{ event.door.name }}</strong>.
-				<form method="POST" action="{% url 'doors.keymaster.views.add_key' %}" style="display:inline;">
-					<input type="hidden" name="username" value="{{ user.username }}"/></td>
-					<input type="hidden" name="code" value="{{ event.code }}"/>
-					<input type="submit" value="Add" />
-				{% csrf_token %}
-				</form>
-			</li>
-		{% endfor %}
-		</ul>
+	{% if potential_key %}
+		Unrecognized key <em>'{{ potential_key.code }}' 
+		read at <strong>{{ potential_key.door.name }}</strong> 
+		at {{ potential_key.timestamp|date:"h:i a" }}
+		<form method="POST" action="{% url 'doors.keymaster.views.add_key' %}" style="display:inline;">
+			<input type="hidden" name="username" value="{{ user.username }}"/></td>
+			<input type="hidden" name="code" value="{{ event.code }}"/>
+			<input type="submit" value="Assign" />
+		{% csrf_token %}
+		</form>
 	{% endif %}
 
+	<p>
 	<form method="POST" action="{% url 'doors.keymaster.views.add_key' %}">
 		<input type="hidden" name="username" value="{{ user.username }}"/></td>
-		<strong>Code:</strong>
+		<strong>Manually Assign Key:</strong>
 		<input name="code" size="16" value="{{ code }}"/>
-		<input type="submit" value="Add" />
+		<input type="submit" value="Assign" />
 	{% csrf_token %}
 	</form>
+	</p>
 </div>
 
 {% if logs %}
