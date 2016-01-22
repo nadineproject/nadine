@@ -50,8 +50,8 @@ nav #doors-tab { background: #FBD850; color: black; }
 		read at <strong>{{ potential_key.door.name }}</strong> 
 		at {{ potential_key.timestamp|date:"h:i a" }}
 		<form method="POST" action="{% url 'doors.keymaster.views.add_key' %}" style="display:inline;">
-			<input type="hidden" name="username" value="{{ user.username }}"/></td>
-			<input type="hidden" name="code" value="{{ event.code }}"/>
+			<input type="hidden" name="username" value="{{ potential_key.user.username }}"/></td>
+			<input type="hidden" name="code" value="{{ potential_key.code }}"/>
 			<input type="submit" value="Assign" />
 		{% csrf_token %}
 		</form>
