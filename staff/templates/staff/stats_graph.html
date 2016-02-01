@@ -19,9 +19,21 @@
 {% block content %} 
 {% include "staff/stats_menu.frag" %}  
 
-<h2>Memberships by Day</h2>
+<h2>{{ title }}</h2>
+
 <div class="columns clearfix date-range">
-	{% include "staff/date_range_form.frag"%}    
+	<form class="date-range-form" action="." method="POST">
+		Graph:
+		<select name="graph">
+			<option value="members" {% ifequal graph "members" %}SELECTED{% endifequal %}>Members by Day</option>
+			<option value="income" {% ifequal graph "income" %}SELECTED{% endifequal %}>Monthly Income</a>
+			<!-- <option value="amv" {% ifequal graph "amv" %}SELECTED{% endifequal %}>Average Member Value</a> -->
+			<!-- <option value="churn" {% ifequal graph "churn" %}SELECTED{% endifequal %}>Membership Churn</a> -->
+		</select>
+		From {% for field in date_range_form %} {% ifequal field.name "end" %}to {% endifequal %}{{ field }}{% endfor %}
+		<input type="submit" value="Update">
+	{% csrf_token %}
+	</form>
 </div>
 
 <div>min = {{min}}, max = {{max}}, avg={{avg}}</div>
@@ -73,7 +85,7 @@
     var getChartData = function(startDate, endDate) {
 		console.log("startDate=" + startDate);
 		console.log("endDate=" + endDate);
-      var data = [{% for day in days %}{{day.members}},{% endfor %}];
+      var data = [{% for day in days %}{{day.value}},{% endfor %}];
       startDate.add({days: -1});
       var jsonData = data.map(function(item, index) {
         startDate.add({days: 1});

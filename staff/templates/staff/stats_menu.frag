@@ -7,7 +7,6 @@
 </div>
 <div class="submenu">
 	<a href="{% url 'staff.views.stats_membership_days' %}">membership days</a> |
-	<a href="{% url 'staff.views.stats_history' %}">history graphs</a> |
-	<a href="{% url 'staff.views.stats_income' %}">income graph</a> |
-	<a href="{% url 'staff.views.stats_members' %}">members graph</a>
+	<a href="{% url 'staff.views.stats_history' %}">member history</a> |
+	<a href="{% url 'staff.views.stats_graph' %}">graphs</a>
 </div>
