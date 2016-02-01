@@ -105,40 +105,6 @@ class HIDDoorController(DoorController):
             cardNumber = cardholder.get('cardNumber')
             self.delete_cardholder(cardholderID, cardNumber)
 
-    def process_door_codes(self, door_codes, load_credentials=True):
-        if load_credentials:
-            self.load_credentials()
-
-        changes = []
-        for new_code in door_codes:
-            username = new_code.get('username')
-            cardholder = self.get_cardholder_by_username(username)
-            #print "username: %s, cardholder: %s" % (username, cardholder)
-            if cardholder:
-                card_number = cardholder.get('cardNumber')
-                if card_number and card_number != new_code.get('code'):
-                    cardholder['action'] = 'change'
-                    cardholder['new_code'] = new_code['code']
-                    changes.append(cardholder)
-                else:
-                    cardholder['action'] = 'no_change'
-            else:
-                new_cardholder = {'action':'add', 'username':username}
-                new_cardholder['forname'] = new_code.get('first_name')
-                new_cardholder['surname'] = new_code.get('last_name')
-                new_cardholder['full_name'] = "%s %s" % (new_code.get('first_name'), new_code.get('last_name'))
-                new_cardholder['new_code'] = new_code.get('code')
-                changes.append(new_cardholder)
-
-        # Now loop through all the cardholders and any that don't have an action
-        # are in the controller but not in the given list.  Remove them.
-        for cardholder in self.cardholders_by_id.values():
-            if not 'action' in cardholder:
-                cardholder['action'] = 'delete'
-                changes.append(cardholder)
-
-        return changes
-
     def process_changes(self, change_list):
         for change in change_list:
             action = change.get('action')

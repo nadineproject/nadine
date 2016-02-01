@@ -20,6 +20,7 @@ class Messages(object):
     NEW_DATA = "new_data"
     NO_NEW_DATA = "no_new_data"
     MARK_SUCCESS = "mark_success"
+    MARK_SYNC = "mark_sync"
     SUCCESS_RESPONSE = "OK"
 
 
@@ -132,6 +133,9 @@ class DoorController(object):
         door_url = "https://%s/cgi-bin/vertx_xml.cgi" % self.door_ip
         return door_url
 
+    def cardholder_count(self):
+        return len(self.cardholders_by_username)
+
     def clear_data(self):
         self.cardholders_by_id = {}
         self.cardholders_by_username = {}
@@ -152,6 +156,44 @@ class DoorController(object):
             return self.cardholders_by_username[username]
         return None
 
+    def process_door_codes(self, door_codes, load_credentials=True):
+        if load_credentials:
+            self.load_credentials()
+
+        changes = []
+        for new_code in door_codes:
+            username = new_code.get('username')
+            cardholder = self.get_cardholder_by_username(username)
+            #print "username: %s, cardholder: %s" % (username, cardholder)
+            if cardholder:
+                card_number = cardholder.get('cardNumber')
+                if card_number and card_number != new_code.get('code'):
+                    cardholder['action'] = 'change'
+                    cardholder['new_code'] = new_code['code']
+                    changes.append(cardholder)
+                else:
+                    cardholder['action'] = 'no_change'
+            else:
+                new_cardholder = {'action':'add', 'username':username}
+                new_cardholder['forname'] = new_code.get('first_name')
+                new_cardholder['surname'] = new_code.get('last_name')
+                new_cardholder['full_name'] = "%s %s" % (new_code.get('first_name'), new_code.get('last_name'))
+                new_cardholder['new_code'] = new_code.get('code')
+                changes.append(new_cardholder)
+        
+        # Now loop through all the cardholders and any that don't have an action
+        # are in the controller but not in the given list.  Remove them.
+        for cardholder in self.cardholders_by_id.values():
+            if not 'action' in cardholder:
+                cardholder['action'] = 'delete'
+                changes.append(cardholder)
+        
+        return changes
+    
+    ################################################################################
+    # Abstract Methods
+    ################################################################################
+    
     @abc.abstractmethod
     def test_connection(self):
        """Tests the connection with the door."""
@@ -171,10 +213,6 @@ class DoorController(object):
     @abc.abstractmethod
     def clear_door_codes(self):
         """Clear all data from the door."""
-    
-    @abc.abstractmethod
-    def process_door_codes(self, door_codes, load_credentials=True):
-        """Process the given set of door codes and make any changes in the door."""
     
     @abc.abstractmethod
     def process_changes(self, change_list):
@@ -206,10 +244,6 @@ class TestDoorController(DoorController):
     def clear_door_codes(self):
         """Clear all data from the door."""
         pass
-    
-    def process_door_codes(self, door_codes, load_credentials=True):
-        """Determin the changes needed given this list of new door codes."""
-        return []
     
     def process_changes(self, change_list):
         """Process the changes at the door."""
