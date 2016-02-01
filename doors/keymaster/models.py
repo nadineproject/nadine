@@ -42,6 +42,7 @@ class Keymaster(models.Model):
     gatekeeper_ip = models.GenericIPAddressField(blank=False, null=False, unique=True)
     encryption_key = models.CharField(max_length=128)
     access_ts = models.DateTimeField(auto_now=True)
+    success_ts = models.DateTimeField(null=True, blank=True)
     sync_ts = models.DateTimeField(null=True, blank=True)
     is_enabled = models.BooleanField(default=False)
 
@@ -114,8 +115,12 @@ class Keymaster(models.Model):
                 new_event = DoorEvent.objects.create(timestamp=tz_timestamp, door=door, user=user, code=door_code, event_type=event_type, event_description=description)
         return Messages.SUCCESS_RESPONSE
 
-    def mark_success(self):
+    def mark_sync(self):
         self.sync_ts = timezone.now()
+        self.save()
+
+    def mark_success(self):
+        self.success_ts = timezone.now()
         self.save()
 
     def force_sync(self):
