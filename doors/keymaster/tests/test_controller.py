@@ -11,7 +11,7 @@ class DoorControllerTestCase(SimpleTestCase):
     password = "password"
     controller = TestDoorController(ip_address, username, password)
     
-    def setup(self):
+    def setUp(self):
         pass
     
     def test_creation(self):

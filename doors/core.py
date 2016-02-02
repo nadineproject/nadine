@@ -354,5 +354,23 @@ class Gatekeeper(object):
         # Reconfigure the doors to get the latest timestamps
         self.configure_doors()
     
+    def encode_door_code(self, clear):
+        enc = []
+        for i in range(len(clear)):
+            key_c = self.code_key[i % len(self.code_key)]
+            enc_c = chr((ord(clear[i]) + ord(key_c)) % 256)
+            enc.append(enc_c)
+        e = base64.urlsafe_b64encode("".join(enc))
+        return e[::-1][1:]
+
+    def decode_door_code(self, enc):
+        dec = []
+        enc = base64.urlsafe_b64decode(enc[::-1] + "=")
+        for i in range(len(enc)):
+            key_c = self.code_key[i % len(self.code_key)]
+            dec_c = chr((256 + ord(enc[i]) - ord(key_c)) % 256)
+            dec.append(dec_c)
+        return "".join(dec)
+    
     def __str__(self): 
         return self.description

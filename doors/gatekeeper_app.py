@@ -92,11 +92,11 @@ if __name__ == "__main__":
         config = json.load(f)
         
     if not 'KEYMASTER_URL' in config:
-        raise ImproperlyConfigured("No KEYMASTER_URL in configuration")
+        raise Exception("No KEYMASTER_URL in configuration")
     if not 'KEYMASTER_KEY' in config:
-        raise ImproperlyConfigured("No KEYMASTER_KEY in configuration")
+        raise Exception("No KEYMASTER_KEY in configuration")
     if not 'CODE_KEY' in config:
-        raise ImproperlyConfigured("No CODE_KEY in configuration")
+        raise Exception("No CODE_KEY in configuration")
 
     # Pull the command line args
     config['initialSync'] = "--sync" in sys.argv
