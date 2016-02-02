@@ -30,18 +30,18 @@ There is a bug in the HID controllers that doesn't allow for this feature to wor
 
 ### Gatekeeper Setup
 
-* Generate an encrytion key:
+* Generate a keymaster encrytion key:
 `./manage.py generate_key`
 
 * Create your config file (nadine/doors/gw_config.json):
 
 ````
 {
-   "ENCRYPTION_KEY": "THE_KEY_YOU_GENERATED",
+   "KEYMASTER_KEY": "THE_KEY_YOU_GENERATED",
    "KEYMASTER_URL": "http://127.0.0.1:8000/doors/keymaster/",
    "KEYMASTER_POLL_DELAY_SEC": 5,
    "EVENT_POLL_DELAY_SEC": 20,
-   "EVENT_SYNC_COUNT": 100
+   "EVENT_SYNC_COUNT": 100,
 }
 ````
 

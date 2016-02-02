@@ -70,6 +70,12 @@ class EventWatcher(threading.Thread):
                         #print "EventWatcher: %s ?= %s" % (logs[0]['timestamp'], last_event_ts)
                         if logs[0]['timestamp'] != last_event_ts:
                             self.new_data = True
+                            
+                            # If this is the magic key, do some magic!
+                            event_code = logs[0].get('code', None)
+                            if gatekeeper.magic_key_code and gatekeeper.magic_key_code == event_code
+                                gatekeeper.magic_key(door_name)
+                            
                             break
                 if not self.new_data:
                     print("EventWatcher: No new event logs")

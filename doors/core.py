@@ -223,42 +223,58 @@ class DoorController(object):
     def pull_events(self, recordCount):
         """Pull the requested number of the most door events."""
 
+    @abc.abstractmethod
+    def is_locked(self):
+        """Return True if the door is locked."""
+
+    @abc.abstractmethod
+    def lock(self):
+        """Lock the door."""
+
+    @abc.abstractmethod
+    def unlock(self):
+        """Unlock the door."""
+
 
 class TestDoorController(DoorController):
 
     def test_connection(self):
-       """Tests the connection with the door."""
        return True
     
     def load_cardholders(self):
-        """Load the cardholder data from the door."""
         pass
     
     def set_time(self):
-        """Set the door time."""
         pass
     
     def load_credentials(self):
-        """Load the credential data from the door."""
         pass
     
     def clear_door_codes(self):
-        """Clear all data from the door."""
         pass
     
     def process_changes(self, change_list):
-        """Process the changes at the door."""
         pass
     
     def pull_events(self, recordCount):
-        """Pull the requested number of the most door events."""
         return []
+    
+    def is_locked(self):
+        return True
+    
+    def lock(self):
+        pass
+    
+    def unlock(self):
+        pass
 
 
 class Gatekeeper(object):
     def __init__(self, config):
         self.encrypted_connection = EncryptedConnection(config['KEYMASTER_KEY'], config['KEYMASTER_URL'])
         self.code_key = config['KEYMASTER_KEY']
+        self.event_count = config.get('EVENT_SYNC_COUNT', 100)
+        self.magic_key_code = config.get('MAGIC_KEY', None)
     
     def get_connection(self):
         return self.encrypted_connection
@@ -333,8 +349,10 @@ class Gatekeeper(object):
             logger.debug("Changes: %s: " % changes)
             controller.process_changes(changes)
     
-    def pull_event_logs(self, record_count=100):
+    def pull_event_logs(self, record_count=-1):
         print "Gatekeeper: Pulling event logs..."
+        if record_count <= 0:
+            record_count = self.event_count
         event_logs = {}
         for door_name, door in self.get_doors().items():
             print "Gatekeeper: Pulling %d logs from '%s'" % (record_count, door_name)
@@ -343,8 +361,10 @@ class Gatekeeper(object):
             event_logs[door_name] = door_logs
         return event_logs
     
-    def push_event_logs(self, record_count=100):
+    def push_event_logs(self, record_count=-1):
         print "Gatekeeper: Pushing event logs to keymaster..."
+        if record_count <= 0:
+            record_count = self.event_count
         event_logs = self.pull_event_logs(record_count)
         json_data = json.dumps(event_logs)
         response = self.encrypted_connection.send_message(Messages.PUSH_EVENT_LOGS, data=json_data)
@@ -354,7 +374,18 @@ class Gatekeeper(object):
         # Reconfigure the doors to get the latest timestamps
         self.configure_doors()
     
+    def magic_key(self, door_name):
+        door = self.get_door(door_name)
+        controller = door['controller']
+        if controller.is_locked():
+            controller.unlock()
+        else:
+            controller.lock()
+    
     def encode_door_code(self, clear):
+        if not self.code_key:
+            return clear
+        
         enc = []
         for i in range(len(clear)):
             key_c = self.code_key[i % len(self.code_key)]
@@ -364,6 +395,9 @@ class Gatekeeper(object):
         return e[::-1][1:]
 
     def decode_door_code(self, enc):
+        if not self.code_key:
+            return enc
+            
         dec = []
         enc = base64.urlsafe_b64decode(enc[::-1] + "=")
         for i in range(len(enc)):

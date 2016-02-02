@@ -183,6 +183,19 @@ class HIDDoorController(DoorController):
             event_dict['cardHolder'] = cardholder
 
         return event_dict
+    
+    def is_locked(self):
+        door_xml = self.__send_xml(list_doors())
+        relay = get_attribute(door_xml, "relayState")
+        return relay and relay == "set"
+    
+    def lock(self):
+        xml = door_command_xml("lockDoor")
+        self.__send_xml(xml)
+    
+    def unlock(self):
+        xml = door_command_xml("unlockDoor")
+        self.__send_xml(xml)
 
 
 ###############################################################################################################
