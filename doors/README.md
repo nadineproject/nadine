@@ -37,13 +37,17 @@ There is a bug in the HID controllers that doesn't allow for this feature to wor
 
 ````
 {
-   "KEYMASTER_KEY": "THE_KEY_YOU_GENERATED",
+   "KEYMASTER_SECRET": "THE_KEY_YOU_GENERATED",
    "KEYMASTER_URL": "http://127.0.0.1:8000/doors/keymaster/",
    "KEYMASTER_POLL_DELAY_SEC": 5,
    "EVENT_POLL_DELAY_SEC": 20,
    "EVENT_SYNC_COUNT": 100,
 }
 ````
+
+* Add optional config attributes
+  * CARD_SECRET = If set this private key is used to encode door keys before sending them off to the keymaster
+  * MAGIC_KEY = A key code that will toggle the lock for any given door
 
 * Install neccessary libraries:
 `pip install flask cryptography requests`

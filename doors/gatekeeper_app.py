@@ -92,10 +92,10 @@ if __name__ == "__main__":
         
     if not 'KEYMASTER_URL' in config:
         raise Exception("No KEYMASTER_URL in configuration")
-    if not 'KEYMASTER_KEY' in config:
-        raise Exception("No KEYMASTER_KEY in configuration")
-    if not 'CODE_KEY' in config:
-        raise Exception("No CODE_KEY in configuration")
+    if not 'KEYMASTER_SECRET' in config:
+        raise Exception("No KEYMASTER_SECRETin configuration")
+    if not 'CARD_SECRET' in config:
+        raise Exception("No CARD_SECRET in configuration")
 
     # Pull the command line args
     config['initialSync'] = "--sync" in sys.argv

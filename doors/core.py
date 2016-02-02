@@ -271,8 +271,8 @@ class TestDoorController(DoorController):
 
 class Gatekeeper(object):
     def __init__(self, config):
-        self.encrypted_connection = EncryptedConnection(config['KEYMASTER_KEY'], config['KEYMASTER_URL'])
-        self.code_key = config['KEYMASTER_KEY']
+        self.encrypted_connection = EncryptedConnection(config['KEYMASTER_SECRET'], config['KEYMASTER_URL'])
+        self.card_secret = config.get('CARD_SECRET', None)
         self.event_count = config.get('EVENT_SYNC_COUNT', 100)
         self.magic_key_code = config.get('MAGIC_KEY', None)
     
@@ -339,7 +339,7 @@ class Gatekeeper(object):
             door.clear_door_codes()
     
     def pull_door_codes(self):
-        print "Gatekeeper: Pulling door codes..."
+        print "Gatekeeper: Pulling door codes from the keymaster..."
         response = self.encrypted_connection.send_message(Messages.PULL_DOOR_CODES)
         doorcode_json = json.loads(response)
         logger.debug(doorcode_json)
@@ -350,7 +350,7 @@ class Gatekeeper(object):
             controller.process_changes(changes)
     
     def pull_event_logs(self, record_count=-1):
-        print "Gatekeeper: Pulling event logs..."
+        print "Gatekeeper: Pulling event logs from the doors..."
         if record_count <= 0:
             record_count = self.event_count
         event_logs = {}
@@ -383,25 +383,19 @@ class Gatekeeper(object):
             controller.lock()
     
     def encode_door_code(self, clear):
-        if not self.code_key:
-            return clear
-        
         enc = []
         for i in range(len(clear)):
-            key_c = self.code_key[i % len(self.code_key)]
+            key_c = self.card_secret[i % len(self.card_secret)]
             enc_c = chr((ord(clear[i]) + ord(key_c)) % 256)
             enc.append(enc_c)
         e = base64.urlsafe_b64encode("".join(enc))
         return e[::-1][1:]
 
     def decode_door_code(self, enc):
-        if not self.code_key:
-            return enc
-            
         dec = []
         enc = base64.urlsafe_b64decode(enc[::-1] + "=")
         for i in range(len(enc)):
-            key_c = self.code_key[i % len(self.code_key)]
+            key_c = self.card_secret[i % len(self.card_secret)]
             dec_c = chr((256 + ord(enc[i]) - ord(key_c)) % 256)
             dec.append(dec_c)
         return "".join(dec)

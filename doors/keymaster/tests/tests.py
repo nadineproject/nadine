@@ -47,10 +47,10 @@ class KeymasterTestCase(TestCase):
 
 class GatekeeperTestCase(TestCase):
     def get_config(self):
-        return { "CODE_KEY": Fernet.generate_key(),
-                  "KEYMASTER_KEY": Fernet.generate_key(),
-                  "KEYMASTER_URL": "http://127.0.0.1:8000/doors/keymaster/",
-                }
+        return { "CARD_SECRET": Fernet.generate_key(),
+                 "KEYMASTER_SECRET": Fernet.generate_key(),
+                 "KEYMASTER_URL": "http://127.0.0.1:8000/doors/keymaster/",
+               }
     
     def test_config(self):
         bad_config = {}
