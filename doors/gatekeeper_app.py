@@ -64,8 +64,7 @@ class GatekeeperApp(object):
                         heartbeat.all_clear()
                     
                     if event_watcher.new_data:
-                        cnt = config.get('EVENT_SYNC_COUNT', 100)
-                        gatekeeper.push_event_logs(record_count=cnt)
+                        gatekeeper.push_event_logs()
                         event_watcher.all_clear()
                     
                     time.sleep(.1)
