@@ -27,10 +27,15 @@ class Heartbeat(threading.Thread):
                     self.new_data = True
                 else:
                     print("Heartbeat: No new door codes")
+                
+                # Mark this connection successfull
+                response = self.connection.send_message(Messages.MARK_SUCCESS)
+                if not response == Messages.SUCCESS_RESPONSE:
+                    raise Exception("Heartbeat: Did not receive proper success response!")
             
 
     def all_clear(self):
-        response = self.connection.send_message(Messages.MARK_SUCCESS)
+        response = self.connection.send_message(Messages.MARK_SYNC)
         if not response == Messages.SUCCESS_RESPONSE:
             raise Exception("Heartbeat: Did not receive proper success response!")
         self.new_data = False

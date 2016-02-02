@@ -116,6 +116,8 @@ class Keymaster(models.Model):
         return Messages.SUCCESS_RESPONSE
 
     def mark_sync(self):
+        # A successfull sync is a success
+        self.success_ts = timezone.now()
         self.sync_ts = timezone.now()
         self.save()
 

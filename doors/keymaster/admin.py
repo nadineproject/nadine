@@ -8,7 +8,7 @@ class KeymasterAdmin(admin.ModelAdmin):
             km.force_sync()
         self.message_user(request, "Sync will be forced on next contact from the gatekeeper")
 
-    list_display = ('description', 'gatekeeper_ip', 'access_ts', 'sync_ts', 'is_enabled')
+    list_display = ('description', 'gatekeeper_ip', 'access_ts', 'success_ts', 'sync_ts', 'is_enabled')
     search_fields = ('gatekeeper_ip', 'is_enabled')
     actions = ["force_sync", ]
 

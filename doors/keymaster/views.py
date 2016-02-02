@@ -161,6 +161,9 @@ def keymaster(request):
         elif incoming_message == Messages.MARK_SUCCESS:
             keymaster.mark_success()
             outgoing_message = Messages.SUCCESS_RESPONSE
+        elif incoming_message == Messages.MARK_SYNC:
+            keymaster.mark_sync()
+            outgoing_message = Messages.SUCCESS_RESPONSE
         else:
             raise Exception("Invalid Message")
         logger.debug("Outgoing Message: '%s' " % outgoing_message)

@@ -14,25 +14,57 @@ nav #doors-tab { background: #FBD850; color: black; }
 {% endif %}
 
 {% for keymaster in keymasters %}
-<h3>{{ keymaster.description }}</h3>
-<div style="padding:10px;">
-	<div><strong>Gatekeeper:</strong> {{ keymaster.gatekeeper_ip }}</div>
-	<div><strong>Last sync:</strong> {{ keymaster.sync_ts }}</div>
-	<div>
-		<strong>Last access:</strong> {{ keymaster.access_ts }}
-		{% if keymaster.access_ts < twoMinutesAgo %}
-			<span class="ui-state-error">INACTIVE</span>
-		{% endif %}
-	</div>
-	<div>
-		<strong>Recent Events:</strong>
-		<ul>
-			{% for event in events %}
-				<li>{{ event.timestamp }}: {{ event.event_description }}</li>
-			{% endfor %}
-		</ul>
-	</div>
-</div>
+	<h3>{{ keymaster.description }}</h3>
+	<table>
+		<tr>
+			<th>Time</th>
+			<th>Description</th>
+			<th>User</th>
+			<th>Code</th>
+			<th></th>
+		</tr>
+		{% for event in events %}
+			<tr>
+				<td nowrap>{{ event.timestamp }}</td>
+				<td>{{ event.event_description }}</td>
+				<td>
+					{% if event.user %}
+						<a href="{% url 'doors.keymaster.views.user_keys' event.user.username %}">{{ event.user }}</a>
+					{% endif %}
+				</td>
+				<td>
+					{% if event.code %}
+						{{ event.code }}
+					{% endif %}
+				</td>
+				<td></td>
+			</tr>
+		{% endfor %}
+	</table>
+
+	<p></p>
+
+	<h4>Gatekeeper Health</h4>
+	<table>
+		<tr>
+			<th></th>
+			<th>Last Access</th>
+			<th>Success</th>
+			<th>Full Sync</th>
+			<th></th>
+		</tr>
+		<tr>
+			<td>
+				{% if keymaster.access_ts < twoMinutesAgo %}
+					<span class="ui-state-error">INACTIVE</span>
+				{% endif %}
+			</td>
+			<td>{{ keymaster.access_ts }}</td>
+			<td>{{ keymaster.success_ts }}</td>
+			<td>{{ keymaster.sync_ts }}</td>
+			<td></td>
+		</tr>
+	</table>
 {% endfor %}
 
 {% endblock %}
