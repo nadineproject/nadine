@@ -155,11 +155,11 @@ class HIDDoorController(DoorController):
     def get_event_detail(self, event_dict):
         hid_event_code = event_dict.get('eventType')
         if hid_event_code == "1022":
-            description = "Card Not Found (%s) " % event_dict.get('rawCardNumber')
+            description = "Card Not Found"
             event_dict['cardNumber'] = event_dict.get('rawCardNumber')
             door_event_type = DoorEventTypes.UNRECOGNIZED
         elif hid_event_code == "2036" or hid_event_code == "2043":
-            description = "Access Denied (%s) " % event_dict.get('rawCardNumber')
+            description = "Access Denied"
             event_dict['cardNumber'] = event_dict.get('rawCardNumber')
             door_event_type = DoorEventTypes.DENIED
         elif hid_event_code == "2020" or hid_event_code == "2021":
