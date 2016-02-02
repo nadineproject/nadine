@@ -106,7 +106,7 @@ def test_door(request):
     if len(xml_request) > 0:
         start_ts = timezone.now()
         controller = DoorController(ip_address, username, password)
-        response_code, xml_response = controller.send_xml_str(xml_request)
+        response_code, xml_response = controller.__send_xml_str(xml_request)
         response_time = timezone.now() - start_ts
         print "response code: %d, response time: %s" % (response_code, response_time)
     else:

@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class HIDDoorController(DoorController):
 
-    def send_xml_str(self, xml_str):
+    def __send_xml_str(self, xml_str):
         logger.debug("Sending: %s" % xml_str)
 
         xml_data = urllib.urlencode({'XML': xml_str})
@@ -38,17 +38,17 @@ class HIDDoorController(DoorController):
 
         return return_xml
 
-    def send_xml(self, xml):
+    def __send_xml(self, xml):
         xml_str = ElementTree.tostring(xml, encoding='utf8', method='xml')
-        return self.send_xml_str(xml_str)
+        return self.__send_xml_str(xml_str)
 
     def test_connection(self):
         test_xml = list_doors()
-        self.send_xml(test_xml)
+        self.__send_xml(test_xml)
 
     def set_time(self):
         set_time_xml = set_time()
-        self.send_xml(set_time_xml)
+        self.__send_xml(set_time_xml)
 
     def load_cardholders(self):
         self.clear_data()
@@ -57,7 +57,7 @@ class HIDDoorController(DoorController):
         moreRecords = True
         while moreRecords:
             #logger.debug("offset: %d, count: %d" % (offset, count))
-            xml_str = self.send_xml(list_cardholders(offset, count))
+            xml_str = self.__send_xml(list_cardholders(offset, count))
             xml = ElementTree.fromstring(xml_str)
             for child in xml[0]:
                 person = child.attrib
@@ -81,7 +81,7 @@ class HIDDoorController(DoorController):
         count = 10
         moreRecords = True
         while moreRecords:
-            xml_str = self.send_xml(list_credentials(offset, count))
+            xml_str = self.__send_xml(list_credentials(offset, count))
             xml = ElementTree.fromstring(xml_str)
             for child in xml[0]:
                 card = child.attrib
@@ -111,48 +111,48 @@ class HIDDoorController(DoorController):
             logger.debug("%s: %s" % (action, change.get('full_name')))
             if action == 'add':
                 logger.debug("")
-                self.add_cardholder(change.get('forname'), change.get('surname'), change.get('username'), change.get('new_code'))
+                self.__add_cardholder(change.get('forname'), change.get('surname'), change.get('username'), change.get('new_code'))
             elif action == 'change':
-                self.change_cardholder(change.get('cardholderID'), change.get('cardNumber'), change.get('new_code'))
+                self.__change_cardholder(change.get('cardholderID'), change.get('cardNumber'), change.get('new_code'))
             elif action == 'delete':
-                self.delete_cardholder(change.get('cardholderID'), change.get('cardNumber'))
+                self.__delete_cardholder(change.get('cardholderID'), change.get('cardNumber'))
                 pass
 
-    def add_cardholder(self, forname, surname, username, cardNumber):
-        response = self.send_xml(create_cardholder(forname, surname, username))
+    def __add_cardholder(self, forname, surname, username, cardNumber):
+        response = self.__send_xml(create_cardholder(forname, surname, username))
         cardholderID = get_attribute(response, 'cardholderID')
         logger.debug("New Cardholder: username: %s, cardholderID: %s" % (username, cardholderID))
-        self.send_xml(create_credential(cardNumber))
-        self.send_xml(assign_credential(cardholderID, cardNumber))
-        self.send_xml(add_roleset(cardholderID))
+        self.__send_xml(create_credential(cardNumber))
+        self.__send_xml(assign_credential(cardholderID, cardNumber))
+        self.__send_xml(add_roleset(cardholderID))
 
-    def change_cardholder(self, cardholderID, oldCardNumber, newCardNumber):
+    def __change_cardholder(self, cardholderID, oldCardNumber, newCardNumber):
         if oldCardNumber:
-            self.send_xml(delete_credential(oldCardNumber))
-        self.send_xml(create_credential(newCardNumber))
-        self.send_xml(assign_credential(cardholderID, newCardNumber))
+            self.__send_xml(delete_credential(oldCardNumber))
+        self.__send_xml(create_credential(newCardNumber))
+        self.__send_xml(assign_credential(cardholderID, newCardNumber))
 
-    def delete_cardholder(self, cardholderID, cardNumber):
+    def __delete_cardholder(self, cardholderID, cardNumber):
         if cardNumber:
-            self.send_xml(delete_credential(cardNumber))
-        self.send_xml(delete_cardholder(cardholderID))
+            self.__send_xml(delete_credential(cardNumber))
+        self.__send_xml(delete_cardholder(cardholderID))
 
     def pull_events(self, recordCount):
         # First pull the overview to get the current recordmarker and timestamp
-        event_xml_str = self.send_xml(list_events())
+        event_xml_str = self.__send_xml(list_events())
         event_xml = ElementTree.fromstring(event_xml_str)
         rm = event_xml[0].attrib['currentRecordMarker']
         ts = event_xml[0].attrib['currentTimestamp']
 
         events = []
-        event_xml_str = self.send_xml(list_events(recordCount, rm, ts))
+        event_xml_str = self.__send_xml(list_events(recordCount, rm, ts))
         event_xml = ElementTree.fromstring(event_xml_str)
         for child in event_xml[0]:
-            event = self.get_event_detail(child.attrib)
+            event = self.__get_event_detail(child.attrib)
             events.append(event)
         return events
 
-    def get_event_detail(self, event_dict):
+    def __get_event_detail(self, event_dict):
         hid_event_code = event_dict.get('eventType')
         if hid_event_code == "1022":
             description = "Card Not Found"
@@ -185,246 +185,6 @@ class HIDDoorController(DoorController):
         return event_dict
 
 
-# Depricated
-# class DoorController(object):
-#
-#     def __init__(self, ip_address, username, password):
-#         self.door_ip = ip_address
-#         self.door_user = username
-#         self.door_pass = password
-#         self.clear_data()
-#
-#     def clear_data(self):
-#         self.cardholders_by_id = {}
-#         self.cardholders_by_username = {}
-#
-#     def door_url(self):
-#         door_url = "https://%s/cgi-bin/vertx_xml.cgi" % self.door_ip
-#         return door_url
-#
-#     def send_xml_str(self, xml_str):
-#         logger.debug("Sending: %s" % xml_str)
-#
-#         xml_data = urllib.urlencode({'XML': xml_str})
-#         request = urllib2.Request(self.door_url(), xml_data)
-#         base64string = base64.encodestring('%s:%s' % (self.door_user, self.door_pass)).replace('\n', '')
-#         request.add_header("Authorization", "Basic %s" % base64string)
-#         context = ssl._create_unverified_context()
-#         context.set_ciphers('RC4-SHA')
-#
-#         result = urllib2.urlopen(request, context=context)
-#         return_code = result.getcode()
-#         return_xml = result.read()
-#         result.close()
-#
-#         logger.debug("Response code: %d" % return_code)
-#         logger.debug("Response: %s" % return_xml)
-#         if return_code != 200:
-#             raise Exception("Did not receive 200 return code")
-#         error = get_attribute(return_xml, "errorMessage")
-#         if error:
-#             raise Exception("Received an error: %s" % error)
-#
-#         return return_xml
-#
-#     def send_xml(self, xml):
-#         xml_str = ElementTree.tostring(xml, encoding='utf8', method='xml')
-#         return self.send_xml_str(xml_str)
-#
-#     def test_connection(self):
-#         test_xml = list_doors()
-#         self.send_xml(test_xml)
-#
-#     def set_time(self):
-#         set_time_xml = set_time()
-#         self.send_xml(set_time_xml)
-#
-#     def save_cardholder(self, cardholder):
-#         if 'cardholderID' in cardholder:
-#             self.cardholders_by_id[cardholder.get('cardholderID')] = cardholder
-#         if 'username' in cardholder:
-#             self.cardholders_by_username[cardholder.get('username')] = cardholder
-#
-#     def load_cardholders(self):
-#         self.clear_data()
-#         offset = 0
-#         count = 10
-#         moreRecords = True
-#         while moreRecords:
-#             #logger.debug("offset: %d, count: %d" % (offset, count))
-#             xml_str = self.send_xml(list_cardholders(offset, count))
-#             xml = ElementTree.fromstring(xml_str)
-#             for child in xml[0]:
-#                 person = child.attrib
-#                 cardholderID = person['cardholderID']
-#                 person['full_name'] = "%s %s " % (person['forename'], person['surname'])
-#                 if 'custom1' in person:
-#                     username = person['custom1']
-#                     person['username'] = username
-#                 self.save_cardholder(person)
-#             returned = int(xml[0].attrib['recordCount'])
-#             logger.debug("returned: %d cardholders" % returned)
-#             if count > returned:
-#                 moreRecords = False
-#             else:
-#                 offset = offset + count
-#
-#     def get_cardholder_by_id(self, cardholderID):
-#         if cardholderID in self.cardholders_by_id:
-#             return self.cardholders_by_id[cardholderID]
-#         return None
-#
-#     def get_cardholder_by_username(self, username):
-#         if username in self.cardholders_by_username:
-#             return self.cardholders_by_username[username]
-#         return None
-#
-#     def load_credentials(self):
-#         # This method pulls all the credentials and infuses the cardholders with their card numbers.
-#         self.load_cardholders()
-#         offset = 0
-#         count = 10
-#         moreRecords = True
-#         while moreRecords:
-#             xml_str = self.send_xml(list_credentials(offset, count))
-#             xml = ElementTree.fromstring(xml_str)
-#             for child in xml[0]:
-#                 card = child.attrib
-#                 if 'cardholderID' in card:
-#                     cardholderID = card.get('cardholderID')
-#                     cardNumber = card.get('rawCardNumber')
-#                     cardholder = self.get_cardholder_by_id(cardholderID)
-#                     if cardholder:
-#                         cardholder['cardNumber'] = cardNumber
-#             returned = int(xml[0].attrib['recordCount'])
-#             logger.debug("returned: %d credentials" % returned)
-#             if count > returned:
-#                 moreRecords = False
-#             else:
-#                 offset = offset + count
-#         logger.debug(self.cardholders_by_id)
-#
-#     def clear_door_codes(self):
-#         self.load_credentials()
-#         for cardholderID, cardholder in self.cardholders_by_id.items():
-#             cardNumber = cardholder.get('cardNumber')
-#             self.delete_cardholder(cardholderID, cardNumber)
-#
-#     def process_door_codes(self, door_codes, load_credentials=True):
-#         if load_credentials:
-#             self.load_credentials()
-#
-#         changes = []
-#         for new_code in door_codes:
-#             username = new_code.get('username')
-#             cardholder = self.get_cardholder_by_username(username)
-#             #print "username: %s, cardholder: %s" % (username, cardholder)
-#             if cardholder:
-#                 card_number = cardholder.get('cardNumber')
-#                 if card_number and card_number != new_code.get('code'):
-#                     cardholder['action'] = 'change'
-#                     cardholder['new_code'] = new_code['code']
-#                     changes.append(cardholder)
-#                 else:
-#                     cardholder['action'] = 'no_change'
-#             else:
-#                 new_cardholder = {'action':'add', 'username':username}
-#                 new_cardholder['forname'] = new_code.get('first_name')
-#                 new_cardholder['surname'] = new_code.get('last_name')
-#                 new_cardholder['full_name'] = "%s %s" % (new_code.get('first_name'), new_code.get('last_name'))
-#                 new_cardholder['new_code'] = new_code.get('code')
-#                 changes.append(new_cardholder)
-#
-#         # Now loop through all the cardholders and any that don't have an action
-#         # are in the controller but not in the given list.  Remove them.
-#         for cardholder in self.cardholders_by_id.values():
-#             if not 'action' in cardholder:
-#                 cardholder['action'] = 'delete'
-#                 changes.append(cardholder)
-#
-#         return changes
-#
-#     def process_changes(self, change_list):
-#         for change in change_list:
-#             action = change.get('action')
-#             logger.debug("%s: %s" % (action, change.get('full_name')))
-#             if action == 'add':
-#                 logger.debug("")
-#                 self.add_cardholder(change.get('forname'), change.get('surname'), change.get('username'), change.get('new_code'))
-#             elif action == 'change':
-#                 self.change_cardholder(change.get('cardholderID'), change.get('cardNumber'), change.get('new_code'))
-#             elif action == 'delete':
-#                 self.delete_cardholder(change.get('cardholderID'), change.get('cardNumber'))
-#                 pass
-#
-#     def add_cardholder(self, forname, surname, username, cardNumber):
-#         response = self.send_xml(create_cardholder(forname, surname, username))
-#         cardholderID = get_attribute(response, 'cardholderID')
-#         logger.debug("New Cardholder: username: %s, cardholderID: %s" % (username, cardholderID))
-#         self.send_xml(create_credential(cardNumber))
-#         self.send_xml(assign_credential(cardholderID, cardNumber))
-#         self.send_xml(add_roleset(cardholderID))
-#
-#     def change_cardholder(self, cardholderID, oldCardNumber, newCardNumber):
-#         if oldCardNumber:
-#             self.send_xml(delete_credential(oldCardNumber))
-#         self.send_xml(create_credential(newCardNumber))
-#         self.send_xml(assign_credential(cardholderID, newCardNumber))
-#
-#     def delete_cardholder(self, cardholderID, cardNumber):
-#         if cardNumber:
-#             self.send_xml(delete_credential(cardNumber))
-#         self.send_xml(delete_cardholder(cardholderID))
-#
-#     def pull_events(self, recordCount):
-#         # First pull the overview to get the current recordmarker and timestamp
-#         event_xml_str = self.send_xml(list_events())
-#         event_xml = ElementTree.fromstring(event_xml_str)
-#         rm = event_xml[0].attrib['currentRecordMarker']
-#         ts = event_xml[0].attrib['currentTimestamp']
-#
-#         events = []
-#         event_xml_str = self.send_xml(list_events(recordCount, rm, ts))
-#         event_xml = ElementTree.fromstring(event_xml_str)
-#         for child in event_xml[0]:
-#             event = self.get_event_detail(child.attrib)
-#             events.append(event)
-#         return events
-#
-#     def get_event_detail(self, event_dict):
-#         from core import DoorEventTypes
-#         hid_event_code = event_dict.get('eventType')
-#         if hid_event_code == "1022":
-#             description = "Card Not Found (%s) " % event_dict.get('rawCardNumber')
-#             event_dict['cardNumber'] = event_dict.get('rawCardNumber')
-#             door_event_type = DoorEventTypes.UNRECOGNIZED
-#         elif hid_event_code == "2036" or hid_event_code == "2043":
-#             description = "Access Denied (%s) " % event_dict.get('rawCardNumber')
-#             event_dict['cardNumber'] = event_dict.get('rawCardNumber')
-#             door_event_type = DoorEventTypes.DENIED
-#         elif hid_event_code == "2020" or hid_event_code == "2021":
-#             description = "Access Granted (%s %s)" % (event_dict.get('forename'), event_dict.get('surname'))
-#             door_event_type = DoorEventTypes.GRANTED
-#         elif hid_event_code == "4036" or hid_event_code == "12032":
-#             description = "Door Unlocked"
-#             door_event_type = DoorEventTypes.UNLOCKED
-#         elif hid_event_code == "4035" or hid_event_code == "12033":
-#             description = "Door Locked"
-#             door_event_type = DoorEventTypes.LOCKED
-#         else:
-#             description = event_details.get(hid_event_code)
-#             door_event_type = DoorEventTypes.UNKNOWN
-#         event_dict['description'] = description
-#         event_dict['door_event_type'] = door_event_type
-#
-#         cardholder = self.get_cardholder_by_id(event_dict.get('cardholderID'))
-#         if cardholder:
-#             event_dict['cardNumber'] = cardholder.get('cardNumber')
-#             event_dict['cardHolder'] = cardholder
-#
-#         return event_dict
-
-
 ###############################################################################################################
 # Helper Functions
 ###############################################################################################################
@@ -438,17 +198,7 @@ def get_attribute(xml_str, attribute):
 
 def send_xml(ip_address, username, password, xml_str):
     controller = DoorController(ip_address, username, password)
-    return controller.send_xml_str(xml_str)
-
-# def unlockDoor():
-#     xml = door_command_xml("unlockDoor")
-#     controller = DoorController()
-#     return controller.send_xml(xml)
-#
-# def lockDoor():
-#     xml = door_command_xml("lockDoor")
-#     controller = DoorController()
-#     return controller.send_xml(xml)
+    return controller.__send_xml_str(xml_str)
 
 ###############################################################################################################
 # Base XML Functions
