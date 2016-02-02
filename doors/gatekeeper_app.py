@@ -8,11 +8,11 @@ from core import Messages, EncryptedConnection, Gatekeeper
 from threads import Heartbeat, EventWatcher
 
 class GatekeeperApp(object):
-    def run(self, config, syncClocks, initialSync, clearCodes):
+    def run(self, config):
         try:
             print "Starting up Gatekeeper..."
-            connection = EncryptedConnection(config['ENCRYPTION_KEY'], config['KEYMASTER_URL'])
-            gatekeeper = Gatekeeper(connection)
+            gatekeeper = Gatekeeper(config)
+            connection = gatekeeper.get_connection()
             
             # Test the connection
             if gatekeeper.test_keymaster_connection():
@@ -26,16 +26,16 @@ class GatekeeperApp(object):
             print "Configured %d doors" % len(gatekeeper.doors)
             
             # Set the time on each door
-            if syncClocks:
+            if config['syncClocks']:
                 gatekeeper.sync_clocks()
             
             # Clear out all the door codes if requested
-            if clearCodes:
+            if config['clearCodes']:
                 gatekeeper.clear_all_codes()
                 initialSync = True
             
             # Pull new data if requested
-            if initialSync:
+            if config['initialSync']:
                 gatekeeper.pull_door_codes()
                 gatekeeper.push_event_logs()
             
@@ -90,12 +90,19 @@ if __name__ == "__main__":
     # Pull the config
     with open('gw_config.json', 'r') as f:
         config = json.load(f)
-    
+        
+    if not 'KEYMASTER_URL' in config:
+        raise ImproperlyConfigured("No KEYMASTER_URL in configuration")
+    if not 'KEYMASTER_KEY' in config:
+        raise ImproperlyConfigured("No KEYMASTER_KEY in configuration")
+    if not 'CODE_KEY' in config:
+        raise ImproperlyConfigured("No CODE_KEY in configuration")
+
     # Pull the command line args
-    initialSync = "--sync" in sys.argv
-    syncClocks = "--set-time" in sys.argv
-    clearCodes = "--clear-all" in sys.argv
+    config['initialSync'] = "--sync" in sys.argv
+    config['syncClocks'] = "--set-time" in sys.argv
+    config['clearCodes'] = "--clear-all" in sys.argv
 
     # Start the application
     app = GatekeeperApp()
-    app.run(config, syncClocks, initialSync, clearCodes)
+    app.run(config)

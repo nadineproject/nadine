@@ -1,5 +1,6 @@
 import abc
 import json
+import base64
 import logging
 import requests
 import traceback
@@ -255,8 +256,12 @@ class TestDoorController(DoorController):
 
 
 class Gatekeeper(object):
-    def __init__(self, encrypted_connection):
-        self.encrypted_connection = encrypted_connection
+    def __init__(self, config):
+        self.encrypted_connection = EncryptedConnection(config['KEYMASTER_KEY'], config['KEYMASTER_URL'])
+        self.code_key = config['KEYMASTER_KEY']
+    
+    def get_connection(self):
+        return self.encrypted_connection
     
     def test_keymaster_connection(self):
         response = self.encrypted_connection.send_message(Messages.TEST_QUESTION)
