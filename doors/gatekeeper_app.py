@@ -67,6 +67,7 @@ class GatekeeperApp(object):
                         gatekeeper.push_event_logs()
                         event_watcher.all_clear()
                     
+                    sys.stdout.flush()
                     time.sleep(.1)
             except KeyboardInterrupt:
                 print " Keyboard Interupt!"
