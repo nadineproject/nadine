@@ -351,7 +351,10 @@ class Gatekeeper(object):
         print "Gatekeeper: Pulling door codes from the keymaster..."
         response = self.encrypted_connection.send_message(Messages.PULL_DOOR_CODES)
         doorcode_json = json.loads(response)
-        logger.debug(doorcode_json)
+        if self.magic_key_code:
+            # Inject our magic key in to the list of door codes
+            doorcode_json.append({'first_name':'Magic', 'last_name':'Key', 'username':'magickey', 'code':self.magic_key_code})
+        #logger.debug(doorcode_json)
         for door in self.get_doors().values():
             controller = door['controller']
             changes = controller.process_door_codes(doorcode_json)

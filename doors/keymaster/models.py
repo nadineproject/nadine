@@ -106,7 +106,7 @@ class Keymaster(models.Model):
                 if cardholder:
                     username = cardholder.get('username')
                     if username:
-                        user = User.objects.get(username=username)
+                        user = User.objects.filter(username=username).first()
                 elif not user and door_code:
                     c = DoorCode.objects.filter(code=door_code).first()
                     if c:
