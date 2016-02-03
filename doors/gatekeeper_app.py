@@ -40,6 +40,9 @@ class GatekeeperApp(object):
                 gatekeeper.push_event_logs()
             
             try:
+                # Start with a clean bowl
+                sys.stdout.flush()
+                
                 heartbeat = None
                 event_watcher = None
                 while True:
@@ -67,7 +70,6 @@ class GatekeeperApp(object):
                         gatekeeper.push_event_logs()
                         event_watcher.all_clear()
                     
-                    sys.stdout.flush()
                     time.sleep(.1)
             except KeyboardInterrupt:
                 print " Keyboard Interupt!"
