@@ -4,6 +4,7 @@ import base64
 import logging
 import requests
 import traceback
+import threading
 from datetime import datetime, time, date, timedelta
 
 from cryptography.fernet import Fernet
@@ -65,6 +66,7 @@ class EncryptedConnection(object):
         self.keymaster_url = keymaster_url
         self.message = None
         self.data = None
+        self.lock = threading.Lock()
 
     def decrypt_message(self, message):
         # If you are getting a blank exception when this runs it might be because the encrypted message
@@ -78,12 +80,19 @@ class EncryptedConnection(object):
         # Encrypt the message
         encrypted_message = self.encrypt_message(message)
         
-        # Send the message
+        # Build our request
         request_package = {'message':encrypted_message}
         if data:
             request_package['data'] = self.encrypt_message(data)
         #print "request: %s" % request_package
-        response = requests.post(self.keymaster_url, data=request_package)
+        
+        # Send the message
+        self.lock.acquire()
+        try:
+            #
+            response = requests.post(self.keymaster_url, data=request_package)
+        finally:
+            self.lock.release()
         
         # Process the response
         response_json = response.json()
@@ -228,11 +237,11 @@ class DoorController(object):
         """Return True if the door is locked."""
 
     @abc.abstractmethod
-    def lock(self):
+    def lock_door(self):
         """Lock the door."""
 
     @abc.abstractmethod
-    def unlock(self):
+    def unlock_door(self):
         """Unlock the door."""
 
 
@@ -262,10 +271,10 @@ class TestDoorController(DoorController):
     def is_locked(self):
         return True
     
-    def lock(self):
+    def lock_door(self):
         pass
     
-    def unlock(self):
+    def unlock_door(self):
         pass
 
 
@@ -375,12 +384,15 @@ class Gatekeeper(object):
         self.configure_doors()
     
     def magic_key(self, door_name):
+        print "Gatekeeper: Magic key triggered!"
         door = self.get_door(door_name)
         controller = door['controller']
         if controller.is_locked():
-            controller.unlock()
+            print "Gatekeeper: Unlocking door"
+            controller.unlock_door()
         else:
-            controller.lock()
+            print "Gatekeeper: Locking door"
+            controller.lock_door()
     
     def encode_door_code(self, clear):
         enc = []

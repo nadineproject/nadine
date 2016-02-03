@@ -1,4 +1,5 @@
 import logging
+import threading
 import ssl, urllib, urllib2, base64
 from datetime import datetime
 from xml.etree import ElementTree
@@ -13,6 +14,10 @@ logger = logging.getLogger(__name__)
 
 class HIDDoorController(DoorController):
 
+    def __init__(self, ip_address, username, password):
+        self.lock = threading.Lock()
+        super(HIDDoorController, self).__init__(ip_address, username, password)
+    
     def __send_xml_str(self, xml_str):
         logger.debug("Sending: %s" % xml_str)
 
@@ -23,10 +28,14 @@ class HIDDoorController(DoorController):
         context = ssl._create_unverified_context()
         context.set_ciphers('RC4-SHA')
 
-        result = urllib2.urlopen(request, context=context)
-        return_code = result.getcode()
-        return_xml = result.read()
-        result.close()
+        self.lock.acquire()
+        try:
+            result = urllib2.urlopen(request, context=context)
+            return_code = result.getcode()
+            return_xml = result.read()
+            result.close()
+        finally:
+            self.lock.release()
 
         logger.debug("Response code: %d" % return_code)
         logger.debug("Response: %s" % return_xml)
@@ -187,14 +196,14 @@ class HIDDoorController(DoorController):
     def is_locked(self):
         door_xml = self.__send_xml(list_doors())
         relay = get_attribute(door_xml, "relayState")
-        return relay and relay == "set"
+        return "set" == relay
     
-    def lock(self):
-        xml = door_command_xml("lockDoor")
+    def lock_door(self):
+        xml = door_command("lockDoor")
         self.__send_xml(xml)
     
-    def unlock(self):
-        xml = door_command_xml("unlockDoor")
+    def unlock_door(self):
+        xml = door_command("unlockDoor")
         self.__send_xml(xml)
 
 
