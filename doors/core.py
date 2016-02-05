@@ -338,7 +338,8 @@ class Gatekeeper(object):
         self.encrypted_connection = EncryptedConnection(config['KEYMASTER_SECRET'], config['KEYMASTER_URL'])
         self.card_secret = config.get('CARD_SECRET', None)
         self.event_count = config.get('EVENT_SYNC_COUNT', 100)
-        self.magic_key_code = config.get('MAGIC_KEY', None)
+        self.lock_key_code = config.get('LOCK_KEY', None)
+        self.unlock_key_code = config.get('UNLOCK_KEY', None)
         self.debug = config.get('DEBUG', False)
     
     def get_connection(self):
@@ -417,9 +418,13 @@ class Gatekeeper(object):
         print "Gatekeeper: Pulling door codes from the keymaster..."
         response = self.encrypted_connection.send_message(Messages.PULL_DOOR_CODES)
         doorcode_json = json.loads(response)
-        if self.magic_key_code:
-            # Inject our magic key in to the list of door codes
-            doorcode_json.append({'first_name':'Magic', 'last_name':'Key', 'username':'magickey', 'code':self.magic_key_code})
+        
+        # Inject our magic keys in to the list of door codes
+        if self.lock_key_code:
+            doorcode_json.append({'first_name':'Lock', 'last_name':'Key', 'username':'lockkey', 'code':self.lock_key_code})
+        if self.unlock_key_code:
+            doorcode_json.append({'first_name':'Unlock', 'last_name':'Key', 'username':'unlockkey', 'code':self.unlock_key_code})
+            
         for door in self.get_doors().values():
             controller = door['controller']
             changes = controller.process_door_codes(doorcode_json)
@@ -454,8 +459,20 @@ class Gatekeeper(object):
         # Reconfigure the doors to get the latest timestamps
         self.configure_doors()
     
-    def magic_key(self, door_name):
-        print "Gatekeeper: Magic key triggered!"
+    def magic_key_test(self, door_name, code):
+        print "Gatekeeper: Magic key test (%s)" % code
+        if code:
+            door = self.get_door(door_name)
+            controller = door['controller']
+            if code == self.unlock_key_code:
+                print "Gatekeeper: Unlocking door"
+                controller.unlock_door()
+            elif code == self.lock_key_code:
+                print "Gatekeeper: Locking door"
+                controller.lock_door()
+
+    def toggle_door(self, door_name):
+        print "Gatekeeper: Toggle Door!"
         door = self.get_door(door_name)
         controller = door['controller']
         if controller.is_locked():

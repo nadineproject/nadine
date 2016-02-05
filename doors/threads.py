@@ -69,11 +69,10 @@ class EventWatcher(threading.Thread):
                         last_event_ts = door.get("last_event_ts")
                         #print "EventWatcher: %s ?= %s" % (logs[0]['timestamp'], last_event_ts)
                         if logs[0]['timestamp'] != last_event_ts:
-                            # If this is the magic key, do some magic!
+                            # If this is one of our magic keys, do some magic!
                             cardNumber = logs[0].get('cardNumber', None)
-                            print "EventWatcher: Magic key test (%s ?= %s)" % (self.gatekeeper.magic_key_code, cardNumber)
-                            if self.gatekeeper.magic_key_code and self.gatekeeper.magic_key_code == cardNumber:
-                                self.gatekeeper.magic_key(door_name)
+                            #print "EventWatcher: Magic key test (%s)" % (cardNumber)
+                            self.gatekeeper.magic_key_test(door_name, cardNumber)
                             
                             self.new_data = True
                             break
