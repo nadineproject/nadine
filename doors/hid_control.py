@@ -102,6 +102,7 @@ class HIDDoorController(DoorController):
                     cardholder = self.get_cardholder_by_id(cardholderID)
                     if cardholder:
                         cardholder.code = cardNumber
+                        self.save_cardholder(cardholder)
             returned = int(xml[0].attrib['recordCount'])
             logger.debug("returned: %d credentials" % returned)
             if count > returned:

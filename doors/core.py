@@ -170,6 +170,7 @@ class CardHolder(object):
 class DoorController(object):
      
     def __init__(self, ip_address, username, password):
+        self.debug = False
         self.door_ip = ip_address
         self.door_user = username
         self.door_pass = password
@@ -187,8 +188,10 @@ class DoorController(object):
         self.cardholders_by_code = {}
     
     def save_cardholder(self, cardholder):
-        self.cardholders_by_id[cardholder.id] = cardholder
-        self.cardholders_by_code[cardholder.code] = cardholder
+        if not cardholder.id in self.cardholders_by_id:
+            self.cardholders_by_id[cardholder.id] = cardholder
+        if cardholder.code and not cardholder.code in self.cardholders_by_code:
+            self.cardholders_by_code[cardholder.code] = cardholder
     
     def get_cardholder_by_id(self, cardholderID):
         if cardholderID in self.cardholders_by_id:
@@ -201,6 +204,8 @@ class DoorController(object):
         return None
     
     def process_door_codes(self, door_codes, load_credentials=True):
+        print "DoorController: Processing door codes (%d)" % len(door_codes)
+        
         if load_credentials:
             self.load_credentials()
         
@@ -236,7 +241,8 @@ class DoorController(object):
     
     def process_changes(self, change_list):
         for c in change_list:
-            logger.debug("%s: %s" % (c.action, c.get_full_name()))
+            if self.debug:
+                print "DoorController: %s - %s" % (c.action.title(), c.get_full_name())
             if c.action == 'add':
                 self.add_cardholder(c)
             elif c.action == 'delete':
@@ -333,6 +339,7 @@ class Gatekeeper(object):
         self.card_secret = config.get('CARD_SECRET', None)
         self.event_count = config.get('EVENT_SYNC_COUNT', 100)
         self.magic_key_code = config.get('MAGIC_KEY', None)
+        self.debug = config.get('DEBUG', False)
     
     def get_connection(self):
         return self.encrypted_connection
@@ -347,7 +354,7 @@ class Gatekeeper(object):
         self.doors = {}
         configuration = self.encrypted_connection.send_message(Messages.PULL_CONFIGURATION)
         config_json = json.loads(configuration)
-        logger.debug("Configuration: %s" % config_json)
+            
         for door_info in config_json:
             name = door_info.get('name')
             door_type= door_info.get('door_type')
@@ -355,10 +362,14 @@ class Gatekeeper(object):
             username=door_info.get('username')
             password=door_info.get('password')
             
+            if self.debug:
+                print("Gatekeeper: %s = %s|%s|%s|%s" % (name, door_type, ip_address, username, password))
+            
             # Find our controller for this door
             if door_type == DoorTypes.HID:
                 from hid_control import HIDDoorController
                 controller = HIDDoorController(ip_address, username, password)
+                controller.debug = self.debug
             elif door_type == DoorTypes.TEST:
                 controller = TestDoorController(ip_address, username, password)
             else:
@@ -367,7 +378,12 @@ class Gatekeeper(object):
 
             print("Gatekeeper: Loading credentials for '%s'" % name)
             controller.load_credentials()
-            print controller.cardholders_by_id
+            if self.debug:
+                print("Gatekeeper: Printing credentials for '%s'" % name)
+                print("Gatekeeper: Number of cardholders = %d" % len(controller.cardholders_by_id))
+                for c in controller.cardholders_by_id.values():
+                    print "   " + str(c)
+                
             self.doors[name] = door_info
     
     def get_doors(self):
@@ -407,7 +423,10 @@ class Gatekeeper(object):
         for door in self.get_doors().values():
             controller = door['controller']
             changes = controller.process_door_codes(doorcode_json)
-            print("Gatekeeper: Changes (%s) = %s: " % (door.get('name'), changes))
+            if self.debug:
+                print("Gatekeeper: Changes for %s (%d): " % (door.get('name'), len(changes)))
+                for c in changes:
+                    print "   " + str(c)
             controller.process_changes(changes)
     
     def pull_event_logs(self, record_count=-1):
