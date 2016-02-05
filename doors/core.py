@@ -418,17 +418,22 @@ class Gatekeeper(object):
     def pull_door_codes(self):
         print "Gatekeeper: Pulling door codes from the keymaster..."
         response = self.encrypted_connection.send_message(Messages.PULL_DOOR_CODES)
-        doorcode_json = json.loads(response)
+        door_codes = json.loads(response)
         
         # Inject our magic keys in to the list of door codes
         if self.lock_key_code:
-            doorcode_json.append({'first_name':'Lock', 'last_name':'Key', 'username':'lockkey', 'code':self.lock_key_code})
+            door_codes.append({'first_name':'Lock', 'last_name':'Key', 'username':'lockkey', 'code':self.lock_key_code})
         if self.unlock_key_code:
-            doorcode_json.append({'first_name':'Unlock', 'last_name':'Key', 'username':'unlockkey', 'code':self.unlock_key_code})
-            
+            door_codes.append({'first_name':'Unlock', 'last_name':'Key', 'username':'unlockkey', 'code':self.unlock_key_code})
+
+        # Decode the doors coming from the keymaster if we have a card secret
+        if self.card_secret:
+            for c in door_codes:
+                c['code'] = self.decode_door_code(c['code'])
+        
         for door in self.get_doors().values():
             controller = door['controller']
-            changes = controller.process_door_codes(doorcode_json)
+            changes = controller.process_door_codes(door_codes)
             if self.debug:
                 print("Gatekeeper: Changes for %s (%d): " % (door.get('name'), len(changes)))
                 for c in changes:
@@ -443,8 +448,12 @@ class Gatekeeper(object):
         for door_name, door in self.get_doors().items():
             print "Gatekeeper: Pulling %d logs from '%s'" % (record_count, door_name)
             controller = door['controller']
-            door_logs = controller.pull_events(record_count)
-            event_logs[door_name] = door_logs
+            door_events = controller.pull_events(record_count)
+            if self.card_secret:
+                for e in door_events:
+                    if 'cardNumber' in e:
+                        e['cardNumber'] = self.encode_door_code(e['cardNumber'])
+            event_logs[door_name] = door_events
         return event_logs
     
     def push_event_logs(self, record_count=-1):
@@ -484,6 +493,7 @@ class Gatekeeper(object):
             controller.lock_door()
     
     def encode_door_code(self, clear):
+        if not clear: return None
         enc = []
         for i in range(len(clear)):
             key_c = self.card_secret[i % len(self.card_secret)]
@@ -493,8 +503,9 @@ class Gatekeeper(object):
         return e[::-1][1:]
 
     def decode_door_code(self, enc):
+        if not enc: return None
         dec = []
-        enc = base64.urlsafe_b64decode(enc[::-1] + "=")
+        enc = base64.urlsafe_b64decode(str(enc)[::-1] + "=")
         for i in range(len(enc)):
             key_c = self.card_secret[i % len(self.card_secret)]
             dec_c = chr((256 + ord(enc[i]) - ord(key_c)) % 256)
