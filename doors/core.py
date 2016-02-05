@@ -131,6 +131,26 @@ class EncryptedConnection(object):
         return self.message
 
 
+class CardHolder(object):
+    
+    def __init__(self, id, first_name, last_name, username, code):
+        self.id = id
+        self.first_name = first_name
+        self.last_name = last_name
+        self.username = username
+        self.code = code
+    
+    def get_full_name(self):
+        "%s %s" % (self.first_name, self.last_name)
+    
+    def is_same_person(self, cardholder):
+        if cardholder.first_name == self.first_name:
+            if cardholder.last_name == self.last_name:
+                if cardholder.username == self.username:
+                    return True
+        return False
+
+
 class DoorController(object):
      
     def __init__(self, ip_address, username, password):
@@ -138,67 +158,73 @@ class DoorController(object):
         self.door_user = username
         self.door_pass = password
         self.clear_data()
-
+    
     def door_url(self):
         door_url = "https://%s/cgi-bin/vertx_xml.cgi" % self.door_ip
         return door_url
-
+    
     def cardholder_count(self):
-        return len(self.cardholders_by_username)
-
+        return len(self.cardholders_by_id)
+    
     def clear_data(self):
         self.cardholders_by_id = {}
-        self.cardholders_by_username = {}
-
+        self.cardholders_by_code = {}
+    
     def save_cardholder(self, cardholder):
-        if 'cardholderID' in cardholder:
-            self.cardholders_by_id[cardholder.get('cardholderID')] = cardholder
-        if 'username' in cardholder:
-            self.cardholders_by_username[cardholder.get('username')] = cardholder
-
+        self.cardholders_by_id[cardholder.id] = cardholder
+        self.cardholders_by_code[cardholder.code] = cardholder
+    
     def get_cardholder_by_id(self, cardholderID):
         if cardholderID in self.cardholders_by_id:
             return self.cardholders_by_id[cardholderID]
         return None
-
-    def get_cardholder_by_username(self, username):
-        if username in self.cardholders_by_username:
-            return self.cardholders_by_username[username]
+    
+    def get_cardholder_by_code(self, code):
+        if code in self.cardholders_by_code:
+            return self.cardholders_by_code[code]
         return None
-
+    
     def process_door_codes(self, door_codes, load_credentials=True):
         if load_credentials:
             self.load_credentials()
-
+        
         changes = []
         for new_code in door_codes:
+            first_name = new_code.get('first_name')
+            last_name = new_code.get('last_name')
             username = new_code.get('username')
-            cardholder = self.get_cardholder_by_username(username)
-            #print "username: %s, cardholder: %s" % (username, cardholder)
+            code = new_code.get('code')
+            new_cardholder = CardHolder(None, first_name, last_name, username, code)
+            
+            cardholder = self.get_cardholder_by_code(code)
             if cardholder:
-                card_number = cardholder.get('cardNumber')
-                if card_number and card_number != new_code.get('code'):
-                    cardholder['action'] = 'change'
-                    cardholder['new_code'] = new_code['code']
-                    changes.append(cardholder)
+                if new_cardholder.is_same_person(cardholder):
+                    cardholder.action = 'no_change'
                 else:
-                    cardholder['action'] = 'no_change'
+                    cardholder.action = 'delete'
+                    changes.append(cardholder)
+                    new_cardholder.action = 'add'
+                    changes.append(new_cardholder)
             else:
-                new_cardholder = {'action':'add', 'username':username}
-                new_cardholder['forname'] = new_code.get('first_name')
-                new_cardholder['surname'] = new_code.get('last_name')
-                new_cardholder['full_name'] = "%s %s" % (new_code.get('first_name'), new_code.get('last_name'))
-                new_cardholder['new_code'] = new_code.get('code')
+                new_cardholder.action = 'add'
                 changes.append(new_cardholder)
         
         # Now loop through all the cardholders and any that don't have an action
         # are in the controller but not in the given list.  Remove them.
         for cardholder in self.cardholders_by_id.values():
-            if not 'action' in cardholder:
-                cardholder['action'] = 'delete'
+            if not hasattr(cardholder, "action"):
+                cardholder.action = 'delete'
                 changes.append(cardholder)
         
         return changes
+    
+    def process_changes(self, change_list):
+        for c in change_list:
+            logger.debug("%s: %s" % (c.action, c.get_full_name()))
+            if c.action == 'add':
+                self.add_cardholder(c)
+            elif c.action == 'delete':
+                self.delete_cardholder(c)
     
     ################################################################################
     # Abstract Methods
@@ -225,8 +251,12 @@ class DoorController(object):
         """Clear all data from the door."""
     
     @abc.abstractmethod
-    def process_changes(self, change_list):
-        """Process the changes at the door."""
+    def add_cardholder(self, cardholder):
+        """Add the given cardholder to the door."""
+    
+    @abc.abstractmethod
+    def delete_cardholder(self, cardholder):
+        """Delete the given cardholder from the door."""
 
     @abc.abstractmethod
     def pull_events(self, recordCount):
@@ -262,7 +292,10 @@ class TestDoorController(DoorController):
     def clear_door_codes(self):
         pass
     
-    def process_changes(self, change_list):
+    def add_cardholder(self, cardholder):
+        pass
+
+    def delete_cardholder(self, cardholder):
         pass
     
     def pull_events(self, recordCount):
@@ -345,7 +378,7 @@ class Gatekeeper(object):
         print "Gatekeeper: Clearing all door codes..."
         for door in self.get_doors().values():
             controller = door['controller']
-            door.clear_door_codes()
+            controller.clear_door_codes()
     
     def pull_door_codes(self):
         print "Gatekeeper: Pulling door codes from the keymaster..."

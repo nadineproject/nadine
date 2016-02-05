@@ -4,7 +4,7 @@ import ssl, urllib, urllib2, base64
 from datetime import datetime
 from xml.etree import ElementTree
 
-from core import DoorController, DoorEventTypes
+from core import CardHolder, DoorController, DoorEventTypes
 
 logger = logging.getLogger(__name__)
 
@@ -70,12 +70,14 @@ class HIDDoorController(DoorController):
             xml = ElementTree.fromstring(xml_str)
             for child in xml[0]:
                 person = child.attrib
-                cardholderID = person['cardholderID']
-                person['full_name'] = "%s %s " % (person['forename'], person['surname'])
-                if 'custom1' in person:
+                cardholderID = person.get('cardholderID')
+                first_name = person.get('forename')
+                last_name = person.get('surname')
+                username = person.get('username')
+                if not username and 'custom1' in person:
                     username = person['custom1']
-                    person['username'] = username
-                self.save_cardholder(person)
+                new_cardholder = CardHolder(cardholderID, first_name, last_name, username, None)
+                self.save_cardholder(new_cardholder)
             returned = int(xml[0].attrib['recordCount'])
             logger.debug("returned: %d cardholders" % returned)
             if count > returned:
@@ -99,7 +101,7 @@ class HIDDoorController(DoorController):
                     cardNumber = card.get('rawCardNumber')
                     cardholder = self.get_cardholder_by_id(cardholderID)
                     if cardholder:
-                        cardholder['cardNumber'] = cardNumber
+                        cardholder.code = cardNumber
             returned = int(xml[0].attrib['recordCount'])
             logger.debug("returned: %d credentials" % returned)
             if count > returned:
@@ -111,40 +113,32 @@ class HIDDoorController(DoorController):
     def clear_door_codes(self):
         self.load_credentials()
         for cardholderID, cardholder in self.cardholders_by_id.items():
-            cardNumber = cardholder.get('cardNumber')
-            self.delete_cardholder(cardholderID, cardNumber)
+            self.delete_cardholder(cardholder)
 
-    def process_changes(self, change_list):
-        for change in change_list:
-            action = change.get('action')
-            logger.debug("%s: %s" % (action, change.get('full_name')))
-            if action == 'add':
-                logger.debug("")
-                self.__add_cardholder(change.get('forname'), change.get('surname'), change.get('username'), change.get('new_code'))
-            elif action == 'change':
-                self.__change_cardholder(change.get('cardholderID'), change.get('cardNumber'), change.get('new_code'))
-            elif action == 'delete':
-                self.__delete_cardholder(change.get('cardholderID'), change.get('cardNumber'))
-                pass
-
-    def __add_cardholder(self, forname, surname, username, cardNumber):
-        response = self.__send_xml(create_cardholder(forname, surname, username))
+    def add_cardholder(self, cardholder):
+        first = cardholder.first_name
+        last = cardholder.last_name
+        username = cardholder.username
+        cardNumber = cardholder.code
+        response = self.__send_xml(create_cardholder(first, last, username))
         cardholderID = get_attribute(response, 'cardholderID')
+        cardholder.id = cardholderID
         logger.debug("New Cardholder: username: %s, cardholderID: %s" % (username, cardholderID))
         self.__send_xml(create_credential(cardNumber))
         self.__send_xml(assign_credential(cardholderID, cardNumber))
         self.__send_xml(add_roleset(cardholderID))
+        return cardholderID
 
-    def __change_cardholder(self, cardholderID, oldCardNumber, newCardNumber):
+    def change_cardholder(self, cardholderID, oldCardNumber, newCardNumber):
         if oldCardNumber:
             self.__send_xml(delete_credential(oldCardNumber))
         self.__send_xml(create_credential(newCardNumber))
         self.__send_xml(assign_credential(cardholderID, newCardNumber))
 
-    def __delete_cardholder(self, cardholderID, cardNumber):
-        if cardNumber:
-            self.__send_xml(delete_credential(cardNumber))
-        self.__send_xml(delete_cardholder(cardholderID))
+    def delete_cardholder(self, cardholder):
+        if cardholder.code:
+            self.__send_xml(delete_credential(cardholder.code))
+        self.__send_xml(delete_cardholder(cardholder.id))
 
     def pull_events(self, recordCount):
         # First pull the overview to get the current recordmarker and timestamp
