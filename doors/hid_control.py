@@ -182,8 +182,8 @@ class HIDDoorController(DoorController):
 
         cardholder = self.get_cardholder_by_id(event_dict.get('cardholderID'))
         if cardholder:
-            event_dict['cardNumber'] = cardholder.get('cardNumber')
-            event_dict['cardHolder'] = cardholder
+            event_dict['cardNumber'] = cardholder.code
+            event_dict['cardHolder'] = cardholder.to_dict()
 
         return event_dict
     

@@ -149,6 +149,14 @@ class CardHolder(object):
                 if cardholder.username == self.username:
                     return True
         return False
+    
+    def to_dict(self):
+        me_dict = {'first_name':self.first_name, 'last_name':self.last_name, 'username':self.username}
+        if self.id:
+            me_dict['id'] = self.id
+        if self.code:
+            me_dict['code'] = self.code
+        return me_dict
 
 
 class DoorController(object):
