@@ -141,7 +141,7 @@ class CardHolder(object):
         self.code = code
     
     def get_full_name(self):
-        "%s %s" % (self.first_name, self.last_name)
+        return "%s %s" % (self.first_name, self.last_name)
     
     def is_same_person(self, cardholder):
         if cardholder.first_name == self.first_name:
@@ -158,6 +158,14 @@ class CardHolder(object):
             me_dict['code'] = self.code
         return me_dict
 
+    def __repr__(self): 
+        id_str = ""
+        if self.id:
+            id_str = " (%s)" % self.id
+        action_str = ""
+        if hasattr(self, "action"):
+            action_str = " (%s)" % self.action
+        return "%s%s: %s%s" % (self.get_full_name(), id_str, self.code, action_str)
 
 class DoorController(object):
      
@@ -357,8 +365,9 @@ class Gatekeeper(object):
                 raise NotImplementedError
             door_info['controller'] = controller
 
-            logger.debug("Gatekeeper: Loading credentials for '%s'" % name)
+            print("Gatekeeper: Loading credentials for '%s'" % name)
             controller.load_credentials()
+            print controller.cardholders_by_id
             self.doors[name] = door_info
     
     def get_doors(self):
@@ -395,11 +404,10 @@ class Gatekeeper(object):
         if self.magic_key_code:
             # Inject our magic key in to the list of door codes
             doorcode_json.append({'first_name':'Magic', 'last_name':'Key', 'username':'magickey', 'code':self.magic_key_code})
-        #logger.debug(doorcode_json)
         for door in self.get_doors().values():
             controller = door['controller']
             changes = controller.process_door_codes(doorcode_json)
-            logger.debug("Changes: %s: " % changes)
+            print("Gatekeeper: Changes (%s) = %s: " % (door.get('name'), changes))
             controller.process_changes(changes)
     
     def pull_event_logs(self, record_count=-1):
