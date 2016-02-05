@@ -204,7 +204,8 @@ class DoorController(object):
         return None
     
     def process_door_codes(self, door_codes, load_credentials=True):
-        print "DoorController: Processing door codes (%d)" % len(door_codes)
+        if self.debug:
+            print "DoorController: Processing door codes (%d)" % len(door_codes)
         
         if load_credentials:
             self.load_credentials()
