@@ -57,14 +57,20 @@ nav #doors-tab { background: #FBD850; color: black; }
 		</tr>
 		<tr>
 			<td>
-				{% if keymaster.access_ts < twoMinutesAgo %}
+				{% if keymaster.success_ts < twoMinutesAgo %}
 					<span class="ui-state-error">INACTIVE</span>
 				{% endif %}
 			</td>
 			<td>{{ keymaster.access_ts }}</td>
 			<td>{{ keymaster.success_ts }}</td>
 			<td>{{ keymaster.sync_ts }}</td>
-			<td></td>
+			<td>
+				<form method="POST" action=".">
+					<input type="hidden" name="keymaster_id" value="{{ keymaster.id }}">
+					<input name="action" type="submit" value="Force Sync"/>
+					{% csrf_token %}
+				</form>
+			</td>
 		</tr>
 	</table>
 {% endfor %}

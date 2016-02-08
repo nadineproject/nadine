@@ -26,6 +26,11 @@ def index(request):
     keymasters = Keymaster.objects.filter(is_enabled=True)
     twoMinutesAgo = timezone.now() - timedelta(minutes=2)
     events = DoorEvent.objects.all().order_by('timestamp').reverse()[:10]
+    
+    if 'keymaster_id' in request.POST and request.POST.get('action') == "Force Sync":
+        km = get_object_or_404(Keymaster, id=request.POST.get('keymaster_id'))
+        km.force_sync()
+    
     return render_to_response('keymaster/index.html', 
         {'keymasters': keymasters, 
          'twoMinutesAgo': twoMinutesAgo,
