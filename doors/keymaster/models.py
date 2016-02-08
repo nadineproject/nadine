@@ -8,6 +8,7 @@ from django.db import models
 from django.conf import settings
 from django.conf.urls import patterns, include, url
 from django.contrib.auth.models import User
+from django.db.models.signals import post_delete
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.utils import timezone
 
@@ -168,6 +169,14 @@ class DoorCode(models.Model):
 
     def __str__(self): 
         return '%s: %s' % (self.user, self.code)
+
+def door_code_callback(sender, **kwargs):
+    door_code = kwargs['instance']
+    # For now we are just going to force all keymasters to sync whenever a code is deleted
+    # When codes are tied to specific doors we can make this smarter.  
+    for km in Keymaster.objects.filter(is_enabled=True):
+        km.force_sync()
+post_delete.connect(door_code_callback, sender=DoorCode)
 
 
 class DoorEvent(models.Model):
