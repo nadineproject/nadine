@@ -18,6 +18,7 @@ nav #doors-tab { background: #FBD850; color: black; }
 	<table>
 		<tr>
 			<th>Time</th>
+			<th>Door</th>
 			<th>Description</th>
 			<th>User</th>
 			<th>Code</th>
@@ -26,6 +27,7 @@ nav #doors-tab { background: #FBD850; color: black; }
 		{% for event in events %}
 			<tr>
 				<td nowrap>{{ event.timestamp }}</td>
+				<td>{{ event.door }}</td>
 				<td>{{ event.event_description }}</td>
 				<td>
 					{% if event.user %}
