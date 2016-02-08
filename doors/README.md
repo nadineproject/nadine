@@ -47,7 +47,8 @@ There is a bug in the HID controllers that doesn't allow for this feature to wor
 
 * Add optional config attributes
   * CARD_SECRET = If set this private key is used to encode door keys before sending them off to the keymaster
-  * MAGIC_KEY = A key code that will toggle the lock for any given door
+  * LOCK_KEY = A key code that will send a lock command to a given door
+  * UNLOCK_KEY = A key code that will send a unlock command to a given door
 
 * Install neccessary libraries:
 `pip install flask cryptography requests`

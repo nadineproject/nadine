@@ -336,6 +336,11 @@ class TestDoorController(DoorController):
 
 class Gatekeeper(object):
     def __init__(self, config):
+        if not 'KEYMASTER_URL' in config:
+            raise Exception("No KEYMASTER_URL in configuration")
+        if not 'KEYMASTER_SECRET' in config:
+            raise Exception("No KEYMASTER_SECRETin configuration")
+        
         self.encrypted_connection = EncryptedConnection(config['KEYMASTER_SECRET'], config['KEYMASTER_URL'])
         self.card_secret = config.get('CARD_SECRET', None)
         self.event_count = config.get('EVENT_SYNC_COUNT', 100)

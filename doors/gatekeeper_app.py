@@ -92,12 +92,7 @@ if __name__ == "__main__":
     # Pull the config
     with open('gw_config.json', 'r') as f:
         config = json.load(f)
-        
-    if not 'KEYMASTER_URL' in config:
-        raise Exception("No KEYMASTER_URL in configuration")
-    if not 'KEYMASTER_SECRET' in config:
-        raise Exception("No KEYMASTER_SECRETin configuration")
-
+    
     # Pull the command line args
     config['initialSync'] = "--sync" in sys.argv
     config['syncClocks'] = "--set-time" in sys.argv
