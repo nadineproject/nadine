@@ -451,7 +451,7 @@ class Gatekeeper(object):
             record_count = self.event_count
         event_logs = {}
         for door_name, door in self.get_doors().items():
-            print "Gatekeeper: Pulling %d logs from '%s'" % (record_count, door_name)
+            if self.debug: print "Gatekeeper: Pulling %d logs from '%s'" % (record_count, door_name)
             controller = door['controller']
             door_events = controller.pull_events(record_count)
             if self.card_secret:
@@ -461,18 +461,16 @@ class Gatekeeper(object):
             event_logs[door_name] = door_events
         return event_logs
     
-    def push_event_logs(self, record_count=-1):
+    def push_event_logs(self, event_logs, reconfig=True):
         print "Gatekeeper: Pushing event logs to keymaster..."
-        if record_count <= 0:
-            record_count = self.event_count
-        event_logs = self.pull_event_logs(record_count)
         json_data = json.dumps(event_logs)
         response = self.encrypted_connection.send_message(Messages.PUSH_EVENT_LOGS, data=json_data)
         if not response == Messages.SUCCESS_RESPONSE:
             raise Exception ("push_event_logs: Invalid response (%s)" % response)
         
         # Reconfigure the doors to get the latest timestamps
-        self.configure_doors()
+        if reconfig:
+            self.configure_doors()
     
     def magic_key_test(self, door_name, code):
         print "Gatekeeper: Magic key test (%s)" % code

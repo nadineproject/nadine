@@ -37,7 +37,6 @@ class GatekeeperApp(object):
             # Pull new data if requested
             if config['initialSync']:
                 gatekeeper.pull_door_codes()
-                gatekeeper.push_event_logs()
             
             try:
                 # Start with a clean bowl
@@ -67,7 +66,8 @@ class GatekeeperApp(object):
                         heartbeat.all_clear()
                     
                     if event_watcher.new_data:
-                        gatekeeper.push_event_logs()
+                        event_logs = gatekeeper.pull_event_logs()
+                        gatekeeper.push_event_logs(event_logs)
                         event_watcher.all_clear()
                     
                     time.sleep(.1)
