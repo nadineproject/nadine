@@ -97,10 +97,12 @@ class Keymaster(models.Model):
                 naive_timestamp = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S")
                 tz_timestamp = tz.localize(naive_timestamp)
                 
+                # TODO - If our timestamp is too far in the future we have a time sync problem.
+                
                 description = event.get('description')
                 event_type = event.get('door_event_type')
                 door_code = event.get('cardNumber')
-
+                
                 # Extract the User from a given username or the door code if we have it
                 user = None
                 cardholder = event.get('cardHolder')
