@@ -185,7 +185,6 @@ def welcome(request, username):
             else:
                 usage_color = "green"
     motd = MOTD.objects.for_today()
-    print motd
     return render_to_response('tablet/welcome.html', {'user': user, 'member': member, 'membership': membership,
                                                       'motd': motd, 'usage_color': usage_color}, context_instance=RequestContext(request))
 
