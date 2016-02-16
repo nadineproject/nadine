@@ -16,8 +16,7 @@ class PopMailChecker(object):
 
     def fetch_mail(self):
         """Pops mail from the pop server and writes them as IncomingMail"""
-        print("Checking mail from %s:%d" %
-                          (self.mailing_list.pop_host, self.mailing_list.pop_port))
+        print("Checking mail for: %s" % self.mailing_list.name)
         pop_client = poplib.POP3_SSL(self.mailing_list.pop_host, self.mailing_list.pop_port)
         try:
             response = pop_client.user(self.mailing_list.username)
