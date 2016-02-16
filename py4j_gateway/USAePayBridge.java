@@ -189,24 +189,36 @@ public class USAePayBridge {
 
 	public TransactionResponse authorize(Integer customer_number) throws Exception {
 		BigInteger custnum = BigInteger.valueOf(customer_number.intValue());
+		BigInteger paymentID = BigInteger.valueOf(0); // sets it to use default
+		String command = "AuthOnly";
 		
-		TransactionDetail details = new TransactionDetail();
+		CustomerTransactionDetail details = new CustomerTransactionDetail();
 		details.setAmount(1.00);
 		details.setDescription("Office Nomads Authorization");
 		
-		CustomerTransactionRequest request = new CustomerTransactionRequest();
-		request.setCommand("AuthOnly");
-		request.setCustReceipt(True);
-		request.setDetails(details);
-		
-		// Set payment method to select the default
-		int paymentMethodID = 0;
-		
-		TransactionResponse response = client.runCustomerTransaction(token, customer_number, paymentMethodID, request);
+		TransactionResponse response = client.runCustomerTransaction(token, custnum, details, command, paymentID);
 		
 		return response;
 	}
 
+	public TransactionResponse runSale(Integer customer_number, double amount, String invoice, String description, String comments) 
+		throws Exception 
+	{
+		BigInteger custnum = BigInteger.valueOf(customer_number.intValue());
+		BigInteger paymentID = BigInteger.valueOf(0); // sets it to use default
+		String command = "Sale";
+
+		CustomerTransactionDetail details = new CustomerTransactionDetail();
+		details.setAmount(amount);
+		details.setInvoice(invoice);
+		details.setDescription(description);
+		details.setComments(comments);
+		
+		TransactionResponse response = client.runCustomerTransaction(token, custnum, details, command, paymentID);
+		
+		return response;
+	}
+	
 	public static void main(String[] args) {
 		String url = args[0];
 		String key = args[1];

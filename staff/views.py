@@ -1047,19 +1047,24 @@ def usaepay_user(request, username):
         if customer_id:
             if action == "verify_profile":
                 # Run a $1.00 authorization to verify this profile works
-                pass
+                epay_api.runAuth(customer_id)
             elif action == "delete_profile":
                 # TODO
                 pass
             elif action == "manual_charge":
-                # TODO
+                invoice = request.POST.get("invoice")
+                description = request.POST.get("description")
+                amount = request.POST.get("amount")
+                comment = request.POST.get("comment")
+                epay_api.runSale(customer_id, amount, invoice, description, comment)
                 pass
             elif action == "edit_recurring":
                 next_date = request.POST.get("next_date")
                 description = request.POST.get("description")
+                comment = request.POST.get("comment")
                 amount = request.POST.get("amount")
                 enabled = request.POST.get("enabled", "") == "on"
-                epay_api.update_recurring(customer_id, enabled, next_date, description, amount)
+                epay_api.update_recurring(customer_id, enabled, next_date, description,comment, amount)
         
         # Lastly pull all customers for this user
         history = epay_api.get_history(username)
@@ -1155,7 +1160,7 @@ def usaepay_void(request):
     
             if 'username' in request.POST and 'confirmed' in request.POST:
                 username = request.POST.get('username')
-                epay_api.void_transaction(self, username, transaction_id)
+                epay_api.void_transaction(username, transaction_id)
                 return HttpResponseRedirect(reverse('staff.views.usaepay_transactions_today'))
     except Exception as e:
         messages.add_message(request, messages.ERROR, e)
