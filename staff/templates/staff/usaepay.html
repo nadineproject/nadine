@@ -27,8 +27,9 @@ nav #billing-tab { background: #FBD850; color: black; }
         <th></th>
         <th>Created</th>
         <th nowrap>Customer #</th>
-        <th nowrap>Next Bill</th>
+        <th>Company</th>
         <th style="width:80%;">Description</th>
+        <th nowrap>Next Bill</th>
         <th>Amount</th>
         <th>Auto</th>
     </tr>
@@ -38,9 +39,10 @@ nav #billing-tab { background: #FBD850; color: black; }
             <td style="width:2px;"><input class="customer" name="customer" type="radio" onChange="selectCustomer('{{ cust.getCustNum }}', this); return false;"/></td>
             <td>{{ cust.getCreated | slice:":10"}}</td>
             <td><a href="https://secure.usaepay.com/console/billing_edit?id={{ cust.getCustNum }}" target="new">{{ cust.getCustNum }}</a></td>
+            <td>{{ cust.getBillingAddress.getCompany }}</td>
+                <td>{{ cust.getDescription }}</td>
             {% if cust.isEnabled %}
                 <td>{{ cust.getNext | slice:":10"}}</td>
-                <td>{{ cust.getDescription }}</td>
                 <td>${{ cust.getAmount|floatformat:2 }}</td>
                 <td style="text-align:center;">
                     <img src="{% static 'green_check.png' %}" height="16px" />
