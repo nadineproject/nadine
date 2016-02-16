@@ -7,9 +7,24 @@ nav #members-tab { background: #FBD850; color: black; }
 #page-message { font-size: 1.5em; color: #933; margin: 20px 0px; }
 {% endblock %}
 
+{% block sub-head %}
+	<link rel="stylesheet" href="{{ STATIC_URL }}c3/c3.min.css" />
+	<link rel="stylesheet" href="{{ STATIC_URL }}themes/custom-staff/jquery-ui-1.10.4.custom.css" />
+	<script src="{{ STATIC_URL }}c3/date.min.js"></script>
+	<script src="{{ STATIC_URL }}c3/d3.min.js" charset="utf-8"></script>
+	<script src="{{ STATIC_URL }}c3/c3.min.js"></script>
+{% endblock %}
+
 
 {% block content %}
 {% include "staff/member_menu.frag" %}  
+
+<script>
+    $(function() {
+        $('#id_start_date').datepicker({ dateFormat: "yy-mm-dd" });
+        $('#id_end_date').datepicker({ dateFormat: "yy-mm-dd" });
+    });
+</script>
 
 <script type="text/javascript">
 

@@ -41,14 +41,23 @@ class EPayAPI:
         return self.entry_point.updateCustomer(customer_id, fields)
 
 
-    def update_recurring(self, customer_id, enabled, next_date, description, amount):
+    def update_recurring(self, customer_id, enabled, next_date, description, comment, amount):
         fields = self.gateway.jvm.java.util.HashMap()
         fields['Enabled'] = str(enabled)
         fields['Next'] = next_date
         fields['Description'] = description
         fields['Amount'] = amount
+        fields['ReceiptNote'] = comment
         fields['SendReceipt'] = 'True'
         return self.entry_point.updateCustomer(int(customer_id), fields)
+
+
+    def runAuth(self, customer_id):
+        self.entry_point.authorize(int(customer_id))
+
+
+    def runSale(self, customer_id, amount, invoice, description, comments):
+        self.entry_point.runSale(int(customer_id), float(amount), invoice, description, comments)
 
 
     def get_transactions(self, year, month, day):

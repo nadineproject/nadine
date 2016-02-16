@@ -1,23 +1,78 @@
 {% extends "staff/staff_base.html" %}
 
-{% block sub-title %} HID Doors | {% endblock %}
+{% block sub-title %} Doors | {% endblock %}
+
+{% block style %}
+nav #doors-tab { background: #FBD850; color: black; }
+{% endblock %}
 
 {% block content %} 
 {% include "keymaster/doors_menu.frag" %}
 
-<h3>HID Doors</h3>
+{% if not keymasters %}
+	<h3>No Keymasters!</h3>
+{% endif %}
 
 {% for keymaster in keymasters %}
-<div>
-	<h4>{{ keymaster.description }}</h4>
-	{{ keymaster.gatekeeper_ip }}
-	<div><em>Last access:</em> {{ keymaster.access_ts }}</div>
-	<div><em>Last sync:</em> {{ keymaster.sync_ts }} 
-		{% if keymaster.sync_ts < twoMinutesAgo %}
-		<span class="ui-state-error">INACTIVE</span>
-		{% endif %}
-	</div>
-</div>
+	<h3>{{ keymaster.description }}</h3>
+	<table>
+		<tr>
+			<th>Time</th>
+			<th>Door</th>
+			<th>Description</th>
+			<th>User</th>
+			<th>Code</th>
+			<th></th>
+		</tr>
+		{% for event in events %}
+			<tr>
+				<td nowrap>{{ event.timestamp }}</td>
+				<td>{{ event.door }}</td>
+				<td>{{ event.event_description }}</td>
+				<td>
+					{% if event.user %}
+						<a href="{% url 'doors.keymaster.views.user_keys' event.user.username %}">{{ event.user }}</a>
+					{% endif %}
+				</td>
+				<td>
+					{% if event.code %}
+						{{ event.code }}
+					{% endif %}
+				</td>
+				<td></td>
+			</tr>
+		{% endfor %}
+	</table>
+
+	<p></p>
+
+	<h4>Gatekeeper Health</h4>
+	<table>
+		<tr>
+			<th></th>
+			<th>Last Access</th>
+			<th>Success</th>
+			<th>Full Sync</th>
+			<th></th>
+		</tr>
+		<tr>
+			<td>
+				{% if keymaster.success_ts < twoMinutesAgo %}
+					<span class="ui-state-error">INACTIVE</span>
+				{% endif %}
+			</td>
+			<td>{{ keymaster.access_ts }}</td>
+			<td>{{ keymaster.success_ts }}</td>
+			<td>{{ keymaster.sync_ts }}</td>
+			<td>
+				<form method="POST" action=".">
+					<input type="hidden" name="keymaster_id" value="{{ keymaster.id }}">
+					<input name="action" type="submit" value="Force Sync"/>
+					{% csrf_token %}
+				</form>
+			</td>
+		</tr>
+	</table>
 {% endfor %}
 
 {% endblock %}

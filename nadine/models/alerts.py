@@ -302,7 +302,7 @@ class MemberAlert(models.Model):
 
 
 def membership_callback(sender, **kwargs):
-    print ("membership_callback")
+    #print ("membership_callback")
     membership = kwargs['instance']
     created = kwargs['created']
     if created:

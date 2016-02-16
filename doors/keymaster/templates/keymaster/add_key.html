@@ -1,0 +1,51 @@
+{% extends "staff/staff_base.html" %}
+
+{% block sub-title %} Doors | {% endblock %}
+
+{% block style %}
+nav #doors-tab { background: #FBD850; color: black; }
+{% endblock %}
+
+{% block content %} 
+{% include "keymaster/doors_menu.frag" %}
+
+<h2>Add a Key</h2>
+
+{% if messages %}
+	<div class="messages">
+		{% for message in messages %}
+			<div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+		{% endfor %}
+	</div>
+{% endif %}
+
+{% if door_code %}
+	<div style="text-align:center;">
+		<h3>
+			Are you sure you want to create a key for 
+			<strong>{{ door_code.user.get_full_name }}</strong> 
+			with code '<em>{{ door_code.code }}</em>'?
+		</h3>
+		<form method="POST" action=".">
+			<input type="hidden" name="username" value="{{ door_code.user.username }}" />
+			<input type="hidden" name="code" value="{{ door_code.code }}" />
+			<input type="hidden" name="add_door_code" value="True"/>
+			<input type="submit" value="Yes" />
+			<input type="button" value="No" onclick="location.href='{% url 'doors.keymaster.views.index' %}'"/>
+			{% csrf_token %}	
+		</form>
+	</div>
+{% else %}
+	<div style="margin-left:2em;">
+		<form method="POST" action=".">
+			<strong>Username:</strong>
+			<input name="username" size="16" value="{{ username }}"/>
+			<strong>Key Code:</strong>
+			<td><input name="code" size="16" value="{{ code }}"/></td>
+			<input type="submit" value="Add Key" />
+			{% csrf_token %}
+		</form>
+	</div>
+{% endif %}
+
+{% endblock %}

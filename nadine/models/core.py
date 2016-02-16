@@ -31,6 +31,7 @@ from django.db.models.signals import pre_save, post_save
 from PIL import Image
 
 from nadine.utils.usaepay_api import EPayAPI
+from nadine.utils.slack_api import SlackAPI
 
 logger = logging.getLogger(__name__)
 
@@ -156,6 +157,17 @@ class MemberManager(models.Manager):
     def daily_members(self):
         return self.active_members().exclude(id__in=self.members_with_desks())
 
+    def active_member_emails(self, include_email2=False):
+        emails = []
+        for membership in Membership.objects.active_memberships():
+            member = membership.member
+            user = membership.member.user
+            if user.email not in emails:
+                emails.append(user.email)
+            if include_email2 and member.email2 not in emails:
+                emails.append(member.email2)
+        return emails
+
     def exiting_members(self, day=None):
         if day == None:
             day = timezone.now()
@@ -168,6 +180,17 @@ class MemberManager(models.Manager):
         exiting = today_memberships.exclude(member__in=tomorrow_memberships.values('member'))
         
         return Member.objects.filter(id__in=exiting.values('member'))
+
+    def expired_slack_users(self):
+        expired_users = []
+        active_emails =self.active_member_emails(include_email2=True)
+        slack_users = SlackAPI().users.list()
+        for u in slack_users.body['members']:
+            if 'profile' in u and 'real_name' in u and 'email' in u['profile']:
+                email = u['profile']['email']
+                if email not in active_emails and 'nadine' not in email:
+                    expired_users.append({'email':email, 'real_name':u['real_name']})
+        return expired_users
 
     def stale_member_date(self):
         three_months_ago = timezone.now() - MonthDelta(3)
@@ -196,7 +219,7 @@ class MemberManager(models.Manager):
         members = []
         for m in self.active_members():
             membership = m.active_membership()
-            if membership.monthly_rate > 0:
+            if membership and membership.monthly_rate > 0:
                 if not m.has_valid_billing():
                     members.append(m)
         return members

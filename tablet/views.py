@@ -19,6 +19,7 @@ from django.utils import timezone
 from nadine import mailgun
 from nadine.models.core import Member, DailyLog, FileUpload
 from nadine.models.payment import Bill
+from nadine.utils.slack_api import SlackAPI
 from members.models import MOTD
 from staff.forms import NewUserForm, MemberSearchForm
 from arpwatch import arp
@@ -158,6 +159,7 @@ def signin_user_guest(request, username, guestof):
                 email.announce_free_trial(user)
                 email.send_introduction(user)
                 email.subscribe_to_newsletter(user)
+                #SlackAPI().invite_user(user)
             except:
                 logger.error("Could not send introduction email to %s" % user.email)
         else:
@@ -183,7 +185,6 @@ def welcome(request, username):
             else:
                 usage_color = "green"
     motd = MOTD.objects.for_today()
-    print motd
     return render_to_response('tablet/welcome.html', {'user': user, 'member': member, 'membership': membership,
                                                       'motd': motd, 'usage_color': usage_color}, context_instance=RequestContext(request))
 

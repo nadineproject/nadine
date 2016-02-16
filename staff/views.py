@@ -403,9 +403,9 @@ class MonthHistory:
 
 @staff_member_required
 def stats_membership_history(request):
-    if 'start_date' in request.REQUEST:
+    if 'start_date' in request.POST:
         try:
-            start_date = datetime.datetime.strptime(request.REQUEST.get('start_date'), "%m-%Y").date()
+            start_date = datetime.datetime.strptime(request.POST.get('start_date'), "%m-%Y").date()
         except:
             return render_to_response('staff/stats_membership_history.html', {'page_message': "Invalid Start Date!  Example: '01-2012'."}, context_instance=RequestContext(request))
     else:
@@ -415,7 +415,7 @@ def stats_membership_history(request):
     end_date = timezone.now().date()
     end_month = date(year=end_date.year, month=end_date.month, day=1)
 
-    average_only = 'average_only' in request.REQUEST
+    average_only = 'average_only' in request.POST
     working_month = start_month
     month_histories = []
     while working_month <= end_month:
@@ -569,69 +569,119 @@ def stats_gender(request):
 
     return render_to_response('staff/stats_gender.html', {'counts': counts, 'percentages': percentages, 'active_only': active_only}, context_instance=RequestContext(request))
 
+# DEPRICATED - for stats_graph that does it all
+#
+# @staff_member_required
+# def stats_income(request):
+#     start, end = date_range_from_request(request)
+#     date_range_form = DateRangeForm({START_DATE_PARAM: start, END_DATE_PARAM: end})
+#     starteo = timeo.strptime(start, "%Y-%m-%d")
+#     start_date = date(year=starteo.tm_year, month=starteo.tm_mon, day=starteo.tm_mday)
+#     endeo = timeo.strptime(end, "%Y-%m-%d")
+#     end_date = date(year=endeo.tm_year, month=endeo.tm_mon, day=endeo.tm_mday)
+#     days = [{'date': start_date + timedelta(days=i)} for i in range((end_date - start_date).days)]
+#     income_min = 0
+#     income_max = 0
+#     income_total = 0
+#     for day in days:
+#         membership_count = 0
+#         membership_income = 0
+#         for membership in Membership.objects.active_memberships(day['date']):
+#             membership_count = membership_count + 1
+#             membership_income = membership_income + membership.monthly_rate
+#         income_total = income_total + membership_income
+#         if membership_income > income_max:
+#             income_max = membership_income
+#         if income_min == 0 or membership_income < income_min:
+#             income_min = membership_income
+#         day['membership'] = membership_count
+#         day['income'] = membership_income
+#     income_avg = income_total / len(days)
+#     return render_to_response('staff/stats_income.html', {'days': days, 'date_range_form': date_range_form, 'start': start, 'end': end, 
+#                     'min': income_min, 'max': income_max, 'avg': income_avg}, context_instance=RequestContext(request))
+#
+#
+# @staff_member_required
+# def stats_members(request):
+#     start, end = date_range_from_request(request)
+#     date_range_form = DateRangeForm({START_DATE_PARAM: start, END_DATE_PARAM: end})
+#     starteo = timeo.strptime(start, "%Y-%m-%d")
+#     start_date = date(year=starteo.tm_year, month=starteo.tm_mon, day=starteo.tm_mday)
+#     endeo = timeo.strptime(end, "%Y-%m-%d")
+#     end_date = date(year=endeo.tm_year, month=endeo.tm_mon, day=endeo.tm_mday)
+#     days = [{'date': start_date + timedelta(days=i)} for i in range((end_date - start_date).days)]
+#     member_min = 0
+#     member_max = 0
+#     member_total = 0
+#     for day in days:
+#         day['members'] = Membership.objects.active_memberships(day['date']).count()
+#         member_total = member_total + day['members']
+#         if day['members'] > member_max:
+#             member_max = day['members']
+#         if member_min == 0 or day['members'] < member_min:
+#             member_min = day['members']
+#     member_avg = member_total / len(days)
+#     return render_to_response('staff/stats_members.html', {'days': days, 'date_range_form': date_range_form, 'start': start, 'end': end, 
+#                   'min': member_min, 'max': member_max, 'avg': member_avg}, context_instance=RequestContext(request))
+#
+#
+# @staff_member_required
+# def stats_churn(request):
+#     start, end = date_range_from_request(request)
+#     date_range_form = DateRangeForm({START_DATE_PARAM: start, END_DATE_PARAM: end})
+#     starteo = timeo.strptime(start, "%Y-%m-%d")
+#     start_date = date(year=starteo.tm_year, month=starteo.tm_mon, day=starteo.tm_mday)
+#     endeo = timeo.strptime(end, "%Y-%m-%d")
+#     end_date = date(year=endeo.tm_year, month=endeo.tm_mon, day=endeo.tm_mday)
+#     days = [{'date': start_date + timedelta(days=i)} for i in range((end_date - start_date).days)]
+#     min_v = max_v = avg_v = 100
+#     return render_to_response('staff/stats_churn.html', {'days': days, 'date_range_form': date_range_form, 'start': start, 'end': end, 'min': min_v, 'max': max_v, 'avg': avg_v}, context_instance=RequestContext(request))
 
 @staff_member_required
-def stats_income(request):
+def stats_graph(request):
+    graph = request.POST.get("graph", "members")
     start, end = date_range_from_request(request)
     date_range_form = DateRangeForm({START_DATE_PARAM: start, END_DATE_PARAM: end})
     starteo = timeo.strptime(start, "%Y-%m-%d")
     start_date = date(year=starteo.tm_year, month=starteo.tm_mon, day=starteo.tm_mday)
     endeo = timeo.strptime(end, "%Y-%m-%d")
     end_date = date(year=endeo.tm_year, month=endeo.tm_mon, day=endeo.tm_mday)
+    
     days = [{'date': start_date + timedelta(days=i)} for i in range((end_date - start_date).days)]
-    income_min = 0
-    income_max = 0
-    income_total = 0
-    for day in days:
-        membership_count = 0
-        membership_income = 0
-        for membership in Membership.objects.active_memberships(day['date']):
-            membership_count = membership_count + 1
-            membership_income = membership_income + membership.monthly_rate
-        income_total = income_total + membership_income
-        if membership_income > income_max:
-            income_max = membership_income
-        if income_min == 0 or membership_income < income_min:
-            income_min = membership_income
-        day['membership'] = membership_count
-        day['income'] = membership_income
-    income_avg = income_total / len(days)
-    return render_to_response('staff/stats_income.html', {'days': days, 'date_range_form': date_range_form, 'start': start, 'end': end, 'min': income_min, 'max': income_max, 'avg': income_avg}, context_instance=RequestContext(request))
+    if graph == "members":
+        title = "Members by Day"
+        min_v, max_v, avg_v, days = graph_members(days)
+    elif graph == "income":
+        title = "Monthly Membership Income by Day"
+        min_v, max_v, avg_v, days = graph_income(days)
+    elif graph == "amv":
+        title = "Average Monthly Value"
+        min_v, max_v, avg_v, days = graph_members(days)
+    elif graph == "churn":
+        title = "Membership Churn"
 
+    
+    return render_to_response('staff/stats_graph.html', {'title':title, 'graph':graph,
+        'days': days, 'date_range_form': date_range_form, 'start': start, 'end': end, 
+        'min': min_v, 'max': max_v, 'avg': avg_v
+    }, context_instance=RequestContext(request))
 
-@staff_member_required
-def stats_members(request):
-    start, end = date_range_from_request(request)
-    date_range_form = DateRangeForm({START_DATE_PARAM: start, END_DATE_PARAM: end})
-    starteo = timeo.strptime(start, "%Y-%m-%d")
-    start_date = date(year=starteo.tm_year, month=starteo.tm_mon, day=starteo.tm_mday)
-    endeo = timeo.strptime(end, "%Y-%m-%d")
-    end_date = date(year=endeo.tm_year, month=endeo.tm_mon, day=endeo.tm_mday)
-    days = [{'date': start_date + timedelta(days=i)} for i in range((end_date - start_date).days)]
+def graph_members(days):
     member_min = 0
     member_max = 0
     member_total = 0
     for day in days:
-        day['members'] = Membership.objects.active_memberships(day['date']).count()
-        member_total = member_total + day['members']
-        if day['members'] > member_max:
-            member_max = day['members']
-        if member_min == 0 or day['members'] < member_min:
-            member_min = day['members']
+        day['value'] = Membership.objects.active_memberships(day['date']).count()
+        member_total = member_total + day['value']
+        if day['value'] > member_max:
+            member_max = day['value']
+        if member_min == 0 or day['value'] < member_min:
+            member_min = day['value']
     member_avg = member_total / len(days)
-    return render_to_response('staff/stats_members.html', {'days': days, 'date_range_form': date_range_form, 'start': start, 'end': end, 'min': member_min, 'max': member_max, 'avg': member_avg}, context_instance=RequestContext(request))
+    return (member_min, member_max, member_avg, days)
 
 
-@staff_member_required
-def stats_amv(request):
-    # Average Membership Value
-    start, end = date_range_from_request(request)
-    date_range_form = DateRangeForm({START_DATE_PARAM: start, END_DATE_PARAM: end})
-    starteo = timeo.strptime(start, "%Y-%m-%d")
-    start_date = date(year=starteo.tm_year, month=starteo.tm_mon, day=starteo.tm_mday)
-    endeo = timeo.strptime(end, "%Y-%m-%d")
-    end_date = date(year=endeo.tm_year, month=endeo.tm_mon, day=endeo.tm_mday)
-    days = [{'date': start_date + timedelta(days=i)} for i in range((end_date - start_date).days)]
+def graph_income(days):
     income_min = 0
     income_max = 0
     income_total = 0
@@ -647,21 +697,25 @@ def stats_amv(request):
         if income_min == 0 or membership_income < income_min:
             income_min = membership_income
         day['membership'] = membership_count
-        day['income'] = membership_income
+        day['value'] = membership_income
     income_avg = income_total / len(days)
-    return render_to_response('staff/stats_amv.html', {'days': days, 'date_range_form': date_range_form, 'start': start, 'end': end, 'min': income_min, 'max': income_max, 'avg': income_avg}, context_instance=RequestContext(request))
+    return (income_min, income_max, income_avg, days)
 
 
-@staff_member_required
-def stats_churn(request):
-    start, end = date_range_from_request(request)
-    date_range_form = DateRangeForm({START_DATE_PARAM: start, END_DATE_PARAM: end})
-    starteo = timeo.strptime(start, "%Y-%m-%d")
-    start_date = date(year=starteo.tm_year, month=starteo.tm_mon, day=starteo.tm_mday)
-    endeo = timeo.strptime(end, "%Y-%m-%d")
-    end_date = date(year=endeo.tm_year, month=endeo.tm_mon, day=endeo.tm_mday)
-    days = [{'date': start_date + timedelta(days=i)} for i in range((end_date - start_date).days)]
-    return render_to_response('staff/stats_churn.html', {'days': days, 'date_range_form': date_range_form, 'start': start, 'end': end, 'min': income_min, 'max': income_max, 'avg': income_avg}, context_instance=RequestContext(request))
+def graph_amv(days):
+    min_v = max_v = avg_v = 100
+    member_min = 0
+    member_max = 0
+    member_total = 0
+    for day in days:
+        day['value'] = Membership.objects.active_memberships(day['date']).count()
+        member_total = member_total + day['value']
+        if day['value'] > member_max:
+            member_max = day['value']
+        if member_min == 0 or day['value'] < member_min:
+            member_min = day['value']
+    member_avg = member_total / len(days)
+    return (min_v, max_v, avg_v, days)
 
 
 def p(p, w):
@@ -988,22 +1042,29 @@ def usaepay_user(request, username):
         
         customer_id = request.POST.get("customer_id", None)
         action = request.POST.get("action", "")
-        print "action: %s" % action
-        print "cust: %s " % customer_id
+        #print "action: %s" % action
+        #print "cust: %s " % customer_id
         if customer_id:
             if action == "verify_profile":
                 # Run a $1.00 authorization to verify this profile works
-                pass
+                epay_api.runAuth(customer_id)
             elif action == "delete_profile":
+                # TODO
                 pass
             elif action == "manual_charge":
+                invoice = request.POST.get("invoice")
+                description = request.POST.get("description")
+                amount = request.POST.get("amount")
+                comment = request.POST.get("comment")
+                epay_api.runSale(customer_id, amount, invoice, description, comment)
                 pass
             elif action == "edit_recurring":
                 next_date = request.POST.get("next_date")
                 description = request.POST.get("description")
+                comment = request.POST.get("comment")
                 amount = request.POST.get("amount")
                 enabled = request.POST.get("enabled", "") == "on"
-                epay_api.update_recurring(customer_id, enabled, next_date, description, amount)
+                epay_api.update_recurring(customer_id, enabled, next_date, description,comment, amount)
         
         # Lastly pull all customers for this user
         history = epay_api.get_history(username)
@@ -1062,7 +1123,6 @@ def usaepay_transactions(request, year, month, day):
                     ach.append(t)
                     totals['ach_total'] = totals['ach_total'] + t['amount']
             else:
-                print t
                 other_transactions.append(t)
         
     except Exception as e:
@@ -1100,13 +1160,27 @@ def usaepay_void(request):
     
             if 'username' in request.POST and 'confirmed' in request.POST:
                 username = request.POST.get('username')
-                epay_api.void_transaction(self, username, transaction_id)
+                epay_api.void_transaction(username, transaction_id)
                 return HttpResponseRedirect(reverse('staff.views.usaepay_transactions_today'))
     except Exception as e:
         messages.add_message(request, messages.ERROR, e)
     
     return render_to_response('staff/usaepay_void.html', {'transaction':transaction}, context_instance=RequestContext(request))
 
+
+@staff_member_required
+def slack_users(request):
+    expired_users = Member.objects.expired_slack_users()
+    slack_emails = []
+    slack_users = SlackAPI().users.list().body['members']
+    for u in slack_users:
+        if 'profile' in u and 'email' in u['profile'] and u['profile']['email']:
+            slack_emails.append(u['profile']['email'])
+    non_slack_users = Member.objects.active_members().exclude(user__email__in=slack_emails)
+    return render_to_response('staff/slack_users.html', {'expired_users':expired_users, 
+                                                         'slack_users':slack_users, 
+                                                         'non_slack_users':non_slack_users, 
+                                                         'slack_url':settings.SLACK_TEAM_URL}, context_instance=RequestContext(request))
 
 def view_ip(request):
     ip = None

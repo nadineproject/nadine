@@ -569,6 +569,12 @@ class SlackAPI:
         response = self.users.invite(user.email, first_name=user.first_name, last_name=user.last_name)
         return response.ok
 
+    def invite_user_quiet(self, user):
+        try:
+            self.invite_user(user)
+        except:
+            pass
+
     def disable_user(self, user):
         # api call pulled from https://github.com/rjshenk/Slack-Admin-Tools
         slack_id = self.get_slack_member_id(user)

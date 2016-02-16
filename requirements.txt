@@ -1,17 +1,17 @@
 Django>=1.8,<1.9
-Pillow==3.0
+Pillow==3.1
 psycopg2==2.6.1
 celery==3.1.19
 django-celery==3.1.17
 django-localflavor-us==1.1
-django-taggit==0.17.3
+django-taggit==0.17.6
 django-taggit-templatetags==0.4.6dev
 mailchimp==2.0.9
 MonthDelta==1.0b0
 py4j==0.9
 pytz==2015.7
-requests==2.8.1
-cryptography==1.1
+requests==2.9.1
+cryptography==1.1.2
 
 # For document signing
 # Newer versions may not work so be cautious when upgrading
@@ -29,9 +29,9 @@ pyxero==0.7.0
 PyJWT==1.4.0
 
 # Libraries for Arpwatch
-pysnmp==4.3
+pysnmp==4.3.1
 pysnmp-mibs==0.1.5
 
 # TODO - Evaluate use of these libraries 
 feedparser
-django-tastypie==0.12.1
+django-tastypie==0.12.2

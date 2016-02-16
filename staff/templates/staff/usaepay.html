@@ -27,8 +27,9 @@ nav #billing-tab { background: #FBD850; color: black; }
         <th></th>
         <th>Created</th>
         <th nowrap>Customer #</th>
-        <th nowrap>Next Bill</th>
+        <th>Company</th>
         <th style="width:80%;">Description</th>
+        <th nowrap>Next Bill</th>
         <th>Amount</th>
         <th>Auto</th>
     </tr>
@@ -38,9 +39,10 @@ nav #billing-tab { background: #FBD850; color: black; }
             <td style="width:2px;"><input class="customer" name="customer" type="radio" onChange="selectCustomer('{{ cust.getCustNum }}', this); return false;"/></td>
             <td>{{ cust.getCreated | slice:":10"}}</td>
             <td><a href="https://secure.usaepay.com/console/billing_edit?id={{ cust.getCustNum }}" target="new">{{ cust.getCustNum }}</a></td>
+            <td>{{ cust.getBillingAddress.getCompany }}</td>
+                <td>{{ cust.getDescription }}</td>
             {% if cust.isEnabled %}
                 <td>{{ cust.getNext | slice:":10"}}</td>
-                <td>{{ cust.getDescription }}</td>
                 <td>${{ cust.getAmount|floatformat:2 }}</td>
                 <td style="text-align:center;">
                     <img src="{% static 'green_check.png' %}" height="16px" />
@@ -65,20 +67,19 @@ nav #billing-tab { background: #FBD850; color: black; }
 
     <input type="button" id="edit_profile_button" value="Edit Automatic Billing" onclick="editProfile()">
 
-    <!--
-    <form id="delete_profile_form" method="POST" action="." style="display:inline;" onSubmit="return confirm('Are you sure?');">
+    <!-- <form id="delete_profile_form" method="POST" action="." style="display:inline;" onSubmit="return confirm('Are you sure?');">
         <input type="hidden" name="action" value="delete_profile">
         <input type="hidden" name="customer_id" value="">
         <input type="submit" name="delete_profile" value="Delete Profile">
         {% csrf_token %}
-    </form>
-    -->
+    </form> -->
 
     <input type="button" id="manual_charge_button" value="Manually Charge" onclick="manualCharge();">
 
-    <form id="verify_profile_button" method="POST" action="." style="display:inline;">
+    <form id="verify_profile_button" method="POST" action="." style="display:inline;" onSubmit="return confirm('Run an AUTH?');">
         <input type="hidden" name="customer_id" value="">
-        <input type="submit" name="verify_profile" value="Run Authorization">
+        <input type="hidden" name="action" value="verify_profile">
+        <input type="submit" value="Run Authorization">
         {% csrf_token %}
     </form>
     
@@ -123,6 +124,7 @@ nav #billing-tab { background: #FBD850; color: black; }
                 <tr>
                     <th>Invoice</th>
                     <th>Description</th>
+                    <th>Comment</th>
                     <th>Amount</th>
                     <th></th>
                 </tr>
@@ -132,6 +134,9 @@ nav #billing-tab { background: #FBD850; color: black; }
                     </td>
                     <td>
                         <input name="description" size="60" value="{{ customer.getDescription }}"/>
+                    </td>
+                    <td>
+                        <input name="comment" size="30" value="Thank you!"/>
                     </td>
                     <td>
                         <input name="amount" size="5" value="{{ customer.getAmount|floatformat:2 }}" />
@@ -152,21 +157,25 @@ nav #billing-tab { background: #FBD850; color: black; }
             <input type="hidden" name="action" value="edit_recurring">
             <table>
                 <tr>
-                    <th>Enabled</th>
-                    <th>Next Date</th>
+                    <th style="width:12px;">Enabled</th>
+                    <th style="">Next Date</th>
                     <th>Description</th>
+                    <th>Comment</th>
                     <th>Amount</th>
                     <th></th>
                 </tr>
                 <tr>
-                    <td style="width:1%;">
+                    <td style="text-align:center;">
                         <input name="enabled" type="checkbox" {% if customer.isEnabled %} CHECKED {% endif %} />
                     </td>
                     <td>
-                        <input name="next_date" size="10" value="{{ customer.getNext|slice:":10" }}"/>
+                        <input id="next_date_{{ customer.getCustNum }}" name="next_date" size="10" value="{{ customer.getNext|slice:":10" }}"/>
                     </td>
                     <td>
                         <input name="description" size="60" value="{{ customer.getDescription }}"/>
+                    </td>
+                    <td>
+                        <input name="comment" size="30" value="{{ customer.getReceiptNote }}"/>
                     </td>
                     <td>
                         <input name="amount" size="5" value="{{ customer.getAmount|floatformat:2 }}" />
@@ -179,6 +188,12 @@ nav #billing-tab { background: #FBD850; color: black; }
             {% csrf_token %}
         </form>
     </div>
+    
+    <script>
+        $(function() {
+          $('#next_date_{{ customer.getCustNum }}').datepicker({ dateFormat: "yy-mm-dd" });
+        });
+    </script>
 {% endfor %}
 
 <div id="add_profile_div">
@@ -268,6 +283,12 @@ nav #billing-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {%block sub-head %}
+
+<link rel="stylesheet" href="{{ STATIC_URL }}c3/c3.min.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}themes/custom-staff/jquery-ui-1.10.4.custom.css" />
+<script src="{{ STATIC_URL }}c3/date.min.js"></script>
+<script src="{{ STATIC_URL }}c3/d3.min.js" charset="utf-8"></script>
+<script src="{{ STATIC_URL }}c3/c3.min.js"></script>
 
 <script>
     function hideAll(){
