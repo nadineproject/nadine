@@ -19,14 +19,21 @@ nav #billing-tab { background: #FBD850; color: black; }
 	</span>
 </h2>
 
-{% if error %}
-	<div style="text-align:center; font-size:150%; color:red">{{ error }}</div>
+{% if messages %}
+  <div class="messages">
+    {% for message in messages %}
+      <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+    {% endfor %}
+  </div>
 {% endif %}
 
 <p>
     <div style="float:right;">
         <a href="https://go.xero.com/AccountsReceivable/Search.aspx?invoiceStatus=INVOICESTATUS%2fAUTHORISED" target="new">Xero Invoices</a> |
-        <a href="https://secure.usaepay.com/console/batch" target="new">USAePay Batch</a>
+        <a href="https://secure.usaepay.com/console/batch" target="new">USAePay</a>
+        {% if open_batch %}
+          | <a href="?close_batch" onClick="return confirm('Are you sure?');">Close Batch</a>
+        {% endif %}
     </div>
     Total {{totals.total_count}} Transactions: ${{totals.total|floatformat:2}}
 </p>

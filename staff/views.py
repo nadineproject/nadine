@@ -1048,16 +1048,17 @@ def usaepay_user(request, username):
             if action == "verify_profile":
                 # Run a $1.00 authorization to verify this profile works
                 epay_api.runAuth(customer_id)
+                messages.add_message(request, messages.INFO, "Payment for %s successfully authorized" % username)
             elif action == "delete_profile":
                 # TODO
-                pass
+                messages.add_message(request, messages.INFO, "Billing profile deleted for %s" % username)
             elif action == "manual_charge":
                 invoice = request.POST.get("invoice")
                 description = request.POST.get("description")
                 amount = request.POST.get("amount")
                 comment = request.POST.get("comment")
                 epay_api.runSale(customer_id, amount, invoice, description, comment)
-                pass
+                messages.add_message(request, messages.INFO, "Sale for %s successfully authorized" % username)
             elif action == "edit_recurring":
                 next_date = request.POST.get("next_date")
                 description = request.POST.get("description")
@@ -1065,6 +1066,7 @@ def usaepay_user(request, username):
                 amount = request.POST.get("amount")
                 enabled = request.POST.get("enabled", "") == "on"
                 epay_api.update_recurring(customer_id, enabled, next_date, description,comment, amount)
+                messages.add_message(request, messages.INFO, "Recurring billing updated for %s" % username)
         
         # Lastly pull all customers for this user
         history = epay_api.get_history(username)
@@ -1083,7 +1085,7 @@ def usaepay_transactions_today(request):
 @staff_member_required
 def usaepay_transactions(request, year, month, day):
     d = date(year=int(year), month=int(month), day=int(day))
-    error = None
+    open_batch = False
     amex = []
     visamc = []
     ach = []
@@ -1093,6 +1095,11 @@ def usaepay_transactions(request, year, month, day):
     open_xero_invoices = XeroAPI().get_open_invoices_by_user()
     try:
         epay_api = EPayAPI()
+        
+        if 'close_batch' in request.GET:
+            #epay_api.close_current_batch()
+            messages.add_message(request, messages.INFO, "Current batch closed")
+        
         transactions = epay_api.get_transactions(year, month, day)
         totals['total_count'] = len(transactions)
         
@@ -1122,14 +1129,18 @@ def usaepay_transactions(request, year, month, day):
                 elif t['card_type'] == "ACH":
                     ach.append(t)
                     totals['ach_total'] = totals['ach_total'] + t['amount']
+                
+                # Presence of authorized transactions means this batch is still open
+                if t['status'] == "Authorized":
+                    open_batch = True
             else:
                 other_transactions.append(t)
+            
         
     except Exception as e:
-        print e
-        error = 'Could not connect to USAePay Gateway!'
+        messages.add_message(request, messages.ERROR, e)
     
-    return render_to_response('staff/charges.html', {'date': d, 'error': error, 'amex': amex, 'visamc': visamc, 'ach':ach,
+    return render_to_response('staff/charges.html', {'date': d, 'amex': amex, 'visamc': visamc, 'ach':ach, 'open_batch':open_batch,
                                                       'other_transactions': other_transactions, 'settled_checks':settled_checks, 'totals':totals,
                                                       'next_date': d + timedelta(days=1), 'previous_date': d - timedelta(days=1)}, context_instance=RequestContext(request))
 
@@ -1161,6 +1172,7 @@ def usaepay_void(request):
             if 'username' in request.POST and 'confirmed' in request.POST:
                 username = request.POST.get('username')
                 epay_api.void_transaction(username, transaction_id)
+                messages.add_message(request, messages.INFO, "Transaction for %s voided" % username)
                 return HttpResponseRedirect(reverse('staff.views.usaepay_transactions_today'))
     except Exception as e:
         messages.add_message(request, messages.ERROR, e)

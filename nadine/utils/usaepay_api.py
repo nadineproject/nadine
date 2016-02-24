@@ -125,6 +125,10 @@ class EPayAPI:
         return False
 
 
+    def close_current_batch(self):
+        self.entry_point.closeCurrentBatch()
+
+
     def get_auth_code(self, username):
         from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
         from cryptography.hazmat.backends import default_backend
