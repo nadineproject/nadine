@@ -218,6 +218,18 @@ public class USAePayBridge {
 		
 		return response;
 	}
+
+	public CloseBatchResponse closeCurrentBatch() throws Exception {
+		//Setting batchRefNum to 0 for current batch, for a different batch set to the Batch Ref Num
+		return closeBatch(BigInteger.ZERO);
+	}
+	
+	public CloseBatchResponse closeBatch(BigInteger batch_number) throws Exception {
+		CloseBatchRequest Request = new CloseBatchRequest();
+		Request.setToken(token);
+		Request.setBatchRefNum(batch_number);
+		return client.closeBatch(Request);
+	}
 	
 	public static void main(String[] args) {
 		String url = args[0];
