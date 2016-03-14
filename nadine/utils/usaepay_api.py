@@ -57,6 +57,8 @@ class EPayAPI:
 
 
     def runSale(self, customer_id, amount, invoice, description, comments):
+        if amount <= 0:
+            raise Exception("Invalid amount (%s)!" % amount)
         self.entry_point.runSale(int(customer_id), float(amount), invoice, description, comments)
 
 
