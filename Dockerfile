@@ -22,8 +22,9 @@ ENV DOCKYARD_SRVPROJ=/webapp/nadine
 
 # Update the default application repository sources list
 RUN apt-get update && apt-get -y upgrade
-RUN apt-get install -y libjpeg-dev python python-pip
-RUN apt-get autoremove
+RUN apt-get autoremove -y
+RUN apt-get install -y python-pip libjpeg-dev
+RUN pip install --upgrade pip
 
 # Create application subdirectories
 WORKDIR $DOCKYARD_SRVHOME
@@ -41,4 +42,4 @@ EXPOSE 8000
 
 # Copy entrypoint script into the image
 WORKDIR $DOCKYARD_SRVPROJ
-ENTRYPOINT ["/docker-entrypoint.sh"]
+ENTRYPOINT ["./docker-entrypoint.sh"]
