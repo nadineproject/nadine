@@ -1097,7 +1097,7 @@ def usaepay_transactions(request, year, month, day):
         epay_api = EPayAPI()
         
         if 'close_batch' in request.GET:
-            #epay_api.close_current_batch()
+            epay_api.close_current_batch()
             messages.add_message(request, messages.INFO, "Current batch closed")
         
         transactions = epay_api.get_transactions(year, month, day)
