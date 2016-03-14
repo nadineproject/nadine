@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, date
 from django.test import TestCase
 from django.utils import timezone
 
-from doors.keymaster.models import Keymaster
+from doors.keymaster.models import Keymaster, GatekeeperLog
 from doors.core import Messages, EncryptedConnection, Gatekeeper
 
 from cryptography.fernet import Fernet
@@ -43,6 +43,16 @@ class KeymasterTestCase(TestCase):
         keymaster.mark_sync()
         self.assertFalse(keymaster.sync_ts == None)
         self.assertTrue(keymaster.sync_ts > start_ts)
+    
+    def test_log_message(self):
+        keymaster = Keymaster.objects.by_ip(self.ip_address)
+        log_count = GatekeeperLog.objects.filter(keymaster=keymaster).count()
+        msg = "This is a test!"
+        keymaster.log_message(msg)
+        new_log_count = GatekeeperLog.objects.filter(keymaster=keymaster).count()
+        self.assertTrue(new_log_count == log_count + 1)
+        new_log = GatekeeperLog.objects.filter(keymaster=keymaster).reverse().first()
+        self.assertEquals(new_log.message, msg)
 
 
 class GatekeeperTestCase(TestCase):
