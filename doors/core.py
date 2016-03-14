@@ -23,6 +23,7 @@ class Messages(object):
     NO_NEW_DATA = "no_new_data"
     MARK_SUCCESS = "mark_success"
     MARK_SYNC = "mark_sync"
+    LOG_MESSAGE = "log_message"
     SUCCESS_RESPONSE = "OK"
 
 
