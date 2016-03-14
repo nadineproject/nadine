@@ -132,6 +132,10 @@ class Keymaster(models.Model):
         self.sync_ts = None
         self.save()
 
+    def log_message(self, message):
+        # TODO email the correct people (as mentioned in a config file) and write a log
+        pass
+
     def __str__(self): 
         return self.description
 
@@ -191,5 +195,12 @@ class DoorEvent(models.Model):
     
     def __str__(self): 
         return '%s: %s' % (self.door, self.event_description)
+
+class GatekeeperLog(models.Model):
+    timestamp = models.DateTimeField(null=False)
+    unresolved = models.BooleanField(default=True)
+    keymaster = models.ForeignKey(Keymaster)
+    entry = models.TextField()
     
-    
+    def __str__(self):
+        return '%s: %s' % (self.timestamp, self.entry)
