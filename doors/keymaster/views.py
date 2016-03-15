@@ -14,6 +14,7 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 
+from nadine.models.core import Member
 from doors.keymaster.models import Keymaster, Door, DoorCode, DoorEvent
 from doors.core import EncryptedConnection, Messages, DoorEventTypes
 from staff import email
@@ -25,7 +26,7 @@ logger = logging.getLogger(__name__)
 def index(request):
     keymasters = Keymaster.objects.filter(is_enabled=True)
     twoMinutesAgo = timezone.now() - timedelta(minutes=2)
-    events = DoorEvent.objects.all().order_by('timestamp').reverse()[:10]
+    events = DoorEvent.objects.all().order_by('timestamp').reverse()[:11]
     
     if 'keymaster_id' in request.POST:
         km = get_object_or_404(Keymaster, id=request.POST.get('keymaster_id'))
@@ -101,7 +102,10 @@ def add_key(request):
         email.announce_new_key(user)
         return HttpResponseRedirect(reverse('doors.keymaster.views.user_keys', kwargs={'username': user.username}))
     
-    return render_to_response('keymaster/add_key.html', {'username':username, 'code':code, 'door_code':door_code}, context_instance=RequestContext(request))
+    # Pull a list of active members for our autocomplete
+    active_members = Member.objects.active_members()
+    
+    return render_to_response('keymaster/add_key.html', {'username':username, 'code':code, 'door_code':door_code, 'active_members':active_members}, context_instance=RequestContext(request))
 
 
 @staff_member_required

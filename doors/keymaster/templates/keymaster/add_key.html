@@ -39,7 +39,7 @@ nav #doors-tab { background: #FBD850; color: black; }
 	<div style="margin-left:2em;">
 		<form method="POST" action=".">
 			<strong>Username:</strong>
-			<input name="username" size="16" value="{{ username }}"/>
+			<input id="username" name="username" size="16" value="{{ username }}"/>
 			<strong>Key Code:</strong>
 			<td><input name="code" size="16" value="{{ code }}"/></td>
 			<input type="submit" value="Add Key" />
@@ -48,4 +48,19 @@ nav #doors-tab { background: #FBD850; color: black; }
 	</div>
 {% endif %}
 
+{% endblock %}
+
+{% block extrajs %}
+	<script>
+	$(function() {
+	  var availableUsers = [
+	    {% for user in active_members %}
+	       "{{ user.username }}",
+	    {% endfor %}
+	  ];
+	  $( "#username" ).autocomplete({
+	    source: availableUsers
+	  });
+	});
+	</script>
 {% endblock %}
