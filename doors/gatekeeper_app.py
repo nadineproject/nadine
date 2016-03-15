@@ -47,6 +47,10 @@ class GatekeeperApp(object):
                 while True:
                     # Keep our heartbeat alive
                     if not heartbeat or not heartbeat.is_alive():
+                        if heartbeat and heartbeat.error:
+                            gatekeeper.send_gatekeper_log(str(heartbeat.error))
+                            time.sleep(5000)
+                        
                         print "Starting Heartbeat..."
                         poll_delay = config.get('KEYMASTER_POLL_DELAY_SEC', 5)
                         heartbeat = Heartbeat(connection, poll_delay)
@@ -55,6 +59,10 @@ class GatekeeperApp(object):
                     
                     # Keep our event watcher alive
                     if not event_watcher or not event_watcher.is_alive():
+                        if event_watcher and event_watcher.error:
+                            gatekeeper.send_gatekeper_log(str(event_watcher.error))
+                            time.sleep(5000)
+                        
                         print "Starting Event Watcher..."
                         poll_delay = config.get('EVENT_POLL_DELAY_SEC', 10)
                         event_watcher = EventWatcher(gatekeeper, poll_delay)
