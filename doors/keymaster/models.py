@@ -151,10 +151,12 @@ class Keymaster(models.Model):
         # How many have we seen today?
         day_start = timezone.now() - timedelta(days=1)
         day_start.replace(hour=0, minute=0, second=0, microsecond=0)
-        logs_today = GatekeeperLog.objects.filter(keymaster=self, timestamp_gte=day_start).count()
+        logs_today = GatekeeperLog.objects.filter(keymaster=self, timestamp__gte=day_start).count()
+        #print "logs_today: %d" % logs_today
         
         # Email the system admins of the problem - Try to avoid a mailbomb
         if logs_today % 30 == 1:
+            #print "mailing admins"
             mail.mail_admins("Gatekeeper Message", message, fail_silently=True)
 
     def __str__(self): 
