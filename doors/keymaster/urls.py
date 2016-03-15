@@ -1,13 +1,12 @@
-from django.conf.urls import patterns, include, url
-from django.conf import settings
+from django.conf.urls import url
 
-urlpatterns = patterns('doors.keymaster.views',
-                       url(r'^$', 'index'),
-                       url(r'^keys/(?P<username>[^/]+)/$', 'user_keys'),
-                       url(r'^users/$', 'user_list'),
-                       url(r'^add_key/$', 'add_key'),
-                       url(r'^test_door/$', 'test_door'),
-                       
-                       # Are you the Keymaster?
-                       url(r'^keymaster/$', 'keymaster'),
-)
+from doors.keymaster import views
+
+urlpatterns = [
+    url(r'^$', views.index),
+    url(r'^keys/(?P<username>[^/]+)/$', views.user_keys),
+    url(r'^users/$', views.user_list),
+    url(r'^add_key/$', views.add_key),
+    url(r'^test_door/$', views.test_door),
+    url(r'^keymaster/$', views.keymaster),
+]
