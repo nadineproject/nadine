@@ -39,7 +39,16 @@ nav #doors-tab { background: #FBD850; color: black; }
 						{{ event.code }}
 					{% endif %}
 				</td>
-				<td></td>
+				<td>
+					{% ifequal event.event_type '1' %}{% if event.code %}
+						<form method="POST" action="{% url 'doors.keymaster.views.add_key' %}" style="display:inline;">
+							<input type="hidden" name="code" value="{{ event.code }}">
+							<input name="action" type="submit" value="Add"/>
+							{% csrf_token %}
+						</form>
+					{% endif %}{% endifequal %}
+				
+				</td>
 			</tr>
 		{% endfor %}
 	</table>
