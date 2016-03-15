@@ -5,6 +5,12 @@ from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 
+from django.contrib.auth.views import login, logout_then_login, password_reset_done, password_reset_confirm, password_reset_complete
+
+import views
+
+from nadine import mailgun
+
 admin.autodiscover()
 
 #from tastypie.api import Api
@@ -24,36 +30,34 @@ urlpatterns = [
     url(r'^logs/', include('arpwatch.urls')),
     url(r'^tablet/', include('tablet.urls')),
 
-    url(r'^login/$', 'django.contrib.auth.views.login', {'template_name': 'login.html'}),
-    url(r'^logout/$', 'django.contrib.auth.views.logout_then_login'),
+    url(r'^login/$', login, {'template_name': 'login.html'}),
+    url(r'^logout/$', logout_then_login),
     url(r'^accounts/profile/$', lambda r: redirect('/')),
 
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
 
-    url(r'^reset/$', 'views.password_reset', {'template_name': 'password_reset_form.html', 'email_template_name': 'email/password_reset_email.txt'}, 'password_reset'),
-    url(r'^reset/done/$', 'django.contrib.auth.views.password_reset_done', {'template_name': 'password_reset_done.html'}, 'password_reset_done'),
-    url(r'^reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$', 'django.contrib.auth.views.password_reset_confirm', {'template_name': 'password_reset_confirm.html'}, 'password_reset_confirm'),
-    url(r'^reset/complete/$', 'django.contrib.auth.views.password_reset_complete', {'template_name': 'password_reset_complete.html'}, 'password_reset_complete'),
+    url(r'^reset/$', views.password_reset, {'template_name': 'password_reset_form.html', 'email_template_name': 'email/password_reset_email.txt'}, 'password_reset'),
+    url(r'^reset/done/$', password_reset_done, {'template_name': 'password_reset_done.html'}, 'password_reset_done'),
+    url(r'^reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$', password_reset_confirm, {'template_name': 'password_reset_confirm.html'}, 'password_reset_confirm'),
+    url(r'^reset/complete/$', password_reset_complete, {'template_name': 'password_reset_complete.html'}, 'password_reset_complete'),
 
     # API URLs
     #url(r'^api/', include(API.urls)),
 
     # Inbound Mailgun Emails
-    url(r'^mailgun/staff$', 'nadine.mailgun.staff'),
-    url(r'^mailgun/team$', 'nadine.mailgun.team'),
-    url(r'^mailgun/test80085$', 'nadine.mailgun.test80085'),
+    url(r'^mailgun/staff$', mailgun.staff),
+    url(r'^mailgun/team$', mailgun.team),
+    url(r'^mailgun/test80085$', mailgun.test80085),
 
     # Discourse discussion group
-    url(r'^discourse/sso$', 'nadine.discourse.sso'),
+    #url(r'^discourse/sso$', discourse.sso),
 
-    url(r'^$', 'views.index'),
+    url(r'^$', views.index),
 ]
 
 if settings.DEBUG:
     import debug_toolbar
-    urlpatterns += patterns('',
-                            url(r'^__debug__/', include(debug_toolbar.urls)),
-                            )
+    urlpatterns.append(url(r'^__debug__/', include(debug_toolbar.urls)))
 
 
 def get_manifest():
