@@ -25,7 +25,7 @@ nav #doors-tab { background: #FBD850; color: black; }
 			<th></th>
 		</tr>
 		{% for event in events %}
-			<tr>
+			<tr class="{% cycle 'row-odd' 'row-even' %}">
 				<td nowrap>{{ event.timestamp }}</td>
 				<td>{{ event.door }}</td>
 				<td>{{ event.event_description }}</td>
@@ -64,21 +64,38 @@ nav #doors-tab { background: #FBD850; color: black; }
 			<td>{{ keymaster.access_ts }}</td>
 			<td>{{ keymaster.success_ts }}</td>
 			<td>{{ keymaster.sync_ts }}</td>
-			<td>
-				<form method="POST" action=".">
+			<td style="text-align:right;">
+				<form method="POST" action="." style="display:inline;">
 					<input type="hidden" name="keymaster_id" value="{{ keymaster.id }}">
 					<input name="action" type="submit" value="Force Sync"/>
 					{% csrf_token %}
 				</form>
+				<form method="POST" action="." style="display:inline;">
+					<input type="hidden" name="keymaster_id" value="{{ keymaster.id }}">
+					<input name="action" type="submit" value="Clear Logs"/>
+					{% csrf_token %}
+				</form>
+				
 			</td>
 		</tr>
 	</table>
-
-	<h4>Gatekeeper Messaages</h4>
 	<table>
-		<tr>
-		</tr>
+		{% for l in keymaster.unresolved_logs %}
+			<tr class="{% cycle 'row-even' 'row-odd' %}">
+				<td nowrap>{{ l.timestamp }}</td>
+				<td>{{ l.message }}</td>
+				<td style="text-align:right;">
+					<form method="POST" action=".">
+						<input type="hidden" name="keymaster_id" value="{{ keymaster.id }}">
+						<input type="hidden" name="log_id" value="{{ l.id }}">
+						<input name="action" type="submit" value="Clear"/>
+						{% csrf_token %}
+					</form>
+				</td>
+			</tr>
+		{% endfor %}
 	</table>
+
 {% endfor %}
 
 

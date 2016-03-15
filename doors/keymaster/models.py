@@ -133,16 +133,28 @@ class Keymaster(models.Model):
         self.sync_ts = None
         self.save()
 
+    def unresolved_logs(self):
+        return GatekeeperLog.objects.filter(keymaster=self, resolved=False)
+
+    def clear_logs(self, log_id=None):
+        logs = self.unresolved_logs()
+        if log_id:
+            logs = logs.filter(id=log_id)
+        for l in logs:
+            l.resolved = True
+            l.save()
+
     def log_message(self, message):
         # Save this message to the database
         GatekeeperLog.objects.create(keymaster=self, message=message)
         
-        # How many have we receoved this hours
-        one_hour_ago = timezone.now() - timedelta(hours=1)
-        logs_this_hour = GatekeeperLog.objects.filter(keymaster=self, timestamp_gte=one_hour_ago).count()
+        # How many have we seen today?
+        day_start = timezone.now() - timedelta(days=1)
+        day_start.replace(hour=0, minute=0, second=0, microsecond=0)
+        logs_today = GatekeeperLog.objects.filter(keymaster=self, timestamp_gte=day_start).count()
         
-        # Email the system admins of the problem
-        if logs_this_hour == 1 :
+        # Email the system admins of the problem - Try to avoid a mailbomb
+        if logs_today % 30 == 1:
             mail.mail_admins("Gatekeeper Message", message, fail_silently=True)
 
     def __str__(self): 
@@ -212,4 +224,4 @@ class GatekeeperLog(models.Model):
     message = models.TextField()
     
     def __str__(self):
-        return '%s: %s' % (self.timestamp, self.entry)
+        return '%s: %s' % (self.timestamp, self.message)

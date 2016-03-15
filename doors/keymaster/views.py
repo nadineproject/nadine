@@ -27,10 +27,13 @@ def index(request):
     twoMinutesAgo = timezone.now() - timedelta(minutes=2)
     events = DoorEvent.objects.all().order_by('timestamp').reverse()[:10]
     
-    if 'keymaster_id' in request.POST and request.POST.get('action') == "Force Sync":
+    if 'keymaster_id' in request.POST:
         km = get_object_or_404(Keymaster, id=request.POST.get('keymaster_id'))
-        km.force_sync()
-    
+        if request.POST.get('action') == "Force Sync":
+            km.force_sync()
+        elif 'action' in request.POST and "Clear" in request.POST.get('action'):
+            km.clear_logs(log_id=request.POST.get('log_id', None))
+
     return render_to_response('keymaster/index.html', 
         {'keymasters': keymasters, 
          'twoMinutesAgo': twoMinutesAgo,
