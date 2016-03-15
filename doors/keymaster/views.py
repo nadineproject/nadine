@@ -171,7 +171,8 @@ def keymaster(request):
             outgoing_message = Messages.SUCCESS_RESPONSE
         elif incoming_message == Messages.LOG_MESSAGE:
             incoming_data = connection.data
-            keymaster.log_message(incoming_data)
+            message = incoming_data['log_text']
+            keymaster.log_message(message)
             outgoing_message = Messages.SUCCESS_RESPONSE
         else:
             raise Exception("Invalid Message")

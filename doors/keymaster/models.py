@@ -10,6 +10,7 @@ from django.conf.urls import patterns, include, url
 from django.contrib.auth.models import User
 from django.db.models.signals import post_delete
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
+from django.core import mail
 from django.utils import timezone
 
 from doors.core import DoorTypes, DoorEventTypes, Messages, EncryptedConnection
@@ -133,8 +134,16 @@ class Keymaster(models.Model):
         self.save()
 
     def log_message(self, message):
-        # TODO email the correct people (as mentioned in a config file) and write a log
-        pass
+        # Save this message to the database
+        GatekeeperLog.objects.create(keymaster=self, message=message)
+        
+        # How many have we receoved this hours
+        one_hour_ago = timezone.now() - timedelta(hours=1)
+        logs_this_hour = GatekeeperLog.objects.filter(keymaster=self, timestamp_gte=one_hour_ago).count()
+        
+        # Email the system admins of the problem
+        if logs_this_hour == 1 :
+            mail.mail_admins("Gatekeeper Message", message, fail_silently=True)
 
     def __str__(self): 
         return self.description
@@ -197,10 +206,10 @@ class DoorEvent(models.Model):
         return '%s: %s' % (self.door, self.event_description)
 
 class GatekeeperLog(models.Model):
-    timestamp = models.DateTimeField(null=False)
-    unresolved = models.BooleanField(default=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    resolved = models.BooleanField(default=False)
     keymaster = models.ForeignKey(Keymaster)
-    entry = models.TextField()
+    message = models.TextField()
     
     def __str__(self):
         return '%s: %s' % (self.timestamp, self.entry)

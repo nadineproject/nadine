@@ -473,6 +473,13 @@ class Gatekeeper(object):
         if reconfig:
             self.configure_doors()
     
+    def send_gatekeper_log(self, log_text):
+        print "Gatekeeper: Sending gatekeeper log to keymaster..."
+        json_data = json.dumps({'log_text':log_text})
+        response = self.encrypted_connection.send_message(Messages.LOG_MESSAGE, data=json_data)
+        if not response == Messages.SUCCESS_RESPONSE:
+            raise Exception ("send_gatekeper_log: Invalid response (%s)" % response)
+    
     def magic_key_test(self, door_name, code):
         print "Gatekeeper: Magic key test (%s)" % code
         if code:

@@ -22,4 +22,5 @@ admin.site.register(Keymaster, KeymasterAdmin)
 admin.site.register(DoorEvent, DoorEventAdmin)
 admin.site.register(Door)
 admin.site.register(DoorCode)
+admin.site.register(GatekeeperLog)
 
