@@ -76,7 +76,7 @@ class Transaction(models.Model):
     member = models.ForeignKey('Member', blank=False, null=False)
     TRANSACTION_STATUS_CHOICES = (('open', 'Open'), ('closed', 'Closed'))
     status = models.CharField(max_length=10, choices=TRANSACTION_STATUS_CHOICES, blank=False, null=False, default='open')
-    bills = models.ManyToManyField(Bill, blank=False, null=False, related_name='transactions')
+    bills = models.ManyToManyField(Bill, related_name='transactions')
     amount = models.DecimalField(max_digits=7, decimal_places=2)
     note = models.TextField(blank=True, null=True)
 
