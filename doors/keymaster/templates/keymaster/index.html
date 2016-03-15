@@ -25,7 +25,7 @@ nav #doors-tab { background: #FBD850; color: black; }
 			<th></th>
 		</tr>
 		{% for event in events %}
-			<tr class="{% cycle 'row-odd' 'row-even' %}">
+			<tr class="{% cycle 'row-even' 'row-odd' %}">
 				<td nowrap>{{ event.timestamp }}</td>
 				<td>{{ event.door }}</td>
 				<td>{{ event.event_description }}</td>
