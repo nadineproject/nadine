@@ -134,8 +134,18 @@ class Keymaster(models.Model):
         self.save()
 
     def unresolved_logs(self):
-        return GatekeeperLog.objects.filter(keymaster=self, resolved=False)
-
+        return gatekeeperlog_set.filter(keymaster=self, resolved=False)
+    
+    def logs_for_day(self, target_date=None):
+        if not target_date:
+            target_date = timezone.now()
+        target_date.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_date = target_date + timedelta(days=1)
+        logs_today = self.gatekeeperlog_set.filter(keymaster=self, timestamp__gte=target_date, timestamp__lt=end_date)
+        logs_today = logs_today.order_by('timestamp').reverse()
+        logger.debug("logs found for '%s': %d" % (target_date.date(), logs_today.count()))
+        return logs_today
+    
     def clear_logs(self, log_id=None):
         logs = self.unresolved_logs()
         if log_id:
@@ -143,20 +153,35 @@ class Keymaster(models.Model):
         for l in logs:
             l.resolved = True
             l.save()
-
+    
     def log_message(self, message):
         # Save this message to the database
         GatekeeperLog.objects.create(keymaster=self, message=message)
         
         # How many have we seen today?
-        day_start = timezone.now() - timedelta(days=1)
-        day_start.replace(hour=0, minute=0, second=0, microsecond=0)
-        logs_today = GatekeeperLog.objects.filter(keymaster=self, timestamp__gte=day_start).count()
-        #print "logs_today: %d" % logs_today
+        logs_today = self.logs_for_day()
+        cnt_today = logs_today.count()
         
-        # Email the system admins of the problem - Try to avoid a mailbomb
-        if logs_today % 30 == 1:
-            #print "mailing admins"
+        # Avoid a mailbombing the admins
+        send_mail = False
+        if cnt_today < 5:
+            # Send the first 5 so we know there is an issue
+            send_mail = True
+        else:
+            # We know there are more then 5 so we should check how fast they are coming
+            delay = logs_today[0].timestamp - logs_today[1].timestamp
+            if delay.seconds >= 600:
+                # Send if there is more then a 10 minute gap between logs
+                send_mail = True
+            else:
+                # Small delay between last 2 logs so they are coming in hot
+                if cnt_today % 30 == 0:
+                    # Send every 30th log
+                    send_mail = True
+        
+        # Email the system admins of the problem
+        if send_mail:
+            logger.debug("mailing admins new gatekeeper log")
             mail.mail_admins("Gatekeeper Message", message, fail_silently=True)
 
     def __str__(self): 
