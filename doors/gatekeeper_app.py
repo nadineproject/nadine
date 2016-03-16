@@ -48,7 +48,7 @@ class GatekeeperApp(object):
                     # Keep our heartbeat alive
                     if not heartbeat or not heartbeat.is_alive():
                         if heartbeat and heartbeat.error:
-                            gatekeeper.send_gatekeper_log(str(heartbeat.error))
+                            gatekeeper.send_gatekeper_log("Heartbeat: " + str(heartbeat.error))
                             time.sleep(5000)
                         
                         print "Starting Heartbeat..."
@@ -60,7 +60,7 @@ class GatekeeperApp(object):
                     # Keep our event watcher alive
                     if not event_watcher or not event_watcher.is_alive():
                         if event_watcher and event_watcher.error:
-                            gatekeeper.send_gatekeper_log(str(event_watcher.error))
+                            gatekeeper.send_gatekeper_log("EventWatcher: " + str(event_watcher.error))
                             time.sleep(5000)
                         
                         print "Starting Event Watcher..."
