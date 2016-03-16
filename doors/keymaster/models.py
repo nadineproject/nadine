@@ -134,7 +134,7 @@ class Keymaster(models.Model):
         self.save()
 
     def unresolved_logs(self):
-        return gatekeeperlog_set.filter(keymaster=self, resolved=False)
+        return self.gatekeeperlog_set.filter(keymaster=self, resolved=False)
     
     def logs_for_day(self, target_date=None):
         if not target_date:
