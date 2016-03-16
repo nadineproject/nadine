@@ -95,7 +95,7 @@ def help_topic(request, slug):
 @user_passes_test(is_active_member, login_url='members.views.not_active')
 def view_members(request):
     active_members = Member.objects.active_members().order_by('user__first_name')
-    here_today = arp.users_for_day()
+    here_today = Member.objects.here_today()
     has_key = has_mail = None
     if request.user.get_profile().is_manager():
         has_key = Member.objects.members_with_keys()
@@ -357,28 +357,6 @@ def delete_notification(request, username):
     for n in UserNotification.objects.filter(notify_user=request.user, target_user=target):
         n.delete()
     return HttpResponseRedirect(reverse('members.views.notifications', kwargs={}))
-
-# On ice for now.  Preffer a JSON alernative
-# def ticker(request):
-#	here_today = arp.users_for_day()
-#
-#	now = timezone.localtime(timezone.now())
-#	midnight = now - timedelta(seconds=now.hour*60*60 + now.minute*60 + now.second)
-#	device_logs = ArpLog.objects.for_range(midnight, now)
-#
-#	counts = {}
-#	counts['members'] = Member.objects.active_members().count()
-#	counts['full_time'] = Membership.objects.active_memberships(now).filter(has_desk=True).count()
-#	counts['part_time'] = counts['members'] - counts['full_time']
-#	counts['here_today'] = len(here_today)
-#	counts['devices'] = len(device_logs)
-#
-#	# Auto refresh?
-#	refresh = True;
-#	if request.GET.has_key("norefresh"):
-#		refresh = False;
-#
-#	return render_to_response('members/ticker.html',{'counts':counts, 'members':here_today, 'refresh':refresh}, context_instance=RequestContext(request))
 
 
 @login_required

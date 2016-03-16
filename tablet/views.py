@@ -22,7 +22,6 @@ from nadine.models.payment import Bill
 from nadine.utils.slack_api import SlackAPI
 from members.models import MOTD
 from staff.forms import NewUserForm, MemberSearchForm
-from arpwatch import arp
 from staff import email
 from forms import SignatureForm
 
@@ -41,7 +40,7 @@ def members(request):
 
 
 def here_today(request):
-    members = arp.users_for_day()
+    members = Member.objects.here_today()
     return render_to_response('tablet/here_today.html', {'members': members}, context_instance=RequestContext(request))
 
 

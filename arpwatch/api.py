@@ -47,7 +47,7 @@ class ActivityModel(object):
     def here_today(self):
         '''This property is exposed in the ActivityModel'''
         results = []
-        for member in arp.users_for_day():
+        for member in Member.objects.here_today()
             member_dict = {"username": member.user.username, "name": member.full_name}
             if(member.photo):
                 member_dict["photo"] = "http://%s%s%s" % (Site.objects.get_current().domain, settings.MEDIA_URL, member.photo)

@@ -109,7 +109,7 @@ def announce_special_days():
 
 @shared_task
 def send_notifications():
-    here_today = arp.users_for_day()
+    here_today = Member.objects.here_today()
     for n in UserNotification.objects.filter(sent_date__isnull=True):
         if n.notify_user.get_profile() in here_today:
             if n.target_user.get_profile() in here_today:

@@ -864,7 +864,7 @@ def activity_for_date(request, activity_date):
 
     daily_log_form = DailyLogForm(initial={'visit_date': activity_date})
     #daily_log_form = None
-    not_signed_in = arp.not_signed_in(activity_date)
+    not_signed_in = Member.objects.not_signed_in(activity_date)
 
     return render_to_response('staff/activity_date.html', {'daily_logs': daily_logs, 'not_signed_in': not_signed_in, 'daily_log_form': daily_log_form, 'activity_date': activity_date, 'next_date': activity_date + timedelta(days=1), 'previous_date': activity_date - timedelta(days=1), }, context_instance=RequestContext(request))
 

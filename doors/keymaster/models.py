@@ -233,7 +233,19 @@ def door_code_callback(sender, **kwargs):
 post_delete.connect(door_code_callback, sender=DoorCode)
 
 
+class DoorEventManager(models.Manager):
+
+    def users_for_day(self, day=None):
+        if not day:
+            day = timezone.now().date()
+        end = day + timedelta(days=1)
+        logger.info("users_for_day from '%s' to '%s'" % (day, end))
+        return DoorEvent.objects.filter(timestamp__range=(day, end))
+
+
 class DoorEvent(models.Model):
+    objects = DoorEventManager()
+    
     timestamp = models.DateTimeField(null=False)
     door = models.ForeignKey(Door, null=False)
     user = models.ForeignKey(User, null=True, db_index=True)

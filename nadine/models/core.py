@@ -33,6 +33,8 @@ from PIL import Image
 from nadine.utils.usaepay_api import EPayAPI
 from nadine.utils.slack_api import SlackAPI
 
+from doors.keymaster.models import DoorEvent
+
 logger = logging.getLogger(__name__)
 
 
@@ -157,6 +159,39 @@ class MemberManager(models.Manager):
     def daily_members(self):
         return self.active_members().exclude(id__in=self.members_with_desks())
 
+    def here_today(self, day=None):
+        if not day:
+            day = timezone.now().date()
+        
+        # The members who are on the network
+        from arpwatch.arp import users_for_day_query
+        arp_members_query = users_for_day_query(day=day)
+        
+        # The members who have signed in
+        daily_members_query = Member.objects.filter(pk__in=DailyLog.objects.filter(visit_date=day).values('member__id'))
+        
+        # The members that have access a door
+        door_query = DoorEvent.objects.users_for_day(day)
+        door_members_query = Member.objects.filter(user__in=door_query.values('user'))
+        
+        combined_query = arp_members_query | daily_members_query | door_members_query
+        return combined_query.distinct()
+
+    def not_signed_in(self, day=None):
+        if not day:
+            day = timezone.now().date()
+        
+        signed_in = []
+        for l in DailyLog.objects.filter(visit_date=day):
+            signed_in.append(l.member)
+
+        not_signed_in = []
+        for member in self.here_today(day):
+            if not member in signed_in and not member.has_desk():
+                not_signed_in.append(member)
+
+        return not_signed_in
+    
     def active_member_emails(self, include_email2=False):
         emails = []
         for membership in Membership.objects.active_memberships():
