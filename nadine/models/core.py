@@ -172,7 +172,7 @@ class MemberManager(models.Manager):
         
         # The members that have access a door
         door_query = DoorEvent.objects.users_for_day(day)
-        door_members_query = Member.objects.filter(user__in=door_query.values('user'))
+        door_members_query = Member.objects.active_members().filter(user__in=door_query.values('user'))
         
         combined_query = arp_members_query | daily_members_query | door_members_query
         return combined_query.distinct()
