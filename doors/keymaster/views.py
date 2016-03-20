@@ -27,7 +27,7 @@ def index(request):
     keymasters = Keymaster.objects.filter(is_enabled=True)
     twoMinutesAgo = timezone.now() - timedelta(minutes=2)
     events = DoorEvent.objects.all().order_by('timestamp').reverse()[:11]
-    
+
     if 'keymaster_id' in request.POST:
         km = get_object_or_404(Keymaster, id=request.POST.get('keymaster_id'))
         if request.POST.get('action') == "Force Sync":
@@ -35,12 +35,18 @@ def index(request):
         elif 'action' in request.POST and "Clear" in request.POST.get('action'):
             km.clear_logs(log_id=request.POST.get('log_id', None))
 
-    return render_to_response('keymaster/index.html', 
-        {'keymasters': keymasters, 
+    return render_to_response('keymaster/index.html',
+        {'keymasters': keymasters,
          'twoMinutesAgo': twoMinutesAgo,
          'events': events,
-        }, 
+        },
         context_instance=RequestContext(request))
+
+
+@staff_member_required
+def logs_by_code(request, code):
+    logs = DoorEvent.objects.filter(code=code).order_by("timestamp").reverse()
+    return render_to_response('keymaster/logs_by_code.html', {'code':code, 'logs':logs}, context_instance=RequestContext(request))
 
 
 @staff_member_required
@@ -48,14 +54,14 @@ def user_keys(request, username):
     user = get_object_or_404(User, username=username)
     keys = DoorCode.objects.filter(user=user)
     logs = DoorEvent.objects.filter(user=user).order_by("timestamp").reverse()
-    
+
     tenMinutesAgo = timezone.now() - timedelta(minutes=10)
     potential_key = DoorEvent.objects.filter(timestamp__gte=tenMinutesAgo, event_type=DoorEventTypes.UNRECOGNIZED).order_by("timestamp").reverse().first()
-    
+
     if 'code_id' in request.POST and request.POST.get('action') == "Delete":
         door_code = get_object_or_404(DoorCode, id=request.POST.get('code_id'))
         door_code.delete()
-    
+
     if not 'view_all_logs' in request.GET:
         logs = logs[:10]
     return render_to_response('keymaster/user_keys.html', {'user':user, 'keys':keys, 'logs':logs, 'potential_key':potential_key}, context_instance=RequestContext(request))
@@ -72,7 +78,7 @@ def user_list(request):
 def add_key(request):
     username = request.POST.get("username", "")
     code = request.POST.get("code", "")
-    
+
     # Try and find one and only one user for this username
     user = None
     if username:
@@ -83,28 +89,28 @@ def add_key(request):
             messages.add_message(request, messages.ERROR, "More then one user found for username '%s'" % username)
         else:
             user = user_search.first()
-    
+
     # Make sure this door code isn't used by anyone else
     if code:
         if DoorCode.objects.filter(code=code).count() > 0:
             messages.add_message(request, messages.ERROR, "Door code '%s' already in use!" % code)
             code = ""
-    
+
     # If we have enough information construct a door_code
     # but don't save it until we get user confirmation
     door_code = None
     if user and code:
         door_code = DoorCode(created_by=request.user, user=user, code=code)
-    
+
     # Save the code if we've received user confirmation
     if door_code and 'add_door_code' in request.POST:
         door_code.save()
         email.announce_new_key(user)
         return HttpResponseRedirect(reverse('doors.keymaster.views.user_keys', kwargs={'username': user.username}))
-    
+
     # Pull a list of active members for our autocomplete
     active_members = Member.objects.active_members()
-    
+
     return render_to_response('keymaster/add_key.html', {'username':username, 'code':code, 'door_code':door_code, 'active_members':active_members}, context_instance=RequestContext(request))
 
 
@@ -122,7 +128,7 @@ def test_door(request):
         response_time = timezone.now() - start_ts
         print "response code: %d, response time: %s" % (response_code, response_time)
     else:
-        # Start with the basic framework    
+        # Start with the basic framework
         xml_request = '<?xml version="1.0" encoding="UTF-8"?>\n<VertXMessage>\n\n</VertXMessage>'
     return render_to_response('keymaster/test_door.html', { 'ip_address': ip_address,
         'username': username, 'password':password, 'xml_request':xml_request, 'xml_response':xml_response
@@ -130,7 +136,7 @@ def test_door(request):
 
 
 ######################################################################
-# Keymaster API 
+# Keymaster API
 ######################################################################
 
 
@@ -151,12 +157,12 @@ def keymaster(request):
         if not keymaster:
             raise Exception("No Keymaster for incoming IP (%s)" % ip)
         logger.debug("Incoming connection from: %s" % ip)
-        
+
         # Decrypt the incoming message
         connection = keymaster.get_encrypted_connection()
         incoming_message = connection.receive_message(request)
         logger.debug("Incoming Message: '%s' " % incoming_message)
-        
+
         # Process the incoming message
         if incoming_message == Messages.TEST_QUESTION:
             outgoing_message = Messages.TEST_RESPONSE
@@ -184,7 +190,7 @@ def keymaster(request):
         else:
             raise Exception("Invalid Message")
         logger.debug("Outgoing Message: '%s' " % outgoing_message)
-        
+
         # Encrypt our response
         encrypted_response = connection.encrypt_message(outgoing_message)
     except Exception as e:

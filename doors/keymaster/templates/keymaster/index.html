@@ -6,7 +6,7 @@
 nav #doors-tab { background: #FBD850; color: black; }
 {% endblock %}
 
-{% block content %} 
+{% block content %}
 {% include "keymaster/doors_menu.frag" %}
 
 {% if not keymasters %}
@@ -36,7 +36,7 @@ nav #doors-tab { background: #FBD850; color: black; }
 				</td>
 				<td>
 					{% if event.code %}
-						{{ event.code }}
+						<a href="{% url 'doors.keymaster.views.logs_by_code' event.code %}">{{ event.code }}</a>
 					{% endif %}
 				</td>
 				<td>
@@ -47,7 +47,7 @@ nav #doors-tab { background: #FBD850; color: black; }
 							{% csrf_token %}
 						</form>
 					{% endif %}
-				
+
 				</td>
 			</tr>
 		{% endfor %}
@@ -84,7 +84,7 @@ nav #doors-tab { background: #FBD850; color: black; }
 					<input name="action" type="submit" value="Clear Logs"/>
 					{% csrf_token %}
 				</form>
-				
+
 			</td>
 		</tr>
 	</table>

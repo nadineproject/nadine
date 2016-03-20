@@ -6,7 +6,7 @@
 nav #doors-tab { background: #FBD850; color: black; }
 {% endblock %}
 
-{% block content %} 
+{% block content %}
 {% include "keymaster/doors_menu.frag" %}
 
 <h2>Keys for {{ user.get_full_name }}</h2>
@@ -47,7 +47,7 @@ nav #doors-tab { background: #FBD850; color: black; }
 
 	{% if potential_key %}
 		Unrecognized key <em>'{{ potential_key.code }}'</em>
-		read at <strong>{{ potential_key.door.name }}</strong> 
+		read at <strong>{{ potential_key.door.name }}</strong>
 		at {{ potential_key.timestamp|date:"h:i a" }}
 		<form method="POST" action="{% url 'doors.keymaster.views.add_key' %}" style="display:inline;">
 			<input type="hidden" name="username" value="{{ user.username }}"/></td>
@@ -82,7 +82,7 @@ nav #doors-tab { background: #FBD850; color: black; }
 			<th></th>
 		</tr>
 		{% for log in logs %}
-			<tr>
+			<tr class="{% cycle 'row-even' 'row-odd' %}">
 				<td nowrap>{{ log.timestamp }}</td>
 				<td>{{ log.door }}</td>
 				<!-- <td>{{ log.event_type }}</td> -->

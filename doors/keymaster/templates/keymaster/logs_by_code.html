@@ -1,0 +1,41 @@
+{% extends "staff/staff_base.html" %}
+
+{% block sub-title %} Doors | {% endblock %}
+
+{% block style %}
+nav #doors-tab { background: #FBD850; color: black; }
+{% endblock %}
+
+{% block content %}
+{% include "keymaster/doors_menu.frag" %}
+
+<h2>Logs for {{ code }}</h2>
+
+{% if messages %}
+	<div class="messages">
+		{% for message in messages %}
+			<div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+		{% endfor %}
+	</div>
+{% endif %}
+
+<table>
+	<tr>
+		<th>Timestamp</th>
+		<th>Door</th>
+		<!-- <th>Event</th> -->
+		<th>Description</th>
+		<th></th>
+	</tr>
+	{% for log in logs %}
+		<tr class="{% cycle 'row-even' 'row-odd' %}">
+			<td nowrap>{{ log.timestamp }}</td>
+			<td>{{ log.door }}</td>
+			<!-- <td>{{ log.event_type }}</td> -->
+			<td>{{ log.event_description }}</td>
+			<td></td>
+		</tr>
+	{% endfor %}
+</table>
+
+{% endblock %}
