@@ -1,6 +1,4 @@
 #!/bin/bash
-/etc/init.d/postgresql start
-
 python manage.py migrate                  # Apply database migrations
 python manage.py collectstatic --noinput  # Collect static files
 

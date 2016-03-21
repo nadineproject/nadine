@@ -1,0 +1,15 @@
+version: '2'
+services:
+  db:
+    image: postgres
+#  demo:
+#    command: ./manage.py restore_backup demo/demo_database.tar
+#    depends_on:
+#      - nadine
+  nadine:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
