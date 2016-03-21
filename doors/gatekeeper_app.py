@@ -48,9 +48,11 @@ class GatekeeperApp(object):
                     # Keep our heartbeat alive
                     if not heartbeat or not heartbeat.is_alive():
                         if heartbeat and heartbeat.error:
-                            gatekeeper.send_gatekeper_log("Heartbeat: " + str(heartbeat.error))
-                            time.sleep(5000)
-                        
+                            try:
+                                gatekeeper.send_gatekeper_log("Heartbeat: " + str(heartbeat.error))
+                                time.sleep(5000)
+                            except Exception as e:
+                                print "Unable to report hearbeat error!: %s" % str(e)
                         print "Starting Heartbeat..."
                         poll_delay = config.get('KEYMASTER_POLL_DELAY_SEC', 5)
                         heartbeat = Heartbeat(connection, poll_delay)
