@@ -6,7 +6,6 @@ path = lambda *a: os.path.join(ROOT, *a)
 
 PRODUCTION = False
 DEBUG = True
-TEMPLATE_DEBUG = DEBUG
 
 # Admins
 ADMINS = (
