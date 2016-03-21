@@ -1,10 +1,12 @@
 #!/bin/bash
+/etc/init.d/postgresql start
+
 python manage.py migrate                  # Apply database migrations
 python manage.py collectstatic --noinput  # Collect static files
 
 # Prepare log files and start outputting logs to stdout
-touch /nadine/logs/gunicorn.log
-touch /nadine/logs/access.log
+touch /webapp/nadine/logs/gunicorn.log
+touch /webapp/nadine/logs/access.log
 tail -n 0 -f /nadine/logs/*.log &
 
 # Start Gunicorn processes
