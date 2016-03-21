@@ -21,10 +21,21 @@ ENV DOCKYARD_SRVHOME=/webapp
 ENV DOCKYARD_SRVPROJ=/webapp/nadine
 
 # Update the default application repository sources list
-RUN apt-get update && apt-get -y upgrade
-RUN apt-get autoremove -y
-RUN apt-get install -y python-pip libjpeg-dev
-RUN pip install --upgrade pip
+RUN apt-get update \
+    && apt-get -y dist-upgrade \
+    && apt-get install -y libjpeg-dev gunicorn postgresql-9.4
+#RUN apt-get -y autoremove
+
+# Configure Postgresql
+#RUN apt-get install -y postgresql-9.4
+USER postgres
+RUN /etc/init.d/postgresql start \
+    && psql --command "CREATE USER pguser WITH SUPERUSER PASSWORD 'pguser';" \
+    && createdb -O pguser nadinedb
+RUN mkdir -p /var/run/postgresql && chown -R postgres /var/run/postgresql
+VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
+#CMD ["/usr/lib/postgresql/9.4/bin/postgres", "-D", "/var/lib/postgresql/9.4/main", "-c", "config_file=/etc/postgresql/9.4/main/postgresql.conf"]
+USER root
 
 # Create application subdirectories
 WORKDIR $DOCKYARD_SRVHOME
@@ -35,11 +46,17 @@ VOLUME ["$DOCKYARD_SRVHOME/media/", "$DOCKYARD_SRVHOME/logs/"]
 COPY $DOCKYARD_SRC $DOCKYARD_SRVPROJ
 
 # Install Python dependencies
+RUN pip install --upgrade pip
 RUN pip install -r $DOCKYARD_SRVPROJ/requirements.txt
+
+# Install the demo data
+WORKDIR $DOCKYARD_SRVPROJ
+COPY $DOCKYARD_SRC/demo/local_settings.py $DOCKYARD_SRVPROJ/nadine/
+RUN /etc/init.d/postgresql start \
+  && ./manage.py restore_backup demo/demo_database.tar
 
 # Port to expose
 EXPOSE 8000
 
 # Copy entrypoint script into the image
-WORKDIR $DOCKYARD_SRVPROJ
 ENTRYPOINT ["./docker-entrypoint.sh"]
