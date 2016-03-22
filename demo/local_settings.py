@@ -6,7 +6,6 @@ path = lambda *a: os.path.join(ROOT, *a)
 
 PRODUCTION = False
 DEBUG = True
-TEMPLATE_DEBUG = DEBUG
 
 # Admins
 ADMINS = (
@@ -20,8 +19,10 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'nadinedb',
         'USER': 'postgres',
-        #'PASSWORD': 'password'
-    }
+        #'PASSWORD': 'password',
+        'HOST': 'db',
+        'PORT': 5432,
+     }
 }
 
 # CACHE_BACKEND = 'dummy:///'

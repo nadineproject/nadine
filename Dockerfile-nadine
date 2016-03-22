@@ -23,7 +23,7 @@ ENV DOCKYARD_SRVPROJ=/webapp/nadine
 # Update the default application repository sources list
 RUN apt-get update \
     && apt-get -y dist-upgrade \
-    && apt-get install -y libjpeg-dev gunicorn
+    && apt-get install -y libjpeg-dev gunicorn postgresql-client
 #RUN apt-get -y autoremove
 
 # Configure Postgresql
