@@ -13,35 +13,35 @@ class GatekeeperApp(object):
             print "Starting up Gatekeeper..."
             gatekeeper = Gatekeeper(config)
             connection = gatekeeper.get_connection()
-            
+
             # Test the connection
             if gatekeeper.test_keymaster_connection():
                 print "Keymaster connection successfull!"
-            
+
             # Pull the configuration
             gatekeeper.configure_doors()
             if len(gatekeeper.doors) == 0:
                 print "No doors to program.  Exiting"
                 return
             print "Configured %d doors" % len(gatekeeper.doors)
-            
+
             # Set the time on each door
             if config['syncClocks']:
                 gatekeeper.sync_clocks()
-            
+
             # Clear out all the door codes if requested
             if config['clearCodes']:
                 gatekeeper.clear_all_codes()
                 initialSync = True
-            
+
             # Pull new data if requested
             if config['initialSync']:
                 gatekeeper.pull_door_codes()
-            
+
             try:
                 # Start with a clean bowl
                 sys.stdout.flush()
-                
+
                 heartbeat = None
                 event_watcher = None
                 hb_conn_err = False
@@ -50,6 +50,8 @@ class GatekeeperApp(object):
                     if not heartbeat or not heartbeat.is_alive():
                         if heartbeat and heartbeat.error:
                             try:
+                                # Heartbeat errors can come from a poor connection to the Keymaster
+                                # In cases like these we need to keep retrying to send the log up
                                 hb_conn_err = False
                                 gatekeeper.send_gatekeper_log("Heartbeat: " + str(heartbeat.error))
                             except Exception as e:
@@ -62,28 +64,28 @@ class GatekeeperApp(object):
                             heartbeat = Heartbeat(connection, poll_delay)
                             heartbeat.setDaemon(True)
                             heartbeat.start()
-                    
+
                     # Keep our event watcher alive
                     if not event_watcher or not event_watcher.is_alive():
                         if event_watcher and event_watcher.error:
                             gatekeeper.send_gatekeper_log("EventWatcher: " + str(event_watcher.error))
                             time.sleep(5)
-                        
+
                         print "Starting Event Watcher..."
                         poll_delay = config.get('EVENT_POLL_DELAY_SEC', 10)
                         event_watcher = EventWatcher(gatekeeper, poll_delay)
                         event_watcher.setDaemon(True)
                         event_watcher.start()
-                    
+
                     if heartbeat.new_data:
                         gatekeeper.pull_door_codes()
                         heartbeat.all_clear()
-                    
+
                     if event_watcher.new_data:
                         event_logs = gatekeeper.pull_event_logs()
                         gatekeeper.push_event_logs(event_logs)
                         event_watcher.all_clear()
-                    
+
                     time.sleep(.1)
             except KeyboardInterrupt:
                 print " Keyboard Interupt!"
@@ -106,7 +108,7 @@ if __name__ == "__main__":
     # Pull the config
     with open('gw_config.json', 'r') as f:
         config = json.load(f)
-    
+
     # Pull the command line args
     config['initialSync'] = "--sync" in sys.argv
     config['syncClocks'] = "--set-time" in sys.argv
