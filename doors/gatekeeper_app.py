@@ -48,11 +48,11 @@ class GatekeeperApp(object):
                 while True:
                     # Keep our heartbeat alive
                     if not heartbeat or not heartbeat.is_alive():
+                        hb_conn_err = False
                         if heartbeat and heartbeat.error:
                             try:
                                 # Heartbeat errors can come from a poor connection to the Keymaster
                                 # In cases like these we need to keep retrying to send the log up
-                                hb_conn_err = False
                                 gatekeeper.send_gatekeper_log("Heartbeat: " + str(heartbeat.error))
                             except Exception as e:
                                 hb_conn_err = True
