@@ -71,7 +71,7 @@ nav #doors-tab { background: #FBD850; color: black; }
 {% if logs %}
 	<h3>
 		Access Logs ({{ logs|length }})
-		[ <a href="?view_all_logs=true">view all</a> ]
+		[ <a href="{% url 'doors.keymaster.views.logs' %}?username={{user.username}}">view all</a> ]
 	</h3>
 	<table>
 		<tr>
