@@ -14,10 +14,10 @@ logger = logging.getLogger(__name__)
 
 class HIDDoorController(DoorController):
 
-    def __init__(self, ip_address, username, password):
+    def __init__(self, name, ip_address, username, password):
         self.lock = threading.Lock()
-        super(HIDDoorController, self).__init__(ip_address, username, password)
-    
+        super(HIDDoorController, self).__init__(name, ip_address, username, password)
+
     def __send_xml_str(self, xml_str):
         logger.debug("Sending: %s" % xml_str)
 
@@ -187,16 +187,16 @@ class HIDDoorController(DoorController):
             event_dict['cardHolder'] = cardholder.to_dict()
 
         return event_dict
-    
+
     def is_locked(self):
         door_xml = self.__send_xml(list_doors())
         relay = get_attribute(door_xml, "relayState")
         return "set" == relay
-    
+
     def lock_door(self):
         xml = door_command("lockDoor")
         self.__send_xml(xml)
-    
+
     def unlock_door(self):
         xml = door_command("unlockDoor")
         self.__send_xml(xml)
@@ -444,7 +444,7 @@ def schedule_elm(action):
     elm = ElementTree.SubElement(root, 'hid:Schedules')
     elm.set('action', action)
     return (root, elm)
-    
+
 # <hid:Schedules action="LR" recordOffset="0" recordCount="10"/>
 def list_schedules(recordOffset, recordCount):
     root, elm = schedule_elm('LR')
