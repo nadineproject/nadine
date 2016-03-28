@@ -1,0 +1,24 @@
+{% extends "staff/staff_base.html" %}
+
+{% block sub-title %} Doors | {% endblock %}
+
+{% block style %}
+nav #doors-tab { background: #FBD850; color: black; }
+{% endblock %}
+
+{% block content %}
+{% include "keymaster/doors_menu.html" %}
+
+<h2>Access Logs</h2>
+
+{% if messages %}
+	<div class="messages">
+		{% for message in messages %}
+			<div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+		{% endfor %}
+	</div>
+{% endif %}
+
+{% include "keymaster/log_table.html" %}
+
+{% endblock %}

@@ -6,8 +6,8 @@
 nav #doors-tab { background: #FBD850; color: black; }
 {% endblock %}
 
-{% block content %} 
-{% include "keymaster/doors_menu.frag" %}
+{% block content %}
+{% include "keymaster/doors_menu.html" %}
 
 <h2>Add a Key</h2>
 
@@ -22,8 +22,8 @@ nav #doors-tab { background: #FBD850; color: black; }
 {% if door_code %}
 	<div style="text-align:center;">
 		<h3>
-			Are you sure you want to create a key for 
-			<strong>{{ door_code.user.get_full_name }}</strong> 
+			Are you sure you want to create a key for
+			<strong>{{ door_code.user.get_full_name }}</strong>
 			with code '<em>{{ door_code.code }}</em>'?
 		</h3>
 		<form method="POST" action=".">
@@ -32,7 +32,7 @@ nav #doors-tab { background: #FBD850; color: black; }
 			<input type="hidden" name="add_door_code" value="True"/>
 			<input type="submit" value="Yes" />
 			<input type="button" value="No" onclick="location.href='{% url 'doors.keymaster.views.index' %}'"/>
-			{% csrf_token %}	
+			{% csrf_token %}
 		</form>
 	</div>
 {% else %}

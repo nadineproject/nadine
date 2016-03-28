@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 def index(request):
     keymasters = Keymaster.objects.filter(is_enabled=True)
     twoMinutesAgo = timezone.now() - timedelta(minutes=2)
-    events = DoorEvent.objects.all().order_by('timestamp').reverse()[:11]
+    logs = DoorEvent.objects.all().order_by('timestamp').reverse()[:11]
 
     if 'keymaster_id' in request.POST:
         km = get_object_or_404(Keymaster, id=request.POST.get('keymaster_id'))
@@ -38,15 +38,31 @@ def index(request):
     return render_to_response('keymaster/index.html',
         {'keymasters': keymasters,
          'twoMinutesAgo': twoMinutesAgo,
-         'events': events,
+         'event_logs': logs,
         },
         context_instance=RequestContext(request))
 
 
 @staff_member_required
-def logs_by_code(request, code):
-    logs = DoorEvent.objects.filter(code=code).order_by("timestamp").reverse()
-    return render_to_response('keymaster/logs_by_code.html', {'code':code, 'logs':logs}, context_instance=RequestContext(request))
+def logs(request):
+    logs = DoorEvent.objects.all().order_by("timestamp").reverse()
+    if 'username' in request.GET:
+        username = request.GET.get('username')
+        user = get_object_or_404(User, username=username)
+        logs = logs.filter(user=user)
+    if 'code' in request.GET:
+        logs = logs.filter(code=request.GET.get('code'))
+    if 'type' in request.GET:
+        logs = logs.filter(event_type=request.GET.get('type'))
+    if 'door' in request.GET:
+        logs = logs.filter(door=request.GET.get('door'))
+
+    limit = 100
+    if 'limit' in request.GET:
+        limit = int(request.GET.get('limit'))
+    logs = logs[:limit]
+
+    return render_to_response('keymaster/logs.html', {'event_logs':logs}, context_instance=RequestContext(request))
 
 
 @staff_member_required

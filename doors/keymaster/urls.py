@@ -4,7 +4,7 @@ from doors.keymaster import views
 
 urlpatterns = [
     url(r'^$', views.index),
-    url(r'^logs/(?P<code>[^/]+)/$', views.logs_by_code),
+    url(r'^logs/$', views.logs),
     url(r'^keys/(?P<username>[^/]+)/$', views.user_keys),
     url(r'^users/$', views.user_list),
     url(r'^add_key/$', views.add_key),
