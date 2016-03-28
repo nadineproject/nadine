@@ -2,6 +2,7 @@
 import sys
 import json
 import time
+import logging
 import traceback
 
 from core import Messages, EncryptedConnection, Gatekeeper
@@ -10,20 +11,20 @@ from threads import Heartbeat, EventWatcher
 class GatekeeperApp(object):
     def run(self, config):
         try:
-            print "Starting up Gatekeeper..."
+            logging.info("Starting up Gatekeeper...")
             gatekeeper = Gatekeeper(config)
             connection = gatekeeper.get_connection()
 
             # Test the connection
             if gatekeeper.test_keymaster_connection():
-                print "Keymaster connection successfull!"
+                logging.info("Keymaster connection successfull!")
 
             # Pull the configuration
             gatekeeper.configure_doors()
             if len(gatekeeper.doors) == 0:
-                print "No doors to program.  Exiting"
+                logging.error("No doors to program.  Exiting")
                 return
-            print "Configured %d doors" % len(gatekeeper.doors)
+            logging.info("Configured %d doors" % len(gatekeeper.doors))
 
             # Set the time on each door
             if config['syncClocks']:
@@ -56,10 +57,10 @@ class GatekeeperApp(object):
                                 gatekeeper.send_gatekeper_log("Heartbeat: " + str(heartbeat.error))
                             except Exception as e:
                                 hb_conn_err = True
-                                print "Unable to report hearbeat error!: %s" % str(e)
+                                logging.warning("Unable to report hearbeat error!: %s" % str(e))
                             time.sleep(5)
                         if not hb_conn_err:
-                            print "Starting Heartbeat..."
+                            logging.info("Starting Heartbeat...")
                             poll_delay = config.get('KEYMASTER_POLL_DELAY_SEC', 5)
                             heartbeat = Heartbeat(connection, poll_delay)
                             heartbeat.setDaemon(True)
@@ -71,7 +72,7 @@ class GatekeeperApp(object):
                             gatekeeper.send_gatekeper_log("EventWatcher: " + str(event_watcher.error))
                             time.sleep(5)
 
-                        print "Starting Event Watcher..."
+                        logging.info("Starting Event Watcher...")
                         poll_delay = config.get('EVENT_POLL_DELAY_SEC', 10)
                         event_watcher = EventWatcher(gatekeeper, poll_delay)
                         event_watcher.setDaemon(True)
@@ -88,20 +89,19 @@ class GatekeeperApp(object):
 
                     time.sleep(.1)
             except KeyboardInterrupt:
-                print " Keyboard Interupt!"
-                print "Shutting down Heartbeat..."
+                logging.info(" Keyboard Interupt!")
+                logging.info("Shutting down Heartbeat...")
                 if heartbeat and heartbeat.is_alive():
                     heartbeat.stop()
                     #heartbeat.join()
-                print "Shutting down Event Watcher..."
+                logging.info("Shutting down Event Watcher...")
                 if event_watcher and event_watcher.is_alive():
                     event_watcher.stop()
                     #event_watcher.join()
-                print "Done!"
 
         except Exception as e:
             traceback.print_exc()
-            print "Error: %s" % str(e)
+            logging.error("Error: %s" % str(e))
 
 
 if __name__ == "__main__":
@@ -114,6 +114,11 @@ if __name__ == "__main__":
     config['syncClocks'] = "--set-time" in sys.argv
     config['clearCodes'] = "--clear-all" in sys.argv
 
+    # Configure logging
+    log_level = logging.DEBUG if config.get('DEBUG', False) else logging.INFO
+    logging.basicConfig(format='%(asctime)s [%(levelname)s]: %(message)s', level=log_level)
+    logging.getLogger("requests").setLevel(logging.WARNING)
+    
     # Start the application
     app = GatekeeperApp()
     app.run(config)
