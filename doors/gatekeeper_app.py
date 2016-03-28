@@ -113,12 +113,14 @@ if __name__ == "__main__":
     config['initialSync'] = "--sync" in sys.argv
     config['syncClocks'] = "--set-time" in sys.argv
     config['clearCodes'] = "--clear-all" in sys.argv
+    if "--debug" in sys.argv:
+            config['DEBUG'] = True
 
     # Configure logging
     log_level = logging.DEBUG if config.get('DEBUG', False) else logging.INFO
     logging.basicConfig(format='%(asctime)s [%(levelname)s]: %(message)s', level=log_level)
     logging.getLogger("requests").setLevel(logging.WARNING)
-    
+
     # Start the application
     app = GatekeeperApp()
     app.run(config)
