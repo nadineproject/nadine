@@ -54,7 +54,7 @@ nav #todo-tab { background: #FBD850; color: black; }
 
 			<tr class="{% cycle 'row-even' 'row-odd' %}">
 				<td>
-					<a href="{% url 'staff.views.activity_date' row.day.year row.day.month row.day.day %}">{{ row.day }}</a>
+					<a href="{% url 'staff.views.activity_date' row.day.year row.day.month row.day.day %}">{{ row.day|date:"l, M dS" }}</a>
 				</td>
 				<td style="text-align:left;">
 					<a href="{% url 'staff.views.member_activity' row.member.id %}">{{ row.member }}</a>
