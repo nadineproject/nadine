@@ -6,19 +6,21 @@ from doors.keymaster.models import Keymaster
 from doors.core import Messages, EncryptedConnection, CardHolder, Gatekeeper, TestDoorController
 
 class DoorControllerTestCase(SimpleTestCase):
+    name = "test controller"
     ip_address = "127.0.0.1"
     username = "username"
     password = "password"
-    controller = TestDoorController(ip_address, username, password)
-    
+    controller = TestDoorController(name, ip_address, username, password)
+
     def setUp(self):
         pass
-    
+
     def test_creation(self):
+        self.assertEqual(self.controller.door_name, self.name)
         self.assertEqual(self.controller.door_ip, self.ip_address)
         self.assertEqual(self.controller.door_user, self.username)
         self.assertEqual(self.controller.door_pass, self.password)
-    
+
     def test_save_cardholder(self):
         self.controller.clear_data()
         self.assertEqual(0, self.controller.cardholder_count())
@@ -27,25 +29,25 @@ class DoorControllerTestCase(SimpleTestCase):
         self.assertEqual(1, self.controller.cardholder_count())
         self.controller.clear_data()
         self.assertEqual(0, self.controller.cardholder_count())
-    
+
     def test_get_cardholder(self):
         cardholder = CardHolder("1", "Jacob", "Sayles", "jacobsayles", "123456")
         self.controller.clear_data()
         self.controller.save_cardholder(cardholder)
         self.assertEqual(cardholder, self.controller.get_cardholder_by_id("1"))
         self.assertEqual(cardholder, self.controller.get_cardholder_by_code("123456"))
-    
+
     def test_process_codes(self):
         c1 = CardHolder("1", "Jacob", "Sayles", "jacobsayles", "123456")
         c2 = CardHolder("2", "Susan", "Dorsch", "susandorsch", "111111")
         c3 = CardHolder("3", "Bob", "Smith", "bobsmith", "666666")
-        
+
         self.controller.clear_data()
         self.controller.save_cardholder(c1)  # No Change
         self.controller.save_cardholder(c2)  # Change
         self.controller.save_cardholder(c3) # Delete
         self.assertEqual(3, self.controller.cardholder_count())
-        
+
         # Process the changes
         new_codes = [
             {'username':'jacobsayles', 'first_name':'Jacob', 'last_name':'Sayles', 'code':'123456'},     # No Change
@@ -54,7 +56,7 @@ class DoorControllerTestCase(SimpleTestCase):
         ]
         changes = self.controller.process_door_codes(new_codes, load_credentials=False)
         self.assertEqual(len(changes), 4)
-        
+
         for c in changes:
             self.assertNotEqual(c.username, 'jacobsayles')
             if c.username == 'susandorsch':

@@ -44,6 +44,14 @@ class KeymasterTestCase(TestCase):
         self.assertFalse(keymaster.sync_ts == None)
         self.assertTrue(keymaster.sync_ts > start_ts)
 
+    def test_is_syncing(self):
+        keymaster = Keymaster.objects.by_ip(self.ip_address)
+        self.assertFalse(keymaster.is_syncing)
+        door_codes = keymaster.pull_door_codes()
+        self.assertTrue(keymaster.is_syncing)
+        keymaster.mark_sync()
+        self.assertFalse(keymaster.is_syncing)
+
     def test_log_message(self):
         keymaster = Keymaster.objects.by_ip(self.ip_address)
         log_count = GatekeeperLog.objects.filter(keymaster=keymaster).count()
