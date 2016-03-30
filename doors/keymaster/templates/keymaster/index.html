@@ -15,6 +15,10 @@ nav #doors-tab { background: #FBD850; color: black; }
 
 {% for keymaster in keymasters %}
 	<h2>{{ keymaster.description }}</h2>
+	{% if keymaster.is_syncing %}
+		<h4 style="color:red;">Full sync in progress.  Logs will be delayed until completed.</h4>
+	{% endif %}
+
 	{% include "keymaster/log_table.html" %}
 	<div style="margin: 1em 3em 0; text-align:right;">
 		<!-- [ <a href="{% url 'doors.keymaster.views.logs' %}">more logs</a> ] -->

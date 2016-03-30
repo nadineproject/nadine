@@ -47,6 +47,7 @@ class Keymaster(models.Model):
     success_ts = models.DateTimeField(null=True, blank=True)
     sync_ts = models.DateTimeField(null=True, blank=True)
     is_enabled = models.BooleanField(default=False)
+    is_syncing = models.BooleanField(default=False)
 
     def get_encrypted_connection(self):
         return EncryptedConnection(self.encryption_key)
@@ -66,6 +67,10 @@ class Keymaster(models.Model):
         return Messages.NO_NEW_DATA
 
     def pull_door_codes(self):
+        # Mark that we are syncing so humans know something is going on
+        self.is_syncing = True
+        self.save()
+
         # Pull all the codes and send them back
         codes = []
         for c in DoorCode.objects.all().order_by('user__username'):
@@ -89,21 +94,21 @@ class Keymaster(models.Model):
                 if timestamp == last_ts:
                     # We have caught up with the logs so we can stop now
                     break
-                    # TODO - If we dont' reach this point ever we should signal to the 
-                    # Gatekeeper that we needed more logs.  
-                
+                    # TODO - If we dont' reach this point ever we should signal to the
+                    # Gatekeeper that we needed more logs.
+
                 # Convert the timestamp string to a datetime object
                 # Assert the timezone is the local timezone for this timestamp
                 tz = timezone.get_current_timezone()
                 naive_timestamp = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S")
                 tz_timestamp = tz.localize(naive_timestamp)
-                
+
                 # TODO - If our timestamp is too far in the future we have a time sync problem.
-                
+
                 description = event.get('description')
                 event_type = event.get('door_event_type')
                 door_code = event.get('cardNumber')
-                
+
                 # Extract the User from a given username or the door code if we have it
                 user = None
                 cardholder = event.get('cardHolder')
@@ -115,7 +120,7 @@ class Keymaster(models.Model):
                     c = DoorCode.objects.filter(code=door_code).first()
                     if c:
                         user = c.user
-                
+
                 new_event = DoorEvent.objects.create(timestamp=tz_timestamp, door=door, user=user, code=door_code, event_type=event_type, event_description=description)
         return Messages.SUCCESS_RESPONSE
 
@@ -123,6 +128,7 @@ class Keymaster(models.Model):
         # A successfull sync is a success
         self.success_ts = timezone.now()
         self.sync_ts = timezone.now()
+        self.syncing = False
         self.save()
 
     def mark_success(self):
@@ -135,7 +141,7 @@ class Keymaster(models.Model):
 
     def unresolved_logs(self):
         return self.gatekeeperlog_set.filter(keymaster=self, resolved=False)
-    
+
     def logs_for_day(self, target_date=None):
         if not target_date:
             target_date = timezone.now()
@@ -145,7 +151,7 @@ class Keymaster(models.Model):
         logs_today = logs_today.order_by('timestamp').reverse()
         logger.debug("logs found for '%s': %d" % (target_date.date(), logs_today.count()))
         return logs_today
-    
+
     def clear_logs(self, log_id=None):
         logs = self.unresolved_logs()
         if log_id:
@@ -153,15 +159,15 @@ class Keymaster(models.Model):
         for l in logs:
             l.resolved = True
             l.save()
-    
+
     def log_message(self, message):
         # Save this message to the database
         GatekeeperLog.objects.create(keymaster=self, message=message)
-        
+
         # How many have we seen today?
         logs_today = self.logs_for_day()
         cnt_today = logs_today.count()
-        
+
         # Avoid a mailbombing the admins
         send_mail = False
         if cnt_today < 5:
@@ -178,13 +184,13 @@ class Keymaster(models.Model):
                 if cnt_today % 30 == 0:
                     # Send every 30th log
                     send_mail = True
-        
+
         # Email the system admins of the problem
         if send_mail:
             logger.debug("mailing admins new gatekeeper log")
             mail.mail_admins("Gatekeeper Message", message, fail_silently=True)
 
-    def __str__(self): 
+    def __str__(self):
         return self.description
 
 
@@ -195,10 +201,10 @@ class Door(models.Model):
     username = models.CharField(max_length=32)
     password = models.CharField(max_length=32)
     ip_address = models.GenericIPAddressField()
-    
+
     def get_last_event(self):
         return DoorEvent.objects.filter(door=self).order_by('timestamp').reverse().first()
-    
+
     def get_last_event_ts(self):
         # Convert the last event timestamp to the format we get from the doors
         ts = None
@@ -207,8 +213,8 @@ class Door(models.Model):
             tz = timezone.get_current_timezone()
             ts = str(last_event.timestamp.astimezone(tz))[:19].replace(" ", "T")
         return ts
-    
-    def __str__(self): 
+
+    def __str__(self):
         return self.name
 
 
@@ -221,13 +227,13 @@ class DoorCode(models.Model):
     def get_last_event(self):
         return DoorEvent.objects.filter(code=self.code).order_by('timestamp').reverse().first()
 
-    def __str__(self): 
+    def __str__(self):
         return '%s: %s' % (self.user, self.code)
 
 def door_code_callback(sender, **kwargs):
     door_code = kwargs['instance']
     # For now we are just going to force all keymasters to sync whenever a code is deleted
-    # When codes are tied to specific doors we can make this smarter.  
+    # When codes are tied to specific doors we can make this smarter.
     for km in Keymaster.objects.filter(is_enabled=True):
         km.force_sync()
 post_delete.connect(door_code_callback, sender=DoorCode)
@@ -245,15 +251,15 @@ class DoorEventManager(models.Manager):
 
 class DoorEvent(models.Model):
     objects = DoorEventManager()
-    
+
     timestamp = models.DateTimeField(null=False)
     door = models.ForeignKey(Door, null=False)
     user = models.ForeignKey(User, null=True, db_index=True)
     code = models.CharField(max_length=16, null=True)
     event_type = models.CharField(max_length=1, choices=DoorEventTypes.CHOICES, default=DoorEventTypes.UNKNOWN, null=False)
     event_description = models.CharField(max_length=256)
-    
-    def __str__(self): 
+
+    def __str__(self):
         return '%s: %s' % (self.door, self.event_description)
 
 class GatekeeperLog(models.Model):
@@ -261,6 +267,6 @@ class GatekeeperLog(models.Model):
     resolved = models.BooleanField(default=False)
     keymaster = models.ForeignKey(Keymaster)
     message = models.TextField()
-    
+
     def __str__(self):
         return '%s: %s' % (self.timestamp, self.message)
