@@ -128,7 +128,7 @@ class Keymaster(models.Model):
         # A successfull sync is a success
         self.success_ts = timezone.now()
         self.sync_ts = timezone.now()
-        self.syncing = False
+        self.is_syncing = False
         self.save()
 
     def mark_success(self):
