@@ -165,7 +165,7 @@ def member_edit(request, username):
             'emergency_email': emergency_contact.email,
         }
         edit_form = MemberEditForm(initial=member_data)
-    
+
     return render_to_response('staff/member_edit.html', { 'user':user, 'member':user.profile, 'edit_form': edit_form }, context_instance=RequestContext(request))
 
 
@@ -249,21 +249,21 @@ def bills_pay_all(request, username):
     user = get_object_or_404(User, username=username)
     member = user.get_profile()
     amount = member.open_bill_amount()
-    
+
     # Save all the bills!
     if amount > 0:
         transaction = Transaction(member=member, status='closed', amount=amount)
         transaction.save()
         for bill in member.open_bills():
             transaction.bills.add(bill)
-    
+
     # Where to next?
     if request.method == 'POST':
         if 'next' in request.POST:
             next_url = request.POST.get("next")
         else:
             next_url = reverse('staff.views.bills')
-    
+
     return HttpResponseRedirect(next_url)
 
 
@@ -314,7 +314,11 @@ def todo(request):
         count = MemberAlert.objects.unresolved(key).count()
         member_alerts.append((key, desc, count))
 
-    return render_to_response('staff/todo.html', {'member_alerts': member_alerts}, context_instance=RequestContext(request))
+    # Did anyone forget to sign in in the last 7 days?
+    check_date = timezone.now().date() - timedelta(days=7)
+    not_signed_in = Member.objects.not_signed_in_since(check_date)
+
+    return render_to_response('staff/todo.html', {'member_alerts': member_alerts, 'not_signed_in': not_signed_in}, context_instance=RequestContext(request))
 
 
 @staff_member_required
@@ -341,10 +345,13 @@ def todo_detail(request, key):
             next_url = request.POST.get("next")
             return HttpResponseRedirect(next_url)
 
+
     alerts = MemberAlert.objects.unresolved(key).order_by('user__first_name')
     description = MemberAlert.getDescription(key)
     is_system_alert = MemberAlert.isSystemAlert(key)
-    return render_to_response('staff/todo_detail.html', {'key': key, 'description': description, 'alerts': alerts, 'is_system_alert': is_system_alert}, context_instance=RequestContext(request))
+
+    return render_to_response('staff/todo_detail.html', {'key': key, 'description': description, 'alerts': alerts,
+            'is_system_alert': is_system_alert}, context_instance=RequestContext(request))
 
 
 @staff_member_required
@@ -597,7 +604,7 @@ def stats_gender(request):
 #         day['membership'] = membership_count
 #         day['income'] = membership_income
 #     income_avg = income_total / len(days)
-#     return render_to_response('staff/stats_income.html', {'days': days, 'date_range_form': date_range_form, 'start': start, 'end': end, 
+#     return render_to_response('staff/stats_income.html', {'days': days, 'date_range_form': date_range_form, 'start': start, 'end': end,
 #                     'min': income_min, 'max': income_max, 'avg': income_avg}, context_instance=RequestContext(request))
 #
 #
@@ -621,7 +628,7 @@ def stats_gender(request):
 #         if member_min == 0 or day['members'] < member_min:
 #             member_min = day['members']
 #     member_avg = member_total / len(days)
-#     return render_to_response('staff/stats_members.html', {'days': days, 'date_range_form': date_range_form, 'start': start, 'end': end, 
+#     return render_to_response('staff/stats_members.html', {'days': days, 'date_range_form': date_range_form, 'start': start, 'end': end,
 #                   'min': member_min, 'max': member_max, 'avg': member_avg}, context_instance=RequestContext(request))
 #
 #
@@ -646,7 +653,7 @@ def stats_graph(request):
     start_date = date(year=starteo.tm_year, month=starteo.tm_mon, day=starteo.tm_mday)
     endeo = timeo.strptime(end, "%Y-%m-%d")
     end_date = date(year=endeo.tm_year, month=endeo.tm_mon, day=endeo.tm_mday)
-    
+
     days = [{'date': start_date + timedelta(days=i)} for i in range((end_date - start_date).days)]
     if graph == "members":
         title = "Members by Day"
@@ -660,9 +667,9 @@ def stats_graph(request):
     elif graph == "churn":
         title = "Membership Churn"
 
-    
+
     return render_to_response('staff/stats_graph.html', {'title':title, 'graph':graph,
-        'days': days, 'date_range_form': date_range_form, 'start': start, 'end': end, 
+        'days': days, 'date_range_form': date_range_form, 'start': start, 'end': end,
         'min': min_v, 'max': max_v, 'avg': avg_v
     }, context_instance=RequestContext(request))
 
@@ -859,14 +866,10 @@ def activity_for_date(request, activity_date):
                 messages.add_message(request, messages.INFO, "Activity was recorded!")
             except Exception as e:
                 messages.add_message(request, messages.ERROR, e)
-        else: 
-            print "Fuck You"
+    else:
+        daily_log_form = DailyLogForm(initial={'visit_date': activity_date})
 
-    daily_log_form = DailyLogForm(initial={'visit_date': activity_date})
-    #daily_log_form = None
-    not_signed_in = Member.objects.not_signed_in(activity_date)
-
-    return render_to_response('staff/activity_date.html', {'daily_logs': daily_logs, 'not_signed_in': not_signed_in, 'daily_log_form': daily_log_form, 'activity_date': activity_date, 'next_date': activity_date + timedelta(days=1), 'previous_date': activity_date - timedelta(days=1), }, context_instance=RequestContext(request))
+    return render_to_response('staff/activity_date.html', {'daily_logs': daily_logs, 'daily_log_form': daily_log_form, 'activity_date': activity_date, 'next_date': activity_date + timedelta(days=1), 'previous_date': activity_date - timedelta(days=1), }, context_instance=RequestContext(request))
 
 
 @staff_member_required
@@ -932,7 +935,7 @@ def member_membership(request, member_id):
     if last_membership and last_membership.end_date and last_membership.end_date > today - timedelta(days=10):
         start = (member.last_membership().end_date + timedelta(days=1))
     last = start + MonthDelta(1) - timedelta(days=1)
-    
+
     if request.method == 'POST':
         membership_form = MembershipForm(request.POST, request.FILES)
         try:
@@ -993,7 +996,7 @@ def view_user_reports(request):
 def xero_user(request, username):
     user = get_object_or_404(User, username=username)
     xero_api = XeroAPI()
-    
+
     if request.method == 'POST':
         action = request.POST.get('action').lower()
         if action == "link":
@@ -1027,19 +1030,19 @@ def xero_user(request, username):
 @staff_member_required
 def usaepay_user(request, username):
     user = get_object_or_404(User, username=username)
-    
+
     # When we add a card we POST to USAePay and it comes back to this page
     # Any errors will be communicated to us in this GET variable
     if 'UMerror' in request.GET:
         messages.add_message(request, messages.ERROR, request.GET.get('UMerror'))
-    
+
     history = None
     try:
         epay_api = EPayAPI()
-        
+
         if 'disable_all' in request.POST:
             epay_api.disableAutoBilling(username)
-        
+
         customer_id = request.POST.get("customer_id", None)
         action = request.POST.get("action", "")
         #print "action: %s" % action
@@ -1067,12 +1070,12 @@ def usaepay_user(request, username):
                 enabled = request.POST.get("enabled", "") == "on"
                 epay_api.update_recurring(customer_id, enabled, next_date, description,comment, amount)
                 messages.add_message(request, messages.INFO, "Recurring billing updated for %s" % username)
-        
+
         # Lastly pull all customers for this user
         history = epay_api.get_history(username)
     except Exception as e:
         messages.add_message(request, messages.ERROR, e)
-    
+
     return render_to_response('staff/usaepay.html', {'user': user, 'history': history, 'settings':settings }, context_instance=RequestContext(request))
 
 
@@ -1095,17 +1098,17 @@ def usaepay_transactions(request, year, month, day):
     open_xero_invoices = XeroAPI().get_open_invoices_by_user()
     try:
         epay_api = EPayAPI()
-        
+
         if 'close_batch' in request.GET:
             epay_api.close_current_batch()
             messages.add_message(request, messages.INFO, "Current batch closed")
-        
+
         transactions = epay_api.get_transactions(year, month, day)
         totals['total_count'] = len(transactions)
-        
+
         # Pull the settled checks seperately
         settled_checks = epay_api.get_checks_settled_by_date(year, month, day)
-        
+
         for t in transactions:
             # Pull the member and the amount they owe
             member = Member.objects.filter(user__username = t['username']).first()
@@ -1129,17 +1132,17 @@ def usaepay_transactions(request, year, month, day):
                 elif t['card_type'] == "ACH":
                     ach.append(t)
                     totals['ach_total'] = totals['ach_total'] + t['amount']
-                
+
                 # Presence of authorized transactions means this batch is still open
                 if t['status'] == "Authorized":
                     open_batch = True
             else:
                 other_transactions.append(t)
-            
-        
+
+
     except Exception as e:
         messages.add_message(request, messages.ERROR, e)
-    
+
     return render_to_response('staff/charges.html', {'date': d, 'amex': amex, 'visamc': visamc, 'ach':ach, 'open_batch':open_batch,
                                                       'other_transactions': other_transactions, 'settled_checks':settled_checks, 'totals':totals,
                                                       'next_date': d + timedelta(days=1), 'previous_date': d - timedelta(days=1)}, context_instance=RequestContext(request))
@@ -1168,7 +1171,7 @@ def usaepay_void(request):
         if 'transaction_id' in request.POST:
             transaction_id = int(request.POST.get('transaction_id'))
             transaction = epay_api.get_transaction(transaction_id)
-    
+
             if 'username' in request.POST and 'confirmed' in request.POST:
                 username = request.POST.get('username')
                 epay_api.void_transaction(username, transaction_id)
@@ -1176,7 +1179,7 @@ def usaepay_void(request):
                 return HttpResponseRedirect(reverse('staff.views.usaepay_transactions_today'))
     except Exception as e:
         messages.add_message(request, messages.ERROR, e)
-    
+
     return render_to_response('staff/usaepay_void.html', {'transaction':transaction}, context_instance=RequestContext(request))
 
 
@@ -1189,9 +1192,9 @@ def slack_users(request):
         if 'profile' in u and 'email' in u['profile'] and u['profile']['email']:
             slack_emails.append(u['profile']['email'])
     non_slack_users = Member.objects.active_members().exclude(user__email__in=slack_emails)
-    return render_to_response('staff/slack_users.html', {'expired_users':expired_users, 
-                                                         'slack_users':slack_users, 
-                                                         'non_slack_users':non_slack_users, 
+    return render_to_response('staff/slack_users.html', {'expired_users':expired_users,
+                                                         'slack_users':slack_users,
+                                                         'non_slack_users':non_slack_users,
                                                          'slack_url':settings.SLACK_TEAM_URL}, context_instance=RequestContext(request))
 
 def view_ip(request):

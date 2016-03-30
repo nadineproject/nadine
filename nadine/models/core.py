@@ -162,25 +162,25 @@ class MemberManager(models.Manager):
     def here_today(self, day=None):
         if not day:
             day = timezone.now().date()
-        
+
         # The members who are on the network
         from arpwatch.arp import users_for_day_query
         arp_members_query = users_for_day_query(day=day)
-        
+
         # The members who have signed in
         daily_members_query = Member.objects.filter(pk__in=DailyLog.objects.filter(visit_date=day).values('member__id'))
-        
+
         # The members that have access a door
         door_query = DoorEvent.objects.users_for_day(day)
         door_members_query = Member.objects.active_members().filter(user__in=door_query.values('user'))
-        
+
         combined_query = arp_members_query | daily_members_query | door_members_query
         return combined_query.distinct()
 
     def not_signed_in(self, day=None):
         if not day:
             day = timezone.now().date()
-        
+
         signed_in = []
         for l in DailyLog.objects.filter(visit_date=day):
             signed_in.append(l.member)
@@ -188,10 +188,22 @@ class MemberManager(models.Manager):
         not_signed_in = []
         for member in self.here_today(day):
             if not member in signed_in and not member.has_desk():
-                not_signed_in.append(member)
+                not_signed_in.append({'member':member, 'day':day})
 
         return not_signed_in
-    
+
+    def not_signed_in_since(self, day=None):
+        if not day:
+            day = timezone.now().date()
+        not_signed_in = []
+
+        d = timezone.now().date()
+        while day <= d:
+            not_signed_in.extend(self.not_signed_in(d))
+            d = d - timedelta(days=1)
+
+        return not_signed_in
+
     def active_member_emails(self, include_email2=False):
         emails = []
         for membership in Membership.objects.active_memberships():
@@ -213,7 +225,7 @@ class MemberManager(models.Manager):
         today_memberships = Membership.objects.active_memberships(day)
         tomorrow_memberships = Membership.objects.active_memberships(next_day)
         exiting = today_memberships.exclude(member__in=tomorrow_memberships.values('member'))
-        
+
         return Member.objects.filter(id__in=exiting.values('member'))
 
     def expired_slack_users(self):
@@ -404,7 +416,7 @@ class Member(models.Model):
         from nadine.utils.xero_api import XeroAPI
         xero_api = XeroAPI()
         return xero_api.get_open_invoices(self.user)
-        
+
     def pay_bills_form(self):
         from staff.forms import PayBillsForm
         return PayBillsForm(initial={'member_id': self.id, 'amount': self.open_bills_amount})
@@ -478,7 +490,7 @@ class Member(models.Model):
 
     def duration(self):
         return relativedelta(timezone.now().date(), self.first_visit())
-    
+
     def duration_str(self, include_days=False):
         retval = ""
         delta = self.duration()
@@ -504,8 +516,8 @@ class Member(models.Model):
         return retval
 
     def is_anniversary(self):
-        
-        return 
+
+        return
 
     def host_daily_logs(self):
         return DailyLog.objects.filter(guest_of=self).order_by('-visit_date')

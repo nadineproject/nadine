@@ -8,7 +8,69 @@ nav #todo-tab { background: #FBD850; color: black; }
 {% block sub-title %}TODO | {% endblock %}
 
 {% block content %}
-{% include "staff/todo_menu.frag" %}  
+{% include "staff/todo_menu.frag" %}
+
+{% if not_signed_in %}
+<h2>Forgot to sign in?</h2>
+<div id="activity_list">
+	<table>
+		<tr>
+			<th>Day</th>
+			<th style="text-align:left;">Member</th>
+			<th>Were they here?</th>
+		</tr>
+
+		<script type="text/javascript">
+			function yes(i) {
+				name = $('#member_name' + i).val()
+				if (confirm("Are you sure you want to mark this activity for " + name + " as billable?")) {
+					$('#payment' + i).val('Bill');
+					$('#nsi_form' + i).submit();
+				} else {
+					return false;
+				}
+			}
+			function no(i) {
+				name = $('#member_name' + i).val()
+				var note = prompt("Waiving activity for " + name + "? Please enter a note:");
+				$('#note' + i).val(note)
+				if ($('#note' + i).val().length == 0) {
+					alert("Note is required if day is marked as WAIVED.");
+					return false;
+				} else {
+					$('#payment' + i).val('Waive');
+					$('#nsi_form' + i).submit();
+				}
+			}
+		</script>
+
+		{% for row in not_signed_in %}
+			<form id="nsi_form{{ forloop.counter }}" enctype="multipart/form-data" method='POST' style="display:inline;" action="{% url 'staff.views.activity_date' row.day.year row.day.month row.day.day %}">
+			<input type="hidden" name="visit_date" value="{{row.day}}">
+			<input type="hidden" name="member_id" value="{{row.member.id}}">
+			<input type="hidden" id="member_name{{ forloop.counter }}" value="{{row.member}}">
+			<input type="hidden" id="payment{{ forloop.counter }}" name="payment"/>
+			<input type="hidden" id="note{{forloop.counter}}" name="note" size="64"/>
+
+			<tr class="{% cycle 'row-even' 'row-odd' %}">
+				<td>
+					<a href="{% url 'staff.views.activity_date' row.day.year row.day.month row.day.day %}">{{ row.day }}</a>
+				</td>
+				<td style="text-align:left;">
+					<a href="{% url 'staff.views.member_activity' row.member.id %}">{{ row.member }}</a>
+				</td>
+				<td style="text-align:center;">
+						<button id="yes{{forloop.counter}}" onClick="return yes({{ forloop.counter }});">Yes - Mark as BILLABLE</button>
+						<button id="no{{forloop.counter}}" onClick="return no({{ forloop.counter }});">No - Mark as WAIVED</button>
+				</td>
+			</tr>
+
+			{% csrf_token %}
+			</form>
+		{% endfor %}
+	</table>
+</div>
+{% endif %}
 
 <h2>TODO:</h2>
 <table>

@@ -34,13 +34,13 @@ class NewUserForm(forms.Form):
     first_name = forms.CharField(max_length=100, label="First name *", required=True, widget=forms.TextInput(attrs={'autocapitalize': "words"}))
     last_name = forms.CharField(max_length=100, label="Last name *", required=True, widget=forms.TextInput(attrs={'autocapitalize': "words"}))
     email = forms.EmailField(max_length=100, label="Email *", required=True)
-    
+
     def clean_first_name(self):
         return self.cleaned_data['first_name'].strip().title()
-    
+
     def clean_last_name(self):
         return self.cleaned_data['last_name'].strip().title()
-    
+
     def clean_email(self):
         email = self.cleaned_data['email'].strip().lower()
         if User.objects.filter(email=email).count() > 0:
@@ -57,30 +57,30 @@ class NewUserForm(forms.Form):
         clean_username = clean_username.replace("@", "")
         clean_username = clean_username.replace("+", "")
         return clean_username
-    
+
     def save(self):
         "Creates the User and Member records with the field data and returns the user"
         if not self.is_valid():
             raise Exception('The form must be valid in order to save')
-        
+
         # Generate a unique username
         tries = 1
         username = self.create_username()
         while User.objects.filter(username=username).count() > 0:
             tries = tries + 1
             username = self.create_username(suffix=tries)
-        
+
         first = self.cleaned_data['first_name']
         last = self.cleaned_data['last_name']
         email = self.cleaned_data['email']
-        
+
         user = User(username=username, first_name=first, last_name=last, email=email)
         password = User.objects.make_random_password(length=32)
         user.set_password(password)
         user.save()
-        
+
         return user
-    
+
     class Meta:
         widgets = {
             'first_name': forms.TextInput(attrs={'autocapitalize': 'on', 'autocorrect': 'off'}),
@@ -125,7 +125,7 @@ class MemberEditForm(forms.Form):
     emergency_relationship = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}), label="Relationship", required=False)
     emergency_phone = forms.CharField(widget=forms.TextInput(attrs={'size': '16'}), label="Phone", required=False)
     emergency_email = forms.EmailField(widget=forms.TextInput(attrs={'size': '50'}), label="E-mail", required=False)
-    
+
     def save(self):
         "Creates the User and Member records with the field data and returns the user"
         if not self.is_valid():
@@ -134,7 +134,7 @@ class MemberEditForm(forms.Form):
         user = User.objects.get(username=self.cleaned_data['username'])
 
         print self.cleaned_data
-        
+
         user.first_name=self.cleaned_data['first_name']
         user.last_name=self.cleaned_data['last_name']
         user.email=self.cleaned_data['email']
@@ -166,7 +166,7 @@ class MemberEditForm(forms.Form):
         if self.cleaned_data['photo']:
             profile.photo = self.cleaned_data['photo']
         profile.save()
-        
+
         emergency_contact = user.get_emergency_contact()
         emergency_contact.name=self.cleaned_data['emergency_name']
         emergency_contact.relationship=self.cleaned_data['emergency_relationship']
@@ -178,7 +178,7 @@ class DailyLogForm(forms.Form):
     member_id = forms.IntegerField(required=True, min_value=0, widget=forms.HiddenInput)
     visit_date = forms.DateField(widget=forms.HiddenInput())
     payment = forms.ChoiceField(choices=PAYMENT_CHOICES, required=True)
-    #member_list = Member.objects.all()
+    #member_list = Member.objects.active_members()
     #member = forms.ModelChoiceField(queryset=member_list, required=True)
     #guest_of = forms.ModelChoiceField(queryset=member_list, required=False)
     note = forms.CharField(required=False)
