@@ -4,11 +4,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-postgres
-  nadine:
+    ports:
+      - "5432:5432"
+  django:
     build:
       context: .
       dockerfile: Dockerfile-nadine
-    command: python manage.py runserver 0.0.0.0:8000
     ports:
       - "8000:8000"
     depends_on:

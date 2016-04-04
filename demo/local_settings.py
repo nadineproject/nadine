@@ -25,6 +25,9 @@ DATABASES = {
      }
 }
 
+STATIC_ROOT = "/webapp/static"
+MEDIA_ROOT = "/webapp/media"
+
 # CACHE_BACKEND = 'dummy:///'
 CACHE_BACKEND = 'locmem:///'
 
