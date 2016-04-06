@@ -33,7 +33,9 @@ from nadine.utils.usaepay_api import EPayAPI
 
 from staff.forms import *
 from staff import billing, user_reports, email
+
 from arpwatch import arp
+from arpwatch.models import ArpLog
 
 START_DATE_PARAM = 'start'
 END_DATE_PARAM = 'end'
@@ -870,6 +872,16 @@ def activity_for_date(request, activity_date):
         daily_log_form = DailyLogForm(initial={'visit_date': activity_date})
 
     return render_to_response('staff/activity_date.html', {'daily_logs': daily_logs, 'daily_log_form': daily_log_form, 'activity_date': activity_date, 'next_date': activity_date + timedelta(days=1), 'previous_date': activity_date - timedelta(days=1), }, context_instance=RequestContext(request))
+
+
+@staff_member_required
+def activity_for_user(request, username):
+    user = get_object_or_404(User, username=username)
+    start = timezone.now().date() - timedelta(days=100)
+    end = timezone.now()
+    print "start: %s, end: %s" % (start, end)
+    arplogs = ArpLog.objects.for_user(username, start, end)
+    return render_to_response('staff/activity_user.html', {'user':user, 'arplogs':arplogs}, context_instance=RequestContext(request))
 
 
 @staff_member_required

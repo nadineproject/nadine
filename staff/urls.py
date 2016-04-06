@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'^activity/today/$', views.activity_today),
     url(r'^activity/$', views.activity),
     url(r'^activity/list/$', views.activity_list),
+    url(r'^activity/user/(?P<username>[^/]+)/$', views.activity_for_user),
     url(r'^pay_all/(?P<username>[^/]+)/$', views.bills_pay_all),
     url(r'^bill/$', views.bills),
     url(r'^bill/list/$', views.bill_list),
