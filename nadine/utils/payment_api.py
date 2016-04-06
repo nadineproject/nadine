@@ -22,11 +22,69 @@ class PaymentAPI:
         raw_transactions = self.entry_point.getTransactions(year, month, day)
         clean_transactions = clean_transaction_list(raw_transactions)
         return clean_transactions
+        
+
+##########################################################################################
+#  Helper functions
+##########################################################################################
+
+
+def getDateRange(year, month, day):
+    start = "%s-%s-%s 00:00:00" % (year, month, day)
+    end = "%s-%s-%s 23:59:59" % (year, month, day)
+    return (start, end)
+
+
+def clean_transaction_list(transactions):
+    transaction_list = []
+    if transactions:
+        for t in transactions:
+            clean_t = clean_transaction(t)
+            transaction_list.append(clean_t)
+    return transaction_list
+
+
+def clean_transaction(t):
+        username = t.CustomerID
+        card_type = t.CreditCardData.CardType
+        if not card_type:
+            card_type = "ACH"
+        status = t.Status
+        if status and ' ' in status:
+            status = status.split()[0]
+        transaction_type = t.TransactionType
+        amount = t.Details.Amount
+        if transaction_type == 'Credit':
+            amount = -1 * amount
+        description = t.Details.Description
+        date_time = datetime.strptime(t.DateTime, '%Y-%m-%d %H:%M:%S')
+        transaction_id = t.Response.RefNum
+        note = ""
+        if status == "Error":
+            note = t.Response.Error
+        return {'transaction_id': transaction_id, 'username': username, 'transaction': t, 'date_time':date_time, 'description': description,
+                'card_type': card_type, 'status': status, 'transaction_type':transaction_type, 'note':note, 'amount': amount}
 
 
 ##########################################################################################
 # USAePay SOAP Interface
 ##########################################################################################
+
+class SearchParamArray:
+
+    def __init__(self, soap_client):
+        self.soap_client = soap_client
+        self.soap_object = soap_client.factory.create('SearchParamArray')
+
+    def addParameter(self, field_name, field_type, field_value):
+        param = self.soap_client.factory.create('SearchParam')
+        param.Field = field_name
+        param.Type = field_type
+        param.Value = field_value
+        self.soap_object.SearchParam.append(param)
+
+    def to_soap(self):
+        return self.soap_object
 
 
 class USAEPAY_SOAP_API:
@@ -47,79 +105,24 @@ class USAEPAY_SOAP_API:
 
 
     def getCustomerNumber(self, username):
-        return self.client.service.searchCustomerID(self.token, username);
+        return self.client.service.searchCustomerID(self.token, username)
 
 
-    def getSearchParam(self, field_name, field_type, field_value):
-        param = self.client.factory.create('SearchParam')
-        param.Field = field_name
-        param.Type = field_type
-        param.Value = field_value
-        return param
+    def getTransactions(self, year, month, day):
+        start, end = getDateRange(year, month, day)
+        search = SearchParamArray(self.client)
+        search.addParameter("created", "gte", start)
+        search.addParameter("created", "lte", end)
+        return self.searchTransactions(search);
 
 
-	def getTransactions(self, year, month, day):
-		start, end = getDateRange(year, month, day);
-		SearchParamArray search = new SearchParamArray();
-		search.add(new SearchParam("created", "gte", start));
-		search.add(new SearchParam("created", "lte", end));
-		return searchTransactions(search);
-	}
+    def searchTransactions(self, search, match_all=True, start=0, limit=100, sort_by=None):
+        if not sort_by:
+            sort_by = "created"
+    	result = self.client.service.searchTransactions(self.token, search.to_soap(), match_all, start, limit, sort_by)
+        return result.Transactions[0]
 
 
-    def searchTransactions(self, search):
-        return searchTransactions(search, true, 0, 100, "created")
-
-
-    def searchTransactions(self, search, match_all, start, limit, sort_by):
-    	result = client.service.searchTransactions(token, search, match_all, start, limit, sort_by)
-    	print("searchTransactions: found " + result.getTransactionsReturned())
-    	transactionArray = result.getTransactions()
-    	return transactionArray.getTransactions()
-
-
-    def searchCustomers(self, SearchParamArray search, boolean match_all, int start, int limit, String sort_by):
+    def searchCustomers(self, search, match_all, start, limit, sort_by):
         # TODO
         return None
-
-
-##########################################################################################
-#  Helper functions
-##########################################################################################
-
-
-def getDateRange(year, month, day):
-    start = "%s-%s-%s 00:00:00" % (year, month day)
-    end = "%s-%s-%s 23:59:59" % (year, month day)
-    return (start, end)
-
-
-def clean_transaction_list(transactions):
-    transaction_list = []
-    if transactions:
-        for t in transactions:
-            clean_t = clean_transaction(t)
-            transaction_list.append(clean_t)
-    return transaction_list
-
-
-def clean_transaction(t):
-        username = t.getCustomerID()
-        card_type = t.getCreditCardData().getCardType()
-        if not card_type:
-            card_type = "ACH"
-        status = t.getStatus()
-        if status and ' ' in status:
-            status = status.split()[0]
-        transaction_type = t.getTransactionType()
-        amount = t.getDetails().getAmount()
-        if transaction_type == 'Credit':
-            amount = -1 * amount
-        description = t.getDetails().getDescription()
-        date_time = datetime.strptime(t.getDateTime(), '%Y-%m-%d %H:%M:%S')
-        transaction_id = t.getResponse().getRefNum()
-        note = ""
-        if status == "Error":
-            note = t.getResponse().getError()
-        return {'transaction_id': transaction_id, 'username': username, 'transaction': t, 'date_time':date_time, 'description': description,
-                'card_type': card_type, 'status': status, 'transaction_type':transaction_type, 'note':note, 'amount': amount}
