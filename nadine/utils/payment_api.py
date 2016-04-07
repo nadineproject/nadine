@@ -17,34 +17,39 @@ class PaymentAPI:
         pin = settings.USA_EPAY_PIN2
         self.entry_point = USAEPAY_SOAP_API(url, key, pin)
 
+
     def getAllCustomers(self, username):
         return self.entry_point.getAllCustomers(username)
+
 
     def get_transactions(self, year, month, day):
         raw_transactions = self.entry_point.getTransactions(year, month, day)
         clean_transactions = clean_transaction_list(raw_transactions)
         return clean_transactions
 
+
     def get_checks_settled_by_date(self, year, month, day):
-        # TODO - refactor to move the row splitting to the parent method`
-        report = self.entry_point.getTransactionReport("check:settled by date", year, month, day)
-        row_list = list(csv.reader(report.splitlines(), delimiter=','))
-        row_list.pop(0)
-        results = []
-        for row in row_list:
-            results.append({'date':row[1], 'name':row[2], 'status':row[9], 'amount':row[10], 'processed':row[13]})
+        results = self.entry_point.getTransactionReport("check:settled by date", year, month, day)
+
         # We pull another report to find any returned checks
         # I'm not sure why this isn't in the error report but I have to go through all transactions
-        report = self.entry_point.getTransactionReport("check:All Transactions by Date", year, month, day)
-        row_list = list(csv.reader(report.splitlines(), delimiter=','))
-        row_list.pop(0)
-        print row_list
-        for row in row_list:
-            if row[9] == "Returned":
-                results.append({'date':row[1], 'name':row[2], 'status':row[9], 'amount':row[10], 'processed':row[13]})
+        report2 = self.entry_point.getTransactionReport("check:All Transactions by Date", year, month, day)
+        return report2
+        for row in report2:
+            if row['status'] == "Returned":
+                results.append(row)
+
+        return results
+
 
     def close_current_batch(self):
         pass
+
+
+    def runSale(self, customer_id, amount, invoice, description, comments):
+        if amount <= 0:
+            raise Exception("Invalid amount (%s)!" % amount)
+        self.entry_point.runSale(int(customer_id), float(amount), invoice, description, comments)
 
 
 ##########################################################################################
@@ -146,9 +151,33 @@ class USAEPAY_SOAP_API:
     def getTransactionReport(self, report_type, year, month, day):
         start, end = getDateRange(year, month, day)
         response = self.client.service.getTransactionReport(self.token, start, end, report_type, "csv")
-        print response
-        return base64.b64decode(response)
+        report_csv = base64.b64decode(response)
+        row_list = list(csv.reader(report_csv.splitlines(), delimiter=','))
+        # First row is the header which we could use, but I like my simplified headers better
+        row_list.pop(0)
+        results = []
+        for row in row_list:
+            results.append({'date':row[1], 'name':row[2], 'status':row[9], 'amount':row[10], 'processed':row[13]})
+        return results
 
     def searchCustomers(self, search, match_all, start, limit, sort_by):
         # TODO
         return None
+
+    def emailReceipt(self, transaction_id):
+        response = self.client.service.emailTransactionReceipt(self.token, transaction_id)
+
+    def runSale(self, customer_number, amount, invoice, description, comments):
+        params = self.client.factory.create('CustomerTransactionRequest')
+        params.Command = "Sale"
+        params.CustReceipt = True
+        params.MerchReceipt = True
+        params.Details.Amount = float(amount)
+        params.Details.Invoice = invoice
+        params.Details.Description = description
+        params.Details.Comments = comments
+        print params
+
+        paymentID = 0 # sets it to use default
+        response = self.client.service.runCustomerTransaction(self.token, customer_number, paymentID, params)
+        return response

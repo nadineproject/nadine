@@ -1061,7 +1061,9 @@ def usaepay_user(request, username):
                 description = request.POST.get("description")
                 amount = request.POST.get("amount")
                 comment = request.POST.get("comment")
-                epay_api.runSale(customer_id, amount, invoice, description, comment)
+                # This sucks and we should use PaymentAPI everywhere TODO!!!
+                api = PaymentAPI()
+                api.runSale(customer_id, amount, invoice, description, comment)
                 messages.add_message(request, messages.INFO, "Sale for %s successfully authorized" % username)
             elif action == "edit_recurring":
                 next_date = request.POST.get("next_date")
@@ -1098,7 +1100,6 @@ def usaepay_transactions(request, year, month, day):
     totals = {'amex_total':0, 'visamc_total':0, 'ach_total':0, 'total':0}
     open_xero_invoices = XeroAPI().get_open_invoices_by_user()
     try:
-        #api = EPayAPI()
         api = PaymentAPI()
 
         if 'close_batch' in request.GET:
@@ -1109,7 +1110,9 @@ def usaepay_transactions(request, year, month, day):
         totals['total_count'] = len(transactions)
 
         # Pull the settled checks seperately
-        settled_checks = api.get_checks_settled_by_date(year, month, day)
+        # TODO - using the old api for now -- REMOVE!
+        settled_checks = EPayAPI().get_checks_settled_by_date(year, month, day)
+        #settled_checks = api.get_checks_settled_by_date(year, month, day)
 
         for t in transactions:
             # Pull the member and the amount they owe
