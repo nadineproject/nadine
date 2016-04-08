@@ -80,6 +80,7 @@ nav #todo-tab { background: #FBD850; color: black; }
 		<th></th>
 	</tr>
 	{% for key, description, count in member_alerts %}
+		{% if showall or count > 0 %}
 		<tr class="{% cycle 'row-even' 'row-odd' %}">
 			<td align="left">
 				<a href="{% url 'staff.views.todo_detail' key %}">{{ description }}</a>
@@ -87,7 +88,16 @@ nav #todo-tab { background: #FBD850; color: black; }
 			<td>{{ count }}</td>
 			<td></td>
 		</tr>
+		{% endif %}
 	{% endfor %}
 </table>
+
+<p>
+	{% if showall %}
+		[ <a href="?">Hide Completed Alerts</a> ]
+	{% else %}
+		[ <a href="?showall">Show All Alerts</a> ]
+	{% endif %}
+</p>
 
 {% endblock %}

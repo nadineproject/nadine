@@ -315,11 +315,13 @@ def todo(request):
         count = MemberAlert.objects.unresolved(key).count()
         member_alerts.append((key, desc, count))
 
+    showall = "showall" in request.GET
+
     # Did anyone forget to sign in in the last 7 days?
     check_date = timezone.now().date() - timedelta(days=7)
     not_signed_in = Member.objects.not_signed_in_since(check_date)
 
-    return render_to_response('staff/todo.html', {'member_alerts': member_alerts, 'not_signed_in': not_signed_in}, context_instance=RequestContext(request))
+    return render_to_response('staff/todo.html', {'member_alerts': member_alerts, 'not_signed_in': not_signed_in, 'showall':showall}, context_instance=RequestContext(request))
 
 
 @staff_member_required
