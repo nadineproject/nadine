@@ -1062,8 +1062,9 @@ def usaepay_user(request, username):
                 amount = request.POST.get("amount")
                 comment = request.POST.get("comment")
                 # This sucks and we should use PaymentAPI everywhere TODO!!!
-                api = PaymentAPI()
-                api.runSale(customer_id, amount, invoice, description, comment)
+                #api = PaymentAPI()
+                #api.runSale(customer_id, amount, invoice, description, comment)
+                epay_api.runSale(customer_id, amount, invoice, description, comment)
                 messages.add_message(request, messages.INFO, "Sale for %s successfully authorized" % username)
             elif action == "edit_recurring":
                 next_date = request.POST.get("next_date")
