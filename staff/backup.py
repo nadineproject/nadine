@@ -86,7 +86,7 @@ class BackupManager(object):
             os.environ['PGPASSWORD'] = db_password
 
         # now delete and recreate the database
-        command = 'echo "drop database %s; create database %s; grant all on database %s to %s;" | psql -U %s' % (db_name, db_name, db_name, db_user, db_user)
+        command = 'echo "drop database %s; create database %s; grant all on database %s to %s;" | psql -U %s %s' % (db_name, db_name, db_name, db_user, db_user, db_name)
         if not self.call_system(command):
             raise BackupError('Aborting restoration.')
 
