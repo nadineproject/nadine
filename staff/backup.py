@@ -86,7 +86,7 @@ class BackupManager(object):
             os.environ['PGPASSWORD'] = db_password
 
         # now delete and recreate the database
-        command = 'echo "drop database %s; create database %s; grant all on database %s to %s;" | psql -U %s %s' % (db_name, db_name, db_name, db_user, db_user, db_name)
+        command = 'echo "drop database %s; create database %s; grant all on database %s to %s;" | psql -U %s' % (db_name, db_name, db_name, db_user, db_user)
         if not self.call_system(command):
             raise BackupError('Aborting restoration.')
 
@@ -176,9 +176,9 @@ class BackupManager(object):
         filename = settings.BACKUP_ROOT + 'active_members.csv'
 
         csv_data = [[
-            'username', 
-            'first_name', 
-            'last_name', 
+            'username',
+            'first_name',
+            'last_name',
             'email',
             'email2',
             'phone',
@@ -211,7 +211,7 @@ class BackupManager(object):
                 member.city,
                 member.state,
                 member.zipcode,
-            
+
             ]
 
             if membership.has_key:
