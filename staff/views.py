@@ -322,8 +322,9 @@ def todo(request):
     # Did anyone forget to sign in in the last 7 days?
     check_date = timezone.now().date() - timedelta(days=7)
     not_signed_in = Member.objects.not_signed_in_since(check_date)
+    today = timezone.now().date()
 
-    return render_to_response('staff/todo.html', {'member_alerts': member_alerts, 'not_signed_in': not_signed_in, 'showall':showall}, context_instance=RequestContext(request))
+    return render_to_response('staff/todo.html', {'member_alerts': member_alerts, 'not_signed_in': not_signed_in, 'showall':showall, 'today':today}, context_instance=RequestContext(request))
 
 
 @staff_member_required
@@ -787,6 +788,7 @@ def date_range_from_request(request, days=31):
     if not end:
         tomorrow = timezone.now() + timedelta(days=1)
         end = tomorrow.date().isoformat()
+
     return (start, end)
 
 
@@ -881,12 +883,16 @@ def activity_for_date(request, activity_date):
 @staff_member_required
 def activity_for_user(request, username):
     user = get_object_or_404(User, username=username)
+
+    tz = timezone.get_current_timezone()
     start, end = date_range_from_request(request, days=10)
     date_range_form = DateRangeForm({START_DATE_PARAM: start, END_DATE_PARAM: end})
+    start_date = timezone.make_aware(datetime.datetime.strptime(start, "%Y-%m-%d"), tz)
+    end_date = timezone.make_aware(datetime.datetime.strptime(end, "%Y-%m-%d"), tz)
 
-    arp_logs = ArpLog.objects.for_user(username, start, end)
-    door_logs = DoorEvent.objects.filter(user=user, timestamp__gte=start, timestamp__lte=end)
-    daily_logs = DailyLog.objects.filter(member__user=user, visit_date__gte=start, visit_date__lte=end).reverse()
+    arp_logs = ArpLog.objects.for_user(username, start_date, end_date)
+    door_logs = DoorEvent.objects.filter(user=user, timestamp__range=(start_date, end_date))
+    daily_logs = DailyLog.objects.filter(member__user=user, visit_date__range=(start_date, end_date)).reverse()
 
     return render_to_response('staff/activity_user.html', {'user':user, 'date_range_form': date_range_form,
         'arp_logs':arp_logs, 'door_logs':door_logs, 'daily_logs':daily_logs}, context_instance=RequestContext(request))

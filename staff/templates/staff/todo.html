@@ -65,8 +65,10 @@ nav #todo-tab { background: #FBD850; color: black; }
 						<button id="no{{forloop.counter}}" onClick="return no({{ forloop.counter }});">No - Mark as WAIVED</button>
 				</td>
 				<td>
-					<a href="{% url 'staff.views.activity_for_user' row.member.user %}">send email</a> |
-					<a href="{% url 'staff.views.activity_for_user' row.member.user %}">view activity</a>
+					{% if row.day == today %}
+						<!-- <a href="">send email</a> | -->
+					{% endif %}
+					<a href="{% url 'staff.views.activity_for_user' row.member.user %}">user activity</a>
 				</td>
 			</tr>
 
