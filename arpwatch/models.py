@@ -72,9 +72,10 @@ class ArpLog_Manager(models.Manager):
         user = User.objects.get(username=username)
         device_logs = OrderedDict()
         DeviceLog = namedtuple('DeviceLog', 'start, end, diff')
-        logs = ArpLog.objects.filter(device__user=user, runtime__range=(day_start, day_end)).order_by('runtime').reverse()
+        logs = ArpLog.objects.filter(device__user=user, runtime__range=(day_start, day_end)).order_by('runtime')
         for arp_log in logs:
-            key = arp_log.runtime.date()
+            local_time = timezone.localtime(arp_log.runtime)
+            key = local_time.date()
             if key in device_logs:
                 start = device_logs[key].start
                 end = arp_log.runtime
