@@ -51,6 +51,9 @@ class PaymentAPI:
             raise Exception("Invalid amount (%s)!" % amount)
         self.entry_point.runSale(int(customer_id), float(amount), invoice, description, comments)
 
+    def update_recurring(self, customer_id, enabled, next_date, description, comment, amount):
+        return self.entry_point.updateCustomer(int(customer_id), enabled, next_date, description, comment, amount)
+
 
 ##########################################################################################
 #  Helper functions
@@ -181,3 +184,27 @@ class USAEPAY_SOAP_API:
         paymentID = 0 # sets it to use default
         response = self.client.service.runCustomerTransaction(self.token, customer_number, paymentID, params)
         return response
+        
+    def updateCustomer(self, customer_number, enabled, next_date, description, comment, amount):
+        # TODO This is totally untested
+        customer_object = self.client.service.getCustomer(self.token, customer_number)
+        customer_object.Enabled = enabled
+        customer_object.Next = next_date
+        customer_object.Description = description
+        customer_object.Comment = comment
+        customer_object.Amount = amount
+        
+        return self.client.service.quickUpdateCustomer(self.token, customer_number, customer_object)
+        
+        # BigInteger custnum = BigInteger.valueOf(customer_number.intValue());
+        #
+        # // Create array of fields to update
+        # FieldValueArray updateData = new FieldValueArray();
+        # for (Map.Entry<String, String> entry : fields.entrySet()) {
+        #     FieldValue fv = new FieldValue(entry.getKey(), entry.getValue());
+        #     updateData.add(fv);
+        # }
+        #
+        # return client.quickUpdateCustomer(token, custnum, updateData);
+    }
+
