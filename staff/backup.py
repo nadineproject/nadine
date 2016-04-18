@@ -176,9 +176,9 @@ class BackupManager(object):
         filename = settings.BACKUP_ROOT + 'active_members.csv'
 
         csv_data = [[
-            'username', 
-            'first_name', 
-            'last_name', 
+            'username',
+            'first_name',
+            'last_name',
             'email',
             'email2',
             'phone',
@@ -211,7 +211,7 @@ class BackupManager(object):
                 member.city,
                 member.state,
                 member.zipcode,
-            
+
             ]
 
             if membership.has_key:

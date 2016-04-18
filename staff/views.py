@@ -30,6 +30,7 @@ from nadine.models.payment import *
 from nadine.models.alerts import *
 from nadine.utils.xero_api import XeroAPI
 from nadine.utils.usaepay_api import EPayAPI
+from nadine.utils.payment_api import PaymentAPI
 
 from staff.forms import *
 from staff import billing, user_reports, email
@@ -316,11 +317,13 @@ def todo(request):
         count = MemberAlert.objects.unresolved(key).count()
         member_alerts.append((key, desc, count))
 
+    showall = "showall" in request.GET
+
     # Did anyone forget to sign in in the last 7 days?
     check_date = timezone.now().date() - timedelta(days=7)
     not_signed_in = Member.objects.not_signed_in_since(check_date)
 
-    return render_to_response('staff/todo.html', {'member_alerts': member_alerts, 'not_signed_in': not_signed_in}, context_instance=RequestContext(request))
+    return render_to_response('staff/todo.html', {'member_alerts': member_alerts, 'not_signed_in': not_signed_in, 'showall':showall}, context_instance=RequestContext(request))
 
 
 @staff_member_required
@@ -1077,6 +1080,9 @@ def usaepay_user(request, username):
                 description = request.POST.get("description")
                 amount = request.POST.get("amount")
                 comment = request.POST.get("comment")
+                # This sucks and we should use PaymentAPI everywhere TODO!!!
+                #api = PaymentAPI()
+                #api.runSale(customer_id, amount, invoice, description, comment)
                 epay_api.runSale(customer_id, amount, invoice, description, comment)
                 messages.add_message(request, messages.INFO, "Sale for %s successfully authorized" % username)
             elif action == "edit_recurring":
@@ -1114,17 +1120,19 @@ def usaepay_transactions(request, year, month, day):
     totals = {'amex_total':0, 'visamc_total':0, 'ach_total':0, 'total':0}
     open_xero_invoices = XeroAPI().get_open_invoices_by_user()
     try:
-        epay_api = EPayAPI()
+        api = PaymentAPI()
 
         if 'close_batch' in request.GET:
-            epay_api.close_current_batch()
+            api.close_current_batch()
             messages.add_message(request, messages.INFO, "Current batch closed")
 
-        transactions = epay_api.get_transactions(year, month, day)
+        transactions = api.get_transactions(year, month, day)
         totals['total_count'] = len(transactions)
 
         # Pull the settled checks seperately
-        settled_checks = epay_api.get_checks_settled_by_date(year, month, day)
+        # TODO - using the old api for now -- REMOVE!
+        settled_checks = EPayAPI().get_checks_settled_by_date(year, month, day)
+        #settled_checks = api.get_checks_settled_by_date(year, month, day)
 
         for t in transactions:
             # Pull the member and the amount they owe

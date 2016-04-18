@@ -12,6 +12,7 @@
     </tr>
 
     {% for t in transactions %}
+        <!-- transaction_id: {{ t.transaction_id }} -->
         <tr>
             <td><a href="{% url 'staff.views.member_detail_user' t.username %}">{{ t.username }}</a></td>
             <td>{{ t.description }}</td>
@@ -37,7 +38,7 @@
                         <input type="submit" value="Void"/>
                         {% csrf_token %}
                     </form>
-                {% endifequal %} 
+                {% endifequal %}
                 {% if t.open_bill_amount %}
                     <form action="{% url 'staff.views.bills_pay_all' t.username %}" method="POST" style="display:inline;">
                         <input type="hidden" name="next" value="{{request.path}}" />
@@ -48,7 +49,7 @@
             </td>
         </tr>
     {% endfor %}
-    
+
     <tr class="row-even">
         <td><strong>{{ transactions|length }} Transactions</strong></td>
         <td></td>
