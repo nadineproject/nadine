@@ -770,19 +770,20 @@ def member_detail(request, member_id):
         'memberships': memberships, 'email_logs': email_logs, 'email_keys': email_keys, 'settings': settings}, context_instance=RequestContext(request))
 
 
-def date_range_from_request(request):
+def date_range_from_request(request, days=31):
     # Pull the Start Date param
     start = request.POST.get(START_DATE_PARAM, None)
     if not start:
         start = request.GET.get(START_DATE_PARAM, None)
     if not start:
-        start_date = timezone.now().date() - timedelta(days=31)
+        start_date = timezone.now().date() - timedelta(days=days)
         start = start_date.isoformat()
     end = request.POST.get(END_DATE_PARAM, None)
     if not end:
         end = request.GET.get(END_DATE_PARAM, None)
     if not end:
-        end = timezone.now().date().isoformat()
+        tomorrow = timezone.now() + timedelta(days=1)
+        end = tomorrow.date().isoformat()
     return (start, end)
 
 
@@ -877,11 +878,15 @@ def activity_for_date(request, activity_date):
 @staff_member_required
 def activity_for_user(request, username):
     user = get_object_or_404(User, username=username)
-    start = timezone.now().date() - timedelta(days=100)
-    end = timezone.now()
-    print "start: %s, end: %s" % (start, end)
-    arplogs = ArpLog.objects.for_user(username, start, end)
-    return render_to_response('staff/activity_user.html', {'user':user, 'arplogs':arplogs}, context_instance=RequestContext(request))
+    start, end = date_range_from_request(request, days=10)
+    date_range_form = DateRangeForm({START_DATE_PARAM: start, END_DATE_PARAM: end})
+
+    arp_logs = ArpLog.objects.for_user(username, start, end)
+    door_logs = DoorEvent.objects.filter(user=user, timestamp__gte=start, timestamp__lte=end)
+    daily_logs = DailyLog.objects.filter(member__user=user, visit_date__gte=start, visit_date__lte=end).reverse()
+
+    return render_to_response('staff/activity_user.html', {'user':user, 'date_range_form': date_range_form,
+        'arp_logs':arp_logs, 'door_logs':door_logs, 'daily_logs':daily_logs}, context_instance=RequestContext(request))
 
 
 @staff_member_required
@@ -897,14 +902,14 @@ def member_bills(request, member_id):
 
 
 @staff_member_required
-def member_activity(request, member_id):
+def member_signins(request, member_id):
     member = get_object_or_404(Member, pk=member_id)
     payment_types = ['Visit', 'Trial', 'Waive', 'Bill']
-    return render_to_response('staff/member_activity.html', {'payment_types': payment_types, 'member': member}, context_instance=RequestContext(request))
+    return render_to_response('staff/member_signins.html', {'payment_types': payment_types, 'member': member}, context_instance=RequestContext(request))
 
 
 @staff_member_required
-def member_activity_json(request, member_id):
+def member_signins_json(request, member_id):
     member = get_object_or_404(Member, pk=member_id)
     response_data = {}
     #response_data['member'] = model_to_dict(member)

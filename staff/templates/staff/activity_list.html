@@ -5,11 +5,11 @@
 {% block style%}
 nav #activity-tab { background: #FBD850; color: black; }
 #content table { width: 100%; }
-.log-note { width: 100px; } 
+.log-note { width: 100px; }
 {% endblock %}
 
 {% block content %}
-{% include "staff/activity_menu.frag" %}  
+{% include "staff/activity_menu.frag" %}
 
 <h2>Activity List</h2>
 {% url 'staff.views.activity_list' as date_range_form_action %}
@@ -24,11 +24,11 @@ nav #activity-tab { background: #FBD850; color: black; }
          <th>Date</th>
          <th>Payment</th>
          <th>Guest of</th>
-         <th>Note</th> 
+         <th>Note</th>
       </tr>
       {% for log in daily_logs %}
          <tr class="{% cycle 'row-even' 'row-odd' %}">
-            <td><a href="{% url 'staff.views.member_activity' log.member.id %}">{{ log.member }}</a></td>
+            <td><a href="{% url 'staff.views.member_signins' log.member.id %}">{{ log.member }}</a></td>
             <td><a href="{% url 'staff.views.activity_date' log.visit_date.year log.visit_date.month log.visit_date.day %}">{{ log.visit_date|date:"M d, Y" }}</td>
             <td>{{ log.payment }}</td>
             <td>{% if log.guest_of %}<a href="{% url 'staff.views.member_detail' log.guest_of.id %}">{{ log.guest_of }}</a>{% endif %}</td>

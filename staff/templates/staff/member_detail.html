@@ -48,7 +48,7 @@ function gotoEmailReset(emailAddress){
 {% endblock %}
 
 {% block content %}
-{% include "staff/member_menu.frag" %}   
+{% include "staff/member_menu.frag" %}
 
 <div class="member-photo">
     {% if member.photo %}
@@ -58,11 +58,11 @@ function gotoEmailReset(emailAddress){
     {% endif %}
 </div>
 
-<!-- Member Detail -->    
+<!-- Member Detail -->
 <div id="member-detail">
     <h2>{{ member.first_name }} {{ member.last_name }} {% if member.is_active %} - <i>{{ member.membership_type }}</i> {% endif %}</h2>
     <div id="quick-links">
-        <a href="{% url 'staff.views.member_activity' member.id %}">activity</a> |
+        <a href="{% url 'staff.views.activity_for_user' member.user.username %}">activity</a> |
         <a href="{% url 'doors.keymaster.views.user_keys' member.user.username %}">keys</a> |
         <a href="{% url 'staff.views.member_files' member.id %}">files</a> |
         <a href="{% url 'members.views.user' member.user.username %}">profile</a> |
@@ -73,7 +73,7 @@ function gotoEmailReset(emailAddress){
         <a href="{% url 'staff.views.member_edit' member.user.username %}">edit member</a> |
         {% if member.is_active %}
             <a href="{% url 'staff.views.membership' member.last_membership.id %}">update membership</a>
-        {% else %}  
+        {% else %}
             <a href="{% url 'staff.views.member_membership' member.id %}">add membership</a>
         {% endif %}
     </div>
@@ -106,7 +106,7 @@ function gotoEmailReset(emailAddress){
             <td>{{ member.active_membership.start_date|date:"jS" }}</td>
         </tr>
         {% endif %}
-    
+
         <!-- Stats -->
         <tr>
             <td>First Visit</td>
@@ -120,7 +120,7 @@ function gotoEmailReset(emailAddress){
             <td>Last Visit</td>
             <td>{{ member.last_visit }}</td>
         </tr>
-    
+
         <!-- Company Name -->
         {% if member.company_name %}
             <tr>
@@ -128,7 +128,7 @@ function gotoEmailReset(emailAddress){
                 <td>{{ member.company_name }}</td>
             </tr>
         {% endif %}
-    
+
         <!-- Website -->
         {% if member.url_personal %}
             <tr>
@@ -136,7 +136,7 @@ function gotoEmailReset(emailAddress){
                 <td><a href="{{ member.url_personal }}">{{ member.url_personal }}</a></td>
             </tr>
         {% endif %}
-    
+
         <!-- Gender -->
         {% if member.gender %}
             <tr>
@@ -144,7 +144,7 @@ function gotoEmailReset(emailAddress){
                 <td>{{ member.gender }}</td>
             </tr>
         {% endif %}
-     
+
         <!-- Email -->
         {% if member.email %}
             <tr>
@@ -152,7 +152,7 @@ function gotoEmailReset(emailAddress){
                 <td>{{ member.email }}</td>
             </tr>
         {% endif %}
-    
+
         <!-- Email2 -->
         {% if member.email2 %}
             <tr>
@@ -160,7 +160,7 @@ function gotoEmailReset(emailAddress){
                 <td>{{ member.email2 }}</td>
             </tr>
         {% endif %}
-    
+
         <!-- Phone -->
         {% if member.phone %}
             <tr>
@@ -168,7 +168,7 @@ function gotoEmailReset(emailAddress){
                 <td>{{ member.phone }}</td>
             </tr>
         {% endif %}
-    
+
         <!-- Phone2 -->
         {% if member.phone2 %}
             <tr>
@@ -208,7 +208,7 @@ function gotoEmailReset(emailAddress){
                 <td>{{ member.howHeard }}</td>
             </tr>
         {% endif %}
-    
+
         <!-- Industry -->
         {% if member.industry %}
             <tr>
@@ -216,7 +216,7 @@ function gotoEmailReset(emailAddress){
                 <td>{{ member.industry }}</td>
             </tr>
         {% endif %}
-    
+
         <!-- Neighborhood -->
         {% if member.neighborhood %}
             <tr>
@@ -224,7 +224,7 @@ function gotoEmailReset(emailAddress){
                 <td>{{ member.neighborhood }}</td>
             </tr>
         {% endif %}
-    
+
         <!-- Has Kids -->
         {% if member.has_kids %}
             <tr>
@@ -232,7 +232,7 @@ function gotoEmailReset(emailAddress){
                 <td>{{ member.has_kids }}</td>
             </tr>
         {% endif %}
-    
+
         <!-- Self Employed -->
         {% if member.self_employed %}
             <tr>
@@ -241,7 +241,7 @@ function gotoEmailReset(emailAddress){
             </tr>
         {% endif %}
     </table>
-    
+
     <div style="padding-top: 1em;">
     <strong>Emergency Contact</strong>
     {% if not emergency_contact.name %}
@@ -305,15 +305,15 @@ function gotoEmailReset(emailAddress){
                 &nbsp;</td>
             </tr>
         {% endfor %}
-        
+
         {% if member.last_membership.end_date %}
         <tr class="{% cycle 'row-even' 'row-odd' %}">
             <td colspan="7">&nbsp;</td>
             <td>[<a href="{% url 'staff.views.member_membership' member.id %}">add membership</a>]</td>
-        </tr>           
+        </tr>
         {% endif %}
     </table>
-    
+
     <!-- Active Guest Memberships -->
     {% if member.guests %}
         <h2>Active Guests:</h2>
@@ -358,7 +358,7 @@ function gotoEmailReset(emailAddress){
     <div style="margin-left: 2em; margin-top: .5em;">
         [ <a href="https://secure.usaepay.com/interface/epayform/{{ settings.USA_EPAY_KEY }}/?UMdescription=Office%20Nomads%20Billing%20Authorization&UMcustid={{ member.user.username }}&UMcommand=AuthOnly&UMamount=1.00&UMaddcustomer=yes&UMschedule=disabled">payment link</a> ]
     </div>
-    
+
     <!-- Security Deposits -->
     <h2>Security Deposits:</h2>
     <div>
@@ -386,7 +386,7 @@ function gotoEmailReset(emailAddress){
                 {% endif %}</td>
             </tr>
         {% endfor %}
-        
+
     <form action="{% url 'staff.views.security_deposits' %}" method="POST">
         <input name="member_id" value="{{ member.id }}" type="hidden" />
         <tr>
@@ -448,7 +448,7 @@ function gotoEmailReset(emailAddress){
         {% endfor %}
     </div>
     {% endif %}
-    
+
     <table id="onboard-form">
         {% for alert in member.open_alerts %}
             <tr>

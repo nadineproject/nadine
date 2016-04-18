@@ -13,7 +13,11 @@ nav #activity-tab { background: #FBD850; color: black; }
 {% block content %}
 {% include "staff/activity_menu.frag" %}
 
-<h2>Activity for {{ user }}</h2>
+<h2>Activity for <a href="{% url 'staff.views.member_detail' user.profile.id %}">{{ user.get_full_name }}</a></h2>
+{% url 'staff.views.activity_user' user as date_range_form_action %}
+<div class="columns clearfix date-range">
+	{% include "staff/date_range_form.frag"%}
+</div>
 
 {% if messages %}
 <div class="messages">
@@ -23,8 +27,26 @@ nav #activity-tab { background: #FBD850; color: black; }
 </div>
 {% endif %}
 
-{% for l in arplogs %}
- <li>{{ l.start }} - {{ l.end }}</a>
+<h3>Network Usage</h3>
+<ul>
+{% for l in arp_logs %}
+ <li>{{ l.start }} - {{ l.end }}</li>
 {% endfor %}
+</ul>
+
+<h3>Doors</h3>
+<ul>
+{% for l in door_logs %}
+ <li>{{ l.timestamp }} - {{ l }}</li>
+{% endfor %}
+</ul>
+
+<h3>Sign-ins</h3>
+<ul>
+{% for l in daily_logs %}
+ <li>{{ l }}</li>
+{% endfor %}
+</ul>
+
 
 {% endblock %}

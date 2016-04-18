@@ -17,8 +17,8 @@ nav #todo-tab { background: #FBD850; color: black; }
 		<tr>
 			<th>Day</th>
 			<th style="text-align:left;">Member</th>
-			<th></th>
 			<th>Were they here?</th>
+			<th></th>
 		</tr>
 
 		<script type="text/javascript">
@@ -58,14 +58,15 @@ nav #todo-tab { background: #FBD850; color: black; }
 					<a href="{% url 'staff.views.activity_date' row.day.year row.day.month row.day.day %}">{{ row.day|date:"l, M dS" }}</a>
 				</td>
 				<td style="text-align:left;">
-					<a href="{% url 'staff.views.member_activity' row.member.id %}">{{ row.member }}</a>
-				</td>
-				<td>
-					<a href="{% url 'staff.views.activity_for_user' row.member.user %}">View Activity</a>
+					<a href="{% url 'staff.views.member_detail' row.member.id %}">{{ row.member }}</a>
 				</td>
 				<td style="text-align:center;">
 						<button id="yes{{forloop.counter}}" onClick="return yes({{ forloop.counter }});">Yes - Mark as BILLABLE</button>
 						<button id="no{{forloop.counter}}" onClick="return no({{ forloop.counter }});">No - Mark as WAIVED</button>
+				</td>
+				<td>
+					<a href="{% url 'staff.views.activity_for_user' row.member.user %}">send email</a> |
+					<a href="{% url 'staff.views.activity_for_user' row.member.user %}">view activity</a>
 				</td>
 			</tr>
 

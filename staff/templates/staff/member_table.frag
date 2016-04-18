@@ -14,14 +14,14 @@
 			</td>
 			<td nowrap style="text-align:left;"><a href="{% url 'staff.views.member_detail' member.id %}">{{ member.first_name }} {{ member.last_name }}</a></td>
 			<td>{{ member.last_membership.start_date|date:"M d, Y" }}</td>
-			<td style="text-align:center;">	
-				<a href="{% url 'staff.views.member_activity' member.id %}">activity</a> |
+			<td style="text-align:center;">
+				<a href="{% url 'staff.views.activity_for_user' member.user.username %}">activity</a> |
 				<a href="{% url 'staff.views.member_files' member.id %}">files</a> |
 				<a href="{% url 'staff.views.usaepay_user' member.user.username %}">usaepay</a> |
 				<a href="{% url 'staff.views.xero_user' member.user.username %}">xero</a> |
 				{% if member.is_active %}
 					<a href="{% url 'staff.views.membership' member.active_membership.id %}">membership</a>
-				{% else %}	
+				{% else %}
 					<a href="{% url 'staff.views.member_membership' member.id %}">membership</a>
 				{% endif %}
 			</td>
