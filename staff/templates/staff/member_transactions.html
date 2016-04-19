@@ -8,7 +8,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {% block content %}
-<h2>Transactions for <a href="{% url 'staff.views.member_detail' member.id %}">{{ member.first_name }} {{ member.last_name }}</a>:</h2>
+<h2>Transactions for <a href="{% url 'staff.views.member.detail' member.id %}">{{ member.first_name }} {{ member.last_name }}</a>:</h2>
 {% if not member.transaction_set.all %}
 <p>There are no transactions!</p>
 {% endif%}
@@ -48,9 +48,9 @@ nav #billing-tab { background: #FBD850; color: black; }
 	         <th>Plan</th>
 	         <th>Start Date</th>
 	         <th>End Date</th>
-	         <th>Notes</th> 
+	         <th>Notes</th>
 	      </tr>
-   
+
 	      {% for membership in member.memberships.all reversed %}
 	         <tr class="{% cycle 'row-even' 'row-odd' %}">
 	            <td>{{ membership.membership_plan }}</td>
@@ -69,7 +69,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 	      <th>Date</th>
 	      <th>Payment</th>
 	      <th>Guest of</th>
-	      <th>Notes</th> 
+	      <th>Notes</th>
 	   </tr>
 	   {% for log in member.daily_logs.all %}
 	      <tr class="{% cycle 'row-even' 'row-odd' %}">

@@ -7,14 +7,14 @@ nav #lists-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {% block content%}
-{% include "interlink/list_menu.frag" %}  
+{% include "interlink/list_menu.frag" %}
 
 <h2>Expired Slack Users ({{ expired_users|length }})</h2>
 <ul>
 {% for u in expired_users %}
 	<li>
-		<strong>{{ u.real_name }}</strong>: 
-		<a href="{{ slack_url }}admin?q={{ u.email }}" target="_new">{{ u.email }}</a> 
+		<strong>{{ u.real_name }}</strong>:
+		<a href="{{ slack_url }}admin?q={{ u.email }}" target="_new">{{ u.email }}</a>
 	</li>
 {% endfor %}
 </ul>
@@ -23,8 +23,8 @@ nav #lists-tab { background: #FBD850; color: black; }
 <ul>
 {% for m in non_slack_users %}
 	<li>
-		<strong><a href="{% url 'staff.views.member_detail' m.id %}">{{ m.full_name }}</a></strong>: 
-		{{ m.email }}</a> 
+		<strong><a href="{% url 'staff.views.member.detail' m.id %}">{{ m.full_name }}</a></strong>: 
+		{{ m.email }}</a>
 	</li>
 {% endfor %}
 </ul>
@@ -34,8 +34,8 @@ nav #lists-tab { background: #FBD850; color: black; }
 {% for u in slack_users %}
 	{% if not u.is_bot and u.profile.email %}
 		<li>
-			<strong>{{ u.real_name }}</strong>: 
-			<a href="{{ slack_url }}admin?q={{ u.profile.email }}" target="_new">{{ u.profile.email }}</a> 
+			<strong>{{ u.real_name }}</strong>:
+			<a href="{{ slack_url }}admin?q={{ u.profile.email }}" target="_new">{{ u.profile.email }}</a>
 		</li>
 	{% endif %}
 {% endfor %}

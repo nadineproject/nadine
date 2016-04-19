@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from xero import Xero
 from xero.auth import PrivateCredentials
 
@@ -25,7 +27,7 @@ def test_xero_connection():
     return False
 
 class XeroAPI:
-    
+
     def __init__(self):
         self.deposit_account = getattr(settings, 'XERO_DEPOSIT_ACCOUNT', None)
         if self.deposit_account is None:
@@ -99,7 +101,7 @@ class XeroAPI:
 
     def sync_user_data(self, user):
         xero_contact = XeroContact.objects.filter(user=user).first()
-        
+
         contact_data = {}
         contact_data['Name'] = user.get_full_name()
         contact_data['FirstName'] = user.first_name
@@ -112,7 +114,7 @@ class XeroAPI:
         else:
             xero_id = self.add_contact(contact_data)
             xero_contact = XeroContact.objects.create(user=user, xero_id=xero_id)
-            
+
         # Update the sync timestamp
         xero_contact.last_sync = timezone.now()
         xero_contact.save()
@@ -150,20 +152,6 @@ class XeroAPI:
         xero_contact = XeroContact.objects.filter(user=user).first()
         if xero_contact:
             xero_data = self.xero.repeatinginvoices.filter(Contact_ContactID=xero_contact.xero_id)
-            if xero_data:
-                for invoice in xero_data:
-                    nsd = invoice['Schedule']['NextScheduledDate']
-                    # Example: '1440417600000+1200' = 08/25/2015 tz=Pacific/LA
-                    unix_time = int(nsd[6:len(nsd)-10])
-                    # The UTC offset comes in with the date but I'm not sure how to convert that
-                    # We know it's coming in NZ time -- JLS
-                    dt = datetime.fromtimestamp(unix_time)
-                    tz = pytz.timezone("Pacific/Auckland")
-                    tz_dt = tz.localize(dt)
-                    local_dt = timezone.localtime(tz_dt)
-                    # Fuck it!  I'm just adding a day
-                    invoice['NextScheduledDate'] = dt + timedelta(days=1)
-            #print xero_data
         return xero_data
 
     def create_invoice(self):

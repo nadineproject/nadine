@@ -17,7 +17,7 @@ nav #members-tab { background: #FBD850; color: black; }
 
 
 {% block content %}
-{% include "staff/member_menu.frag" %}  
+{% include "staff/member_menu.frag" %}
 
 <script>
     $(function() {
@@ -31,7 +31,7 @@ nav #members-tab { background: #FBD850; color: black; }
 $(document).ready(function() {
 	 var formData = {
 		 {% for plan in membership_plans %}
-		  '{{plan.id}}':{ 'monthly_rate':{{plan.monthly_rate}}, 'dropin_allowance':{{plan.dropin_allowance}}, 'daily_rate':{{plan.daily_rate}}, 
+		  '{{plan.id}}':{ 'monthly_rate':{{plan.monthly_rate}}, 'dropin_allowance':{{plan.dropin_allowance}}, 'daily_rate':{{plan.daily_rate}},
 								'has_desk':'{{plan.has_desk}}' },
 		 {% endfor %}
 	 }
@@ -59,7 +59,7 @@ $(document).ready(function() {
 })
 </script>
 
-<h2>{% if membership %} Update {% else %} Add {% endif %} Membership for <a href="{% url 'staff.views.member_detail' member.id %}">{{ member }}</a></h2>
+<h2>{% if membership %} Update {% else %} Add {% endif %} Membership for <a href="{% url 'staff.views.member.detail' member.id %}">{{ member }}</a></h2>
 
 {% if messages %}
 <div class="messages">
@@ -79,7 +79,7 @@ $(document).ready(function() {
 				<td nowrap>Membership Plan</td>
 				<td style="text-align:left;">
 					{% if membership %}
-						{{ membership.membership_plan }} 
+						{{ membership.membership_plan }}
 						{{ membership_form.membership_plan.as_hidden }}
 					{% else %}
 						{{ membership_form.membership_plan }}
@@ -111,7 +111,7 @@ $(document).ready(function() {
 						{{ membership.monthly_rate }}
 						{{ membership_form.monthly_rate.as_hidden }}
 					{% else %}
-						{{ membership_form.monthly_rate }} 
+						{{ membership_form.monthly_rate }}
 					{% endif %}
 				</td>
 				<td>{{ membership_form.monthly_rate.errors }}</td>
@@ -123,7 +123,7 @@ $(document).ready(function() {
 						{{ membership.dropin_allowance }}
 						{{ membership_form.dropin_allowance.as_hidden }}
 					{% else %}
-						{{ membership_form.dropin_allowance }} 
+						{{ membership_form.dropin_allowance }}
 					{% endif %}
 				</td>
 				<td>{{ membership_form.dropin_allowance.errors }}</td>
@@ -135,7 +135,7 @@ $(document).ready(function() {
 						{{ membership.daily_rate }}
 						{{ membership_form.daily_rate.as_hidden }}
 					{% else %}
-						{{ membership_form.daily_rate }} 
+						{{ membership_form.daily_rate }}
 					{% endif %}
 				</td>
 				<td>{{ membership_form.daily_rate.errors }}</td>

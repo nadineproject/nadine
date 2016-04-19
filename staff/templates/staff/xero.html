@@ -8,9 +8,9 @@ nav #members-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {% block content %}
-{% include "staff/member_menu.frag" %}	 
+{% include "staff/member_menu.frag" %}
 
-<h2>Xero Data - <a href="{% url 'staff.views.member_detail_user' user.username %}">{{ user.get_full_name }}</a>:</h2>
+<h2>Xero Data - <a href="{% url 'staff.views.member.detail_user' user.username %}">{{ user.get_full_name }}</a>:</h2>
 
 {% if messages %}
 <div class="messages">
@@ -102,7 +102,7 @@ nav #members-tab { background: #FBD850; color: black; }
 			<th></th>
 		{% for i in repeating_invoices %}
 			<tr>
-				<td>{{ i.NextScheduledDate|date:"Y-m-d" }}</td>
+				<td>{{ i.Schedule.NextScheduledDate|date:"Y-m-d" }}</td>
 				<td>
 					{% for l in i.LineItems %}
 						{{ l.Description }}
@@ -115,7 +115,7 @@ nav #members-tab { background: #FBD850; color: black; }
 			</tr>
 		{% endfor %}
 	</table>
-	
+
 	<h3>Invoices</h3>
 	<table>
 		<tr>

@@ -13,8 +13,8 @@ nav #activity-tab { background: #FBD850; color: black; }
 {% block content %}
 {% include "staff/activity_menu.frag" %}
 
-<h2>Activity for <a href="{% url 'staff.views.member_detail' user.profile.id %}">{{ user.get_full_name }}</a></h2>
-{% url 'staff.views.activity_user' user as date_range_form_action %}
+<h2>Activity for <a href="{% url 'staff.views.member.detail' user.profile.id %}">{{ user.get_full_name }}</a></h2>
+{% url 'staff.views.activity.for_user' user as date_range_form_action %}
 <div class="columns clearfix date-range">
 	{% include "staff/date_range_form.frag"%}
 </div>

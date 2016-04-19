@@ -7,7 +7,7 @@ nav #members-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {% block content %}
-{% include "staff/member_menu.frag" %}  
+{% include "staff/member_menu.frag" %}
 
 <h2>Member List [<i>{{total_members}} total</i> ]</h2>
 
@@ -16,7 +16,7 @@ nav #members-tab { background: #FBD850; color: black; }
 	<strong>View: </strong>
 	<select name="group" OnChange="location.href=group_form.group.options[selectedIndex].value">
 		{% for k, v in group_list %}
-			<option value="{% url 'staff.views.members' k %}" {% if k == group %} SELECTED {% endif %}>
+			<option value="{% url 'staff.views.core.members' k %}" {% if k == group %} SELECTED {% endif %}>
 				{{ v }}
 			</option>
 		{% endfor %}
