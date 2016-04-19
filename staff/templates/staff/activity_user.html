@@ -14,6 +14,16 @@ nav #activity-tab { background: #FBD850; color: black; }
 {% include "staff/activity_menu.frag" %}
 
 <h2>Activity for <a href="{% url 'staff.views.member.detail' user.profile.id %}">{{ user.get_full_name }}</a></h2>
+<div style="float:right;">
+	<form action="." method="POST">
+		<input type="hidden" name="start" value="{{ user.profile.first_visit|date:"Y-m-d" }}" />
+		<input type="hidden" name="end" value="{{ user.profile.last_visit|date:"Y-m-d" }}" />
+	 	<input type="Submit" value="View All Activity ({{ user.profile.first_visit|date:"Y-m-d" }} to {{ user.profile.last_visit|date:"Y-m-d" }})" />
+		{% csrf_token %}
+	</form>
+	<i>* This can take some time!</i>
+</div>
+
 {% url 'staff.views.activity.for_user' user as date_range_form_action %}
 <div class="columns clearfix date-range">
 	{% include "staff/date_range_form.frag"%}
@@ -27,26 +37,70 @@ nav #activity-tab { background: #FBD850; color: black; }
 </div>
 {% endif %}
 
-<h3>Network Usage</h3>
-<ul>
-{% for l in arp_logs %}
- <li>{{ l.start }} - {{ l.end }}</li>
-{% endfor %}
-</ul>
+{% if not daily_logs and not arp_logs and not door_logs %}
+	<div><i>No activity for this time period!</i></div>
+{% endif %}
 
-<h3>Doors</h3>
-<ul>
-{% for l in door_logs %}
- <li>{{ l.timestamp }} - {{ l }}</li>
-{% endfor %}
-</ul>
-
+{% if daily_logs %}
 <h3>Sign-ins</h3>
-<ul>
-{% for l in daily_logs %}
- <li>{{ l }}</li>
-{% endfor %}
-</ul>
+<table>
+	 <tr>
+			<th>Date</th>
+			<th>Payment</th>
+			<th>Guest of</th>
+			<th>Note</th>
+			<th></th>
+	 </tr>
+	{% for log in daily_logs %}
+		<tr class="{% cycle 'row-even' 'row-odd' %}">
+			<td>{{ log.visit_date|date:"M d, Y" }}</td>
+			<td>{{ log.payment }}</td>
+			<td>{% if log.guest_of %}<a href="{% url 'staff.views.member.detail' log.guest_of.id %}">{{ log.guest_of }}</a>{% endif %}</td>
+			<td class="log-note">{{ log.note }}</td>
+			<td></td>
+		</tr>
+	{% endfor %}
+</table>
+{% endif %}
 
+{% if arp_logs %}
+<h3>Network Usage</h3>
+<table>
+	 <tr>
+			<th>From</th>
+			<th>To</th>
+			<th>Duration</th>
+			<th></th>
+		</tr>
+	{% for log in arp_logs %}
+	<tr class="{% cycle 'row-even' 'row-odd' %}">
+		<td nowrap>{{ log.start|date:"M d, Y h:m A" }}</td>
+		<td>{{ log.end|date:"h:m A" }}</td>
+		<td>{{ log.diff }}</td>
+		<td></td>
+	</tr>
+	{% endfor %}
+</table>
+{% endif %}
+
+{% if door_logs %}
+<h3>Doors</h3>
+<table>
+	 <tr>
+			<th>Date</th>
+			<th>Door</th>
+			<th>Description</th>
+			<th></th>
+		</tr>
+	{% for log in door_logs %}
+	<tr class="{% cycle 'row-even' 'row-odd' %}">
+		<td nowrap>{{ log.timestamp|date:"M d, Y h:m A" }}</td>
+		<td>{{ log.door }}</td>
+		<td>{{ log.event_description }}</td>
+		<td></td>
+	</tr>
+	{% endfor %}
+</table>
+{% endif %}
 
 {% endblock %}
