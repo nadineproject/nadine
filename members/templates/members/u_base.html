@@ -13,7 +13,7 @@
 		<script src="{{ STATIC_URL }}html5.js"></script>
 	<![endif]-->
 	<script src="{{ STATIC_URL }}jquery-2.1.0.min.js"></script>
-	<script src="{{ STATIC_URL }}jquery-ui-1.10.4.custom.min.js"></script> 
+	<script src="{{ STATIC_URL }}jquery-ui-1.10.4.custom.min.js"></script>
 
 	{% if not request.user.is_staff %}
 		<script>
@@ -26,9 +26,9 @@
 			ga('send', 'pageview');
 		</script>
 	{% endif %}
-	
+
 	{%block sub-head %}{% endblock %}
-	
+
 	<style>
 	{% block style %}{% endblock %}
 	</style>
@@ -84,7 +84,7 @@
 			<div id="footer">
 				<div class="setwidth">
 					<div id="copyright">
-						Copyright 2014  | Office Nomads |
+						Copyright 2016  | Office Nomads |
 						<a href="http://nadineproject.org/" target="_new">The Nadine Project</a>
 					</div>
 					<div id="social">
@@ -115,7 +115,7 @@
 		});
 		</script>
 		{% endblock %}
-		
+
 		{% block extrajs %}
 		{% endblock %}
 		</body>
