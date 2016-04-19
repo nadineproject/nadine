@@ -230,12 +230,12 @@ class MemberManager(models.Manager):
 
     def expired_slack_users(self):
         expired_users = []
-        active_emails =self.active_member_emails(include_email2=True)
+        active_emails = self.active_member_emails(include_email2=True)
         slack_users = SlackAPI().users.list()
         for u in slack_users.body['members']:
             if 'profile' in u and 'real_name' in u and 'email' in u['profile']:
                 email = u['profile']['email']
-                if email not in active_emails and 'nadine' not in email:
+                if email and email not in active_emails and 'nadine' not in email:
                     expired_users.append({'email':email, 'real_name':u['real_name']})
         return expired_users
 
@@ -713,7 +713,7 @@ class Member(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('staff.views.member_detail', (), {'member_id': self.id})
+        return ('staff.views.member.detail', (), {'member_id': self.id})
 
     class Meta:
         app_label = 'nadine'

@@ -11,7 +11,7 @@
 	<link rel="stylesheet" href="{{ STATIC_URL }}jquery-custom.css">
 	<link rel="stylesheet" href="{{ STATIC_URL }}/themes/custom-staff/jquery-ui-1.10.4.custom.min.css">
 	<script src="{{ STATIC_URL }}jquery-2.1.0.min.js"></script>
-	<script src="{{ STATIC_URL }}jquery-ui-1.10.4.custom.min.js"></script> 
+	<script src="{{ STATIC_URL }}jquery-ui-1.10.4.custom.min.js"></script>
 
 	{%block sub-head %}{% endblock %}
 	{% block feed-link %}{% endblock %}
@@ -21,7 +21,7 @@
 </head>
 
 <body>{% block body %}
-	
+
 	<div id="branding">
 		<div style="float:right;">
 			{% if request.user.is_authenticated %}
@@ -36,15 +36,15 @@
 		</div>
 		<a href="/">{{ site.name}}</a>: <span style="color:#e1e1e1">Nadine Membership Console</span>
 	</div>
-	
+
 	<!-- Header -->
-	{% block header %}<header>	
+	{% block header %}<header>
 		<nav>
-		<a id="todo-tab" href="{% url 'staff.views.todo' %}">Todo</a>
-		<a id="members-tab" href="{% url 'staff.views.members' %}">Member List</a>
-		<a id="activity-tab" href="{% url 'staff.views.activity' %}">Activity</a>
-		<a id="billing-tab" href="{% url 'staff.views.bills' %}">Billing</a>
-		<a id="stats-tab" href="{% url 'staff.views.stats' %}">Stats</a>
+		<a id="todo-tab" href="{% url 'staff.views.core.todo' %}">Todo</a>
+		<a id="members-tab" href="{% url 'staff.views.core.members' %}">Member List</a>
+		<a id="activity-tab" href="{% url 'staff.views.activity.activity' %}">Activity</a>
+		<a id="billing-tab" href="{% url 'staff.views.billing.bills' %}">Billing</a>
+		<a id="stats-tab" href="{% url 'staff.views.stats.stats' %}">Stats</a>
 		<a id="logs-tab" href="{% url 'arpwatch.views.device_logs_today' %}">Logs</a>
 		<a id="lists-tab" href="{% url 'interlink.views.index' %}">Lists</a>
 		<a id="doors-tab" href="{% url 'doors.keymaster.views.index' %}">Doors</a>
@@ -54,27 +54,27 @@
 		<a id="log-tab" href="{% url 'django.contrib.auth.views.login' %}">Login</a>
 		{% endif %}
 		</nav>
-		
+
 		{% block header-title %}{% endblock %}
 	</header>{% endblock %}
 
 	<!-- Content -->
 	<div id="content">
 		{% if request.user.is_authenticated %}
-		<form id="site-search-form" action="{% url 'staff.views.member_search' %}" method="post">
+		<form id="site-search-form" action="{% url 'staff.views.core.member_search' %}" method="post">
 			{% for field in site_search_form %}{{ field }}{% endfor %}
 			<input type="submit" value="search" />
 			{% csrf_token %}
 		</form>
 		{% endif %}
-		
+
 		{% block content %}{% endblock %}
 	</div>
 
 	<!-- Footer -->
 	<div id="footer">
 		{% block footer %}
-		&copy;2008-2014 <a href="http://nadineproject.org" target="_new">The Nadine Project</a> 
+		&copy;2008-2014 <a href="http://nadineproject.org" target="_new">The Nadine Project</a>
 		by <a href="http://officenomads.com">Office Nomads</a>
 		{% endblock %}
 	</div>

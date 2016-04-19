@@ -63,7 +63,7 @@ class Bill(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('staff.views.bill', (), {'id': self.id})
+        return ('staff.views.billing.bill', (), {'id': self.id})
 
     def get_admin_url(self):
         return urlresolvers.reverse('admin:nadine_bill_change', args=[self.id])
@@ -89,8 +89,7 @@ class Transaction(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('staff.views.transaction', (), {'id': self.id})
+        return ('staff.views.billing.thransaction', (), {'id': self.id})
 
     def get_admin_url(self):
         return urlresolvers.reverse('admin:nadine_transaction_change', args=[self.id])
-

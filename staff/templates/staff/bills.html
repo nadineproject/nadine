@@ -40,7 +40,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {% block content %}
-{% include "staff/billing_menu.frag" %}  
+{% include "staff/billing_menu.frag" %}
 
 <h2>Outstanding Bills</h2>
 {% if page_message%}<p id="page-message">{{ page_message|safe }}</p>{% endif %}
@@ -63,7 +63,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 						{% endfor %}
 						<input type="submit" value="Set Paid" />
 					</div>
-				
+
 					<div class="bill-details" id="bill-details-{{member.id}}">
 						{% for bill in member.open_bills %}
 							<h4>
@@ -72,7 +72,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 								{% if bill.paid_by %}for <a href="{{ bill.member.get_absolute_url }}">{{ bill.member.first_name }} {{ bill.member.last_name }}</a>{% endif %}
 								/ Amount: ${{ bill.amount }}
 							</h4>
-				
+
 							{% if bill.membership %}
 							<div class="bill-info">
 								Monthly: <a href="{{ bill.membership.get_admin_url }}">${{ bill.membership.monthly_rate }}</a>
@@ -98,7 +98,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 							</div>
 							{% endif %}
 						{% endfor %}
-					
+
 						{% if member.member_notes %}
 							<br /><strong>Member notes:</strong>
 							<ul>
@@ -119,7 +119,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 					{% csrf_token %}
 
 					<div style="margin-left:5em;">
-					<form action="{% url 'staff.views.toggle_billing_flag' member.id %}" onSubmit="return confirm('Are you sure?');">
+					<form action="{% url 'staff.views.billing.toggle_billing_flag' member.id %}" onSubmit="return confirm('Are you sure?');">
 						{% if member.has_valid_billing %}
 							<input type="submit" value="Flag Invalid Billing Profile">
 						{% else %}
@@ -128,7 +128,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 						{% csrf_token %}
 					</form>
 					</div>
-				
+
 					</div>
 			</span></li>
 		{% endfor %}
@@ -140,7 +140,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 <table>
 	{% for member in invalid_members %}
 		<tr class="{% cycle 'row-odd' 'row-even' %}">
-			<td nowrap style="text-align:left;"><li><a href="{% url 'staff.views.member_detail' member.id %}">{{ member.full_name }}</a></li></td>
+			<td nowrap style="text-align:left;"><li><a href="{% url 'staff.views.member.detail' member.id %}">{{ member.full_name }}</a></li></td>
 			<td></td>
 		</tr>
 	{% endfor %}

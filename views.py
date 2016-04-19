@@ -48,7 +48,7 @@ def index(request):
         #	return HttpResponseRedirect(reverse('members.views.user_devices'))
 
     if request.user.is_staff:
-        return HttpResponseRedirect(reverse('staff.views.todo'))
+        return HttpResponseRedirect(reverse('staff.views.core.todo'))
 
     return HttpResponseRedirect(reverse('members.views.home'))
 

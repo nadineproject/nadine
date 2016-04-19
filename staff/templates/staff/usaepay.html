@@ -9,9 +9,9 @@ nav #billing-tab { background: #FBD850; color: black; }
 {% block sub-title %}USAePay | {{ user }} | {% endblock %}
 
 {% block content %}
-{% include "staff/billing_menu.frag" %}   
+{% include "staff/billing_menu.frag" %}
 
-<h2>USAePay - <a href="{% url 'staff.views.member_detail_user' user.username %}">{{ user.get_full_name }}</a></h2>
+<h2>USAePay - <a href="{% url 'staff.views.member.detail_user' user.username %}">{{ user.get_full_name }}</a></h2>
 
 {% if messages %}
     <div class="messages">
@@ -57,7 +57,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 
 <div style="padding: 12px;">
     <h4 style="display:inline;">Actions:</h4>
-    
+
     <input type="button" value="Create New Profile" onclick="addBillingProfile(); return false;">
 
     <form id="disable_auto_button"  method="POST" action="." style="display:inline;">
@@ -82,7 +82,7 @@ nav #billing-tab { background: #FBD850; color: black; }
         <input type="submit" value="Run Authorization">
         {% csrf_token %}
     </form>
-    
+
      <input id="clear_button" type="button" value="Clear Selection" onclick="clearCustomerSelect(); return false;">
 </div>
 
@@ -114,7 +114,7 @@ nav #billing-tab { background: #FBD850; color: black; }
         {% endfor %}
         </table>
     </div>
-    
+
     <div id="manual_charge_{{ customer.getCustNum }}">
         <h3>Manually Run Charges</h3>
         <form action="." method="POST">
@@ -149,7 +149,7 @@ nav #billing-tab { background: #FBD850; color: black; }
             {% csrf_token %}
         </form>
     </div>
-    
+
     <div id="edit_recurring_{{ customer.getCustNum }}">
         <h3>Edit Automatic Billing</h3>
         <form action="." method="POST">
@@ -188,7 +188,7 @@ nav #billing-tab { background: #FBD850; color: black; }
             {% csrf_token %}
         </form>
     </div>
-    
+
     <script>
         $(function() {
           $('#next_date_{{ customer.getCustNum }}').datepicker({ dateFormat: "yy-mm-dd" });
@@ -199,11 +199,11 @@ nav #billing-tab { background: #FBD850; color: black; }
 <div id="add_profile_div">
     <h3>Create New Billing Profile</h3>
 
-    <form name="ccform" action="https://www.usaepay.com/gate.php" method="POST" 
+    <form name="ccform" action="https://www.usaepay.com/gate.php" method="POST"
     onSubmit="return validateForm()">
 
     <input type="hidden" name="UMkey" value="{{ settings.USA_EPAY_KEY }}">
-    <input type="hidden" name="UMredir" value="https://apps.officenomads.com{% url 'staff.views.usaepay_user' user.username %}">
+    <input type="hidden" name="UMredir" value="https://apps.officenomads.com{% url 'staff.views.payment.usaepay_user' user.username %}">
     <input type="hidden" name="UMdescription" value="Office Nomads Billing Authorization">
     <input type="hidden" name="UMcustid" value="{{ user.username }}">
     <input type="hidden" name="UMcommand" value="AuthOnly">
@@ -297,7 +297,7 @@ nav #billing-tab { background: #FBD850; color: black; }
         hide_detail();
     }
     $(document).ready(function() { hideAll(); });
-    
+
     function hide_buttons() {
         $("#disable_auto_button").show();
         $("#delete_profile_form").hide();
@@ -323,27 +323,27 @@ nav #billing-tab { background: #FBD850; color: black; }
             $("#edit_recurring_{{ customer.getCustNum }}").hide();
         {% endfor %}
     }
-    
+
     function selectCustomer(custID) {
         $("#add_profile_div").hide();
         hide_detail();
         show_buttons();
-        
+
         div_selector = '#billing_detail_' + custID
         $(div_selector).show();
-        
+
         // Set all the customer_id values to this ID
         $('[name="customer_id"]').val(custID)
-        
+
     }
-    
+
     function clearCustomerSelect() {
         $('.customer').each(function(i, obj) {
             obj.checked = false;
         });
         hideAll();
     }
-    
+
     function addBillingProfile(){
         clearCustomerSelect();
         $("#add_profile_div").show();

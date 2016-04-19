@@ -46,7 +46,7 @@ nav #todo-tab { background: #FBD850; color: black; }
 		</script>
 
 		{% for row in not_signed_in %}
-			<form id="nsi_form{{ forloop.counter }}" enctype="multipart/form-data" method='POST' style="display:inline;" action="{% url 'staff.views.activity_date' row.day.year row.day.month row.day.day %}">
+			<form id="nsi_form{{ forloop.counter }}" enctype="multipart/form-data" method='POST' style="display:inline;" action="{% url 'staff.views.activity.for_date' row.day.year row.day.month row.day.day %}">
 			<input type="hidden" name="visit_date" value="{{row.day}}">
 			<input type="hidden" name="member_id" value="{{row.member.id}}">
 			<input type="hidden" id="member_name{{ forloop.counter }}" value="{{row.member}}">
@@ -55,10 +55,10 @@ nav #todo-tab { background: #FBD850; color: black; }
 
 			<tr class="{% cycle 'row-even' 'row-odd' %}">
 				<td>
-					<a href="{% url 'staff.views.activity_date' row.day.year row.day.month row.day.day %}">{{ row.day|date:"l, M dS" }}</a>
+					<a href="{% url 'staff.views.activity.for_date' row.day.year row.day.month row.day.day %}">{{ row.day|date:"l, M dS" }}</a>
 				</td>
 				<td style="text-align:left;">
-					<a href="{% url 'staff.views.member_detail' row.member.id %}">{{ row.member }}</a>
+					<a href="{% url 'staff.views.member.detail' row.member.id %}">{{ row.member }}</a>
 				</td>
 				<td style="text-align:center;">
 						<button id="yes{{forloop.counter}}" onClick="return yes({{ forloop.counter }});">Yes - Mark as BILLABLE</button>
@@ -68,7 +68,7 @@ nav #todo-tab { background: #FBD850; color: black; }
 					{% if row.day == today %}
 						<!-- <a href="">send email</a> | -->
 					{% endif %}
-					<a href="{% url 'staff.views.activity_for_user' row.member.user %}">user activity</a>
+					<a href="{% url 'staff.views.activity.for_user' row.member.user %}">user activity</a>
 				</td>
 			</tr>
 
@@ -90,7 +90,7 @@ nav #todo-tab { background: #FBD850; color: black; }
 		{% if showall or count > 0 %}
 		<tr class="{% cycle 'row-even' 'row-odd' %}">
 			<td align="left">
-				<a href="{% url 'staff.views.todo_detail' key %}">{{ description }}</a>
+				<a href="{% url 'staff.views.core.todo_detail' key %}">{{ description }}</a>
 			</td>
 			<td>{{ count }}</td>
 			<td></td>

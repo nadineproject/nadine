@@ -5,15 +5,15 @@
 {% block style%}
 nav #billing-tab { background: #FBD850; color: black; }
 #content table { width: 100%; }
-.amount { text-align:right; } 
+.amount { text-align:right; }
 #content table td:last-child { text-align: center; }
 {% endblock %}
 
 {% block content %}
-{% include "staff/billing_menu.frag" %}  
+{% include "staff/billing_menu.frag" %}
 
 <h2>Bill List</h2>
-{% url 'staff.views.bill_list' as date_range_form_action %}
+{% url 'staff.views.billing.bill_list' as date_range_form_action %}
 <div class="columns clearfix date-range">
 	{% include "staff/date_range_form.frag"%}
 </div>
@@ -30,14 +30,14 @@ nav #billing-tab { background: #FBD850; color: black; }
 			<th>Member</th>
 			<th>Membership</th>
 			<th>Drop-ins</th>
-			<th>Guests</th> 
+			<th>Guests</th>
 			<th class="amount">Amount</th>
 			<th>&nbsp;</th>
 		</tr>
 
 		{% for bill in bills %}
 			<tr class="{% cycle 'row-even' 'row-odd' %}">
-				<td><a href="{% url 'staff.views.bill' bill.id %}">{{ bill.bill_date|date:"m/d/y" }}</a></td>
+				<td><a href="{% url 'staff.views.billing.bill' bill.id %}">{{ bill.bill_date|date:"m/d/y" }}</a></td>
 				<td><a href="{{ bill.member.get_absolute_url }}">{{ bill.member.first_name }} {{ bill.member.last_name }}</a></td>
 				<td>{{ bill.membership.membership_plan }}</td>
 				<td>{{ bill.dropins.all | length }}</td>
