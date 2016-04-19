@@ -11,14 +11,16 @@ nav #stats-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {% block content %}
-{% include "staff/stats_menu.frag" %}  
+{% include "staff/stats_menu.frag" %}
 
 <h2>Stats - Membership Days:</h2>
 
-<table border=1>
+<table>
 	<tr>
 		<th>User</th>
 		<th>Rank</th>
+		<th>First Visit</th>
+		<th>Duration</th>
 		<th>Memberships</th>
 		<th>Total Days</th>
 		<th>Sign-Ins</th>
@@ -26,14 +28,19 @@ nav #stats-tab { background: #FBD850; color: black; }
 		<th></th>
 	</tr>
 	{% for d in membership_days %}
-		<tr>
-			<td>{% if d.current %}<strong>{% endif %}{{ d.user }}{% if d.current %}</strong>{% endif %}</td>
+		<tr class="{% cycle 'row-even' 'row-odd' %}">
+			<td width="1">{% if d.current %}<strong>{% endif %}{{ d.user }}{% if d.current %}</strong>{% endif %}</td>
 			<td>{{ forloop.counter }}</th>
+			<td>{{ d.user.profile.first_visit|date:"Y-m-d" }}</td>
+			<td>{{ d.user.profile.duration_str }}</td>
 			<td>{{ d.membership_count }}</td>
 			<td>{{ d.total_days }}</td>
 			<td>{{ d.daily_logs }}</td>
 			<td>{{ d.max_days }}</td>
-			<td></td>
+			<td nowrap>
+				<a href="{% url 'staff.views.activity.for_user' d.user.username %}">activity</a> |
+				<a href="{% url 'staff.views.member.detail_user' d.user.username %}">profile</a>
+			</td>
 		</tr>
 	{% endfor %}
 </table>
