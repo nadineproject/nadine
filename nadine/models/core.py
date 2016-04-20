@@ -187,7 +187,7 @@ class MemberManager(models.Manager):
 
         not_signed_in = []
         for member in self.here_today(day):
-            if not member in signed_in and not member.has_desk():
+            if not member in signed_in and not member.has_desk(day):
                 not_signed_in.append({'member':member, 'day':day})
 
         return not_signed_in
@@ -434,7 +434,7 @@ class Member(models.Model):
         return Membership.objects.filter(member=self).order_by('-start_date', 'end_date')
 
     def membership_on_date(self, day):
-        return Membership.objects.filter(start_date__lte=day, end_date__gte=day).first()
+        return Membership.objects.filter(member=self, start_date__lte=day).filter(Q(end_date__isnull=True) | Q(end_date__gte=day)).first()
 
     def last_membership(self):
         """Returns the latest membership, even if it has an end date, or None if none exists"""
