@@ -19,7 +19,6 @@ from django.conf import settings
 #from django.forms.models import model_to_dict
 #from django.db.models import Sum
 #from decimal import Decimal
-#from monthdelta import MonthDelta, monthmod
 
 from nadine.models.core import Member, Membership, MembershipPlan, MemberGroups, SecurityDeposit
 from nadine.models.alerts import MemberAlert
