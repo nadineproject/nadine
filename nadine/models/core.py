@@ -433,6 +433,9 @@ class Member(models.Model):
     def membership_history(self):
         return Membership.objects.filter(member=self).order_by('-start_date', 'end_date')
 
+    def membership_on_date(self, day):
+        return Membership.objects.filter(start_date__lte=day, end_date__gte=day).first()
+
     def last_membership(self):
         """Returns the latest membership, even if it has an end date, or None if none exists"""
         memberships = Membership.objects.filter(member=self).order_by('-start_date', 'end_date')[0:]
@@ -609,13 +612,11 @@ class Member(models.Model):
         m = self.active_membership()
         return m is not None
 
-    def has_desk(self):
-        m = self.active_membership()
-        if not m:
-            return False
-        if m.is_active():
-            return m.has_desk
-        return False
+    def has_desk(self, target_date=None):
+        if not target_date:
+            target_date = timezone.now().date()
+        m = self.membership_on_date(target_date)
+        return m and m.has_desk
 
     def is_guest(self):
         m = self.active_membership()
