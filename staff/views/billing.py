@@ -12,7 +12,10 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.conf import settings
 
+from decimal import Decimal
+
 from nadine.models import *
+from staff.forms import PayBillsForm
 
 @staff_member_required
 def transactions(request):
