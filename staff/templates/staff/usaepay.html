@@ -36,14 +36,14 @@ nav #billing-tab { background: #FBD850; color: black; }
 
     {% for cust in history.keys %}
         <tr class="{% cycle 'row-even' 'row-odd' %}">
-            <td style="width:2px;"><input class="customer" name="customer" type="radio" onChange="selectCustomer('{{ cust.getCustNum }}', this); return false;"/></td>
-            <td>{{ cust.getCreated | slice:":10"}}</td>
-            <td><a href="https://secure.usaepay.com/console/billing_edit?id={{ cust.getCustNum }}" target="new">{{ cust.getCustNum }}</a></td>
-            <td>{{ cust.getBillingAddress.getCompany }}</td>
-                <td>{{ cust.getDescription }}</td>
-            {% if cust.isEnabled %}
-                <td>{{ cust.getNext | slice:":10"}}</td>
-                <td>${{ cust.getAmount|floatformat:2 }}</td>
+            <td style="width:2px;"><input class="customer" name="customer" type="radio" onChange="selectCustomer('{{ cust.CustNum }}', this); return false;"/></td>
+            <td>{{ cust.Created | slice:":10"}}</td>
+            <td><a href="https://secure.usaepay.com/console/billing_edit?id={{ cust.CustNum }}" target="new">{{ cust.CustNum }}</a></td>
+            <td>{{ cust.BillingAddress.Company }}</td>
+                <td>{{ cust.Description }}</td>
+            {% if cust.Enabled %}
+                <td>{{ cust.Next | slice:":10"}}</td>
+                <td>${{ cust.Amount|floatformat:2 }}</td>
                 <td style="text-align:center;">
                     <img src="{% static 'green_check.png' %}" height="16px" />
                 </td>
@@ -87,12 +87,12 @@ nav #billing-tab { background: #FBD850; color: black; }
 </div>
 
 {% for customer, transactions in history.items %}
-    <div id="billing_detail_{{ customer.getCustNum }}">
-        <h3>Billing Detail ({{ customer.getCustNum }})</h3>
+    <div id="billing_detail_{{ customer.CustNum }}">
+        <h3>Billing Detail ({{ customer.CustNum }})</h3>
         <div style="padding: 12px;">
-            <strong>Address: </strong>{{ customer.getBillingAddress.getStreet }}
-            <strong>Zip: </strong>{{ customer.getBillingAddress.getZip }}
-            <strong>Email: </strong>{{ customer.getBillingAddress.getEmail }}
+            <strong>Address: </strong>{{ customer.BillingAddress.Street }}
+            <strong>Zip: </strong>{{ customer.BillingAddress.Zip }}
+            <strong>Email: </strong>{{ customer.BillingAddress.Email }}
         </div>
         <h3>Billing History</h3>
         <table>
@@ -115,7 +115,7 @@ nav #billing-tab { background: #FBD850; color: black; }
         </table>
     </div>
 
-    <div id="manual_charge_{{ customer.getCustNum }}">
+    <div id="manual_charge_{{ customer.CustNum }}">
         <h3>Manually Run Charges</h3>
         <form action="." method="POST">
             <input type="hidden" name="customer_id" value="">
@@ -133,13 +133,13 @@ nav #billing-tab { background: #FBD850; color: black; }
                         <input name="invoice" size="10"/>
                     </td>
                     <td>
-                        <input name="description" size="60" value="{{ customer.getDescription }}"/>
+                        <input name="description" size="60" value="{{ customer.Description }}"/>
                     </td>
                     <td>
                         <input name="comment" size="30" value="Thank you!"/>
                     </td>
                     <td>
-                        <input name="amount" size="5" value="{{ customer.getAmount|floatformat:2 }}" />
+                        <input name="amount" size="5" value="{{ customer.Amount|floatformat:2 }}" />
                     </td>
                     <td>
                         <input type="submit" value="Run Charges">
@@ -150,7 +150,7 @@ nav #billing-tab { background: #FBD850; color: black; }
         </form>
     </div>
 
-    <div id="edit_recurring_{{ customer.getCustNum }}">
+    <div id="edit_recurring_{{ customer.CustNum }}">
         <h3>Edit Automatic Billing</h3>
         <form action="." method="POST">
             <input type="hidden" name="customer_id" value="">
@@ -166,19 +166,19 @@ nav #billing-tab { background: #FBD850; color: black; }
                 </tr>
                 <tr>
                     <td style="text-align:center;">
-                        <input name="enabled" type="checkbox" {% if customer.isEnabled %} CHECKED {% endif %} />
+                        <input name="enabled" type="checkbox" {% if customer.Enabled %} CHECKED {% endif %} />
                     </td>
                     <td>
-                        <input id="next_date_{{ customer.getCustNum }}" name="next_date" size="10" value="{{ customer.getNext|slice:":10" }}"/>
+                        <input id="next_date_{{ customer.CustNum }}" name="next_date" size="10" value="{{ customer.Next|slice:":10" }}"/>
                     </td>
                     <td>
-                        <input name="description" size="60" value="{{ customer.getDescription }}"/>
+                        <input name="description" size="60" value="{{ customer.Description }}"/>
                     </td>
                     <td>
-                        <input name="comment" size="30" value="{{ customer.getReceiptNote }}"/>
+                        <input name="comment" size="30" value="{{ customer.ReceiptNote }}"/>
                     </td>
                     <td>
-                        <input name="amount" size="5" value="{{ customer.getAmount|floatformat:2 }}" />
+                        <input name="amount" size="5" value="{{ customer.Amount|floatformat:2 }}" />
                     </td>
                     <td>
                         <input type="submit" value="Save Changes">
@@ -191,7 +191,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 
     <script>
         $(function() {
-          $('#next_date_{{ customer.getCustNum }}').datepicker({ dateFormat: "yy-mm-dd" });
+          $('#next_date_{{ customer.CustNum }}').datepicker({ dateFormat: "yy-mm-dd" });
         });
     </script>
 {% endfor %}
@@ -318,9 +318,9 @@ nav #billing-tab { background: #FBD850; color: black; }
 
     function hide_detail() {
         {% for customer in history.keys %}
-            $("#billing_detail_{{ customer.getCustNum }}").hide();
-            $("#manual_charge_{{ customer.getCustNum }}").hide();
-            $("#edit_recurring_{{ customer.getCustNum }}").hide();
+            $("#billing_detail_{{ customer.CustNum }}").hide();
+            $("#manual_charge_{{ customer.CustNum }}").hide();
+            $("#edit_recurring_{{ customer.CustNum }}").hide();
         {% endfor %}
     }
 

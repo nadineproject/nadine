@@ -36,7 +36,7 @@ from staff.forms import *
 
 from nadine import mailgun
 from nadine.utils.slack_api import SlackAPI
-from nadine.utils.usaepay_api import EPayAPI
+from nadine.utils.payment_api import PaymentAPI
 
 def is_active_member(user):
     if user and not user.is_anonymous():
@@ -138,7 +138,7 @@ def user(request, username):
     activity = DailyLog.objects.filter(member=member, payment='Bill', bills__isnull=True, visit_date__gt=timezone.now().date() - timedelta(days=31))
     guest_activity = DailyLog.objects.filter(guest_of=member, payment='Bill', guest_bills__isnull=True, visit_date__gte=timezone.now().date() - timedelta(days=31))
     emergency_contact = user.get_emergency_contact()
-    return render_to_response('members/user.html', {'user': user, 'member': member, 'emergency_contact': emergency_contact, 'activity': activity, 
+    return render_to_response('members/user.html', {'user': user, 'member': member, 'emergency_contact': emergency_contact, 'activity': activity,
                               'guest_activity': guest_activity, 'settings': settings}, context_instance=RequestContext(request))
 
 
@@ -184,8 +184,8 @@ def edit_profile(request, username):
                                                 'url_linkedin': profile.url_linkedin, 'url_aboutme': profile.url_aboutme, 'url_github': profile.url_github,
                                                 'gender': profile.gender, 'howHeard': profile.howHeard, 'industry': profile.industry, 'neighborhood': profile.neighborhood,
                                                 'has_kids': profile.has_kids, 'self_employed': profile.self_employed,
-                                                'emergency_name': emergency_contact.name, 'emergency_relationship': emergency_contact.relationship, 
-                                                'emergency_phone': emergency_contact.phone, 'emergency_email': emergency_contact.email, 
+                                                'emergency_name': emergency_contact.name, 'emergency_relationship': emergency_contact.relationship,
+                                                'emergency_phone': emergency_contact.phone, 'emergency_email': emergency_contact.email,
                                             })
 
     return render_to_response('members/edit_profile.html', {'user': user, 'profile_form': profile_form}, context_instance=RequestContext(request))
@@ -363,8 +363,8 @@ def delete_notification(request, username):
 def disable_billing(request, username):
     user = get_object_or_404(User, username=username)
     if user == request.user or request.user.is_staff:
-        epay_api = EPayAPI()
-        epay_api.disableAutoBilling(username)
+        api = PaymentAPI()
+        api.disableAutoBilling(username)
         email.announce_billing_disable(user)
     return HttpResponseRedirect(reverse('members.views.user', kwargs={'username': request.user.username}))
 

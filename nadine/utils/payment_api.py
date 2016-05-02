@@ -4,12 +4,14 @@ import base64
 import random
 import hashlib
 from datetime import datetime, timedelta
+from collections import OrderedDict
 
 from django.conf import settings
 
 from suds.client import Client
 
-class PaymentAPI:
+
+class PaymentAPI(object):
 
     def __init__(self):
         url = settings.USA_EPAY_URL2
@@ -17,16 +19,15 @@ class PaymentAPI:
         pin = settings.USA_EPAY_PIN2
         self.entry_point = USAEPAY_SOAP_API(url, key, pin)
 
-
-    def getAllCustomers(self, username):
-        return self.entry_point.getAllCustomers(username)
-
+    def get_customers(self, username):
+    	search = SearchParamArray(self.entry_point.client)
+    	search.addParameter("CustomerID", "eq", username)
+        return self.entry_point.searchCustomers(search)[0][0]
 
     def get_transactions(self, year, month, day):
         raw_transactions = self.entry_point.getTransactions(year, month, day)
         clean_transactions = clean_transaction_list(raw_transactions)
         return clean_transactions
-
 
     def get_checks_settled_by_date(self, year, month, day):
         results = self.entry_point.getTransactionReport("check:settled by date", year, month, day)
@@ -41,10 +42,18 @@ class PaymentAPI:
 
         return results
 
+    def get_history(self, username):
+        # Searches all the history for all the customers for this user
+        # Returns a dictionary of {cust_num: transactions}
+        history = OrderedDict()
+        for cust in self.get_customers(username):
+            raw_transactions = self.entry_point.getCustomerHistory(cust.CustNum)
+            clean_transactions = clean_transaction_list(raw_transactions)
+            history[cust] = clean_transactions
+        return history
 
     def close_current_batch(self):
         pass
-
 
     def runSale(self, customer_id, amount, invoice, description, comments):
         if amount <= 0:
@@ -52,7 +61,19 @@ class PaymentAPI:
         self.entry_point.runSale(int(customer_id), float(amount), invoice, description, comments)
 
     def update_recurring(self, customer_id, enabled, next_date, description, comment, amount):
-        return self.entry_point.updateCustomer(int(customer_id), enabled, next_date, description, comment, amount)
+        customer_object = self.entry_point.getCustomer(customer_id)
+        customer_object.Enabled = enabled
+        customer_object.Next = next_date
+        customer_object.Description = description
+        customer_object.Amount = amount
+        customer_object.ReceiptNote = comment
+        customer_object.SendReceipt = True
+        return self.entry_point.updateCustomer(customer_object)
+
+    def disableAutoBilling(self, username):
+        for cust in self.get_customers(username):
+            cust.Enabled = False
+            self.entry_point.updateCustomer(cust)
 
 
 ##########################################################################################
@@ -102,7 +123,8 @@ def clean_transaction(t):
 # USAePay SOAP Interface
 ##########################################################################################
 
-class SearchParamArray:
+
+class SearchParamArray(object):
 
     def __init__(self, soap_client):
         self.soap_client = soap_client
@@ -119,7 +141,7 @@ class SearchParamArray:
         return self.soap_object
 
 
-class USAEPAY_SOAP_API:
+class USAEPAY_SOAP_API(object):
 
     def __init__(self, url, key, pin):
         self.client = Client(url)
@@ -138,12 +160,23 @@ class USAEPAY_SOAP_API:
     def getCustomerNumber(self, username):
         return self.client.service.searchCustomerID(self.token, username)
 
+    def getCustomer(self, customer_number):
+        return self.client.service.getCustomer(self.token, int(customer_number))
+
+    def updateCustomer(self, customer):
+        customer_number = customer.CustNum
+        return self.client.service.updateCustomer(self.token, customer_number, customer)
+
     def getTransactions(self, year, month, day):
         start, end = getDateRange(year, month, day)
         search = SearchParamArray(self.client)
         search.addParameter("created", "gte", start)
         search.addParameter("created", "lte", end)
         return self.searchTransactions(search);
+
+    def getCustomerHistory(self, customer_number):
+        result = self.client.service.getCustomerHistory(self.token, customer_number)
+        return result.Transactions[0]
 
     def searchTransactions(self, search, match_all=True, start=0, limit=100, sort_by=None):
         if not sort_by:
@@ -163,9 +196,11 @@ class USAEPAY_SOAP_API:
             results.append({'date':row[1], 'name':row[2], 'status':row[9], 'amount':row[10], 'processed':row[13]})
         return results
 
-    def searchCustomers(self, search, match_all, start, limit, sort_by):
-        # TODO
-        return None
+    def searchCustomers(self, search, match_all=True, start=0, limit=100, sort_by=None):
+        if not sort_by:
+            sort_by = "created"
+        result = self.client.service.searchCustomers(self.token, search.to_soap(), match_all, start, limit, sort_by)
+        return result
 
     def emailReceipt(self, transaction_id):
         response = self.client.service.emailTransactionReceipt(self.token, transaction_id)
@@ -185,24 +220,12 @@ class USAEPAY_SOAP_API:
         response = self.client.service.runCustomerTransaction(self.token, customer_number, paymentID, params)
         return response
 
-    def updateCustomer(self, customer_number, enabled, next_date, description, comment, amount):
-        # TODO This is totally untested
-        customer_object = self.client.service.getCustomer(self.token, customer_number)
+    def updateRecurring(self, customer_number, enabled, next_date, description, comment, amount):
+        customer_object = self.getCustomer(customer_number)
         customer_object.Enabled = enabled
         customer_object.Next = next_date
         customer_object.Description = description
-        customer_object.Comment = comment
         customer_object.Amount = amount
-
-        return self.client.service.quickUpdateCustomer(self.token, customer_number, customer_object)
-
-        # BigInteger custnum = BigInteger.valueOf(customer_number.intValue());
-        #
-        # // Create array of fields to update
-        # FieldValueArray updateData = new FieldValueArray();
-        # for (Map.Entry<String, String> entry : fields.entrySet()) {
-        #     FieldValue fv = new FieldValue(entry.getKey(), entry.getValue());
-        #     updateData.add(fv);
-        # }
-        #
-        # return client.quickUpdateCustomer(token, custnum, updateData);
+        customer_object.ReceiptNote = comment
+        customer_object.SendReceipt = True
+        self.updateCustomer(customer_object)

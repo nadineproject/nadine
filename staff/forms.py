@@ -6,7 +6,7 @@ from taggit.forms import *
 
 from nadine.models.core import *
 from nadine.models.payment import *
-from nadine.utils.usaepay_api import EPayAPI
+from nadine.utils.payment_api import PaymentAPI
 from staff import email
 
 import datetime
@@ -245,8 +245,8 @@ class MembershipForm(forms.Form):
         # Any change triggers disabling of the automatic billing
         username = membership.member.user.username
         try:
-            epay_api = EPayAPI()
-            epay_api.disableAutoBilling(username)
+            api = PaymentAPI()
+            api.disableAutoBilling(username)
             logger.debug("Automatic Billing Disabled for '%s'" % username)
         except Exception as e:
             logger.error(e)

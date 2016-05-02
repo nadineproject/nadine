@@ -43,14 +43,14 @@ public class USAePayBridge {
 	public List searchTransactions(SearchParamArray search) throws Exception {
 		return searchTransactions(search, true, 0, 100, "created");
 	}
-	
+
 	public List searchTransactions(SearchParamArray search, boolean match_all, int start, int limit, String sort_by) throws Exception {
 		TransactionSearchResult result = client.searchTransactions(token, search, match_all, BigInteger.valueOf(start), BigInteger.valueOf(limit), sort_by);
 		System.out.println("searchTransactions: found " + result.getTransactionsReturned());
 		TransactionObjectArray transactionArray = result.getTransactions();
 		return transactionArray.getTransactions();
 	}
-	
+
 	public List getBatches(String year, String month, String day) throws Exception {
 		String[] dates = getDateRange(year, month, day);
 		String start = dates[0];
@@ -65,21 +65,21 @@ public class USAePayBridge {
 	public List searchBatches(SearchParamArray search) throws Exception {
 		return searchBatches(search, true, 0, 100, "opened");
 	}
-	
+
 	public List searchBatches(SearchParamArray search, boolean match_all, int start, int limit, String sort_by) throws Exception {
 		BatchSearchResult result = client.searchBatches(token, search, match_all, BigInteger.valueOf(start), BigInteger.valueOf(limit), sort_by);
 		System.out.println("searchBatches: found " + result.getBatchesReturned());
 		BatchStatusArray batchArray = result.getBatches();
 		return batchArray.getBatchStatuses();
 	}
-	
+
 	public CustomerObject getCustomer(String user_id) throws Exception {
 		System.out.println("getCustomer: " + user_id);
 		BigInteger customer_number = getCustomerNumber(user_id);
 		CustomerObject customer = client.getCustomer(token, customer_number);
 		return customer;
 	}
-	
+
 	public List getAllCustomers(String user_id) throws Exception {
 		System.out.println("getAllCustomers: " + user_id);
 		SearchParamArray search = new SearchParamArray();
@@ -93,17 +93,18 @@ public class USAePayBridge {
 		search.add(new SearchParam("Enabled", "eq", "True"));
 		return searchCustomers(search, true, 0, 500, "next");
 	}
-	
+
 	public List searchCustomers(SearchParamArray search) throws Exception {
 		return searchCustomers(search, true, 0, 100, "created");
 	}
-	
+
 	public List searchCustomers(SearchParamArray search, boolean match_all, int start, int limit, String sort_by) throws Exception {
 		CustomerSearchResult result = client.searchCustomers(token, search, match_all, BigInteger.valueOf(start), BigInteger.valueOf(limit), sort_by);
 		System.out.println("searchCustomers: found " + result.getCustomersReturned());
 		CustomerObjectArray customerArray = result.getCustomers();
 		return customerArray.getCustomers();
 	}
+
 	public void enableCustomer(String user_id) throws Exception {
 		System.out.println("enableCustomer: " + user_id);
 		BigInteger customer_number = getCustomerNumber(user_id);
@@ -115,7 +116,7 @@ public class USAePayBridge {
 		BigInteger customer_number = getCustomerNumber(user_id);
 		disableCustomer(customer_number);
 	}
-	
+
 	public void disableCustomer(BigInteger customer_number) throws Exception {
 		System.out.println("disableCustomer: " + customer_number);
 		client.disableCustomer(token, customer_number);
@@ -131,7 +132,7 @@ public class USAePayBridge {
 			disableCustomer(customer_number);
 		}
 	}
-	
+
 	public List getCustomerHistory(Integer customer_number) throws Exception {
 		System.out.println("getCustomerHistory: " + customer_number);
 		BigInteger big_num = BigInteger.valueOf(customer_number.intValue());
@@ -147,13 +148,13 @@ public class USAePayBridge {
 		TransactionObjectArray transactionArray = result.getTransactions();
 		return transactionArray.getTransactions();
 	}
-	
+
 	public BigInteger getCustomerNumber(String user_id) throws Exception {
 		BigInteger n = client.searchCustomerID(token, user_id);
 		System.out.println("getCustomerNumber: " + user_id + " = " + n);
 		return n;
 	}
-	
+
 	private String[] getDateRange(String year, String month, String day) {
 		// TODO - Add Validation
 		String start = year + "-" + month + "-" + day + " 00:00:00";
@@ -167,7 +168,7 @@ public class USAePayBridge {
 		BigInteger big_num = BigInteger.valueOf(transaction_id.intValue());
 		return client.getTransaction(token, big_num);
 	}
-	
+
 	public boolean voidTransaction(Integer transaction_id) throws Exception {
 		System.out.println("voidTransaction: " + transaction_id);
 		BigInteger big_num = BigInteger.valueOf(transaction_id.intValue());
@@ -176,14 +177,14 @@ public class USAePayBridge {
 
 	public boolean updateCustomer(Integer customer_number, Map<String, String> fields) throws Exception {
 		BigInteger custnum = BigInteger.valueOf(customer_number.intValue());
- 
+
 		// Create array of fields to update
 		FieldValueArray updateData = new FieldValueArray();
 		for (Map.Entry<String, String> entry : fields.entrySet()) {
 			FieldValue fv = new FieldValue(entry.getKey(), entry.getValue());
 			updateData.add(fv);
 		}
-		
+
 		return client.quickUpdateCustomer(token, custnum, updateData);
 	}
 
@@ -191,18 +192,18 @@ public class USAePayBridge {
 		BigInteger custnum = BigInteger.valueOf(customer_number.intValue());
 		BigInteger paymentID = BigInteger.valueOf(0); // sets it to use default
 		String command = "AuthOnly";
-		
+
 		CustomerTransactionDetail details = new CustomerTransactionDetail();
 		details.setAmount(1.00);
 		details.setDescription("Office Nomads Authorization");
-		
+
 		TransactionResponse response = client.runCustomerTransaction(token, custnum, details, command, paymentID);
-		
+
 		return response;
 	}
 
-	public TransactionResponse runSale(Integer customer_number, double amount, String invoice, String description, String comments) 
-		throws Exception 
+	public TransactionResponse runSale(Integer customer_number, double amount, String invoice, String description, String comments)
+		throws Exception
 	{
 		BigInteger custnum = BigInteger.valueOf(customer_number.intValue());
 		BigInteger paymentID = BigInteger.valueOf(0); // sets it to use default
@@ -213,9 +214,9 @@ public class USAePayBridge {
 		details.setInvoice(invoice);
 		details.setDescription(description);
 		details.setComments(comments);
-		
+
 		TransactionResponse response = client.runCustomerTransaction(token, custnum, details, command, paymentID);
-		
+
 		return response;
 	}
 
@@ -223,19 +224,19 @@ public class USAePayBridge {
 		//Setting batchRefNum to 0 for current batch, for a different batch set to the Batch Ref Num
 		return closeBatch(BigInteger.ZERO);
 	}
-	
+
 	public CloseBatchResponse closeBatch(BigInteger batch_number) throws Exception {
 		CloseBatchRequest Request = new CloseBatchRequest();
 		Request.setToken(token);
 		Request.setBatchRefNum(batch_number);
 		return client.closeBatch(Request);
 	}
-	
+
 	public static void main(String[] args) {
 		String url = args[0];
 		String key = args[1];
 		String pin = args[2];
-		
+
 		try {
 			System.out.print("Connecting to " + url + "... ");
 			USAePayBridge app = new USAePayBridge(url, key, pin);
@@ -247,7 +248,7 @@ public class USAePayBridge {
 			System.out.println("Done");
 
 			System.out.println("Accepting python connections");
-			
+
 			//dump_methods("com.usaepay.api.jaxws.CustomerObject");
 		} catch (Exception e) {
 			System.out.println("Error!");

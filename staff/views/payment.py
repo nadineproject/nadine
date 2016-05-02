@@ -66,9 +66,10 @@ def usaepay_user(request, username):
     history = None
     try:
         epay_api = EPayAPI()
+        api = PaymentAPI()
 
         if 'disable_all' in request.POST:
-            epay_api.disableAutoBilling(username)
+            api.disableAutoBilling(username)
 
         customer_id = request.POST.get("customer_id", None)
         action = request.POST.get("action", "")
@@ -98,11 +99,11 @@ def usaepay_user(request, username):
                 comment = request.POST.get("comment")
                 amount = request.POST.get("amount")
                 enabled = request.POST.get("enabled", "") == "on"
-                epay_api.update_recurring(customer_id, enabled, next_date, description,comment, amount)
+                api.update_recurring(customer_id, enabled, next_date, description,comment, amount)
                 messages.add_message(request, messages.INFO, "Recurring billing updated for %s" % username)
 
         # Lastly pull all customers for this user
-        history = epay_api.get_history(username)
+        history = api.get_history(username)
     except Exception as e:
         messages.add_message(request, messages.ERROR, e)
 
