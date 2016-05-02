@@ -97,6 +97,10 @@ def usaepay_user(request, username):
                 enabled = request.POST.get("enabled", "") == "on"
                 api.update_recurring(customer_id, enabled, next_date, description,comment, amount)
                 messages.add_message(request, messages.INFO, "Recurring billing updated for %s" % username)
+        elif action == "email_receipt":
+            transaction_id = request.POST.get("transaction_id")
+            api.email_receipt(transaction_id, user.email)
+            messages.add_message(request, messages.INFO, "Receipt emailed to: %s" % user.email)
 
         # Lastly pull all customers for this user
         history = api.get_history(username)

@@ -102,6 +102,7 @@ nav #billing-tab { background: #FBD850; color: black; }
             <th>Status</th>
             <th>Type</th>
             <th style="text-align:right;">Amount</th>
+            <th>Action</th>
         </tr>
         {% for t in transactions|dictsortreversed:"date_time"|slice:":100" %}
             <tr>
@@ -110,6 +111,13 @@ nav #billing-tab { background: #FBD850; color: black; }
                 <td>{{ t.status }}</td>
                 <td>{{ t.card_type }}</td>
                 <td style="text-align:right;">${{ t.amount|floatformat:2 }}</td>
+                <td style="text-align:center;"><form method="POST" action=".">
+                  <input type="hidden" name="transaction_id" value="{{ t.transaction_id }}"/>
+                  <input type="hidden" name="action" value="email_receipt">
+                  <input type="submit" value="Email Receipt"/>
+                  {% csrf_token %}
+                </form>
+              </td>
             </tr>
         {% endfor %}
         </table>

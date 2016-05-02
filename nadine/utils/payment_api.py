@@ -3,6 +3,7 @@ import csv
 import base64
 import random
 import hashlib
+import logging
 from datetime import datetime, timedelta
 from collections import OrderedDict
 
@@ -53,9 +54,6 @@ class PaymentAPI(object):
     def close_current_batch(self):
         pass
 
-    # def runAuth(self, customer_id):
-    #     self.entry_point.authorize(customer_id)
-
     def run_transaction(self, customer_id, amount, description, invoice=None, comments=None, auth_only=False):
         if amount <= 0:
             raise Exception("Invalid amount (%s)!" % amount)
@@ -77,7 +75,7 @@ class PaymentAPI(object):
         customer_object.SendReceipt = True
         return self.entry_point.updateCustomer(customer_object)
 
-    def disableAutoBilling(self, username):
+    def disable_recurring(self, username):
         for cust in self.get_customers(username):
             cust.Enabled = False
             self.entry_point.updateCustomer(cust)
@@ -99,6 +97,9 @@ class PaymentAPI(object):
                 if auth and recent:
                     return True
         return False
+
+    def email_receipt(self, transaction_id, email):
+        self.entry_point.emailReceipt(transaction_id, email)
 
     def close_current_batch(self):
         self.entry_point.closeCurrentBatch()
@@ -242,8 +243,13 @@ class USAEPAY_SOAP_API(object):
         result = self.client.service.searchCustomers(self.token, search.to_soap(), match_all, start, limit, sort_by)
         return result
 
-    def emailReceipt(self, transaction_id):
-        response = self.client.service.emailTransactionReceipt(self.token, transaction_id)
+    def emailReceipt(self, transaction_id, email_address, receipt_name=None):
+        if not receipt_name:
+            receipt_name = "vterm_customer"
+        response = self.client.service.emailTransactionReceiptByName(self.token, transaction_id, receipt_name, email_address)
+        if not response:
+            raise Exception("Sending email failed!")
+        return response
 
     # def authorize(self, customer_number):
     #     params = self.client.factory.create('CustomerTransactionRequest')
