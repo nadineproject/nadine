@@ -75,6 +75,24 @@ class PaymentAPI(object):
             cust.Enabled = False
             self.entry_point.updateCustomer(cust)
 
+    def auto_bill_enabled(self, username):
+        for cust in self.get_customers(username):
+            if cust.Enabled:
+                return True
+        return False
+
+    def has_new_card(self, username):
+        history = get_history(username)
+        for cust_num, transactions in history.items():
+            # New cards have only a few transactions and one
+            # is an autorization within one week
+            if len(transactions) <= 3:
+                auth = transactions[0]['status'] == 'Authorized'
+                recent = datetime.now() - transactions[0]['date_time'] <= timedelta(weeks=1)
+                if auth and recent:
+                    return True
+        return False
+
 
 ##########################################################################################
 #  Helper functions

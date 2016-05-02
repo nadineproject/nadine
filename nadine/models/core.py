@@ -30,7 +30,7 @@ from django.dispatch import receiver
 from django.db.models.signals import pre_save, post_save
 from PIL import Image
 
-from nadine.utils.usaepay_api import EPayAPI
+from nadine.utils.payment_api import PaymentAPI
 from nadine.utils.slack_api import SlackAPI
 
 from doors.keymaster.models import DoorEvent
@@ -640,8 +640,8 @@ class Member(models.Model):
 
     def has_billing_profile(self):
         try:
-            epay_api = EPayAPI()
-            if epay_api.getAllCustomers(self.user.username):
+            api = PaymentAPI()
+            if api.get_customers(self.user.username):
                 return True
         except Exception:
             pass
@@ -650,8 +650,8 @@ class Member(models.Model):
     def has_new_card(self):
         # Check for a new card.  WARNING: kinda expensive
         try:
-            epay_api = EPayAPI()
-            return epay_api.has_new_card(self.user.username)
+            api = PaymentAPI
+            return api.has_new_card(self.user.username)
         except Exception:
             pass
         return False
@@ -668,13 +668,9 @@ class Member(models.Model):
 
     def __str__(self): return '%s %s' % (smart_str(self.user.first_name), smart_str(self.user.last_name))
 
-    def usaepay_auth(self):
-        epay_api = EPayAPI()
-        return epay_api.get_auth_code(self.user.username)
-
     def auto_bill_enabled(self):
-        epay_api = EPayAPI()
-        return epay_api.auto_bill_enabled(self.user.username)
+        api = PaymentAPI()
+        return api.auto_bill_enabled(self.user.username)
 
     def member_notes(self):
         return MemberNote.objects.filter(member=self)
