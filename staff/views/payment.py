@@ -68,7 +68,7 @@ def usaepay_user(request, username):
         api = PaymentAPI()
 
         if 'disable_all' in request.POST:
-            api.disableAutoBilling(username)
+            api.disable_recurring(username)
 
         customer_id = request.POST.get("customer_id", None)
         action = request.POST.get("action", "")

@@ -364,7 +364,7 @@ def disable_billing(request, username):
     user = get_object_or_404(User, username=username)
     if user == request.user or request.user.is_staff:
         api = PaymentAPI()
-        api.disableAutoBilling(username)
+        api.disable_recurring(username)
         email.announce_billing_disable(user)
     return HttpResponseRedirect(reverse('members.views.user', kwargs={'username': request.user.username}))
 

@@ -246,7 +246,7 @@ class MembershipForm(forms.Form):
         username = membership.member.user.username
         try:
             api = PaymentAPI()
-            api.disableAutoBilling(username)
+            api.disable_recurring(username)
             logger.debug("Automatic Billing Disabled for '%s'" % username)
         except Exception as e:
             logger.error(e)
