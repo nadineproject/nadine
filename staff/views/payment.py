@@ -65,7 +65,6 @@ def usaepay_user(request, username):
 
     history = None
     try:
-        epay_api = EPayAPI()
         api = PaymentAPI()
 
         if 'disable_all' in request.POST:
@@ -78,7 +77,7 @@ def usaepay_user(request, username):
         if customer_id:
             if action == "verify_profile":
                 # Run a $1.00 authorization to verify this profile works
-                epay_api.runAuth(customer_id)
+                api.run_transaction(customer_id, 1.00, "Office Nomads Authorization", auth_only=True)
                 messages.add_message(request, messages.INFO, "Payment for %s successfully authorized" % username)
             elif action == "delete_profile":
                 # TODO
@@ -88,10 +87,7 @@ def usaepay_user(request, username):
                 description = request.POST.get("description")
                 amount = request.POST.get("amount")
                 comment = request.POST.get("comment")
-                # This sucks and we should use PaymentAPI everywhere TODO!!!
-                #api = PaymentAPI()
-                #api.runSale(customer_id, amount, invoice, description, comment)
-                epay_api.runSale(customer_id, amount, invoice, description, comment)
+                api.run_transaction(customer_id, amount, description, invoice=invoice, comment=comment)
                 messages.add_message(request, messages.INFO, "Sale for %s successfully authorized" % username)
             elif action == "edit_recurring":
                 next_date = request.POST.get("next_date")
@@ -184,15 +180,14 @@ def usaepay_transactions(request, year, month, day):
 @staff_member_required
 def usaepay_members(request):
     members = []
-    epay_api = EPayAPI()
+    api = PaymentAPI()
     for m in Member.objects.active_members():
         username = m.user.username
-        print username
-        customers = epay_api.getAllCustomers(username)
+        customers = api.get_customers(username)
         if customers:
             for c in customers:
-                if c.isEnabled():
-                    members.append({'member': m, 'username': username, 'next': c.getNext(), 'customer_number': c.getCustNum()})
+                if c.Enabled:
+                    members.append({'member': m, 'username': username, 'next': c.Next, 'customer_number': c.CustNum})
     return render_to_response('staff/usaepay_members.html', {'members': members}, context_instance=RequestContext(request))
 
 
@@ -200,14 +195,14 @@ def usaepay_members(request):
 def usaepay_void(request):
     transaction = None
     try:
-        epay_api = EPayAPI()
+        api = PaymentAPI()
         if 'transaction_id' in request.POST:
             transaction_id = int(request.POST.get('transaction_id'))
-            transaction = epay_api.get_transaction(transaction_id)
+            transaction = api.get_transaction(transaction_id)
 
             if 'username' in request.POST and 'confirmed' in request.POST:
                 username = request.POST.get('username')
-                epay_api.void_transaction(username, transaction_id)
+                api.void_transaction(username, transaction_id)
                 messages.add_message(request, messages.INFO, "Transaction for %s voided" % username)
                 return HttpResponseRedirect(reverse('staff.views.payment.usaepay_transactions_today'))
     except Exception as e:

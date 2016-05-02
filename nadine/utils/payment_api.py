@@ -20,9 +20,7 @@ class PaymentAPI(object):
         self.entry_point = USAEPAY_SOAP_API(url, key, pin)
 
     def get_customers(self, username):
-    	search = SearchParamArray(self.entry_point.client)
-    	search.addParameter("CustomerID", "eq", username)
-        return self.entry_point.searchCustomers(search)[0][0]
+        return self.entry_point.getAllCustomers(username)
 
     def get_transactions(self, year, month, day):
         raw_transactions = self.entry_point.getTransactions(year, month, day)
@@ -55,10 +53,19 @@ class PaymentAPI(object):
     def close_current_batch(self):
         pass
 
-    def runSale(self, customer_id, amount, invoice, description, comments):
+    # def runAuth(self, customer_id):
+    #     self.entry_point.authorize(customer_id)
+
+    def run_transaction(self, customer_id, amount, description, invoice=None, comments=None, auth_only=False):
         if amount <= 0:
             raise Exception("Invalid amount (%s)!" % amount)
-        self.entry_point.runSale(int(customer_id), float(amount), invoice, description, comments)
+        self.entry_point.runTransaction(int(customer_id), float(amount), description, invoice=invoice, comments=comments, auth_only=auth_only)
+
+    def void_transaction(self, username, transaction_id):
+        t = clean_transaction(self.entry_point.getTransaction(transaction_id))
+        if t['username'] == username and t['status'] == "Authorized":
+            return self.entry_point.voidTransaction(transaction_id)
+        return False
 
     def update_recurring(self, customer_id, enabled, next_date, description, comment, amount):
         customer_object = self.entry_point.getCustomer(customer_id)
@@ -82,16 +89,19 @@ class PaymentAPI(object):
         return False
 
     def has_new_card(self, username):
-        history = get_history(username)
+        history = self.get_history(username)
         for cust_num, transactions in history.items():
             # New cards have only a few transactions and one
             # is an autorization within one week
-            if len(transactions) <= 3:
+            if len(transactions) > 0 and len(transactions) <= 3:
                 auth = transactions[0]['status'] == 'Authorized'
                 recent = datetime.now() - transactions[0]['date_time'] <= timedelta(weeks=1)
                 if auth and recent:
                     return True
         return False
+
+    def close_current_batch(self):
+        self.entry_point.closeCurrentBatch()
 
 
 ##########################################################################################
@@ -181,6 +191,14 @@ class USAEPAY_SOAP_API(object):
     def getCustomer(self, customer_number):
         return self.client.service.getCustomer(self.token, int(customer_number))
 
+    def getAllCustomers(self, username):
+    	search = SearchParamArray(self.client)
+    	search.addParameter("CustomerID", "eq", username)
+        result = self.searchCustomers(search)
+        if len(result) > 0 and len(result[0]) > 0:
+            return result[0][0]
+        return None
+
     def updateCustomer(self, customer):
         customer_number = customer.CustNum
         return self.client.service.updateCustomer(self.token, customer_number, customer)
@@ -194,13 +212,17 @@ class USAEPAY_SOAP_API(object):
 
     def getCustomerHistory(self, customer_number):
         result = self.client.service.getCustomerHistory(self.token, customer_number)
-        return result.Transactions[0]
+        if len(result.Transactions) >= 1:
+            return result.Transactions[0]
+        return None
 
     def searchTransactions(self, search, match_all=True, start=0, limit=100, sort_by=None):
         if not sort_by:
             sort_by = "created"
     	result = self.client.service.searchTransactions(self.token, search.to_soap(), match_all, start, limit, sort_by)
-        return result.Transactions[0]
+        if len(result.Transactions) >= 1:
+            return result.Transactions[0]
+        return None
 
     def getTransactionReport(self, report_type, year, month, day):
         start, end = getDateRange(year, month, day)
@@ -223,19 +245,47 @@ class USAEPAY_SOAP_API(object):
     def emailReceipt(self, transaction_id):
         response = self.client.service.emailTransactionReceipt(self.token, transaction_id)
 
-    def runSale(self, customer_number, amount, invoice, description, comments):
+    # def authorize(self, customer_number):
+    #     params = self.client.factory.create('CustomerTransactionRequest')
+    #     params.Command = "AuthOnly"
+    #     params.CustReceipt = True
+    #     params.MerchReceipt = True
+    #     details = self.client.factory.create('TransactionDetail')
+    #     details.Amount = 1.00
+    #     details.Description = "Office Nomads Authorization"
+    #     params.Details = details
+    #     print params
+    #     paymentID = 0 # sets it to use default
+    #     response = self.client.service.runCustomerTransaction(self.token, customer_number, paymentID, params)
+    #     print response
+    #     if response.Error:
+    #         raise Exception(response.Error)
+    #     return response
+
+    def runTransaction(self, customer_number, amount, description, invoice=None, comments=None, auth_only=False):
         params = self.client.factory.create('CustomerTransactionRequest')
-        params.Command = "Sale"
+        if auth_only:
+            params.Command = "AuthOnly"
+        else:
+            params.Command = "Sale"
         params.CustReceipt = True
         params.MerchReceipt = True
         params.Details.Amount = float(amount)
-        params.Details.Invoice = invoice
         params.Details.Description = description
-        params.Details.Comments = comments
-        print params
+        if invoice:
+            params.Details.Invoice = invoice
+        if comments:
+            params.Details.Comments = comments
+        paymentID = int(0) # sets it to use default
+        response = self.client.service.runCustomerTransaction(self.token, int(customer_number), paymentID, params)
+        if response.Error:
+            raise Exception(response.Error)
+        return response
 
-        paymentID = 0 # sets it to use default
-        response = self.client.service.runCustomerTransaction(self.token, customer_number, paymentID, params)
+    def voidTransaction(self, transaction_id):
+        response = self.client.service.voidTransaction(self.token, transaction_id)
+        if response.Error:
+            raise Exception(response.Error)
         return response
 
     def updateRecurring(self, customer_number, enabled, next_date, description, comment, amount):
@@ -247,3 +297,13 @@ class USAEPAY_SOAP_API(object):
         customer_object.ReceiptNote = comment
         customer_object.SendReceipt = True
         self.updateCustomer(customer_object)
+
+    def closeCurrentBatch(self):
+        # Setting batch number to 0 for current batch
+        return self.closeBatch(0)
+
+    def closeBatch(self, batch_number):
+        response = self.client.service.closeBatch(self.token, batch_number)
+        if response.Error:
+            raise Exception(response.Error)
+        return response
