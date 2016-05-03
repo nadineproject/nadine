@@ -23,7 +23,7 @@ class PaymentAPI(object):
     def get_customers(self, username):
         customers = self.entry_point.getAllCustomers(username)
         if not customers:
-            return [] 
+            return []
         return customers
 
     def get_transactions(self, year, month, day):
@@ -34,7 +34,6 @@ class PaymentAPI(object):
     def get_checks_settled_by_date(self, year, month, day):
         raw_transactions = self.entry_point.getSettledCheckTransactions(year, month, day)
         clean_transactions = clean_transaction_list(raw_transactions)
-        print clean_transactions
         return clean_transactions
 
     def get_history(self, username):
