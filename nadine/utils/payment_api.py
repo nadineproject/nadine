@@ -46,9 +46,6 @@ class PaymentAPI(object):
             history[cust] = clean_transactions
         return history
 
-    def close_current_batch(self):
-        pass
-
     def run_transaction(self, customer_id, amount, description, invoice=None, comments=None, auth_only=False):
         if amount <= 0:
             raise Exception("Invalid amount (%s)!" % amount)
