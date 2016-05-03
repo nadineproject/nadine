@@ -69,10 +69,10 @@ nav #billing-tab { background: #FBD850; color: black; }
 
 	{% for c in settled_checks %}
 		<tr class="{% cycle 'row-even' 'row-odd' %}">
-			<td>{{ c.name }}</td>
+			<td>{{ c.username }}</td>
 			<td>${{ c.amount|floatformat:2 }}</td>
 			<td>{{ c.status }}</td>
-			<td>{{ c.processed }}</td>
+			<td>{{ c.transaction.CheckTrace.Processed }}</td>
 			<td></td>
 		</tr>
 	{% endfor %}

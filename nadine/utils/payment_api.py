@@ -29,17 +29,10 @@ class PaymentAPI(object):
         return clean_transactions
 
     def get_checks_settled_by_date(self, year, month, day):
-        results = self.entry_point.getTransactionReport("check:settled by date", year, month, day)
-
-        # We pull another report to find any returned checks
-        # I'm not sure why this isn't in the error report but I have to go through all transactions
-        report2 = self.entry_point.getTransactionReport("check:All Transactions by Date", year, month, day)
-        return report2
-        for row in report2:
-            if row['status'] == "Returned":
-                results.append(row)
-
-        return results
+        raw_transactions = self.entry_point.getSettledCheckTransactions(year, month, day)
+        clean_transactions = clean_transaction_list(raw_transactions)
+        print clean_transactions
+        return clean_transactions
 
     def get_history(self, username):
         # Searches all the history for all the customers for this user
@@ -209,7 +202,14 @@ class USAEPAY_SOAP_API(object):
         search = SearchParamArray(self.client)
         search.addParameter("created", "gte", start)
         search.addParameter("created", "lte", end)
-        return self.searchTransactions(search);
+        return self.searchTransactions(search)
+
+    def getSettledCheckTransactions(self, year, month, day):
+        start, end = getDateRange(year, month, day)
+        search = SearchParamArray(self.client)
+        search.addParameter("VCChecks.Settled", "gte", start)
+        search.addParameter("VCChecks.Settled", "lte", end)
+        return self.searchTransactions(search)
 
     def getCustomerHistory(self, customer_number):
         result = self.client.service.getCustomerHistory(self.token, customer_number)
@@ -225,17 +225,18 @@ class USAEPAY_SOAP_API(object):
             return result.Transactions[0]
         return None
 
-    def getTransactionReport(self, report_type, year, month, day):
-        start, end = getDateRange(year, month, day)
-        response = self.client.service.getTransactionReport(self.token, start, end, report_type, "csv")
-        report_csv = base64.b64decode(response)
-        row_list = list(csv.reader(report_csv.splitlines(), delimiter=','))
-        # First row is the header which we could use, but I like my simplified headers better
-        row_list.pop(0)
-        results = []
-        for row in row_list:
-            results.append({'date':row[1], 'name':row[2], 'status':row[9], 'amount':row[10], 'processed':row[13]})
-        return results
+    # This isn't working.  There is a bug in USAePay and it's been reported. --JLS
+    # def getTransactionReport(self, report_type, year, month, day):
+    #     start, end = getDateRange(year, month, day)
+    #     response = self.client.service.getTransactionReport(self.token, start, end, report_type, "csv")
+    #     report_csv = base64.b64decode(response)
+    #     row_list = list(csv.reader(report_csv.splitlines(), delimiter=','))
+    #     # First row is the header which we could use, but I like my simplified headers better
+    #     row_list.pop(0)
+    #     results = []
+    #     for row in row_list:
+    #         results.append({'date':row[1], 'name':row[2], 'status':row[9], 'amount':row[10], 'processed':row[13]})
+    #     return results
 
     def searchCustomers(self, search, match_all=True, start=0, limit=100, sort_by=None):
         if not sort_by:
@@ -251,6 +252,7 @@ class USAEPAY_SOAP_API(object):
             raise Exception("Sending email failed!")
         return response
 
+    # Depricated in favor of runTransaction(auth_only=True)
     # def authorize(self, customer_number):
     #     params = self.client.factory.create('CustomerTransactionRequest')
     #     params.Command = "AuthOnly"

@@ -15,7 +15,6 @@ from nadine.models import Member, XeroContact
 
 from py4j.java_gateway import JavaGateway
 from nadine.utils.xero_api import XeroAPI
-from nadine.utils.usaepay_api import EPayAPI
 from nadine.utils.payment_api import PaymentAPI
 
 
@@ -78,7 +77,7 @@ def usaepay_user(request, username):
             if action == "verify_profile":
                 # Run a $1.00 authorization to verify this profile works
                 api.run_transaction(customer_id, 1.00, "Office Nomads Authorization", auth_only=True)
-                messages.add_message(request, messages.INFO, "Payment for %s successfully authorized" % username)
+                messages.add_message(request, messages.INFO, "Profile authorization for %s successful" % username)
             elif action == "delete_profile":
                 # TODO
                 messages.add_message(request, messages.INFO, "Billing profile deleted for %s" % username)
@@ -138,9 +137,7 @@ def usaepay_transactions(request, year, month, day):
         totals['total_count'] = len(transactions)
 
         # Pull the settled checks seperately
-        # TODO - using the old api for now -- REMOVE!
-        settled_checks = EPayAPI().get_checks_settled_by_date(year, month, day)
-        #settled_checks = api.get_checks_settled_by_date(year, month, day)
+        settled_checks = api.get_checks_settled_by_date(year, month, day)
 
         for t in transactions:
             # Pull the member and the amount they owe
