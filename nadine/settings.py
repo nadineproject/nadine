@@ -162,11 +162,13 @@ JSIGNATURE_COLOR = "30F"
 JSIGNATURE_RESET_BUTTON = False
 
 # USAePay Settings
-USA_EPAY_URL = 'www.usaepay.com'
-USA_EPAY_KEY = 'ABCDEFG'
-USA_EPAY_KEY2 = 'ABCDEFG'
-USA_EPAY_PIN2 = '1234'
-USA_EPAY_URL_KEY = 'ABCDEFG'
+# Use API v1.4 Doc/Literal WSDL
+USA_EPAY_URL = "https://www.usaepay.com/soap/gate/YOUR_URL_CODE/usaepay.wsdl"
+USA_EPAY_KEY = "YOUR_USAEPAY_KEY"
+USA_EPAY_PIN = "YOUR_USAEPAY_PIN"
+# Used for adding billing profiles
+USA_EPAY_WEB_KEY = "YOUR_USAEPAY_KEY"
+
 
 CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
 CELERY_TASK_SERIALIZER = 'json'

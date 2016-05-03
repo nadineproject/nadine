@@ -15,7 +15,7 @@ class UsaepayTestCase(SimpleTestCase):
 
     def get_client(self):
         if not self._client:
-            url = settings.USA_EPAY_URL2
+            url = settings.USA_EPAY_URL
             self._client = Client(url)
         return self._client
 
@@ -35,8 +35,8 @@ class UsaepayTestCase(SimpleTestCase):
         return self._token
 
     def test_soap(self):
-        key = settings.USA_EPAY_KEY2
-        pin = settings.USA_EPAY_PIN2
+        key = settings.USA_EPAY_KEY
+        pin = settings.USA_EPAY_PIN
 
         client = self.get_client()
         token = self.get_token(key, pin)

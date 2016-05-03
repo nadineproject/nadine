@@ -1,5 +1,5 @@
 <div style="margin-left: 2em; margin-bottom: .5em;">
-Current Profile: 
+Current Profile:
 {% if member.has_valid_billing %}
 	<font color=green>Valid</font>
 	{% if member.is_guest %}
@@ -10,10 +10,10 @@ Current Profile:
 {% endif %}
 </div>
 
-{% if settings.USA_EPAY_KEY %}
+{% if settings.USA_EPAY_WEB_KEY %}
 	<div style="margin-left: 2em">
 		<form action="https://www.usaepay.com/interface/epayform/">
-			<input type="hidden" name="UMkey" value="{{ settings.USA_EPAY_KEY }}">
+			<input type="hidden" name="UMkey" value="{{ settings.USA_EPAY_WEB_KEY }}">
 			<input type="hidden" name="UMdescription" value="Office Nomads Billing Authorization">
 			<input type="hidden" name="UMcustid" value="{{ member.user.username }}">
 			<input type="hidden" name="UMcommand" value="AuthOnly">
@@ -41,9 +41,7 @@ Current Profile:
 			<input type="hidden" name="UMemail" value="{{ member.email }}">
 			<!--<input type="hidden" name="UMtestmode" value="true">-->
 			<input type="hidden" name="username" value="{{member.user.username}}">
-			<input type="hidden" name="auth" value="{{member.usaepay_auth}}">
 			<input type="submit" value="Create New Billing Profile">
 		</form>
 	</div>
 {% endif %}
-

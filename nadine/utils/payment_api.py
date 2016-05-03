@@ -15,13 +15,16 @@ from suds.client import Client
 class PaymentAPI(object):
 
     def __init__(self):
-        url = settings.USA_EPAY_URL2
-        key = settings.USA_EPAY_KEY2
-        pin = settings.USA_EPAY_PIN2
+        url = settings.USA_EPAY_URL
+        key = settings.USA_EPAY_KEY
+        pin = settings.USA_EPAY_PIN
         self.entry_point = USAEPAY_SOAP_API(url, key, pin)
 
     def get_customers(self, username):
-        return self.entry_point.getAllCustomers(username)
+        customers = self.entry_point.getAllCustomers(username)
+        if not customers:
+            return [] 
+        return customers
 
     def get_transactions(self, year, month, day):
         raw_transactions = self.entry_point.getTransactions(year, month, day)
