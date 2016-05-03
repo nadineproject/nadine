@@ -14,11 +14,19 @@ from suds.client import Client
 
 class PaymentAPI(object):
 
-    def __init__(self):
-        url = settings.USA_EPAY_URL
-        key = settings.USA_EPAY_KEY
-        pin = settings.USA_EPAY_PIN
-        self.entry_point = USAEPAY_SOAP_API(url, key, pin)
+    def __init__(self, v=4):
+        if v == 2:
+            self.url = settings.USA_EPAY_URL_1_2
+        elif v == 3:
+            self.url = settings.USA_EPAY_URL_1_3
+        elif v == 6:
+            self.url = settings.USA_EPAY_URL_1_6
+        else:
+            self.url = settings.USA_EPAY_URL_1_4
+        self.entry_point = USAEPAY_SOAP_API(self.url, settings.USA_EPAY_KEY, settings.USA_EPAY_PIN)
+
+    def switch_api_ver(self, version):
+        self.__init__(v=version)
 
     def get_customers(self, username):
         customers = self.entry_point.getAllCustomers(username)
@@ -49,7 +57,20 @@ class PaymentAPI(object):
     def run_transaction(self, customer_id, amount, description, invoice=None, comments=None, auth_only=False):
         if amount <= 0:
             raise Exception("Invalid amount (%s)!" % amount)
-        self.entry_point.runTransaction(int(customer_id), float(amount), description, invoice=invoice, comments=comments, auth_only=auth_only)
+
+        # We have to revert to API v1.2 to make this work HACK!!!!!!
+        self.switch_api_ver(2)
+        response = self.entry_point.runTransaction2(int(customer_id), float(amount), description, invoice=invoice, comments=comments, auth_only=auth_only)
+        transaction_id = response.RefNum
+
+        # Stupid 1.2 api doesn't send the email so we'll do it manually
+        self.switch_api_ver(4)
+        customer = self.entry_point.getCustomer(customer_id)
+        email = customer.BillingAddress.Email
+        if email:
+            self.email_receipt(transaction_id, email)
+
+        return response
 
     def void_transaction(self, username, transaction_id):
         t = clean_transaction(self.entry_point.getTransaction(transaction_id))
@@ -269,25 +290,49 @@ class USAEPAY_SOAP_API(object):
     #         raise Exception(response.Error)
     #     return response
 
-    def runTransaction(self, customer_number, amount, description, invoice=None, comments=None, auth_only=False):
-        params = self.client.factory.create('CustomerTransactionRequest')
+    # 1.2 way of doing things
+    def runTransaction2(self, customer_number, amount, description, invoice=None, comments=None, auth_only=False):
+        params = self.client.factory.create('CustomerTransactionDetail')
+
         if auth_only:
-            params.Command = "AuthOnly"
+            command = "AuthOnly"
         else:
-            params.Command = "Sale"
-        params.CustReceipt = True
-        params.MerchReceipt = True
-        params.Details.Amount = float(amount)
-        params.Details.Description = description
+            command = "Sale"
+        params.Amount = float(amount)
+        params.Description = description
         if invoice:
-            params.Details.Invoice = invoice
+            params.Invoice = invoice
         if comments:
-            params.Details.Comments = comments
+            params.Comments = comments
+
         paymentID = int(0) # sets it to use default
-        response = self.client.service.runCustomerTransaction(self.token, int(customer_number), paymentID, params)
-        if response.Error:
-            raise Exception(response.Error)
+        response = self.client.service.runCustomerTransaction(self.token, int(customer_number), params, command, paymentID)
         return response
+
+
+        # 1.4 way of doing things
+        def runTransactions4(self, customer_number, amount, description, invoice=None, comments=None, auth_only=False):
+            params = self.client.factory.create('CustomerTransactionRequest')
+
+            if auth_only:
+                command = "AuthOnly"
+            else:
+                command = "Sale"
+            params.CustReceipt = True
+            params.MerchReceipt = True
+            params.Command = command
+            params.Details.Amount = float(amount)
+            params.Details.Description = description
+            if invoice:
+                params.Details.Invoice = invoice
+            if comments:
+                params.Details.Comments = comments
+
+            paymentID = int(0) # sets it to use default
+            response = self.client.service.runCustomerTransaction(self.token, int(customer_number), paymentID, params)
+            if response.Error:
+                raise Exception(response.Error)
+            return response
 
     def voidTransaction(self, transaction_id):
         response = self.client.service.voidTransaction(self.token, transaction_id)
