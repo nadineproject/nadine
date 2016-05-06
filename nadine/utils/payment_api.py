@@ -54,13 +54,13 @@ class PaymentAPI(object):
             history[cust] = clean_transactions
         return history
 
-    def run_transaction(self, customer_id, amount, description, invoice=None, comments=None, auth_only=False):
+    def run_transaction(self, customer_id, amount, description, invoice=None, comment=None, auth_only=False):
         if amount <= 0:
             raise Exception("Invalid amount (%s)!" % amount)
 
         # We have to revert to API v1.2 to make this work HACK!!!!!!
         self.switch_api_ver(2)
-        response = self.entry_point.runTransaction2(int(customer_id), float(amount), description, invoice=invoice, comments=comments, auth_only=auth_only)
+        response = self.entry_point.runTransaction2(int(customer_id), float(amount), description, invoice=invoice, comment=comment, auth_only=auth_only)
         transaction_id = response.RefNum
 
         # Stupid 1.2 api doesn't send the email so we'll do it manually
@@ -291,7 +291,7 @@ class USAEPAY_SOAP_API(object):
     #     return response
 
     # 1.2 way of doing things
-    def runTransaction2(self, customer_number, amount, description, invoice=None, comments=None, auth_only=False):
+    def runTransaction2(self, customer_number, amount, description, invoice=None, comment=None, auth_only=False):
         params = self.client.factory.create('CustomerTransactionDetail')
 
         if auth_only:
@@ -302,8 +302,8 @@ class USAEPAY_SOAP_API(object):
         params.Description = description
         if invoice:
             params.Invoice = invoice
-        if comments:
-            params.Comments = comments
+        if comment:
+            params.Comments = comment
 
         paymentID = int(0) # sets it to use default
         response = self.client.service.runCustomerTransaction(self.token, int(customer_number), params, command, paymentID)
@@ -311,7 +311,7 @@ class USAEPAY_SOAP_API(object):
 
 
         # 1.4 way of doing things
-        def runTransactions4(self, customer_number, amount, description, invoice=None, comments=None, auth_only=False):
+        def runTransactions4(self, customer_number, amount, description, invoice=None, comment=None, auth_only=False):
             params = self.client.factory.create('CustomerTransactionRequest')
 
             if auth_only:
@@ -325,8 +325,8 @@ class USAEPAY_SOAP_API(object):
             params.Details.Description = description
             if invoice:
                 params.Details.Invoice = invoice
-            if comments:
-                params.Details.Comments = comments
+            if comment:
+                params.Details.Comments = comment
 
             paymentID = int(0) # sets it to use default
             response = self.client.service.runCustomerTransaction(self.token, int(customer_number), paymentID, params)
