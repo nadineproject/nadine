@@ -356,6 +356,4 @@ class USAEPAY_SOAP_API(object):
 
     def closeBatch(self, batch_number):
         response = self.client.service.closeBatch(self.token, batch_number)
-        if response.Error:
-            raise Exception(response.Error)
         return response
