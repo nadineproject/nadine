@@ -112,7 +112,8 @@ class PaymentAPI(object):
         return False
 
     def email_receipt(self, transaction_id, email):
-        self.entry_point.emailReceipt(transaction_id, email)
+        self.entry_point.emailReceipt(transaction_id, email, receipt_name="vterm_customer")
+        self.entry_point.emailReceipt(transaction_id, email, receipt_name="vterm_merchant")
 
     def close_current_batch(self):
         self.entry_point.closeCurrentBatch()
