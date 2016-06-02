@@ -18,7 +18,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'nadinedb',
-        'USER': 'postgres',
+        'USER': 'nadine',
         'PASSWORD': 'password'
     }
 }
