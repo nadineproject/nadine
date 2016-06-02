@@ -84,7 +84,7 @@ $userScript = <<SCRIPT
   workon nadine
   ./manage.py migrate
   ./manage.py create_admin
-  tmux -c ./manage.py runserver 0.0.0.0:8989
+  tmux ./manage.py runserver 0.0.0.0:8989
 SCRIPT
 
 
