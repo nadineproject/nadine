@@ -38,7 +38,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 $rootScript = <<SCRIPT
   set -x
   apt-get update -y
-  apt-get install git vim tmux -y
+  apt-get install git vim screen -y
   apt-get install python-dev python-pip python-software-properties -y
   apt-get install libffi-dev libxml2-dev libxslt1-dev libjpeg8-dev -y
   apt-get install python-psycopg2 libpq-dev postgresql -y
@@ -84,7 +84,7 @@ $userScript = <<SCRIPT
   workon nadine
   ./manage.py migrate
   ./manage.py create_admin
-  tmux ./manage.py runserver 0.0.0.0:8989
+  screen -dmS django ./manage.py runserver 0.0.0.0:8989
 SCRIPT
 
 
