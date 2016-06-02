@@ -15,7 +15,7 @@ from django.conf import settings
 from decimal import Decimal
 
 from nadine.models import *
-from staff.forms import PayBillsForm
+from staff.forms import PayBillsForm, RunBillingForm
 from staff import email
 
 @staff_member_required
