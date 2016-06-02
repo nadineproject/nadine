@@ -8,4 +8,7 @@ class Command(NoArgsCommand):
 
     def handle_noargs(self, **options):
         if not User.objects.filter(username="admin"):
+            print("Creating admin user with username='admin' and password='admin'")
             User.objects.create_superuser('admin', 'admin@example.com', 'admin')
+        else:
+            print("Admin user already exists!")
