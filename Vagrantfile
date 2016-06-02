@@ -83,7 +83,7 @@ $userScript = <<SCRIPT
   echo workon nadine >> /home/vagrant/.bashrc
   workon nadine
   ./manage.py migrate
-  #screen -dms celery ./manage.py celeryd -v 2 -B -s celery -E -l INFO
+  ./manage.py create_admin
   screen -dmS django ./manage.py runserver 0.0.0.0:8989
 SCRIPT
 
