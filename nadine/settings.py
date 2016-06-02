@@ -135,7 +135,7 @@ INSTALLED_APPS = (
     'tablet',
     'easy_pdf',
     'jsignature',
-    'taggit_templatetags',
+    'taggit_templatetags2',
     'taggit',
     'djcelery',
     'doors.keymaster',
