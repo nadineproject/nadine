@@ -39,7 +39,7 @@ $rootScript = <<SCRIPT
   set -x
   apt-get update -y
   apt-get install git vim tmux -y
-  apt-get install python-dev python-pip python-software-properties -y
+  apt-get install python-dev python-software-properties -y
   apt-get install libffi-dev libxml2-dev libxslt1-dev libjpeg8-dev -y
   apt-get install python-psycopg2 libpq-dev postgresql -y
   apt-get autoremove -y
@@ -48,7 +48,7 @@ $rootScript = <<SCRIPT
   sudo -u postgres createuser --createdb --no-superuser --no-createrole nadine
   sudo -u postgres createdb --owner=nadine nadinedb
   sudo -u postgres psql -d postgres -c "ALTER USER nadine WITH PASSWORD 'password'"
-  sed -i.bak 's/peer$/trust/' /etc/postgresql/9.1/main/pg_hba.conf
+  sed -i.bak 's/peer$/trust/' /etc/postgresql/9.3/main/pg_hba.conf
   service postgresql restart
 
   if [ -f /etc/init.d/nginx ]; then
