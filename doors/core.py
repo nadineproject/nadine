@@ -1,3 +1,4 @@
+import os
 import abc
 import json
 import base64
@@ -15,6 +16,7 @@ logger = logging.getLogger(__name__)
 class Messages(object):
     TEST_QUESTION = "Are you the Keymaster?"
     TEST_RESPONSE = "Are you the Gatekeeper?"
+    GET_TIME = "get_time"
     PULL_CONFIGURATION = "pull_configuration"
     CHECK_IN = "check_in"
     PULL_DOOR_CODES = "pull_door_codes"
@@ -403,6 +405,15 @@ class Gatekeeper(object):
         return self.doors[door_name]
 
     def sync_clocks(self):
+        logging.info("Gatekeeper: pull the time from the keymaster...")
+        try:
+            km_time = self.encrypted_connection.send_message(Messages.GET_TIME)
+            logging.info("Gatekeeper: Received: %s" % km_time)
+            date_cmd = 'echo "" | sudo -kS hwclock --set --date "%s" 2> /dev/null' % km_time
+            os.system(date_cmd)
+        except Exception as e:
+            logging.info("Gatekeeper: Failed to set hardware clock! (%s)" % e)
+
         logging.info("Gatekeeper: Syncing the door clocks...")
         for door in self.get_doors().values():
             controller = door['controller']
