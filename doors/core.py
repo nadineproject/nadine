@@ -79,14 +79,17 @@ class EncryptedConnection(object):
     def encrypt_message(self, message):
         return self.farnet.encrypt(bytes(message))
 
-    def send_message(self, message, data=None):
+    def send_message(self, message, data=None, encrypt=True):
         # Encrypt the message
-        encrypted_message = self.encrypt_message(message)
-
-        # Build our request
-        request_package = {'message':encrypted_message}
-        if data:
-            request_package['data'] = self.encrypt_message(data)
+        if encrypt:
+            encrypted_message = self.encrypt_message(message)
+            request_package = {'message':encrypted_message}
+            if data:
+                request_package['data'] = self.encrypt_message(data)
+        else:
+            request_package = {'text_message': message}
+            if data:
+                request_package['data'] = data
 
         # Send the message
         self.lock.acquire()
@@ -103,6 +106,9 @@ class EncryptedConnection(object):
             traceback.print_exc()
             raise Exception(error)
 
+        if 'text_message' in response_json:
+            return response.json()['text_message']
+
         if 'message' in response_json:
             encrypted_return_message = response.json()['message']
             return self.decrypt_message(encrypted_return_message)
@@ -113,6 +119,9 @@ class EncryptedConnection(object):
         # Encrypted message is in 'message' POST variable
         if not request.method == 'POST':
             raise Exception("Must be POST")
+        if 'text_message' in request.POST:
+            return request.POST['text_message']
+
         if not 'message' in request.POST:
             raise Exception("No message in POST")
         encrypted_message = request.POST['message']
