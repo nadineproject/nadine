@@ -9,7 +9,7 @@ from datetime import datetime, time, date, timedelta
 
 from cryptography.fernet import Fernet
 
-#logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class Messages(object):
@@ -114,11 +114,11 @@ class EncryptedConnection(object):
         if not 'message' in request.POST:
             raise Exception("No message in POST")
         encrypted_message = request.POST['message']
-        logging.debug("Received encrypted message.  Size: %d" % len(encrypted_message))
+        logger.debug("Received encrypted message.  Size: %d" % len(encrypted_message))
 
         try:
             self.message = self.decrypt_message(encrypted_message)
-            logging.debug("Decrypted message: %s" % self.message)
+            logger.debug("Decrypted message: %s" % self.message)
         except Exception as e:
             raise Exception("Could not decrypt message! (%s)" % str(e))
 
