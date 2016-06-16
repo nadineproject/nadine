@@ -413,16 +413,19 @@ class Gatekeeper(object):
             raise Exception("Door not found")
         return self.doors[door_name]
 
-    def sync_clocks(self):
-        logging.info("Gatekeeper: pull the time from the keymaster...")
+    def set_system_clock(self):
+        logging.info("Gatekeeper: Pulling the time from the keymaster...")
         try:
-            km_time = self.encrypted_connection.send_message(Messages.GET_TIME)
+            km_time = self.encrypted_connection.send_message(Messages.GET_TIME, encrypt=False)
             logging.info("Gatekeeper: Received: %s" % km_time)
             date_cmd = 'echo "" | sudo -kS date -s "%s" 2> /dev/null' % km_time
             os.system(date_cmd)
+            return True
         except Exception as e:
-            logging.info("Gatekeeper: Failed to set hardware clock! (%s)" % e)
+            logging.info("Gatekeeper: Failed to set system clock! (%s)" % e)
+        return False
 
+    def sync_clocks(self):
         logging.info("Gatekeeper: Syncing the door clocks...")
         for door in self.get_doors().values():
             controller = door['controller']
