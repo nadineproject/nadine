@@ -120,7 +120,13 @@ class EncryptedConnection(object):
             self.message = self.decrypt_message(encrypted_message)
             logger.debug("Decrypted message: %s" % self.message)
         except Exception as e:
-            raise Exception("Could not decrypt message! (%s)" % str(e))
+            error_msg = str(e)
+            if len(error_msg) == 0:
+                # A blank error message is most likely at imestamp mismatch.
+                # Check the times on the gatekeeper to make sure it's not in ahead of the keymaster
+                raise Exception("Decryption error!  Possible keymaster/gatekeeper timestamp mismatch" % )
+            else:
+                raise Exception("Could not decrypt message! (%s)" % error_msg)
 
         # Encrypted data is in 'data' POST variable
         if 'data' in request.POST:
