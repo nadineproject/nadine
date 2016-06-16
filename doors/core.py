@@ -414,6 +414,9 @@ class Gatekeeper(object):
         return self.doors[door_name]
 
     def set_system_clock(self):
+        # For this to work the user running the gatekeepr app must have sudo access
+        # for the date command with password turned off.  If this is not set, it will
+        # fail silently without doing anything. --JLS
         logging.info("Gatekeeper: Pulling the time from the keymaster...")
         try:
             km_time = self.encrypted_connection.send_message(Messages.GET_TIME, encrypt=False)
