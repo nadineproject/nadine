@@ -124,7 +124,7 @@ class EncryptedConnection(object):
             if len(error_msg) == 0:
                 # A blank error message is most likely at imestamp mismatch.
                 # Check the times on the gatekeeper to make sure it's not in ahead of the keymaster
-                raise Exception("Decryption error!  Possible keymaster/gatekeeper timestamp mismatch" % )
+                raise Exception("Decryption error!  Possible keymaster/gatekeeper timestamp mismatch")
             else:
                 raise Exception("Could not decrypt message! (%s)" % error_msg)
 
