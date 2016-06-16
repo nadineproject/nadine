@@ -409,7 +409,7 @@ class Gatekeeper(object):
         try:
             km_time = self.encrypted_connection.send_message(Messages.GET_TIME)
             logging.info("Gatekeeper: Received: %s" % km_time)
-            date_cmd = 'echo "" | sudo -kS hwclock --set --date "%s" 2> /dev/null' % km_time
+            date_cmd = 'echo "" | sudo -kS date -s "%s" 2> /dev/null' % km_time
             os.system(date_cmd)
         except Exception as e:
             logging.info("Gatekeeper: Failed to set hardware clock! (%s)" % e)
