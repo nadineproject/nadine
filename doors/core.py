@@ -417,8 +417,8 @@ class Gatekeeper(object):
         logging.info("Gatekeeper: Pulling the time from the keymaster...")
         try:
             km_time = self.encrypted_connection.send_message(Messages.GET_TIME, encrypt=False)
-            logging.info("Gatekeeper: Received: %s" % km_time)
-            date_cmd = 'echo "" | sudo -kS date -s "%s" 2> /dev/null' % km_time
+            logging.debug("Gatekeeper: Received: %s" % km_time)
+            date_cmd = 'echo "" | sudo -kS date -s "%s" > /dev/null 2> /dev/null' % km_time
             os.system(date_cmd)
             return True
         except Exception as e:
