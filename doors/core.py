@@ -1,3 +1,4 @@
+import os
 import abc
 import json
 import base64
@@ -9,12 +10,13 @@ from datetime import datetime, time, date, timedelta
 
 from cryptography.fernet import Fernet
 
-#logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class Messages(object):
     TEST_QUESTION = "Are you the Keymaster?"
     TEST_RESPONSE = "Are you the Gatekeeper?"
+    GET_TIME = "get_time"
     PULL_CONFIGURATION = "pull_configuration"
     CHECK_IN = "check_in"
     PULL_DOOR_CODES = "pull_door_codes"
@@ -77,14 +79,17 @@ class EncryptedConnection(object):
     def encrypt_message(self, message):
         return self.farnet.encrypt(bytes(message))
 
-    def send_message(self, message, data=None):
+    def send_message(self, message, data=None, encrypt=True):
         # Encrypt the message
-        encrypted_message = self.encrypt_message(message)
-
-        # Build our request
-        request_package = {'message':encrypted_message}
-        if data:
-            request_package['data'] = self.encrypt_message(data)
+        if encrypt:
+            encrypted_message = self.encrypt_message(message)
+            request_package = {'message':encrypted_message}
+            if data:
+                request_package['data'] = self.encrypt_message(data)
+        else:
+            request_package = {'text_message': message}
+            if data:
+                request_package['data'] = data
 
         # Send the message
         self.lock.acquire()
@@ -101,6 +106,9 @@ class EncryptedConnection(object):
             traceback.print_exc()
             raise Exception(error)
 
+        if 'text_message' in response_json:
+            return response.json()['text_message']
+
         if 'message' in response_json:
             encrypted_return_message = response.json()['message']
             return self.decrypt_message(encrypted_return_message)
@@ -111,16 +119,25 @@ class EncryptedConnection(object):
         # Encrypted message is in 'message' POST variable
         if not request.method == 'POST':
             raise Exception("Must be POST")
+        if 'text_message' in request.POST:
+            return request.POST['text_message']
+
         if not 'message' in request.POST:
             raise Exception("No message in POST")
         encrypted_message = request.POST['message']
-        logging.debug("Received encrypted message.  Size: %d" % len(encrypted_message))
+        logger.debug("Received encrypted message.  Size: %d" % len(encrypted_message))
 
         try:
             self.message = self.decrypt_message(encrypted_message)
-            logging.debug("Decrypted message: %s" % self.message)
+            logger.debug("Decrypted message: %s" % self.message)
         except Exception as e:
-            raise Exception("Could not decrypt message! (%s)" % str(e))
+            error_msg = str(e)
+            if len(error_msg) == 0:
+                # A blank error message is most likely at imestamp mismatch.
+                # Check the times on the gatekeeper to make sure it's not in ahead of the keymaster
+                raise Exception("Decryption error!  Possible keymaster/gatekeeper timestamp mismatch")
+            else:
+                raise Exception("Could not decrypt message! (%s)" % error_msg)
 
         # Encrypted data is in 'data' POST variable
         if 'data' in request.POST:
@@ -395,6 +412,21 @@ class Gatekeeper(object):
         if door_name not in self.get_doors():
             raise Exception("Door not found")
         return self.doors[door_name]
+
+    def set_system_clock(self):
+        # For this to work the user running the gatekeepr app must have sudo access
+        # for the date command with password turned off.  If this is not set, it will
+        # fail silently without doing anything. --JLS
+        logging.info("Gatekeeper: Pulling the time from the keymaster...")
+        try:
+            km_time = self.encrypted_connection.send_message(Messages.GET_TIME, encrypt=False)
+            logging.debug("Gatekeeper: Received: %s" % km_time)
+            date_cmd = 'echo "" | sudo -kS date -s "%s" > /dev/null 2> /dev/null' % km_time
+            os.system(date_cmd)
+            return True
+        except Exception as e:
+            logging.info("Gatekeeper: Failed to set system clock! (%s)" % e)
+        return False
 
     def sync_clocks(self):
         logging.info("Gatekeeper: Syncing the door clocks...")

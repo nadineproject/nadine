@@ -15,9 +15,12 @@ class GatekeeperApp(object):
             gatekeeper = Gatekeeper(config)
             connection = gatekeeper.get_connection()
 
-            # Test the connection
+            # Sync our system clocks
+            gatekeeper.set_system_clock()
+
+            # Test the connection encryption
             if gatekeeper.test_keymaster_connection():
-                logging.info("Keymaster connection successfull!")
+                logging.info("Keymaster encrypted connection successfull!")
 
             # Pull the configuration
             gatekeeper.configure_doors()

@@ -1,3 +1,4 @@
+import time
 import logging
 from datetime import datetime, timedelta, date
 
@@ -182,6 +183,8 @@ def keymaster(request):
         # Process the incoming message
         if incoming_message == Messages.TEST_QUESTION:
             outgoing_message = Messages.TEST_RESPONSE
+        elif incoming_message == Messages.GET_TIME:
+            return JsonResponse({'text_message':time.strftime("%c")})
         elif incoming_message == Messages.PULL_CONFIGURATION:
             outgoing_message = keymaster.pull_config()
         elif incoming_message == Messages.CHECK_IN:
