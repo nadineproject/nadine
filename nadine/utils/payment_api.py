@@ -90,8 +90,11 @@ class PaymentAPI(object):
 
     def disable_recurring(self, username):
         for cust in self.get_customers(username):
-            cust.Enabled = False
-            self.entry_point.updateCustomer(cust)
+            try:
+                cust.Enabled = False
+                self.entry_point.updateCustomer(cust)
+            except Exception as e:
+                pass
 
     def auto_bill_enabled(self, username):
         for cust in self.get_customers(username):
