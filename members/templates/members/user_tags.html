@@ -1,6 +1,4 @@
 {% extends "members/u_base.html" %}
-{% load taggit_extras %}
-{% include_tagcloud 'staff.member' %}
 
 {%block sub-head %}
 	<!-- TODO need to find out what's in these that's not in our custom stuff already loaded at the top -->
@@ -26,12 +24,12 @@
 	<ul>
 		{% for t in user_tags %}
 			<li>
-				<a href="{% url 'members.views.tag' t %}">{{ t }}</a> 
+				<a href="{% url 'members.views.tag' t %}">{{ t }}</a>
 				(<a href="{% url 'members.views.delete_tag' user.username t %}" style="color: red;">x</a>)
 			</li>
 		{% endfor %}
 	</ul>
-	
+
 	<div class="ui-widget">
 	<form action="." method="POST">
 		<input id="tag" name="tag">
@@ -39,9 +37,9 @@
 		{% csrf_token %}
 	</form>
 	</div>
-	
+
 	{% if error %}
 		<div style="color:red;"><strong>Error:</strong> {{ error }}</div>
 	{% endif %}
-	
+
 {% endblock %}
