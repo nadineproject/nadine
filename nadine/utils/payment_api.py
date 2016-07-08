@@ -144,26 +144,31 @@ def clean_transaction_list(transactions):
 
 
 def clean_transaction(t):
-        username = t.CustomerID
-        if t.CreditCardData:
+    print t
+    username = t.CustomerID
+    if t.CreditCardData:
+        print t.CreditCardData
+        if "CardType" in t.CreditCardData:
             card_type = t.CreditCardData.CardType
         else:
-            card_type = "ACH"
-        status = t.Status
-        if status and ' ' in status:
-            status = status.split()[0]
-        transaction_type = t.TransactionType
-        amount = t.Details.Amount
-        if transaction_type == 'Credit':
-            amount = -1 * amount
-        description = t.Details.Description
-        date_time = datetime.strptime(t.DateTime, '%Y-%m-%d %H:%M:%S')
-        transaction_id = t.Response.RefNum
-        note = ""
-        if status == "Error":
-            note = t.Response.Error
-        return {'transaction_id': transaction_id, 'username': username, 'transaction': t, 'date_time':date_time, 'description': description,
-                'card_type': card_type, 'status': status, 'transaction_type':transaction_type, 'note':note, 'amount': amount}
+            card_type = "U"
+    else:
+        card_type = "ACH"
+    status = t.Status
+    if status and ' ' in status:
+        status = status.split()[0]
+    transaction_type = t.TransactionType
+    amount = t.Details.Amount
+    if transaction_type == 'Credit':
+        amount = -1 * amount
+    description = t.Details.Description
+    date_time = datetime.strptime(t.DateTime, '%Y-%m-%d %H:%M:%S')
+    transaction_id = t.Response.RefNum
+    note = ""
+    if status == "Error":
+        note = t.Response.Error
+    return {'transaction_id': transaction_id, 'username': username, 'transaction': t, 'date_time':date_time, 'description': description,
+            'card_type': card_type, 'status': status, 'transaction_type':transaction_type, 'note':note, 'amount': amount}
 
 
 ##########################################################################################
