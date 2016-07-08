@@ -16,7 +16,7 @@ from monthdelta import MonthDelta, monthmod
 
 from staff import email
 from staff.forms import MemberEditForm, MembershipForm
-from nadine.models import Member, Membership, MembershipPlan, DailyLog, SentEmailLog, FileUpload
+from nadine.models import Member, Membership, MembershipPlan, DailyLog, SentEmailLog, FileUpload, SpecialDay
 
 
 @staff_member_required
