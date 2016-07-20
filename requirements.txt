@@ -4,12 +4,11 @@ psycopg2==2.6.2
 celery==3.1.23
 django-celery==3.1.17
 django-localflavor-us==1.1
-django-taggit==0.18.1
+django-taggit==0.20.2
 django-taggit-templatetags2==1.5.2
 mailchimp==2.0.9
 MonthDelta==1.0b0
-#py4j==0.9.2
-pytz==2016.4
+pytz==2016.6.1
 requests==2.10.0
 cryptography==1.4
 suds==0.4
@@ -27,7 +26,7 @@ pip-review
 
 # Libraries for Xero
 pyxero==0.8.0
-PyJWT==1.4.0
+PyJWT==1.4.1
 
 # Libraries for Arpwatch
 pysnmp==4.3.2
@@ -35,4 +34,5 @@ pysnmp-mibs==0.1.6
 
 # TODO - Evaluate use of these libraries
 feedparser
-django-tastypie==0.12.2
+#py4j==0.9.2
+#django-tastypie==0.12.2
