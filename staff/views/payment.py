@@ -13,7 +13,6 @@ from django.conf import settings
 
 from nadine.models import Member, XeroContact
 
-from py4j.java_gateway import JavaGateway
 from nadine.utils.xero_api import XeroAPI
 from nadine.utils.payment_api import PaymentAPI
 
