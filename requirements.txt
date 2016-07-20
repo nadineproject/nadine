@@ -15,6 +15,7 @@ suds==0.4
 
 # For document signing
 # Newer versions may not work so be cautious when upgrading
+html5lib==1.0b8
 xhtml2pdf>=0.0.6
 reportlab>=2.7,<3
 django-easy-pdf==0.1.0
