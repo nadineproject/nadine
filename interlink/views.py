@@ -66,13 +66,13 @@ def moderator_inspect(request, id):
 def moderator_approve(request, id):
     incoming_mail = get_object_or_404(IncomingMail, pk=id)
     if not request.user in incoming_mail.mailing_list.moderators.all():
-        print request.user.get_full_name(), 'tried to moderate an email for %s' % incoming_mail.mailing_list.name
+        #print(request.user.get_full_name(), 'tried to moderate an email for %s' % incoming_mail.mailing_list.name)
         return HttpResponseRedirect(reverse('interlink.views.moderator_list'))
 
     if incoming_mail.state != 'moderate':
-        print 'Tried to moderate an email which needs no moderation:', incoming_mail, incoming_mail.state
+        #print('Tried to moderate an email which needs no moderation:', incoming_mail, incoming_mail.state)
         return HttpResponseRedirect(reverse('interlink.views.moderator_list'))
-    print 'accepting'
+    #print('accepting')
     incoming_mail.create_outgoing()
     return HttpResponseRedirect(reverse('interlink.views.moderator_list'))
 
@@ -81,14 +81,13 @@ def moderator_approve(request, id):
 def moderator_reject(request, id):
     incoming_mail = get_object_or_404(IncomingMail, pk=id)
     if not request.user in incoming_mail.mailing_list.moderators.all():
-        print request.user.get_full_name(), 'tried to moderate an email for %s' % incoming_mail.mailing_list.name
+        #print(request.user.get_full_name(), 'tried to moderate an email for %s' % incoming_mail.mailing_list.name)
         return HttpResponseRedirect(reverse('interlink.views.moderator_list'))
 
     if incoming_mail.state != 'moderate':
-        print 'Tried to moderate an email which needs no moderation.'
+        #print('Tried to moderate an email which needs no moderation.')
         return HttpResponseRedirect(reverse('interlink.views.moderator_list'))
 
-    print 'rejecting'
     incoming_mail.reject()
     return HttpResponseRedirect(reverse('interlink.views.moderator_list'))
 

@@ -88,7 +88,7 @@ class Run:
                 if self.days[i].date >= membership.start_date:
                     if membership.end_date == None or self.days[i].date <= membership.end_date:
                         if self.days[i].membership:
-                            print 'Duplicate membership! %s' % membership
+                            print('Duplicate membership! %s' % membership)
                         self.days[i].membership = membership
 
     def populate_daily_logs(self):
@@ -134,13 +134,13 @@ class Run:
         for day in self.days:
             if day.daily_log or day.is_membership_end_date() or day.is_membership_anniversary() or len(day.guest_daily_logs) > 0:
                 if day.daily_log:
-                    print '\tDaily log: %s' % day.daily_log.visit_date
+                    print('\tDaily log: %s' % day.daily_log.visit_date)
                 if day.is_membership_end_date():
-                    print '\t%s end: %s' % (day.membership.membership_plan, day.date)
+                    print('\t%s end: %s' % (day.membership.membership_plan, day.date))
                 if day.is_membership_anniversary():
-                    print '\t%s monthly anniversary: %s' % (day.membership.membership_plan, day.date)
+                    print('\t%s monthly anniversary: %s' % (day.membership.membership_plan, day.date))
                 if len(day.guest_daily_logs) > 0:
-                    print '\tGuest logs: %s' % day.guest_daily_logs
+                    print('\tGuest logs: %s' % day.guest_daily_logs)
 
     def __repr__(self):
         if len(self.days) == 0:

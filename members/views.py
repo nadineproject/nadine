@@ -398,7 +398,7 @@ def manage_member(request, username):
 
     # Handle the buttons if a task is being marked done
     if request.method == 'POST':
-        print request.POST
+        #print(request.POST)
         if 'resolve_task' in request.POST:
             alert = MemberAlert.objects.get(pk=request.POST.get('alert_id'))
             alert.resolve(request.user)

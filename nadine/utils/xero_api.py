@@ -62,7 +62,6 @@ class XeroAPI:
         return None
 
     def save_contact(self, contact_data):
-        print contact_data
         contact_id = None
         try:
             result = self.xero.contacts.save(contact_data)
@@ -73,11 +72,9 @@ class XeroAPI:
         return contact_id
 
     def add_contact(self, contact_data):
-        print contact_data
         contact_id = None
         try:
             result = self.xero.contacts.put(contact_data)
-            print result
             if len(result) == 1:
                 contact_id = result[0]['ContactID']
         except Exception as e:
@@ -85,11 +82,9 @@ class XeroAPI:
         return contact_id
 
     def save_or_put_contact(self, contact_data):
-        print contact_data
         contact_id = None
         try:
             result = self.xero.contacts.save_or_put(contact_data)
-            print result
             xml = result[3]['xml']
             dom = parseString(xml)
             id_elm = dom.getElementsByTagName('ContactID')

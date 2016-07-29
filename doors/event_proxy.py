@@ -26,17 +26,16 @@ class EventProxy(threading.Thread):
     @cherrypy.expose
     def index(self):
         return "I'm the event proxy!"
-    
+
     # This is the one that takes the event data from the doors
     @cherrypy.expose
     def event_proxy(self, **args):
-        print args
         # event = args.get('event', 'unknown')
         # door = args.get('door', 'unknown')
         # code = args.get('code', 'unknown')
         # print("Incoming Event: %s, Door: %s, Code: %s" % (event, door, code))
         proxy_dict = self.event_for_keymaster_from_hid_args(args)
-        
+
         proxy_data = json.dumps(proxy_dict)
         print(proxy_data)
         response = self.connection.send_message(proxy_data)
@@ -67,7 +66,7 @@ class EventProxy(threading.Thread):
         return new_args
 
 ################################################################################
-# Main method 
+# Main method
 ################################################################################
 
 if __name__ == "__main__":
@@ -77,20 +76,20 @@ if __name__ == "__main__":
     debug = "-d" in sys.argv
 
     # Test the connection
-    print "Testing connection: %s" % config['KEYMASTER_URL']
+    print("Testing connection: %s" % config['KEYMASTER_URL'])
     connection = EncryptedConnection(config['ENCRYPTION_KEY'], config['KEYMASTER_URL'])
     response = connection.send_message(Messages.TEST_QUESTION)
     if response == Messages.TEST_RESPONSE:
-        print "Keymaster handshake successfull!"
+        print("Keymaster handshake successfull!")
     else:
         raise Exception("Could not connect to Keymaster")
-    
+
     queue = Queue.PriorityQueue()
-    
+
     doors = {'FrontDoor': 1}
     users = {'mike': 1}
     special_codes = ['abc']
-    
+
     # Create our proxy
     proxy = EventProxy(queue, special_codes, doors, users, connection)
     proxy.setDaemon(True)

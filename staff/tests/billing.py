@@ -16,12 +16,12 @@ from nadine.models.payment import *
 def print_user_data(user):
     print
     profile = user.get_profile()
-    print "Profile: %s" % profile
+    print("Profile: %s" % profile)
     for bill in Bill.objects.filter(member=profile):
-        print "  Bill: %s" % bill
-        print "    Membership: %s" % bill.membership
+        print("  Bill: %s" % bill)
+        print("    Membership: %s" % bill.membership)
         for dropin in bill.dropins.all():
-            print "    Drop-in: %s" % dropin
+            print("    Drop-in: %s" % dropin)
 
 
 def run_billing_for_range(end_time, days):
@@ -94,7 +94,6 @@ class BillingTestCase(TestCase):
         days = [end_time - timedelta(days=i) for i in day_range]
         # 2010-06-1 through 2010-06-30
         for day in days:
-            # print 'Testing: %s' % (day)
             billing.run_billing(day)
             if day.day == 10:
                 # User4's PT5 membership

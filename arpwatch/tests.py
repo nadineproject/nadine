@@ -71,4 +71,3 @@ class ArpWatchTest(SimpleTestCase):
             s = s + timedelta(minutes=5)
 
         logs = ArpLog.objects.for_user(user1, start, end)
-        print logs

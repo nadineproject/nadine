@@ -70,8 +70,6 @@ def usaepay_user(request, username):
 
         customer_id = request.POST.get("customer_id", None)
         action = request.POST.get("action", "")
-        #print "action: %s" % action
-        #print "cust: %s " % customer_id
         if customer_id:
             if action == "verify_profile":
                 # Run a $1.00 authorization to verify this profile works

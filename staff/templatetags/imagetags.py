@@ -41,7 +41,7 @@ def crop(file, size_param="300x255"):
                 fit_crop(miniature_filename, width, height)
         return miniature_url
     except:
-        print 'Could not crop file: %s' % file
+        print('Could not crop file: %s' % file)
         return ''
 register.filter('crop', crop)
 
@@ -66,7 +66,7 @@ def squarecrop(file, size_param='100'):
             fit_crop(miniature_filename, size, size)
         return miniature_url
     except:
-        print 'Could not squarecrop file: %s' % file
+        print('Could not squarecrop file: %s' % file)
         return ''
 register.filter('squarecrop', squarecrop)
 
@@ -95,7 +95,7 @@ def fit_image(file, size_param="300x300"):
         return miniature_url
     except:
         traceback.print_exc()
-        print "Could not fit_image %s" % file
+        print("Could not fit_image %s" % file)
         return ''
 register.filter('fit_image', fit_image)
 
@@ -130,7 +130,7 @@ def thumbnail(file, size='300w'):
             image.save(miniature_filename, image.format)
         return miniature_url
     except:
-        print "Could not load image %s" % filename
+        print("Could not load image %s" % filename)
         return ''
 register.filter('thumbnail', thumbnail)
 

@@ -69,7 +69,6 @@ def member_bcc(request, group=None):
         group_name = "%s Members" % group
         members = Member.objects.members_by_plan(group)
     group_list = MemberGroups.get_member_groups()
-    print group
     return render_to_response('staff/member_bcc.html', {'group': group, 'group_name': group_name, 'group_list': group_list, 'members': members}, context_instance=RequestContext(request))
 
 

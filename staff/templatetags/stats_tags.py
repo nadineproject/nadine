@@ -22,7 +22,7 @@ class LoopCommaNode(template.Node):
             datum_type = self.type_var.resolve(context)
             return month_history.data[datum_type]
         except template.VariableDoesNotExist:
-            print 'does not exist'
+            print('does not exist')
             return ''
 
 

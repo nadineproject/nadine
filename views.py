@@ -63,7 +63,6 @@ def password_reset(request, is_admin_site=False, template_name='registration/pas
         email = request.POST.get('email')
         logger.info("Resetting password for '%s'" % email)
         form = password_reset_form(request.POST)
-        print form.is_valid()
         if form.is_valid():
             opts = {}
             opts['use_https'] = request.is_secure()

@@ -15,12 +15,12 @@ from nadine.models.core import *
 def print_user_data(user):
     print
     profile = user.get_profile()
-    print "Profile: %s" % profile
+    print("Profile: %s" % profile)
     for bill in Bill.objects.filter(member=profile):
-        print "  Bill: %s" % bill
-        print "    Membership: %s" % bill.membership
+        print("  Bill: %s" % bill)
+        print("    Membership: %s" % bill.membership)
         for dropin in bill.dropins.all():
-            print "    Drop-in: %s" % dropin
+            print("    Drop-in: %s" % dropin)
 
 
 class MembershipTestCase(TestCase):

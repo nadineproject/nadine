@@ -17,7 +17,7 @@ class Command(BaseCommand):
     def print_keys(self):
         print("Valid Message Keys: ")
         for key in email.valid_message_keys():
-            print "   " + key
+            print("   " + key)
 
     def handle(self, *labels, **options):
         if not labels or len(labels) != 2:

@@ -26,7 +26,7 @@ class LoopCommaNode(template.Node):
                 return ''
             return ', '
         except template.VariableDoesNotExist:
-            print 'does not exist'
+            print('does not exist')
             return ''
 
 

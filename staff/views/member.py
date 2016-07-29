@@ -101,7 +101,7 @@ def detail(request, member_id):
             desc = request.POST.get('description')
             SpecialDay.objects.create(member=member, month=month, day=day, year=year, description=desc)
         else:
-            print request.POST
+            print(request.POST)
 
     email_keys = email.valid_message_keys()
     email_keys.remove("all")

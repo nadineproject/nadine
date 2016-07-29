@@ -144,10 +144,8 @@ def clean_transaction_list(transactions):
 
 
 def clean_transaction(t):
-    print t
     username = t.CustomerID
     if t.CreditCardData:
-        print t.CreditCardData
         if "CardType" in t.CreditCardData:
             card_type = t.CreditCardData.CardType
         else:
@@ -292,10 +290,8 @@ class USAEPAY_SOAP_API(object):
     #     details.Amount = 1.00
     #     details.Description = "Office Nomads Authorization"
     #     params.Details = details
-    #     print params
     #     paymentID = 0 # sets it to use default
     #     response = self.client.service.runCustomerTransaction(self.token, customer_number, paymentID, params)
-    #     print response
     #     if response.Error:
     #         raise Exception(response.Error)
     #     return response

@@ -19,7 +19,7 @@ class Command(BaseCommand):
     requires_system_checks = True
 
     def print_usage(self):
-        print './manage.py subscribe_members <mailing-list-id>'
+        print('./manage.py subscribe_members <mailing-list-id>')
 
     def handle(self, *labels, **options):
         if len(labels) != 1:

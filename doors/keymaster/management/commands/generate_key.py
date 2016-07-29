@@ -19,4 +19,4 @@ class Command(BaseCommand):
     requires_system_checks = False
 
     def handle(self, *labels, **options):
-        print Fernet.generate_key()
+        print(Fernet.generate_key())

@@ -27,7 +27,7 @@ class BackupManager(object):
     def call_system(self, command):
         if os.system(command) == 0:
             return True
-        print 'FAILED:', command
+        print('FAILED:', command)
         return False
 
     def get_db_info(self):
@@ -147,7 +147,7 @@ class BackupManager(object):
             os.environ['PGPASSWORD'] = db_password
         command = 'pg_dump -U %s %s | gzip > "%s"' % (db_user, db_name, sql_path)
         if not self.call_system(command):
-            print 'aborting'
+            print('aborting')
             return
 
         media_file = '%s-media.tgz' % file_token
@@ -155,23 +155,23 @@ class BackupManager(object):
         dirs = settings.MEDIA_ROOT.split('/')
         command = 'cd "%s" && cd .. && tar -czf "%s" "%s"' % (settings.MEDIA_ROOT, media_path, dirs[len(dirs) - 1])
         if not self.call_system(command):
-            print 'aborting'
+            print('aborting')
             return
 
         backup_file = '%s-backup.tar' % file_token
         backup_path = '%s%s' % (settings.BACKUP_ROOT, backup_file)
-        print "backup_file: %s" % backup_file
+        print("backup_file: %s" % backup_file)
         command = 'cd "%s" && tar -czf "%s" "%s" "%s"' % (settings.BACKUP_ROOT, backup_path, media_file, sql_file)
         if not self.call_system(command):
-            print 'aborting'
+            print('aborting')
             return
 
         if not self.call_system('cd "%s" && ln -fs "%s" latest-backup.tar' % (settings.BACKUP_ROOT, backup_file)):
-            print 'Could not link %s to latest-backup.tar' % backup_file
+            print('Could not link %s to latest-backup.tar' % backup_file)
 
         command = 'rm -f "%s" "%s"' % (media_path, sql_path)
         if not self.call_system(command):
-            print 'Could not erase temp backup files'
+            print('Could not erase temp backup files')
 
         if settings.BACKUP_COUNT and settings.BACKUP_COUNT > 0:
             self.remove_old_files()

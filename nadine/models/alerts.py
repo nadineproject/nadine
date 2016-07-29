@@ -25,7 +25,7 @@ class MemberAlertManager(models.Manager):
             MemberAlert.objects.create(user=user, key=key)
             return True
         return False
-        
+
     def create_if_new(self, user, key, new_since):
         old_alerts = MemberAlert.objects.filter(user=user, key=key, created_ts__gte=new_since)
         if old_alerts.count() == 0:
@@ -76,7 +76,7 @@ class MemberAlertManager(models.Manager):
 
         new_alerts = False
         open_alerts = user.profile.alerts_by_key(include_resolved=False)
-        
+
         membership = user.profile.membership_for_day(day)
         if not membership:
             membership = user.profile.last_membership()
@@ -98,15 +98,15 @@ class MemberAlertManager(models.Manager):
             elif not MemberAlert.objects.filter(user=user, key=MemberAlert.REMOVE_MAILBOX, created_ts__gte=membership.start_date):
                 MemberAlert.objects.create(user=user, key=MemberAlert.REMOVE_MAILBOX)
                 new_alerts = True
-    
-        # Take down their photo. 
+
+        # Take down their photo.
         if user.profile.photo:
             if MemberAlert.POST_PHOTO in open_alerts:
                 user.profile.resolve_alerts(MemberAlert.POST_PHOTO)
             elif not MemberAlert.REMOVE_PHOTO in open_alerts:
                 MemberAlert.objects.create(user=user, key=MemberAlert.REMOVE_PHOTO)
                 new_alerts = True
-        
+
         # Send an email to the team announcing their exit
         if new_alerts:
             end = membership.end_date
@@ -302,7 +302,7 @@ class MemberAlert(models.Model):
 
 
 def membership_callback(sender, **kwargs):
-    #print ("membership_callback")
+    #print("membership_callback")
     membership = kwargs['instance']
     created = kwargs['created']
     if created:

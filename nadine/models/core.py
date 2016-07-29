@@ -466,7 +466,6 @@ class Member(models.Model):
         else:
             # Just go back one month from this date since there isn't a membership to work with
             month_start = test_date - MonthDelta(1)
-        # print month_start
 
         activity = []
         for m in [self] + self.guests():
@@ -743,7 +742,7 @@ def size_images(sender, instance, **kwargs):
         image = Image.open(instance.photo)
         old_x, old_y = image.size
         if old_x > Member.MAX_PHOTO_SIZE or old_y > Member.MAX_PHOTO_SIZE:
-            print "Resizing photo for %s" % instance.user.username
+            print("Resizing photo for %s" % instance.user.username)
             if old_y > old_x:
                 new_y = Member.MAX_PHOTO_SIZE
                 new_x = int((float(new_y) / old_y) * old_x)
