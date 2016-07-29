@@ -214,8 +214,8 @@ class USAEPAY_SOAP_API(object):
         return self.client.service.getCustomer(self.token, int(customer_number))
 
     def getAllCustomers(self, username):
-    	search = SearchParamArray(self.client)
-    	search.addParameter("CustomerID", "eq", username)
+        search = SearchParamArray(self.client)
+        search.addParameter("CustomerID", "eq", username)
         result = self.searchCustomers(search)
         if len(result) > 0 and len(result[0]) > 0:
             return result[0][0]
@@ -248,7 +248,7 @@ class USAEPAY_SOAP_API(object):
     def searchTransactions(self, search, match_all=True, start=0, limit=100, sort_by=None):
         if not sort_by:
             sort_by = "created"
-    	result = self.client.service.searchTransactions(self.token, search.to_soap(), match_all, start, limit, sort_by)
+        result = self.client.service.searchTransactions(self.token, search.to_soap(), match_all, start, limit, sort_by)
         if len(result.Transactions) >= 1:
             return result.Transactions[0]
         return None
