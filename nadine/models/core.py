@@ -16,7 +16,7 @@ from django.core.files.base import ContentFile
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.conf import settings
-from django.utils.encoding import smart_str, smart_unicode
+from django.utils.encoding import smart_str
 from django_localflavor_us.models import USStateField, PhoneNumberField
 from django.utils import timezone
 
