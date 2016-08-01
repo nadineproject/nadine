@@ -11,7 +11,7 @@ MonthDelta==1.0b0
 pytz==2016.6.1
 requests==2.10.0
 cryptography==1.4
-suds==0.4
+suds-jurko==0.6
 
 # For document signing
 # Newer versions may not work so be cautious when upgrading
