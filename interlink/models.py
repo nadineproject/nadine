@@ -40,21 +40,21 @@ def membership_save_callback(sender, **kwargs):
     created = kwargs['created']
     if not created:
         return
-    
+
     # If the member is just switching from one membership to another, don't change subscriptions
     # But if this membership is created in the past there is no way to know what they want so subscribe them
     if membership.start_date > timezone.now().date():
         if Membership.objects.filter(member=membership.member, end_date=membership.start_date - timedelta(days=1)).count() != 0:
             return
-    
+
     mailing_lists = MailingList.objects.filter(is_opt_out=True)
     for ml in mailing_lists:
         ml.subscribers.add(membership.member.user)
-        
+
     # If this is their first membership, also invite them to Slack
     if Membership.objects.filter(member=membership.member).count() == 1:
         SlackAPI().invite_user_quiet(membership.member.user)
-    
+
 post_save.connect(membership_save_callback, sender=Membership)
 
 
@@ -345,7 +345,7 @@ class OutgoingMailManager(models.Manager):
                 for m in mails:
                     try:
                         m.send(conn)
-                    except MailingList.LimitExceeded, e:
+                    except MailingList.LimitExceeded as e:
                         logger.warning("Limit exceeded: " + str(e),
                                        exc_info=sys.exc_info(),
                                        extra={'exception': e})
