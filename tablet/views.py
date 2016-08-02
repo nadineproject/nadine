@@ -23,7 +23,7 @@ from nadine.utils.slack_api import SlackAPI
 from members.models import MOTD
 from staff.forms import NewUserForm, MemberSearchForm
 from staff import email
-from forms import SignatureForm
+from .forms import SignatureForm
 
 from easy_pdf.rendering import render_to_pdf, render_to_pdf_response
 
