@@ -6,7 +6,6 @@ from datetime import datetime, time, date, timedelta
 
 from django.db import models
 from django.conf import settings
-from django.conf.urls import patterns, include, url
 from django.contrib.auth.models import User
 from django.db.models.signals import post_delete
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
