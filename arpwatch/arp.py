@@ -1,3 +1,4 @@
+import os
 import time
 import logging
 from datetime import datetime, time, date, timedelta
@@ -52,18 +53,27 @@ def map_ip_to_mac(hours):
                 a.device.save()
 
 
+def get_arp_root():
+    if not default_storage.exists(settings.ARP_ROOT):
+        os.mkdir(default_storage.path(settings.ARP_ROOT))
+    return settings.ARP_ROOT
+
+
 def list_files():
+    arp_root = get_arp_root()
     print("listing:")
-    print(settings.ARP_ROOT)
-    file_list = default_storage.listdir(settings.ARP_ROOT)[1]
+    print(arp_root)
+    file_list = default_storage.listdir(arp_root)[1]
     return file_list
 
 
 def import_dir_locked():
+    arp_root = get_arp_root()
     return default_storage.exists(settings.ARP_IMPORT_LOCK)
 
 
 def lock_import_dir():
+    arp_root = get_arp_root()
     msg = "locked: %s" % timezone.localtime(timezone.now())
     default_storage.save(settings.ARP_IMPORT_LOCK, ContentFile(msg))
 
@@ -73,6 +83,7 @@ def unlock_import_dir():
 
 
 def log_message(msg):
+    arp_root = get_arp_root()
     log = "%s: %s\r\n" % (timezone.localtime(timezone.now()), msg)
     if not default_storage.exists(settings.ARP_IMPORT_LOG):
         log = "%s: Log Started\r\n%s" % (timezone.localtime(timezone.now()), log)
@@ -133,7 +144,7 @@ def import_file(file, runtime):
 
 def import_snmp():
     runtime = timezone.now()
-    
+
     cmdGen = cmdgen.CommandGenerator()
     errorIndication, errorStatus, errorIndex, varBinds = cmdGen.nextCmd(
         cmdgen.CommunityData(settings.ARPWATCH_SNMP_COMMUNITY),
@@ -141,7 +152,7 @@ def import_snmp():
         cmdgen.MibVariable('IP-MIB', 'ipNetToMediaPhysAddress'),
         lookupNames=True, lookupValues=True
     )
-    
+
     for row in varBinds:
         for name, val in row:
             ip = name.prettyPrint().split('\"')[3]
@@ -189,5 +200,3 @@ def users_for_day_query(day=None):
     logger.info("users_for_day from '%s' to '%s'" % (start, end))
     arp_query = ArpLog.objects.filter(runtime__range=(start, end))
     return Member.objects.filter(user__in=arp_query.values('device__user'))
-
-

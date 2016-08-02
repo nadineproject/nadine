@@ -15,14 +15,8 @@ from arpwatch.models import *
 
 class ArpWatchTest(SimpleTestCase):
 
-    #def test_api(self):
-    #    response = self.client.get('/api/v1/activity/0/')
-    #    self.failUnlessEqual(response.status_code, 200, 'status was %s' % response.status_code)
-    #    result_data = json.loads(response.content)
-    #    self.failUnless('member_count' in result_data)
-
     def test_user_device(self):
-        MAC = "90:A2:DA:00:EE:5D"
+        MAC = "AA:AA:AA:AA:AA:AA"
         device1 = UserDevice.objects.create(mac_address=MAC)
         with self.assertRaises(IntegrityError):
             device2 = UserDevice.objects.create(mac_address=MAC)

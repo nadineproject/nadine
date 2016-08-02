@@ -52,8 +52,8 @@ USE_I18N = True
 # Example: "http://media.lawrence.com"
 MEDIA_URL = '/media/'
 
-# Arp Watch data directory
-ARP_ROOT = path('../arp_import/')
+# Arp Watch data directory (This must be in the MEDIA_ROOT)
+ARP_ROOT = 'arp_import/'
 ARP_IMPORT_LOG = ARP_ROOT + 'import.log'
 ARP_IMPORT_LOCK = ARP_ROOT + 'importing.lock'
 ARP_IP_PFX = '172.16.5.'
