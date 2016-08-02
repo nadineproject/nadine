@@ -47,7 +47,7 @@ nav #todo-tab { background: #FBD850; color: black; }
 
 		{% for row in not_signed_in %}
 			<form id="nsi_form{{ forloop.counter }}" enctype="multipart/form-data" method='POST' style="display:inline;" action="{% url 'staff.views.activity.for_date' row.day.year row.day.month row.day.day %}">
-			<input type="hidden" name="visit_date" value="{{row.day}}">
+			<input type="hidden" name="visit_date" value="{{row.day|date:'Y-m-d'}}">
 			<input type="hidden" name="member_id" value="{{row.member.id}}">
 			<input type="hidden" id="member_name{{ forloop.counter }}" value="{{row.member}}">
 			<input type="hidden" id="payment{{ forloop.counter }}" name="payment"/>
