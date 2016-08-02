@@ -1,7 +1,7 @@
 import os
 import uuid
 import base64
-import StringIO
+from io import StringIO
 
 from jsignature.forms import JSignatureField
 from jsignature.utils import draw_signature
