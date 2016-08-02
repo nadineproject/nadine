@@ -8,7 +8,7 @@ from django.conf import settings
 from django.utils import timezone
 import staff.billing as billing
 from interlink.models import MailingList
-from staff.views import beginning_of_next_month, first_days_in_months
+from staff.views.stats import beginning_of_next_month, first_days_in_months
 from nadine.models.core import *
 from nadine.models.payment import *
 
