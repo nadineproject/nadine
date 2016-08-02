@@ -6,9 +6,9 @@ services:
 install: "pip install -r requirements.txt"
 before_script: "cp nadine/local_settings.example nadine/local_settings.py"
 script: ./manage.py test
-notifications:
-  email:
-    recipients:
-      - jacob@officenomads.com
-    on_success: change
-    on_failure: always
+#notifications:
+#  email:
+#    recipients:
+#      - jacob@officenomads.com
+#    on_success: change
+#    on_failure: always
