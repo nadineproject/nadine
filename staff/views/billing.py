@@ -16,7 +16,7 @@ from decimal import Decimal
 
 from nadine.models import *
 from staff.forms import PayBillsForm, RunBillingForm
-from staff import email
+from staff import email, billing
 
 @staff_member_required
 def transactions(request):
