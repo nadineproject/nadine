@@ -25,3 +25,4 @@ newrelic.ini
 newrelic-celery.ini
 gw_config.json
 .vagrant/
+__pycache__/
