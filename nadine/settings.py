@@ -14,7 +14,7 @@ BACKUP_ROOT = path('../backups/')
 BACKUP_COUNT = 30
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = ('static', )
+STATICFILES_DIRS = ('custom-theme/static', 'static', )
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
@@ -77,6 +77,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
+            'custom-theme/templates',
             'templates',
         ],
         'APP_DIRS': True,

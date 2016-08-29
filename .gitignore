@@ -1,10 +1,10 @@
+/custom-theme/
 .svn
 *.pyc
 *.class
 .DS_Store
 pip-log.txt
 backups
-nadine/settings.py
 nadine/local_settings.py
 media
 media/
