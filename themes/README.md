@@ -8,4 +8,10 @@ called **active**.
 ~~~~
 cd themes
 ln -s theme_you_want active
+cd ..
+~~~~
+
+### To Deactivate
+~~~~
+rm themes/active
 ~~~~
