@@ -1,4 +1,3 @@
-/custom-theme/
 .svn
 *.pyc
 *.class
@@ -26,3 +25,7 @@ newrelic-celery.ini
 gw_config.json
 .vagrant/
 __pycache__/
+
+# Ignore Themes
+/themes/**
+!/themes/README.md

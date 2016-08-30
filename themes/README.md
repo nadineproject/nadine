@@ -1,7 +1,7 @@
-# Themes
+## Themes
 
-## To Activate
+### To Activate
 ``
 cd themes
-ln -s them_you_want active
+ln -s theme_you_want active
 ``
