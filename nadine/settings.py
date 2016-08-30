@@ -8,6 +8,7 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 path = lambda *a: os.path.join(ROOT, *a)
 
 # TEMPLATE_DIRS = (path('../templates/'), )
+MEDIA_URL = '/media/'
 MEDIA_ROOT = path('../media/')
 
 BACKUP_ROOT = path('../backups/')
