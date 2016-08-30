@@ -6,6 +6,7 @@ urlpatterns = [
     url(r'^$', views.home),
     url(r'^view/$', views.view_members),
     url(r'^events/$', views.events_google),
+    url(r'^faq/$', views.faq),
     url(r'^chat/$', views.chat),
     url(r'^tag_list/$', views.tags),
     url(r'^tag_cloud/$', views.tag_cloud),

@@ -1,0 +1,9 @@
+{% extends "members/u_base.html" %}
+
+{% block content %}
+	<h2>{{ title }}</h2>
+	{% autoescape off %}
+		{{ page_body }}
+	{% endautoescape %}
+
+{% endblock %}

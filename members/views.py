@@ -78,6 +78,22 @@ def home(request):
     rendered = template.render(current_context)
     return render_to_response('members/home.html', {'title': title, 'page_body': rendered, 'other_topics': other_topics}, current_context)
 
+@login_required
+def faq(request):
+    title = "faq"
+    template_text = "Frequently Asked Questions"
+    other_topics = {}
+    for topic in HelpText.objects.all():
+        if topic.slug == 'home':
+            title = topic.title
+            template_text = topic.template
+        else:
+            other_topics[topic.title] = topic
+
+    current_context = RequestContext(request)
+    template = Template(template_text)
+    rendered = template.render(current_context)
+    return render_to_response('members/faq.html', {'title': title, 'page_body': rendered, 'other_topics': other_topics}, current_context)
 
 @login_required
 def help_topic(request, slug):
