@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block content %}
-<h1>{{ site.name }} Login:</h1>
+<h1 style='margin-top:5%;'>{{ site.name }} Login:</h1>
 
 {% if form.errors %}
 <p>Your username and password didn't match. Please try again.</p>
@@ -42,7 +42,7 @@
 </form>
 </div>
 <div style="margin-top:1.5em;">
-<font size="-1"><i>If this is your first time logging in or you've forgotten your password, 
+<font size="-1"><i>If this is your first time logging in or you've forgotten your password,
 you will need to <a href="{% url 'views.password_reset' %}">create a new password</a>.</i></font>
 </div>
 
