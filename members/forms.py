@@ -15,7 +15,7 @@ class EditProfileForm(forms.Form):
     last_name = forms.CharField(max_length=100, required=True)
     email = forms.EmailField(widget=forms.TextInput(attrs={'size': '50'}), required=True)
     email2 = forms.EmailField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
-    
+
     address1 = forms.CharField(max_length=100, required=False)
     address2 = forms.CharField(max_length=100, required=False)
     city = forms.CharField(max_length=100, required=False)
@@ -59,7 +59,7 @@ class EditProfileForm(forms.Form):
         user.last_name = self.cleaned_data['last_name']
         user.email = self.cleaned_data['email']
         user.save()
-        
+
         # Profile data
         profile.phone = self.cleaned_data['phone']
         profile.phone2 = self.cleaned_data['phone2']
@@ -84,7 +84,7 @@ class EditProfileForm(forms.Form):
         profile.self_emplyed = self.cleaned_data['self_employed']
         profile.company_name = self.cleaned_data['company_name']
         profile.save()
-        
+
         # Emergency Contact data
         emergency_contact = user.get_emergency_contact()
         emergency_contact.name=self.cleaned_data['emergency_name']
@@ -92,5 +92,5 @@ class EditProfileForm(forms.Form):
         emergency_contact.phone=self.cleaned_data['emergency_phone']
         emergency_contact.email=self.cleaned_data['emergency_email']
         emergency_contact.save()
-        
+
         return profile

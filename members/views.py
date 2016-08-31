@@ -84,7 +84,7 @@ def faq(request):
     template_text = "Frequently Asked Questions"
     other_topics = {}
     for topic in HelpText.objects.all():
-        if topic.slug == 'home':
+        if topic.slug == 'faq':
             title = topic.title
             template_text = topic.template
         else:
@@ -423,6 +423,17 @@ def manage_member(request, username):
     text_content, html_content = mailgun.get_manage_member_content(user)
 
     return render_to_response('members/manage_member.html', {'user': user, 'page_content': html_content}, context_instance=RequestContext(request))
+
+def register(request):
+    if request.method == 'POST':
+        registration_form = NewUserForm(request.POST)
+        if registration_form.is_valid():
+            registration_form.save()
+            return HttpResponseRedirect(reverse('members.views.register', kwargs={'username': user.username}))
+
+    else:
+        registration_form = NewUserForm()
+        return render_to_response('members/register.html', { 'registration_form': registration_form}, context_instance=RequestContext(request))
 
 #@login_required
 #@user_passes_test(is_active_member, login_url='members.views.not_active')
