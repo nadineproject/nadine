@@ -42,6 +42,8 @@ class Bill(models.Model):
 
     """A record of what fees a Member owes."""
     bill_date = models.DateField(blank=False, null=False)
+    #user = models.ForeignKey(User, null=True)
+    user = models.ForeignKey(User)
     member = models.ForeignKey('Member', blank=False, null=False, related_name="bills")
     amount = models.DecimalField(max_digits=7, decimal_places=2)
     membership = models.ForeignKey('Membership', blank=True, null=True)
@@ -73,6 +75,8 @@ class Transaction(models.Model):
 
     """A record of charges for a member."""
     transaction_date = models.DateTimeField(auto_now_add=True)
+    #user = models.ForeignKey(User, null=True)
+    user = models.ForeignKey(User)
     member = models.ForeignKey('Member', blank=False, null=False)
     TRANSACTION_STATUS_CHOICES = (('open', 'Open'), ('closed', 'Closed'))
     status = models.CharField(max_length=10, choices=TRANSACTION_STATUS_CHOICES, blank=False, null=False, default='open')

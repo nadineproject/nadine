@@ -206,7 +206,7 @@ class MemberAlert(models.Model):
     MEMBER_INFO = "member_info"
     MEMBER_AGREEMENT = "member_agreement"
     TAKE_PHOTO = "take_photo"
-    UPLOAD_PHOTO = "upload_hoto"
+    UPLOAD_PHOTO = "upload_photo"
     POST_PHOTO = "post_photo"
     ORIENTATION = "orientation"
     KEY_AGREEMENT = "key_agreement"
