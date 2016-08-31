@@ -140,10 +140,11 @@ def signin_user_guest(request, username, guestof):
     member = get_object_or_404(Member, user=user)
     daily_log = DailyLog()
     daily_log.user = user
+    # TODO - remove member
     daily_log.member = member
     daily_log.visit_date = timezone.localtime(timezone.now()).date()
     # Only proceed if they haven't signed in already
-    if DailyLog.objects.filter(member=member, visit_date=daily_log.visit_date).count() == 0:
+    if DailyLog.objects.filter(user=user, visit_date=daily_log.visit_date).count() == 0:
         if guestof:
             guestof_user = get_object_or_404(User, username=guestof)
             guestof_member = get_object_or_404(Member, user=guestof_user)
