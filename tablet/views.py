@@ -139,6 +139,7 @@ def signin_user_guest(request, username, guestof):
     user = get_object_or_404(User, username=username)
     member = get_object_or_404(Member, user=user)
     daily_log = DailyLog()
+    daily_log.user = user
     daily_log.member = member
     daily_log.visit_date = timezone.localtime(timezone.now()).date()
     # Only proceed if they haven't signed in already
