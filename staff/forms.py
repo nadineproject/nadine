@@ -172,6 +172,7 @@ class MemberEditForm(forms.Form):
         emergency_contact.save()
 
 class DailyLogForm(forms.Form):
+    # TODO - switch to using username
     member_id = forms.IntegerField(required=True, min_value=0, widget=forms.HiddenInput)
     visit_date = forms.DateField(widget=forms.HiddenInput())
     payment = forms.ChoiceField(choices=PAYMENT_CHOICES, required=True)
@@ -194,6 +195,7 @@ class DailyLogForm(forms.Form):
 
         daily_log = DailyLog()
         daily_log.member = m
+        daily_log.user = m.user
         daily_log.visit_date = v
         daily_log.payment = self.cleaned_data['payment']
         #daily_log.guest_of = self.cleaned_data['guest_of']
@@ -203,6 +205,7 @@ class DailyLogForm(forms.Form):
 
 
 class MembershipForm(forms.Form):
+    # TODO - switch to using username
     member_list = Member.objects.all()
     plan_list = MembershipPlan.objects.filter(enabled=True).order_by('name')
     membership_id = forms.IntegerField(required=False, min_value=0, widget=forms.HiddenInput)
@@ -237,7 +240,9 @@ class MembershipForm(forms.Form):
             membership = Membership()
 
         # Is this right?  Do I really need a DB call so I have the object?
+        # TODO - Clean up and use username not member_id
         membership.member = Member.objects.get(id=self.cleaned_data['member'])
+        membership.user = membership.member.user
 
         # Any change triggers disabling of the automatic billing
         username = membership.member.user.username

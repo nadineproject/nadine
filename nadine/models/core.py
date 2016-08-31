@@ -779,6 +779,7 @@ class XeroContact(models.Model):
 class DailyLog(models.Model):
 
     """A visit by a member"""
+    user = models.ForeignKey(User)
     member = models.ForeignKey(Member, verbose_name="Member", unique_for_date="visit_date", related_name="daily_logs")
     visit_date = models.DateField("Date")
     payment = models.CharField("Payment", max_length=5, choices=PAYMENT_CHOICES)
@@ -852,6 +853,7 @@ class MembershipManager(models.Manager):
 class Membership(models.Model):
 
     """A membership level which is billed monthly"""
+    user = models.ForeignKey(User)
     member = models.ForeignKey(Member, related_name="memberships")
     membership_plan = models.ForeignKey(MembershipPlan, null=True)
     start_date = models.DateField(db_index=True)
@@ -933,6 +935,7 @@ class Membership(models.Model):
 
 class SentEmailLog(models.Model):
     created = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, null=True)
     member = models.ForeignKey('Member', null=True)
     recipient = models.EmailField()
     subject = models.CharField(max_length=128, blank=True, null=True)
@@ -943,6 +946,7 @@ class SentEmailLog(models.Model):
 
 
 class SecurityDeposit(models.Model):
+    user = models.ForeignKey(User)
     member = models.ForeignKey('Member', blank=False, null=False)
     received_date = models.DateField()
     returned_date = models.DateField(blank=True, null=True)
@@ -951,6 +955,7 @@ class SecurityDeposit(models.Model):
 
 
 class SpecialDay(models.Model):
+    user = models.ForeignKey(User)
     member = models.ForeignKey('Member', blank=False, null=False)
     year = models.PositiveSmallIntegerField(blank=True, null=True)
     month = models.PositiveSmallIntegerField(blank=True, null=True)
@@ -959,8 +964,9 @@ class SpecialDay(models.Model):
 
 
 class MemberNote(models.Model):
+    user = models.ForeignKey(User)
     created = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, null=True)
+    created_by = models.ForeignKey(User, null=True, related_name='+')
     member = models.ForeignKey('Member', blank=False, null=False)
     note = models.TextField(blank=True, null=True)
 

@@ -94,7 +94,7 @@ def security_deposits(request):
             member = Member.objects.get(pk=member_id)
             amount = request.POST.get('amount')
             note = request.POST.get('note')
-            deposit = SecurityDeposit.objects.create(member=member, received_date=today, amount=amount, note=note)
+            deposit = SecurityDeposit.objects.create(user=member.user, member=member, received_date=today, amount=amount, note=note)
             deposit.save()
         if member_id:
             return HttpResponseRedirect(reverse('staff.views.member.detail', args=[], kwargs={'member_id': member_id}))
