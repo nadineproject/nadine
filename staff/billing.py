@@ -207,7 +207,7 @@ def run_billing(bill_time=None):
 
                     # Close out the transaction if no money is due
                     if bill_amount == 0:
-                        transaction = Transaction(member=member, amount=0, status='closed')
+                        transaction = Transaction(user=member.user, member=member, amount=0, status='closed')
                         transaction.save()
                         transaction.bills = [day.bill]
                         transaction.save()

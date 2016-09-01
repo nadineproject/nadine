@@ -87,7 +87,7 @@ def bills_pay_all(request, username):
 
     # Save all the bills!
     if amount > 0:
-        transaction = Transaction(member=member, status='closed', amount=amount)
+        transaction = Transaction(user=member.user, member=member, status='closed', amount=amount)
         transaction.save()
         for bill in member.open_bills():
             transaction.bills.add(bill)
