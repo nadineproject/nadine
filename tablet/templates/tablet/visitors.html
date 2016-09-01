@@ -6,7 +6,7 @@
 {% block content %}
 
 	<h2>Have you been here before?</h2>
-		<form id="member-search-form" action="{% url 'tablet.views.search' %}" method="POST">
+		<form id="member-search-form" action="{% url 'tablet_search' %}" method="POST">
 			<div data-role="fieldcontain">
 				<input placeholder="Search by your first name" type="search" name="terms" data-inline="true" />
 				<input type="submit" value="Search" data-theme="b"/>
@@ -15,13 +15,13 @@
 		</form>
 
 	<h2>New to Office Nomads?</h2>
-	
+
 	{% if page_message %}
 		<p id="page_message">{{ page_message|safe }}</p>
 	{% endif %}
 
 	<div id="visitor-form">
-		<form action="{% url 'tablet.views.visitors' %}" method="POST">
+		<form action="{% url 'tablet_visitors' %}" method="POST">
 			{{ new_user_form.non_field_errors }}
 			{% for field in new_user_form %}
 				<div data-role="fieldcontain">
@@ -34,12 +34,12 @@
 			{% csrf_token %}
 		</form>
 	</div>
-	
+
 	{% if search_results %}
 		<div id="member-list">
 			<ul data-role="listview" data-inset="true" data-filter="false">
 				{% for member in search_results %}
-					<li><a href="{% url 'tablet.views.user_signin' member.user %}" data-transition="fade">{{ member.full_name }}</a></li>
+					<li><a href="{% url 'tablet_user_signin' member.user %}" data-transition="fade">{{ member.full_name }}</a></li>
 				{% endfor %}
 			</ul>
 		</div>

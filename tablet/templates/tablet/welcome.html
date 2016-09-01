@@ -6,11 +6,11 @@
 	<div style="font-size: 150%;">Welcome {{user.first_name}} {{user.last_name}}!</div>
 	{% if membership %}
 	<div style="font-weight:bold; padding:1em; font-size:200%">
-		As of today, you have used 
+		As of today, you have used
 		<span style="color: {{ usage_color }}">
 			{{ member.activity_this_month | length }}
 			{% if membership.get_allowance %}
-				of {{ membership.get_allowance }} 
+				of {{ membership.get_allowance }}
 				{% endif %}
 		</span>
 		days.
@@ -25,8 +25,8 @@
 			-- The Office Nomads Team
 		</p>
 	</div>
-	
-	
+
+
 	<div style="width:100%; position:absolute; bottom:60px; text-align:center;">
 		<div id="page-coutdown" style="margin:0 auto; position:relative;">
 			<img src="{{ STATIC_URL }}images/b_dot_full.png" style="padding: 0 25px;"/>
@@ -54,6 +54,6 @@
 	</script>
 	<script>
 		//will call the function after 5 secs
-		setTimeout(function () { window.location.href = "{% url 'tablet.views.members' %}"; }, {{ motd.delay_ms }});
+		setTimeout(function () { window.location.href = "{% url 'tablet_members' %}"; }, {{ motd.delay_ms }});
 	</script>
 {% endblock %}

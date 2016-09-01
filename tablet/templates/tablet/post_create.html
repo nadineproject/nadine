@@ -5,46 +5,46 @@
 
 {% block style %}
 	#yes_button {
-		background:#1BA512; 
-		color:white; 
+		background:#1BA512;
+		color:white;
 		opacity:.5;
 	}
 	#no_button {
-		background:#DB0303; 
-		color:white; 
+		background:#DB0303;
+		color:white;
 		opacity:.5;
 	}
 	#guest_button {
-		background:#0B79D0; 
-		color:white; 
+		background:#0B79D0;
+		color:white;
 		opacity:.5;
 	}
 {% endblock %}
 
 {% block content %}
 	<div style="font-size: 150%;">Welcome to Office Nomads!</div>
-	
+
 	<p>
 	We have created a new user in Nadine. You can use Nadine to enter billing information, review your membership, your daily activity, and explore everything
-	that is going on here at Office Nomads.  
+	that is going on here at Office Nomads.
 	</p>
 	<p style="padding-left:3em;">
 		Enjoy!<br>
 		-- The Office Nomads Team
 	</p>
-	
+
 	<h2>User Information</h2>
 	<blockquote>
 		<p>Username: <strong>{{ user.username }}</strong>
 		<p>Full Name: <strong>{{ user.get_full_name }}</strong>
 		<p>Email: <strong>{{ user.email }}</em></strong>
 	</blockquote>
-	
+
 	<div id="guestform-show"></div>
-	
+
 	<div style="width:100%; text-align:center;" id="signin" {% if search_results %} class="hidden" {% endif %}>
 	<h2>Are you going to stay and work today?</h2>
-	<form action="{% url 'tablet.views.post_create' user.username %}" method="POST" data-ajax="false">
+	<form action="{% url 'tablet_post_create' user.username %}" method="POST" data-ajax="false">
 		<fieldset class="visitor-form ui-grid-b">
 			<div class="ui-block-a"><input id="yes_button" name="work_today" type="Submit" value="Yes"/></div>
 			<div class="ui-block-b"><input id="no_button" name="work_today" type="Submit" value="No"/></div>
@@ -52,25 +52,25 @@
 		{% csrf_token %}
 	</form>
 	</div>
-	
+
 	<div style="width:100%; text-align:center;" id="guestform" {% if not search_results %} class="hidden" {% endif %} >
 		<h2>Which member is paying for you today?</h2>
 		{% if search_results %}
 			<div id="member-list">
 				<ul data-role="listview" data-inset="true" data-filter="false">
 					{% for member in search_results %}
-						<li style="padding: 0.5em;"><a href="{% url 'tablet.views.signin_user_guest' user.username member.user %}" data-transition="fade">{{ member.full_name }}</a></li>
+						<li style="padding: 0.5em;"><a href="{% url 'tablet_signin_guest' user.username member.user %}" data-transition="fade">{{ member.full_name }}</a></li>
 					{% endfor %}
 				</ul>
 			</div>
 		{% else %}
 			<div id="search-box">
-				<form id="member-search-form" action="{% url 'tablet.views.post_create' user.username %}" method="POST">
+				<form id="member-search-form" action="{% url 'tablet_post_create' user.username %}" method="POST">
 					<input id="id_terms"  placeholder="Search by first name" type="search" name="terms" maxlength="100"/>
 					<input type="submit" value="Search" data-theme="b" data-transition="fade"/>
 					{% csrf_token %}
 				</form>
 			</div>
-		{% endif %}  
+		{% endif %}
 	</div>
 {% endblock %}

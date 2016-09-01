@@ -15,9 +15,9 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 
-from nadine.models.core import Member
 from doors.keymaster.models import Keymaster, Door, DoorCode, DoorEvent
 from doors.core import EncryptedConnection, Messages, DoorEventTypes
+from nadine.models.core import Member
 from staff import email
 
 logger = logging.getLogger(__name__)
@@ -123,7 +123,7 @@ def add_key(request):
     if door_code and 'add_door_code' in request.POST:
         door_code.save()
         email.announce_new_key(user)
-        return HttpResponseRedirect(reverse('doors.keymaster.views.user_keys', kwargs={'username': user.username}))
+        return HttpResponseRedirect(reverse('doors_keys', kwargs={'username': user.username}))
 
     # Pull a list of active members for our autocomplete
     active_members = Member.objects.active_members()

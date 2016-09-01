@@ -9,14 +9,14 @@
 		<div id="member-list">
 			<ul data-role="listview" data-inset="true" data-filter="false">
 				{% for member in search_results %}
-					<li><a href="{% url 'tablet.views.user_signin' member.user %}" data-transition="fade">{{ member.full_name }}</a></li>
+					<li><a href="{% url 'tablet_user_signin' member.user %}" data-transition="fade">{{ member.full_name }}</a></li>
 				{% endfor %}
 			</ul>
 		</div>
 	{% else %}
 		<h2>Search</h2>
 		<div id="search-box">
-			<form id="member-search-form" action="{% url 'tablet.views.search' %}" method="POST">
+			<form id="member-search-form" action="{% url 'tablet_search' %}" method="POST">
 				<div data-role="fieldcontain">
 					<input id="id_terms" type="search" maxlength="100" name="terms" type="text" />
 					<input type="submit" value="Search" data-theme="b" data-transition="fade"/>
@@ -24,8 +24,8 @@
 				{% csrf_token %}
 			</form>
 		</div>
-	{% endif %}  
+	{% endif %}
 
 
-	
+
 {% endblock %}

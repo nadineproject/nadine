@@ -9,14 +9,14 @@
 			<ul data-role="listview" data-inset="true">
 				{% for member in members %}
 					<li >
-						<a href="{% url 'tablet.views.user_signin' member.user %}" data-transition="fade" style="font-size: 1.3em;">{{ member.full_name }}</a>
+						<a href="{% url 'tablet_user_signin' member.user %}" data-transition="fade" style="font-size: 1.3em;">{{ member.full_name }}</a>
 					</li>
 				{% endfor %}
 			</ul>
 		{% else %}
 			<h2>No Members</h2>
 		{% endif %}
-		<input type="button" data-theme="E" onclick="window.location='{% url 'tablet.views.members' %}'" value="Back"/>
+		<input type="button" data-theme="E" onclick="window.location='{% url 'tablet_members' %}'" value="Back"/>
 	{% else %}
 		<h2>What is the first letter of your <em><u>first name</u></em>?</h2>
 		<div id="tiles">
@@ -46,8 +46,8 @@
 			<span class="tile"><a href="?startswith=X">X</a></span>
 			<span class="tile"><a href="?startswith=Y">Y</a></span>
 			<span class="tile"><a href="?startswith=Z">Z</a></span>
-			<span class="tile"><a href="{% url 'tablet.views.search' %}">?</a></span>
-			
+			<span class="tile"><a href="{% url 'tablet_search' %}">?</a></span>
+
 		</div>
 	{% endif %}
 {% endblock %}

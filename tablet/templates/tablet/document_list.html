@@ -16,12 +16,11 @@
 			<td style="vertical-align:middle;">{{ description }}</td>
 			<td style="text-align: center;">
 				{% if key in signed_docs %}
-					<!--a href="{% url 'tablet.views.document_view' user.username key %}">Signed</a>-->
 					<img src="{% static 'green_check.png' %}" height="32px">
 				{% else %}
 					<input type="button"
 						value="Sign"
-						onClick="parent.location='{% url 'tablet.views.signature_capture' user.username key %}'">
+						onClick="parent.location='{% url 'tablet_sig_capture' user.username key %}'">
 				{% endif %}
 			</th>
 		</tr>
