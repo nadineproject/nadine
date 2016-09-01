@@ -39,7 +39,7 @@ class Run:
 
     def __init__(self, member, start_date, end_date, filter_closed_logs=True):
         #logger.debug(("Run: member=%s, start=%s, end=%s") % (member, start_date, end_date))
-
+        # TODO - convert to using 'user'    
         self.member = member
         self.start_date = start_date
         self.end_date = end_date

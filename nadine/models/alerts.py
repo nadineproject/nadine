@@ -306,10 +306,10 @@ def membership_callback(sender, **kwargs):
     membership = kwargs['instance']
     created = kwargs['created']
     if created:
-        MemberAlert.objects.trigger_new_membership(membership.member.user)
+        MemberAlert.objects.trigger_new_membership(membership.user)
     else:
         # If this membership is older then a week we'll go straight to exiting member logic
         window_start = timezone.now() - timedelta(days=5)
         if membership.end_date and membership.end_date < window_start.date():
-            MemberAlert.objects.trigger_exiting_membership(membership.member.user)
+            MemberAlert.objects.trigger_exiting_membership(membership.user)
 post_save.connect(membership_callback, sender=Membership)

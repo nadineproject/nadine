@@ -209,7 +209,7 @@ class MemberManager(models.Manager):
         emails = []
         for membership in Membership.objects.active_memberships():
             member = membership.member
-            user = membership.member.user
+            user = membership.user
             if user.email not in emails:
                 emails.append(user.email)
             if include_email2 and member.email2 not in emails:
@@ -803,7 +803,7 @@ class DailyLog(models.Model):
 def sign_in_callback(sender, **kwargs):
     log = kwargs['instance']
     from nadine.models.alerts import MemberAlert
-    MemberAlert.objects.trigger_sign_in(log.member.user)
+    MemberAlert.objects.trigger_sign_in(log.user)
 post_save.connect(sign_in_callback, sender=DailyLog)
 
 

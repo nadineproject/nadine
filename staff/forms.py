@@ -272,10 +272,10 @@ class MembershipForm(forms.Form):
         # Save the note if we were given one
         note = self.cleaned_data['note']
         if note:
-            MemberNote.objects.create(member=membership.member, created_by=self.created_by, note=note)
+            MemberNote.objects.create(user=membership.user, member=membership.member, created_by=self.created_by, note=note)
 
         if adding:
-            email.send_new_membership(membership.member.user)
+            email.send_new_membership(membership.user)
 
         return membership
 
