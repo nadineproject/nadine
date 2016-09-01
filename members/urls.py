@@ -8,6 +8,7 @@ urlpatterns = [
     url(r'^events/$', views.events_google),
     url(r'^faq/$', views.faq),
     url(r'^chat/$', views.chat),
+    url(r'^register/$', views.register),
     url(r'^tag_list/$', views.tags),
     url(r'^tag_cloud/$', views.tag_cloud),
     url(r'^not_active/$', views.not_active),

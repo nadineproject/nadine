@@ -15,11 +15,11 @@ class EditProfileForm(forms.Form):
     last_name = forms.CharField(max_length=100, required=True)
     email = forms.EmailField(widget=forms.TextInput(attrs={'size': '50'}), required=True)
     email2 = forms.EmailField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
-    
+
     address1 = forms.CharField(max_length=100, required=False)
     address2 = forms.CharField(max_length=100, required=False)
     city = forms.CharField(max_length=100, required=False)
-    state = forms.ChoiceField(choices=STATE_CHOICES, required=False)
+    state = forms.ChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), choices=STATE_CHOICES, required=False)
     zipcode = forms.CharField(max_length=5, required=False)
     phone = forms.CharField(max_length=20, required=False)
     phone2 = forms.CharField(max_length=20, required=False)
@@ -31,12 +31,12 @@ class EditProfileForm(forms.Form):
     url_linkedin = forms.URLField(required=False)
     url_aboutme = forms.URLField(required=False)
     url_github = forms.URLField(required=False)
-    gender = forms.ChoiceField(choices=GENDER_CHOICES, required=False)
-    howHeard = forms.ModelChoiceField(label="How heard", queryset=HowHeard.objects.all(), required=False)
-    industry = forms.ModelChoiceField(queryset=Industry.objects.all(), required=False)
-    neighborhood = forms.ModelChoiceField(queryset=Neighborhood.objects.all(), required=False)
-    has_kids = forms.NullBooleanField(required=False)
-    self_employed = forms.NullBooleanField(required=False)
+    gender = forms.ChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), choices=GENDER_CHOICES, required=False)
+    howHeard = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), label="How heard", queryset=HowHeard.objects.all(), required=False)
+    industry = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), queryset=Industry.objects.all(), required=False)
+    neighborhood = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), queryset=Neighborhood.objects.all(), required=False)
+    has_kids = forms.NullBooleanField(widget=forms.Select(attrs={'class': 'browser-default'}), required=False)
+    self_employed = forms.NullBooleanField(widget=forms.Select(attrs={'class': 'browser-default'}), required=False)
 
     emergency_name = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}), label="Name", required=False)
     emergency_relationship = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}), label="Relationship", required=False)
@@ -59,7 +59,7 @@ class EditProfileForm(forms.Form):
         user.last_name = self.cleaned_data['last_name']
         user.email = self.cleaned_data['email']
         user.save()
-        
+
         # Profile data
         profile.phone = self.cleaned_data['phone']
         profile.phone2 = self.cleaned_data['phone2']
@@ -84,7 +84,7 @@ class EditProfileForm(forms.Form):
         profile.self_emplyed = self.cleaned_data['self_employed']
         profile.company_name = self.cleaned_data['company_name']
         profile.save()
-        
+
         # Emergency Contact data
         emergency_contact = user.get_emergency_contact()
         emergency_contact.name=self.cleaned_data['emergency_name']
@@ -92,5 +92,5 @@ class EditProfileForm(forms.Form):
         emergency_contact.phone=self.cleaned_data['emergency_phone']
         emergency_contact.email=self.cleaned_data['emergency_email']
         emergency_contact.save()
-        
+
         return profile

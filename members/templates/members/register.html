@@ -1,0 +1,39 @@
+{% extends "members/u_base.html" %}
+
+{% block sub-title %} Register | {% endblock %}
+
+{% block style %}
+#page-message { font-size: 1.5em; color: #933; margin: 20px 0px; }
+table td    {text-align: left;}
+{% endblock %}
+
+{% block content %}
+
+{% if page_message %}
+  <p id="page_message">{{ page_message|safe }}</p>
+{% endif %}
+
+  <form id='registration_form' align='center' name='registration_form' action='.' method='POST'>
+    <h3>Register</h3>
+    <table align='center'>
+      <tr class="row-even">
+          <td>First Name:</td>
+          <td>{{ registration_form.first_name }}</td>
+          <td>{{ registration_form.first_name.errors }}</td>
+      </tr>
+      <tr class="row-odd">
+          <td>Last Name:</td>
+          <td>{{ registration_form.last_name }}</td>
+          <td>{{ registration_form.last_name.errors }}</td>
+      </tr>
+      <tr class="row-even">
+          <td>Email:</td>
+          <td>{{ registration_form.email }}</td>
+          <td>{{ registration_form.email.errors }}</td>
+      </tr>
+    </table>
+    <button class="btn waves-effect waves-light sub-btn" id='reg-btn' type="submit" value="Register" />Register</button>
+    {% csrf_token %}
+  </form>
+
+{% endblock %}

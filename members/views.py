@@ -9,7 +9,7 @@ from django.template import RequestContext, Template, Context
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404, HttpRequest
 from django.http import JsonResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
@@ -84,7 +84,7 @@ def faq(request):
     template_text = "Frequently Asked Questions"
     other_topics = {}
     for topic in HelpText.objects.all():
-        if topic.slug == 'home':
+        if topic.slug == 'faq':
             title = topic.title
             template_text = topic.template
         else:
@@ -423,6 +423,22 @@ def manage_member(request, username):
     text_content, html_content = mailgun.get_manage_member_content(user)
 
     return render_to_response('members/manage_member.html', {'user': user, 'page_content': html_content}, context_instance=RequestContext(request))
+
+def register(request):
+    page_message = None
+    if request.method == 'POST':
+        registration_form = NewUserForm(request.POST)
+        try:
+            if registration_form.is_valid():
+                user = registration_form.save()
+                print user.username
+                return HttpResponseRedirect(reverse('members.views.edit_profile', kwargs={'username': user.username}))
+        except Exception as e:
+            page_message = str(e)[3:len(str(e)) - 2]
+            logger.error(str(e))
+    else:
+        registration_form = NewUserForm()
+    return render_to_response('members/register.html', { 'registration_form': registration_form, 'page_message': page_message}, context_instance=RequestContext(request))
 
 #@login_required
 #@user_passes_test(is_active_member, login_url='members.views.not_active')

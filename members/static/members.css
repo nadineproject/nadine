@@ -23,7 +23,7 @@ p {
 	 line-height: 1.6;
 }
 
-#page_container { 
+#page_container {
 	 min-height: 100%;
 	 position: relative;
 	 background-image: url(../img/moo.jpg);
@@ -33,10 +33,10 @@ p {
 }
 
 .ir { display: block; text-indent: -999em; overflow: hidden; background-repeat: no-repeat; }
-.hidden { display: none; visibility: hidden; } 
+.hidden { display: none; visibility: hidden; }
 .visuallyhidden { position: absolute !important;
 	clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
-	clip: rect(1px, 1px, 1px, 1px); 
+	clip: rect(1px, 1px, 1px, 1px);
 }
 .invisible { visibility: hidden; }
 .clearfix:after  { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
@@ -154,25 +154,25 @@ p {
 }
 
 .user-card {
-	width: 190px; 
-	border: solid 3px #EEE; 
-	margin: 10px; 
-	text-align: center; 
+	width: 190px;
+	border: solid 3px #EEE;
+	margin: 10px;
+	text-align: center;
 	display: inline-block;
 }
 
-.user-card a { 
-	padding: 10px 0; 
-	display: block; 
+.user-card a {
+	padding: 10px 0;
+	display: block;
 	background:#FFFFFF;
 }
 
-.user-card a.photo { 
-	height: 180px; 
-	background-color: #FFF; 
-	font-size: 120px; 
-	color: #DDD; 
-	text-decoration: none; 
+.user-card a.photo {
+	height: 180px;
+	background-color: #FFF;
+	font-size: 120px;
+	color: #DDD;
+	text-decoration: none;
 }
 
 .member-photo {
@@ -180,9 +180,9 @@ p {
 	margin: 0px 1em 1em 0px;
 }
 
-dt, dd { 
-	display: inline-block; 
-	margin: 0.25em; 
+dt, dd {
+	display: inline-block;
+	margin: 0.25em;
 }
 dt { font-weight: bold; }
 dd:after { content:"|"; margin-left: 0.5em; font-size: 1.2em; }
