@@ -7,7 +7,7 @@
 	<div class="ui-grid-a">
 		<div class="ui-block-a">
 			{% if member.photo %}
-				<a href="{% url 'tablet_user_profile' member.user %}"><img src="{{ user.profile.photo.url }}" width="300px"></a>
+				<a href="{% url 'tablet_profile' member.user %}"><img src="{{ user.profile.photo.url }}" width="300px"></a>
 			{% else %}
 				<img src="{{ STATIC_URL }}/BlankIcon150x150.jpg">
 			{% endif %}
