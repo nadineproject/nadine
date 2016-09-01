@@ -245,7 +245,7 @@ class MembershipForm(forms.Form):
         membership.user = membership.member.user
 
         # Any change triggers disabling of the automatic billing
-        username = membership.member.user.username
+        username = membership.user.username
         try:
             api = PaymentAPI()
             api.disable_recurring(username)
@@ -254,7 +254,7 @@ class MembershipForm(forms.Form):
             logger.error(e)
 
         # We need to look at their last membership but we'll wait until after the save
-        last_membership = membership.member.last_membership()
+        last_membership = membership.user.profile.last_membership()
 
         # Save this membership
         membership.membership_plan = self.cleaned_data['membership_plan']

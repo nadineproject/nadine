@@ -61,7 +61,7 @@ class Bill(models.Model):
         get_latest_by = 'bill_date'
 
     def __unicode__(self):
-        return 'Bill %s [%s]: %s - $%s' % (self.id, self.bill_date, self.member, self.amount)
+        return 'Bill %s [%s]: %s - $%s' % (self.id, self.bill_date, self.user, self.amount)
 
     @models.permalink
     def get_absolute_url(self):

@@ -37,27 +37,27 @@ def regular_checkins():
     two_months_ago = timezone.localtime(timezone.now()) - timedelta(days=60)
     for membership in Membership.objects.filter(start_date=two_months_ago):
         if Membership.objects.filter(user=membership.user, start_date__lt=two_months_ago).count() == 0:
-            if membership.member.is_active():
+            if membership.user.profile.is_active():
                 email.send_member_survey(membership.user)
 
     # Pull all the free trials from 30 days ago and send an email if they haven't been back
     one_month_ago = timezone.localtime(timezone.now()) - timedelta(days=30)
     for dropin in DailyLog.objects.filter(visit_date=one_month_ago, payment='Trial'):
         if DailyLog.objects.filter(user=dropin.user).count() == 1:
-            if not dropin.member.is_active():
+            if not dropin.user.profile.is_active():
                 email.send_no_return_checkin(dropin.user)
 
     # Send an exit survey to members that have been gone a week.
     one_week_ago = timezone.localtime(timezone.now()) - timedelta(days=7)
     for membership in Membership.objects.filter(end_date=one_week_ago):
-        if not membership.member.is_active():
+        if not membership.user.profile.is_active():
             email.send_exit_survey(membership.user)
 
     # Announce to the team when a new user is nearing the end of their first month
     #almost_a_month_ago = timezone.localtime(timezone.now()) - timedelta(days=21)
     # for membership in Membership.objects.filter(start_date=almost_a_month_ago):
     #	if Membership.objects.filter(user=membership.user, start_date__lt=almost_a_month_ago).count() == 0:
-    #		if membership.member.is_active():
+    #		if membership.user.profile.is_active():
     #			email.announce_member_checkin(membership.user)
 
 
