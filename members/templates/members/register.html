@@ -2,11 +2,20 @@
 
 {% block sub-title %} Register | {% endblock %}
 
+{% block style %}
+#page-message { font-size: 1.5em; color: #933; margin: 20px 0px; }
+table td    {text-align: left;}
+{% endblock %}
 
 {% block content %}
-  <form name='registration_form' action='.' method='POST'>
+
+{% if page_message %}
+  <p id="page_message">{{ page_message|safe }}</p>
+{% endif %}
+
+  <form align='center' name='registration_form' action='.' method='POST'>
     <h3>Register</h3>
-    <table id='registration_form'>
+    <table align='center' id='registration_form'>
       <tr class="row-even">
           <td>First Name:</td>
           <td>{{ registration_form.first_name }}</td>
