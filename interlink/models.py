@@ -19,6 +19,7 @@ from django.utils import timezone
 from nadine.models.core import Member, Membership
 from nadine.utils.slack_api import SlackAPI
 from interlink.message import MailingListMessage
+import interlink
 
 logger = logging.getLogger(__name__)
 
@@ -311,13 +312,13 @@ class IncomingMail(models.Model):
         return user_by_email(self.origin_address)
 
     @property
-    def approve_url(self): return 'https://%s%s' % (Site.objects.get_current().domain, reverse('interlink.views.moderator_approve', kwargs={'id': self.id}, current_app='interlink'))
+    def approve_url(self): return 'https://%s%s' % (Site.objects.get_current().domain, reverse(interlink.views.moderator_approve, kwargs={'id': self.id}, current_app='interlink'))
 
     @property
-    def reject_url(self): return 'https://%s%s' % (Site.objects.get_current().domain, reverse('interlink.views.moderator_reject', kwargs={'id': self.id}))
+    def reject_url(self): return 'https://%s%s' % (Site.objects.get_current().domain, reverse(interlink.views.moderator_reject, kwargs={'id': self.id}))
 
     @property
-    def inspect_url(self): return 'https://%s%s' % (Site.objects.get_current().domain, reverse('interlink.views.moderator_inspect', kwargs={'id': self.id}))
+    def inspect_url(self): return 'https://%s%s' % (Site.objects.get_current().domain, reverse(interlink.views.moderator_inspect, kwargs={'id': self.id}))
 
     def __unicode__(self): return '%s: %s' % (self.origin_address, self.subject)
 
@@ -340,15 +341,18 @@ class OutgoingMailManager(models.Manager):
         # make a connection to the server, and send them all.
         for ml, mails in d.iteritems():
             try:
-                conn = ml.get_smtp_connection()
-                conn.open()
+                conn = None
+                try:
+                    conn = ml.get_smtp_connection()
+                    conn.open()
+                except Exception as e:
+                    logger.error("Could not open SMTP connection for '%s': %s" % (ml.name, str(e)), exc_info=sys.exc_info(), extra={'exception': e})
+                    break
                 for m in mails:
                     try:
                         m.send(conn)
                     except MailingList.LimitExceeded as e:
-                        logger.warning("Limit exceeded: " + str(e),
-                                       exc_info=sys.exc_info(),
-                                       extra={'exception': e})
+                        logger.warning("Limit exceeded: " + str(e), exc_info=sys.exc_info(), extra={'exception': e})
                         break
 
             finally:

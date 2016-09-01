@@ -13,7 +13,6 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.sites.models import Site
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
-from django.template.loader import render_to_string
 from django.utils import timezone
 
 from nadine import mailgun
@@ -51,7 +50,7 @@ def visitors(request):
         try:
             if form.is_valid():
                 user = form.save()
-                return HttpResponseRedirect(reverse('tablet.views.post_create', kwargs={'username': user.username}))
+                return HttpResponseRedirect(reverse('tablet_post_create', kwargs={'username': user.username}))
         except Exception as e:
             page_message = str(e)[3:len(str(e)) - 2]
             logger.error(str(e))
@@ -114,13 +113,13 @@ def post_create(request, username):
         work_today = request.POST.get('work_today')
         if work_today == "Yes":
             # Send them over to the sign-in page.  This will trigger the Free Trial logic down the line.
-            return HttpResponseRedirect(reverse('tablet.views.signin_user', kwargs={'username': user.username}))
+            return HttpResponseRedirect(reverse('tablet_signin_user', kwargs={'username': user.username}))
         else:
             try:
                 email.announce_new_user(user)
             except:
                 logger.error("Could not send introduction email to %s" % user.email)
-            return HttpResponseRedirect(reverse('tablet.views.members', kwargs={}))
+            return HttpResponseRedirect(reverse('tablet_members', kwargs={}))
 
     search_results = None
     if request.method == "POST":
@@ -166,7 +165,7 @@ def signin_user_guest(request, username, guestof):
         else:
             if len(member.open_alerts()) > 0:
                 mailgun.send_manage_member(user)
-    return HttpResponseRedirect(reverse('tablet.views.welcome', kwargs={'username': username}))
+    return HttpResponseRedirect(reverse('tablet_welcome', kwargs={'username': username}))
 
 
 def welcome(request, username):
@@ -214,7 +213,7 @@ def signature_capture(request, username, doc_type):
     form = SignatureForm(request.POST or None)
     if form and form.has_signature():
         signature_file = form.save_signature()
-        render_url = reverse('tablet.views.signature_render', kwargs={'username': user.username, 'doc_type': doc_type, 'signature_file': signature_file}) + "?save_file=True"
+        render_url = reverse('tablet_sig_render', kwargs={'username': user.username, 'doc_type': doc_type, 'signature_file': signature_file}) + "?save_file=True"
         return HttpResponseRedirect(render_url)
     return render_to_response('tablet/signature_capture.html', {'user': user, 'form': form, 'today': today, 'doc_type': doc_type}, context_instance=RequestContext(request))
 
@@ -228,7 +227,7 @@ def signature_render(request, username, doc_type, signature_file):
         pdf_data = render_to_pdf('tablet/signature_render.html', pdf_args)
         pdf_file = FileUpload.objects.pdf_from_string(user, pdf_data, doc_type, user)
         os.remove(os.path.join(settings.MEDIA_ROOT, "signatures/%s" % signature_file))
-        return HttpResponseRedirect(reverse('tablet.views.document_list', kwargs={'username': user.username}))
+        return HttpResponseRedirect(reverse('tablet_document_list', kwargs={'username': user.username}))
     return render_to_pdf_response(request, 'tablet/signature_render.html', pdf_args)
 
 # Copyright 2011 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

@@ -24,11 +24,11 @@
 				<img src="/media/documents/{{doc_type}}1.jpg" width="100%"/>
 			</div>
 		</div>
-	
+
 		<div class="page-container">
 			<div class="page">
 				<img src="/media/documents/{{doc_type}}2.jpg" width="100%"/>
-			
+
 				<div class="signature_box">
 					<div data-role="fieldcontain" class="static-field">
 						<div class="label">Name:</div>
@@ -39,7 +39,7 @@
 						<span>{{ today }}</span>
 					</div>
 
-					<form action="{% url 'tablet.views.signature_capture' user.username doc_type%}" method="POST">
+					<form action="{% url 'tablet_sig_capture' user.username doc_type%}" method="POST">
 						<div data-role="fieldcontain">
 							{% for field in form %}
 								{{ field.label_tag }}

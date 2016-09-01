@@ -7,31 +7,31 @@
 	<div class="ui-grid-a">
 		<div class="ui-block-a">
 			{% if member.photo %}
-				<a href="{% url 'tablet.views.user_profile' member.user %}"><img src="{{ user.profile.photo.url }}" width="300px"></a>
+				<a href="{% url 'tablet_profile' member.user %}"><img src="{{ user.profile.photo.url }}" width="300px"></a>
 			{% else %}
 				<img src="{{ STATIC_URL }}/BlankIcon150x150.jpg">
-			{% endif %}							
+			{% endif %}
 		</div>
 		<div class="ui-block-b">
 			<h2>{{ member.full_name }}</h2>
 			<h3>Billing Day: <span style="font-weight:normal;">{{ member.active_membership.start_date|date:"jS" }}</span></h3>
-			
+
 			{% if not member.has_valid_billing %}
 				<h3 style="color:red;">Please update your billing profile.</h3>
-			{% endif %} 
-			
+			{% endif %}
+
 			{% if membership %}
-				<h3>Visits This Cycle: 
-					<span style="font-weight:normal;">{{ member.activity_this_month | length }} 
+				<h3>Visits This Cycle:
+					<span style="font-weight:normal;">{{ member.activity_this_month | length }}
 						{% if membership.get_allowance %}
 							of {{ membership.get_allowance }}
 						{% endif %}
 					</span>
 				</h3>
-			{% endif %} 
-			
-			<h3><a href="{% url 'tablet.views.document_list' user.username %}">Sign Documents</a></h3>
-			
+			{% endif %}
+
+			<h3><a href="{% url 'tablet_document_list' user.username %}">Sign Documents</a></h3>
+
 			{% if can_signin and not search_results %}
 				<div id="guestform-links">
 					<a href="#" data-role="button" data-inline="true" data-mini="true" id="guestform-show" class="showLink" onclick="showGuestForm();return false;">Is someone else paying today?</a>
@@ -49,23 +49,23 @@
 				<div id="member-list">
 					<ul data-role="listview" data-inset="true" data-filter="false">
 						{% for member in previous_hosts %}
-							<li style="padding: 0.5em;"><a href="{% url 'tablet.views.signin_user_guest' user.username member.user %}" data-transition="fade">{{ member.full_name }}</a></li>
+							<li style="padding: 0.5em;"><a href="{% url 'tablet_signin_guest' user.username member.user %}" data-transition="fade">{{ member.full_name }}</a></li>
 						{% endfor %}
 					</ul>
 				</div>
 			{% endif %}
-			
+
 			{% if search_results %}
 				<div id="member-list">
 					<ul data-role="listview" data-inset="true" data-filter="false">
 						{% for member in search_results %}
-							<li style="padding: 0.5em;"><a href="{% url 'tablet.views.signin_user_guest' user.username member.user %}" data-transition="fade">{{ member.full_name }}</a></li>
+							<li style="padding: 0.5em;"><a href="{% url 'tablet_signin_guest' user.username member.user %}" data-transition="fade">{{ member.full_name }}</a></li>
 						{% endfor %}
 					</ul>
 				</div>
 			{% else %}
 				<div id="search-box">
-					<form id="member-search-form" action="{% url 'tablet.views.user_signin' user.username %}" method="POST">
+					<form id="member-search-form" action="{% url 'tablet_user_signin' user.username %}" method="POST">
 						<input id="id_terms"  placeholder="Search by first name" type="search" name="terms" maxlength="100"/>
 						<input type="submit" value="Search" data-theme="b" data-transition="fade"/>
 						{% csrf_token %}
@@ -75,7 +75,7 @@
 		</div>
 
 		<div id="signin" data-theme="a" {% if search_results %} class="hidden" {% endif %}>
-			<a href="{% url 'tablet.views.signin_user' user.username %}" data-role="button" data-theme="b" data-transition="fade">Sign In</a>  
-		</div>   
-	{% endif %}  
+			<a href="{% url 'tablet_signin_user' user.username %}" data-role="button" data-theme="b" data-transition="fade">Sign In</a>
+		</div>
+	{% endif %}
 {% endblock %}

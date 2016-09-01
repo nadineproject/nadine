@@ -31,7 +31,7 @@ nav #doors-tab { background: #FBD850; color: black; }
 			<input type="hidden" name="code" value="{{ door_code.code }}" />
 			<input type="hidden" name="add_door_code" value="True"/>
 			<input type="submit" value="Yes" />
-			<input type="button" value="No" onclick="location.href='{% url 'doors.keymaster.views.index' %}'"/>
+			<input type="button" value="No" onclick="location.href='{% url 'doors_index' %}'"/>
 			{% csrf_token %}
 		</form>
 	</div>

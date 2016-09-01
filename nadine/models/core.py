@@ -154,7 +154,8 @@ class MemberManager(models.Manager):
         return Member.objects.filter(id__in=Membership.objects.active_memberships().values('member'))
 
     def active_users(self):
-        return self.active_members().values('user')
+        return User.objects.filter(id__in=Membership.objects.active_memberships().values('user'))
+        #return self.active_members().values('user')
 
     def daily_members(self):
         return self.active_members().exclude(id__in=self.members_with_desks())
