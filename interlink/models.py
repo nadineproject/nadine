@@ -340,15 +340,18 @@ class OutgoingMailManager(models.Manager):
         # make a connection to the server, and send them all.
         for ml, mails in d.iteritems():
             try:
-                conn = ml.get_smtp_connection()
-                conn.open()
+                conn = None
+                try:
+                    conn = ml.get_smtp_connection()
+                    conn.open()
+                except Exception as e:
+                    logger.error("Could not open SMTP connection for '%s': %s" % (ml.name, str(e)), exc_info=sys.exc_info(), extra={'exception': e})
+                    break
                 for m in mails:
                     try:
                         m.send(conn)
                     except MailingList.LimitExceeded as e:
-                        logger.warning("Limit exceeded: " + str(e),
-                                       exc_info=sys.exc_info(),
-                                       extra={'exception': e})
+                        logger.warning("Limit exceeded: " + str(e), exc_info=sys.exc_info(), extra={'exception': e})
                         break
 
             finally:
