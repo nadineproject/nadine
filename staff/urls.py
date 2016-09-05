@@ -30,7 +30,7 @@ urlpatterns = [
     url(r'^transaction/$', billing.transactions),
     url(r'^transaction/(?P<id>\d+)/$', billing.transaction),
     url(r'^pay_all/(?P<username>[^/]+)/$', billing.bills_pay_all),
-    url(r'^(?P<member_id>\d+)/toggle_billing_flag/$', billing.toggle_billing_flag),
+    url(r'^(?P<username>[^/]+)/toggle_billing_flag/$', billing.toggle_billing_flag),
 
     url(r'^u/(?P<username>[^/]+)/$', member.detail_user),
     url(r'^(?P<member_id>\d+)/$', member.detail),

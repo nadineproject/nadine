@@ -119,7 +119,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 					{% csrf_token %}
 
 					<div style="margin-left:5em;">
-					<form action="{% url 'staff.views.billing.toggle_billing_flag' member.id %}" onSubmit="return confirm('Are you sure?');">
+					<form action="{% url 'staff.views.billing.toggle_billing_flag' member.user.username %}" onSubmit="return confirm('Are you sure?');">
 						{% if member.has_valid_billing %}
 							<input type="submit" value="Flag Invalid Billing Profile">
 						{% else %}

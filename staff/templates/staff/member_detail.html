@@ -345,7 +345,7 @@ function gotoEmailReset(emailAddress){
     <h2>Billing Profile</h2>
     {% include "members/billing_profile.frag" %}
     <div style="margin-left: 2em; margin-top: .5em;">
-        <form method=POST action="{% url 'staff.views.billing.toggle_billing_flag' member.id %}" onSubmit="return confirm('Are you sure?');">
+        <form method=POST action="{% url 'staff.views.billing.toggle_billing_flag' member.user.username %}" onSubmit="return confirm('Are you sure?');">
             <input type="hidden" name="back" value="{{request.get_full_path}}">
             {% if member.has_valid_billing %}
                 <input type="submit" value="Flag Invalid Billing Profile">

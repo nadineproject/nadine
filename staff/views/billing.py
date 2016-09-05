@@ -18,6 +18,7 @@ from nadine.models import *
 from staff.forms import PayBillsForm, RunBillingForm
 from staff import email, billing
 
+
 @staff_member_required
 def transactions(request):
     page_message = None
@@ -79,6 +80,7 @@ def bills(request):
     invalids = Member.objects.invalid_billing()
     return render_to_response('staff/bills.html', {'bills': ordered_bills, 'page_message': page_message, 'invalid_members': invalids}, context_instance=RequestContext(request))
 
+
 @staff_member_required
 def bills_pay_all(request, username):
     user = get_object_or_404(User, username=username)
@@ -116,9 +118,9 @@ def bill_list(request):
 
 
 @staff_member_required
-def toggle_billing_flag(request, member_id):
-    member = get_object_or_404(Member, pk=member_id)
-    user = member.user
+def toggle_billing_flag(request, username):
+    user = get_object_or_404(User, username=username)
+    member = user.get_profile()
 
     page_message = member.full_name + " billing profile: "
     if member.valid_billing:
