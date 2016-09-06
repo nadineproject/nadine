@@ -31,8 +31,8 @@ urlpatterns = [
     url(r'^logs/', include('arpwatch.urls')),
     url(r'^tablet/', include('tablet.urls')),
 
-    url(r'^login/$', login, {'template_name': 'login.html'}),
-    url(r'^logout/$', logout_then_login),
+    url(r'^login/$', login, {'template_name': 'login.html'}, name='login'),
+    url(r'^logout/$', logout_then_login, name="logout"),
     url(r'^accounts/profile/$', lambda r: redirect('/')),
 
     url(r'^reset/$', views.password_reset, {'template_name': 'password_reset_form.html', 'email_template_name': 'email/password_reset_email.txt'}, 'password_reset'),
@@ -51,7 +51,7 @@ urlpatterns = [
     # Discourse discussion group
     #url(r'^discourse/sso$', discourse.sso),
 
-    url(r'^$', views.index),
+    url(r'^$', views.index, name='site_index'),
 ]
 
 if settings.DEBUG:

@@ -297,7 +297,7 @@ class IncomingMail(models.Model):
 
         elif self.owner == None or not self.sender_subscribed() or self.is_moderated_subject():
             subject = 'Moderation Request: %s: %s' % (self.mailing_list.name, self.subject)
-            body = render_to_string('interlink/email/moderation_required.txt', {'incoming_mail': self})
+            body = render_to_string('interlink/email/moderation_required.txt', context={'incoming_mail': self})
             OutgoingMail.objects.create(mailing_list=self.mailing_list, moderators_only=True, original_mail=self, subject=subject, body=body)
             self.state = 'moderate'
             self.save()

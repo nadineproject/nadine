@@ -3,9 +3,9 @@ Hi {{ user.first_name }},
 
 You have been a coming to {{ site.name }} for {{ user.profile.duration_str }} now!  In an effort to keep our data up to date we would like to encourage you to update your Nadine profile and emergency contact information. It's easy to edit. Go to the "Member Login" link on our website or use the one below.
 
-https://{{ site.domain }}{% url 'members.views.profile_redirect' %}
+https://{{ site.domain }}{% url 'member_profile_redirect' %}
 
-If you have any questions, please call us at 206.323.6500, respond to this message, or stop by the front desk. 
+If you have any questions, please call us at 206.323.6500, respond to this message, or stop by the front desk.
 
 Thank you,
 The {{ site.name }} Team

@@ -46,8 +46,7 @@
 	</form>
 	</div>
 	<div style="margin-top:1.5em;">
-	<font size="-1"><i>If this is your first time logging in or you've forgotten your password,
-	you will need to <a href="{% url 'views.password_reset' %}">create a new password</a>.</i></font>
+	<font size="-1"><i>If this is your first time logging in or you've forgotten your password, you will need to <a href="{% url 'password_reset' %}">create a new password</a>.</i></font>
 	</div>
 {% else %}
 	<div id='login_box'>
@@ -83,7 +82,7 @@
 		</div>
 		<div style="margin-top:1.5em;">
 		<font size="-1"><i>If you've forgotten your password,
-		you will need to <a href="{% url 'views.password_reset' %}">create a new password</a>.</i></font>
+		you will need to <a href="{% url 'password_reset' %}">create a new password</a>.</i></font>
 		</div>
 	</div>
 	<div id='reg_box'>
@@ -113,5 +112,4 @@
 		</div>
 	</div>
 {% endif %}
-
 {% endblock %}

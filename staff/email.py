@@ -64,7 +64,7 @@ def send_manual(user, message):
 def send_introduction(user):
     site = Site.objects.get_current()
     subject = "%s: Introduction to Nadine" % (site.name)
-    message = render_to_string('email/introduction.txt', {'user': user, 'site': site})
+    message = render_to_string('email/introduction.txt', context={'user': user, 'site': site})
     send_quietly(user.email, subject, message)
 
 
@@ -81,7 +81,7 @@ def send_new_membership(user):
     site = Site.objects.get_current()
     membership = user.profile.last_membership()
     subject = "%s: New %s Membership" % (site.name, membership.membership_plan.name)
-    message = render_to_string('email/new_membership.txt', {'user': user, 'membership': membership, 'site': site})
+    message = render_to_string('email/new_membership.txt', context={'user': user, 'membership': membership, 'site': site})
     send(user.email, subject, message)
     announce_new_membership(user)
 
@@ -89,76 +89,76 @@ def send_new_membership(user):
 def send_first_day_checkin(user):
     site = Site.objects.get_current()
     subject = "%s: How was your first day?" % (site.name)
-    message = render_to_string('email/first_day.txt', {'user': user, 'site': site})
+    message = render_to_string('email/first_day.txt', context={'user': user, 'site': site})
     send(user.email, subject, message)
 
 
 def send_exit_survey(user):
     site = Site.objects.get_current()
     subject = "%s: Exit Survey" % (site.name)
-    message = render_to_string('email/exit_survey.txt', {'user': user, 'site': site})
+    message = render_to_string('email/exit_survey.txt', context={'user': user, 'site': site})
     send(user.email, subject, message)
 
 
 def send_member_survey(user):
     site = Site.objects.get_current()
     subject = "%s: Coworking Survey" % (site.name)
-    message = render_to_string('email/member_survey.txt', {'user': user, 'site': site})
+    message = render_to_string('email/member_survey.txt', context={'user': user, 'site': site})
     send(user.email, subject, message)
 
 
 def send_no_return_checkin(user):
     site = Site.objects.get_current()
     subject = "%s: Checking In" % (site.name)
-    message = render_to_string('email/no_return.txt', {'user': user, 'site': site})
+    message = render_to_string('email/no_return.txt', context={'user': user, 'site': site})
     send(user.email, subject, message)
 
 
 def send_invalid_billing(user):
     site = Site.objects.get_current()
     subject = "%s: Billing Problem" % (site.name)
-    message = render_to_string('email/invalid_billing.txt', {'user': user, 'site': site})
+    message = render_to_string('email/invalid_billing.txt', context={'user': user, 'site': site})
     send(user.email, subject, message)
 
 
 def send_no_signin(user):
     site = Site.objects.get_current()
     subject = "%s: Forget to sign in?" % (site.name)
-    message = render_to_string('email/no_signin.txt', {'user': user, 'site': site})
+    message = render_to_string('email/no_signin.txt', context={'user': user, 'site': site})
     send(user.email, subject, message)
 
 
 def send_no_device(user):
     site = Site.objects.get_current()
     subject = "%s: Device Registration" % (site.name)
-    message = render_to_string('email/no_device.txt', {'user': user, 'site': site})
+    message = render_to_string('email/no_device.txt', context={'user': user, 'site': site})
     send(user.email, subject, message)
 
 
 def send_new_key(user):
     site = Site.objects.get_current()
     subject = "%s: Key Holding Details" % (site.name)
-    message = render_to_string('email/new_key.txt', {'user': user, 'site': site})
+    message = render_to_string('email/new_key.txt', context={'user': user, 'site': site})
     send(user.email, subject, message)
 
 
 def send_user_notifications(user, target):
     site = Site.objects.get_current()
     subject = "%s: %s is here!" % (site.name, target.get_full_name())
-    message = render_to_string('email/user_notification.txt', {'user': user, 'target': target, 'site': site})
+    message = render_to_string('email/user_notification.txt', context={'user': user, 'target': target, 'site': site})
     send(user.email, subject, message)
 
 
 def send_contact_request(user, target):
     site = Site.objects.get_current()
     subject = "%s: %s wants to connect!" % (site.name, user.get_full_name())
-    message = render_to_string('email/contact_request.txt', {'user': user, 'target': target, 'site': site})
+    message = render_to_string('email/contact_request.txt', context={'user': user, 'target': target, 'site': site})
     send(target.email, subject, message)
 
 def send_edit_profile(user):
     site = Site.objects.get_current()
     subject = "Please update your Nadine profile"
-    message = render_to_string('email/edit_profile.txt', {'user': user, 'site': site})
+    message = render_to_string('email/edit_profile.txt', context={'user': user, 'site': site})
     send(user.email, subject, message)
 
 #####################################################################
@@ -255,7 +255,7 @@ def manage_member_email(user):
 
 def team_signature(user):
     site = Site.objects.get_current()
-    return render_to_string('email/team_email_signature.txt', {'user': user, 'site': site})
+    return render_to_string('email/team_email_signature.txt', context={'user': user, 'site': site})
 
 
 def send(recipient, subject, message):
