@@ -37,16 +37,16 @@
 </head>
 
 	<body>{% block body %}
-		<div id="page_container">
-			<!-- Page -->
-			<div id="header_container">
-				<div id="header" class="setwidth">
-					<div id="logo">
-						<a href="{% url 'members.views.home' %}" id="home">
-							<img src="{{ STATIC_URL }}img/ON_Logo_tall.png" />
-						</a>
-					</div>
-					<h1 id="title">Nadine Membership Console</h1>
+			<div id="page_container">
+				<!-- Page -->
+				<div id="header_container">
+					<div id="header" class="setwidth">
+						<div id="logo">
+							<a href="{% url 'members.views.home' %}" id="home">
+								<img src="{{ STATIC_URL }}img/ON_Logo_tall.png" />
+							</a>
+						</div>
+						<h1 id="title">Nadine Membership Console</h1>
 					<nav>
 						<a href="{% url 'members.views.profile_redirect' %}">Profile</a>
 						{% if not request.user.is_authenticated %}
@@ -75,11 +75,13 @@
 				</div>
 			</div>
 
+		{% block main_body %}
 			<div id="content_container">
 				<div class="setwidth lightbg">
 					<div id="content">{% block content %}{% endblock %}</div>
 				</div>
 			</div>
+		{% endblock %}
 
 
 			<!-- Footer -->

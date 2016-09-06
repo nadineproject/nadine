@@ -84,15 +84,16 @@
     <div class="clearfix"></div>
 
     <div id="tabs">
-        <ul>
-            <li><a href="#tabs-0">Member Profile</a></li>
-            <li><a href="#tabs-1">Private Details</a></li>
-            <li><a href="#tabs-2">Documents</a></li>
-            <li><a href="#tabs-3">Membership History</a></li>
-            <li><a href="#tabs-4">Daily Activity</a></li>
-            <li><a href="#tabs-5">Billing</a></li>
+      {% block mem_tabs %}
+        <ul class='tabs prof-tabs'>
+            <li class="tab col s2"><a href="#tabs-0">Member Profile</a></li>
+            <li class="tab col s2"><a href="#tabs-1">Private Details</a></li>
+            <li class="tab col s2"><a href="#tabs-2">Documents</a></li>
+            <li class="tab col s2"><a href="#tabs-3">Membership History</a></li>
+            <li class="tab col s2"><a href="#tabs-4">Daily Activity</a></li>
+            <li class="tab col s2"><a href="#tabs-5">Billing</a></li>
         </ul>
-
+      {% endblock %}
     <div id="tabs-0">
         <h3>Member Profile</h3>
         {% include "members/profile.frag" %}

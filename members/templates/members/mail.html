@@ -43,9 +43,9 @@
 
 <div id="tabs">
 
-<ul> 
+<ul class='tabs'>
 	{% for mailing_list, is_subscriber in user.mailing_list_memberships %}
-		<li><a href="#tabs-{{forloop.counter}}">{{ mailing_list.name }}</a></li>
+		<li class='tab'><a href="#tabs-{{forloop.counter}}">{{ mailing_list.name }}</a></li>
 	{% endfor%}
 </ul>
 
@@ -66,7 +66,7 @@
     		{% endif %}
 		</h3>
 		<div class="list_desc">{{ mailing_list.description }}</div>
-		
+
 		<h3>Recent Messages</h3>
 		<div class="list_mail" id="recents-{{mailing_list.id}}">
 			<table class="msg_table">

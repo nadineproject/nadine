@@ -7,9 +7,9 @@
 		$(function () {
 			{% if search_terms %}
 				jQuery('#tabs').tabs({ active: -1 });
-			{% else %} 
+			{% else %}
 				jQuery('#tabs').tabs({ active: 0 });
-			{% endif %} 
+			{% endif %}
 		});
 	</script>
 {% endblock %}
@@ -18,29 +18,31 @@
 
 <h2 style="vertical-align: top;">View Members</h2>
 
-<div id="tabs">
+{% block search_mems %}
+	<div id="tabs">
 
-<form id="site-search-form" action="." method="POST" style="float:right; margin-top:6px;">
-	{% for field in search_form %}{{ field }}{% endfor %}
-	<input type="submit" value="search"/>
-	{% csrf_token %}
-</form>
+	<form id="site-search-form" action="." method="POST" style="float:right; margin-top:6px;">
+		{% for field in search_form %}{{ field }}{% endfor %}
+		<input type="submit" value="search"/>
+		{% csrf_token %}
+	</form>
 
-<ul> 
-	<li><a href="#tabs-1">Active Members ({{ active_members | length }})</a></li>
-	<li><a href="#tabs-2">Here Today ({{ here_today | length }})</a></li>
-	{% if search_terms %}
-		<li><a href="#tabs-3" active="True">Search Results - {{ search_terms }}</a></li>
-	{% elif user.get_profile.is_manager %}
-		<li><a href="#tabs-4">Has Mail ({{ has_mail | length }})</a></li>
-		<li><a href="#tabs-5">Has Key ({{ has_key | length }})</a></li>
-	{% endif %} 
-</ul>
+	<ul>
+		<li><a href="#tabs-1">Active Members ({{ active_members | length }})</a></li>
+		<li><a href="#tabs-2">Here Today ({{ here_today | length }})</a></li>
+		{% if search_terms %}
+			<li><a href="#tabs-3" active="True">Search Results - {{ search_terms }}</a></li>
+		{% elif user.get_profile.is_manager %}
+			<li><a href="#tabs-4">Has Mail ({{ has_mail | length }})</a></li>
+			<li><a href="#tabs-5">Has Key ({{ has_key | length }})</a></li>
+		{% endif %}
+	</ul>
+{% endblock %}
 
 <div id="tabs-1" class="plan-section">
 	<div style="margin:auto; width:100%; text-align:center;">
 	{% for member in active_members %}
-		{% include "members/user_card.frag" %}  
+		{% include "members/user_card.frag" %}
 	{% endfor %}
 	</div>
 </div>
@@ -48,7 +50,7 @@
 <div id="tabs-2" class="plan-section">
 	<div style="margin:auto; width:100%; text-align:center;">
 	{% for member in here_today %}
-		{% include "members/user_card.frag" %}  
+		{% include "members/user_card.frag" %}
 	{% endfor %}
 	</div>
 </div>
@@ -58,7 +60,7 @@
 		{% if search_results %}
 			<div style="margin:auto; width:100%; text-align:center;">
 			{% for member in search_results %}
-				{% include "members/user_card.frag" %}  
+				{% include "members/user_card.frag" %}
 			{% endfor %}
 			</div>
 		{% else %}
@@ -68,12 +70,12 @@
 {% elif user.get_profile.is_manager %}
 	<div id="tabs-4" class="plan-section">
 		{% for member in has_mail %}
-			{% include "members/user_card.frag" %}  
+			{% include "members/user_card.frag" %}
 		{% endfor %}
 	</div>
 	<div id="tabs-5" class="plan-section">
 		{% for member in has_key %}
-			{% include "members/user_card.frag" %}  
+			{% include "members/user_card.frag" %}
 		{% endfor %}
 	</div>
 {% endif %}

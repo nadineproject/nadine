@@ -434,8 +434,7 @@ def register(request):
                 user = registration_form.save()
                 token = default_token_generator.make_token(user)
                 path = 'Ng-' + token + '/'
-                print path
-                return HttpResponseRedirect('https://apps.officenomads.com/reset/'+ path)
+                return HttpResponseRedirect(reverse('password_reset')+ path)
         except Exception as e:
             page_message = str(e)
             logger.error(str(e))
