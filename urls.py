@@ -51,7 +51,7 @@ urlpatterns = [
     # Discourse discussion group
     #url(r'^discourse/sso$', discourse.sso),
 
-    url(r'^$', views.index),
+    url(r'^$', views.index, name='site_index'),
 ]
 
 if settings.DEBUG:

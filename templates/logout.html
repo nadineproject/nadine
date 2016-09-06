@@ -1,11 +1,12 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="utf-8">
 	<title>{{ site.name }} Logout</title>
-	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}base.css" />
+	<link rel="stylesheet" type="text/css" href="{% static 'base.css' %}" />
 </head>
 <body>
-   Thanks for playing... now go <a href="{% url 'views.index' %}">home</a>.
+   Thanks for playing... now go <a href="{% url 'site_index' %}">home</a>.
 </body>
 </html>
