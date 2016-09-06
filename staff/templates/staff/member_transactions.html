@@ -1,25 +1,25 @@
 {% extends "staff/staff_base.html" %}
 {% load list_tags %}
 
-{% block sub-title %}Transactions for {{ member.first_name }} {{ member.last_name }} | {% endblock %}
+{% block sub-title %}Transactions for {{ user.get_full_name }} | {% endblock %}
 
 {% block style %}
 nav #billing-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {% block content %}
-<h2>Transactions for <a href="{% url 'staff.views.member.detail' member.id %}">{{ member.first_name }} {{ member.last_name }}</a>:</h2>
-{% if not member.transaction_set.all %}
+<h2>Transactions for <a href="{% url 'staff_user_detail' user.username %}">{{ user.get_full_name }}</a>:</h2>
+{% if not user.profile.transaction_set.all %}
 <p>There are no transactions!</p>
 {% endif%}
 
 <table id="transaction-list">
-	{% for transaction in member.transaction_set.all %}
+	{% for transaction in user.profile.transaction_set.all %}
 		<tr class="{% cycle 'row-even' 'row-odd' %}">
-			<td><a href="{{ transaction.get_absolute_url }}">{{ transaction.transaction_date|date:"m/d/y" }}</a>
+			<td><a href="{% url 'staff_transaction' transaction.id %}">{{ transaction.transaction_date|date:"m/d/y" }}</a>
 			   for bill{{ transaction.bills.all|pluralize }}
 			   {% for bill in transaction.bills.all %}
-               <a href="{{ bill.get_absolute_url }}">{{ bill.bill_date|date:"m/d/y" }}</a>{% loop_comma %}
+               <a href="{% url 'staff_bill' bill.id %}">{{ bill.bill_date|date:"m/d/y" }}</a>{% loop_comma %}
             {% endfor %}
 			</td>
 			<td>${{ transaction.amount }}</td>
@@ -34,7 +34,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 <table id="open-bills-list">
       {% for bill in member.open_bills %}
 		<tr class="{% cycle 'row-even' 'row-odd' %}">
-		   <td><a href="{{ bill.get_absolute_url }}">{{ bill.bill_date|date:"m/d/y" }}</a></td>
+		   <td><a href="{% url 'staff_bill' bill.id %}">{{ bill.bill_date|date:"m/d/y" }}</a></td>
 		   <td>${{ bill.amount }}</td>
 		   <td></td>
 		</tr>

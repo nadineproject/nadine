@@ -46,19 +46,19 @@ nav #todo-tab { background: #FBD850; color: black; }
 		</script>
 
 		{% for row in not_signed_in %}
-			<form id="nsi_form{{ forloop.counter }}" enctype="multipart/form-data" method='POST' style="display:inline;" action="{% url 'staff.views.activity.for_date' row.day.year row.day.month row.day.day %}">
+			<form id="nsi_form{{ forloop.counter }}" enctype="multipart/form-data" method='POST' style="display:inline;" action="{% url 'staff_activity_day' row.day.year row.day.month row.day.day %}">
 			<input type="hidden" name="visit_date" value="{{row.day|date:'Y-m-d'}}">
-			<input type="hidden" name="member_id" value="{{row.member.id}}">
-			<input type="hidden" id="member_name{{ forloop.counter }}" value="{{row.member}}">
+			<input type="hidden" name="username" value="{{row.user.username}}">
+			<input type="hidden" id="member_name{{ forloop.counter }}" value="{{row.user.get_full_name}}">
 			<input type="hidden" id="payment{{ forloop.counter }}" name="payment"/>
 			<input type="hidden" id="note{{forloop.counter}}" name="note" size="64"/>
 
 			<tr class="{% cycle 'row-even' 'row-odd' %}">
 				<td>
-					<a href="{% url 'staff.views.activity.for_date' row.day.year row.day.month row.day.day %}">{{ row.day|date:"l, M dS" }}</a>
+					<a href="{% url 'staff_activity_day' row.day.year row.day.month row.day.day %}">{{ row.day|date:"l, M dS" }}</a>
 				</td>
 				<td style="text-align:left;">
-					<a href="{% url 'staff.views.member.detail' row.member.id %}">{{ row.member }}</a>
+					<a href="{% url 'staff_user_detail' row.member.user.username %}">{{ row.user.get_full_name }}</a>
 				</td>
 				<td style="text-align:center;">
 						<button id="yes{{forloop.counter}}" onClick="return yes({{ forloop.counter }});">Yes - Mark as BILLABLE</button>
@@ -68,7 +68,7 @@ nav #todo-tab { background: #FBD850; color: black; }
 					{% if row.day == today %}
 						<!-- <a href="">send email</a> | -->
 					{% endif %}
-					<a href="{% url 'staff.views.activity.for_user' row.member.user %}">user activity</a>
+					<a href="{% url 'staff_activity_user' row.user %}">user activity</a>
 				</td>
 			</tr>
 
@@ -90,7 +90,7 @@ nav #todo-tab { background: #FBD850; color: black; }
 		{% if showall or count > 0 %}
 		<tr class="{% cycle 'row-even' 'row-odd' %}">
 			<td align="left">
-				<a href="{% url 'staff.views.core.todo_detail' key %}">{{ description }}</a>
+				<a href="{% url 'staff_todo_detail' key %}">{{ description }}</a>
 			</td>
 			<td>{{ count }}</td>
 			<td></td>

@@ -141,9 +141,6 @@ class MailingList(models.Model):
 
     def __unicode__(self): return '%s' % self.name
 
-    @models.permalink
-    def get_absolute_url(self): return ('interlink.views.list', (), {'id': self.id})
-
     def create_incoming(self, message, commit=True):
         "Parses an email message and creates an IncomingMail from it."
         _name, origin_address = email.utils.parseaddr(message['From'])

@@ -43,11 +43,11 @@
 	<!-- Header -->
 	{% block header %}<header>
 		<nav>
-		<a id="todo-tab" href="{% url 'staff.views.core.todo' %}">Todo</a>
-		<a id="members-tab" href="{% url 'staff.views.core.members' %}">Member List</a>
-		<a id="activity-tab" href="{% url 'staff.views.activity.activity' %}">Activity</a>
-		<a id="billing-tab" href="{% url 'staff.views.billing.bills' %}">Billing</a>
-		<a id="stats-tab" href="{% url 'staff.views.stats.stats' %}">Stats</a>
+		<a id="todo-tab" href="{% url 'staff_todo' %}">Todo</a>
+		<a id="members-tab" href="{% url 'staff_members' %}">Member List</a>
+		<a id="activity-tab" href="{% url 'staff_activity' %}">Activity</a>
+		<a id="billing-tab" href="{% url 'staff_bills' %}">Billing</a>
+		<a id="stats-tab" href="{% url 'staff_stats' %}">Stats</a>
 		<a id="logs-tab" href="{% url 'arpwatch.views.device_logs_today' %}">Logs</a>
 		<a id="lists-tab" href="{% url 'interlink.views.index' %}">Lists</a>
 		<a id="doors-tab" href="{% url 'doors_index' %}">Doors</a>
@@ -64,7 +64,7 @@
 	<!-- Content -->
 	<div id="content">
 		{% if request.user.is_authenticated %}
-		<form id="site-search-form" action="{% url 'staff.views.core.member_search' %}" method="post">
+		<form id="site-search-form" action="{% url 'staff_search' %}" method="post">
 			{% for field in site_search_form %}{{ field }}{% endfor %}
 			<input type="submit" value="search" />
 			{% csrf_token %}

@@ -16,9 +16,9 @@ nav #activity-tab { background: #FBD850; color: black; }
 <h2>
 	Daily Activity - {{ activity_date|date:"l, M dS" }}
 	<span style="float:right;">
-	<a href="{% url 'staff.views.activity.for_date' previous_date.year previous_date.month previous_date.day %}">&larr;</a>
-	<a href="{% url 'staff.views.activity.for_today' %}">&bull;</a>
-	<a href="{% url 'staff.views.activity.for_date' next_date.year next_date.month next_date.day %}">&rarr;</a>
+	<a href="{% url 'staff_activity_day' previous_date.year previous_date.month previous_date.day %}">&larr;</a>
+	<a href="{% url 'staff_activity_today' %}">&bull;</a>
+	<a href="{% url 'staff_activity_day' next_date.year next_date.month next_date.day %}">&rarr;</a>
 	</span>
 </h2>
 
@@ -37,35 +37,20 @@ nav #activity-tab { background: #FBD850; color: black; }
          <th>Payment</th>
          <th>Guest of</th>
          <th>Note</th>
-				 <th></th>
+         <th></th>
       </tr>
       {% for log in daily_logs %}
          <tr class="{% cycle 'row-even' 'row-odd' %}">
-            <td><a href="{% url 'staff.views.member.detail' log.member.id %}">{{ log.member }}</a></td>
+            <td><a href="{% url 'staff_user_detail' log.user.username %}">{{ log.user.get_full_name }}</a></td>
             <td>{{ log.payment }}</td>
-            <td>{% if log.guest_of %}<a href="{% url 'staff.views.member.detail' log.guest_of.id %}">{{ log.guest_of }}</a>{% endif %}</td>
+            <td>{% if log.guest_of %}<a href="{% url 'staff_user_detail' log.guest_of.user.username %}">{{ log.guest_of }}</a>{% endif %}</td>
             <td class="log-note">{{ log.note }}</td>
             <td style="text-align: center;">
-							<a href="{% url 'admin:nadine_dailylog_change' log.id %}">edit data </a> |
-							<a href="{% url 'staff.views.activity.for_user' log.user.username %}">user activity</a>
-						</td>
+                <a href="{% url 'admin:nadine_dailylog_change' log.id %}">edit data </a> |
+                <a href="{% url 'staff_activity_user' log.user.username %}">user activity</a>
+            </td>
          </tr>
       {% endfor %}
-
-			<!--
-			<form enctype="multipart/form-data" action='.' method='post'>
-			{{ daily_log_form.visit_date }}
-			<tr class="{% cycle 'row-even' 'row-odd' %}">
-				 <td>{{ daily_log_form.member }}</td>
-				 <td>{{ daily_log_form.payment }}</td>
-				 <td>{{ daily_log_form.guest_of }}</td>
-				 <td>{{ daily_log_form.note }}</td>
-				 <td><input name="action" type="submit" value="Add" /></td>
-			</tr>
-			{% csrf_token %}
-			</form>
-			-->
-
   </table>
   <div style="font-weight:bold; text-align:right;">{{ daily_logs | length }} records found</div>
 </div>

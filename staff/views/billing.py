@@ -1,3 +1,4 @@
+import time as timeo
 from datetime import date, datetime, timedelta
 from collections import OrderedDict
 
@@ -10,12 +11,14 @@ from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
+from django.db.models import Q, Sum
 from django.conf import settings
 
 from decimal import Decimal
 
 from nadine.models import *
-from staff.forms import PayBillsForm, RunBillingForm
+from staff.views.activity import date_range_from_request, START_DATE_PARAM, END_DATE_PARAM
+from staff.forms import PayBillsForm, RunBillingForm, DateRangeForm
 from staff import email, billing
 
 
@@ -41,7 +44,7 @@ def run_billing(request):
         run_billing_form = RunBillingForm(request.POST)
         if run_billing_form.is_valid():
             billing.run_billing()
-            page_message = 'At your request, I have run <a href="%s">the bills</a>.' % (reverse('staff.views.billing.bills', args=[], kwargs={}),)
+            page_message = 'At your request, I have run <a href="%s">the bills</a>.' % (reverse('staff_bills', args=[], kwargs={}),)
     logs = BillingLog.objects.all()[:10]
     return render_to_response('staff/run_billing.html', {'run_billing_form': run_billing_form, 'page_message': page_message, "billing_logs": logs}, context_instance=RequestContext(request))
 
@@ -53,23 +56,27 @@ def bills(request):
         pay_bills_form = PayBillsForm(request.POST)
         if pay_bills_form.is_valid():
             try:
-                member = Member.objects.get(pk=int(pay_bills_form.cleaned_data['member_id']))
+                user = User.objects.get(username=pay_bills_form.cleaned_data['username'])
             except:
                 page_message = 'Error: I could not find that user.'
 
             amount = pay_bills_form.cleaned_data['amount']
             if page_message == None:
                 bill_ids = [int(bill_id) for bill_id in request.POST.getlist('bill_id')]
-                transaction = Transaction(user=member.user, member=member, status='closed', amount=Decimal(amount))
+                transaction = Transaction(user=user, member=user.profile, status='closed', amount=Decimal(amount))
                 transaction.note = pay_bills_form.cleaned_data['transaction_note']
                 transaction.save()
-                for bill in member.open_bills():
+                for bill in user.profile.open_bills():
                     if bill.id in bill_ids:
                         transaction.bills.add(bill)
-                page_message = 'Created a <a href="%s">transaction for %s</a>' % (reverse('staff.views.billing.transaction', args=[], kwargs={'id': transaction.id}), member,)
+                transaction_url = reverse('staff_transaction', args=[], kwargs={'id': transaction.id})
+                page_message = 'Created a <a href="%s">transaction for %s</a>' % (transaction_url, user.get_full_name())
 
     bills = {}
-    members = Member.objects.filter(models.Q(bills__isnull=False, bills__transactions=None, bills__paid_by__isnull=True) | models.Q(guest_bills__isnull=False, guest_bills__transactions=None)).distinct().order_by('user__last_name')
+    # TODO - convert to User
+    unpaid = models.Q(bills__isnull=False, bills__transactions=None, bills__paid_by__isnull=True)
+    unpaid_guest = models.Q(guest_bills__isnull=False, guest_bills__transactions=None)
+    members = Member.objects.filter(unpaid | unpaid_guest).distinct().order_by('user__last_name')
     for member in members:
         last_bill = member.open_bills()[0]
         if not last_bill.bill_date in bills:
@@ -77,6 +84,7 @@ def bills(request):
         bills[last_bill.bill_date].append(member)
     ordered_bills = OrderedDict(sorted(bills.items(), key=lambda t: t[0]))
 
+    # TODO - convert to User
     invalids = Member.objects.invalid_billing()
     return render_to_response('staff/bills.html', {'bills': ordered_bills, 'page_message': page_message, 'invalid_members': invalids}, context_instance=RequestContext(request))
 
@@ -99,7 +107,7 @@ def bills_pay_all(request, username):
         if 'next' in request.POST:
             next_url = request.POST.get("next")
         else:
-            next_url = reverse('staff.views.billing.bills')
+            next_url = reverse('staff_bills')
 
     return HttpResponseRedirect(next_url)
 
@@ -135,7 +143,7 @@ def toggle_billing_flag(request, username):
 
     if 'back' in request.POST:
         return HttpResponseRedirect(request.POST.get('back'))
-    return HttpResponseRedirect(reverse('staff.views.billing.bills'))
+    return HttpResponseRedirect(reverse('staff_bills'))
 
 
 @staff_member_required

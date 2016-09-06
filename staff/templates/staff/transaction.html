@@ -7,9 +7,9 @@ nav #billing-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {% block content %}
-{% include "staff/billing_menu.frag" %}  
+{% include "staff/billing_menu.frag" %}
 
-<h2><a href="{{ transaction.member.get_absolute_url }}">{{ transaction.member.first_name }} {{ transaction.member.last_name }}</a>'s Transaction:</h2>
+<h2><a href="{% url 'staff_user_transactions' transaction.user.username %}">{{ transaction.user.get_full_name }}</a>'s Transaction:</h2>
 
 <dl id="transaction-metadata">
 		<dt>Created:</dt><dd>{{ transaction.transaction_date }}</dd>
@@ -22,7 +22,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 <h2>Bills covered by this transaction:</h2>
 <ul>
 {% for bill in transaction.bills.all %}
-<li><a href="{{ bill.get_absolute_url }}">Bill on {{ bill.bill_date }}</a> for ${{ bill.amount }}</li>
+<li><a href="{% url 'staff_bill' bill.id %}">Bill on {{ bill.bill_date }}</a> for ${{ bill.amount }}</li>
 {% endfor %}
 </ul>
 

@@ -3,14 +3,14 @@
 	<tr>
 		<th>Date:</th>
 		<td>
-			<a href="{% url 'staff.views.billing.bill' bill.id %}">{{ bill.bill_date|date:"m/d/y" }}</a>
-			{% if show_member_name %}for <a href="{% url 'staff.views.member.detail' bill.member.id %}">{{ bill.member.first_name }} {{ bill.member.last_name }}</a>{% endif %}
+			<a href="{% url 'staff_bill' bill.id %}">{{ bill.bill_date|date:"m/d/y" }}</a>
+			{% if show_member_name %}for <a href="{% url 'staff_user_detail' bill.user.username %}">{{ bill.user.get_full_name }}</a>{% endif %}
 		</td>
 	</tr>
 	<tr><th>Status:</th>
 		<td>
 			{% if bill.transactions.all %}
-				closed on {% for transaction in bill.transactions.all %}<a href="{% url 'staff.views.billing.transaction' transaction.id %}">{{ transaction.transaction_date | date:"m/d/y"}}</a>{% endfor %}
+				closed on {% for transaction in bill.transactions.all %}<a href="{% url 'staff_transaction' transaction.id %}">{{ transaction.transaction_date | date:"m/d/y"}}</a>{% endfor %}
 			{% else %}
 				open
 			{% endif %}
@@ -20,7 +20,7 @@
 	{% if not hide_paid_by %}
 		{% if bill.paid_by %}
 			<tr>
-				<th>Paid by:</th><td><a href="{{ bill.paid_by.get_absolute_url }}">{{ bill.paid_by.first_name }} {{ bill.paid_by.last_name }}</a></td>
+				<th>Paid by:</th><td><a href="{% url 'staff_user_detail' bill.paid_by.user.username %}">{{ bill.paid_by.user.get_full_name }}</a></td>
 			</tr>
 		{% endif %}
 	{% endif %}
@@ -54,7 +54,8 @@
 		<th>Guest Dropins:</th>
 		<td>
 			{% for dropin in bill.guest_dropins.all %}
-				<a href="{{ dropin.member.get_absolute_url }}">{{dropin.member.first_name}} {{ dropin.member.last_name}}</a> on <a href="{{ dropin.get_admin_url }}">{{ dropin.visit_date|date:"m/d/y" }}</a>{% loop_comma %}
+				<a href="{% url 'staff_user_detail' dropin.user.username %}">{{dropin.user.get_full_name}}</a>
+				on <a href="{{ dropin.get_admin_url }}">{{ dropin.visit_date|date:"m/d/y" }}</a>{% loop_comma %}
 			{% endfor %}
 		</td>
 	</tr>

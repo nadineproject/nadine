@@ -27,9 +27,9 @@ nav #todo-tab { background: #FBD850; color: black; }
 		</tr>
 		{% for alert in alerts %}
 		<tr class="{% cycle 'row-even' 'row-odd' %}">
-			<td nowrap><a href="{% url 'staff.views.member.detail' alert.user.profile.id %}">{{ alert.user.get_full_name }}</a></td>
+			<td nowrap><a href="{% url 'staff_user_detail' alert.user.username %}">{{ alert.user.get_full_name }}</a></td>
 			<td style="text-align: right;">
-				<form action="{% url 'staff.views.core.todo_detail' key %}" method="POST">
+				<form action="{% url 'staff_todo_detail' key %}" method="POST">
 					<input type="hidden" name="alert_id" value="{{ alert.id }}"/>
 					<button name="action" value="resolve" type="submit" {% if is_system_alert %} disabled{% endif %}>Resolve</button>
 					<button name="action" value="mute" type="submit" >Mute</button>

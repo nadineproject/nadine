@@ -7,6 +7,7 @@ from datetime import date, datetime, timedelta
 from django.utils import timezone
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.contrib.admin.views.decorators import staff_member_required
 from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect
@@ -37,6 +38,7 @@ def members(request, group=None):
         if first_plan:
             group = first_plan.name
 
+    # TODO convert to Users
     members = MemberGroups.get_members(group)
     if members:
         member_count = members.count()
@@ -84,27 +86,27 @@ def export_members(request):
 @staff_member_required
 def security_deposits(request):
     if request.method == 'POST':
-        member_id = request.POST.get('member_id')
+        username = request.POST.get('username')
         today = timezone.localtime(timezone.now())
         if 'mark_returned' in request.POST:
             deposit = SecurityDeposit.objects.get(pk=request.POST.get('deposit_id'))
             deposit.returned_date = today
             deposit.save()
         elif 'add_deposit' in request.POST:
-            member = Member.objects.get(pk=member_id)
+            user = User.objects.get(username=username)
             amount = request.POST.get('amount')
             note = request.POST.get('note')
-            deposit = SecurityDeposit.objects.create(user=member.user, member=member, received_date=today, amount=amount, note=note)
+            deposit = SecurityDeposit.objects.create(user=user, member=user.profile, received_date=today, amount=amount, note=note)
             deposit.save()
-        if member_id:
-            return HttpResponseRedirect(reverse('staff.views.member.detail', args=[], kwargs={'member_id': member_id}))
+        if username:
+            return HttpResponseRedirect(reverse('staff_user_detail', kwargs={'username': username}))
 
-    members = []
+    deposits = []
     total_deposits = 0
-    for deposit in SecurityDeposit.objects.filter(returned_date=None).order_by('member'):
-        members.append({'id': deposit.member.id, 'name': deposit.member, 'deposit_id': deposit.id, 'deposit': deposit.amount})
+    for deposit in SecurityDeposit.objects.filter(returned_date=None).order_by('user__username'):
+        deposits.append({'username': deposit.user.username, 'name': deposit.user.get_full_name(), 'deposit_id': deposit.id, 'amount': deposit.amount})
         total_deposits = total_deposits + deposit.amount
-    return render_to_response('staff/security_deposits.html', {'member_list': members, 'total_deposits': total_deposits}, context_instance=RequestContext(request))
+    return render_to_response('staff/security_deposits.html', {'deposits': deposits, 'total_deposits': total_deposits}, context_instance=RequestContext(request))
 
 
 @staff_member_required
@@ -113,9 +115,10 @@ def member_search(request):
     if request.method == "POST":
         member_search_form = MemberSearchForm(request.POST)
         if member_search_form.is_valid():
+            # TODO - convert to User
             search_results = Member.objects.search(member_search_form.cleaned_data['terms'])
             if len(search_results) == 1:
-                return HttpResponseRedirect(reverse('staff.views.member.detail', args=[], kwargs={'member_id': search_results[0].id}))
+                return HttpResponseRedirect(reverse('staff_user_detail', kwargs={'username': search_results[0].user.username}))
     else:
         member_search_form = MemberSearchForm()
     return render_to_response('staff/member_search.html', {'member_search_form': member_search_form, 'search_results': search_results}, context_instance=RequestContext(request))
@@ -180,18 +183,18 @@ def membership(request, membership_id):
         try:
             if membership_form.is_valid():
                 membership_form.save()
-                return HttpResponseRedirect(reverse('staff.views.member.detail', args=[], kwargs={'member_id': membership.member.id}))
+                return HttpResponseRedirect(reverse('staff_user_detail', kwargs={'username': membership.user.username}))
         except Exception as e:
             messages.add_message(request, messages.ERROR, e)
     else:
-        membership_form = MembershipForm(initial={'membership_id': membership.id, 'member': membership.member.id, 'membership_plan': membership.membership_plan,
+        membership_form = MembershipForm(initial={'membership_id': membership.id, 'username': membership.user.username, 'membership_plan': membership.membership_plan,
                                                   'start_date': membership.start_date, 'end_date': membership.end_date, 'monthly_rate': membership.monthly_rate, 'dropin_allowance': membership.dropin_allowance,
                                                   'daily_rate': membership.daily_rate, 'has_desk': membership.has_desk, 'has_key': membership.has_key, 'has_mail': membership.has_mail,
                                                   'guest_of': membership.guest_of})
 
     today = timezone.localtime(timezone.now()).date()
     last = membership.next_billing_date() - timedelta(days=1)
-    return render_to_response('staff/membership.html', {'member': membership.member, 'membership': membership, 'membership_plans': MembershipPlan.objects.all(),
+    return render_to_response('staff/membership.html', {'user': membership.user, 'membership': membership, 'membership_plans': MembershipPlan.objects.all(),
                                                         'membership_form': membership_form, 'today': today.isoformat(), 'last': last.isoformat()}, context_instance=RequestContext(request))
 
 
@@ -212,6 +215,7 @@ def view_user_reports(request):
 def slack_users(request):
     expired_users = Member.objects.expired_slack_users()
     slack_emails = []
+    # TODO - convert to USER
     slack_users = SlackAPI().users.list().body['members']
     for u in slack_users:
         if 'profile' in u and 'email' in u['profile'] and u['profile']['email']:

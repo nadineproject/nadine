@@ -1,7 +1,8 @@
 {% extends "staff/staff_base.html" %}
 {% load imagetags %}
+{% load static %}
 
-{% block sub-title %}{{ member.first_name }} {{ member.last_name }} | {% endblock %}
+{% block sub-title %}{{ user.get_full_name }} | {% endblock %}
 
 {% block style%}
     nav #members-tab { background: #FBD850; color: black; }
@@ -51,30 +52,29 @@ function gotoEmailReset(emailAddress){
 {% include "staff/member_menu.frag" %}
 
 <div class="member-photo">
-    {% if member.photo %}
-        <a href="{{ member.photo.url }}"><img src="{{ member.photo.url|fit_image:"170x170" }}" /></a>
+    {% if user.profile.photo %}
+        <a href="{{ user.profile.photo.url }}"><img src="{{ user.profile.photo.url|fit_image:"170x170" }}" /></a>
     {% else %}
-        <img src="{{ STATIC_URL }}/BlankIcon150x150.jpg">
+        <img src="{% static 'BlankIcon150x150.jpg' %}">
     {% endif %}
 </div>
 
 <!-- Member Detail -->
 <div id="member-detail">
-    <h2>{{ member.first_name }} {{ member.last_name }} {% if member.is_active %} - <i>{{ member.membership_type }}</i> {% endif %}</h2>
+    <h2>{{ user.get_full_name }} {% if user.profile.is_active %} - <i>{{ user.profile.membership_type }}</i> {% endif %}</h2>
     <div id="quick-links">
-        <a href="{% url 'staff.views.activity.for_user' member.user.username %}">activity</a> |
-        <a href="{% url 'doors.keymaster.views.user_keys' member.user.username %}">keys</a> |
-        <a href="{% url 'staff.views.member.files' member.id %}">files</a> |
-        <a href="{% url 'members.views.user' member.user.username %}">profile</a> |
-        <a href="{% url 'staff.views.payment.usaepay_user' member.user.username %}">usaepay</a> |
-        <a href="{% url 'staff.views.payment.xero_user' member.user.username %}">xero</a> |
-        <a href="{% url 'admin:auth_user_change' member.user.id %}">admin</a> |
-        <!--<a href="{% url 'admin:auth_user_change' member.user.id %}history/">change history</a> | -->
-        <a href="{% url 'staff.views.member.edit' member.user.username %}">edit member</a> |
-        {% if member.is_active %}
-            <a href="{% url 'staff.views.core.membership' member.last_membership.id %}">update membership</a>
+        <a href="{% url 'staff_activity_user' user.username %}">activity</a> |
+        <a href="{% url 'doors_keys' user.username %}">keys</a> |
+        <a href="{% url 'staff_user_files' user.username %}">files</a> |
+        <a href="{% url 'member_profile' user.username %}">profile</a> |
+        <a href="{% url 'staff_user_payment' user.username %}">usaepay</a> |
+        <a href="{% url 'staff_xero' user.username %}">xero</a> |
+        <a href="{% url 'admin:auth_user_change' user.id %}">admin</a> |
+        <a href="{% url 'staff_user_edit' user.username %}">edit details</a> |
+        {% if user.profile.is_active %}
+            <a href="{% url 'staff_membership' user.profile.last_membership.id %}">update membership</a>
         {% else %}
-            <a href="{% url 'staff.views.member.membership' member.id %}">add membership</a>
+            <a href="{% url 'staff_user_membership' user.username %}">add membership</a>
         {% endif %}
     </div>
 </div>
@@ -96,148 +96,148 @@ function gotoEmailReset(emailAddress){
         <!-- Username -->
         <tr>
             <td>Username</td>
-            <td>{{ member.user }}</td>
+            <td>{{ user.username }}</td>
         </tr>
 
         <!-- Plan Start -->
-        {% if member.active_membership %}
+        {% if user.profile.active_membership %}
         <tr>
             <td>Bill Date</td>
-            <td>{{ member.active_membership.start_date|date:"jS" }}</td>
+            <td>{{ user.profile.active_membership.start_date|date:"jS" }}</td>
         </tr>
         {% endif %}
 
         <!-- Stats -->
         <tr>
             <td>First Visit</td>
-            <td>{{ member.first_visit }}</td>
+            <td>{{ user.profile.first_visit }}</td>
         </tr>
         <tr>
             <td>Duration</td>
-            <td>{{ member.duration_str }}</td>
+            <td>{{ user.profile.duration_str }}</td>
         </tr>
         <tr>
             <td>Last Visit</td>
-            <td>{{ member.last_visit }}</td>
+            <td>{{ user.profile.last_visit }}</td>
         </tr>
 
         <!-- Company Name -->
-        {% if member.company_name %}
+        {% if user.profile.company_name %}
             <tr>
                 <td>Company Name</td>
-                <td>{{ member.company_name }}</td>
+                <td>{{ user.profile.company_name }}</td>
             </tr>
         {% endif %}
 
         <!-- Website -->
-        {% if member.url_personal %}
+        {% if user.profile.url_personal %}
             <tr>
                 <td>Website</td>
-                <td><a href="{{ member.url_personal }}">{{ member.url_personal }}</a></td>
+                <td><a href="{{ user.profile.url_personal }}">{{ user.profile.url_personal }}</a></td>
             </tr>
         {% endif %}
 
         <!-- Gender -->
-        {% if member.gender %}
+        {% if user.profile.gender %}
             <tr>
                 <td>Gender</td>
-                <td>{{ member.gender }}</td>
+                <td>{{ user.profile.gender }}</td>
             </tr>
         {% endif %}
 
         <!-- Email -->
-        {% if member.email %}
+        {% if user.email %}
             <tr>
                 <td>Email</td>
-                <td>{{ member.email }}</td>
+                <td>{{ user.email }}</td>
             </tr>
         {% endif %}
 
         <!-- Email2 -->
-        {% if member.email2 %}
+        {% if user.profile.email2 %}
             <tr>
                 <td>Alternate Email</td>
-                <td>{{ member.email2 }}</td>
+                <td>{{ user.profile.email2 }}</td>
             </tr>
         {% endif %}
 
         <!-- Phone -->
-        {% if member.phone %}
+        {% if user.profile.phone %}
             <tr>
                 <td>Phone</td>
-                <td>{{ member.phone }}</td>
+                <td>{{ user.profile.phone }}</td>
             </tr>
         {% endif %}
 
         <!-- Phone2 -->
-        {% if member.phone2 %}
+        {% if user.profile.phone2 %}
             <tr>
                 <td>Alternate Phone</td>
-                <td>{{ member.phone2 }}</td>
+                <td>{{ user.profile.phone2 }}</td>
             </tr>
         {% endif %}
 
         <!-- Address 1-->
-        {% if member.address1 %}
+        {% if user.profile.address1 %}
             <tr>
                 <td>Address 1</td>
-                <td>{{ member.address1 }}</td>
+                <td>{{ user.profile.address1 }}</td>
             </tr>
         {% endif %}
 
         <!-- Address 2-->
-        {% if member.address2 %}
+        {% if user.profile.address2 %}
             <tr>
                 <td>Address 2</td>
-                <td>{{ member.address2 }}</td>
+                <td>{{ user.profile.address2 }}</td>
             </tr>
         {% endif %}
 
         <!-- City, State, Zip-->
-        {% if member.city %}
+        {% if user.profile.city %}
             <tr>
                 <td>City</td>
-                <td>{{ member.city }} {{ member.state }}, {{ member.zipcode }}</td>
+                <td>{{ user.profile.city }} {{ user.profile.state }}, {{ user.profile.zipcode }}</td>
             </tr>
         {% endif %}
 
         <!-- How Heard -->
-        {% if member.howHeard %}
+        {% if user.profile.howHeard %}
             <tr>
                 <td>How Heard</td>
-                <td>{{ member.howHeard }}</td>
+                <td>{{ user.profile.howHeard }}</td>
             </tr>
         {% endif %}
 
         <!-- Industry -->
-        {% if member.industry %}
+        {% if user.profile.industry %}
             <tr>
                 <td>Industry</td>
-                <td>{{ member.industry }}</td>
+                <td>{{ user.profile.industry }}</td>
             </tr>
         {% endif %}
 
         <!-- Neighborhood -->
-        {% if member.neighborhood %}
+        {% if user.profile.neighborhood %}
             <tr>
                 <td>Neighborhood</td>
-                <td>{{ member.neighborhood }}</td>
+                <td>{{ user.profile.neighborhood }}</td>
             </tr>
         {% endif %}
 
         <!-- Has Kids -->
-        {% if member.has_kids %}
+        {% if user.profile.has_kids %}
             <tr>
                 <td>Has Kids?</td>
-                <td>{{ member.has_kids }}</td>
+                <td>{{ user.profile.has_kids }}</td>
             </tr>
         {% endif %}
 
         <!-- Self Employed -->
-        {% if member.self_employed %}
+        {% if user.profile.self_employed %}
             <tr>
                 <td>Self Employed?</td>
-                <td>{{ member.self_employed }}</td>
+                <td>{{ user.profile.self_employed }}</td>
             </tr>
         {% endif %}
     </table>
@@ -289,7 +289,7 @@ function gotoEmailReset(emailAddress){
                 <td nowrap>
                     {{ membership.membership_plan }}
                     {% if membership.guest_of %}
-                     (<a href="{% url 'staff.views.member.detail' membership.guest_of.id %}">{{ membership.guest_of.user.username }}</a>)
+                     (<a href="{% url 'staff_user_detail' membership.guest_of.user.username %}">{{ membership.guest_of.user.username }}</a>)
                     {% endif %}
                 </td>
                 <td>${{ membership.monthly_rate }}</td>
@@ -299,23 +299,23 @@ function gotoEmailReset(emailAddress){
                 <td>{% if membership.has_key %}&check;{% endif %}</td>
                 <td>{% if membership.has_mail %}&check;{% endif %}</td>
                 <td style="text-align:center;">
-                    {% if membership == member.last_membership %}
-                        [<a href="{% url 'staff.views.core.membership' membership.id %}">edit</a>]
+                    {% if membership == user.profile.last_membership %}
+                        [<a href="{% url 'staff_membership' membership.id %}">edit</a>]
                     {% endif %}
                 &nbsp;</td>
             </tr>
         {% endfor %}
 
-        {% if member.last_membership.end_date %}
+        {% if user.profile.last_membership.end_date %}
         <tr class="{% cycle 'row-even' 'row-odd' %}">
             <td colspan="7">&nbsp;</td>
-            <td>[<a href="{% url 'staff.views.member.membership' member.id %}">add membership</a>]</td>
+            <td>[<a href="{% url 'staff_user_membership' user.username %}">add membership</a>]</td>
         </tr>
         {% endif %}
     </table>
 
     <!-- Active Guest Memberships -->
-    {% if member.guests %}
+    {% if user.profile.guests %}
         <h2>Active Guests:</h2>
             <table>
                 <tr>
@@ -324,9 +324,9 @@ function gotoEmailReset(emailAddress){
                     <th>First Visit</th>
                 </tr>
 
-                {% for guest in member.guests %}
+                {% for guest in user.profile.guests %}
                     <tr class="{% cycle 'row-even' 'row-odd' %}">
-                        <td nowrap><a href="{% url 'staff.views.member.detail' guest.id %}">{{ guest.first_name }} {{ guest.last_name }}</a></td>
+                        <td nowrap><a href="{% url 'staff_user_detail' guest.user.username %}">{{ guest.user.get_full_name }}</a></td>
                         <td>{{ guest.active_membership.membership_plan }}</td>
                         <td style="text-align: center;">{{ guest.first_visit }}</td>
                     </tr>
@@ -338,16 +338,16 @@ function gotoEmailReset(emailAddress){
 <div id="tabs-2">
     <div id="quick-links">
         <strong>More Info:</strong>
-        <a href="{% url 'staff.views.member.bills' member.id %}">bills</a> |
-        <a href="{% url 'staff.views.member.transactions' member.id %}">transactions</a>
+        <a href="{% url 'staff_user_bills' user.username %}">bills</a> |
+        <a href="{% url 'staff_user_transactions' user.username %}">transactions</a>
     </div>
     <!-- Billing Profile -->
     <h2>Billing Profile</h2>
     {% include "members/billing_profile.frag" %}
     <div style="margin-left: 2em; margin-top: .5em;">
-        <form method=POST action="{% url 'staff.views.billing.toggle_billing_flag' member.user.username %}" onSubmit="return confirm('Are you sure?');">
-            <input type="hidden" name="back" value="{{request.get_full_path}}">
-            {% if member.has_valid_billing %}
+        <form method=POST action="{% url 'staff_toggle_bill' user.username %}" onSubmit="return confirm('Are you sure?');">
+            <input type="hidden" name="back" value="{{ request.get_full_path }}">
+            {% if user.profile.has_valid_billing %}
                 <input type="submit" value="Flag Invalid Billing Profile">
             {% else %}
                 <input type="submit" value="Clear Invalid Billing Flag">
@@ -356,7 +356,7 @@ function gotoEmailReset(emailAddress){
         </form>
     </div>
     <div style="margin-left: 2em; margin-top: .5em;">
-        [ <a href="https://secure.usaepay.com/interface/epayform/{{ settings.USA_EPAY_WEB_KEY }}/?UMdescription=Office%20Nomads%20Billing%20Authorization&UMcustid={{ member.user.username }}&UMcommand=AuthOnly&UMamount=1.00&UMaddcustomer=yes&UMschedule=disabled">payment link</a> ]
+        [ <a href="https://secure.usaepay.com/interface/epayform/{{ settings.USA_EPAY_WEB_KEY }}/?UMdescription=Office%20Nomads%20Billing%20Authorization&UMcustid={{ user.username }}&UMcommand=AuthOnly&UMamount=1.00&UMaddcustomer=yes&UMschedule=disabled">payment link</a> ]
     </div>
 
     <!-- Security Deposits -->
@@ -370,15 +370,15 @@ function gotoEmailReset(emailAddress){
             <th>Note</th>
             <th>Action</th>
         </tr>
-        {% for deposit in member.deposits %}
+        {% for deposit in user.profile.deposits %}
             <tr class="{% cycle 'row-even' 'row-odd' %}">
                 <td>{{ deposit.received_date }}</td>
                 <td>{% if deposit.returned_date %}{{ deposit.returned_date }}{% endif %}</td>
                 <td>${{ deposit.amount }}</td>
                 <td>{% if deposit.note %}{{ deposit.note }}{% endif %}</td>
                 <td style="text-align:right;">{% if not deposit.returned_date %}
-                    <form action="{% url 'staff.views.core.security_deposits' %}" method="POST" onSubmit="return confirm('Are you sure?');">
-                        <input name="member_id" value="{{ member.id }}" type="hidden" />
+                    <form action="{% url 'staff_deposits' %}" method="POST" onSubmit="return confirm('Are you sure?');">
+                        <input name="username" value="{{ user.username }}" type="hidden" />
                         <input name="deposit_id" value="{{ deposit.id }}" type="hidden" />
                         <input name="mark_returned" type="submit" Value="Mark Returned" />
                         {% csrf_token %}
@@ -387,8 +387,8 @@ function gotoEmailReset(emailAddress){
             </tr>
         {% endfor %}
 
-    <form action="{% url 'staff.views.core.security_deposits' %}" method="POST">
-        <input name="member_id" value="{{ member.id }}" type="hidden" />
+    <form action="{% url 'staff_deposits' %}" method="POST">
+        <input name="username" value="{{ user.username }}" type="hidden" />
         <tr>
             <td colspan="2" style="text-align:right;"><strong>Record New Deposit:</strong></th>
             <td><input name="amount" size="4" /></td>
@@ -405,7 +405,7 @@ function gotoEmailReset(emailAddress){
     <!-- Email Logs -->
     <div id="quick-links">
         <strong>Actions:</strong>
-        <a href="{% url 'views.password_reset' %}?email={{ member.email }}">password reset</a>
+        <a href="{% url 'views.password_reset' %}?email={{ user.email }}">password reset</a>
     </div>
     <h2>Email Logs</h2>
     <div>
@@ -425,7 +425,6 @@ function gotoEmailReset(emailAddress){
         <div style="margin:1em;">
             <form action="." method="POST">
                 <strong>Manually Send Email: </strong>
-                <input name="member_id" value="{{ member.id }}" type="hidden" />
                 <select name="message_key">
                     {% for key in email_keys %}
                         <option>{{ key }}</option>
@@ -450,13 +449,13 @@ function gotoEmailReset(emailAddress){
     {% endif %}
 
     <table id="onboard-form">
-        {% for alert in member.open_alerts %}
+        {% for alert in user.profile.open_alerts %}
             <tr>
                 <td>{{ alert.description }}</td>
                 <td>
-                    <form action="{% url 'staff.views.core.todo_detail' alert.key %}" method="POST">
+                    <form action="{% url 'staff_todo_detail' alert.key %}" method="POST">
                         <input type="hidden" name="alert_id" value="{{ alert.id }}"/>
-                        <input type="hidden" name="next" value="{% url 'staff.views.member.detail' alert.user.profile.id %}#tabs-4"/>
+                        <input type="hidden" name="next" value="{% url 'staff_user_detail' alert.user.username %}#tabs-4"/>
                         <button name="action" value="resolve" type="submit" {% if alert.is_system_alert %} disabled{% endif %}>Resolve</button>
                         <button name="action" value="mute" type="submit" >Mute</button>
                         <input name="note" size="32"/>
@@ -478,7 +477,7 @@ function gotoEmailReset(emailAddress){
             <th>Muted By</th>
             <th>Note</th>
         </tr>
-        {% for alert in member.alerts %}
+        {% for alert in user.profile.alerts %}
             {% if alert.is_resolved %}
                 <tr>
                     <td>{{ alert.created_ts|date:"m/d/y" }}</td>
@@ -504,7 +503,7 @@ function gotoEmailReset(emailAddress){
                 <th align="left">Note</th>
                 <th></th>
             </tr>
-            {% for note in member.member_notes %}
+            {% for note in user.profile.member_notes %}
                 <tr>
                     <td>{{ note.created|date:"M d, Y"}}</td>
                     <td>{% if note.created_by %}{{ note.created_by }} {% endif %}</td>
@@ -533,7 +532,7 @@ function gotoEmailReset(emailAddress){
                 <th style="text-align:left;">Description</th>
                 <th></th>
             </tr>
-            {% for d in member.special_days %}
+            {% for d in user.profile.special_days %}
                 <tr>
                     <td>{{ d.month }}</td>
                     <td>{{ d.day }}</td>

@@ -29,7 +29,7 @@ def edit(request, username):
             try:
                 edit_form.save()
                 messages.add_message(request, messages.INFO, "Member Updated")
-                return HttpResponseRedirect(reverse('staff.views.member.detail_user', args=[], kwargs={'username': username}))
+                return HttpResponseRedirect(reverse('staff_user_detail', args=[], kwargs={'username': username}))
             except Exception as e:
                 messages.add_message(request, messages.ERROR, e)
     else:
@@ -72,26 +72,20 @@ def edit(request, username):
 
 
 @staff_member_required
-def detail_user(request, username):
+def detail(request, username):
     user = get_object_or_404(User, username=username)
-    return HttpResponseRedirect(reverse('staff.views.member.detail', args=[], kwargs={'member_id': user.profile.id}))
-
-
-@staff_member_required
-def detail(request, member_id):
-    member = get_object_or_404(Member, pk=member_id)
-    #daily_logs = DailyLog.objects.filter(member=member).order_by('visit_date').reverse()
-    emergency_contact = member.user.get_emergency_contact()
-    memberships = Membership.objects.filter(member=member).order_by('start_date').reverse()
-    email_logs = SentEmailLog.objects.filter(member=member).order_by('created').reverse()
+    member = user.get_profile()
+    emergency_contact = user.get_emergency_contact()
+    memberships = Membership.objects.filter(user=user).order_by('start_date').reverse()
+    email_logs = SentEmailLog.objects.filter(user=user).order_by('created').reverse()
 
     if request.method == 'POST':
         if 'send_manual_email' in request.POST:
             key = request.POST.get('message_key')
-            email.send_manual(member.user, key)
+            email.send_manual(user, key)
         elif 'add_note' in request.POST:
             note = request.POST.get('note')
-            MemberNote.objects.create(user=member.user, member=member, created_by=request.user, note=note)
+            MemberNote.objects.create(user=user, member=member, created_by=request.user, note=note)
         elif 'add_special_day' in request.POST:
             month = request.POST.get('month')
             day = request.POST.get('day')
@@ -99,40 +93,44 @@ def detail(request, member_id):
             if len(year) == 0:
                 year = None
             desc = request.POST.get('description')
-            SpecialDay.objects.create(user=member.user, member=member, month=month, day=day, year=year, description=desc)
+            SpecialDay.objects.create(user=user, member=member, month=month, day=day, year=year, description=desc)
         else:
             print(request.POST)
 
     email_keys = email.valid_message_keys()
     email_keys.remove("all")
 
-    return render_to_response('staff/member_detail.html', {'member': member, 'emergency_contact': emergency_contact,
+    return render_to_response('staff/member_detail.html', {'user':user, 'member': member, 'emergency_contact': emergency_contact,
         'memberships': memberships, 'email_logs': email_logs, 'email_keys': email_keys, 'settings': settings}, context_instance=RequestContext(request))
 
 
 
 @staff_member_required
-def transactions(request, member_id):
-    member = get_object_or_404(Member, pk=member_id)
-    return render_to_response('staff/member_transactions.html', {'member': member}, context_instance=RequestContext(request))
+def transactions(request, username):
+    user = get_object_or_404(User, username=username)
+    member = user.get_profile()
+    return render_to_response('staff/member_transactions.html', {'user':user, 'member': member}, context_instance=RequestContext(request))
 
 
 @staff_member_required
-def bills(request, member_id):
-    member = get_object_or_404(Member, pk=member_id)
-    return render_to_response('staff/member_bills.html', {'member': member}, context_instance=RequestContext(request))
+def bills(request, username):
+    user = get_object_or_404(User, username=username)
+    member = user.get_profile()
+    return render_to_response('staff/member_bills.html', {'user':user, 'member': member}, context_instance=RequestContext(request))
 
 
 @staff_member_required
-def signins(request, member_id):
-    member = get_object_or_404(Member, pk=member_id)
+def signins(request, username):
+    user = get_object_or_404(User, username=username)
+    member = user.get_profile()
     payment_types = ['Visit', 'Trial', 'Waive', 'Bill']
-    return render_to_response('staff/member_signins.html', {'payment_types': payment_types, 'member': member}, context_instance=RequestContext(request))
+    return render_to_response('staff/member_signins.html', {'payment_types': payment_types, 'user':user, 'member': member}, context_instance=RequestContext(request))
 
 
 @staff_member_required
-def signins_json(request, member_id):
-    member = get_object_or_404(Member, pk=member_id)
+def signins_json(request, username):
+    user = get_object_or_404(User, username=username)
+    member = user.get_profile()
     response_data = {}
     #response_data['member'] = model_to_dict(member)
     #response_data['payment_types'] = ['Visit', 'Trial', 'Waive', 'Bill']
@@ -141,8 +139,9 @@ def signins_json(request, member_id):
 
 
 @staff_member_required
-def files(request, member_id):
-    member = get_object_or_404(Member, pk=member_id)
+def files(request, username):
+    user = get_object_or_404(User, username=username)
+    member = user.get_profile()
 
     if 'delete' in request.POST:
         upload_obj = get_object_or_404(FileUpload, pk=request.POST['file_id'])
@@ -162,17 +161,17 @@ def files(request, member_id):
 
     doc_types = FileUpload.DOC_TYPES
     files = FileUpload.objects.filter(user=member.user)
-    return render_to_response('staff/member_files.html', {'member': member, 'files': files, 'doc_types': doc_types}, context_instance=RequestContext(request))
+    return render_to_response('staff/member_files.html', {'user':user, 'member': member, 'files': files, 'doc_types': doc_types}, context_instance=RequestContext(request))
 
 
 @staff_member_required
-def membership(request, member_id):
-    member = get_object_or_404(Member, pk=member_id)
+def membership(request, username):
+    user = get_object_or_404(User, username=username)
 
     start = today = timezone.localtime(timezone.now()).date()
-    last_membership = member.last_membership()
+    last_membership = user.profile.last_membership()
     if last_membership and last_membership.end_date and last_membership.end_date > today - timedelta(days=10):
-        start = (member.last_membership().end_date + timedelta(days=1))
+        start = (last_membership.end_date + timedelta(days=1))
     last = start + MonthDelta(1) - timedelta(days=1)
 
     if request.method == 'POST':
@@ -181,15 +180,16 @@ def membership(request, member_id):
             if membership_form.is_valid():
                 membership_form.created_by = request.user
                 membership_form.save()
-                return HttpResponseRedirect(reverse('staff.views.member.detail', args=[], kwargs={'member_id': member.id}))
+                return HttpResponseRedirect(reverse('staff_user_detail', kwargs={'username': username}))
         except Exception as e:
             messages.add_message(request, messages.ERROR, e)
     else:
-        membership_form = MembershipForm(initial={'member': member_id, 'start_date': start})
+        membership_form = MembershipForm(initial={'username': username, 'start_date': start})
 
     # Send them to the update page if we don't have an end date
-    if (member.last_membership() and not member.last_membership().end_date):
-        return HttpResponseRedirect(reverse('staff.views.core.membership', args=[], kwargs={'membership_id': member.last_membership().id}))
+    if (last_membership and not last_membership.end_date):
+        return HttpResponseRedirect(reverse('staff_membership', kwargs={'membership_id': last_membership.id}))
+
     plans = MembershipPlan.objects.filter(enabled=True).order_by('name')
-    return render_to_response('staff/membership.html', {'member': member, 'membership_plans': plans,
+    return render_to_response('staff/membership.html', {'user':user, 'membership_plans': plans,
                                                         'membership_form': membership_form, 'today': today.isoformat(), 'last': last.isoformat()}, context_instance=RequestContext(request))

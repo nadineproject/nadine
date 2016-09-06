@@ -420,7 +420,7 @@ class Member(models.Model):
 
     def pay_bills_form(self):
         from staff.forms import PayBillsForm
-        return PayBillsForm(initial={'member_id': self.id, 'amount': self.open_bills_amount})
+        return PayBillsForm(initial={'username': self.user.username, 'amount': self.open_bills_amount})
 
     def last_bill(self):
         """Returns the latest Bill, or None if the member has not been billed.
@@ -708,10 +708,6 @@ class Member(models.Model):
                     return active_membership.membership_plan == management_plan
         return False
 
-    @models.permalink
-    def get_absolute_url(self):
-        return ('staff.views.member.detail', (), {'member_id': self.id})
-
     class Meta:
         app_label = 'nadine'
         ordering = ['user__first_name', 'user__last_name']
@@ -733,7 +729,6 @@ post_save.connect(user_save_callback, sender=User)
 
 # Add some handy methods to Django's User object
 User.get_profile = lambda self: Member.objects.get_or_create(user=self)[0]
-User.get_absolute_url = lambda self: Member.objects.get(user=self).get_absolute_url()
 User.get_emergency_contact = lambda self: EmergencyContact.objects.get_or_create(user=self)[0]
 User.profile = property(User.get_profile)
 
