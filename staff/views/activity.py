@@ -125,7 +125,7 @@ def for_date(request, year, month, day):
 @staff_member_required
 def for_today(request):
     today = timezone.localtime(timezone.now())
-    return HttpResponseRedirect(reverse('staff.views.activity.for_date', args=[], kwargs={'year': today.year, 'month': today.month, 'day': today.day}))
+    return HttpResponseRedirect(reverse('staff_activity_day', args=[], kwargs={'year': today.year, 'month': today.month, 'day': today.day}))
 
 
 @staff_member_required

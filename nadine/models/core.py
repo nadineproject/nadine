@@ -209,7 +209,7 @@ class MemberManager(models.Manager):
         emails = []
         for membership in Membership.objects.active_memberships():
             member = membership.member
-            user = membership.member.user
+            user = membership.user
             if user.email not in emails:
                 emails.append(user.email)
             if include_email2 and member.email2 not in emails:
@@ -420,7 +420,7 @@ class Member(models.Model):
 
     def pay_bills_form(self):
         from staff.forms import PayBillsForm
-        return PayBillsForm(initial={'member_id': self.id, 'amount': self.open_bills_amount})
+        return PayBillsForm(initial={'username': self.user.username, 'amount': self.open_bills_amount})
 
     def last_bill(self):
         """Returns the latest Bill, or None if the member has not been billed.
@@ -708,10 +708,6 @@ class Member(models.Model):
                     return active_membership.membership_plan == management_plan
         return False
 
-    @models.permalink
-    def get_absolute_url(self):
-        return ('staff.views.member.detail', (), {'member_id': self.id})
-
     class Meta:
         app_label = 'nadine'
         ordering = ['user__first_name', 'user__last_name']
@@ -733,7 +729,6 @@ post_save.connect(user_save_callback, sender=User)
 
 # Add some handy methods to Django's User object
 User.get_profile = lambda self: Member.objects.get_or_create(user=self)[0]
-User.get_absolute_url = lambda self: Member.objects.get(user=self).get_absolute_url()
 User.get_emergency_contact = lambda self: EmergencyContact.objects.get_or_create(user=self)[0]
 User.profile = property(User.get_profile)
 
@@ -803,7 +798,7 @@ class DailyLog(models.Model):
 def sign_in_callback(sender, **kwargs):
     log = kwargs['instance']
     from nadine.models.alerts import MemberAlert
-    MemberAlert.objects.trigger_sign_in(log.member.user)
+    MemberAlert.objects.trigger_sign_in(log.user)
 post_save.connect(sign_in_callback, sender=DailyLog)
 
 

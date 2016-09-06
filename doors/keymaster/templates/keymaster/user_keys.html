@@ -9,7 +9,7 @@ nav #doors-tab { background: #FBD850; color: black; }
 {% block content %}
 {% include "keymaster/doors_menu.html" %}
 
-<h2>Keys for <a href="{% url 'staff.views.member.detail' user.profile.id %}">{{ user.get_full_name }}</a></h2>
+<h2>Keys for <a href="{% url 'staff_user_detail' user.username %}">{{ user.get_full_name }}</a></h2>
 
 {% if messages %}
 	<div class="messages">

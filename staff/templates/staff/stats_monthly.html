@@ -8,12 +8,12 @@ nav #stats-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {% block content %}
-{% include "staff/stats_menu.frag" %}  
+{% include "staff/stats_menu.frag" %}
 
 <h2>Stats - Monthly members:</h2>
 
 <div style="margin: 10px 0;">
-	<strong>Total Monthly Members:</strong> {{ memberships.count }} &nbsp;&nbsp; 
+	<strong>Total Monthly Members:</strong> {{ memberships.count }} &nbsp;&nbsp;
 	<strong>Total Monthly Income:</strong>  ${{ total_income }}
 </div>
 
@@ -26,17 +26,17 @@ nav #stats-tab { background: #FBD850; color: black; }
          <th>Rate</th>
          <th>Note</th>
       </tr>
-   
+
       {% for membership in memberships %}
 	      <tr class="{% cycle 'row-even' 'row-odd' %}">
-	         <td><a href="{{ membership.member.get_absolute_url }}">{{ membership.member }}</a></td>
+	         <td><a href="{% url 'staff_user_detail' membership.user.username %}">{{ membership.user.get_full_name }}</a></td>
 	         <td>{{ membership.start_date }}</td>
 	         <td>{{ membership.membership_plan }}</td>
 	         <td>${{ membership.monthly_rate }}</td>
 	         <td class="note-cell">{{ membership.note }}</td>
 	      </tr>
 	   {% endfor %}
-	   
+
 	</table>
 </div>
 {% endblock %}

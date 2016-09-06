@@ -45,16 +45,16 @@ def membership_save_callback(sender, **kwargs):
     # If the member is just switching from one membership to another, don't change subscriptions
     # But if this membership is created in the past there is no way to know what they want so subscribe them
     if membership.start_date > timezone.now().date():
-        if Membership.objects.filter(member=membership.member, end_date=membership.start_date - timedelta(days=1)).count() != 0:
+        if Membership.objects.filter(user=membership.user, end_date=membership.start_date - timedelta(days=1)).count() != 0:
             return
 
     mailing_lists = MailingList.objects.filter(is_opt_out=True)
     for ml in mailing_lists:
-        ml.subscribers.add(membership.member.user)
+        ml.subscribers.add(membership.user)
 
     # If this is their first membership, also invite them to Slack
-    if Membership.objects.filter(member=membership.member).count() == 1:
-        SlackAPI().invite_user_quiet(membership.member.user)
+    if Membership.objects.filter(user=membership.user).count() == 1:
+        SlackAPI().invite_user_quiet(membership.user)
 
 post_save.connect(membership_save_callback, sender=Membership)
 
@@ -140,9 +140,6 @@ class MailingList(models.Model):
         return tuple([sub.email for sub in self.subscribers.all()])
 
     def __unicode__(self): return '%s' % self.name
-
-    @models.permalink
-    def get_absolute_url(self): return ('interlink.views.list', (), {'id': self.id})
 
     def create_incoming(self, message, commit=True):
         "Parses an email message and creates an IncomingMail from it."

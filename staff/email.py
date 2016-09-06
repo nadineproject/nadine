@@ -8,6 +8,7 @@ from django.contrib.sites.models import Site
 from django.template.loader import render_to_string
 from django.template import Template, TemplateDoesNotExist, Context
 from django.core.mail import send_mail, EmailMessage
+from django.contrib.auth.models import User
 from django.utils import timezone
 
 from nadine.utils.slack_api import SlackAPI
@@ -156,7 +157,7 @@ def send_contact_request(user, target):
 
 def send_edit_profile(user):
     site = Site.objects.get_current()
-    subject = "Please update your Nadine profile" 
+    subject = "Please update your Nadine profile"
     message = render_to_string('email/edit_profile.txt', {'user': user, 'site': site})
     send(user.email, subject, message)
 
@@ -283,19 +284,13 @@ def send_email(recipient, subject, message, fail_silently):
             pass
         raise
     finally:
-        member = None
+        user = User.objects.filter(email=recipient).first()
         try:
-            members = Member.objects.filter(user__email=recipient)
-            if len(members) == 1:
-                member = members[0]
-        except:
-            pass
-        try:
-            log = SentEmailLog(member=member, recipient=recipient, subject=subject, success=success)
+            log = SentEmailLog(user=user, member=user.profile, recipient=recipient, subject=subject, success=success)
             if note:
                 log.note = note
             log.save()
         except:
             pass
 
-# Copyright 2014 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

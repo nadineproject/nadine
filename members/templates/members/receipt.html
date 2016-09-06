@@ -15,11 +15,11 @@
 
 
 <table id="user_detail"><tr><td>
-	{{ transaction.member }}<br>
-	{% if transaction.member.email %}{{ transaction.member.email }}<br>{% endif %}
-	{% if transaction.member.email2 %}{{ transaction.member.email2 }}<br>{% endif %}
-	{% if transaction.member.phone %}{{ transaction.member.phone }}<br>{% endif %}
-	{% if transaction.member.phone2 %}{{ transaction.member.phone2 }}<br>{% endif %}
+	{{ transaction.user.get_full_name }}<br>
+	{% if transaction.user.email %}{{ transaction.user.email }}<br>{% endif %}
+	{% if transaction.user.profile.email2 %}{{ transaction.user.profile.email2 }}<br>{% endif %}
+	{% if transaction.user.profile.phone %}{{ transaction.user.profile.phone }}<br>{% endif %}
+	{% if transaction.user.profile.phone2 %}{{ transaction.user.profile.phone2 }}<br>{% endif %}
 </td></tr></table>
 
 <p>&nbsp;</p>
@@ -31,17 +31,17 @@
 		<th>Amount</th>
 		<th>Plan</th>
 		<th align="left">Details</th>
-	</tr>   	    
+	</tr>
   </thead>
   <tbody>
  	{% for bill in bills %}
  		<tr class="{% cycle 'row-even' 'row-odd' %}">
- 			<td>{{ bill.bill_date|date:"M d, Y" }}</td>
+ 			<td nowrap>{{ bill.bill_date|date:"M d, Y" }}</td>
  			<td>${{ bill.amount }}</td>
  			<td>{% if bill.membership %}{{ bill.membership.membership_plan }}{% endif %}</td>
  			<td>
  				{% if bill.paid_by %}
- 				<b>For {{ bill.member.full_name }}</b>
+ 				<b>For {{ bill.user.get_full_name }}</b>
  				{% endif %}
  				{% if bill.new_member_deposit %}
  				<b class="bill-info">Deposit: ${{ bill.new_member_deposit }}</b>
@@ -56,7 +56,7 @@
  				{% if bill.guest_dropins.all %}
  				<b class="bill-info">Guest Drop-ins:
  					{% for dropin in bill.guest_dropins.all %}
- 						{{dropin.member.full_name}} on {{ dropin.visit_date|date:"m/d" }}{% loop_comma %}
+ 						{{dropin.user.get_full_name}} on {{ dropin.visit_date|date:"m/d" }}{% loop_comma %}
  					{% endfor %}
  				</b>
  				{% endif %}

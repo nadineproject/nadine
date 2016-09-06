@@ -243,7 +243,7 @@ def receipt(request, username, id):
             return HttpResponseRedirect(reverse('members.views.user', kwargs={'username': request.user.username}))
 
     transaction = get_object_or_404(Transaction, id=id)
-    if not user.profile == transaction.member:
+    if not user == transaction.user:
         if not request.user.is_staff:
             return HttpResponseRedirect(reverse('members.views.user', kwargs={'username': request.user.username}))
     bills = transaction.bills.all()

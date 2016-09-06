@@ -109,7 +109,7 @@ def usaepay_user(request, username):
 @staff_member_required
 def usaepay_transactions_today(request):
     today = timezone.localtime(timezone.now())
-    return HttpResponseRedirect(reverse('staff.views.payment.usaepay_transactions', args=[], kwargs={'year': today.year, 'month': today.month, 'day': today.day}))
+    return HttpResponseRedirect(reverse('staff_charges', args=[], kwargs={'year': today.year, 'month': today.month, 'day': today.day}))
 
 
 @staff_member_required
@@ -202,7 +202,7 @@ def usaepay_void(request):
                 username = request.POST.get('username')
                 api.void_transaction(username, transaction_id)
                 messages.add_message(request, messages.INFO, "Transaction for %s voided" % username)
-                return HttpResponseRedirect(reverse('staff.views.payment.usaepay_transactions_today'))
+                return HttpResponseRedirect(reverse('staff_charges_today'))
     except Exception as e:
         messages.add_message(request, messages.ERROR, e)
 

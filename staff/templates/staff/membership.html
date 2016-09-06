@@ -1,4 +1,5 @@
 {% extends "staff/staff_base.html" %}
+{% load static %}
 
 {% block sub-title %}Membership | {% endblock %}
 
@@ -8,11 +9,11 @@ nav #members-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {% block sub-head %}
-	<link rel="stylesheet" href="{{ STATIC_URL }}c3/c3.min.css" />
-	<link rel="stylesheet" href="{{ STATIC_URL }}themes/custom-staff/jquery-ui-1.10.4.custom.css" />
-	<script src="{{ STATIC_URL }}c3/date.min.js"></script>
-	<script src="{{ STATIC_URL }}c3/d3.min.js" charset="utf-8"></script>
-	<script src="{{ STATIC_URL }}c3/c3.min.js"></script>
+	<link rel="stylesheet" href="{% static 'c3/c3.min.css' %}" />
+	<link rel="stylesheet" href="{% static 'themes/custom-staff/jquery-ui-1.10.4.custom.css' %}" />
+	<script src="{% static 'c3/date.min.js' %}"></script>
+	<script src="{% static 'c3/d3.min.js' %}" charset="utf-8"></script>
+	<script src="{% static 'c3/c3.min.js' %}"></script>
 {% endblock %}
 
 
@@ -59,7 +60,7 @@ $(document).ready(function() {
 })
 </script>
 
-<h2>{% if membership %} Update {% else %} Add {% endif %} Membership for <a href="{% url 'staff.views.member.detail' member.id %}">{{ member }}</a></h2>
+<h2>{% if membership %} Update {% else %} Add {% endif %} Membership for <a href="{% url 'staff_user_detail' user.username %}">{{ user.get_full_name }}</a></h2>
 
 {% if messages %}
 <div class="messages">
@@ -73,7 +74,7 @@ $(document).ready(function() {
 <div id="membership_form">
 	<form name="membership_form" enctype="multipart/form-data" action='.' method='post'>
 		{% if membership %}{{ membership_form.membership_id }}{% endif %}
-		{{ membership_form.member }}
+		{{ membership_form.username }}
 		<table id="membership">
 			<tr class="row-odd">
 				<td nowrap>Membership Plan</td>

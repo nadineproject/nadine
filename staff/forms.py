@@ -21,7 +21,7 @@ class DateRangeForm(forms.Form):
 
 
 class PayBillsForm(forms.Form):
-    member_id = forms.IntegerField(required=True, min_value=0, widget=forms.HiddenInput)
+    username = forms.CharField(required=True, widget=forms.HiddenInput)
     amount = forms.DecimalField(min_value=0, max_value=10000, required=True, max_digits=7, decimal_places=2)
     transaction_note = forms.CharField(required=False, widget=forms.Textarea)
 
@@ -172,8 +172,8 @@ class MemberEditForm(forms.Form):
         emergency_contact.save()
 
 class DailyLogForm(forms.Form):
-    # TODO - switch to using username
-    member_id = forms.IntegerField(required=True, min_value=0, widget=forms.HiddenInput)
+    username = forms.CharField(widget=forms.TextInput(attrs={'readonly':'readonly'}))
+    #member_id = forms.IntegerField(required=True, min_value=0, widget=forms.HiddenInput)
     visit_date = forms.DateField(widget=forms.HiddenInput())
     payment = forms.ChoiceField(choices=PAYMENT_CHOICES, required=True)
     #member_list = Member.objects.active_members()
@@ -187,15 +187,16 @@ class DailyLogForm(forms.Form):
             raise Exception('The form must be valid in order to save')
 
         # Make sure there isn't another log for this member on this day
-        m = Member.objects.get(pk=self.cleaned_data['member_id'])
+        u = User.objects.get(username=self.cleaned_data['username'])
+        #m = Member.objects.get(pk=self.cleaned_data['member_id'])
         v = self.cleaned_data['visit_date']
-        daily_log = DailyLog.objects.filter(member=m, visit_date=v)
+        daily_log = DailyLog.objects.filter(user=u, visit_date=v)
         if daily_log:
             raise Exception('Member already signed in')
 
         daily_log = DailyLog()
-        daily_log.member = m
-        daily_log.user = m.user
+        daily_log.user = u
+        daily_log.member = u.profile
         daily_log.visit_date = v
         daily_log.payment = self.cleaned_data['payment']
         #daily_log.guest_of = self.cleaned_data['guest_of']
@@ -205,11 +206,11 @@ class DailyLogForm(forms.Form):
 
 
 class MembershipForm(forms.Form):
-    # TODO - switch to using username
+    username = forms.CharField(required=True, widget=forms.HiddenInput)
+    # TODO - convert to User
     member_list = Member.objects.all()
     plan_list = MembershipPlan.objects.filter(enabled=True).order_by('name')
     membership_id = forms.IntegerField(required=False, min_value=0, widget=forms.HiddenInput)
-    member = forms.IntegerField(required=True, min_value=0, widget=forms.HiddenInput)
     membership_plan = forms.ModelChoiceField(queryset=plan_list, required=True)
     start_date = forms.DateField(initial=datetime.date.today)
     end_date = forms.DateField(required=False)
@@ -239,13 +240,10 @@ class MembershipForm(forms.Form):
             adding = True
             membership = Membership()
 
-        # Is this right?  Do I really need a DB call so I have the object?
-        # TODO - Clean up and use username not member_id
-        membership.member = Member.objects.get(id=self.cleaned_data['member'])
-        membership.user = membership.member.user
+        username = self.cleaned_data['username']
+        membership.user = User.objects.get(username=username)
 
         # Any change triggers disabling of the automatic billing
-        username = membership.member.user.username
         try:
             api = PaymentAPI()
             api.disable_recurring(username)
@@ -254,9 +252,10 @@ class MembershipForm(forms.Form):
             logger.error(e)
 
         # We need to look at their last membership but we'll wait until after the save
-        last_membership = membership.member.last_membership()
+        last_membership = membership.user.profile.last_membership()
 
         # Save this membership
+        membership.member = membership.user.get_profile()
         membership.membership_plan = self.cleaned_data['membership_plan']
         membership.start_date = self.cleaned_data['start_date']
         membership.end_date = self.cleaned_data['end_date']
@@ -272,11 +271,11 @@ class MembershipForm(forms.Form):
         # Save the note if we were given one
         note = self.cleaned_data['note']
         if note:
-            MemberNote.objects.create(member=membership.member, created_by=self.created_by, note=note)
+            MemberNote.objects.create(user=membership.user, member=membership.member, created_by=self.created_by, note=note)
 
         if adding:
-            email.send_new_membership(membership.member.user)
+            email.send_new_membership(membership.user)
 
         return membership
 
-# Copyright 2010 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

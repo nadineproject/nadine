@@ -61,11 +61,7 @@ class Bill(models.Model):
         get_latest_by = 'bill_date'
 
     def __unicode__(self):
-        return 'Bill %s [%s]: %s - $%s' % (self.id, self.bill_date, self.member, self.amount)
-
-    @models.permalink
-    def get_absolute_url(self):
-        return ('staff.views.billing.bill', (), {'id': self.id})
+        return 'Bill %s [%s]: %s - $%s' % (self.id, self.bill_date, self.user, self.amount)
 
     def get_admin_url(self):
         return urlresolvers.reverse('admin:nadine_bill_change', args=[self.id])
@@ -90,10 +86,6 @@ class Transaction(models.Model):
 
     def __unicode__(self):
         return '%s: %s' % (self.member.full_name, self.amount)
-
-    @models.permalink
-    def get_absolute_url(self):
-        return ('staff.views.billing.thransaction', (), {'id': self.id})
 
     def get_admin_url(self):
         return urlresolvers.reverse('admin:nadine_transaction_change', args=[self.id])

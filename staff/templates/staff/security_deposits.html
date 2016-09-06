@@ -20,13 +20,13 @@ nav #members-tab { background: #FBD850; color: black; }
 		<th>Action</th>
 		<th></th>
 	</tr>
-	{% for member in member_list %}
+	{% for d in deposits %}
 	<tr class="{% cycle 'row-even' 'row-odd' %}">
-		<td nowrap ><a href="{% url 'staff.views.member.detail' member.id %}">{{ member.name }}</a></td>
-		<td>${{ member.deposit }}</td>
+		<td nowrap ><a href="{% url 'staff_user_detail' d.username %}">{{ d.name }}</a></td>
+		<td>${{ d.amount }}</td>
 		<td>
 			<form action="." method="POST" onSubmit="return confirm('Are you sure?');">
-				<input name="deposit_id" value="{{ member.deposit_id }}" type="hidden" />
+				<input name="deposit_id" value="{{ d.deposit_id }}" type="hidden" />
 				<input name="mark_returned" type="submit" Value="Mark Returned" />
 				{% csrf_token %}
 			</form>

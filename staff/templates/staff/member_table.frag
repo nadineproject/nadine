@@ -7,41 +7,41 @@
 		<th>Quicklinks</th>
 		<th>Guests</th>
 	</tr>
-	{% for member in members %}
+	{% for m in members %}
 		<tr class="{% cycle 'row-even' 'row-odd' %}" >
 			<td style="text-align:center;">
-				{% if member.photo %}<a href="{% url 'staff.views.member.detail' member.id %}"><img class="member-table-photo" src="{{ member.photo.url|fit_image:"48x48"}}" /></a>{% endif %}
+				{% if m.photo %}<a href="{% url 'staff_user_detail' m.user.username %}"><img class="member-table-photo" src="{{ m.user.profile.photo.url|fit_image:"48x48"}}" /></a>{% endif %}
 			</td>
-			<td nowrap style="text-align:left;"><a href="{% url 'staff.views.member.detail' member.id %}">{{ member.first_name }} {{ member.last_name }}</a></td>
-			<td>{{ member.last_membership.start_date|date:"M d, Y" }}</td>
+			<td nowrap style="text-align:left;"><a href="{% url 'staff_user_detail' m.user.username %}">{{ m.user.get_full_name }}</a></td>
+			<td>{{ m.last_membership.start_date|date:"M d, Y" }}</td>
 			<td style="text-align:center;">
-				<a href="{% url 'staff.views.activity.for_user' member.user.username %}">activity</a> |
-				<a href="{% url 'staff.views.member.files' member.id %}">files</a> |
-				<a href="{% url 'staff.views.payment.usaepay_user' member.user.username %}">usaepay</a> |
-				<a href="{% url 'staff.views.payment.xero_user' member.user.username %}">xero</a> |
-				{% if member.is_active %}
-					<a href="{% url 'staff.views.core.membership' member.active_membership.id %}">membership</a>
+				<a href="{% url 'staff_activity_user' m.user.username %}">activity</a> |
+				<a href="{% url 'staff_user_files' m.user.username %}">files</a> |
+				<a href="{% url 'staff_user_payment' m.user.username %}">usaepay</a> |
+				<a href="{% url 'staff_xero' m.user.username %}">xero</a> |
+				{% if m.is_active %}
+					<a href="{% url 'staff_membership' m.active_membership.id %}">membership</a>
 				{% else %}
-					<a href="{% url 'staff.views.member.membership' member.id %}">membership</a>
+					<a href="{% url 'staff_user_membership' m.user.username %}">membership</a>
 				{% endif %}
 			</td>
 			<td style="text-align:center;">
-				{% if member.guests %}
-					<a href="." onclick="$('#guest-details-{{member.id}}').show(); return false;">{{member.guests|length}}</a>
+				{% if m.guests %}
+					<a href="." onclick="$('#guest-details-{{m.id}}').show(); return false;">{{m.guests|length}}</a>
 				{% endif %}
 			</td>
 		</tr>
-		<tr style="display: none;" id="guest-details-{{member.id}}">
+		<tr style="display: none;" id="guest-details-{{m.id}}">
 			<td colspan="5"><table class="guest-detail" style="margin-left: 5em;">
-				{% for guest in member.guests %}
+				{% for guest in m.guests %}
 					<tr>
 						<td style="border-bottom: 0px solid #ccc;" width="2">{% if guest.photo %}
-							<a href="{% url 'staff.views.member.detail' guest.id %}">
+							<a href="{% url 'staff_user_detail' guest.user.username %}">
 								<img class="member-table-photo" src="{{ guest.photo.url|fit_image:"48x48"}}" />
 							</a>
 						{% endif %}</td>
 						<td style="text-align: left; border-bottom: 0px solid #ccc; padding: 0.5em;">
-							<a href="{% url 'staff.views.member.detail' guest.id %}">{{ guest.first_name }} {{ guest.last_name }}</a>
+							<a href="{% url 'staff_user_detail' guest.user.username %}">{{ guest.user.get_full_name }}</a>
 						</td>
 						<td style="text-align: left; border-bottom: 0px solid #ccc; padding: 0.5em;">{{ guest.active_membership.membership_plan }}</td>
 						<td style="text-align: left; border-bottom: 0px solid #ccc; padding: 0.5em;">{{ guest.active_membership.start_date }}</td>

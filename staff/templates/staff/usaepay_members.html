@@ -26,7 +26,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 
 	{% for m in members %}
 		<tr class="{% cycle 'row-even' 'row-odd' %}">
-			<td><a href="{% url 'staff.views.member.detail_user' m.username %}">{{ m.username }}</a></td>
+			<td><a href="{% url 'staff_user_detail' m.username %}">{{ m.username }}</a></td>
 			<td><a href="https://secure.usaepay.com/console/billing_edit?id={{ m.customer_number }}" target="new">{{ m.customer_number }}</a></td>
 			<td>{{ m.next | slice:":10"}}</td>
 			<td></td>

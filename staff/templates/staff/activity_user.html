@@ -13,7 +13,7 @@ nav #activity-tab { background: #FBD850; color: black; }
 {% block content %}
 {% include "staff/activity_menu.frag" %}
 
-<h2>Activity for <a href="{% url 'staff.views.member.detail' user.profile.id %}">{{ user.get_full_name }}</a></h2>
+<h2>Activity for <a href="{% url 'staff_user_detail' user.username %}">{{ user.get_full_name }}</a></h2>
 <div style="float:right;">
 	<form action="." method="POST">
 		<input type="hidden" name="start" value="{{ user.profile.first_visit|date:"Y-m-d" }}" />
@@ -24,7 +24,7 @@ nav #activity-tab { background: #FBD850; color: black; }
 	<i>* This can take some time!</i>
 </div>
 
-{% url 'staff.views.activity.for_user' user as date_range_form_action %}
+{% url 'staff_activity_user' user.username as date_range_form_action %}
 <div class="columns clearfix date-range">
 	{% include "staff/date_range_form.frag"%}
 </div>
@@ -55,7 +55,7 @@ nav #activity-tab { background: #FBD850; color: black; }
 		<tr class="{% cycle 'row-even' 'row-odd' %}">
 			<td><a href="{% url 'admin:nadine_dailylog_change' log.id %}">{{ log.visit_date|date:"M d, Y" }}</a></td>
 			<td>{{ log.payment }}</td>
-			<td>{% if log.guest_of %}<a href="{% url 'staff.views.member.detail' log.guest_of.id %}">{{ log.guest_of }}</a>{% endif %}</td>
+			<td>{% if log.guest_of %}<a href="{% url 'staff_user_detail' log.guest_of.user.username %}">{{ log.guest_of }}</a>{% endif %}</td>
 			<td class="log-note">{{ log.note }}</td>
 			<td></td>
 		</tr>

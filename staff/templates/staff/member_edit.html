@@ -11,7 +11,7 @@ nav #members-tab { background: #FBD850; color: black; }
 {% block content %}
 {% include "staff/member_menu.frag" %}
 
-<h2>Edit Member: <a href="{% url 'staff.views.member.detail' member.id %}">{{ member }}</a></h2>
+<h2>Edit Member: <a href="{% url 'staff_user_detail' user.username %}">{{ user.get_full_name }}</a></h2>
 
 {% if messages %}
 <div class="messages">
@@ -34,9 +34,9 @@ nav #members-tab { background: #FBD850; color: black; }
 	            <td>{{ field.label_tag }}</td>
 	            <td style="text-align:left;">
                   {{ field }}
-	               {% if field.label == 'How heard' %}<a href="{% url 'admin:nadine_howheard_add' %}" target="new">+</a>{% endif %}
-	               {% if field.label == 'Industry' %}<a href="{% url 'admin:nadine_industry_add' %}" target="new">+</a>{% endif %}
-	               {% if field.label == 'Neighborhood' %}<a href="{% url 'admin:nadine_neighborhood_add' %}" target="new">+</a>{% endif %}
+	              {% if field.label == 'How heard' %}<a href="{% url 'admin:nadine_howheard_add' %}" target="new">+</a>{% endif %}
+	              {% if field.label == 'Industry' %}<a href="{% url 'admin:nadine_industry_add' %}" target="new">+</a>{% endif %}
+	              {% if field.label == 'Neighborhood' %}<a href="{% url 'admin:nadine_neighborhood_add' %}" target="new">+</a>{% endif %}
 	            </td>
 	            <td>
 	               {{ field.errors }}
@@ -46,7 +46,7 @@ nav #members-tab { background: #FBD850; color: black; }
 	      <tr>
 				<td  class="row-even" colspan="3" style="text-align: center;">
 					<button type="submit">Save Changes</button>
-					<button onclick="window.location='{% url 'staff.views.member.detail' member.id %}'; return false;">Cancel</button>
+					<button onclick="window.location='{% url 'staff_user_detail' user.username %}'; return false;">Cancel</button>
 				</td>
 			</tr>
 	   </table>
