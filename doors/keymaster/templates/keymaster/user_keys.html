@@ -49,7 +49,7 @@ nav #doors-tab { background: #FBD850; color: black; }
 		Unrecognized key <em>'{{ potential_key.code }}'</em>
 		read at <strong>{{ potential_key.door.name }}</strong>
 		at {{ potential_key.timestamp|date:"h:i a" }}
-		<form method="POST" action="{% url 'doors.keymaster.views.add_key' %}" style="display:inline;">
+		<form method="POST" action="{% url 'doors_add_key' %}" style="display:inline;">
 			<input type="hidden" name="username" value="{{ user.username }}"/></td>
 			<input type="hidden" name="code" value="{{ potential_key.code }}"/>
 			<input type="submit" value="Assign" />
@@ -58,7 +58,7 @@ nav #doors-tab { background: #FBD850; color: black; }
 	{% endif %}
 
 	<p>
-	<form method="POST" action="{% url 'doors.keymaster.views.add_key' %}">
+	<form method="POST" action="{% url 'doors_add_key' %}">
 		<input type="hidden" name="username" value="{{ user.username }}"/></td>
 		<strong>Manually Assign Key:</strong>
 		<input name="code" size="16" value="{{ code }}"/>
@@ -71,7 +71,7 @@ nav #doors-tab { background: #FBD850; color: black; }
 {% if logs %}
 	<h3>
 		Access Logs ({{ logs|length }})
-		[ <a href="{% url 'doors.keymaster.views.logs' %}?username={{user.username}}">view all</a> ]
+		[ <a href="{% url 'doors_logs' %}?username={{user.username}}">view all</a> ]
 	</h3>
 	<table>
 		<tr>
