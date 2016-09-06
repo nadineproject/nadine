@@ -109,7 +109,7 @@ def help_topic(request, slug):
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='members.views.not_active')
+@user_passes_test(is_active_member, login_url='member_not_active')
 def view_members(request):
     active_members = Member.objects.active_members().order_by('user__first_name')
     here_today = Member.objects.here_today()
@@ -145,7 +145,7 @@ def not_active(request):
 
 @login_required
 def profile_redirect(request):
-    return HttpResponseRedirect(reverse('members.views.user', kwargs={'username': request.user.username}))
+    return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
 
 
 @login_required
@@ -160,19 +160,19 @@ def user(request, username):
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='members.views.not_active')
+@user_passes_test(is_active_member, login_url='member_not_active')
 def mail(request):
     user = request.user
     if request.method == 'POST':
         sub_form = MailingListSubscriptionForm(request.POST)
         if sub_form.is_valid():
             sub_form.save(user)
-            return HttpResponseRedirect(reverse('members.views.mail'))
+            return HttpResponseRedirect(reverse('member_email_lists'))
     return render_to_response('members/mail.html', {'user': user, 'mailing_list_subscription_form': MailingListSubscriptionForm()}, context_instance=RequestContext(request))
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='members.views.not_active')
+@user_passes_test(is_active_member, login_url='member_not_active')
 def mail_message(request, id):
     message = get_object_or_404(IncomingMail, id=id)
     return render_to_response('members/mail_message.html', {'message': message}, context_instance=RequestContext(request))
@@ -183,13 +183,13 @@ def edit_profile(request, username):
     user = get_object_or_404(User, username=username)
     if not user == request.user:
         if not request.user.is_staff:
-            return HttpResponseRedirect(reverse('members.views.user', kwargs={'username': request.user.username}))
+            return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
 
     if request.method == 'POST':
         profile_form = EditProfileForm(request.POST, request.FILES)
         if profile_form.is_valid():
             profile_form.save()
-            return HttpResponseRedirect(reverse('members.views.user', kwargs={'username': user.username}))
+            return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
     else:
         profile = user.get_profile()
         emergency_contact = user.get_emergency_contact()
@@ -213,7 +213,7 @@ def slack(request, username):
     user = get_object_or_404(User, username=username)
     if not user == request.user:
         if not request.user.is_staff:
-            return HttpResponseRedirect(reverse('members.views.user', kwargs={'username': request.user.username}))
+            return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
 
     if request.method == 'POST':
         try:
@@ -240,18 +240,18 @@ def receipt(request, username, id):
     user = get_object_or_404(User, username=username)
     if not user == request.user:
         if not request.user.is_staff:
-            return HttpResponseRedirect(reverse('members.views.user', kwargs={'username': request.user.username}))
+            return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
 
     transaction = get_object_or_404(Transaction, id=id)
     if not user == transaction.user:
         if not request.user.is_staff:
-            return HttpResponseRedirect(reverse('members.views.user', kwargs={'username': request.user.username}))
+            return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
     bills = transaction.bills.all()
     return render_to_response('members/receipt.html', {'user': user, 'transaction': transaction, 'bills': bills}, context_instance=RequestContext(request))
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='members.views.not_active')
+@user_passes_test(is_active_member, login_url='member_not_active')
 def tags(request):
     tags = []
     for tag in Member.tags.all().order_by('name'):
@@ -262,7 +262,7 @@ def tags(request):
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='members.views.not_active')
+@user_passes_test(is_active_member, login_url='member_not_active')
 def tag_cloud(request):
     tags = []
     for tag in Member.tags.all().order_by('name'):
@@ -273,7 +273,7 @@ def tag_cloud(request):
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='members.views.not_active')
+@user_passes_test(is_active_member, login_url='member_not_active')
 def tag(request, tag):
     members = Member.objects.active_members().filter(tags__name__in=[tag])
     return render_to_response('members/tag.html', {'tag': tag, 'members': members}, context_instance=RequestContext(request))
@@ -284,7 +284,7 @@ def user_tags(request, username):
     user = get_object_or_404(User, username=username)
     if not user == request.user:
         if not request.user.is_staff:
-            return HttpResponseRedirect(reverse('members.views.user', kwargs={'username': request.user.username}))
+            return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
     profile = user.get_profile()
     user_tags = profile.tags.all()
 
@@ -308,9 +308,9 @@ def delete_tag(request, username, tag):
     user = get_object_or_404(User, username=username)
     if not user == request.user:
         if not request.user.is_staff:
-            return HttpResponseRedirect(reverse('members.views.user', kwargs={'username': request.user.username}))
+            return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
     user.get_profile().tags.remove(tag)
-    return HttpResponseRedirect(reverse('members.views.user_tags', kwargs={'username': username}))
+    return HttpResponseRedirect(reverse('member_user_tags', kwargs={'username': username}))
 
 
 @login_required
@@ -318,7 +318,7 @@ def user_devices(request, username):
     user = get_object_or_404(User, username=username)
     if not user == request.user:
         if not request.user.is_staff:
-            return HttpResponseRedirect(reverse('members.views.user', kwargs={'username': request.user.username}))
+            return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
     profile = user.get_profile()
 
     error = None
@@ -342,7 +342,7 @@ def user_devices(request, username):
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='members.views.not_active')
+@user_passes_test(is_active_member, login_url='member_not_active')
 def connect(request, username):
     message = ""
     target = get_object_or_404(User, username=username)
@@ -365,7 +365,7 @@ def add_notification(request, username):
     target = get_object_or_404(User, username=username)
     if UserNotification.objects.filter(notify_user=request.user, target_user=target, sent_date__isnull=True).count() == 0:
         UserNotification.objects.create(notify_user=request.user, target_user=target)
-    return HttpResponseRedirect(reverse('members.views.notifications', kwargs={}))
+    return HttpResponseRedirect(reverse('member_notifications', kwargs={}))
 
 
 @login_required
@@ -373,7 +373,7 @@ def delete_notification(request, username):
     target = get_object_or_404(User, username=username)
     for n in UserNotification.objects.filter(notify_user=request.user, target_user=target):
         n.delete()
-    return HttpResponseRedirect(reverse('members.views.notifications', kwargs={}))
+    return HttpResponseRedirect(reverse('member_notifications', kwargs={}))
 
 
 @login_required
@@ -383,17 +383,17 @@ def disable_billing(request, username):
         api = PaymentAPI()
         api.disable_recurring(username)
         email.announce_billing_disable(user)
-    return HttpResponseRedirect(reverse('members.views.user', kwargs={'username': request.user.username}))
+    return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='members.views.not_active')
+@user_passes_test(is_active_member, login_url='member_not_active')
 def events_google(request, location_slug=None):
     return render_to_response('members/events_google.html', {}, context_instance=RequestContext(request))
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='members.views.not_active')
+@user_passes_test(is_active_member, login_url='member_not_active')
 def file_view(request, disposition, username, file_name):
     if not request.user.is_staff and not username == request.user.username:
         return HttpResponseForbidden("Forbidden")
@@ -409,7 +409,7 @@ def file_view(request, disposition, username, file_name):
 
 @csrf_exempt
 @login_required
-@user_passes_test(is_manager, login_url='members.views.not_active')
+@user_passes_test(is_manager, login_url='member_not_active')
 def manage_member(request, username):
     user = get_object_or_404(User, username=username)
 
@@ -443,7 +443,7 @@ def register(request):
     return render_to_response('members/register.html', { 'registration_form': registration_form, 'page_message': page_message}, context_instance=RequestContext(request))
 
 #@login_required
-#@user_passes_test(is_active_member, login_url='members.views.not_active')
+#@user_passes_test(is_active_member, login_url='member_not_active')
 # def my_create_event(request, location_slug=None):
 #	return create_event(request, location_slug)
 

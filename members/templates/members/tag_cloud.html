@@ -1,17 +1,18 @@
 {% extends "members/u_base.html" %}
+{% load static %}
 
 {%block sub-head %}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}jqcloud/jqcloud-1.0.4.css" />
-<script type="text/javascript" src="{{ STATIC_URL }}jqcloud/jqcloud-1.0.4.min.js"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'jqcloud/jqcloud-1.0.4.css' %}" />
+<script type="text/javascript" src="{% static 'jqcloud/jqcloud-1.0.4.min.js' %}"></script>
 <script type="text/javascript">
 var word_list = [
-{ text: "web development", weight: 5, link: "{% url 'members.views.tag' 'web development' %}" },
+{ text: "web development", weight: 5, link: "{% url 'member_tag' 'web development' %}" },
 {% for tag, members in tags %}
 	{% if tag.name != "web development" %}
 	{
-		text: "{{ tag.name }}", 
+		text: "{{ tag.name }}",
 		weight: {{ members|length }},
-		link: "{% url 'members.views.tag' tag %}"
+		link: "{% url 'member_tag' tag %}"
 	},
 	{% endif %}
 {% endfor %}
@@ -23,7 +24,7 @@ var word_list = [
 {% endblock %}
 
 {% block content %}
-	<div style="float: right;">[ <a href="{% url 'members.views.tags' %}">Tag List</a> ]</div>
+	<div style="float: right;">[ <a href="{% url 'member_tags' %}">Tag List</a> ]</div>
 	<h2>All Member Tags</h2>
 	<div id="my_favorite_latin_words" style="font-size: 100%; width: 920px; height: 680px;"></div>
 {% endblock %}

@@ -1,14 +1,14 @@
 {% extends "members/u_base.html" %}
 
 {% block content %}
-	<div style="float: right;">[ <a href="{% url 'members.views.tag_cloud' %}">Tag Cloud</a> ]</div>
+	<div style="float: right;">[ <a href="{% url 'member_tag_cloud' %}">Tag Cloud</a> ]</div>
 	<h2>All Member Tags</h2>
 	<ul>
 	{% for tag, members in tags %}
 		<dl>
-		<dt><a href="{% url 'members.views.tag' tag %}">{{ tag }}</a>:</dt> 
+		<dt><a href="{% url 'member_tag' tag %}">{{ tag }}</a>:</dt>
 			{% for member in members %}
-				<dd><a href="{% url 'members.views.user' member.user.username %}">{{ member }}</a></dd>
+				<dd><a href="{% url 'member_profile' member.user.username %}">{{ member }}</a></dd>
 		{% endfor %}
 		</dl>
 	{% endfor %}

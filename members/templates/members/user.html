@@ -52,12 +52,12 @@
     <dl>
         <dt>Quicklinks:</dt>
         {% if request.user.profile.is_manager %}
-        <dd><a href="{% url 'members.views.manage_member' user.username %}">manage member</a></dd>
+        <dd><a href="{% url 'member_manage' user.username %}">manage member</a></dd>
         {% endif %}
         {% if user.username == request.user.username or request.user.is_staff %}
-        <dd><a href="{% url 'members.views.edit_profile' user.username %}">edit profile</a></dd>
-        <dd><a href="{% url 'members.views.user_tags' user.username %}">edit tags</a></dd>
-        <dd><a href="{% url 'members.views.user_devices' user.username %}">register device</a></dd>
+        <dd><a href="{% url 'member_edit_profile' user.username %}">edit profile</a></dd>
+        <dd><a href="{% url 'member_user_tags' user.username %}">edit tags</a></dd>
+        <dd><a href="{% url 'member_user_devices' user.username %}">register device</a></dd>
         {% endif %}
     </dl>
 {% endif %}
@@ -66,7 +66,7 @@
     <dt>Profile Tags:</dt>
     {% if member.tags.all %}
         {% for tag in member.tags.all %}
-            <dd><a href="{% url 'members.views.tag' tag %}">{{ tag }}</a></dd>
+            <dd><a href="{% url 'member_tag' tag %}">{{ tag }}</a></dd>
         {% endfor %}
     {% else %}
         <dd><i>No tags</i></dd>
@@ -76,7 +76,7 @@
 {% if user.username != request.user.username %}
     <dl>
         <dt>Contact:</dt>
-        <dd><a href="{% url 'members.views.connect' user %}">Connect with this member</a></dd>
+        <dd><a href="{% url 'member_connect' user %}">Connect with this member</a></dd>
     </dl>
 {% endif %}
 
@@ -102,7 +102,7 @@
     <div id="tabs-1">
         <h3>
             Private Details
-            (<a href="{% url 'members.views.edit_profile' user.username %}">edit</a>)
+            (<a href="{% url 'member_edit_profile' user.username %}">edit</a>)
         </h3>
         <table>
             <!-- Username -->
@@ -219,7 +219,7 @@
 
         <h3>
             Emergency Contact
-            (<a href="{% url 'members.views.edit_profile' user.username %}#emergency_contact">edit</a>)
+            (<a href="{% url 'member_edit_profile' user.username %}#emergency_contact">edit</a>)
         </h3>
         {% if not emergency_contact.name %}
             <p style="font-style: italic; color:red; padding-left: 2em;">No Emergency Contact Information</p>
@@ -256,7 +256,7 @@
                     <td>{{ f.uploadTS }}</td>
                     <!--<td>{{ f.document_type }}</td>-->
                     <td>
-                        <a href="{% url 'members.views.file_view' 'inline' f.user f.name     %}">{{ f.name }}</a>
+                        <a href="{% url 'member_files' 'inline' f.user f.name     %}">{{ f.name }}</a>
                     </td>
                 <tr>
             {% endfor %}
@@ -360,7 +360,7 @@
                 <div style="margin-bottom: .5em; text-align:left;">
                     Automatic Billing: <span id="auto_billing" style="color:green;">The {{ member.active_membership.start_date|date:"jS" }}</span>
                 </div>
-                <form id="disable_billing_form" action="{% url 'members.views.disable_billing' user.username %}">
+                <form id="disable_billing_form" action="{% url 'member_disable_billing' user.username %}">
                     <input id="disable_billing_button" type="submit" value="Disable Automatic Billing" />
                 </form>
             </td>
@@ -395,7 +395,7 @@
          <tbody>
             {% for transaction in user.profile.transaction_set.all %}
             <tr class="{% cycle 'row-even' 'row-odd' %}">
-                <td nowrap><a href="{% url 'members.views.receipt' user.username transaction.id %}">{{ transaction.transaction_date | date:"M d, Y" }}</a></td>
+                <td nowrap><a href="{% url 'member_receipt' user.username transaction.id %}">{{ transaction.transaction_date | date:"M d, Y" }}</a></td>
                 <td>${{ transaction.amount }}</td>
                 <td>
                     {% for bill in transaction.bills.all %}

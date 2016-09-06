@@ -42,13 +42,13 @@
 				<div id="header_container">
 					<div id="header" class="setwidth">
 						<div id="logo">
-							<a href="{% url 'members.views.home' %}" id="home">
-								<img src="{{ STATIC_URL }}img/ON_Logo_tall.png" />
+							<a href="{% url 'member_home' %}" id="home">
+								<img src="{% static 'img/ON_Logo_tall.png' %}" />
 							</a>
 						</div>
 						<h1 id="title">Nadine Membership Console</h1>
 					<nav>
-						<a href="{% url 'members.views.profile_redirect' %}">Profile</a>
+						<a href="{% url 'member_profile_redirect' %}">Profile</a>
 						{% if not request.user.is_authenticated %}
 						<a>Members</a>
 						<a>Events</a>
@@ -56,20 +56,20 @@
 						<a>Mailing Lists</a>
 						<a>Slack</a>
 						<a>Login</a>
-						{% elif request.user.get_profile.is_active %}
-						<a href="{% url 'members.views.view_members' %}">Members</a>
-						<a href="{% url 'members.views.events_google' %}">Events</a>
-						<a href="{% url 'members.views.tag_cloud' %}">Tags</a>
-						<a href="{% url 'members.views.mail' %}">Mailing Lists</a>
-						<a href="{% url 'members.views.slack' user.username %}">Slack</a>
-						<a href="{% url 'django.contrib.auth.views.logout_then_login' %}">Logout</a>
+						{% elif request.user.profile.is_active %}
+						<a href="{% url 'member_members' %}">Members</a>
+						<a href="{% url 'member_events' %}">Events</a>
+						<a href="{% url 'member_tag_cloud' %}">Tags</a>
+						<a href="{% url 'member_email_lists' %}">Mailing Lists</a>
+						<a href="{% url 'member_slack' user.username %}">Slack</a>
+						<a href="{% url 'logout' %}">Logout</a>
 						{% else %}
-						<a href="{% url 'members.views.not_active' %}">Members</a>
-						<a href="{% url 'members.views.not_active' %}">Events</a>
-						<a href="{% url 'members.views.not_active' %}">Tags</a>
-						<a href="{% url 'members.views.not_active' %}">Mailing Lists</a>
-						<a href="{% url 'members.views.not_active' %}">Slack</a>
-						<a href="{% url 'django.contrib.auth.views.logout_then_login' %}">Logout</a>
+						<a href="{% url 'member_not_active' %}">Members</a>
+						<a href="{% url 'member_not_active' %}">Events</a>
+						<a href="{% url 'member_not_active' %}">Tags</a>
+						<a href="{% url 'member_not_active' %}">Mailing Lists</a>
+						<a href="{% url 'member_not_active' %}">Slack</a>
+						<a href="{% url 'logout' %}">Logout</a>
 						{% endif %}
 					</nav>
 				</div>

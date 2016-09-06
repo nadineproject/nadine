@@ -5,9 +5,9 @@
 	<ul>
 	{% for member in members %}
 		<dl>
-			<dt><a href="{% url 'members.views.user' member.user.username %}">{{ member }}</a>:</td<>
+			<dt><a href="{% url 'member_profile' member.user.username %}">{{ member }}</a>:</td<>
 			{% for t in member.tags.all %}
-				<dd><a href="{% url 'members.views.tag' t %}">{{ t }}</a></dd>
+				<dd><a href="{% url 'member_tag' t %}">{{ t }}</a></dd>
 			{% endfor %}
 		</dl>
 	{% endfor %}

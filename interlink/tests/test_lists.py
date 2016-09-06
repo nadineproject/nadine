@@ -38,7 +38,7 @@ class ListTest(TestCase):
             'subscribe': 'true',
             'mailing_list_id': self.mlist1.id
         }
-        response = self.client2.post(reverse(members.views.mail), form_data)
+        response = self.client2.post(reverse('member_email_lists'), form_data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(IncomingMail.objects.count(), 0)
         self.assertEqual(OutgoingMail.objects.count(), 1)
