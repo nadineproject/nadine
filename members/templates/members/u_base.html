@@ -15,6 +15,7 @@
 	<![endif]-->
 	<script src="{% static 'jquery-2.1.0.min.js' %}"></script>
 	<script src="{% static 'jquery-ui-1.10.4.custom.min.js' %}"></script>
+	{% block scripts %}{% endblock %}
 
 	{% if not request.user.is_staff %}
 		<script>
