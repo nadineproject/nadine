@@ -18,6 +18,7 @@ from django.utils import timezone
 from django.template.defaultfilters import slugify
 from django.contrib.sites.models import Site
 from django.contrib import messages
+from django.contrib.auth.tokens import default_token_generator
 
 #from gather.models import Event, Location, EventAdminGroup
 #from gather.forms import EventForm
@@ -431,10 +432,12 @@ def register(request):
         try:
             if registration_form.is_valid():
                 user = registration_form.save()
-                print user.username
-                return HttpResponseRedirect(reverse('members.views.edit_profile', kwargs={'username': user.username}))
+                token = default_token_generator.make_token(user)
+                path = 'Ng-' + token + '/'
+                print path
+                return HttpResponseRedirect('https://apps.officenomads.com/reset/'+ path)
         except Exception as e:
-            page_message = str(e)[3:len(str(e)) - 2]
+            page_message = str(e)
             logger.error(str(e))
     else:
         registration_form = NewUserForm()

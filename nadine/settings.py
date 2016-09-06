@@ -190,6 +190,8 @@ CELERY_ALWAYS_EAGER = False
 # MAILCHIMP_NEWSLETTER_KEY="YourNewsletter"
 MAILCHIMP_WEBHOOK_KEY = "nadine"
 
+ALLOW_ONLINE_REGISTRATION = False
+
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 # Logging
