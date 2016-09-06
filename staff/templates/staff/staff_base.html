@@ -52,9 +52,9 @@
 		<a id="lists-tab" href="{% url 'interlink_index' %}">Lists</a>
 		<a id="doors-tab" href="{% url 'doors_index' %}">Doors</a>
 		{% if request.user.is_authenticated %}
-		<a id="log-tab" href="{% url 'django.contrib.auth.views.logout_then_login' %}">Logout</a>
+		<a id="log-tab" href="{% url 'logout' %}">Logout</a>
 		{% else %}
-		<a id="log-tab" href="{% url 'django.contrib.auth.views.login' %}">Login</a>
+		<a id="log-tab" href="{% url 'login' %}">Login</a>
 		{% endif %}
 		</nav>
 
