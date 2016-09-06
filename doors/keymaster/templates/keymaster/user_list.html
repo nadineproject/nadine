@@ -30,7 +30,7 @@ nav #doors-tab { background: #FBD850; color: black; }
 	{% for key in codes %}
 		<tr>
 			<td>
-				<a href="{% url 'doors.keymaster.views.user_keys' key.user.username %}">{{ key.user }}</a>
+				<a href="{% url 'doors_keys' key.user.username %}">{{ key.user }}</a>
 			</td>
 			<!--<td>{{ key.code }}</td>-->
 			<td>
