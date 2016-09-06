@@ -1,15 +1,15 @@
 {% load i18n %}{% autoescape off %}
-{{ target.first_name }}, 
+{{ target.first_name }},
 
 {{ user.get_full_name }} wants to connect with you!  Did you know you can login to Nadine, find another member,
 and ask Nadine to connect the two of you?  {{ user.first_name }} did and they chose you!  You can connect with
 them directly by emailing:  {{ user.email }}
 
 Their Profile:
-http://{{ site.domain }}{% url 'members.views.user' user.username %}
+http://{{ site.domain }}{% url 'member_profile' user.username %}
 
 Or to be notified the next time you are both in the space:
-http://{{ site.domain }}{% url 'members.views.connect' user.username %}
+http://{{ site.domain }}{% url 'member_connect' user.username %}
 
 Have fun!
 The {{ site.name }} Team

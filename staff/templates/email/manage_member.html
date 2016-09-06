@@ -19,7 +19,7 @@
 					{% if alert.is_system_alert %}
 						[ SYSTEM ]
 					{% else %}
-						<form action="{{ site_url }}{% url 'members.views.manage_member' user.username %}" method="POST">
+						<form action="{{ site_url }}{% url 'member_manage' user.username %}" method="POST">
 							<input name="alert_id" value="{{ alert.id }}" type="hidden" />
 							<input name="username" value="{{ user.username }}" type="hidden" />
 							<button type="submit" name="resolve_task" type="submit">Resolve</button>
@@ -37,7 +37,7 @@
 		<th style="border-bottom: 1px solid gray; text-align:left;" nowrap>Date</th>
 		<th style="border-bottom: 1px solid gray; text-align:left;">Payment</th>
 		<th style="border-bottom: 1px solid gray; text-align:left;">Guest of</th>
-		<th style="border-bottom: 1px solid gray; text-align:left;">Notes</th> 
+		<th style="border-bottom: 1px solid gray; text-align:left;">Notes</th>
 	</tr>
 	{% for log in user.profile.activity|slice:":10" %}
 		<tr>
@@ -56,7 +56,7 @@
 	<tr>
 		<th style="border-bottom: 1px solid gray; text-align:left;">Membership</th>
 		<th style="border-bottom: 1px solid gray; text-align:left;">Start</th>
-		<th style="border-bottom: 1px solid gray; text-align:left;">End</th> 
+		<th style="border-bottom: 1px solid gray; text-align:left;">End</th>
 	</tr>
 	{% for m in user.profile.membership_history %}
 		<tr>
@@ -86,5 +86,3 @@
 		<tr><td colspan="4" style="border-bottom: 1px solid gray; text-align:left;"><i>There are no files uploaded for this user.</i></td></tr>
 	{% endfor %}
 </table>
-
-

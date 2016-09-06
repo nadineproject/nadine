@@ -1,24 +1,24 @@
 {% load i18n %}{% autoescape off %}
-Hello {{ user.first_name }}! 
+Hello {{ user.first_name }}!
 
 Congratulations on being a key holding member at Office Nomads! There are some
-great perks to having a key to the space, and with those perks come some 
+great perks to having a key to the space, and with those perks come some
 important responsibilities. We will run throgh a quick training with you
 regarding how your keycard works, but wanted to get a few other points over to
 you via email.
 
 If you prefer to read this information online you can always find it in the
-Nadine help pages:  http://{{ site.domain }}{% url 'members.views.help_topic' 'keys' %}
+Nadine help pages:  http://{{ site.domain }}{% url 'member_help' 'keys' %}
 
 IMPORTANT POINTS:
 
  * Only key holding members and their guests are allowed in the space when an
 Office Nomads staff person isn't here. During that time, you are responsible
 for yourself and your guest. Do not leave your guests in the space
-without you.  
+without you.
 
  * Keys are not transferrable. Please keep track of your key and please don’t
-mark it indicating Office Nomads or the location of our space.  
+mark it indicating Office Nomads or the location of our space.
 
  * As you’re in the space after hours, we can really use your help keeping the
 space clean & tidy. Please do your dishes, leave meeting rooms tidy for the
@@ -33,7 +33,7 @@ thermostat, and then hit “DONE.”
 make coffee, give the French Press a try – it makes just a few cups!
 
  * Keep your keycard with you at all times! We'd hate for you to lock yourself
-out on accident. 
+out on accident.
 
  * Please take note of the emergency contact lists by each suite door. We always
 recommend that key holding members put our phone numbers in their mobile phones
@@ -46,7 +46,7 @@ right. This involves a few steps:
    - Adjusted the thermostats if needed.
    - Check to make sure all windows are closed and all fans are off.
    - Make sure the door closes and is locked behind you when you leave.
- 
+
 If you have any questions at all, please don't hesitate to contact any of us.
 Otherwise, feel free to come on by the front desk and chat anytime!
 

@@ -1,11 +1,11 @@
 {% load i18n %}{% autoescape off %}
 {{ user.first_name }},
 
-It looks like you currently do not have any devices registered in Nadine.  
+It looks like you currently do not have any devices registered in Nadine.
 
-https://{{ site.domain }}{% url 'members.views.profile_redirect' %}
+https://{{ site.domain }}{% url 'member_profile_redirect' %}
 
-If you've got any questions or concerns, please e-mail staff@officenomads.com. 
+If you've got any questions or concerns, please e-mail staff@officenomads.com.
 
 Thank you,
 The {{ site.name }} Team
