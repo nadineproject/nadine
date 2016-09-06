@@ -48,7 +48,7 @@
 		<a id="activity-tab" href="{% url 'staff_activity' %}">Activity</a>
 		<a id="billing-tab" href="{% url 'staff_bills' %}">Billing</a>
 		<a id="stats-tab" href="{% url 'staff_stats' %}">Stats</a>
-		<a id="logs-tab" href="{% url 'arpwatch.views.device_logs_today' %}">Logs</a>
+		<a id="logs-tab" href="{% url 'arp_devices_today' %}">Logs</a>
 		<a id="lists-tab" href="{% url 'interlink.views.index' %}">Lists</a>
 		<a id="doors-tab" href="{% url 'doors_index' %}">Doors</a>
 		{% if request.user.is_authenticated %}

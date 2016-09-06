@@ -2,6 +2,6 @@
 
 <ul>
 	{% for device in devices %}
-		<li><a href="{% url 'arpwatch.views.device' device.id %}">{{ device }}</a></li>
+		<li><a href="{% url 'arpwatch_device' device.id %}">{{ device }}</a></li>
 	{% endfor %}
 </ul>
