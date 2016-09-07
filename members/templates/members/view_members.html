@@ -2,41 +2,35 @@
 {% load imagetags %}
 {% load list_tags %}
 
-{%block sub-head %}
-	<script>
-		$(function () {
-			{% if search_terms %}
-				jQuery('#tabs').tabs({ active: -1 });
-			{% else %}
-				jQuery('#tabs').tabs({ active: 0 });
-			{% endif %}
-		});
-	</script>
-{% endblock %}
+{% block sub-head %}{% endblock %}
 
 {% block content %}
 
 <h2 style="vertical-align: top;">View Members</h2>
 
 {% block search_mems %}
-	<div id="tabs">
-
-	<form id="site-search-form" action="." method="POST" style="float:right; margin-top:6px;">
-		{% for field in search_form %}{{ field }}{% endfor %}
-		<input type="submit" value="search"/>
-		{% csrf_token %}
-	</form>
-
-	<ul>
-		<li><a href="#tabs-1">Active Members ({{ active_members | length }})</a></li>
-		<li><a href="#tabs-2">Here Today ({{ here_today | length }})</a></li>
-		{% if search_terms %}
-			<li><a href="#tabs-3" active="True">Search Results - {{ search_terms }}</a></li>
-		{% elif user.get_profile.is_manager %}
-			<li><a href="#tabs-4">Has Mail ({{ has_mail | length }})</a></li>
-			<li><a href="#tabs-5">Has Key ({{ has_key | length }})</a></li>
-		{% endif %}
-	</ul>
+	<div class='row'>
+		<div class="col s8">
+			<ul class="tabs">
+				{% if search_terms %}
+					<li class="tab mem-tabs col s2"><a href="#tabs-1">Active Members ({{ active_members | length }})</a></li>
+					<li class="tab col s2"><a href="#tabs-2">Here Today ({{ here_today | length }})</a></li>
+					<li class="tab col s2"><a href="#tabs-3" class='active'>Search Results - {{ search_terms }}</a></li>
+				{% elif user.get_profile.is_manager %}
+					<li class="tab col s2"><a href="#tabs-4">Has Mail ({{ has_mail | length }})</a></li>
+					<li class="tab col s2"><a href="#tabs-5">Has Key ({{ has_key | length }})</a></li>
+				{% else %}
+					<li class="tab mem-tabs col s2"><a class='active' href="#tabs-1">Active Members ({{ active_members | length }})</a></li>
+					<li class="tab col s2"><a href="#tabs-2">Here Today ({{ here_today | length }})</a></li>
+				{% endif %}
+			</ul>
+		</div>
+		<form class='col s4' id="site-search-form" action="." method="POST" style="margin-top:6px;">
+			{% for field in search_form %}{{ field }}{% endfor %}
+			<input class='btn' type="submit" value="search"/>
+			{% csrf_token %}
+		</form>
+	</div>
 {% endblock %}
 
 <div id="tabs-1" class="plan-section">

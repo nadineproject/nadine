@@ -2,131 +2,114 @@
 
 {% block sub-title %}Edit Profile | {% endblock %}
 
-{% block style %}
-nav #members-tab { background: #FBD850; color: black; }
-#page-message { font-size: 1.5em; color: #933; margin: 20px 0px; }
-#quick-links { text-align: right; margin-bottom: 20px;}
-#id_address1 { width: 20em; }
-#id_address2 { width: 20em; }
-#id_zipcode { width: 5em; }
-#id_url_personal { width: 32em; }
-#id_url_professional { width: 32em; }
-#id_url_facebook { width: 32em; }
-#id_url_twitter { width: 32em; }
-#id_url_linkedin { width: 32em; }
-#id_url_aboutme { width: 32em; }
-#id_url_github { width: 32em; }
-table td    {text-align: left;}
-{% endblock %}
-
 {% block content %}
 
-<h2>Edit Your Profile:</h2>
+<h3 style='text-align:center;'>Edit Your Profile:</h3>
 
 <p align="center"><em>NOTE: Items in <strong>bold</strong> are viewable by all active members.</em></p>
 
 <div id="profile_form">
     <form enctype="multipart/form-data" action='.' method='post'>
         {{ profile_form.member_id }}
-        <h3>Contact Information</h3>
+        <h4>Contact Information</h4>
         <table id="contact">
             <tr class="row-even">
-                <td><strong>First Name:</strong></td>
-                <td>{{ profile_form.first_name }}</td>
+                <td><strong>FIRST NAME</strong></td>
+                <td id='pf_input'>{{ profile_form.first_name }}</td>
                 <td>{{ profile_form.first_name.errors }}</td>
             </tr>
             <tr class="row-odd">
-                <td><strong>Last Name:</strong></td>
-                <td>{{ profile_form.last_name }}</td>
+                <td><strong>LAST NAME</strong></td>
+                <td id='pf_input'>{{ profile_form.last_name }}</td>
                 <td>{{ profile_form.last_name.errors }}</td>
             </tr>
             <tr class="row-even">
-                <td>Primary Email Address:</td>
-                <td>{{ profile_form.email }}</td>
+                <td>PRIMARY EMAIL ADDRESS</td>
+                <td id='pf_input'>{{ profile_form.email }}</td>
                 <td>{{ profile_form.email.errors }}</td>
             </tr>
             <tr class="row-odd">
-                <td>Alternate Email:</td>
+                <td>ALTERNATE EMAIL</td>
                 <td>{{ profile_form.email2 }}</td>
                 <td>{{ profile_form.email2.errors }}</td>
             </tr>
             <tr class="row-even">
-                <td>Address 1:</td>
+                <td>ADDRESS 1</td>
                 <td>{{ profile_form.address1 }}</td>
                 <td>{{ profile_form.address1.errors }}</td>
             </tr>
             <tr class="row-odd">
-                <td>Address 2:</td>
+                <td>ADDRESS 2</td>
                 <td>{{ profile_form.address2 }}</td>
                 <td>{{ profile_form.address2.errors }}</td>
             </tr>
             <tr class="row-even">
-                <td>City:</td>
+                <td>CITY</td>
                 <td>{{ profile_form.city }}</td>
                 <td>{{ profile_form.city.errors }}</td>
             </tr>
             <tr class="row-odd">
-                <td>State:</td>
+                <td>STATE</td>
                 <td>{{ profile_form.state }}</td>
                 <td>{{ profile_form.state.errors }}</td>
             </tr>
             <tr class="row-even">
-                <td>zipcode:</td>
+                <td>ZIPCODE</td>
                 <td>{{ profile_form.zipcode }}</td>
                 <td>{{ profile_form.zipcode.errors }}</td>
             </tr>
             <tr class="row-odd">
-                <td>Primary Phone:</td>
+                <td>PRIMARY PHONE</td>
                 <td>{{ profile_form.phone }}</td>
                 <td>{{ profile_form.phone.errors }}</td>
             </tr>
             <tr class="row-even">
-                <td>Alternate Phone:</td>
+                <td>ALTERNATE PHONE</td>
                 <td>{{ profile_form.phone2 }}</td>
                 <td>{{ profile_form.phone2.errors }}</td>
             </tr>
         </table>
 
-        <h3>Websites &amp; Other Profiles</h3>
+        <h4>Websites &amp; Other Profiles</h4>
        <table id="websites">
             <tr class="row-even">
-                <td><strong>Professional Website</strong>:</td>
+                <td><strong>PROFESSIONAL WEBSITE</strong></td>
                 <td>{{ profile_form.url_professional }}</td>
                 <td width="200px">{{ profile_form.url_professional.errors }}</td>
             </tr>
             <tr class="row-odd">
-                <td><strong>Personal Website</strong>:</td>
+                <td><strong>PERSONAL WEBSITE</strong></td>
                 <td>{{ profile_form.url_personal }}</td>
                 <td>{{ profile_form.url_personal.errors }}</td>
             </tr>
             <tr class="row-even">
-                <td><strong>Twitter</strong>:</td>
+                <td><strong>TWITTER</strong></td>
                 <td>{{ profile_form.url_twitter }}</td>
                 <td>{{ profile_form.url_twitter.errors }}</td>
             </tr>
             <tr class="row-odd">
-                <td><strong>Facebook</strong>:</td>
+                <td><strong>FACEBOOK</strong></td>
                 <td>{{ profile_form.url_facebook }}</td>
                 <td>{{ profile_form.url_facebook.errors }}</td>
             </tr>
             <tr class="row-even">
-                <td><strong>Linkedin Profile</strong>:</td>
+                <td><strong>LINKEDIN PROFILE</strong></td>
                 <td>{{ profile_form.url_linkedin }}</td>
                 <td>{{ profile_form.url_linkedin.errors }}</td>
             </tr>
             <tr class="row-odd">
-                <td><strong>Github Profile</strong>:</td>
+                <td><strong>GITHUB PROFILE</strong></td>
                 <td>{{ profile_form.url_github }}</td>
                 <td>{{ profile_form.url_github.errors }}</td>
             </tr>
             <tr class="row-even">
-                <td><strong>About Me Profile</strong>:</td>
+                <td><strong>ABOUT ME PROFILE</strong></td>
                 <td>{{ profile_form.url_aboutme }}</td>
                 <td>{{ profile_form.url_aboutme.errors }}</td>
             </tr>
         </table>
 
-        <h3>Other Information</h3>
+        <h4>Other Information</h4>
         <table id="otherinfo">
             <tr class="row-even">
                 <td><strong>Company Name:</strong></td>
@@ -165,32 +148,32 @@ table td    {text-align: left;}
             </tr>
         </table>
 
-        <h3>Emergency Contact Information</h3>
+        <h4>Emergency Contact Information</h4>
         <a name="emergency_contact"></a>
         <table id="otherinfo">
             <tr class="row-even">
-                <td>Name:</td>
+                <td>NAME</td>
                 <td>{{ profile_form.emergency_name }}</td>
                 <td>{{ profile_form.emergency_name.errors }}</td>
             </tr>
             <tr class="row-even">
-                <td>Relationship:</td>
+                <td>RELATIONSHIP</td>
                 <td>{{ profile_form.emergency_relationship }}</td>
                 <td>{{ profile_form.emergency_relationship.errors }}</td>
             </tr>
             <tr class="row-even">
-                <td>Phone:</td>
+                <td>PHONE</td>
                 <td>{{ profile_form.emergency_phone }}</td>
                 <td>{{ profile_form.emergency_phone.errors }}</td>
             </tr>
             <tr class="row-even">
-                <td>Email:</td>
+                <td>EMAIL</td>
                 <td>{{ profile_form.emergency_email }}</td>
                 <td>{{ profile_form.emergency_email.errors }}</td>
             </tr>
         </table>
 
-        <p align="center"><input type="submit" value="Update Your Profile" /></p>
+        <button class="btn waves-effect waves-light sub-btn" type="submit" value="Update Your Profile" />Update Your Profile</button>
         {% csrf_token %}
     </form>
 </div>
