@@ -109,19 +109,22 @@
 		</div>
 		{% endblock %}
 
-		<!-- Footer -->
-		<footer class="page-footer">
-			<div class="footer-copyright">
-        <div class="container">
-        	© 2016 |  Office Nomads | <a id='nadine-link' href="http://nadineproject.org/" target="_new">The Nadine Project</a>
-					<div class='grey-text text-lighten-4 right' id="social">
-						<a id="fb" target="_blank" href="http://www.facebook.com/OfficeNomads"><i class="material-icons">fb</i></a>
-						<a id="tw" target="_blank" href="http://twitter.com/OfficeNomads">tw</a>
-						<a id="ye" target="_blank" href="http://www.yelp.com/biz/office-nomads-seattle">ye</a>
-					</div>
-				</div>
-      </div>
-    </footer>
+
+				{% block footer %}
+					<!-- Footer -->
+					<footer class="page-footer">
+						<div class="footer-copyright">
+			        <div class="container">
+			        	© 2016 |  Office Nomads | <a id='nadine-link' href="http://nadineproject.org/" target="_new">The Nadine Project</a>
+								<div class='grey-text text-lighten-4 right' id="social">
+									<a id="fb" target="_blank" href="http://www.facebook.com/OfficeNomads">fb</a>
+									<a id="tw" target="_blank" href="http://twitter.com/OfficeNomads">tw</a>
+									<a id="ye" target="_blank" href="http://www.yelp.com/biz/office-nomads-seattle">ye</a>
+								</div>
+							</div>
+			      </div>
+			    </footer>
+				{% endblock %}
 		<!-- End Page -->
 	</div>
 {% endblock %}

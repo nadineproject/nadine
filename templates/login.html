@@ -6,89 +6,86 @@
 #content { font-size: 1em; border: none; }
 #content h1 { font-size: 1.8em; margin: 0; }
 #content table td { border-bottom: none;}
-#content table th { width: 40%; }
+<!-- #content table th { width: 40%; } -->
 {% endblock %}
 
 {% block content %}
 
 {% if ALLOW_ONLINE_REGISTRATION %}
-	<h1 style='margin-top:5%;'>{{ site.name }} Login:</h1>
-
+<div class='col s6 offset-s3' id='login_box'>
 	{% if form.errors %}
 	<p>Your username and password didn't match. Please try again.</p>
 	{% endif %}
-
 	<div style="margin-left:2em;">
-	<form method="post" action=".">
-	<table style="width:300px;">
-	<tr>
-		<th>Email:</th>
-		<td>{{ form.username }}</td>
-		<td></td>
-	</tr>
-	<tr>
-		<th>Password:</th>
-		<td>{{ form.password }}</td>
-		<td></td>
-	</tr>
-	<tr>
-		<td colspan=2>
-			<input type="submit" value="login" />
-			<input type="hidden" name="next" value="{{ next }}" />
-		</td>
-		<td></td>
-	</tr>
-	</table>
+
+	<form id='login_form'  method="post" action=".">
+		<h1 id='login_header' style='margin-top:5%;margin-bottom:5%;' align='center'>Login</h1>
+		<table>
+			<tr>
+				<th>Email:</th>
+				<td>{{ form.username }}</td>
+				<td></td>
+			</tr>
+			<tr>
+				<th>Password:</th>
+				<td>{{ form.password }}</td>
+				<td></td>
+			</tr>
+		</table>
+	<div class='row'>
+		<button class="btn waves-effect waves-light" id='loginonly-btn' type="submit" value="Login" />Login</button>
+		<input type="hidden" name="next" value="{{ next }}" />
+	</div>
 	{% csrf_token %}
+	<div id='login_reset' style="margin-top:1.5em;margin-left:12%;">
+		<font size="-1"><i>If you've forgotten your password, you will need to <a href="{% url 'password_reset' %}">create a new password</a>.</i></font>
+	</div>
 	</form>
 	</div>
-	<div style="margin-top:1.5em;">
-	<font size="-1"><i>If this is your first time logging in or you've forgotten your password, you will need to <a href="{% url 'password_reset' %}">create a new password</a>.</i></font>
-	</div>
+
+</div>
 {% else %}
 <div class='row'>
-	<div class='col s6' id='login_box'>
+	<div class='col s6 offset-s3' id='login_box'>
 		{% if form.errors %}
 		<p>Your username and password didn't match. Please try again.</p>
 		{% endif %}
 		<div style="margin-left:2em;">
 
 		<form id='login_form'  method="post" action=".">
-			<h1 style='margin-top:5%;margin-bottom:5%;' align='center'>{{ site.name }} Login:</h1>
-		<table>
-		<tr>
-			<th>Email:</th>
-			<td>{{ form.username }}</td>
-			<td></td>
-		</tr>
-		<tr>
-			<th>Password:</th>
-			<td>{{ form.password }}</td>
-			<td></td>
-		</tr>
-		<tr>
-			<td colspan=2>
-				<button class="btn waves-effect waves-light sub-btn" id='login-btn' type="submit" value="Login" />Login</button>
-				<input type="hidden" name="next" value="{{ next }}" />
-			</td>
-			<td></td>
-		</tr>
-		</table>
+			<h1 id='login_header' style='margin-top:5%;margin-bottom:5%;' align='center'>Login</h1>
+			<table>
+				<tr>
+					<th>Email:</th>
+					<td>{{ form.username }}</td>
+					<td></td>
+				</tr>
+				<tr>
+					<th>Password:</th>
+					<td>{{ form.password }}</td>
+					<td></td>
+				</tr>
+			</table>
+		<div class='row'>
+			<button class="btn waves-effect waves-light" id='login-btn' type="submit" value="Login" />Login</button>
+			<input type="hidden" name="next" value="{{ next }}" />
+			<a id='reg_link' href='.'>Register</a>
+		</div>
 		{% csrf_token %}
-		<div style="margin-top:1.5em;margin-left:5%;">
+		<div id='login_reset' style="margin-top:1.5em;margin-left:5%;">
 			<font size="-1"><i>If you've forgotten your password, you will need to <a href="{% url 'password_reset' %}">create a new password</a>.</i></font>
 		</div>
 		</form>
 		</div>
 
 	</div>
-	<div class='col s6' id='reg_box'>
+	<div class='col s6 offset-s3' id='reg_box'>
 		{% if page_message %}
 		  <p id="page_message">{{ page_message|safe }}</p>
 		{% endif %}
 		<div style="margin-left:2em;">
 		  <form id='registration_form' name='registration_form' action='../member/register/' method='POST'>
-		    <h1 style='margin-top:5%;margin-bottom:5%;' align='center'>{{ site.name }} Register:</h1>
+		    <h1 style='margin-top:5%;margin-bottom:5%;' align='center'>Register</h1>
 		    <table>
 					<tr>
 						<th>First Name:</th>
@@ -103,7 +100,12 @@
 						<td><input type='text' name='email' /></td>
 					</tr>
 		    </table>
-		    <button class="btn waves-effect waves-light sub-btn" id='reg-btn' type="submit" value="Register" />Register</button>
+				<div class='row'>
+					<button class="btn waves-effect waves-light sub-btn" id='reg-btn' type="submit" value="Register" />Register</button>
+					<a id='login_link' href='.'>Login</a>
+					<input type="hidden" name="next" value="{{ next }}" />
+				</div>
+
 		    {% csrf_token %}
 		  </form>
 		</div>
@@ -111,4 +113,27 @@
 </div>
 
 {% endif %}
+{% endblock %}
+
+{% block extrajs %}
+	<script>
+		$(document).ready(function() {
+			$('#reg_box').hide();
+
+
+			$('#reg_link').on('click', function(e) {
+				e.preventDefault();
+
+				$('#login_box').hide();
+				$('#reg_box').show();
+			});
+
+			$('#login_link').on('click', function(e) {
+				e.preventDefault();
+
+				$('#reg_box').hide();
+				$('#login_box').show();
+			})
+		})
+	</script>
 {% endblock %}
