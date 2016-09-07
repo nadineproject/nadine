@@ -102,7 +102,7 @@
     <div id="tabs-1">
         <h3>
             Private Details
-            (<a href="{% url 'member_edit_profile' user.username %}">edit</a>)
+            (<a target="_self" href="{% url 'member_edit_profile' user.username %}">edit</a>)
         </h3>
         <table>
             <!-- Username -->
@@ -219,7 +219,7 @@
 
         <h3>
             Emergency Contact
-            (<a href="{% url 'member_edit_profile' user.username %}#emergency_contact">edit</a>)
+            (<a target="_self" href="{% url 'member_edit_profile' user.username %}#emergency_contact">edit</a>)
         </h3>
         {% if not emergency_contact.name %}
             <p style="font-style: italic; color:red; padding-left: 2em;">No Emergency Contact Information</p>
@@ -256,7 +256,7 @@
                     <td>{{ f.uploadTS }}</td>
                     <!--<td>{{ f.document_type }}</td>-->
                     <td>
-                        <a href="{% url 'member_files' 'inline' f.user f.name     %}">{{ f.name }}</a>
+                        <a target="_self" href="{% url 'member_files' 'inline' f.user f.name     %}">{{ f.name }}</a>
                     </td>
                 <tr>
             {% endfor %}
@@ -367,7 +367,7 @@
         </tr>
         <tr><td colspan="2">
             If you have any questions, or need to make any changes to your membership, please email
-            <a href="mailto:billing@officenomads.com" style="color:green;">billing@officenomads.com</a>.     We need at least one
+            <a target="_self" href="mailto:billing@officenomads.com" style="color:green;">billing@officenomads.com</a>.     We need at least one
             full business day to make any changes, otherwise your payment will be processed automatically.
         </td></tr>
         </table>
@@ -381,7 +381,7 @@
             </script>
         {% endif %}
 
-        <h3>View All Payments <a id="payment-details-toggle" href="." onclick="togglePaymentDetails(); return false;">[+]</a></h3>
+        <h3>View All Payments <a target="_self" id="payment-details-toggle" href="." onclick="togglePaymentDetails(); return false;">[+]</a></h3>
         <div id="payment-details">
         {% if user.profile.transaction_set.all %}
         <table>
@@ -395,7 +395,7 @@
          <tbody>
             {% for transaction in user.profile.transaction_set.all %}
             <tr class="{% cycle 'row-even' 'row-odd' %}">
-                <td nowrap><a href="{% url 'member_receipt' user.username transaction.id %}">{{ transaction.transaction_date | date:"M d, Y" }}</a></td>
+                <td nowrap><a target="_self" href="{% url 'member_receipt' user.username transaction.id %}">{{ transaction.transaction_date | date:"M d, Y" }}</a></td>
                 <td>${{ transaction.amount }}</td>
                 <td>
                     {% for bill in transaction.bills.all %}
@@ -411,7 +411,7 @@
         {% endif %}
         </div>
 
-        <h3>View All Bills <a id="bill-details-toggle" href="." onclick="toggleBillDetails(); return false;">[+]</a></h3>
+        <h3>View All Bills <a target="_self" id="bill-details-toggle" href="." onclick="toggleBillDetails(); return false;">[+]</a></h3>
         <div id="bill-details">
         {% if user.profile.all_bills %}
         <table>

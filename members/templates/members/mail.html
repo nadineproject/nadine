@@ -57,10 +57,10 @@
 			{{ mailing_list.name }}
 			{% if not mailing_list.moderator_controlled %} - {{ mailing_list.email_address}}
     			{% if is_subscriber %}
-    			(<a href="." onclick="unsubscribe({{mailing_list.id}}); return false;">unsubscribe</a>)
+    			(<a target="_self" href="." onclick="unsubscribe({{mailing_list.id}}); return false;">unsubscribe</a>)
     			{% else %}
         			{% if request.user.get_profile.is_active or request.user.is_staff %}
-        			    ( <a href="." onclick="subscribe({{mailing_list.id}}); return false;">subscribe</a> )
+        			    ( <a target="_self" href="." onclick="subscribe({{mailing_list.id}}); return false;">subscribe</a> )
         			{% endif %}
     			{% endif %}
     		{% endif %}
@@ -79,11 +79,11 @@
 				<tr>
 					<td nowrap>{{ msg.sent_time }}</td>
 					{% if msg.get_user %}
-						<td nowrap><a href="{% url 'member_profile' msg.get_user.username %}">{{ msg.get_user.get_profile.full_name }}</a></td>
+						<td nowrap><a target="_self" href="{% url 'member_profile' msg.get_user.username %}">{{ msg.get_user.get_profile.full_name }}</a></td>
 					{% else %}
 						<td nowrap>{{ msg.origin_address }}</td>
 					{% endif %}
-					<td><a  href="{% url 'member_view_mail' msg.id %}">{{ msg.clean_subject }}</a></td>
+					<td><a target="_self" href="{% url 'member_view_mail' msg.id %}">{{ msg.clean_subject }}</a></td>
 				</tr>
 				{% endfor %}
 			</table>
