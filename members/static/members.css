@@ -130,25 +130,36 @@ p {
 	text-align: center;
 }
 
-#profile_form, #registration_form {
+#profile_form {
 	background-color: RGBA(239, 238, 231, 1);
 	padding: 2%;
 	margin-left: 15%;
 	width: 70%;
 }
 
-#registration_form {
+#login_form,  #registration_form {
+	background-color: RGBA(239, 238, 231, 1);
+	padding: 2%;
+	margin-right: 0;
+}
+
+#registration_form, #login_form {
 	margin-top: 5%;
 }
 
-#profile_form tr, #registration_form tr {
+#profile_form tr, #registration_form tr, #login_form tr {
 	border: none;
 }
 
-#profile_form input, #registration_form input {
-	padding: 2%;
+#profile_form input, #registration_form input, #login_form input {
+	padding-left: 2%;
 	background-color: white;
 	border-bottom: none;
+}
+
+#login_form input{
+	padding-left: 2%;
+	margin-right: 2%;
 }
 
 .sub-btn {
@@ -157,7 +168,13 @@ p {
 }
 
 #reg-btn {
-	margin-left: 0;
+	margin-left: 20%;
+	width: 60%;
+}
+
+#login-btn {
+	margin-left: 20%;
+	width: 60%;
 }
 
 #event_cal {
