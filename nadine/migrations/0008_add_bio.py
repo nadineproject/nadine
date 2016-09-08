@@ -22,4 +22,10 @@ class Migration(migrations.Migration):
             name='public_profile',
             field=models.BooleanField(default=False),
         ),
+        migrations.AlterField(
+            model_name='member',
+            name='zipcode',
+            field=models.CharField(blank=True, max_length=16),
+        ),
+
     ]

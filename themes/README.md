@@ -15,3 +15,16 @@ cd ..
 ~~~~
 rm themes/active
 ~~~~
+
+### Theme Settings
+
+All constants in a file located at **/themes/active/theme_settings.py**
+will be loaded after settings.py and local_settings.py, and available
+through the settings module.
+
+These constants are used in the system base to toggle functionality.
+
+ + FACEBOOK_URL
+ + TWITTER_URL
+ + YELP_URL
+ + ALLOW_PHOTO_UPLOAD

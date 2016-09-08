@@ -359,7 +359,7 @@ class Member(models.Model):
     address2 = models.CharField(max_length=128, blank=True)
     city = models.CharField(max_length=128, blank=True)
     state = models.CharField(max_length=2, blank=True)
-    zipcode = models.CharField(max_length=5, blank=True)
+    zipcode = models.CharField(max_length=16, blank=True)
     bio = models.TextField(blank=True, null=True)
     public_profile = models.BooleanField(default=False)
     url_personal = models.URLField(blank=True, null=True)

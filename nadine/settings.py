@@ -6,6 +6,7 @@ from datetime import timedelta
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 path = lambda *a: os.path.join(ROOT, *a)
+print("Loading global settings file...")
 
 # TEMPLATE_DIRS = (path('../templates/'), )
 MEDIA_URL = '/media/'
@@ -246,7 +247,16 @@ LOGGING = {
     },
 }
 
-# Import the local settings file
-from .local_settings import *
+# Import the local and theme SETTINGS files
+if os.path.isfile('nadine/local_settings.py'):
+    print("Loading local settings file...")
+    from nadine.local_settings import *
+if os.path.isfile('themes/active/theme_settings.py'):
+    print("Loading theme settings file...")
+    import imp
+    sys.path.append('themes/active')
+    theme_settings = imp.load_source('themes.active.theme_settings', 'themes/active/theme_settings.py')
+    from theme_settings import *
 
-# Copyright 2009 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+# Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
