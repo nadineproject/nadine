@@ -18,9 +18,11 @@ rm themes/active
 
 ### Theme Settings
 
-All settings constants in a file located at **/themes/active/theme_settings.py**
-will be loaded after the settings.py and the local_settings.py.  These constants
-are used in the base theme to toggle functionality.
+All constants in a file located at **/themes/active/theme_settings.py**
+will be loaded after settings.py and local_settings.py, and available
+through the settings module.
+
+These constants are used in the system base to toggle functionality.
 
  + FACEBOOK_URL
  + TWITTER_URL
