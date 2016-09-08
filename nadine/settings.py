@@ -191,6 +191,9 @@ CELERY_ALWAYS_EAGER = False
 MAILCHIMP_WEBHOOK_KEY = "nadine"
 
 ALLOW_ONLINE_REGISTRATION = False
+ALLOW_PHOTO_UPLOAD = False
+COUNTRY = 'US'
+
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 

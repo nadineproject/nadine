@@ -51,6 +51,10 @@ PAYMENT_CHOICES = (
     ('Waive', 'Payment Waived'),
 )
 
+COUNTRY_CHOICES = (
+    ('US', 'United States'),
+    ('CA', 'Canada')
+)
 
 class MemberGroups():
     ALL = "all"

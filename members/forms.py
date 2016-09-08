@@ -3,9 +3,16 @@ from django.contrib.auth.models import User
 from django.utils.html import strip_tags
 from taggit.forms import *
 from members.models import *
-from nadine.models.core import Member, HowHeard, Industry, Neighborhood, GENDER_CHOICES
+from nadine.models.core import Member, HowHeard, Industry, Neighborhood, GENDER_CHOICES, COUNTRY_CHOICES
 import datetime
-from django_localflavor_us.us_states import STATE_CHOICES
+from localflavor.us.us_states import US_STATES
+from localflavor.ca.ca_provinces import PROVINCE_CHOICES
+
+def get_state_choices():
+    if settings.COUNTRY == 'US':
+        return US_STATES
+    elif settings.COUNTRY == 'CA':
+        return PROVINCE_CHOICES
 
 
 class EditProfileForm(forms.Form):
@@ -15,12 +22,14 @@ class EditProfileForm(forms.Form):
     last_name = forms.CharField(max_length=100, required=True)
     email = forms.EmailField(widget=forms.TextInput(attrs={'size': '50'}), required=True)
     email2 = forms.EmailField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
-
+    country = forms.ChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}),choices=COUNTRY_CHOICES, required=False)
     address1 = forms.CharField(max_length=100, required=False)
     address2 = forms.CharField(max_length=100, required=False)
     city = forms.CharField(max_length=100, required=False)
-    state = forms.ChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), choices=STATE_CHOICES, required=False)
-    zipcode = forms.CharField(max_length=5, required=False)
+    state = forms.ChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), choices=get_state_choices, required=False)
+    province = forms.ChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), choices=PROVINCE_CHOICES, required=True)
+    zipcode = forms.CharField(max_length=16, required=False)
+    photo = forms.FileField(required=False)
     phone = forms.CharField(max_length=20, required=False)
     phone2 = forms.CharField(max_length=20, required=False)
     company_name = forms.CharField(max_length=100, required=False)
@@ -35,6 +44,7 @@ class EditProfileForm(forms.Form):
     howHeard = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), label="How heard", queryset=HowHeard.objects.all(), required=False)
     industry = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), queryset=Industry.objects.all(), required=False)
     neighborhood = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), queryset=Neighborhood.objects.all(), required=False)
+    bio = forms.CharField(widget=forms.Textarea, max_length=512, required=False)
     has_kids = forms.NullBooleanField(widget=forms.Select(attrs={'class': 'browser-default'}), required=False)
     self_employed = forms.NullBooleanField(widget=forms.Select(attrs={'class': 'browser-default'}), required=False)
 

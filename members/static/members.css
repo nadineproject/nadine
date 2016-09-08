@@ -145,6 +145,11 @@ p {
 	width: 70%;
 }
 
+textarea#id_bio {
+	background-color: white;
+	height: 100px;
+}
+
 #reg_box, #login_box {
 	margin-top: 3%;
 }
