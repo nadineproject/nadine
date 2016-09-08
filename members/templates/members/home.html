@@ -117,9 +117,18 @@
 			        <div class="container">
 			        	© 2016 |  Office Nomads | <a id='nadine-link' href="http://nadineproject.org/" target="_new">The Nadine Project</a>
 								<div class='grey-text text-lighten-4 right' id="social">
-									<a id="fb" target="_blank" href="http://www.facebook.com/OfficeNomads">fb</a>
-									<a id="tw" target="_blank" href="http://twitter.com/OfficeNomads">tw</a>
-									<a id="ye" target="_blank" href="http://www.yelp.com/biz/office-nomads-seattle">ye</a>
+									{% if settings.FACEBOOK_URL %}
+										<a id="fb" target="_blank" href={{ settings.FACEBOOK_URL }} >fb</a>
+									{% endif %}
+									{% if settings.TWITTER_URL %}
+										<a id="tw" target="_blank" href={{ settings.TWITTER_URL }}>tw</a>
+									{% endif %}
+									{% if settings.YELP_URL %}
+										<a id="ye" target="_blank" href={{ settings.YELP_URL }}>ye</a>
+									{% endif %}
+									{% if settings.INSTAGRAM_URL %}
+										<a id='inst' target='_blank' href={{ settings.INSTAGRAM_URL }}>inst</a>
+									{% endif %}
 								</div>
 							</div>
 			      </div>

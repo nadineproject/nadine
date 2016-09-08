@@ -201,6 +201,11 @@ ALLOW_PHOTO_UPLOAD = False
 COUNTRY = 'US'
 # COUNTRY = 'CA'
 
+# Uncomment and insert social media URLS to be inserted in the footer
+FACEBOOK_URL = "https://www.facebook.com/OfficeNomads"
+TWITTER_URL = 'https://twitter.com/OfficeNomads'
+YELP_URL = 'https://www.yelp.com/biz/office-nomads-seattle-2'
+# INSTAGRAM_URL =
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
