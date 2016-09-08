@@ -22,15 +22,15 @@ class StyledAdmin(admin.ModelAdmin):
 
 
 class TransactionAdmin(StyledAdmin):
-    list_display = ('transaction_date', 'member', 'amount')
-    search_fields = ('member__user__first_name', 'member__user__last_name', 'amount')
-    raw_id_fields = ('bills', 'member')
+    list_display = ('transaction_date', 'user', 'amount')
+    search_fields = ('user__first_name', 'user__last_name', 'amount')
+    raw_id_fields = ('bills', 'user')
 admin.site.register(Transaction, TransactionAdmin)
 
 
 class BillAdmin(StyledAdmin):
-    list_display = ('bill_date', 'member', 'amount')
-    search_fields = ('member__user__first_name', 'member__user__last_name')
+    list_display = ('bill_date', 'user', 'amount')
+    search_fields = ('user__first_name', 'user__last_name')
     raw_id_fields = ('membership', 'dropins', 'guest_dropins')
 admin.site.register(Bill, BillAdmin)
 
@@ -53,14 +53,14 @@ admin.site.register(User, UserWithProfileAdmin)
 
 
 class DailyLogAdmin(StyledAdmin):
-    list_display = ('visit_date', 'member', 'guest_of', 'created')
-    search_fields = ('member__user__first_name', 'member__user__last_name', 'guest_of__user__first_name', 'guest_of__user__last_name')
+    list_display = ('visit_date', 'user', 'guest_of', 'created')
+    search_fields = ('user__first_name', 'user__last_name', 'guest_of__user__first_name', 'guest_of__user__last_name')
 admin.site.register(DailyLog, DailyLogAdmin)
 
 
 class MembershipAdmin(StyledAdmin):
-    list_display = ('member', 'start_date', 'end_date')
-    search_fields = ('member__user__first_name', 'member__user__last_name')
+    list_display = ('user', 'start_date', 'end_date')
+    search_fields = ('user__first_name', 'user__last_name')
 admin.site.register(Membership, MembershipAdmin)
 
 
@@ -70,17 +70,17 @@ admin.site.register(SentEmailLog, SentEmailLogAdmin)
 
 
 class SecurityDepositAdmin(StyledAdmin):
-    list_display = ('member', 'received_date', 'returned_date', 'amount', 'note')
+    list_display = ('user', 'received_date', 'returned_date', 'amount', 'note')
 admin.site.register(SecurityDeposit, SecurityDepositAdmin)
 
 
 class SpecialDayAdmin(StyledAdmin):
-    list_display = ('member', 'year', 'month', 'day', 'description')
+    list_display = ('user', 'year', 'month', 'day', 'description')
 admin.site.register(SpecialDay, SpecialDayAdmin)
 
 
 class MemberNoteAdmin(StyledAdmin):
-    list_display = ('created', 'member', 'created_by', 'note')
+    list_display = ('created', 'user', 'created_by', 'note')
 admin.site.register(MemberNote, MemberNoteAdmin)
 
 
