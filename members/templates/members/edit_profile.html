@@ -33,57 +33,44 @@
                 <td>{{ profile_form.email2 }}</td>
                 <td>{{ profile_form.email2.errors }}</td>
             </tr>
-            <tr class='row-even'>
-              <td>COUNTRY</td>
-              <td id='country' name='profile.country'>{{ profile_form.country }}</td>
-              <td>{{ profile_form.country.errors }}</td>
-            </tr>
-            <tr class="row-odd">
+            <tr class="row-even">
                 <td>ADDRESS 1</td>
                 <td>{{ profile_form.address1 }}</td>
                 <td>{{ profile_form.address1.errors }}</td>
             </tr>
-            <tr class="row-even">
+            <tr class="row-odd">
                 <td>ADDRESS 2</td>
                 <td>{{ profile_form.address2 }}</td>
                 <td>{{ profile_form.address2.errors }}</td>
             </tr>
-            <tr class="row-odd">
+            <tr class="row-even">
                 <td>CITY</td>
                 <td>{{ profile_form.city }}</td>
                 <td>{{ profile_form.city.errors }}</td>
             </tr>
-            {% if profile.country == 'United States' %}
-              <tr class="row-even">
-                  <td>STATE</td>
-                  <td>{{ profile_form.state }}</td>
-                  <td>{{ profile_form.state.errors }}</td>
-              </tr>
-            {% else %}
-              <tr class="row-even">
-                  <td>PROVINCE</td>
-                  <td>{{ profile_form.province }}</td>
-                  <td>{{ profile_form.state.errors }}</td>
-              </tr>
-            {% endif %}
             <tr class="row-odd">
+                <td>STATE</td>
+                <td>{{ profile_form.state }}</td>
+                <td>{{ profile_form.state.errors }}</td>
+            </tr>
+            <tr class="row-even">
                 <td>ZIPCODE</td>
                 <td>{{ profile_form.zipcode }}</td>
                 <td>{{ profile_form.zipcode.errors }}</td>
             </tr>
-            <tr class="row-even">
+            <tr class="row-odd">
                 <td>PRIMARY PHONE</td>
                 <td>{{ profile_form.phone }}</td>
                 <td>{{ profile_form.phone.errors }}</td>
             </tr>
-            <tr class="row-odd">
+            <tr class="row-even">
                 <td>ALTERNATE PHONE</td>
                 <td>{{ profile_form.phone2 }}</td>
                 <td>{{ profile_form.phone2.errors }}</td>
             </tr>
             {% if not ALLOW_PHOTO_UPLOAD %}
-            <tr class="row-even">
-              <td>UPLOAD PHOTO</td>
+            <tr class="row-odd">
+              <td><strong>UPLOAD PHOTO</strong></td>
               <td>
                 <form method='POST' action='.' name='upload' enctype="multipart/form-data">
 	                {% csrf_token %}
@@ -203,6 +190,13 @@
             </tr>
         </table>
 
+        <a name="public_profile"></a>
+        <table id='publicprofile'>
+          <tr>
+            <td class='public_bool'><strong>Make your profile public?</strong></td>
+            <td>{{ profile_form.public_profile }}</td>
+          </tr>
+        </table>
         <button class="btn waves-effect waves-light sub-btn" type="submit" value="Update Your Profile" />Update Your Profile</button>
         {% csrf_token %}
     </form>

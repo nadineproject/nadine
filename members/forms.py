@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.utils.html import strip_tags
 from taggit.forms import *
 from members.models import *
-from nadine.models.core import Member, HowHeard, Industry, Neighborhood, GENDER_CHOICES, COUNTRY_CHOICES
+from nadine.models.core import Member, HowHeard, Industry, Neighborhood, GENDER_CHOICES
 import datetime
 from localflavor.us.us_states import US_STATES
 from localflavor.ca.ca_provinces import PROVINCE_CHOICES
@@ -22,12 +22,10 @@ class EditProfileForm(forms.Form):
     last_name = forms.CharField(max_length=100, required=True)
     email = forms.EmailField(widget=forms.TextInput(attrs={'size': '50'}), required=True)
     email2 = forms.EmailField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
-    country = forms.ChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}),choices=COUNTRY_CHOICES, required=False)
     address1 = forms.CharField(max_length=100, required=False)
     address2 = forms.CharField(max_length=100, required=False)
     city = forms.CharField(max_length=100, required=False)
     state = forms.ChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), choices=get_state_choices, required=False)
-    province = forms.ChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), choices=PROVINCE_CHOICES, required=True)
     zipcode = forms.CharField(max_length=16, required=False)
     photo = forms.FileField(required=False)
     phone = forms.CharField(max_length=20, required=False)
@@ -45,8 +43,9 @@ class EditProfileForm(forms.Form):
     industry = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), queryset=Industry.objects.all(), required=False)
     neighborhood = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), queryset=Neighborhood.objects.all(), required=False)
     bio = forms.CharField(widget=forms.Textarea, max_length=512, required=False)
-    has_kids = forms.NullBooleanField(widget=forms.Select(attrs={'class': 'browser-default'}), required=False)
-    self_employed = forms.NullBooleanField(widget=forms.Select(attrs={'class': 'browser-default'}), required=False)
+    has_kids = forms.NullBooleanField(widget=forms.NullBooleanSelect(attrs={'class':'browser-default'}), required=False)
+    self_employed = forms.NullBooleanField(widget=forms.NullBooleanSelect(attrs={'class':'browser-default'}), required=False)
+    public_profile = forms.ChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), choices=((True, 'Yes'), (False, 'No')), required=True)
 
     emergency_name = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}), label="Name", required=False)
     emergency_relationship = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}), label="Relationship", required=False)

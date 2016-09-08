@@ -150,6 +150,14 @@ textarea#id_bio {
 	height: 100px;
 }
 
+.public_bool {
+	width: 25%;
+}
+
+select#id_public_profile.browser-default {
+	width: 45%;
+}
+
 #reg_box, #login_box {
 	margin-top: 3%;
 }
