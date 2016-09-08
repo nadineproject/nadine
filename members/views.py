@@ -205,7 +205,7 @@ def edit_profile(request, username):
                                                 'emergency_phone': emergency_contact.phone, 'emergency_email': emergency_contact.email,
                                             })
 
-    return render_to_response('members/edit_profile.html', {'user': user, 'profile_form': profile_form}, context_instance=RequestContext(request))
+    return render_to_response('members/edit_profile.html', {'user': user, 'profile_form': profile_form, 'ALLOW_PHOTO_UPLOAD': settings.ALLOW_PHOTO_UPLOAD}, context_instance=RequestContext(request))
 
 
 @login_required

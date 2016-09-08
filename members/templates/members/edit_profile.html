@@ -68,15 +68,11 @@
                 <td>{{ profile_form.phone2 }}</td>
                 <td>{{ profile_form.phone2.errors }}</td>
             </tr>
-            {% if not ALLOW_PHOTO_UPLOAD %}
+            {% if ALLOW_PHOTO_UPLOAD %}
             <tr class="row-odd">
               <td><strong>UPLOAD PHOTO</strong></td>
               <td>
-                <form method='POST' action='.' name='upload' enctype="multipart/form-data">
-	                {% csrf_token %}
-                  <input type='file' name='profile_form.photo.photo' style='background-color:RGBA(255, 255, 255, 0);'/>
-                  <button class='btn' type='submit'  value='Upload'>Upload</button>
-               </form>
+                <input type='file' name='photo' style='background-color:RGBA(255, 255, 255, 0);'/>
               </td>
             </tr>
             {% endif %}

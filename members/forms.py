@@ -78,6 +78,7 @@ class EditProfileForm(forms.Form):
         profile.city = self.cleaned_data['city']
         profile.state = self.cleaned_data['state']
         profile.zipcode = self.cleaned_data['zipcode']
+        profile.photo = self.cleaned_data['photo']
         profile.url_personal = self.cleaned_data['url_personal']
         profile.url_professional = self.cleaned_data['url_professional']
         profile.url_facebook = self.cleaned_data['url_facebook']
@@ -85,6 +86,7 @@ class EditProfileForm(forms.Form):
         profile.url_linkedin = self.cleaned_data['url_linkedin']
         profile.url_aboutme = self.cleaned_data['url_aboutme']
         profile.url_github = self.cleaned_data['url_github']
+        profile.bio = self.cleaned_data['bio']
         profile.gender = self.cleaned_data['gender']
         profile.howHeard = self.cleaned_data['howHeard']
         profile.industry = self.cleaned_data['industry']
@@ -92,6 +94,7 @@ class EditProfileForm(forms.Form):
         profile.has_kids = self.cleaned_data['has_kids']
         profile.self_emplyed = self.cleaned_data['self_employed']
         profile.company_name = self.cleaned_data['company_name']
+        profile.public_profile = self.cleaned_data['public_profile']
         profile.save()
 
         # Emergency Contact data
