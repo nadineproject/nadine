@@ -2,13 +2,21 @@
 
 html {
 	height: 100%;
+	box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
 }
 
 body {
-	height:100%;
+	min-height: 100%;
 	margin: 0;
 	padding: 0;
 	font-family: 'Roboto', sans-serif;
+	position: relative;
 }
 
 a {
@@ -130,25 +138,59 @@ p {
 	text-align: center;
 }
 
-#profile_form, #registration_form {
+#profile_form {
 	background-color: RGBA(239, 238, 231, 1);
 	padding: 2%;
 	margin-left: 15%;
 	width: 70%;
 }
 
-#registration_form {
-	margin-top: 5%;
+#reg_box, #login_box {
+	margin-top: 3%;
 }
 
-#profile_form tr, #registration_form tr {
+#login_form,  #registration_form {
+	background-color: RGBA(232, 232, 232, 1);
+	margin-right: 0;
+	margin-top: 5%;
+	border-radius: 2px;
+}
+
+#login_form h1, #registration_form h1 {
+	background-color: RGBA(63, 104, 140, .7);
+	padding: 2%;
+	border-radius: 2px;
+}
+
+#login_form th, #registration_form th {
+	padding-left: 10%;
+}
+
+#login_reset {
+	padding-bottom: 5%;
+}
+
+#registration_form input {
+	width: 75%;
+}
+
+#registration_form {
+	padding-bottom: 5%;
+}
+
+#profile_form tr, #registration_form tr, #login_form tr {
 	border: none;
 }
 
-#profile_form input, #registration_form input {
-	padding: 2%;
+#profile_form input, #registration_form input, #login_form input {
+	padding-left: 2%;
 	background-color: white;
 	border-bottom: none;
+}
+
+#login_form input{
+	padding-left: 2%;
+	margin-right: 2%;
 }
 
 .sub-btn {
@@ -156,8 +198,17 @@ p {
 	margin-left: 35%;
 }
 
-#reg-btn {
-	margin-left: 0;
+#login-btn, #reg-btn {
+	margin-left: 20%;
+	margin-right: 10%;
+	width: 35%;
+	background-color: RGBA(127, 175, 147, 1);
+}
+
+#loginonly-btn {
+	margin-left: 30%;
+	width: 40%;
+	background-color: RGBA(127, 175, 147, 1);
 }
 
 #event_cal {
@@ -267,18 +318,21 @@ table td { text-align: center; border-bottom: 1px solid #ccc; padding: 0.5em; }
 
 /* Footer */
 
-footer.page-footer{
+footer.page-footer {
 	padding: 1px;
 	background: RGBA(61, 61, 61, .9);
-  right: 0;
-  bottom: 0;
-  left: 0;
+	margin: 0;
 }
 
 #copyright {
 	float: left;
 	margin: 10px;
 	margin-top:16px;
+}
+
+.footer-copyright {
+	color: white;
+	font-weight: 400;
 }
 
 #social {
