@@ -3,20 +3,25 @@
 {% block sub-title %} Register | {% endblock %}
 
 {% block style %}
+#content { font-size: 1em; border: none; }
+#content h1 { font-size: 1.8em; margin: 0; }
+#content table td { border-bottom: none;}
 #page-message { font-size: 1.5em; color: #933; margin: 20px 0px; }
 table td    {text-align: left;}
 {% endblock %}
 
 {% block content %}
 
-{% if page_message %}
-  <p id="page_message">{{ page_message|safe }}</p>
-{% endif %}
+<div class='col s6 offset-s3' id='reg_box'>
+  {% if page_message %}
+    <p id="page_message">{{ page_message|safe }}</p>
+  {% endif %}
 
-  <form id='registration_form' align='center' name='registration_form' action='.' method='POST'>
-    <h3>Register</h3>
-    <table align='center'>
-      <tr class="row-even">
+  <div style="margin-left:2em;">
+    <form id='registration_form' name='registration_form' action='../member/register/' method='POST'>
+      <h1 style='margin-top:5%;margin-bottom:5%;' align='center'>Register</h1>
+      <table>
+        <tr>
           <td>First Name:</td>
           <td>{{ registration_form.first_name }}</td>
           <td>{{ registration_form.first_name.errors }}</td>
@@ -32,8 +37,13 @@ table td    {text-align: left;}
           <td>{{ registration_form.email.errors }}</td>
       </tr>
     </table>
-    <button class="btn waves-effect waves-light sub-btn" id='reg-btn' type="submit" value="Register" />Register</button>
-    {% csrf_token %}
-  </form>
+    <div class='row'>
+      <button class="btn waves-effect waves-light" id='reg-btn' type="submit" value="Register" />Register</button>
+      <input type="hidden" name="next" value="{{ next }}" />
+    </div>
 
+    {% csrf_token %}
+    </form>
+  </div>
+</div>
 {% endblock %}
