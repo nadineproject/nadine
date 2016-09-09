@@ -14,7 +14,7 @@
 				{% endif %}
 		</span>
 		days.
-		<div style="padding-top:1em; font-weight:normal;">Your billing day is the {{ member.active_membership.start_date|date:"jS" }}.</div>
+		<div style="padding-top:1em; font-weight:normal;">Your billing day is the {{ user.profile.active_membership.start_date|date:"jS" }}.</div>
 	</div>
 	{% endif %}
 	<div style="font-size:150%;">
