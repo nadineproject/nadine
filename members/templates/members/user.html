@@ -64,8 +64,8 @@
 
 <dl>
     <dt>Profile Tags:</dt>
-    {% if member.tags.all %}
-        {% for tag in member.tags.all %}
+    {% if user.profile.tags.all %}
+        {% for tag in user.profile.tags.all %}
             <dd><a href="{% url 'member_tag' tag %}">{{ tag }}</a></dd>
         {% endfor %}
     {% else %}
@@ -83,7 +83,7 @@
 {% if user.profile.bio %}
   <dl>
     <dt>Bio:</dt>
-    <dd>{{ member.bio }}</dd>
+    <dd>{{ user.profile.bio }}</dd>
   </dl>
 {% endif %}
 
@@ -141,85 +141,85 @@
             {% endif %}
             <tr>
               <td>Paid Visits</td>
-              <td>{{ member.paid_count }}</td>
+              <td>{{ user.profile.paid_count }}</td>
             </tr>
             <tr>
               <td>First Visit</td>
-              <td>{{ member.first_visit }}</td>
+              <td>{{ user.profile.first_visit }}</td>
             </tr>
             <tr>
               <td>Last Visit</td>
-              <td>{{ member.last_visit }}</td>
+              <td>{{ user.profile.last_visit }}</td>
             </tr>
             -->
 
             <!-- Address1 -->
-            {% if member.address1 %}
+            {% if user.profile.address1 %}
               <tr>
                  <td>Address 1:</td>
-                 <td>{{ member.address1 }}</td>
+                 <td>{{ user.profile.address1 }}</td>
               </tr>
             {% endif %}
             <!-- Address2 -->
-            {% if member.address2 %}
+            {% if user.profile.address2 %}
               <tr>
                  <td>Address 2:</td>
-                 <td>{{ member.address2 }}</td>
+                 <td>{{ user.profile.address2 }}</td>
               </tr>
             {% endif %}
             <!-- City -->
-            {% if member.city %}
+            {% if user.profile.city %}
               <tr>
                  <td>City:</td>
-                 <td>{{ member.city }}, {{ member.state }} {{ member.zipcode }}</td>
+                 <td>{{ user.profile.city }}, {{ user.profile.state }} {{ user.profile.zipcode }}</td>
               </tr>
             {% endif %}
 
             <!-- Email -->
-            {% if member.email %}
+            {% if user.profile.email %}
               <tr>
                  <td>Email:</td>
-                 <td>{{ member.email }}</td>
+                 <td>{{ user.profile.email }}</td>
               </tr>
             {% endif %}
 
             <!-- Email2 -->
-            {% if member.email2 %}
+            {% if user.profile.email2 %}
               <tr>
                  <td>Alternate Email:</td>
-                 <td>{{ member.email2 }}</td>
+                 <td>{{ user.profile.email2 }}</td>
               </tr>
             {% endif %}
 
             <!-- Phone -->
-            {% if member.phone %}
+            {% if user.profile.phone %}
               <tr>
                  <td>Phone:</td>
-                 <td>{{ member.phone }}</td>
+                 <td>{{ user.profile.phone }}</td>
               </tr>
             {% endif %}
 
             <!-- Phone2 -->
-            {% if member.phone2 %}
+            {% if user.profile.phone2 %}
               <tr>
                  <td>Alternate Phone:</td>
-                 <td>{{ member.phone2 }}</td>
+                 <td>{{ user.profile.phone2 }}</td>
               </tr>
             {% endif %}
 
             <!-- How Heard -->
-            {% if member.howHeard %}
+            {% if user.profile.howHeard %}
               <tr>
                  <td>How Heard:</td>
-                 <td>{{ member.howHeard }}</td>
+                 <td>{{ user.profile.howHeard }}</td>
               </tr>
             {% endif %}
 
             <!-- Gender -->
-            {% if member.gender %}
+            {% if user.profile.gender %}
               <tr>
                  <td>Gender:</td>
-                 <td>{{ member.gender }}</td>
+                 <td>{{ user.profile.gender }}</td>
               </tr>
             {% endif %}
         </table>
@@ -298,12 +298,12 @@
     </div>
 
     <div id="tabs-4">
-        {% if member.is_active %}
+        {% if user.profile.is_active %}
             <h3>Visits This Cycle</h3>
             <div style="font-weight:bold; padding-left:1em; font-size:120%">
-                {{ member.activity_this_month | length }}
-                {% if member.active_membership.get_allowance %}
-                    of {{ member.active_membership.get_allowance }}
+                {{ user.profile.activity_this_month | length }}
+                {% if user.profile.active_membership.get_allowance %}
+                    of {{ user.profile.active_membership.get_allowance }}
                 {% endif %}
                 Days
             </div>
@@ -365,7 +365,7 @@
             <td>{% include "members/billing_profile.frag" %}</td>
             <td>
                 <div style="margin-bottom: .5em; text-align:left;">
-                    Automatic Billing: <span id="auto_billing" style="color:green;">The {{ member.active_membership.start_date|date:"jS" }}</span>
+                    Automatic Billing: <span id="auto_billing" style="color:green;">The {{ user.profile.active_membership.start_date|date:"jS" }}</span>
                 </div>
                 <form id="disable_billing_form" action="{% url 'member_disable_billing' user.username %}">
                     <input id="disable_billing_button" type="submit" value="Disable Automatic Billing" />
@@ -379,7 +379,7 @@
         </td></tr>
         </table>
 
-        {% if not member.auto_bill_enabled %}
+        {% if not user.profile.auto_bill_enabled %}
             <script>
                 ab = document.getElementById("auto_billing");
                 ab.innerHTML = "Disabled";
