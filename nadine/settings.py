@@ -88,6 +88,7 @@ TEMPLATES = [
                 'nadine.context_processors.site',
                 'nadine.context_processors.nav_context',
                 'nadine.context_processors.tablet_context',
+                'nadine.context_processors.allow_online_registration',
                 'django.contrib.auth.context_processors.auth',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.i18n',
