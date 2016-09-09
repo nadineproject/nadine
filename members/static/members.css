@@ -80,10 +80,11 @@ p {
 
 #jumbotron {
 	position: relative;
+	margin: 0;
 	top: 0;
 	left: 0;
 	width: 100%;
-	z-index: 2
+	z-index: 2;
 }
 
 .logo-img {
@@ -110,11 +111,16 @@ p {
 #jumbo-img {
 	content: url(img/jumbo.png);
 	width: 100%;
+	margin: 0;
+	padding: 0;
+	box-sizing: inherit;
 }
 
 #logo {
 	float: left;
 	padding-left: 1%;
+	padding-bottom: 0;
+	margin: 0;
 }
 
 #content h2 {
@@ -158,6 +164,7 @@ select#id_public_profile.browser-default {
 	width: 45%;
 }
 
+
 #reg_box, #login_box {
 	margin-top: 3%;
 }
@@ -199,6 +206,10 @@ select#id_public_profile.browser-default {
 	padding-left: 2%;
 	background-color: white;
 	border-bottom: none;
+}
+
+input#id_photo {
+	background-color: RGBA(255, 255, 255, 0);
 }
 
 #login_form input{
@@ -421,12 +432,5 @@ footer.page-footer {
 
 	#profile_form input {
 		margin-right: 1%;
-	}
-}
-
-/*Dynamic top margin when using large screen*/
-@media only screen and (min-width: 1600px) {
-	#jumbotron {
-		margin-top: 2%;
 	}
 }

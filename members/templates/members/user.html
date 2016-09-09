@@ -80,6 +80,13 @@
     </dl>
 {% endif %}
 
+{% if user.profile.bio %}
+  <dl>
+    <dt>Bio:</dt>
+    <dd>{{ member.bio }}</dd>
+  </dl>
+{% endif %}
+
 {% if user.username == request.user.username or request.user.is_staff %}
     <div class="clearfix"></div>
 

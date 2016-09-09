@@ -78,7 +78,6 @@ class EditProfileForm(forms.Form):
         profile.city = self.cleaned_data['city']
         profile.state = self.cleaned_data['state']
         profile.zipcode = self.cleaned_data['zipcode']
-        profile.photo = self.cleaned_data['photo']
         profile.url_personal = self.cleaned_data['url_personal']
         profile.url_professional = self.cleaned_data['url_professional']
         profile.url_facebook = self.cleaned_data['url_facebook']
@@ -95,6 +94,10 @@ class EditProfileForm(forms.Form):
         profile.self_emplyed = self.cleaned_data['self_employed']
         profile.company_name = self.cleaned_data['company_name']
         profile.public_profile = self.cleaned_data['public_profile']
+
+        if self.cleaned_data['photo']:
+            profile.photo = self.cleaned_data['photo']
+
         profile.save()
 
         # Emergency Contact data

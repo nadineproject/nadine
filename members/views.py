@@ -198,10 +198,13 @@ def edit_profile(request, username):
                                                 'company_name': profile.company_name, 'url_personal': profile.url_personal, 'url_professional': profile.url_professional,
                                                 'url_facebook': profile.url_facebook, 'url_twitter': profile.url_twitter,
                                                 'url_linkedin': profile.url_linkedin, 'url_aboutme': profile.url_aboutme, 'url_github': profile.url_github,
+                                                'bio': profile.bio, 'photo': profile.photo,
+                                                'public_profile': profile.public_profile,
                                                 'gender': profile.gender, 'howHeard': profile.howHeard, 'industry': profile.industry, 'neighborhood': profile.neighborhood,
                                                 'has_kids': profile.has_kids, 'self_employed': profile.self_employed,
                                                 'emergency_name': emergency_contact.name, 'emergency_relationship': emergency_contact.relationship,
                                                 'emergency_phone': emergency_contact.phone, 'emergency_email': emergency_contact.email,
+
                                             })
 
     return render_to_response('members/edit_profile.html', {'user': user, 'profile_form': profile_form, 'ALLOW_PHOTO_UPLOAD': settings.ALLOW_PHOTO_UPLOAD, 'settings': settings}, context_instance=RequestContext(request))
