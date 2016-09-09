@@ -352,7 +352,7 @@ footer.page-footer {
 	float: left;
 	margin: 10px;
 	margin-left: 130px;
-	width: 132px;
+	/*width: 132px;*/
 }
 
 #nadine-link {
@@ -388,6 +388,16 @@ footer.page-footer {
 	float: left;
 	margin-right: 10px;
 	background-image: url(img/yelp_32.png);
+	text-indent: -9999px;
+}
+
+#inst {
+	display: block;
+	width: 32px;
+	height: 32px;
+	float: left;
+	margin-right: 10px;
+	background-image: url(img/instagram_32.png);
 	text-indent: -9999px;
 }
 
