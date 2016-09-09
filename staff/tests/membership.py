@@ -16,7 +16,7 @@ def print_user_data(user):
     print
     profile = user.get_profile()
     print("Profile: %s" % profile)
-    for bill in Bill.objects.filter(member=profile):
+    for bill in Bill.objects.filter(user=user):
         print("  Bill: %s" % bill)
         print("    Membership: %s" % bill.membership)
         for dropin in bill.dropins.all():

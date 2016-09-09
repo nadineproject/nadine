@@ -188,7 +188,7 @@ class MemberManager(models.Manager):
         not_signed_in = []
         for member in self.here_today(day):
             if not member in signed_in and not member.has_desk(day):
-                not_signed_in.append({'member':member, 'day':day})
+                not_signed_in.append({'user':member.user, 'day':day})
 
         return not_signed_in
 

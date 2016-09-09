@@ -198,6 +198,7 @@ def run_billing(bill_time=None):
                         monthly_fee = 0
                     billable_dropin_count = max(0, len(bill_dropins) + len(bill_guest_dropins) - day.membership.dropin_allowance)
                     bill_amount = monthly_fee + (billable_dropin_count * day.membership.daily_rate)
+                    # TODO - remove Member
                     day.bill = Bill(bill_date=day.date, amount=bill_amount, user=user, member=user.profile, paid_by=day.membership.guest_of, membership=day.membership)
                     #logger.debug('saving bill: %s - %s - %s' % (day.bill, day, billable_dropin_count))
                     day.bill.save()
@@ -208,7 +209,7 @@ def run_billing(bill_time=None):
 
                     # Close out the transaction if no money is due
                     if bill_amount == 0:
-                        transaction = Transaction(user=user, member=user.profile, amount=0, status='closed')
+                        transaction = Transaction(user=user, amount=0, status='closed')
                         transaction.save()
                         transaction.bills = [day.bill]
                         transaction.save()
@@ -221,6 +222,7 @@ def run_billing(bill_time=None):
                 if time_to_bill_guests or time_to_bill_dropins:
                     bill_amount = (len(bill_dropins) + len(guest_bill_dropins)) * settings.NON_MEMBER_DROPIN_FEE
                     last_day = run.days[len(run.days) - 1]
+                    # TODO - remove member from Bill
                     last_day.bill = Bill(bill_date=last_day.date, amount=bill_amount, user=user, member=user.profile)
                     last_day.bill.save()
                     bill_count += 1

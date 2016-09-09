@@ -73,21 +73,19 @@ def search(request):
 
 def user_profile(request, username):
     user = get_object_or_404(User, username=username)
-    member = get_object_or_404(Member, user=user)
-    membership = member.active_membership()
-    tags = member.tags.order_by('name')
-    return render_to_response('tablet/user_profile.html', {'user': user, 'member': member, 'membership': membership, 'tags': tags}, context_instance=RequestContext(request))
+    membership = user.profile.active_membership()
+    tags = user.profile.tags.order_by('name')
+    return render_to_response('tablet/user_profile.html', {'user': user, 'membership': membership, 'tags': tags}, context_instance=RequestContext(request))
 
 
 def user_signin(request, username):
     user = get_object_or_404(User, username=username)
-    member = get_object_or_404(Member, user=user)
-    membership = member.active_membership()
+    membership = user.profile.active_membership()
 
     can_signin = False
-    active_membership = member.active_membership()
+    active_membership = user.profile.active_membership()
     if not active_membership or active_membership.end_date or not active_membership.has_desk:
-        if not DailyLog.objects.filter(member=member, visit_date=timezone.localtime(timezone.now()).date()):
+        if not DailyLog.objects.filter(user=user, visit_date=timezone.localtime(timezone.now()).date()):
             can_signin = True
 
     search_results = None
@@ -98,12 +96,12 @@ def user_signin(request, username):
     else:
         member_search_form = MemberSearchForm()
 
-    # Look up previous hosts for his member
-    guest_days = DailyLog.objects.filter(member__user__username=username, guest_of__isnull=False).values("guest_of")
+    # Look up previous hosts for his user
+    guest_days = DailyLog.objects.filter(user=user, guest_of__isnull=False).values("guest_of")
     previous_hosts = Member.objects.active_members().filter(id__in=guest_days)
 
-    return render_to_response('tablet/user_signin.html', {'user': user, 'member': member, 'can_signin': can_signin,
-                                                          'membership': membership, 'member': member, 'previous_hosts':previous_hosts,
+    return render_to_response('tablet/user_signin.html', {'user': user, 'can_signin': can_signin,
+                                                          'membership': membership, 'previous_hosts':previous_hosts,
                                                           'member_search_form': member_search_form, 'search_results': search_results}, context_instance=RequestContext(request))
 
 
@@ -136,11 +134,8 @@ def signin_user(request, username):
 
 def signin_user_guest(request, username, guestof):
     user = get_object_or_404(User, username=username)
-    member = get_object_or_404(Member, user=user)
     daily_log = DailyLog()
     daily_log.user = user
-    # TODO - remove member
-    daily_log.member = member
     daily_log.visit_date = timezone.localtime(timezone.now()).date()
     # Only proceed if they haven't signed in already
     if DailyLog.objects.filter(user=user, visit_date=daily_log.visit_date).count() == 0:
@@ -148,7 +143,7 @@ def signin_user_guest(request, username, guestof):
             guestof_user = get_object_or_404(User, username=guestof)
             guestof_member = get_object_or_404(Member, user=guestof_user)
             daily_log.guest_of = guestof_member
-        if DailyLog.objects.filter(member=member).count() == 0:
+        if DailyLog.objects.filter(user=user).count() == 0:
             daily_log.payment = 'Trial'
         else:
             daily_log.payment = 'Bill'
@@ -163,7 +158,7 @@ def signin_user_guest(request, username, guestof):
             except:
                 logger.error("Could not send introduction email to %s" % user.email)
         else:
-            if len(member.open_alerts()) > 0:
+            if len(user.profile.open_alerts()) > 0:
                 mailgun.send_manage_member(user)
     return HttpResponseRedirect(reverse('tablet_welcome', kwargs={'username': username}))
 
@@ -171,21 +166,18 @@ def signin_user_guest(request, username, guestof):
 def welcome(request, username):
     usage_color = "black"
     user = get_object_or_404(User, username=username)
-    member = user.get_profile()
-    membership = None
-    if member:
-        membership = member.active_membership()
-        if membership:
-            days = len(member.activity_this_month())
-            allowed = membership.get_allowance()
-            if days > allowed:
-                usage_color = "red"
-            elif days == allowed:
-                usage_color = "orange"
-            else:
-                usage_color = "green"
+    membership = user.profile.active_membership()
+    if membership:
+        days = len(user.profile.activity_this_month())
+        allowed = membership.get_allowance()
+        if days > allowed:
+            usage_color = "red"
+        elif days == allowed:
+            usage_color = "orange"
+        else:
+            usage_color = "green"
     motd = MOTD.objects.for_today()
-    return render_to_response('tablet/welcome.html', {'user': user, 'member': member, 'membership': membership,
+    return render_to_response('tablet/welcome.html', {'user': user, 'membership': membership,
                                                       'motd': motd, 'usage_color': usage_color}, context_instance=RequestContext(request))
 
 

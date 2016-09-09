@@ -17,7 +17,7 @@ def print_user_data(user):
     print
     profile = user.get_profile()
     print("Profile: %s" % profile)
-    for bill in Bill.objects.filter(member=profile):
+    for bill in Bill.objects.filter(user=user):
         print("  Bill: %s" % bill)
         print("    Membership: %s" % bill.membership)
         for dropin in bill.dropins.all():
@@ -46,7 +46,7 @@ class BillingTestCase(TestCase):
         Membership.objects.create_with_plan(member=self.user3.get_profile(), start_date=date(2008, 2, 1), end_date=date(2010, 6, 20), membership_plan=self.pt15Plan)
         Membership.objects.create_with_plan(member=self.user3.get_profile(), start_date=date(2010, 6, 21), end_date=None, membership_plan=self.basicPlan)
         for day in range(2, 19):
-            DailyLog.objects.create(member=self.user3.get_profile(), visit_date=date(2010, 6, day), payment='Bill')
+            DailyLog.objects.create(user=self.user3, visit_date=date(2010, 6, day), payment='Bill')
 
         # User 4 = PT5 2/1/2008 - 6/10/2010 & Resident since 6/11/2010
         # Daily activity 6/2/2010 through 6/11/2010
@@ -54,15 +54,15 @@ class BillingTestCase(TestCase):
         Membership.objects.create_with_plan(member=self.user4.get_profile(), start_date=date(2008, 2, 1), end_date=date(2010, 6, 10), membership_plan=self.pt5Plan)
         Membership.objects.create_with_plan(member=self.user4.get_profile(), start_date=date(2010, 6, 11), end_date=None, membership_plan=self.residentPlan)
         for day in range(2, 11):
-            DailyLog.objects.create(member=self.user4.get_profile(), visit_date=date(2010, 6, day), payment='Bill')
+            DailyLog.objects.create(user=self.user4, visit_date=date(2010, 6, day), payment='Bill')
 
         # User 5 = PT15 5/20/2010 - 6/16/2010 & Basic since 6/17/2010
         # Daily activity 6/1/2010 through 6/15/2010
         self.user5 = User.objects.create(username='member_five', first_name='Member', last_name='Five')
-        Membership.objects.create_with_plan(member=self.user5.get_profile(), start_date=date(2010, 5, 20), end_date=date(2010, 6, 16), membership_plan=self.pt15Plan)
-        Membership.objects.create_with_plan(member=self.user5.get_profile(), start_date=date(2010, 6, 17), end_date=None, membership_plan=self.basicPlan)
+        Membership.objects.create_with_plan(user=self.user5, start_date=date(2010, 5, 20), end_date=date(2010, 6, 16), membership_plan=self.pt15Plan)
+        Membership.objects.create_with_plan(user=self.user5, start_date=date(2010, 6, 17), end_date=None, membership_plan=self.basicPlan)
         for day in range(1, 16):
-            DailyLog.objects.create(member=self.user5.get_profile(), visit_date=date(2010, 6, day), payment='Bill')
+            DailyLog.objects.create(user=self.user5, visit_date=date(2010, 6, day), payment='Bill')
 
         # User 6, 7 = PT-5 6/26/2008 - User 7 guest of User 6
         # User 7 has daily activity 6/1/2010 through 6/15/2010
@@ -71,7 +71,7 @@ class BillingTestCase(TestCase):
         Membership.objects.create_with_plan(member=self.user6.get_profile(), start_date=date(2008, 6, 26), end_date=None, membership_plan=self.pt5Plan)
         Membership.objects.create_with_plan(member=self.user7.get_profile(), start_date=date(2008, 6, 26), end_date=None, membership_plan=self.pt5Plan, rate=0, guest_of=self.user6.get_profile())
         for day in range(1, 16):
-            DailyLog.objects.create(member=self.user7.get_profile(), visit_date=date(2010, 6, day), payment='Bill')
+            DailyLog.objects.create(user=self.user7, visit_date=date(2010, 6, day), payment='Bill')
 
     def test_guest_activity(self):
         test_date = date(2010, 6, 20)
@@ -176,11 +176,11 @@ class BillingTestCase(TestCase):
         Membership.objects.create_with_plan(member=user8.get_profile(), start_date=date(2010, 5, 20), end_date=date(2010, 6, 19), membership_plan=self.pt5Plan)
         Membership.objects.create_with_plan(member=user8.get_profile(), start_date=date(2010, 6, 20), end_date=None, membership_plan=self.basicPlan)
         for day in range(11, 23):
-            DailyLog.objects.create(member=user8.get_profile(), visit_date=date(2010, 6, day), payment='Bill')
+            DailyLog.objects.create(user=user8, visit_date=date(2010, 6, day), payment='Bill')
         run_billing_for_range(datetime(2010, 7, 31), 61)
         print_user_data(user8)
 
-        bills = Bill.objects.filter(member=user8.get_profile()).order_by("bill_date")
+        bills = Bill.objects.filter(user=user8).order_by("bill_date")
         # self.assertEqual(bills.count(), 5, "Member8 had the incorrect number of bills (%d)" % bills.count())
         may_20_pt5 = bills[0]
         may_20_overage = bills[1]

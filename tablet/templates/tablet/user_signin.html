@@ -1,28 +1,29 @@
 {% extends "tablet/t_base.html" %}
 {% load imagetags %}
+{% load staticfiles %}
 
 {% block nav-members %} class="ui-btn-active" {% endblock %}
 
 {% block content %}
 	<div class="ui-grid-a">
 		<div class="ui-block-a">
-			{% if member.photo %}
-				<a href="{% url 'tablet_profile' member.user %}"><img src="{{ user.profile.photo.url }}" width="300px"></a>
+			{% if user.profile.photo %}
+				<a href="{% url 'tablet_profile' user %}"><img src="{{ user.profile.photo.url }}" width="300px"></a>
 			{% else %}
-				<img src="{{ STATIC_URL }}/BlankIcon150x150.jpg">
+				<img src="{% static 'BlankIcon150x150.jpg' %}">
 			{% endif %}
 		</div>
 		<div class="ui-block-b">
-			<h2>{{ member.full_name }}</h2>
-			<h3>Billing Day: <span style="font-weight:normal;">{{ member.active_membership.start_date|date:"jS" }}</span></h3>
+			<h2>{{ user.get_full_name }}</h2>
+			<h3>Billing Day: <span style="font-weight:normal;">{{ user.profile.active_membership.start_date|date:"jS" }}</span></h3>
 
-			{% if not member.has_valid_billing %}
+			{% if not user.profile.has_valid_billing %}
 				<h3 style="color:red;">Please update your billing profile.</h3>
 			{% endif %}
 
 			{% if membership %}
 				<h3>Visits This Cycle:
-					<span style="font-weight:normal;">{{ member.activity_this_month | length }}
+					<span style="font-weight:normal;">{{ user.profile.activity_this_month | length }}
 						{% if membership.get_allowance %}
 							of {{ membership.get_allowance }}
 						{% endif %}
