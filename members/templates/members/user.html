@@ -309,7 +309,7 @@
             </div>
         {% endif %}
         <h3>Daily Activity</h3>
-        {% if user.profile.daily_logs.all %}
+        {% if user.dailylog_set.all %}
         <table>
           <thead>
             <tr>
@@ -319,7 +319,7 @@
             </tr>
           </thead>
           <tbody>
-            {% for log in user.profile.daily_logs.all %}
+            {% for log in user.dailylog_set.all %}
               <tr class="{% cycle 'row-even' 'row-odd' %}">
                  <td nowrap class="date-cell">{{ log.visit_date|date:"M d, Y" }}</td>
                  <td align="center">{{ log.payment }}</td>

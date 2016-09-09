@@ -150,12 +150,11 @@ def profile_redirect(request):
 @login_required
 def user(request, username):
     user = get_object_or_404(User, username=username)
-    member = user.profile
-    activity = DailyLog.objects.filter(user=user, payment='Bill', bills__isnull=True, visit_date__gt=timezone.now().date() - timedelta(days=31))
-    guest_activity = DailyLog.objects.filter(guest_of=member, payment='Bill', guest_bills__isnull=True, visit_date__gte=timezone.now().date() - timedelta(days=31))
+    #member = user.profile
+    # activity = DailyLog.objects.filter(user=user, payment='Bill', bills__isnull=True, visit_date__gt=timezone.now().date() - timedelta(days=31))
+    #guest_activity = DailyLog.objects.filter(guest_of=member, payment='Bill', guest_bills__isnull=True, visit_date__gte=timezone.now().date() - timedelta(days=31))
     emergency_contact = user.get_emergency_contact()
-    return render_to_response('members/user.html', {'user': user, 'emergency_contact': emergency_contact, 'activity': activity,
-                              'guest_activity': guest_activity, 'settings': settings}, context_instance=RequestContext(request))
+    return render_to_response('members/user.html', {'user': user, 'emergency_contact': emergency_contact, 'settings': settings}, context_instance=RequestContext(request))
 
 
 @login_required
