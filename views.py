@@ -44,7 +44,7 @@ def index(request):
     if request.user.is_staff:
         return HttpResponseRedirect(reverse('staff_todo'))
 
-    return HttpResponseRedirect(reverse('members_home'))
+    return HttpResponseRedirect(reverse('member_home'))
 
 
 @csrf_protect
