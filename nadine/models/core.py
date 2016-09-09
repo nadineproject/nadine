@@ -51,7 +51,6 @@ PAYMENT_CHOICES = (
     ('Waive', 'Payment Waived'),
 )
 
-
 class MemberGroups():
     ALL = "all"
     HAS_DESK = "has_desk"

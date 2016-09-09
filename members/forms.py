@@ -5,7 +5,14 @@ from taggit.forms import *
 from members.models import *
 from nadine.models.core import Member, HowHeard, Industry, Neighborhood, GENDER_CHOICES
 import datetime
-from django_localflavor_us.us_states import STATE_CHOICES
+from localflavor.us.us_states import US_STATES
+from localflavor.ca.ca_provinces import PROVINCE_CHOICES
+
+def get_state_choices():
+    if settings.COUNTRY == 'US':
+        return US_STATES
+    elif settings.COUNTRY == 'CA':
+        return PROVINCE_CHOICES
 
 
 class EditProfileForm(forms.Form):
@@ -15,12 +22,12 @@ class EditProfileForm(forms.Form):
     last_name = forms.CharField(max_length=100, required=True)
     email = forms.EmailField(widget=forms.TextInput(attrs={'size': '50'}), required=True)
     email2 = forms.EmailField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
-
     address1 = forms.CharField(max_length=100, required=False)
     address2 = forms.CharField(max_length=100, required=False)
     city = forms.CharField(max_length=100, required=False)
-    state = forms.ChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), choices=STATE_CHOICES, required=False)
-    zipcode = forms.CharField(max_length=5, required=False)
+    state = forms.ChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), choices=get_state_choices, required=False)
+    zipcode = forms.CharField(max_length=16, required=False)
+    photo = forms.FileField(required=False)
     phone = forms.CharField(max_length=20, required=False)
     phone2 = forms.CharField(max_length=20, required=False)
     company_name = forms.CharField(max_length=100, required=False)
@@ -35,8 +42,10 @@ class EditProfileForm(forms.Form):
     howHeard = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), label="How heard", queryset=HowHeard.objects.all(), required=False)
     industry = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), queryset=Industry.objects.all(), required=False)
     neighborhood = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), queryset=Neighborhood.objects.all(), required=False)
-    has_kids = forms.NullBooleanField(widget=forms.Select(attrs={'class': 'browser-default'}), required=False)
-    self_employed = forms.NullBooleanField(widget=forms.Select(attrs={'class': 'browser-default'}), required=False)
+    bio = forms.CharField(widget=forms.Textarea, max_length=512, required=False)
+    has_kids = forms.NullBooleanField(widget=forms.NullBooleanSelect(attrs={'class':'browser-default'}), required=False)
+    self_employed = forms.NullBooleanField(widget=forms.NullBooleanSelect(attrs={'class':'browser-default'}), required=False)
+    public_profile = forms.ChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), choices=((True, 'Yes'), (False, 'No')), required=True)
 
     emergency_name = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}), label="Name", required=False)
     emergency_relationship = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}), label="Relationship", required=False)
@@ -69,6 +78,7 @@ class EditProfileForm(forms.Form):
         profile.city = self.cleaned_data['city']
         profile.state = self.cleaned_data['state']
         profile.zipcode = self.cleaned_data['zipcode']
+        profile.photo = self.cleaned_data['photo']
         profile.url_personal = self.cleaned_data['url_personal']
         profile.url_professional = self.cleaned_data['url_professional']
         profile.url_facebook = self.cleaned_data['url_facebook']
@@ -76,6 +86,7 @@ class EditProfileForm(forms.Form):
         profile.url_linkedin = self.cleaned_data['url_linkedin']
         profile.url_aboutme = self.cleaned_data['url_aboutme']
         profile.url_github = self.cleaned_data['url_github']
+        profile.bio = self.cleaned_data['bio']
         profile.gender = self.cleaned_data['gender']
         profile.howHeard = self.cleaned_data['howHeard']
         profile.industry = self.cleaned_data['industry']
@@ -83,6 +94,7 @@ class EditProfileForm(forms.Form):
         profile.has_kids = self.cleaned_data['has_kids']
         profile.self_emplyed = self.cleaned_data['self_employed']
         profile.company_name = self.cleaned_data['company_name']
+        profile.public_profile = self.cleaned_data['public_profile']
         profile.save()
 
         # Emergency Contact data

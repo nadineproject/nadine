@@ -191,7 +191,21 @@ CELERY_ALWAYS_EAGER = False
 # MAILCHIMP_NEWSLETTER_KEY="YourNewsletter"
 MAILCHIMP_WEBHOOK_KEY = "nadine"
 
+# Allows for the login page to include or not include the option for nonmembers to register and make a user account.
 ALLOW_ONLINE_REGISTRATION = False
+
+# Allows or does not allow for users to upload their own profile photo on the edit profile page.
+ALLOW_PHOTO_UPLOAD = False
+
+# The uncommented country below allows for either the US states or Canadian provinces to be options for member profiles.
+COUNTRY = 'US'
+# COUNTRY = 'CA'
+
+# Uncomment and insert social media URLS to be inserted in the footer
+FACEBOOK_URL = "https://www.facebook.com/OfficeNomads"
+TWITTER_URL = 'https://twitter.com/OfficeNomads'
+YELP_URL = 'https://www.yelp.com/biz/office-nomads-seattle-2'
+# INSTAGRAM_URL =
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 

@@ -61,7 +61,6 @@ def is_manager(user):
             return profile.is_manager()
     return False
 
-
 @login_required
 def home(request):
     title = "Home"
@@ -77,7 +76,7 @@ def home(request):
     current_context = RequestContext(request)
     template = Template(template_text)
     rendered = template.render(current_context)
-    return render_to_response('members/home.html', {'title': title, 'page_body': rendered, 'other_topics': other_topics}, current_context)
+    return render_to_response('members/home.html', {'title': title, 'page_body': rendered, 'other_topics': other_topics, 'settings': settings}, current_context)
 
 @login_required
 def faq(request):
@@ -94,7 +93,7 @@ def faq(request):
     current_context = RequestContext(request)
     template = Template(template_text)
     rendered = template.render(current_context)
-    return render_to_response('members/faq.html', {'title': title, 'page_body': rendered, 'other_topics': other_topics}, current_context)
+    return render_to_response('members/faq.html', {'title': title, 'page_body': rendered, 'other_topics': other_topics, 'settings': settings}, current_context)
 
 @login_required
 def help_topic(request, slug):
@@ -105,7 +104,7 @@ def help_topic(request, slug):
     current_context = context_instance = RequestContext(request)
     template = Template(template_text)
     rendered = template.render(current_context)
-    return render_to_response('members/help_topic.html', {'title': title, 'page_body': rendered, 'other_topics': other_topics}, current_context)
+    return render_to_response('members/help_topic.html', {'title': title, 'page_body': rendered, 'other_topics': other_topics, 'settings': settings}, current_context)
 
 
 @login_required
@@ -128,7 +127,7 @@ def view_members(request):
     else:
         search_form = MemberSearchForm()
 
-    return render_to_response('members/view_members.html', {'active_members': active_members, 'here_today': here_today,
+    return render_to_response('members/view_members.html', {'settings': settings, 'active_members': active_members, 'here_today': here_today,
                                                             'search_results': search_results, 'search_form': search_form, 'search_terms': search_terms, 'has_key': has_key, 'has_mail': has_mail},
                               context_instance=RequestContext(request))
 
@@ -140,7 +139,7 @@ def chat(request):
 
 
 def not_active(request):
-    return render_to_response('members/not_active.html', {}, context_instance=RequestContext(request))
+    return render_to_response('members/not_active.html', {'settings': settings}, context_instance=RequestContext(request))
 
 
 @login_required
@@ -168,14 +167,14 @@ def mail(request):
         if sub_form.is_valid():
             sub_form.save(user)
             return HttpResponseRedirect(reverse('member_email_lists'))
-    return render_to_response('members/mail.html', {'user': user, 'mailing_list_subscription_form': MailingListSubscriptionForm()}, context_instance=RequestContext(request))
+    return render_to_response('members/mail.html', {'user': user, 'mailing_list_subscription_form': MailingListSubscriptionForm(), 'settings': settings}, context_instance=RequestContext(request))
 
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def mail_message(request, id):
     message = get_object_or_404(IncomingMail, id=id)
-    return render_to_response('members/mail_message.html', {'message': message}, context_instance=RequestContext(request))
+    return render_to_response('members/mail_message.html', {'message': message, 'settings': settings}, context_instance=RequestContext(request))
 
 
 @login_required
@@ -205,7 +204,7 @@ def edit_profile(request, username):
                                                 'emergency_phone': emergency_contact.phone, 'emergency_email': emergency_contact.email,
                                             })
 
-    return render_to_response('members/edit_profile.html', {'user': user, 'profile_form': profile_form}, context_instance=RequestContext(request))
+    return render_to_response('members/edit_profile.html', {'user': user, 'profile_form': profile_form, 'ALLOW_PHOTO_UPLOAD': settings.ALLOW_PHOTO_UPLOAD, 'settings': settings}, context_instance=RequestContext(request))
 
 
 @login_required
@@ -223,7 +222,7 @@ def slack(request, username):
         except Exception as e:
             messages.add_message(request, messages.ERROR, "Failed to send invitation: %s" % e)
 
-    return render_to_response('members/slack.html', {'user': user, 'team_url':settings.SLACK_TEAM_URL}, context_instance=RequestContext(request))
+    return render_to_response('members/slack.html', {'user': user, 'team_url':settings.SLACK_TEAM_URL, 'settings': settings}, context_instance=RequestContext(request))
 
 @csrf_exempt
 def slack_bots(request):
@@ -247,7 +246,7 @@ def receipt(request, username, id):
         if not request.user.is_staff:
             return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
     bills = transaction.bills.all()
-    return render_to_response('members/receipt.html', {'user': user, 'transaction': transaction, 'bills': bills}, context_instance=RequestContext(request))
+    return render_to_response('members/receipt.html', {'user': user, 'transaction': transaction, 'bills': bills, 'settings': settings}, context_instance=RequestContext(request))
 
 
 @login_required
@@ -258,7 +257,7 @@ def tags(request):
         members = Member.objects.active_members().filter(tags__name__in=[tag])
         if members:
             tags.append((tag, members))
-    return render_to_response('members/tags.html', {'tags': tags}, context_instance=RequestContext(request))
+    return render_to_response('members/tags.html', {'tags': tags, 'settings': settings}, context_instance=RequestContext(request))
 
 
 @login_required
@@ -269,14 +268,14 @@ def tag_cloud(request):
         members = Member.objects.active_members().filter(tags__name__in=[tag])
         if members:
             tags.append((tag, members))
-    return render_to_response('members/tag_cloud.html', {'tags': tags}, context_instance=RequestContext(request))
+    return render_to_response('members/tag_cloud.html', {'tags': tags, 'settings': settings}, context_instance=RequestContext(request))
 
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def tag(request, tag):
     members = Member.objects.active_members().filter(tags__name__in=[tag])
-    return render_to_response('members/tag.html', {'tag': tag, 'members': members}, context_instance=RequestContext(request))
+    return render_to_response('members/tag.html', {'tag': tag, 'members': members, 'settings': settings}, context_instance=RequestContext(request))
 
 
 @login_required
@@ -300,7 +299,7 @@ def user_tags(request, username):
                 profile.tags.add(tag.lower())
 
     all_tags = Member.tags.all()
-    return render_to_response('members/user_tags.html', {'user': user, 'user_tags': user_tags, 'all_tags': all_tags, 'error': error}, context_instance=RequestContext(request))
+    return render_to_response('members/user_tags.html', {'user': user, 'user_tags': user_tags, 'all_tags': all_tags, 'error': error, 'settings': settings}, context_instance=RequestContext(request))
 
 
 @login_required
@@ -310,7 +309,7 @@ def delete_tag(request, username, tag):
         if not request.user.is_staff:
             return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
     user.get_profile().tags.remove(tag)
-    return HttpResponseRedirect(reverse('member_user_tags', kwargs={'username': username}))
+    return HttpResponseRedirect(reverse('member_user_tags', kwargs={'username': username, 'settings': settings}))
 
 
 @login_required
@@ -338,7 +337,7 @@ def user_devices(request, username):
     devices = arp.devices_by_user(user)
     ip = request.META['REMOTE_ADDR']
     this_device = arp.device_by_ip(ip)
-    return render_to_response('members/user_devices.html', {'user': user, 'devices': devices, 'this_device': this_device, 'ip': ip, 'error': error}, context_instance=RequestContext(request))
+    return render_to_response('members/user_devices.html', {'user': user, 'devices': devices, 'this_device': this_device, 'ip': ip, 'error': error, 'settings': settings}, context_instance=RequestContext(request))
 
 
 @login_required
@@ -351,7 +350,7 @@ def connect(request, username):
     if action and action == "send_info":
         email.send_contact_request(user, target)
         message = "Email Sent"
-    return render_to_response('members/connect.html', {'target': target, 'user': user, 'page_message': message}, context_instance=RequestContext(request))
+    return render_to_response('members/connect.html', {'target': target, 'user': user, 'page_message': message, 'settings': settings}, context_instance=RequestContext(request))
 
 
 @login_required
@@ -383,13 +382,13 @@ def disable_billing(request, username):
         api = PaymentAPI()
         api.disable_recurring(username)
         email.announce_billing_disable(user)
-    return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
+    return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username, 'settings': settings}))
 
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def events_google(request, location_slug=None):
-    return render_to_response('members/events_google.html', {}, context_instance=RequestContext(request))
+    return render_to_response('members/events_google.html', {'settings': settings}, context_instance=RequestContext(request))
 
 
 @login_required
@@ -440,7 +439,7 @@ def register(request):
             logger.error(str(e))
     else:
         registration_form = NewUserForm()
-    return render_to_response('members/register.html', { 'registration_form': registration_form, 'page_message': page_message}, context_instance=RequestContext(request))
+    return render_to_response('members/register.html', { 'registration_form': registration_form, 'page_message': page_message, 'settings': settings}, context_instance=RequestContext(request))
 
 #@login_required
 #@user_passes_test(is_active_member, login_url='member_not_active')
