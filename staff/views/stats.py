@@ -221,7 +221,7 @@ def membership_days(request):
             total_days = total_days + days
             if (days > max_days):
                 max_days = days
-        daily_logs = DailyLog.objects.filter(member=user.profile).count()
+        daily_logs = DailyLog.objects.filter(user=user).count()
         membership_days.append(MembershipDays(user, membership_count, total_days, daily_logs, max_days, current))
         if total_days > 0:
             avg_count = avg_count + 1

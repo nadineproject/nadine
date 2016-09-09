@@ -390,7 +390,7 @@
 
         <h3>View All Payments <a target="_self" id="payment-details-toggle" href="." onclick="togglePaymentDetails(); return false;">[+]</a></h3>
         <div id="payment-details">
-        {% if user.profile.transaction_set.all %}
+        {% if user.transaction_set.all %}
         <table>
          <thead>
             <tr>
@@ -400,7 +400,7 @@
             </tr>
          </thead>
          <tbody>
-            {% for transaction in user.profile.transaction_set.all %}
+            {% for transaction in user.transaction_set.all %}
             <tr class="{% cycle 'row-even' 'row-odd' %}">
                 <td nowrap><a target="_self" href="{% url 'member_receipt' user.username transaction.id %}">{{ transaction.transaction_date | date:"M d, Y" }}</a></td>
                 <td>${{ transaction.amount }}</td>

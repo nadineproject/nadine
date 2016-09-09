@@ -2,7 +2,7 @@ import json
 import traceback
 from datetime import datetime, timedelta, date
 
-from django.test import SimpleTestCase
+from django.test import TestCase
 from django.core import management
 from django.contrib.auth.models import User
 from django.conf import settings
@@ -13,7 +13,7 @@ import arp
 from arpwatch.models import *
 
 
-class ArpWatchTest(SimpleTestCase):
+class ArpWatchTest(TestCase):
 
     def test_user_device(self):
         MAC = "AA:AA:AA:AA:AA:AA"

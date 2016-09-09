@@ -63,7 +63,7 @@ def bills(request):
             amount = pay_bills_form.cleaned_data['amount']
             if page_message == None:
                 bill_ids = [int(bill_id) for bill_id in request.POST.getlist('bill_id')]
-                transaction = Transaction(user=user, member=user.profile, status='closed', amount=Decimal(amount))
+                transaction = Transaction(user=user, status='closed', amount=Decimal(amount))
                 transaction.note = pay_bills_form.cleaned_data['transaction_note']
                 transaction.save()
                 for bill in user.profile.open_bills():
@@ -92,14 +92,13 @@ def bills(request):
 @staff_member_required
 def bills_pay_all(request, username):
     user = get_object_or_404(User, username=username)
-    member = user.get_profile()
-    amount = member.open_bill_amount()
+    amount = user.profile.open_bill_amount()
 
     # Save all the bills!
     if amount > 0:
-        transaction = Transaction(user=member.user, member=member, status='closed', amount=amount)
+        transaction = Transaction(user=user, status='closed', amount=amount)
         transaction.save()
-        for bill in member.open_bills():
+        for bill in user.profile.open_bills():
             transaction.bills.add(bill)
 
     # Where to next?

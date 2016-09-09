@@ -31,7 +31,7 @@ class ListTest(TestCase):
         self.basic_plan = MembershipPlan.objects.create(name='Basic', description='An occasional user', monthly_rate='50', daily_rate='25', dropin_allowance='5')
 
     def test_subscription_form(self):
-        Membership.objects.create(member=self.user2.get_profile(), membership_plan=self.basic_plan, start_date=timezone.now().date() - timedelta(days=10))
+        Membership.objects.create(user=self.user2, member=self.user2.get_profile(), membership_plan=self.basic_plan, start_date=timezone.now().date() - timedelta(days=10))
         self.mlist1.moderators.add(self.user1)
         self.mlist1.subscribers.add(self.user2)
         form_data = {
@@ -125,7 +125,7 @@ class ListTest(TestCase):
         self.mlist1.save()
         user3, _client3 = create_user('suz', 'Suz', 'Ebens', email='suz@example.com')
         self.assertEqual(0, self.mlist1.subscribers.count())
-        membership = Membership.objects.create(member=user3.get_profile(), membership_plan=self.basic_plan, start_date=timezone.now().date() - timedelta(days=31))
+        membership = Membership.objects.create(user=user3, member=user3.get_profile(), membership_plan=self.basic_plan, start_date=timezone.now().date() - timedelta(days=31))
         self.assertEqual(1, self.mlist1.subscribers.count())
         self.assertTrue(user3 in self.mlist1.subscribers.all())
 
@@ -133,7 +133,7 @@ class ListTest(TestCase):
         membership.end_date = timezone.now().date() - timedelta(days=1)
         membership.save()
         self.mlist1.subscribers.remove(user3)
-        _membership2 = Membership.objects.create(member=user3.get_profile(), membership_plan=self.basic_plan, start_date=timezone.now().date())
+        membership2 = Membership.objects.create(user=user3, member=user3.get_profile(), membership_plan=self.basic_plan, start_date=timezone.now().date())
         self.assertFalse(user3 in self.mlist1.subscribers.all())
 
     def test_subscribe_command(self):
@@ -143,7 +143,7 @@ class ListTest(TestCase):
         call_command('subscribe_members', '%s' % self.mlist1.id)
         self.assertEqual(0, self.mlist1.subscribers.count())
 
-        Membership.objects.create(member=self.user2.get_profile(), membership_plan=self.basic_plan, start_date=timezone.now().date() - timedelta(days=10))
+        Membership.objects.create(user=self.user2, member=self.user2.get_profile(), membership_plan=self.basic_plan, start_date=timezone.now().date() - timedelta(days=10))
         call_command('subscribe_members', '%s' % self.mlist1.id)
         self.assertEqual(1, self.mlist1.subscribers.count())
 

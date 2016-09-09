@@ -13,7 +13,7 @@ import django.db.models.deletion
 #
 
 def member_to_user(model):
-    print(" %d objects found..." % model.objects.all().count(), end="")
+    # print(" %d objects found..." % model.objects.all().count(), end="")
     for o in model.objects.all():
         if o.member:
             o.user = o.member.user
@@ -21,26 +21,26 @@ def member_to_user(model):
         #else:
         #    print()
         #    print("      '%s' has no Member object! (pk=%s)" % (o, o.pk))
-    print()
+    # print()
 
 
 def forwards_func(apps, schema_editor):
-    print()
-    print ("    Migrating DailyLog... ", end="")
+    # print()
+    # print ("    Migrating DailyLog... ", end="")
     member_to_user(apps.get_model("nadine", "DailyLog"))
-    print ("    Migrating Membership... ", end="")
+    # print ("    Migrating Membership... ", end="")
     member_to_user(apps.get_model("nadine", "Membership"))
-    print ("    Migrating SentEmailLog... ", end="")
+    # print ("    Migrating SentEmailLog... ", end="")
     member_to_user(apps.get_model("nadine", "SentEmailLog"))
-    print ("    Migrating SecurityDeposit... ", end="")
+    # print ("    Migrating SecurityDeposit... ", end="")
     member_to_user(apps.get_model("nadine", "SecurityDeposit"))
-    print ("    Migrating SpecialDay... ", end="")
+    # print ("    Migrating SpecialDay... ", end="")
     member_to_user(apps.get_model("nadine", "SpecialDay"))
-    print ("    Migrating MemberNote... ", end="")
+    # print ("    Migrating MemberNote... ", end="")
     member_to_user(apps.get_model("nadine", "MemberNote"))
-    print ("    Migrating Bill... ", end="")
+    # print ("    Migrating Bill... ", end="")
     member_to_user(apps.get_model("nadine", "Bill"))
-    print ("    Migrating Transaction... ", end="")
+    # print ("    Migrating Transaction... ", end="")
     member_to_user(apps.get_model("nadine", "Transaction"))
 
 

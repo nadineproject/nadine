@@ -173,12 +173,8 @@ class MemberEditForm(forms.Form):
 
 class DailyLogForm(forms.Form):
     username = forms.CharField(widget=forms.TextInput(attrs={'readonly':'readonly'}))
-    #member_id = forms.IntegerField(required=True, min_value=0, widget=forms.HiddenInput)
     visit_date = forms.DateField(widget=forms.HiddenInput())
     payment = forms.ChoiceField(choices=PAYMENT_CHOICES, required=True)
-    #member_list = Member.objects.active_members()
-    #member = forms.ModelChoiceField(queryset=member_list, required=True)
-    #guest_of = forms.ModelChoiceField(queryset=member_list, required=False)
     note = forms.CharField(required=False)
 
     def save(self):
@@ -188,7 +184,6 @@ class DailyLogForm(forms.Form):
 
         # Make sure there isn't another log for this member on this day
         u = User.objects.get(username=self.cleaned_data['username'])
-        #m = Member.objects.get(pk=self.cleaned_data['member_id'])
         v = self.cleaned_data['visit_date']
         daily_log = DailyLog.objects.filter(user=u, visit_date=v)
         if daily_log:
@@ -196,7 +191,6 @@ class DailyLogForm(forms.Form):
 
         daily_log = DailyLog()
         daily_log.user = u
-        daily_log.member = u.profile
         daily_log.visit_date = v
         daily_log.payment = self.cleaned_data['payment']
         #daily_log.guest_of = self.cleaned_data['guest_of']
@@ -206,9 +200,9 @@ class DailyLogForm(forms.Form):
 
 
 class MembershipForm(forms.Form):
-    username = forms.CharField(required=True, widget=forms.HiddenInput)
     # TODO - convert to User
     member_list = Member.objects.all()
+    username = forms.CharField(required=True, widget=forms.HiddenInput)
     plan_list = MembershipPlan.objects.filter(enabled=True).order_by('name')
     membership_id = forms.IntegerField(required=False, min_value=0, widget=forms.HiddenInput)
     membership_plan = forms.ModelChoiceField(queryset=plan_list, required=True)
@@ -255,7 +249,6 @@ class MembershipForm(forms.Form):
         last_membership = membership.user.profile.last_membership()
 
         # Save this membership
-        membership.member = membership.user.get_profile()
         membership.membership_plan = self.cleaned_data['membership_plan']
         membership.start_date = self.cleaned_data['start_date']
         membership.end_date = self.cleaned_data['end_date']
@@ -271,7 +264,7 @@ class MembershipForm(forms.Form):
         # Save the note if we were given one
         note = self.cleaned_data['note']
         if note:
-            MemberNote.objects.create(user=membership.user, member=membership.member, created_by=self.created_by, note=note)
+            MemberNote.objects.create(user=membership.user, created_by=self.created_by, note=note)
 
         if adding:
             email.send_new_membership(membership.user)

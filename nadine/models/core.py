@@ -107,7 +107,7 @@ class MemberGroups():
 
 class HowHeard(models.Model):
 
-    """A record of how a member discovered the space"""
+    """A record of how a person discovered the space"""
     name = models.CharField(max_length=128)
 
     def __str__(self): return self.name
@@ -119,7 +119,7 @@ class HowHeard(models.Model):
 
 class Industry(models.Model):
 
-    """The type of work a member does"""
+    """The type of work a user does"""
     name = models.CharField(max_length=128)
 
     def __str__(self): return self.name
@@ -145,7 +145,7 @@ class MemberManager(models.Manager):
 
     def member_count(self, active_only):
         if active_only:
-            return Member.objects.filter(memberships__start_date__isnull=False, memberships__end_date__isnull=True).count()
+            return Member.objects.active_users().count()
         else:
             return Member.objects.all().count()
 
@@ -168,7 +168,7 @@ class MemberManager(models.Manager):
         arp_members_query = users_for_day_query(day=day)
 
         # The members who have signed in
-        daily_members_query = Member.objects.filter(pk__in=DailyLog.objects.filter(visit_date=day).values('member__id'))
+        daily_members_query = Member.objects.filter(user__id__in=DailyLog.objects.filter(visit_date=day).values('user__id'))
 
         # The members that have access a door
         door_query = DoorEvent.objects.users_for_day(day)
@@ -183,12 +183,12 @@ class MemberManager(models.Manager):
 
         signed_in = []
         for l in DailyLog.objects.filter(visit_date=day):
-            signed_in.append(l.member)
+            signed_in.append(l.user.profile)
 
         not_signed_in = []
         for member in self.here_today(day):
             if not member in signed_in and not member.has_desk(day):
-                not_signed_in.append({'member':member, 'day':day})
+                not_signed_in.append({'user':member.user, 'day':day})
 
         return not_signed_in
 
@@ -207,12 +207,11 @@ class MemberManager(models.Manager):
     def active_member_emails(self, include_email2=False):
         emails = []
         for membership in Membership.objects.active_memberships():
-            member = membership.member
             user = membership.user
             if user.email not in emails:
                 emails.append(user.email)
-            if include_email2 and member.email2 not in emails:
-                emails.append(member.email2)
+            if include_email2 and user.profile.email2 not in emails:
+                emails.append(user.profile.email2)
         return emails
 
     def exiting_members(self, day=None):
@@ -224,9 +223,9 @@ class MemberManager(models.Manager):
         # memberships for today and remove the list of active members tomorrow.
         today_memberships = Membership.objects.active_memberships(day)
         tomorrow_memberships = Membership.objects.active_memberships(next_day)
-        exiting = today_memberships.exclude(member__in=tomorrow_memberships.values('member'))
+        exiting = today_memberships.exclude(user__in=tomorrow_memberships.values('user'))
 
-        return Member.objects.filter(id__in=exiting.values('member'))
+        return Member.objects.filter(user__in=exiting.values('user'))
 
     def expired_slack_users(self):
         expired_users = []
@@ -245,9 +244,9 @@ class MemberManager(models.Manager):
 
     def stale_members(self):
         smd = self.stale_member_date()
-        recently_used = DailyLog.objects.filter(visit_date__gte=smd).values('member').distinct()
+        recently_used = DailyLog.objects.filter(visit_date__gte=smd).values('user').distinct()
         memberships = Membership.objects.active_memberships().filter(start_date__lte=smd, has_desk=False)
-        return Member.objects.filter(id__in=memberships.values('member')).exclude(id__in=recently_used)
+        return Member.objects.filter(user__in=memberships.values('user')).exclude(user__in=recently_used)
 
     def missing_member_agreement(self):
         active_agmts = FileUpload.objects.filter(document_type=FileUpload.MEMBER_AGMT, user__in=self.active_users()).distinct()
@@ -276,23 +275,23 @@ class MemberManager(models.Manager):
 
     def members_by_plan(self, plan):
         memberships = Membership.objects.active_memberships().filter(membership_plan__name=plan)
-        return Member.objects.filter(id__in=memberships.values('member'))
+        return Member.objects.filter(user__in=memberships.values('user'))
 
     def members_by_plan_id(self, plan_id):
         memberships = Membership.objects.active_memberships().filter(membership_plan=plan_id)
-        return Member.objects.filter(id__in=memberships.values('member'))
+        return Member.objects.filter(user__in=memberships.values('user'))
 
     def members_with_desks(self):
         memberships = Membership.objects.active_memberships().filter(has_desk=True)
-        return Member.objects.filter(id__in=memberships.values('member'))
+        return Member.objects.filter(user__in=memberships.values('user'))
 
     def members_with_keys(self):
         memberships = Membership.objects.active_memberships().filter(has_key=True)
-        return Member.objects.filter(id__in=memberships.values('member'))
+        return Member.objects.filter(user__in=memberships.values('user'))
 
     def members_with_mail(self):
         memberships = Membership.objects.active_memberships().filter(has_mail=True)
-        return Member.objects.filter(id__in=memberships.values('member'))
+        return Member.objects.filter(user__in=memberships.values('user'))
 
     def members_by_neighborhood(self, hood, active_only=True):
         if active_only:
@@ -306,7 +305,7 @@ class MemberManager(models.Manager):
             memberships = Membership.objects.active_memberships().filter(membership_plan=management_plan).distinct()
             if include_future:
                 memberships = memberships | Membership.objects.future_memberships().filter(membership_plan=management_plan).distinct()
-            return Member.objects.filter(id__in=memberships.values('member'))
+            return Member.objects.filter(user__in=memberships.values('user'))
         return None
 
     def unsubscribe_recent_dropouts(self):
@@ -394,14 +393,14 @@ class Member(models.Model):
     def natural_key(self): return [self.user.id]
 
     def all_bills(self):
-        """Returns all of the open bills, both for this member and any bills for other members which are marked to be paid by this member."""
+        """Returns all of the open bills, both for this user and any bills for other members which are marked to be paid by this member."""
         from nadine.models.payment import Bill
-        return Bill.objects.filter(models.Q(member=self) | models.Q(paid_by=self)).order_by('-bill_date')
+        return Bill.objects.filter(models.Q(user=self.user) | models.Q(paid_by=self)).order_by('-bill_date')
 
     def open_bills(self):
-        """Returns all of the open bills, both for this member and any bills for other members which are marked to be paid by this member."""
+        """Returns all of the open bills, both for this user and any bills for other members which are marked to be paid by this member."""
         from nadine.models.payment import Bill
-        return Bill.objects.filter(models.Q(member=self) | models.Q(paid_by=self)).filter(transactions=None).order_by('bill_date')
+        return Bill.objects.filter(models.Q(user=self.user) | models.Q(paid_by=self)).filter(transactions=None).order_by('bill_date')
 
     def open_bill_amount(self):
         total = 0
@@ -412,7 +411,7 @@ class Member(models.Model):
     def open_bills_amount(self):
         """Returns the amount of all of the open bills, both for this member and any bills for other members which are marked to be paid by this member."""
         from nadine.models.payment import Bill
-        return Bill.objects.filter(models.Q(member=self) | models.Q(paid_by=self)).filter(transactions=None).aggregate(models.Sum('amount'))['amount__sum']
+        return Bill.objects.filter(models.Q(user=self.user) | models.Q(paid_by=self)).filter(transactions=None).aggregate(models.Sum('amount'))['amount__sum']
 
     def open_xero_invoices(self):
         from nadine.utils.xero_api import XeroAPI
@@ -427,20 +426,20 @@ class Member(models.Model):
         """Returns the latest Bill, or None if the member has not been billed.
         NOTE: This does not (and should not) return bills which are for other members but which are to be paid by this member."""
         from nadine.models.payment import Bill
-        bills = Bill.objects.filter(member=self)
+        bills = Bill.objects.filter(user=self.user)
         if len(bills) == 0:
             return None
         return bills[0]
 
     def membership_history(self):
-        return Membership.objects.filter(member=self).order_by('-start_date', 'end_date')
+        return Membership.objects.filter(user=self.user).order_by('-start_date', 'end_date')
 
     def membership_on_date(self, day):
-        return Membership.objects.filter(member=self, start_date__lte=day).filter(Q(end_date__isnull=True) | Q(end_date__gte=day)).first()
+        return Membership.objects.filter(user=self.user, start_date__lte=day).filter(Q(end_date__isnull=True) | Q(end_date__gte=day)).first()
 
     def last_membership(self):
         """Returns the latest membership, even if it has an end date, or None if none exists"""
-        memberships = Membership.objects.filter(member=self).order_by('-start_date', 'end_date')[0:]
+        memberships = Membership.objects.filter(user=self.user).order_by('-start_date', 'end_date')[0:]
         if memberships == None or len(memberships) == 0:
             return None
         return memberships[0]
@@ -452,7 +451,7 @@ class Member(models.Model):
         return None
 
     def membership_for_day(self, day):
-        return Membership.objects.active_memberships(target_date=day).filter(member=self).first()
+        return Membership.objects.active_memberships(target_date=day).filter(user=self.user).first()
 
     def activity_this_month(self, test_date=None):
         if not test_date:
@@ -471,24 +470,24 @@ class Member(models.Model):
 
         activity = []
         for m in [self] + self.guests():
-            for l in DailyLog.objects.filter(member=m, payment='Bill', visit_date__gte=month_start):
+            for l in DailyLog.objects.filter(user=m.user, payment='Bill', visit_date__gte=month_start):
                 activity.append(l)
         for l in DailyLog.objects.filter(guest_of=self, payment='Bill', visit_date__gte=month_start):
             activity.append(l)
         return activity
 
     def activity(self):
-        return DailyLog.objects.filter(member=self)
+        return DailyLog.objects.filter(user=self.user)
 
     def paid_count(self):
         return self.activity().filter(payment='Bill').count()
 
     def first_visit(self):
-        if Membership.objects.filter(member=self).count() > 0:
-            return Membership.objects.filter(member=self).order_by('start_date')[0].start_date
+        if Membership.objects.filter(user=self.user).count() > 0:
+            return Membership.objects.filter(user=self.user).order_by('start_date')[0].start_date
         else:
-            if DailyLog.objects.filter(member=self).count() > 0:
-                return DailyLog.objects.filter(member=self).order_by('visit_date')[0].visit_date
+            if DailyLog.objects.filter(user=self.user).count() > 0:
+                return DailyLog.objects.filter(user=self.user).order_by('visit_date')[0].visit_date
             else:
                 return None
 
@@ -583,11 +582,11 @@ class Member(models.Model):
         return timezone.localtime(timezone.now()) - datetime.combine(first, time(0, 0, 0))
 
     def last_visit(self):
-        if DailyLog.objects.filter(member=self).count() > 0:
-            return DailyLog.objects.filter(member=self).latest('visit_date').visit_date
+        if DailyLog.objects.filter(user=self.user).count() > 0:
+            return DailyLog.objects.filter(user=self.user).latest('visit_date').visit_date
         else:
-            if Membership.objects.filter(member=self, end_date__isnull=False).count() > 0:
-                return Membership.objects.filter(member=self, end_date__isnull=False).latest('end_date').end_date
+            if Membership.objects.filter(user=self.user, end_date__isnull=False).count() > 0:
+                return Membership.objects.filter(user=self.user, end_date__isnull=False).latest('end_date').end_date
             else:
                 return None
 
@@ -601,7 +600,7 @@ class Member(models.Model):
                 return "Ex" + str(last_monthly.membership_plan)
 
         # Now check daily logs
-        drop_ins = DailyLog.objects.filter(member=self).count()
+        drop_ins = DailyLog.objects.filter(user=self.user).count()
         if drop_ins == 0:
             return "New User"
         elif drop_ins == 1:
@@ -665,7 +664,7 @@ class Member(models.Model):
         return guests
 
     def deposits(self):
-        return SecurityDeposit.objects.filter(member=self)
+        return SecurityDeposit.objects.filter(user=self.user)
 
     def __str__(self): return '%s %s' % (smart_str(self.user.first_name), smart_str(self.user.last_name))
 
@@ -674,10 +673,10 @@ class Member(models.Model):
         return api.auto_bill_enabled(self.user.username)
 
     def member_notes(self):
-        return MemberNote.objects.filter(member=self)
+        return MemberNote.objects.filter(user=self.user)
 
     def special_days(self):
-        return SpecialDay.objects.filter(member=self)
+        return SpecialDay.objects.filter(user=self.user)
 
     def membership_days(self):
         total_days = 0
@@ -692,7 +691,7 @@ class Member(models.Model):
 
     def average_bill(self):
         from nadine.models.payment import Bill
-        bills = Bill.objects.filter(member=self)
+        bills = Bill.objects.filter(user=self.user)
         if bills:
             bill_totals = 0
             for b in bills:
@@ -776,16 +775,17 @@ class XeroContact(models.Model):
 class DailyLog(models.Model):
 
     """A visit by a member"""
-    user = models.ForeignKey(User)
-    member = models.ForeignKey(Member, verbose_name="Member", unique_for_date="visit_date", related_name="daily_logs")
+    user = models.ForeignKey(User, unique_for_date="visit_date")
+    #member = models.ForeignKey(Member, verbose_name="Member", unique_for_date="visit_date", related_name="daily_logs")
     visit_date = models.DateField("Date")
     payment = models.CharField("Payment", max_length=5, choices=PAYMENT_CHOICES)
+    # TODO - convert to User
     guest_of = models.ForeignKey(Member, verbose_name="Guest Of", related_name="guest_of", blank=True, null=True)
     note = models.CharField("Note", max_length=128, blank="True")
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return '%s - %s' % (self.visit_date, self.member)
+        return '%s - %s' % (self.visit_date, self.user)
 
     def get_admin_url(self):
         return urlresolvers.reverse('admin:nadine_dailylog_change', args=[self.id])
@@ -866,9 +866,9 @@ class Membership(models.Model):
     objects = MembershipManager()
 
     def save(self, *args, **kwargs):
-        if Membership.objects.active_memberships(self.start_date).exclude(pk=self.pk).filter(member=self.member).count() != 0:
+        if Membership.objects.active_memberships(self.start_date).exclude(pk=self.pk).filter(user=self.user).count() != 0:
             raise Exception('Already have a Membership for that start date')
-        if self.end_date and Membership.objects.active_memberships(self.end_date).exclude(pk=self.pk).filter(member=self.member).count() != 0:
+        if self.end_date and Membership.objects.active_memberships(self.end_date).exclude(pk=self.pk).filter(user=self.user).count() != 0:
             raise Exception('Already have a Membership for that end date')
         if self.end_date and self.start_date > self.end_date:
             raise Exception('A Membership cannot start after it ends')
@@ -895,7 +895,7 @@ class Membership(models.Model):
 
     def is_change(self):
         # If there is a membership ending the day before this one began then this one is a change
-        return Membership.objects.filter(member=self.member, end_date=self.start_date - timedelta(days=1)).count() > 0
+        return Membership.objects.filter(user=self.user, end_date=self.start_date - timedelta(days=1)).count() > 0
 
     def prev_billing_date(self, test_date=None):
         if not test_date:
@@ -933,7 +933,7 @@ class Membership(models.Model):
 class SentEmailLog(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, null=True)
-    member = models.ForeignKey('Member', null=True)
+    #member = models.ForeignKey('Member', null=True)
     recipient = models.EmailField()
     subject = models.CharField(max_length=128, blank=True, null=True)
     success = models.NullBooleanField(blank=False, null=False, default=False)
@@ -944,7 +944,7 @@ class SentEmailLog(models.Model):
 
 class SecurityDeposit(models.Model):
     user = models.ForeignKey(User)
-    member = models.ForeignKey('Member', blank=False, null=False)
+    #member = models.ForeignKey('Member', blank=False, null=False)
     received_date = models.DateField()
     returned_date = models.DateField(blank=True, null=True)
     amount = models.PositiveSmallIntegerField(default=0)
@@ -953,7 +953,7 @@ class SecurityDeposit(models.Model):
 
 class SpecialDay(models.Model):
     user = models.ForeignKey(User)
-    member = models.ForeignKey('Member', blank=False, null=False)
+    #member = models.ForeignKey('Member', blank=False, null=False)
     year = models.PositiveSmallIntegerField(blank=True, null=True)
     month = models.PositiveSmallIntegerField(blank=True, null=True)
     day = models.PositiveSmallIntegerField(blank=True, null=True)
@@ -964,7 +964,7 @@ class MemberNote(models.Model):
     user = models.ForeignKey(User)
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, null=True, related_name='+')
-    member = models.ForeignKey('Member', blank=False, null=False)
+    #member = models.ForeignKey('Member', blank=False, null=False)
     note = models.TextField(blank=True, null=True)
 
     def __str__(self):

@@ -42,8 +42,8 @@ class Bill(models.Model):
 
     """A record of what fees a Member owes."""
     bill_date = models.DateField(blank=False, null=False)
-    #user = models.ForeignKey(User, null=True)
     user = models.ForeignKey(User)
+    # TODO - remove member
     member = models.ForeignKey('Member', blank=False, null=False, related_name="bills")
     amount = models.DecimalField(max_digits=7, decimal_places=2)
     membership = models.ForeignKey('Membership', blank=True, null=True)
@@ -69,11 +69,10 @@ class Bill(models.Model):
 
 class Transaction(models.Model):
 
-    """A record of charges for a member."""
+    """A record of charges for a user."""
     transaction_date = models.DateTimeField(auto_now_add=True)
-    #user = models.ForeignKey(User, null=True)
     user = models.ForeignKey(User)
-    member = models.ForeignKey('Member', blank=False, null=False)
+    #member = models.ForeignKey('Member', blank=False, null=False)
     TRANSACTION_STATUS_CHOICES = (('open', 'Open'), ('closed', 'Closed'))
     status = models.CharField(max_length=10, choices=TRANSACTION_STATUS_CHOICES, blank=False, null=False, default='open')
     bills = models.ManyToManyField(Bill, related_name='transactions')
@@ -85,7 +84,7 @@ class Transaction(models.Model):
         ordering = ['-transaction_date']
 
     def __unicode__(self):
-        return '%s: %s' % (self.member.full_name, self.amount)
+        return '%s: %s' % (self.user.get_full_name(), self.amount)
 
     def get_admin_url(self):
         return urlresolvers.reverse('admin:nadine_transaction_change', args=[self.id])

@@ -85,7 +85,7 @@ def detail(request, username):
             email.send_manual(user, key)
         elif 'add_note' in request.POST:
             note = request.POST.get('note')
-            MemberNote.objects.create(user=user, member=member, created_by=request.user, note=note)
+            MemberNote.objects.create(user=user, created_by=request.user, note=note)
         elif 'add_special_day' in request.POST:
             month = request.POST.get('month')
             day = request.POST.get('day')
@@ -93,7 +93,7 @@ def detail(request, username):
             if len(year) == 0:
                 year = None
             desc = request.POST.get('description')
-            SpecialDay.objects.create(user=user, member=member, month=month, day=day, year=year, description=desc)
+            SpecialDay.objects.create(user=user, month=month, day=day, year=year, description=desc)
         else:
             print(request.POST)
 
