@@ -88,6 +88,7 @@ TEMPLATES = [
                 'nadine.context_processors.site',
                 'nadine.context_processors.nav_context',
                 'nadine.context_processors.tablet_context',
+                'nadine.context_processors.allow_online_registration',
                 'django.contrib.auth.context_processors.auth',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.i18n',
@@ -205,7 +206,7 @@ COUNTRY = 'US'
 FACEBOOK_URL = "https://www.facebook.com/OfficeNomads"
 TWITTER_URL = 'https://twitter.com/OfficeNomads'
 YELP_URL = 'https://www.yelp.com/biz/office-nomads-seattle-2'
-# INSTAGRAM_URL =
+INSTAGRAM_URL = 'https://www.instagram.com/officenomads/'
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 

@@ -27,4 +27,6 @@ These constants are used in the system base to toggle functionality.
  + FACEBOOK_URL
  + TWITTER_URL
  + YELP_URL
+ + INSTAGRAM_URL
  + ALLOW_PHOTO_UPLOAD
+ + ALLOW_ONLINE_REGISTRATION
