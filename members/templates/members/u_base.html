@@ -105,7 +105,9 @@
 
 		{% block footer %}
 			<!-- Footer -->
-			<footer class="page-footer main-footer" id="footer">
+			{% block footer-class %}
+				<footer class="page-footer main-footer" id="footer">
+			{% endblock %}
 				<div class="footer-copyright setwidth container">
 					<div id="copyright">
 						© 2016 |  Office Nomads | <a id='nadine-link' href="http://nadineproject.org/" target="_new">The Nadine Project</a>
