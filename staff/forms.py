@@ -236,6 +236,7 @@ class MembershipForm(forms.Form):
 
         username = self.cleaned_data['username']
         membership.user = User.objects.get(username=username)
+        membership.member = membership.user.profile
 
         # Any change triggers disabling of the automatic billing
         try:
