@@ -14,7 +14,6 @@ urlpatterns = [
     url(r'^search/$', core.member_search, name='staff_search'),
     url(r'^user_reports/$', core.view_user_reports, name='staff_user_reports'),
     url(r'^slack_users/$', core.slack_users, name='staff_slack_users'),
-    url(r'^ip/$', core.view_ip, name='staff_view_ip'),
     url(r'^membership/(?P<membership_id>\d+)/$', core.membership, name='staff_membership'),
 
     url(r'^activity/$', activity.activity, name='staff_activity'),
@@ -56,5 +55,9 @@ urlpatterns = [
     url(r'^charges/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', payment.usaepay_transactions, name='staff_charges'),
     url(r'^charges/today/$', payment.usaepay_transactions_today, name='staff_charges_today'),
     url(r'^xero/(?P<username>[^/]+)/$', payment.xero_user, name='staff_xero'),
+
+    url(r'^view_ip/$', core.view_ip, name='staff_view_ip'),
+    url(r'^view_config/$', core.view_config, name='view_config'),
 ]
+
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

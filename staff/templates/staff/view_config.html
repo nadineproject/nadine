@@ -1,0 +1,20 @@
+{% load social_links %}
+
+<h1>Nadine Configuration</h1>
+
+<h2>Social URLS</h2>
+{% load_social_urls as social %}
+<ul>
+    {% if social.facebook %}
+        <li>FACEBOOK_URL = {{ social.facebook }}</li>
+    {% endif %}
+    {% if social.twitter %}
+        <li>TWITTER_URL = {{ social.twitter }}</li>
+    {% endif %}
+    {% if social.yelp %}
+        <li>YELP_URL = {{ social.yelp }}</li>
+    {% endif %}
+    {% if social.instagram %}
+        <li>INSTAGRAM_URL = {{ social.instagram }}</li>
+    {% endif %}
+</ul>
