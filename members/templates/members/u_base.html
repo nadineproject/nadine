@@ -19,10 +19,10 @@
 	<!-- Compiled and minified CSS -->
 	<link rel="stylesheet" href="{% static 'css/materialize.min.css' %}" />
 
-  <!-- Compiled and minified JavaScript -->
-  <script src="{% static 'js/materialize.min.js' %}"></script>
+	<!-- Compiled and minified JavaScript -->
+	<script src="{% static 'js/materialize.min.js' %}"></script>
 
-	<link hef="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+	<link hrf="{% static 'fonts/Roboto' %}" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href= "{% static 'members.css'%}" />
 {% endblock %}
@@ -49,26 +49,26 @@
 
 <body>
 	{% block body %}
-		<!-- <div id="page_container"> -->
+		{% block top_div %}{% endblock %}
 			<!-- Page -->
 			<div id="header_container">
-				<div id="header">
+				<div id="header" class="setwidth">
 					{% block top_nav %}
-					<nav class='row' id='main-nav'>
-						<div class='nav-wrapper'>
-							<div id='logo'>
-								<a href="{% url 'member_home' %}" id="home">
-									<img class='sec-logo' />
-								</a>
-							</div>
-				      <ul id="nav-mobile" class="right">
+						<nav class='row' id='main-nav'>
+							<div class='nav-wrapper'>
+								<div id='logo'>
+									<a href="{% url 'member_home' %}" id="home">
+										<img class='sec-logo' />
+									</a>
+								</div>
 					{% endblock %}
-				        <li><a href="{% url 'member_profile_redirect' %}">Profile</a></li>
+							<ul id="nav-mobile" class="right">
+								<li><a href="{% url 'member_profile_redirect' %}">Profile</a></li>
 								{% if not request.user.is_authenticated %}
-					        <li><a>Members</a></li>
-					        <li><a>Events</a></li>
+									<li><a>Members</a></li>
+									<li><a>Events</a></li>
 									<li><a>Tags</a></li>
-					        <li><a>Mailing Lists</a></li>
+									<li><a>Mailing Lists</a></li>
 									<li><a>Slack</a></li>
 									<li><a>Login</a></li>
 								{% elif request.user.get_profile.is_active %}
@@ -91,7 +91,6 @@
 				  </nav>
 				</div>
 			</div>
-
 		{% block main_body %}
 			<div>
 				<div class='row'>
@@ -104,30 +103,34 @@
 
 		{% block footer %}
 			<!-- Footer -->
-			<footer class="page-footer">
-				<div class="footer-copyright">
-	        <div class="container">
-	        	© 2016 |  Office Nomads | <a id='nadine-link' href="http://nadineproject.org/" target="_new">The Nadine Project</a>
+			<footer class="page-footer main-footer" id="footer">
+				<div class="footer-copyright setwidth container">
+					<div id="copyright">
+						© 2016 |  Office Nomads | <a id='nadine-link' href="http://nadineproject.org/" target="_new">The Nadine Project</a>
+					</div>
+					{% block lowerfooter %}
 						<div class='grey-text text-lighten-4 right' id="social">
 							{% if settings.FACEBOOK_URL %}
-								<a id="fb" target="_blank" href={{ settings.FACEBOOK_URL }} >fb</a>
+								<a id="fb" target="_blank" href="{{ settings.FACEBOOK_URL }}">fb</a>
 							{% endif %}
 							{% if settings.TWITTER_URL %}
-								<a id="tw" target="_blank" href={{ settings.TWITTER_URL }}>tw</a>
+								<a id="tw" target="_blank" href="{{ settings.TWITTER_URL }}">tw</a>
 							{% endif %}
 							{% if settings.YELP_URL %}
-								<a id="ye" target="_blank" href={{ settings.YELP_URL }}>ye</a>
+								<a id="ye" target="_blank" href="{{ settings.YELP_URL }}">ye</a>
 							{% endif %}
 							{% if settings.INSTAGRAM_URL %}
-								<a id='inst' target='_blank' href={{ settings.INSTAGRAM_URL }}>inst</a>
+								<a id='inst' target='_blank' href="{{ settings.INSTAGRAM_URL }}">inst</a>
 							{% endif %}
 						</div>
+					{% endblock %}
 					</div>
-	      </div>
-	    </footer>
+				</div>
+			</footer>
 		{% endblock %}
 			<!-- End Page -->
 		</div>
+		{% block bottom_div %} {% endblock %}
 		{% endblock %}
 
 	{% block extrajs %}

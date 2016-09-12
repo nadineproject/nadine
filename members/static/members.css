@@ -261,12 +261,16 @@ input#id_photo {
 	color: RGBA(44, 148, 231, 1)
 }
 
+.tabs .tab a:hover {
+	color: RGBA(30, 52, 64, 1);
+}
+
 .tabs .indicator {
-	background-color: RGBA(44, 148, 231, 1);
+	background-color: RGBA(30, 52, 64, 1);
 }
 
 .mem-tabs .indicator {
-	background-color: RGBA(44, 148, 231, 1);
+	background-color: RGBA(30, 52, 64, 1);
 }
 
 .prof-tabs .indicator {
@@ -349,9 +353,9 @@ footer.page-footer {
 }
 
 #copyright {
-	float: left;
-	margin: 10px;
-	margin-top:16px;
+	width: 360px;
+	margin: 0;
+	display: inline;
 }
 
 .footer-copyright {
