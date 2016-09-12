@@ -210,7 +210,6 @@ def view_user_reports(request):
     return render_to_response('staff/user_reports.html', {'users': users, 'form': form}, context_instance=RequestContext(request))
 
 
-
 @staff_member_required
 def slack_users(request):
     expired_users = Member.objects.expired_slack_users()
@@ -226,6 +225,7 @@ def slack_users(request):
                                                          'non_slack_users':non_slack_users,
                                                          'slack_url':settings.SLACK_TEAM_URL}, context_instance=RequestContext(request))
 
+@staff_member_required
 def view_ip(request):
     ip = None
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
@@ -233,4 +233,12 @@ def view_ip(request):
         ip = x_forwarded_for.split(',')[0]
     else:
         ip = request.META.get('REMOTE_ADDR')
-    return render_to_response('staff/ip.html', {'ip': ip}, context_instance=RequestContext(request))
+    return render_to_response('staff/view_ip.html', {'ip': ip}, context_instance=RequestContext(request))
+
+
+@staff_member_required
+def view_config(request):
+    return render_to_response('staff/view_config.html', {}, context_instance=RequestContext(request))
+
+
+# Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
