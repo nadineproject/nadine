@@ -6,7 +6,7 @@
 
 {% block content %}
 
-<h2 style="vertical-align: top;">View Members</h2>
+	<h2 style="vertical-align: top;">View Members</h2>
 
 {% block search_mems %}
 	<div class='row'>
@@ -27,51 +27,51 @@
 		</div>
 		<form class='col s4' id="site-search-form" action="." method="POST" style="margin-top:6px;">
 			{% for field in search_form %}{{ field }}{% endfor %}
-			<input class='btn' type="submit" value="search"/>
+			<input class='btn search-btn' type="submit" value="search"/>
 			{% csrf_token %}
 		</form>
 	</div>
 {% endblock %}
 
-<div id="tabs-1" class="plan-section">
-	<div style="margin:auto; width:100%; text-align:center;">
-	{% for member in active_members %}
-		{% include "members/user_card.frag" %}
-	{% endfor %}
+	<div id="tabs-1" class="plan-section">
+		<div style="margin:auto; width:100%; text-align:center;">
+		{% for member in active_members %}
+			{% include "members/user_card.frag" %}
+		{% endfor %}
+		</div>
 	</div>
-</div>
 
-<div id="tabs-2" class="plan-section">
-	<div style="margin:auto; width:100%; text-align:center;">
-	{% for member in here_today %}
-		{% include "members/user_card.frag" %}
-	{% endfor %}
+	<div id="tabs-2" class="plan-section">
+		<div style="margin:auto; width:100%; text-align:center;">
+		{% for member in here_today %}
+			{% include "members/user_card.frag" %}
+		{% endfor %}
+		</div>
 	</div>
-</div>
 
-{% if search_terms %}
-	<div id="tabs-3" class="plan-section">
-		{% if search_results %}
-			<div style="margin:auto; width:100%; text-align:center;">
-			{% for member in search_results %}
+	{% if search_terms %}
+		<div id="tabs-3" class="plan-section">
+			{% if search_results %}
+				<div style="margin:auto; width:100%; text-align:center;">
+				{% for member in search_results %}
+					{% include "members/user_card.frag" %}
+				{% endfor %}
+				</div>
+			{% else %}
+				<h3>No members matching that query</h3>
+			{% endif %}
+		</div>
+	{% elif user.get_profile.is_manager %}
+		<div id="tabs-4" class="plan-section">
+			{% for member in has_mail %}
 				{% include "members/user_card.frag" %}
 			{% endfor %}
-			</div>
-		{% else %}
-			<h3>No members matching that query</h3>
-		{% endif %}
-	</div>
-{% elif user.get_profile.is_manager %}
-	<div id="tabs-4" class="plan-section">
-		{% for member in has_mail %}
-			{% include "members/user_card.frag" %}
-		{% endfor %}
-	</div>
-	<div id="tabs-5" class="plan-section">
-		{% for member in has_key %}
-			{% include "members/user_card.frag" %}
-		{% endfor %}
-	</div>
-{% endif %}
+		</div>
+		<div id="tabs-5" class="plan-section">
+			{% for member in has_key %}
+				{% include "members/user_card.frag" %}
+			{% endfor %}
+		</div>
+	{% endif %}
 
 {% endblock %}</div>
