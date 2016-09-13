@@ -1,7 +1,6 @@
 {% extends "members/u_base.html" %}
 
 {% block content %}
-
 	<h2>Slack Team</h2>
 
 	{% if messages %}
@@ -26,5 +25,8 @@
 			<h3>Team Location: <a href="{{ team_url }}">{{ team_url }}</a></h3>
 		</div>
 	{% endif %}
+{% endblock %}
 
+{% block footer-class %}
+	<footer class="sticky-footer" id="footer">
 {% endblock %}

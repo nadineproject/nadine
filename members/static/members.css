@@ -44,14 +44,18 @@ p {
 /* Header */
 
 #main-nav {
-	background-color: RGBA(232, 232, 232, 1);
+	background-color: RGBA(140, 164, 179, 1);
 	position: fixed;
 	top: 0;
 	left: 0;
 }
 
+#main-nav a {
+	text-transform: uppercase;
+}
+
 #home-nav {
-	background-color: RGBA(246, 246, 246, 1);
+	background-color: RGBA(35, 98, 126, .8);
 	margin: 0;
 }
 
@@ -67,15 +71,15 @@ p {
 }
 
 #header_container a {
-	color: RGBA(94, 138, 196, 1);
-	text-transform: uppercase;
+	color: white;
 	padding-right: 20px;
 	margin-right: 0;
-	letter-spacing: .3px;
+	letter-spacing: .6px;
+	font-weight: lighter;
 }
 
-#header_container a.slack-a {
-	color: RGBA(231, 74, 114, 1);
+#home-nav a.slack-a {
+	color: RGBA(78, 62, 132, 1);
 }
 
 #jumbotron {
@@ -85,6 +89,8 @@ p {
 	left: 0;
 	width: 100%;
 	z-index: 2;
+	box-sizing: padding-box;
+	background-color: RGBA(35, 98, 126, .8);
 }
 
 .logo-img {
@@ -103,7 +109,7 @@ p {
 	position: fixed;
 	top: 0;
 	left: 0;
-	height: 85px;
+	height: 110px;
 	margin-left: 1%;
 	z-index: 2000;
 }
@@ -113,7 +119,7 @@ p {
 	width: 100%;
 	margin: 0;
 	padding: 0;
-	box-sizing: inherit;
+	box-sizing: border-box;
 }
 
 #logo {
@@ -176,6 +182,10 @@ select#id_public_profile.browser-default {
 	border-radius: 2px;
 }
 
+#login_form {
+	box-shadow: 1px 1px 1px RGBA(174, 174, 174, 1);
+}
+
 #login_form h1, #registration_form h1 {
 	background-color: RGBA(63, 104, 140, .7);
 	padding: 2%;
@@ -218,6 +228,7 @@ input#id_photo {
 }
 
 .sub-btn {
+	background: RGBA(63, 146, 161, 1);
 	margin-top: 2%;
 	margin-left: 35%;
 }
@@ -235,14 +246,24 @@ input#id_photo {
 	background-color: RGBA(127, 175, 147, 1);
 }
 
+#site-search-form input {
+	width: 60%;
+}
+
+#site-search-form input.search-btn {
+	background: RGBA(63, 146, 161, 1);
+	width: 30%;
+	padding: 0;
+	margin-left: 5%;
+}
+
 #event_cal {
 	margin-left: 10%;
 }
 
 .card {
 	text-align: center;
-	background-color: RGBA(94, 138, 196, 1);
-	/*z-index: -1;*/
+	background-color: RGBA(43, 84, 118, 1);
 }
 
 #chat_icon {
@@ -257,12 +278,17 @@ input#id_photo {
 	width: 50%;
 }
 
+.card a {
+	color: RGBA(213, 159, 68, 1);
+}
+
 .event-card {
 	width: 330px;
 }
 
 .tabs {
 	color: RGBA(44, 148, 231, 1);
+	width: 50%;
 }
 
 .tabs .tab {
@@ -273,7 +299,7 @@ input#id_photo {
 	color: RGBA(44, 148, 231, 1)
 }
 
-.tabs .tab a:hover {
+.tabs .tab a:hover, .tabs .tab a:focus {
 	color: RGBA(30, 52, 64, 1);
 }
 
@@ -358,6 +384,7 @@ table td { text-align: center; border-bottom: 1px solid #ccc; padding: 0.5em; }
 
 /* Footer */
 
+
 footer.home-footer {
 	padding: 1px;
 	padding-top: 8px;
@@ -369,6 +396,17 @@ footer.home-footer {
 footer.main-footer {
 	background: RGBA(61, 61, 61, .9);
 	padding: 1px;
+	/*right: 0;
+	bottom: 0;
+	left: 0;
+	position: absolute;*/
+}
+
+footer.sticky-footer {
+	background: RGBA(61, 61, 61, .9);
+	clear: both;
+	width: 100%;
+	padding: 10px;
 	right: 0;
 	bottom: 0;
 	left: 0;

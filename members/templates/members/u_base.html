@@ -76,7 +76,7 @@
 									<li><a href="{% url 'member_events' %}">Events</a></li>
 									<li><a href="{% url 'member_tag_cloud' %}">Tags</a></li>
 									<li><a href="{% url 'member_email_lists' %}">Mailing Lists</a></li>
-									<li><a href="{% url 'member_slack' user.username %}">Slack</a></li>
+									<li><a class='slack-a' href="{% url 'member_slack' user.username %}">Slack</a></li>
 									<li><a href="{% url 'logout' %}">Logout</a></li>
 								{% else %}
 									<li><a href="{% url 'member_not_active' %}">Members</a></li>
