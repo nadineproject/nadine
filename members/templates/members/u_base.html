@@ -107,31 +107,31 @@
 			{% block footer-class %}
 				<footer class="page-footer main-footer" id="footer">
 			{% endblock %}
-				<div class="footer-copyright setwidth container">
-					<div id="copyright">
-						© 2016 |  Office Nomads | <a id='nadine-link' href="http://nadineproject.org/" target="_new">The Nadine Project</a>
+					<div class="footer-copyright setwidth container">
+						<div id="copyright">
+							© 2016 |  Office Nomads | <a id='nadine-link' href="http://nadineproject.org/" target="_new">The Nadine Project</a>
+						</div>
+						{% block lowerfooter %}
+							{% load_social_urls as social %}
+								<div class='grey-text text-lighten-4 right' id="social">
+									{% if social.facebook %}
+										<a id="fb" target="_blank" href="{{ social.facebook }}">fb</a>
+									{% endif %}
+									{% if social.twitter %}
+										<a id="tw" target="_blank" href="{{ social.twitter }}">tw</a>
+									{% endif %}
+									{% if social.yelp %}
+										<a id="ye" target="_blank" href="{{ social.yelp }}">ye</a>
+									{% endif %}
+									{% if social.instagram %}
+										<a id='inst' target='_blank' href="{{ social.instagram }}">inst</a>
+									{% endif %}
+								</div>
+						{% endblock %}
+						</div>
 					</div>
-					{% block lowerfooter %}
-						{% load_social_urls as social %}
-							<div class='grey-text text-lighten-4 right' id="social">
-								{% if social.facebook %}
-									<a id="fb" target="_blank" href="{{ social.facebook }}">fb</a>
-								{% endif %}
-								{% if social.twitter %}
-									<a id="tw" target="_blank" href="{{ social.twitter }}">tw</a>
-								{% endif %}
-								{% if social.yelp %}
-									<a id="ye" target="_blank" href="{{ social.yelp }}">ye</a>
-								{% endif %}
-								{% if social.instagram %}
-									<a id='inst' target='_blank' href="{{ social.instagram }}">inst</a>
-								{% endif %}
-							</div>
-					{% endblock %}
-					</div>
-				</div>
-			</footer>
-		{% endblock %}
+				</footer>
+			{% endblock %}
 			<!-- End Page -->
 		</div>
 		{% block bottom_div %} {% endblock %}
