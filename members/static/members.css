@@ -245,6 +245,18 @@ input#id_photo {
 	/*z-index: -1;*/
 }
 
+#chat_icon {
+	content: url(img/chat_icon.png);
+	height: 25%;
+	width: 25%;
+}
+
+#group_icon {
+	content: url(img/people_icon.png);
+	height: 50%;
+	width: 50%;
+}
+
 .event-card {
 	width: 330px;
 }
