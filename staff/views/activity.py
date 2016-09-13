@@ -140,7 +140,7 @@ def for_user(request, username):
 
     arp_logs = ArpLog.objects.for_user(username, start_date, end_date)
     door_logs = DoorEvent.objects.filter(user=user, timestamp__range=(start_date, end_date))
-    daily_logs = DailyLog.objects.filter(member__user=user, visit_date__range=(start_date, end_date)).reverse()
+    daily_logs = DailyLog.objects.filter(user=user, visit_date__range=(start_date, end_date)).reverse()
 
     return render_to_response('staff/activity_user.html', {'user':user, 'date_range_form': date_range_form,
         'arp_logs':arp_logs, 'door_logs':door_logs, 'daily_logs':daily_logs}, context_instance=RequestContext(request))
