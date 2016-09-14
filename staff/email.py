@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 
 from nadine.utils.slack_api import SlackAPI
-from nadine.models.core import Member, DailyLog, SentEmailLog
+from nadine.models.core import Member, SentEmailLog
 from nadine import mailgun
 
 logger = logging.getLogger(__name__)

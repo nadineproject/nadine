@@ -16,8 +16,8 @@ from django.conf import settings
 
 from doors.keymaster.models import DoorEvent
 from arpwatch.models import ArpLog
-from staff.forms import DailyLogForm, DateRangeForm
-from nadine.models import DailyLog, Membership
+from staff.forms import CoworkingDayForm, DateRangeForm
+from nadine.models import CoworkingDay, Membership
 
 START_DATE_PARAM = 'start'
 END_DATE_PARAM = 'end'
@@ -52,7 +52,7 @@ def activity(request):
     days.reverse()
     for day in days:
         memberships = Membership.objects.active_memberships(day['date'])
-        day['daily_logs'] = DailyLog.objects.filter(visit_date=day['date']).count()
+        day['daily_logs'] = CoworkingDay.objects.filter(visit_date=day['date']).count()
         day['has_desk'] = memberships.filter(has_desk=True).count()
         day['occupancy'] = day['daily_logs'] + day['has_desk']
         day['membership'] = memberships.count()
@@ -94,16 +94,16 @@ def list(request):
     start_date = date(year=starteo.tm_year, month=starteo.tm_mon, day=starteo.tm_mday)
     endeo = timeo.strptime(end, "%Y-%m-%d")
     end_date = date(year=endeo.tm_year, month=endeo.tm_mon, day=endeo.tm_mday)
-    daily_logs = DailyLog.objects.filter(visit_date__range=(start_date, end_date))
+    daily_logs = CoworkingDay.objects.filter(visit_date__range=(start_date, end_date))
     return render_to_response('staff/activity_list.html', {'daily_logs': daily_logs, 'date_range_form': date_range_form, 'start_date': start_date, 'end_date': end_date}, context_instance=RequestContext(request))
 
 
 @staff_member_required
 def activity_for_date(request, activity_date):
-    daily_logs = DailyLog.objects.filter(visit_date=activity_date).reverse()
+    daily_logs = CoworkingDay.objects.filter(visit_date=activity_date).reverse()
 
     if request.method == 'POST':
-        daily_log_form = DailyLogForm(request.POST, request.FILES)
+        daily_log_form = CoworkingDayForm(request.POST, request.FILES)
         if daily_log_form.is_valid():
             try:
                 daily_log_form.save()
@@ -111,7 +111,7 @@ def activity_for_date(request, activity_date):
             except Exception as e:
                 messages.add_message(request, messages.ERROR, e)
     else:
-        daily_log_form = DailyLogForm(initial={'visit_date': activity_date})
+        daily_log_form = CoworkingDayForm(initial={'visit_date': activity_date})
 
     return render_to_response('staff/activity_date.html', {'daily_logs': daily_logs, 'daily_log_form': daily_log_form, 'activity_date': activity_date, 'next_date': activity_date + timedelta(days=1), 'previous_date': activity_date - timedelta(days=1), }, context_instance=RequestContext(request))
 
@@ -140,7 +140,7 @@ def for_user(request, username):
 
     arp_logs = ArpLog.objects.for_user(username, start_date, end_date)
     door_logs = DoorEvent.objects.filter(user=user, timestamp__range=(start_date, end_date))
-    daily_logs = DailyLog.objects.filter(user=user, visit_date__range=(start_date, end_date)).reverse()
+    daily_logs = CoworkingDay.objects.filter(user=user, visit_date__range=(start_date, end_date)).reverse()
 
     return render_to_response('staff/activity_user.html', {'user':user, 'date_range_form': date_range_form,
         'arp_logs':arp_logs, 'door_logs':door_logs, 'daily_logs':daily_logs}, context_instance=RequestContext(request))

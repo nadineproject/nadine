@@ -29,7 +29,8 @@ from members.forms import EditProfileForm
 from members.models import HelpText, UserNotification
 from arpwatch import arp
 from arpwatch.models import ArpLog, UserDevice
-from nadine.models.core import Member, Membership, DailyLog
+from nadine.models.core import Member, Membership
+from nadine.models.usage import CoworkingDay
 from nadine.models.payment import Transaction
 from nadine.models.alerts import MemberAlert
 from staff import email
@@ -44,7 +45,7 @@ def is_active_member(user):
         profile = user.get_profile()
         if profile:
             # If today is their Free Trial Day count them as active
-            if DailyLog.objects.filter(user=user, payment='Trial', visit_date=date.today()).count() == 1:
+            if CoworkingDay.objects.filter(user=user, payment='Trial', visit_date=date.today()).count() == 1:
                 return True
 
             # Check to make sure their currently an active member
@@ -150,9 +151,6 @@ def profile_redirect(request):
 @login_required
 def user(request, username):
     user = get_object_or_404(User, username=username)
-    #member = user.profile
-    # activity = DailyLog.objects.filter(user=user, payment='Bill', bills__isnull=True, visit_date__gt=timezone.now().date() - timedelta(days=31))
-    #guest_activity = DailyLog.objects.filter(guest_of=member, payment='Bill', guest_bills__isnull=True, visit_date__gte=timezone.now().date() - timedelta(days=31))
     emergency_contact = user.get_emergency_contact()
     return render_to_response('members/user.html', {'user': user, 'emergency_contact': emergency_contact, 'settings': settings}, context_instance=RequestContext(request))
 

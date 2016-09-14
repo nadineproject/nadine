@@ -14,7 +14,8 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.conf import settings
 
-from nadine.models import Member, Membership, MembershipPlan, DailyLog, Neighborhood
+from nadine.models.core import Member, Membership, MembershipPlan, Neighborhood
+from nadine.models.usage import CoworkingDay
 
 from staff.views.activity import date_range_from_request, START_DATE_PARAM, END_DATE_PARAM
 from staff.forms import DateRangeForm
@@ -58,7 +59,7 @@ class MonthHistory:
 
 
 def calculate_dropins(start_date, end_date):
-    all_logs = DailyLog.objects.filter(visit_date__gte=start_date, visit_date__lte=end_date)
+    all_logs = CoworkingDay.objects.filter(visit_date__gte=start_date, visit_date__lte=end_date)
     return (all_logs.filter(payment='Visit').distinct().count(), all_logs.filter(payment='Trial').distinct().count(), all_logs.filter(payment='Waive').distinct().count(), all_logs.filter(payment='Bill').distinct().count())
 
 
@@ -87,7 +88,7 @@ def stats(request):
     # Group the daily logs into months
     daily_logs_by_month = []
     number_dict = {'month': 'firstrun'}
-    for daily_log in DailyLog.objects.all().order_by('visit_date').reverse():
+    for daily_log in CoworkingDay.objects.all().order_by('visit_date').reverse():
         month = '%(year)i-%(month)i' % {'year': daily_log.visit_date.year, "month": daily_log.visit_date.month}
         if number_dict['month'] != month:
             if number_dict['month'] != 'firstrun':
@@ -110,7 +111,6 @@ def membership_history(request):
         except:
             return render_to_response('staff/stats_membership_history.html', {'page_message': "Invalid Start Date!  Example: '01-2012'."}, context_instance=RequestContext(request))
     else:
-        #start_date = min(DailyLog.objects.all().order_by('visit_date')[0].visit_date, Membership.objects.all().order_by('start_date')[0].start_date)
         start_date = timezone.now().date() - timedelta(days=365)
     start_month = date(year=start_date.year, month=start_date.month, day=1)
     end_date = timezone.now().date()
@@ -224,7 +224,7 @@ def membership_days(request):
             total_days = total_days + days
             if (days > max_days):
                 max_days = days
-        daily_logs = DailyLog.objects.filter(user=user).count()
+        daily_logs = CoworkingDay.objects.filter(user=user).count()
         membership_days.append(MembershipDays(user, membership_count, total_days, daily_logs, max_days, current))
         if total_days > 0:
             avg_count = avg_count + 1
