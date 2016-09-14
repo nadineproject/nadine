@@ -145,9 +145,9 @@ class UserQueryHelper():
     def active_members(self):
         return User.objects.filter(id__in=Membership.objects.active_memberships().values('user'))
 
-    # def daily_members(self):
-    #     return self.active_members().exclude(id__in=self.members_with_desks())
-    #
+    def daily_members(self):
+        return self.active_members().exclude(id__in=self.members_with_desks())
+
     # def here_today(self, day=None):
     #     if not day:
     #         day = timezone.now().date()
@@ -269,18 +269,19 @@ class UserQueryHelper():
     # def members_by_plan_id(self, plan_id):
     #     memberships = Membership.objects.active_memberships().filter(membership_plan=plan_id)
     #     return Member.objects.filter(user__in=memberships.values('user'))
-    #
-    # def members_with_desks(self):
-    #     memberships = Membership.objects.active_memberships().filter(has_desk=True)
-    #     return Member.objects.filter(user__in=memberships.values('user'))
-    #
-    # def members_with_keys(self):
-    #     memberships = Membership.objects.active_memberships().filter(has_key=True)
-    #     return Member.objects.filter(user__in=memberships.values('user'))
-    #
-    # def members_with_mail(self):
-    #     return Membership.objects.active_memberships().filter(has_mail=True).values('user')
-    #
+
+    def members_with_desks(self):
+        memberships = Membership.objects.active_memberships().filter(has_desk=True)
+        return User.objects.filter(id__in=memberships.values('user'))
+
+    def members_with_keys(self):
+        memberships = Membership.objects.active_memberships().filter(has_key=True)
+        return User.objects.filter(id__in=memberships.values('user'))
+
+    def members_with_mail(self):
+        memberships = Membership.objects.active_memberships().filter(has_mail=True)
+        return User.objects.filter(id__in=memberships.values('user'))
+
     # def members_by_neighborhood(self, hood, active_only=True):
     #     if active_only:
     #         return Member.objects.filter(neighborhood=hood).filter(memberships__isnull=False).filter(Q(memberships__end_date__isnull=True) | Q(memberships__end_date__gt=timezone.now().date())).distinct()
