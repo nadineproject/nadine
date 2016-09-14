@@ -42,16 +42,16 @@ class BillingTestCase(TestCase):
         # User 3 = PT15 2/1/2008 - 6/20/2010 & Basic since 6/21/2010
         # Daily activity 6/2/2010 through 6/19/2010
         self.user3 = User.objects.create(username='member_three', first_name='Member', last_name='Three')
-        Membership.objects.create_with_plan(member=self.user3.get_profile(), start_date=date(2008, 2, 1), end_date=date(2010, 6, 20), membership_plan=self.pt15Plan)
-        Membership.objects.create_with_plan(member=self.user3.get_profile(), start_date=date(2010, 6, 21), end_date=None, membership_plan=self.basicPlan)
+        Membership.objects.create_with_plan(user=self.user3, start_date=date(2008, 2, 1), end_date=date(2010, 6, 20), membership_plan=self.pt15Plan)
+        Membership.objects.create_with_plan(user=self.user3, start_date=date(2010, 6, 21), end_date=None, membership_plan=self.basicPlan)
         for day in range(2, 19):
             CoworkingDay.objects.create(user=self.user3, visit_date=date(2010, 6, day), payment='Bill')
 
         # User 4 = PT5 2/1/2008 - 6/10/2010 & Resident since 6/11/2010
         # Daily activity 6/2/2010 through 6/11/2010
         self.user4 = User.objects.create(username='member_four', first_name='Member', last_name='Four')
-        Membership.objects.create_with_plan(member=self.user4.get_profile(), start_date=date(2008, 2, 1), end_date=date(2010, 6, 10), membership_plan=self.pt5Plan)
-        Membership.objects.create_with_plan(member=self.user4.get_profile(), start_date=date(2010, 6, 11), end_date=None, membership_plan=self.residentPlan)
+        Membership.objects.create_with_plan(user=self.user4, start_date=date(2008, 2, 1), end_date=date(2010, 6, 10), membership_plan=self.pt5Plan)
+        Membership.objects.create_with_plan(user=self.user4, start_date=date(2010, 6, 11), end_date=None, membership_plan=self.residentPlan)
         for day in range(2, 11):
             CoworkingDay.objects.create(user=self.user4, visit_date=date(2010, 6, day), payment='Bill')
 
@@ -67,8 +67,8 @@ class BillingTestCase(TestCase):
         # User 7 has daily activity 6/1/2010 through 6/15/2010
         self.user6 = User.objects.create(username='member_six', first_name='Member', last_name='Six')
         self.user7 = User.objects.create(username='member_seven', first_name='Member', last_name='Seven')
-        Membership.objects.create_with_plan(member=self.user6.get_profile(), start_date=date(2008, 6, 26), end_date=None, membership_plan=self.pt5Plan)
-        Membership.objects.create_with_plan(member=self.user7.get_profile(), start_date=date(2008, 6, 26), end_date=None, membership_plan=self.pt5Plan, rate=0, guest_of=self.user6.get_profile())
+        Membership.objects.create_with_plan(user=self.user6, start_date=date(2008, 6, 26), end_date=None, membership_plan=self.pt5Plan)
+        Membership.objects.create_with_plan(user=self.user7, start_date=date(2008, 6, 26), end_date=None, membership_plan=self.pt5Plan, rate=0, guest_of=self.user6.get_profile())
         for day in range(1, 16):
             CoworkingDay.objects.create(user=self.user7, visit_date=date(2010, 6, day), payment='Bill')
 
@@ -149,7 +149,7 @@ class BillingTestCase(TestCase):
         # User 1 = Resident since 6/26/2008
         user1 = User.objects.create(username='member_one', first_name='Member', last_name='One')
         start_date = date(2008, 6, 26)
-        Membership.objects.create_with_plan(member=user1.get_profile(), start_date=start_date, end_date=None, membership_plan=self.residentPlan)
+        Membership.objects.create_with_plan(user=user1, start_date=start_date, end_date=None, membership_plan=self.residentPlan)
 
         run_billing_for_range(datetime(2010, 6, 30), 30)
         # print_user_data(user1)
@@ -172,8 +172,8 @@ class BillingTestCase(TestCase):
         # User 8 = PT-5 5/20/2010 - 6/19/2010 & Basic since 6/20/2010
         # Daily activity 6/11/2010 through 6/23/2010
         user8 = User.objects.create(username='member_eight', first_name='Member', last_name='Eight')
-        Membership.objects.create_with_plan(member=user8.get_profile(), start_date=date(2010, 5, 20), end_date=date(2010, 6, 19), membership_plan=self.pt5Plan)
-        Membership.objects.create_with_plan(member=user8.get_profile(), start_date=date(2010, 6, 20), end_date=None, membership_plan=self.basicPlan)
+        Membership.objects.create_with_plan(user=user8, start_date=date(2010, 5, 20), end_date=date(2010, 6, 19), membership_plan=self.pt5Plan)
+        Membership.objects.create_with_plan(user=user8, start_date=date(2010, 6, 20), end_date=None, membership_plan=self.basicPlan)
         for day in range(11, 23):
             CoworkingDay.objects.create(user=user8, visit_date=date(2010, 6, day), payment='Bill')
         run_billing_for_range(datetime(2010, 7, 31), 61)
@@ -207,4 +207,4 @@ class BillingTestCase(TestCase):
         self.assertEqual(date(2010, 6, 20), june_20_basic.bill_date)
         self.assertEqual(0, june_20_basic.dropins.count())
 
-# Copyright 2010 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

@@ -998,10 +998,10 @@ class MembershipPlan(models.Model):
 
 class MembershipManager(models.Manager):
 
-    def create_with_plan(self, member, start_date, end_date, membership_plan, rate=-1, guest_of=None):
+    def create_with_plan(self, user, start_date, end_date, membership_plan, rate=-1, guest_of=None):
         if rate < 0:
             rate = membership_plan.monthly_rate
-        self.create(member=member, start_date=start_date, end_date=end_date, membership_plan=membership_plan,
+        self.create(user=user, member=user.profile, start_date=start_date, end_date=end_date, membership_plan=membership_plan,
                     monthly_rate=rate, daily_rate=membership_plan.daily_rate, dropin_allowance=membership_plan.dropin_allowance,
                     has_desk=membership_plan.has_desk, guest_of=guest_of)
 
