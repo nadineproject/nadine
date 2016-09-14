@@ -32,6 +32,7 @@ from PIL import Image
 
 from nadine.utils.payment_api import PaymentAPI
 from nadine.utils.slack_api import SlackAPI
+from nadine.models.usage import CoworkingDay
 
 from doors.keymaster.models import DoorEvent
 
@@ -48,11 +49,6 @@ GENDER_CHOICES = (
     ('O', 'Other'),
 )
 
-PAYMENT_CHOICES = (
-    ('Bill', 'Billable'),
-    ('Trial', 'Free Trial'),
-    ('Waive', 'Payment Waived'),
-)
 
 class MemberGroups():
     ALL = "all"
@@ -161,7 +157,7 @@ class UserQueryHelper():
     #     arp_members_query = users_for_day_query(day=day)
     #
     #     # The members who have signed in
-    #     daily_members_query = Member.objects.filter(user__id__in=DailyLog.objects.filter(visit_date=day).values('user__id'))
+    #     daily_members_query = Member.objects.filter(user__id__in=CoworkingDay.objects.filter(visit_date=day).values('user__id'))
     #
     #     # The members that have access a door
     #     door_query = DoorEvent.objects.users_for_day(day)
@@ -175,7 +171,7 @@ class UserQueryHelper():
     #         day = timezone.now().date()
     #
     #     signed_in = []
-    #     for l in DailyLog.objects.filter(visit_date=day):
+    #     for l in CoworkingDay.objects.filter(visit_date=day):
     #         signed_in.append(l.user.profile)
     #
     #     not_signed_in = []
@@ -237,7 +233,7 @@ class UserQueryHelper():
     #
     # def stale_members(self):
     #     smd = self.stale_member_date()
-    #     recently_used = DailyLog.objects.filter(visit_date__gte=smd).values('user').distinct()
+    #     recently_used = CoworkingDay.objects.filter(visit_date__gte=smd).values('user').distinct()
     #     memberships = Membership.objects.active_memberships().filter(start_date__lte=smd, has_desk=False)
     #     return Member.objects.filter(user__in=memberships.values('user')).exclude(user__in=recently_used)
     #
@@ -350,7 +346,7 @@ class MemberManager(models.Manager):
         arp_members_query = users_for_day_query(day=day)
 
         # The members who have signed in
-        daily_members_query = Member.objects.filter(user__id__in=DailyLog.objects.filter(visit_date=day).values('user__id'))
+        daily_members_query = Member.objects.filter(user__id__in=CoworkingDay.objects.filter(visit_date=day).values('user__id'))
 
         # The members that have access a door
         door_query = DoorEvent.objects.users_for_day(day)
@@ -365,7 +361,7 @@ class MemberManager(models.Manager):
             day = timezone.now().date()
 
         signed_in = []
-        for l in DailyLog.objects.filter(visit_date=day):
+        for l in CoworkingDay.objects.filter(visit_date=day):
             signed_in.append(l.user.profile)
 
         not_signed_in = []
@@ -433,7 +429,7 @@ class MemberManager(models.Manager):
     def stale_members(self):
         warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
         smd = self.stale_member_date()
-        recently_used = DailyLog.objects.filter(visit_date__gte=smd).values('user').distinct()
+        recently_used = CoworkingDay.objects.filter(visit_date__gte=smd).values('user').distinct()
         memberships = Membership.objects.active_memberships().filter(start_date__lte=smd, has_desk=False)
         return Member.objects.filter(user__in=memberships.values('user')).exclude(user__in=recently_used)
 
@@ -674,14 +670,14 @@ class Member(models.Model):
 
         activity = []
         for m in [self] + self.guests():
-            for l in DailyLog.objects.filter(user=m.user, payment='Bill', visit_date__gte=month_start):
+            for l in CoworkingDay.objects.filter(user=m.user, payment='Bill', visit_date__gte=month_start):
                 activity.append(l)
-        for l in DailyLog.objects.filter(guest_of=self, payment='Bill', visit_date__gte=month_start):
+        for l in CoworkingDay.objects.filter(guest_of=self, payment='Bill', visit_date__gte=month_start):
             activity.append(l)
         return activity
 
     def activity(self):
-        return DailyLog.objects.filter(user=self.user)
+        return CoworkingDay.objects.filter(user=self.user)
 
     def paid_count(self):
         return self.activity().filter(payment='Bill').count()
@@ -690,8 +686,8 @@ class Member(models.Model):
         if Membership.objects.filter(user=self.user).count() > 0:
             return Membership.objects.filter(user=self.user).order_by('start_date')[0].start_date
         else:
-            if DailyLog.objects.filter(user=self.user).count() > 0:
-                return DailyLog.objects.filter(user=self.user).order_by('visit_date')[0].visit_date
+            if CoworkingDay.objects.filter(user=self.user).count() > 0:
+                return CoworkingDay.objects.filter(user=self.user).order_by('visit_date')[0].visit_date
             else:
                 return None
 
@@ -727,7 +723,7 @@ class Member(models.Model):
         return
 
     def host_daily_logs(self):
-        return DailyLog.objects.filter(guest_of=self).order_by('-visit_date')
+        return CoworkingDay.objects.filter(guest_of=self).order_by('-visit_date')
 
     def has_file_uploads(self):
         return FileUpload.objects.filter(user=self.user).count() > 0
@@ -786,8 +782,8 @@ class Member(models.Model):
         return timezone.localtime(timezone.now()) - datetime.combine(first, time(0, 0, 0))
 
     def last_visit(self):
-        if DailyLog.objects.filter(user=self.user).count() > 0:
-            return DailyLog.objects.filter(user=self.user).latest('visit_date').visit_date
+        if CoworkingDay.objects.filter(user=self.user).count() > 0:
+            return CoworkingDay.objects.filter(user=self.user).latest('visit_date').visit_date
         else:
             if Membership.objects.filter(user=self.user, end_date__isnull=False).count() > 0:
                 return Membership.objects.filter(user=self.user, end_date__isnull=False).latest('end_date').end_date
@@ -804,7 +800,7 @@ class Member(models.Model):
                 return "Ex" + str(last_monthly.membership_plan)
 
         # Now check daily logs
-        drop_ins = DailyLog.objects.filter(user=self.user).count()
+        drop_ins = CoworkingDay.objects.filter(user=self.user).count()
         if drop_ins == 0:
             return "New User"
         elif drop_ins == 1:
@@ -975,36 +971,6 @@ class XeroContact(models.Model):
 
     def __str__(self):
         return '%s - %s' % (self.user.username, self.xero_id)
-
-class DailyLog(models.Model):
-
-    """A visit by a member"""
-    user = models.ForeignKey(User, unique_for_date="visit_date")
-    #member = models.ForeignKey(Member, verbose_name="Member", unique_for_date="visit_date", related_name="daily_logs")
-    visit_date = models.DateField("Date")
-    payment = models.CharField("Payment", max_length=5, choices=PAYMENT_CHOICES)
-    # TODO - convert to User
-    guest_of = models.ForeignKey(Member, verbose_name="Guest Of", related_name="guest_of", blank=True, null=True)
-    note = models.CharField("Note", max_length=128, blank="True")
-    created = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return '%s - %s' % (self.visit_date, self.user)
-
-    def get_admin_url(self):
-        return urlresolvers.reverse('admin:nadine_dailylog_change', args=[self.id])
-
-    class Meta:
-        app_label = 'nadine'
-        verbose_name = "Daily Log"
-        ordering = ['-visit_date', '-created']
-
-
-def sign_in_callback(sender, **kwargs):
-    log = kwargs['instance']
-    from nadine.models.alerts import MemberAlert
-    MemberAlert.objects.trigger_sign_in(log.user)
-post_save.connect(sign_in_callback, sender=DailyLog)
 
 
 class MembershipPlan(models.Model):

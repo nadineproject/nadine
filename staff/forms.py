@@ -4,8 +4,7 @@ from django.utils.html import strip_tags
 from django.utils import timezone
 from taggit.forms import *
 
-from nadine.models.core import *
-from nadine.models.payment import *
+from nadine.models import *
 from nadine.utils.payment_api import PaymentAPI
 from staff import email
 
@@ -171,7 +170,7 @@ class MemberEditForm(forms.Form):
         emergency_contact.email=self.cleaned_data['emergency_email']
         emergency_contact.save()
 
-class DailyLogForm(forms.Form):
+class CoworkingDayForm(forms.Form):
     username = forms.CharField(widget=forms.TextInput(attrs={'readonly':'readonly'}))
     visit_date = forms.DateField(widget=forms.HiddenInput())
     payment = forms.ChoiceField(choices=PAYMENT_CHOICES, required=True)
@@ -185,11 +184,11 @@ class DailyLogForm(forms.Form):
         # Make sure there isn't another log for this member on this day
         u = User.objects.get(username=self.cleaned_data['username'])
         v = self.cleaned_data['visit_date']
-        daily_log = DailyLog.objects.filter(user=u, visit_date=v)
+        daily_log = CoworkingDay.objects.filter(user=u, visit_date=v)
         if daily_log:
             raise Exception('Member already signed in')
 
-        daily_log = DailyLog()
+        daily_log = CoworkingDay()
         daily_log.user = u
         daily_log.visit_date = v
         daily_log.payment = self.cleaned_data['payment']

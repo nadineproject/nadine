@@ -10,7 +10,8 @@ from django.contrib.sites.models import Site
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
-from nadine.models.core import DailyLog, MembershipPlan, Membership, Member, Industry, Neighborhood
+from nadine.models.core import MembershipPlan, Membership, Member, Industry, Neighborhood
+from nadine.models.usage import CoworkingDay
 from nadine.models.payment import BillingLog, Bill, Transaction
 from interlink.models import MailingList, IncomingMail, OutgoingMail
 
@@ -27,7 +28,7 @@ class Command(BaseCommand):
         self.delete_all(BillingLog)
         self.delete_all(Bill)
         self.delete_all(Transaction)
-        self.delete_all(DailyLog)
+        self.delete_all(CoworkingDay)
         self.delete_all(MembershipPlan)
         self.delete_all(Membership)
         self.delete_all(Member)

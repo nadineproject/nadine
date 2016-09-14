@@ -9,8 +9,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.contrib.auth.models import User
 
-from nadine.models.core import Member, Membership, DailyLog
+from nadine.models.core import Member, Membership
 from nadine.models.payment import Bill, BillingLog, Transaction
+from nadine.models.usage import CoworkingDay
 
 logger = logging.getLogger(__name__)
 
@@ -92,7 +93,7 @@ class Run:
 
     def populate_daily_logs(self):
         # Grab all the daily_logs from this user
-        daily_logs = DailyLog.objects.filter(user=self.user, payment="Bill", guest_of=None).filter(visit_date__gte=self.start_date).filter(visit_date__lte=self.end_date)
+        daily_logs = CoworkingDay.objects.filter(user=self.user, payment="Bill", guest_of=None).filter(visit_date__gte=self.start_date).filter(visit_date__lte=self.end_date)
         if self.filter_closed_logs:
             daily_logs = daily_logs.annotate(bill_count=Count('bills')).filter(bill_count=0)
         for log in daily_logs.order_by('visit_date'):
@@ -100,7 +101,7 @@ class Run:
 
         # Grab all the daily_logs marked as a guest of this user
         # TODO - convert guest_of to user object
-        daily_logs = DailyLog.objects.filter(guest_of=self.user.profile, payment="Bill").filter(visit_date__gte=self.start_date).filter(visit_date__lte=self.end_date)
+        daily_logs = CoworkingDay.objects.filter(guest_of=self.user.profile, payment="Bill").filter(visit_date__gte=self.start_date).filter(visit_date__lte=self.end_date)
         if self.filter_closed_logs:
             daily_logs = daily_logs.annotate(bill_count=Count('bills')).filter(bill_count=0)
         for log in daily_logs.order_by('visit_date'):
@@ -113,7 +114,7 @@ class Run:
                 continue
             if membership.start_date > self.end_date:
                 continue
-            for log in DailyLog.objects.filter(user=membership.user, payment="Bill", guest_of=None).filter(visit_date__gte=self.start_date).filter(visit_date__lte=self.end_date):
+            for log in CoworkingDay.objects.filter(user=membership.user, payment="Bill", guest_of=None).filter(visit_date__gte=self.start_date).filter(visit_date__lte=self.end_date):
                 self.add_guest_log(log)
 
     def add_daily_log(self, log):
