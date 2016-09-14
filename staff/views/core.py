@@ -25,7 +25,7 @@ from nadine.models.alerts import MemberAlert
 from nadine.utils.slack_api import SlackAPI
 
 from staff import user_reports
-from staff.forms import MemberSearchForm, MembershipForm
+from staff.forms import MemberSearchForm, MembershipForm, EventForm
 
 from arpwatch import arp
 from arpwatch.models import ArpLog
@@ -242,7 +242,14 @@ def view_config(request):
 
 @staff_member_required
 def create_event(request):
-    return render_to_response('staff/create_event.html', {}, context_instance=RequestContext(request))
+    if request.method == 'POST':
+        event_form = EventForm(request.POST)
+        if event_form.is_valid():
+            event_form.save()
+            return HttpResponseRedirect(reverse('staff_todo'))
+    else:
+        event_form = EventForm()
+    return render_to_response('staff/create_event.html', {'event_form': event_form}, context_instance=RequestContext(request))
 
 
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

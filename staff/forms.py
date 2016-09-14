@@ -4,8 +4,7 @@ from django.utils.html import strip_tags
 from django.utils import timezone
 from taggit.forms import *
 
-from nadine.models.core import *
-from nadine.models.payment import *
+from nadine.models import *
 from nadine.utils.payment_api import PaymentAPI
 from staff import email
 
@@ -271,5 +270,38 @@ class MembershipForm(forms.Form):
             email.send_new_membership(membership.user)
 
         return membership
+
+class EventForm(forms.Form):
+    user = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), queryset=User.objects.all())
+    room = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), queryset=Room.objects.all(), required=False)
+    start_time = forms.DateTimeField(widget=forms.DateTimeInput(format='%m/%d/%Y %H:%M:%S'), required=True)
+    end_time = forms.DateTimeField(widget=forms.DateTimeInput(format='%m/%d/%Y %H:%M:%S'), required=True)
+    description = forms.CharField(max_length=100, required=False)
+    charge = forms.DecimalField(decimal_places=2, max_digits=9, required=True)
+    publicly_viewable = forms.BooleanField(required=False)
+
+    def save(self):
+        if not self.is_valid():
+            raise Exception('The form must be valid in order to save')
+
+        user = self.cleaned_data['user']
+        room = self.cleaned_data['room']
+        start_ts = self.cleaned_data['start_time']
+        end_ts = self.cleaned_data['end_time']
+        description = self.cleaned_data['description']
+
+        if self.cleaned_data['charge'] == None:
+            charge = 0
+        else:
+            charge = self.cleaned_data['charge']
+
+        charge = self.cleaned_data['charge']
+        is_public = self.cleaned_data['publicly_viewable']
+
+        event = Event(user=user, room=room, start_ts=start_ts, end_ts=end_ts, description=description, charge=charge, is_public=is_public)
+
+        event.save()
+
+        return event
 
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
