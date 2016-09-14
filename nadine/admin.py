@@ -4,15 +4,15 @@ from django.forms.utils import ErrorList
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
 
-from nadine.models.core import *
-from nadine.models.payment import *
-from nadine.models.alerts import *
+from nadine.models import *
 
 # Register the objects with the admin interface
 admin.site.register(Neighborhood)
 admin.site.register(Industry)
 admin.site.register(HowHeard)
 admin.site.register(MembershipPlan)
+admin.site.register(Room)
+admin.site.register(Event)
 
 
 class StyledAdmin(admin.ModelAdmin):
