@@ -289,12 +289,6 @@ class EventForm(forms.Form):
         start_ts = self.cleaned_data['start_time']
         end_ts = self.cleaned_data['end_time']
         description = self.cleaned_data['description']
-
-        if self.cleaned_data['charge'] == None:
-            charge = 0
-        else:
-            charge = self.cleaned_data['charge']
-
         charge = self.cleaned_data['charge']
         is_public = self.cleaned_data['publicly_viewable']
 
