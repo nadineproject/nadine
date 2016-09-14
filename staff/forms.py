@@ -272,10 +272,10 @@ class MembershipForm(forms.Form):
         return membership
 
 class EventForm(forms.Form):
-    user = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), queryset=User.objects.all())
+    user = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), queryset=User.objects.order_by('first_name'))
     room = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), queryset=Room.objects.all(), required=False)
-    start_time = forms.DateTimeField(widget=forms.DateTimeInput(format='%m/%d/%Y %H:%M:%S'), required=True)
-    end_time = forms.DateTimeField(widget=forms.DateTimeInput(format='%m/%d/%Y %H:%M:%S'), required=True)
+    start_time = forms.DateTimeField(widget=forms.DateTimeInput(attrs={'placeholder':'e.g. 12/28/16 14:30'}, format='%m/%d/%Y %H:%M'), required=True)
+    end_time = forms.DateTimeField(widget=forms.DateTimeInput(attrs={'placeholder':'e.g. 12/28/16 16:30'}, format='%m/%d/%Y %H:%M:%S'), required=True)
     description = forms.CharField(max_length=100, required=False)
     charge = forms.DecimalField(decimal_places=2, max_digits=9, required=True)
     publicly_viewable = forms.BooleanField(required=False)
