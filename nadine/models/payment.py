@@ -47,8 +47,8 @@ class Bill(models.Model):
     member = models.ForeignKey('Member', blank=False, null=False, related_name="bills")
     amount = models.DecimalField(max_digits=7, decimal_places=2)
     membership = models.ForeignKey('Membership', blank=True, null=True)
-    dropins = models.ManyToManyField('DailyLog', related_name='bills')
-    guest_dropins = models.ManyToManyField('DailyLog', related_name='guest_bills')
+    dropins = models.ManyToManyField('CoworkingDay', related_name='bills')
+    guest_dropins = models.ManyToManyField('CoworkingDay', related_name='guest_bills')
     new_member_deposit = models.BooleanField(default=False, blank=False, null=False)
     paid_by = models.ForeignKey('Member', blank=True, null=True, related_name='guest_bills')
 

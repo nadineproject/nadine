@@ -22,7 +22,8 @@ from django.utils import timezone
 
 import arp
 from arpwatch.models import UserDevice, ArpLog
-from nadine.models.core import Member, Membership, DailyLog
+from nadine.models.core import Member, Membership
+from nadine.models.usage import CoworkingDay
 from staff.templatetags import imagetags
 
 
@@ -41,7 +42,7 @@ class ActivityModel(object):
         self.full_time_count = Membership.objects.active_memberships().filter(has_desk=True).count()
         self.part_time_count = self.member_count - self.full_time_count
         self.device_count = len(ArpLog.objects.for_range(midnight, now))
-        self.dropin_count = DailyLog.objects.filter(visit_date__gt=midnight).count()
+        self.dropin_count = CoworkingDay.objects.filter(visit_date__gt=midnight).count()
 
     @property
     def here_today(self):

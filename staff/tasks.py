@@ -5,7 +5,8 @@ from datetime import datetime, timedelta
 
 from django.utils import timezone
 
-from nadine.models.core import Member, Membership, DailyLog
+from nadine.models.core import Member, Membership
+from nadine.models.usage import CoworkingDay
 from nadine.models.payment import BillingLog
 from members.models import UserNotification
 
@@ -24,7 +25,7 @@ def first_day_checkins():
     """A recurring task which sends an email to new members"""
     now = timezone.localtime(timezone.now())
     midnight = now - timedelta(seconds=now.hour * 60 * 60 + now.minute * 60 + now.second)
-    free_trials = DailyLog.objects.filter(visit_date__range=(midnight, now), payment='Trial')
+    free_trials = CoworkingDay.objects.filter(visit_date__range=(midnight, now), payment='Trial')
     for l in free_trials:
         email.send_first_day_checkin(l.user)
 
@@ -42,8 +43,8 @@ def regular_checkins():
 
     # Pull all the free trials from 30 days ago and send an email if they haven't been back
     one_month_ago = timezone.localtime(timezone.now()) - timedelta(days=30)
-    for dropin in DailyLog.objects.filter(visit_date=one_month_ago, payment='Trial'):
-        if DailyLog.objects.filter(user=dropin.user).count() == 1:
+    for dropin in CoworkingDay.objects.filter(visit_date=one_month_ago, payment='Trial'):
+        if CoworkingDay.objects.filter(user=dropin.user).count() == 1:
             if not dropin.user.profile.is_active():
                 email.send_no_return_checkin(dropin.user)
 

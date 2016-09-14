@@ -12,7 +12,7 @@ from django.db import transaction
 from django.utils import timezone
 
 from arpwatch.models import *
-from nadine.models.core import Member, DailyLog
+from nadine.models.core import Member
 
 logger = logging.getLogger(__name__)
 

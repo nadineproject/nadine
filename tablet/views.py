@@ -16,7 +16,8 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.utils import timezone
 
 from nadine import mailgun
-from nadine.models.core import Member, DailyLog, FileUpload
+from nadine.models.core import Member, FileUpload
+from nadine.models.usage import CoworkingDay
 from nadine.models.payment import Bill
 from nadine.utils.slack_api import SlackAPI
 from members.models import MOTD
@@ -85,7 +86,7 @@ def user_signin(request, username):
     can_signin = False
     active_membership = user.profile.active_membership()
     if not active_membership or active_membership.end_date or not active_membership.has_desk:
-        if not DailyLog.objects.filter(user=user, visit_date=timezone.localtime(timezone.now()).date()):
+        if not CoworkingDay.objects.filter(user=user, visit_date=timezone.localtime(timezone.now()).date()):
             can_signin = True
 
     search_results = None
@@ -97,7 +98,7 @@ def user_signin(request, username):
         member_search_form = MemberSearchForm()
 
     # Look up previous hosts for his user
-    guest_days = DailyLog.objects.filter(user=user, guest_of__isnull=False).values("guest_of")
+    guest_days = CoworkingDay.objects.filter(user=user, guest_of__isnull=False).values("guest_of")
     previous_hosts = Member.objects.active_members().filter(id__in=guest_days)
 
     return render_to_response('tablet/user_signin.html', {'user': user, 'can_signin': can_signin,
@@ -134,16 +135,16 @@ def signin_user(request, username):
 
 def signin_user_guest(request, username, guestof):
     user = get_object_or_404(User, username=username)
-    daily_log = DailyLog()
+    daily_log = CoworkingDay()
     daily_log.user = user
     daily_log.visit_date = timezone.localtime(timezone.now()).date()
     # Only proceed if they haven't signed in already
-    if DailyLog.objects.filter(user=user, visit_date=daily_log.visit_date).count() == 0:
+    if CoworkingDay.objects.filter(user=user, visit_date=daily_log.visit_date).count() == 0:
         if guestof:
             guestof_user = get_object_or_404(User, username=guestof)
             guestof_member = get_object_or_404(Member, user=guestof_user)
             daily_log.guest_of = guestof_member
-        if DailyLog.objects.filter(user=user).count() == 0:
+        if CoworkingDay.objects.filter(user=user).count() == 0:
             daily_log.payment = 'Trial'
         else:
             daily_log.payment = 'Bill'
