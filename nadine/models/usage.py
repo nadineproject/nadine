@@ -25,7 +25,7 @@ class CoworkingDay(models.Model):
     # TODO - convert to User
     guest_of = models.ForeignKey('Member', verbose_name="Guest Of", related_name="guest_of", blank=True, null=True)
     note = models.CharField("Note", max_length=128, blank="True")
-    created = models.DateTimeField(auto_now_add=True)
+    created_ts = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return '%s - %s' % (self.visit_date, self.user)
@@ -36,7 +36,7 @@ class CoworkingDay(models.Model):
     class Meta:
         app_label = 'nadine'
         verbose_name = "Coworking Day"
-        ordering = ['-visit_date', '-created']
+        ordering = ['-visit_date', '-created_ts']
 
 def sign_in_callback(sender, **kwargs):
     log = kwargs['instance']
@@ -52,7 +52,8 @@ class Event(models.Model):
     start_ts = models.DateTimeField(verbose_name="Start time")
     end_ts = models.DateTimeField(verbose_name="End time")
     description = models.CharField(max_length=128, null=True)
-    charge = models.DecimalField(decimal_places=2, max_digits=9)
+    charge = models.DecimalField(decimal_places=2, max_digits=9, null=True)
+    paid_by = models.ForeignKey(User, null=True, related_name="guest_event")
     is_public = models.BooleanField(default=False)
 
     def __unicode__(self):
