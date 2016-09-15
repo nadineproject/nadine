@@ -75,8 +75,8 @@ class MemberGroups():
         group_list = []
         for plan in MembershipPlan.objects.filter(enabled=True).order_by('name'):
             plan_name = plan.name
-            plan_members = Member.objects.members_by_plan(plan_name)
-            if plan_members.count() > 0:
+            plan_users = User.helper.members_by_plan(plan_name)
+            if plan_users.count() > 0:
                 group_list.append((plan_name, "%s Members" % plan_name))
         for g, d in sorted(MemberGroups.GROUP_DICT.items(), key=operator.itemgetter(0)):
             group_list.append((g, d))
@@ -85,21 +85,21 @@ class MemberGroups():
     @staticmethod
     def get_members(group):
         if group == MemberGroups.ALL:
-            return Member.objects.active_members()
+            return User.helper.active_members()
         elif group == MemberGroups.HAS_DESK:
-            return Member.objects.members_with_desks()
+            return User.helper.members_with_desks()
         elif group == MemberGroups.HAS_KEY:
-            return Member.objects.members_with_keys()
+            return User.helper.members_with_keys()
         elif group == MemberGroups.HAS_MAIL:
-            return Member.objects.members_with_mail()
+            return User.helper.members_with_mail()
         elif group == MemberGroups.NO_MEMBER_AGREEMENT:
-            return Member.objects.missing_member_agreement()
+            return User.helper.missing_member_agreement()
         elif group == MemberGroups.NO_KEY_AGREEMENT:
-            return Member.objects.missing_key_agreement()
+            return User.helper.missing_key_agreement()
         elif group == MemberGroups.NO_PHOTO:
-            return Member.objects.missing_photo()
+            return User.helper.missing_photo()
         elif group == MemberGroups.STALE_MEMBERSHIP:
-            return Member.objects.stale_members()
+            return User.helper.stale_members()
         else:
             return None
 
@@ -144,9 +144,6 @@ class UserQueryHelper():
 
     def active_members(self):
         return User.objects.filter(id__in=Membership.objects.active_memberships().values('user'))
-
-    def daily_members(self):
-        return self.active_members().exclude(id__in=self.members_with_desks())
 
     # def here_today(self, day=None):
     #     if not day:
@@ -226,30 +223,31 @@ class UserQueryHelper():
     #             if email and email not in active_emails and 'nadine' not in email:
     #                 expired_users.append({'email':email, 'real_name':u['real_name']})
     #     return expired_users
-    #
-    # def stale_member_date(self):
-    #     three_months_ago = timezone.now() - MonthDelta(3)
-    #     return three_months_ago
-    #
-    # def stale_members(self):
-    #     smd = self.stale_member_date()
-    #     recently_used = CoworkingDay.objects.filter(visit_date__gte=smd).values('user').distinct()
-    #     memberships = Membership.objects.active_memberships().filter(start_date__lte=smd, has_desk=False)
-    #     return Member.objects.filter(user__in=memberships.values('user')).exclude(user__in=recently_used)
-    #
-    # def missing_member_agreement(self):
-    #     active_agmts = FileUpload.objects.filter(document_type=FileUpload.MEMBER_AGMT, user__in=self.active_users()).distinct()
-    #     users_with_agmts = active_agmts.values('user')
-    #     return self.active_members().exclude(user__in=users_with_agmts)
-    #
-    # def missing_key_agreement(self):
-    #     active_agmts = FileUpload.objects.filter(document_type=FileUpload.KEY_AGMT, user__in=self.active_users()).distinct()
-    #     users_with_agmts = active_agmts.values('user')
-    #     return self.members_with_keys().exclude(user__in=users_with_agmts)
-    #
-    # def missing_photo(self):
-    #     return self.active_members().filter(photo="")
-    #
+
+    def stale_member_date(self):
+        three_months_ago = timezone.now() - MonthDelta(3)
+        return three_months_ago
+
+    def stale_members(self):
+        smd = self.stale_member_date()
+        recently_used = CoworkingDay.objects.filter(visit_date__gte=smd).values('user').distinct()
+        memberships = Membership.objects.active_memberships().filter(start_date__lte=smd, has_desk=False)
+        return User.objects.filter(id__in=memberships.values('user')).exclude(id__in=recently_used).order_by('first_name')
+
+    def missing_member_agreement(self):
+        active_agmts = FileUpload.objects.filter(document_type=FileUpload.MEMBER_AGMT, user__in=self.active_members()).distinct()
+        users_with_agmts = active_agmts.values('user')
+        return self.active_members().exclude(id__in=users_with_agmts).order_by('first_name')
+
+    def missing_key_agreement(self):
+        active_agmts = FileUpload.objects.filter(document_type=FileUpload.KEY_AGMT, user__in=self.active_members()).distinct()
+        users_with_agmts = active_agmts.values('user')
+        print users_with_agmts
+        return self.members_with_keys().exclude(id__in=users_with_agmts).order_by('first_name')
+
+    def missing_photo(self):
+        return self.active_members().filter(member__photo="").order_by('first_name')
+
     # def invalid_billing(self):
     #     members = []
     #     for m in self.active_members():
@@ -261,33 +259,29 @@ class UserQueryHelper():
     #
     # def recent_members(self, days):
     #     return Member.objects.filter(user__date_joined__gt=timezone.localtime(timezone.now()) - timedelta(days=days))
-    #
-    # def members_by_plan(self, plan):
-    #     memberships = Membership.objects.active_memberships().filter(membership_plan__name=plan)
-    #     return Member.objects.filter(user__in=memberships.values('user'))
-    #
-    # def members_by_plan_id(self, plan_id):
-    #     memberships = Membership.objects.active_memberships().filter(membership_plan=plan_id)
-    #     return Member.objects.filter(user__in=memberships.values('user'))
+
+    def members_by_plan(self, plan):
+        memberships = Membership.objects.active_memberships().filter(membership_plan__name=plan)
+        return User.objects.filter(id__in=memberships.values('user')).order_by('first_name')
 
     def members_with_desks(self):
         memberships = Membership.objects.active_memberships().filter(has_desk=True)
-        return User.objects.filter(id__in=memberships.values('user'))
+        return User.objects.filter(id__in=memberships.values('user')).order_by('first_name')
 
     def members_with_keys(self):
         memberships = Membership.objects.active_memberships().filter(has_key=True)
-        return User.objects.filter(id__in=memberships.values('user'))
+        return User.objects.filter(id__in=memberships.values('user')).order_by('first_name')
 
     def members_with_mail(self):
         memberships = Membership.objects.active_memberships().filter(has_mail=True)
-        return User.objects.filter(id__in=memberships.values('user'))
+        return User.objects.filter(id__in=memberships.values('user')).order_by('first_name')
 
-    # def members_by_neighborhood(self, hood, active_only=True):
-    #     if active_only:
-    #         return Member.objects.filter(neighborhood=hood).filter(memberships__isnull=False).filter(Q(memberships__end_date__isnull=True) | Q(memberships__end_date__gt=timezone.now().date())).distinct()
-    #     else:
-    #         return Member.objects.filter(neighborhood=hood)
-    #
+    def members_by_neighborhood(self, hood, active_only=True):
+        if active_only:
+            return self.active_members().filter(member__neighborhood=hood)
+        else:
+            return User.objects.filter(member__neighborhood=hood)
+
     # def managers(self, include_future=False):
     #     if hasattr(settings, 'TEAM_MEMBERSHIP_PLAN'):
     #         management_plan = MembershipPlan.objects.filter(name=settings.TEAM_MEMBERSHIP_PLAN).first()
@@ -303,22 +297,22 @@ class UserQueryHelper():
     #     recently_expired = Member.objects.filter(memberships__end_date=timezone.now().date() - timedelta(days=1)).exclude(memberships__start_date=timezone.now().date())
     #     for member in recently_expired:
     #         MailingList.objects.unsubscribe_from_all(member.user)
-    #
-    # def search(self, search_string, active_only=False):
-    #     terms = search_string.split()
-    #     if len(terms) == 0:
-    #         return None
-    #     fname_query = Q(user__first_name__icontains=terms[0])
-    #     lname_query = Q(user__last_name__icontains=terms[0])
-    #     for term in terms[1:]:
-    #         fname_query = fname_query | Q(user__first_name__icontains=term)
-    #         lname_query = lname_query | Q(user__last_name__icontains=term)
-    #
-    #     if active_only:
-    #         active_members = self.active_members()
-    #         return active_members.filter(fname_query | lname_query)
-    #
-    #     return self.filter(fname_query | lname_query)
+
+    def search(self, search_string, active_only=False):
+        terms = search_string.split()
+        if len(terms) == 0:
+            return None
+        fname_query = Q(first_name__icontains=terms[0])
+        lname_query = Q(last_name__icontains=terms[0])
+        for term in terms[1:]:
+            fname_query = fname_query | Q(first_name__icontains=term)
+            lname_query = lname_query | Q(last_name__icontains=term)
+
+        if active_only:
+            user_query = self.active_members()
+        else:
+            user_query = User.objects.all()
+        return user_query.filter(fname_query | lname_query)
 
 User.helper = UserQueryHelper()
 
@@ -332,10 +326,6 @@ class MemberManager(models.Manager):
         warnings.warn("DeprecationWarning:  Use 'User.helper.active_users'")
         return User.objects.filter(id__in=Membership.objects.active_memberships().values('user'))
         #return self.active_members().values('user')
-
-    def daily_members(self):
-        warnings.warn("DeprecationWarning:  Use 'User.helper.daily_users")
-        return self.active_members().exclude(id__in=self.members_with_desks())
 
     def here_today(self, day=None):
         warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
@@ -422,33 +412,33 @@ class MemberManager(models.Manager):
                     expired_users.append({'email':email, 'real_name':u['real_name']})
         return expired_users
 
-    def stale_member_date(self):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
-        three_months_ago = timezone.now() - MonthDelta(3)
-        return three_months_ago
+    # def stale_member_date(self):
+    #     warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
+    #     three_months_ago = timezone.now() - MonthDelta(3)
+    #     return three_months_ago
 
-    def stale_members(self):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
-        smd = self.stale_member_date()
-        recently_used = CoworkingDay.objects.filter(visit_date__gte=smd).values('user').distinct()
-        memberships = Membership.objects.active_memberships().filter(start_date__lte=smd, has_desk=False)
-        return Member.objects.filter(user__in=memberships.values('user')).exclude(user__in=recently_used)
+    # # def stale_members(self):
+    #     warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
+    #     smd = self.stale_member_date()
+    #     recently_used = CoworkingDay.objects.filter(visit_date__gte=smd).values('user').distinct()
+    #     memberships = Membership.objects.active_memberships().filter(start_date__lte=smd, has_desk=False)
+    #     return Member.objects.filter(user__in=memberships.values('user')).exclude(user__in=recently_used)
 
-    def missing_member_agreement(self):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
-        active_agmts = FileUpload.objects.filter(document_type=FileUpload.MEMBER_AGMT, user__in=self.active_users()).distinct()
-        users_with_agmts = active_agmts.values('user')
-        return self.active_members().exclude(user__in=users_with_agmts)
+    # def missing_member_agreement(self):
+    #     warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
+    #     active_agmts = FileUpload.objects.filter(document_type=FileUpload.MEMBER_AGMT, user__in=self.active_users()).distinct()
+    #     users_with_agmts = active_agmts.values('user')
+    #     return self.active_members().exclude(user__in=users_with_agmts)
 
-    def missing_key_agreement(self):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
-        active_agmts = FileUpload.objects.filter(document_type=FileUpload.KEY_AGMT, user__in=self.active_users()).distinct()
-        users_with_agmts = active_agmts.values('user')
-        return self.members_with_keys().exclude(user__in=users_with_agmts)
+    # def missing_key_agreement(self):
+    #     warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
+    #     active_agmts = FileUpload.objects.filter(document_type=FileUpload.KEY_AGMT, user__in=self.active_users()).distinct()
+    #     users_with_agmts = active_agmts.values('user')
+    #     return self.members_with_keys().exclude(user__in=users_with_agmts)
 
-    def missing_photo(self):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
-        return self.active_members().filter(photo="")
+    # def missing_photo(self):
+    #     warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
+    #     return self.active_members().filter(photo="")
 
     def invalid_billing(self):
         warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
@@ -464,37 +454,39 @@ class MemberManager(models.Manager):
         warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
         return Member.objects.filter(user__date_joined__gt=timezone.localtime(timezone.now()) - timedelta(days=days))
 
-    def members_by_plan(self, plan):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
-        memberships = Membership.objects.active_memberships().filter(membership_plan__name=plan)
-        return Member.objects.filter(user__in=memberships.values('user'))
+    # def members_by_plan(self, plan):
+    #     warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
+    #     memberships = Membership.objects.active_memberships().filter(membership_plan__name=plan)
+    #     return Member.objects.filter(user__in=memberships.values('user'))
+    #
+    # def members_by_plan_id(self, plan_id):
+    #     warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
+    #     memberships = Membership.objects.active_memberships().filter(membership_plan=plan_id)
+    #     return Member.objects.filter(user__in=memberships.values('user'))
 
-    def members_by_plan_id(self, plan_id):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
-        memberships = Membership.objects.active_memberships().filter(membership_plan=plan_id)
-        return Member.objects.filter(user__in=memberships.values('user'))
+    # def members_with_desks(self):
+    #     warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
+    #     memberships = Membership.objects.active_memberships().filter(has_desk=True)
+    #     return Member.objects.filter(user__in=memberships.values('user'))
 
-    def members_with_desks(self):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
-        memberships = Membership.objects.active_memberships().filter(has_desk=True)
-        return Member.objects.filter(user__in=memberships.values('user'))
-
+    # Still used in members.views
     def members_with_keys(self):
         warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
         memberships = Membership.objects.active_memberships().filter(has_key=True)
         return Member.objects.filter(user__in=memberships.values('user'))
 
+    # Still used in members.views
     def members_with_mail(self):
         warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
         memberships = Membership.objects.active_memberships().filter(has_mail=True)
         return Member.objects.filter(user__in=memberships.values('user'))
 
-    def members_by_neighborhood(self, hood, active_only=True):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
-        if active_only:
-            return Member.objects.filter(neighborhood=hood).filter(memberships__isnull=False).filter(Q(memberships__end_date__isnull=True) | Q(memberships__end_date__gt=timezone.now().date())).distinct()
-        else:
-            return Member.objects.filter(neighborhood=hood)
+    # def members_by_neighborhood(self, hood, active_only=True):
+    #     warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
+    #     if active_only:
+    #         return Member.objects.filter(neighborhood=hood).filter(memberships__isnull=False).filter(Q(memberships__end_date__isnull=True) | Q(memberships__end_date__gt=timezone.now().date())).distinct()
+    #     else:
+    #         return Member.objects.filter(neighborhood=hood)
 
     def managers(self, include_future=False):
         warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
@@ -514,26 +506,26 @@ class MemberManager(models.Manager):
         for member in recently_expired:
             MailingList.objects.unsubscribe_from_all(member.user)
 
-    def search(self, search_string, active_only=False):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
-        terms = search_string.split()
-        if len(terms) == 0:
-            return None
-        fname_query = Q(user__first_name__icontains=terms[0])
-        lname_query = Q(user__last_name__icontains=terms[0])
-        for term in terms[1:]:
-            fname_query = fname_query | Q(user__first_name__icontains=term)
-            lname_query = lname_query | Q(user__last_name__icontains=term)
-
-        if active_only:
-            active_members = self.active_members()
-            return active_members.filter(fname_query | lname_query)
-
-        return self.filter(fname_query | lname_query)
-
-    def get_by_natural_key(self, user_id):
-        warnings.warn("DeprecationWarning: unused method 'get_by_natural_key'")
-        return self.get(user__id=user_id)
+    # def search(self, search_string, active_only=False):
+    #     warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
+    #     terms = search_string.split()
+    #     if len(terms) == 0:
+    #         return None
+    #     fname_query = Q(user__first_name__icontains=terms[0])
+    #     lname_query = Q(user__last_name__icontains=terms[0])
+    #     for term in terms[1:]:
+    #         fname_query = fname_query | Q(user__first_name__icontains=term)
+    #         lname_query = lname_query | Q(user__last_name__icontains=term)
+    #
+    #     if active_only:
+    #         active_members = self.active_members()
+    #         return active_members.filter(fname_query | lname_query)
+    #
+    #     return self.filter(fname_query | lname_query)
+    # 
+    # def get_by_natural_key(self, user_id):
+    #     warnings.warn("DeprecationWarning: unused method 'get_by_natural_key'")
+    #     return self.get(user__id=user_id)
 
 
 def user_photo_path(instance, filename):

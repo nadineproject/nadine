@@ -9,7 +9,7 @@ nav #members-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {% block content %}
-{% include "staff/member_menu.frag" %}  
+{% include "staff/member_menu.frag" %}
 
 	<form id="member-search-form" action="." method="post">
 		<strong>Find Member</strong>:
@@ -17,11 +17,11 @@ nav #members-tab { background: #FBD850; color: black; }
 		<input type="submit" value="search" />
 		{% csrf_token %}
 	</form>
-	
+
 	<h2>Search results</h2>
 	{% if search_results %}
-		{% with search_results as members %}
-			{% include "staff/member_table.frag" %}
+		{% with search_results as users %}
+			{% include "staff/user_list_frag.html" %}
 		{% endwith %}
 	{% endif %}
 

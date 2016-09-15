@@ -53,11 +53,11 @@ class MemberAlertManager(models.Manager):
                 self.trigger_exiting_membership(m.user, exit_date)
 
         # Check for stale membership
-        smd = Member.objects.stale_member_date()
-        for m in Member.objects.stale_members():
-            existing_alerts = MemberAlert.objects.filter(user=m.user, key=MemberAlert.STALE_MEMBER, created_ts__gte=smd)
+        smd = User.helper.stale_member_date()
+        for u in User.helper.stale_members():
+            existing_alerts = MemberAlert.objects.filter(user=u, key=MemberAlert.STALE_MEMBER, created_ts__gte=smd)
             if not existing_alerts:
-                MemberAlert.objects.create_if_not_open(user=m.user, key=MemberAlert.STALE_MEMBER)
+                MemberAlert.objects.create_if_not_open(user=u, key=MemberAlert.STALE_MEMBER)
 
         # Expire old and unresolved alerts
         #active_users = Member.objects.active_users()

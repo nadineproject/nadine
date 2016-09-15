@@ -52,17 +52,17 @@ class MemberTestCase(TestCase):
         Membership.objects.create(user=self.user5, member=self.user5.get_profile(), membership_plan=self.pt5Plan, start_date=date(2009, 1, 1), guest_of=self.profile1)
 
     def test_info_methods(self):
-        self.assertTrue(self.user1.profile in Member.objects.members_by_plan_id(self.residentPlan.id))
-        self.assertFalse(self.user1.profile in Member.objects.members_by_plan_id(self.basicPlan.id))
-        self.assertTrue(self.user2.profile in Member.objects.members_by_plan_id(self.pt5Plan.id))
-        self.assertFalse(self.user2.profile in Member.objects.members_by_plan_id(self.residentPlan.id))
+        self.assertTrue(self.user1 in User.helper.members_by_plan(self.residentPlan))
+        self.assertFalse(self.user1 in User.helper.members_by_plan(self.basicPlan))
+        self.assertTrue(self.user2 in User.helper.members_by_plan(self.pt5Plan))
+        self.assertFalse(self.user2 in User.helper.members_by_plan(self.residentPlan))
 
-        self.assertTrue(self.user1.profile in Member.objects.members_by_neighborhood(self.neighborhood1))
-        self.assertFalse(self.user2.profile in Member.objects.members_by_neighborhood(self.neighborhood1))
-        self.assertFalse(self.user3.profile in Member.objects.members_by_neighborhood(self.neighborhood1))
-        self.assertFalse(self.user4.profile in Member.objects.members_by_neighborhood(self.neighborhood1))
-        self.assertTrue(self.user3.profile in Member.objects.members_by_neighborhood(self.neighborhood1, active_only=False))
-        self.assertTrue(self.user4.profile in Member.objects.members_by_neighborhood(self.neighborhood1, active_only=False))
+        self.assertTrue(self.user1 in User.helper.members_by_neighborhood(self.neighborhood1))
+        self.assertFalse(self.user2 in User.helper.members_by_neighborhood(self.neighborhood1))
+        self.assertFalse(self.user3 in User.helper.members_by_neighborhood(self.neighborhood1))
+        self.assertFalse(self.user4 in User.helper.members_by_neighborhood(self.neighborhood1))
+        self.assertTrue(self.user3 in User.helper.members_by_neighborhood(self.neighborhood1, active_only=False))
+        self.assertTrue(self.user4 in User.helper.members_by_neighborhood(self.neighborhood1, active_only=False))
 
     def test_valid_billing(self):
         # Member 1 has valid billing

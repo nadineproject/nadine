@@ -26,7 +26,7 @@ nav #members-tab { background: #FBD850; color: black; }
 </div>
 
 <textarea rows="20" cols="80">
-{% for member in members %}{{ member.email }}, {% endfor %}
+{% for user in users %}{{ user.email }}, {% endfor %}
 </textarea>
 
 {% endblock %}
