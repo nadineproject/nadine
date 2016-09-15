@@ -199,4 +199,4 @@ def users_for_day_query(day=None):
     end = start + timedelta(days=1)
     logger.info("users_for_day from '%s' to '%s'" % (start, end))
     arp_query = ArpLog.objects.filter(runtime__range=(start, end))
-    return Member.objects.filter(user__in=arp_query.values('device__user'))
+    return User.objects.filter(id__in=arp_query.values('device__user'))

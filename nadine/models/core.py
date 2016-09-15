@@ -145,51 +145,51 @@ class UserQueryHelper():
     def active_members(self):
         return User.objects.filter(id__in=Membership.objects.active_memberships().values('user'))
 
-    # def here_today(self, day=None):
-    #     if not day:
-    #         day = timezone.now().date()
-    #
-    #     # The members who are on the network
-    #     from arpwatch.arp import users_for_day_query
-    #     arp_members_query = users_for_day_query(day=day)
-    #
-    #     # The members who have signed in
-    #     daily_members_query = Member.objects.filter(user__id__in=CoworkingDay.objects.filter(visit_date=day).values('user__id'))
-    #
-    #     # The members that have access a door
-    #     door_query = DoorEvent.objects.users_for_day(day)
-    #     door_members_query = Member.objects.active_members().filter(user__in=door_query.values('user'))
-    #
-    #     combined_query = arp_members_query | daily_members_query | door_members_query
-    #     return combined_query.distinct()
-    #
-    # def not_signed_in(self, day=None):
-    #     if not day:
-    #         day = timezone.now().date()
-    #
-    #     signed_in = []
-    #     for l in CoworkingDay.objects.filter(visit_date=day):
-    #         signed_in.append(l.user.profile)
-    #
-    #     not_signed_in = []
-    #     for member in self.here_today(day):
-    #         if not member in signed_in and not member.has_desk(day):
-    #             not_signed_in.append({'user':member.user, 'day':day})
-    #
-    #     return not_signed_in
-    #
-    # def not_signed_in_since(self, day=None):
-    #     if not day:
-    #         day = timezone.now().date()
-    #     not_signed_in = []
-    #
-    #     d = timezone.now().date()
-    #     while day <= d:
-    #         not_signed_in.extend(self.not_signed_in(d))
-    #         d = d - timedelta(days=1)
-    #
-    #     return not_signed_in
-    #
+    def here_today(self, day=None):
+        if not day:
+            day = timezone.now().date()
+
+        # The members who are on the network
+        from arpwatch.arp import users_for_day_query
+        arp_members_query = users_for_day_query(day=day)
+
+        # The members who have signed in
+        daily_members_query = User.objects.filter(id__in=CoworkingDay.objects.filter(visit_date=day).values('user__id'))
+
+        # The members that have access a door
+        door_query = DoorEvent.objects.users_for_day(day)
+        door_members_query = User.helper.active_members().filter(id__in=door_query.values('user'))
+
+        combined_query = arp_members_query | daily_members_query | door_members_query
+        return combined_query.distinct()
+
+    def not_signed_in(self, day=None):
+        if not day:
+            day = timezone.now().date()
+
+        signed_in = []
+        for l in CoworkingDay.objects.filter(visit_date=day):
+            signed_in.append(l.user)
+
+        not_signed_in = []
+        for u in self.here_today(day):
+            if not u in signed_in and not u.profile.has_desk(day):
+                not_signed_in.append({'user':u, 'day':day})
+
+        return not_signed_in
+
+    def not_signed_in_since(self, day=None):
+        if not day:
+            day = timezone.now().date()
+        not_signed_in = []
+
+        d = timezone.now().date()
+        while day <= d:
+            not_signed_in.extend(self.not_signed_in(d))
+            d = d - timedelta(days=1)
+
+        return not_signed_in
+
     # def active_member_emails(self, include_email2=False):
     #     emails = []
     #     for membership in Membership.objects.active_memberships():
@@ -333,54 +333,54 @@ class MemberManager(models.Manager):
         return User.objects.filter(id__in=Membership.objects.active_memberships().values('user'))
         #return self.active_members().values('user')
 
-    def here_today(self, day=None):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
-        if not day:
-            day = timezone.now().date()
-
-        # The members who are on the network
-        from arpwatch.arp import users_for_day_query
-        arp_members_query = users_for_day_query(day=day)
-
-        # The members who have signed in
-        daily_members_query = Member.objects.filter(user__id__in=CoworkingDay.objects.filter(visit_date=day).values('user__id'))
-
-        # The members that have access a door
-        door_query = DoorEvent.objects.users_for_day(day)
-        door_members_query = Member.objects.active_members().filter(user__in=door_query.values('user'))
-
-        combined_query = arp_members_query | daily_members_query | door_members_query
-        return combined_query.distinct()
-
-    def not_signed_in(self, day=None):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
-        if not day:
-            day = timezone.now().date()
-
-        signed_in = []
-        for l in CoworkingDay.objects.filter(visit_date=day):
-            signed_in.append(l.user.profile)
-
-        not_signed_in = []
-        for member in self.here_today(day):
-            if not member in signed_in and not member.has_desk(day):
-                not_signed_in.append({'user':member.user, 'day':day})
-
-        return not_signed_in
-
-    def not_signed_in_since(self, day=None):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
-        if not day:
-            day = timezone.now().date()
-        not_signed_in = []
-
-        d = timezone.now().date()
-        while day <= d:
-            not_signed_in.extend(self.not_signed_in(d))
-            d = d - timedelta(days=1)
-
-        return not_signed_in
-
+    # def here_today(self, day=None):
+    #     warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
+    #     if not day:
+    #         day = timezone.now().date()
+    #
+    #     # The members who are on the network
+    #     from arpwatch.arp import users_for_day_query
+    #     arp_members_query = users_for_day_query(day=day)
+    #
+    #     # The members who have signed in
+    #     daily_members_query = Member.objects.filter(user__id__in=CoworkingDay.objects.filter(visit_date=day).values('user__id'))
+    #
+    #     # The members that have access a door
+    #     door_query = DoorEvent.objects.users_for_day(day)
+    #     door_members_query = Member.objects.active_members().filter(user__in=door_query.values('user'))
+    #
+    #     combined_query = arp_members_query | daily_members_query | door_members_query
+    #     return combined_query.distinct()
+    #
+    # def not_signed_in(self, day=None):
+    #     warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
+    #     if not day:
+    #         day = timezone.now().date()
+    #
+    #     signed_in = []
+    #     for l in CoworkingDay.objects.filter(visit_date=day):
+    #         signed_in.append(l.user.profile)
+    #
+    #     not_signed_in = []
+    #     for member in self.here_today(day):
+    #         if not member in signed_in and not member.has_desk(day):
+    #             not_signed_in.append({'user':member.user, 'day':day})
+    #
+    #     return not_signed_in
+    #
+    # def not_signed_in_since(self, day=None):
+    #     warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
+    #     if not day:
+    #         day = timezone.now().date()
+    #     not_signed_in = []
+    #
+    #     d = timezone.now().date()
+    #     while day <= d:
+    #         not_signed_in.extend(self.not_signed_in(d))
+    #         d = d - timedelta(days=1)
+    #
+    #     return not_signed_in
+    #
     def active_member_emails(self, include_email2=False):
         warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
         emails = []

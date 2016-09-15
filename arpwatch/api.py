@@ -48,16 +48,16 @@ class ActivityModel(object):
     def here_today(self):
         '''This property is exposed in the ActivityModel'''
         results = []
-        for member in Member.objects.here_today()
-            member_dict = {"username": member.user.username, "name": member.full_name}
+        for u in User.helper.here_today()
+            member_dict = {"username": u.username, "name": u.get_full_name()}
             if(member.photo):
-                member_dict["photo"] = "http://%s%s%s" % (Site.objects.get_current().domain, settings.MEDIA_URL, member.photo)
-                member_dict["thumbnail"] = "http://%s%s" % (Site.objects.get_current().domain, imagetags.fit_image(member.photo.url, '170x170'))
-            member_dict["industry"] = member.industry
-            membership = member.membership_type()
+                member_dict["photo"] = "http://%s%s%s" % (Site.objects.get_current().domain, settings.MEDIA_URL, u.profile.photo)
+                member_dict["thumbnail"] = "http://%s%s" % (Site.objects.get_current().domain, imagetags.fit_image(u.profile.photo.url, '170x170'))
+            member_dict["industry"] = u.profile.industry
+            membership = u.profile.membership_type()
             member_dict["membership"] = membership
             tags = []
-            for t in member.tags.all():
+            for t in u.profile.tags.all():
                 tags.append(t)
             member_dict["tags"] = tags
             results.append(member_dict)

@@ -133,7 +133,7 @@ def todo(request):
 
     # Did anyone forget to sign in in the last 7 days?
     check_date = timezone.now().date() - timedelta(days=7)
-    not_signed_in = Member.objects.not_signed_in_since(check_date)
+    not_signed_in = User.helper.not_signed_in_since(check_date)
     today = timezone.now().date()
 
     return render_to_response('staff/todo.html', {'member_alerts': member_alerts, 'not_signed_in': not_signed_in, 'showall':showall, 'today':today}, context_instance=RequestContext(request))
