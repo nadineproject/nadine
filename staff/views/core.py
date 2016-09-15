@@ -20,7 +20,7 @@ from django.conf import settings
 #from django.forms.models import model_to_dict
 #from django.db.models import Sum
 
-from nadine.models.core import Member, Membership, MembershipPlan, MemberGroups, SecurityDeposit
+from nadine.models.core import Membership, MembershipPlan, MemberGroups, SecurityDeposit
 from nadine.models.alerts import MemberAlert
 from nadine.utils.slack_api import SlackAPI
 
@@ -38,22 +38,21 @@ def members(request, group=None):
         if first_plan:
             group = first_plan.name
 
-    # TODO convert to Users
-    members = MemberGroups.get_members(group)
-    if members:
-        member_count = members.count()
+    users = MemberGroups.get_members(group)
+    if users:
+        member_count = users.count()
         group_name = MemberGroups.GROUP_DICT[group]
     else:
         # Assume the group is a membership plan
-        members = Member.objects.members_by_plan(group)
-        member_count = len(members)
+        users = User.helper.members_by_plan(group)
+        member_count = len(users)
         group_name = "%s Members" % group
 
     # How many members do we have?
-    total_members = Member.objects.active_members().count()
+    total_members = User.helper.active_members().count()
     group_list = MemberGroups.get_member_groups()
 
-    return render_to_response('staff/members.html', {'group': group, 'group_name': group_name, 'members': members,
+    return render_to_response('staff/members.html', {'group': group, 'group_name': group_name, 'users': users,
                                                      'member_count': member_count, 'group_list': group_list, 'total_members': total_members
                                                      }, context_instance=RequestContext(request)
                               )
@@ -63,24 +62,24 @@ def member_bcc(request, group=None):
     if not group:
         group = MemberGroups.ALL
         group_name = "All Members"
-        members = Member.objects.active_members()
+        users = User.helper.active_members()
     elif group in MemberGroups.GROUP_DICT:
         group_name = MemberGroups.GROUP_DICT[group]
-        members = MemberGroups.get_members(group)
+        users = MemberGroups.get_members(group)
     else:
         group_name = "%s Members" % group
-        members = Member.objects.members_by_plan(group)
+        users = User.helper.members_by_plan(group)
     group_list = MemberGroups.get_member_groups()
-    return render_to_response('staff/member_bcc.html', {'group': group, 'group_name': group_name, 'group_list': group_list, 'members': members}, context_instance=RequestContext(request))
+    return render_to_response('staff/member_bcc.html', {'group': group, 'group_name': group_name, 'group_list': group_list, 'users': users}, context_instance=RequestContext(request))
 
 
 @staff_member_required
-def export_members(request):
+def export_users(request):
     if 'active_only' in request.GET:
-        members = Member.objects.active_members()
+        users = User.helper.active_members()
     else:
-        members = Member.objects.all()
-    return render_to_response('staff/memberList.csv', {'member_list': members}, content_type="text/plain")
+        users = User.objects.all()
+    return render_to_response('staff/memberList.csv', {'member_list': users}, content_type="text/plain")
 
 
 @staff_member_required
@@ -115,10 +114,9 @@ def member_search(request):
     if request.method == "POST":
         member_search_form = MemberSearchForm(request.POST)
         if member_search_form.is_valid():
-            # TODO - convert to User
-            search_results = Member.objects.search(member_search_form.cleaned_data['terms'])
+            search_results = User.helper.search(member_search_form.cleaned_data['terms'])
             if len(search_results) == 1:
-                return HttpResponseRedirect(reverse('staff_user_detail', kwargs={'username': search_results[0].user.username}))
+                return HttpResponseRedirect(reverse('staff_user_detail', kwargs={'username': search_results[0].username}))
     else:
         member_search_form = MemberSearchForm()
     return render_to_response('staff/member_search.html', {'member_search_form': member_search_form, 'search_results': search_results}, context_instance=RequestContext(request))
@@ -135,7 +133,7 @@ def todo(request):
 
     # Did anyone forget to sign in in the last 7 days?
     check_date = timezone.now().date() - timedelta(days=7)
-    not_signed_in = Member.objects.not_signed_in_since(check_date)
+    not_signed_in = User.helper.not_signed_in_since(check_date)
     today = timezone.now().date()
 
     return render_to_response('staff/todo.html', {'member_alerts': member_alerts, 'not_signed_in': not_signed_in, 'showall':showall, 'today':today}, context_instance=RequestContext(request))
@@ -212,14 +210,13 @@ def view_user_reports(request):
 
 @staff_member_required
 def slack_users(request):
-    expired_users = Member.objects.expired_slack_users()
+    expired_users = User.helper.expired_slack_users()
     slack_emails = []
-    # TODO - convert to USER
     slack_users = SlackAPI().users.list().body['members']
     for u in slack_users:
         if 'profile' in u and 'email' in u['profile'] and u['profile']['email']:
             slack_emails.append(u['profile']['email'])
-    non_slack_users = Member.objects.active_members().exclude(user__email__in=slack_emails)
+    non_slack_users = User.helper.active_members().exclude(email__in=slack_emails)
     return render_to_response('staff/slack_users.html', {'expired_users':expired_users,
                                                          'slack_users':slack_users,
                                                          'non_slack_users':non_slack_users,

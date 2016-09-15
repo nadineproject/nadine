@@ -7,8 +7,8 @@
 	{% for tag, members in tags %}
 		<dl>
 		<dt><a href="{% url 'member_tag' tag %}">{{ tag }}</a>:</dt>
-			{% for member in members %}
-				<dd><a href="{% url 'member_profile' member.user.username %}">{{ member }}</a></dd>
+			{% for u in members %}
+				<dd><a href="{% url 'member_profile' u.username %}">{{ u.get_full_name }}</a></dd>
 		{% endfor %}
 		</dl>
 	{% endfor %}

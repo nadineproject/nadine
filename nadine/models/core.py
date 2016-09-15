@@ -75,8 +75,8 @@ class MemberGroups():
         group_list = []
         for plan in MembershipPlan.objects.filter(enabled=True).order_by('name'):
             plan_name = plan.name
-            plan_members = Member.objects.members_by_plan(plan_name)
-            if plan_members.count() > 0:
+            plan_users = User.helper.members_by_plan(plan_name)
+            if plan_users.count() > 0:
                 group_list.append((plan_name, "%s Members" % plan_name))
         for g, d in sorted(MemberGroups.GROUP_DICT.items(), key=operator.itemgetter(0)):
             group_list.append((g, d))
@@ -85,21 +85,21 @@ class MemberGroups():
     @staticmethod
     def get_members(group):
         if group == MemberGroups.ALL:
-            return Member.objects.active_members()
+            return User.helper.active_members()
         elif group == MemberGroups.HAS_DESK:
-            return Member.objects.members_with_desks()
+            return User.helper.members_with_desks()
         elif group == MemberGroups.HAS_KEY:
-            return Member.objects.members_with_keys()
+            return User.helper.members_with_keys()
         elif group == MemberGroups.HAS_MAIL:
-            return Member.objects.members_with_mail()
+            return User.helper.members_with_mail()
         elif group == MemberGroups.NO_MEMBER_AGREEMENT:
-            return Member.objects.missing_member_agreement()
+            return User.helper.missing_member_agreement()
         elif group == MemberGroups.NO_KEY_AGREEMENT:
-            return Member.objects.missing_key_agreement()
+            return User.helper.missing_key_agreement()
         elif group == MemberGroups.NO_PHOTO:
-            return Member.objects.missing_photo()
+            return User.helper.missing_photo()
         elif group == MemberGroups.STALE_MEMBERSHIP:
-            return Member.objects.stale_members()
+            return User.helper.stale_members()
         else:
             return None
 
@@ -145,199 +145,7 @@ class UserQueryHelper():
     def active_members(self):
         return User.objects.filter(id__in=Membership.objects.active_memberships().values('user'))
 
-    # def daily_members(self):
-    #     return self.active_members().exclude(id__in=self.members_with_desks())
-    #
-    # def here_today(self, day=None):
-    #     if not day:
-    #         day = timezone.now().date()
-    #
-    #     # The members who are on the network
-    #     from arpwatch.arp import users_for_day_query
-    #     arp_members_query = users_for_day_query(day=day)
-    #
-    #     # The members who have signed in
-    #     daily_members_query = Member.objects.filter(user__id__in=CoworkingDay.objects.filter(visit_date=day).values('user__id'))
-    #
-    #     # The members that have access a door
-    #     door_query = DoorEvent.objects.users_for_day(day)
-    #     door_members_query = Member.objects.active_members().filter(user__in=door_query.values('user'))
-    #
-    #     combined_query = arp_members_query | daily_members_query | door_members_query
-    #     return combined_query.distinct()
-    #
-    # def not_signed_in(self, day=None):
-    #     if not day:
-    #         day = timezone.now().date()
-    #
-    #     signed_in = []
-    #     for l in CoworkingDay.objects.filter(visit_date=day):
-    #         signed_in.append(l.user.profile)
-    #
-    #     not_signed_in = []
-    #     for member in self.here_today(day):
-    #         if not member in signed_in and not member.has_desk(day):
-    #             not_signed_in.append({'user':member.user, 'day':day})
-    #
-    #     return not_signed_in
-    #
-    # def not_signed_in_since(self, day=None):
-    #     if not day:
-    #         day = timezone.now().date()
-    #     not_signed_in = []
-    #
-    #     d = timezone.now().date()
-    #     while day <= d:
-    #         not_signed_in.extend(self.not_signed_in(d))
-    #         d = d - timedelta(days=1)
-    #
-    #     return not_signed_in
-    #
-    # def active_member_emails(self, include_email2=False):
-    #     emails = []
-    #     for membership in Membership.objects.active_memberships():
-    #         user = membership.user
-    #         if user.email not in emails:
-    #             emails.append(user.email)
-    #         if include_email2 and user.profile.email2 not in emails:
-    #             emails.append(user.profile.email2)
-    #     return emails
-    #
-    # def exiting_members(self, day=None):
-    #     if day == None:
-    #         day = timezone.now()
-    #     next_day = day + timedelta(days=1)
-    #
-    #     # Exiting members are here today and gone tomorrow.  Pull up all the active
-    #     # memberships for today and remove the list of active members tomorrow.
-    #     today_memberships = Membership.objects.active_memberships(day)
-    #     tomorrow_memberships = Membership.objects.active_memberships(next_day)
-    #     exiting = today_memberships.exclude(user__in=tomorrow_memberships.values('user'))
-    #
-    #     return Member.objects.filter(user__in=exiting.values('user'))
-    #
-    # def expired_slack_users(self):
-    #     expired_users = []
-    #     active_emails = self.active_member_emails(include_email2=True)
-    #     slack_users = SlackAPI().users.list()
-    #     for u in slack_users.body['members']:
-    #         if 'profile' in u and 'real_name' in u and 'email' in u['profile']:
-    #             email = u['profile']['email']
-    #             if email and email not in active_emails and 'nadine' not in email:
-    #                 expired_users.append({'email':email, 'real_name':u['real_name']})
-    #     return expired_users
-    #
-    # def stale_member_date(self):
-    #     three_months_ago = timezone.now() - MonthDelta(3)
-    #     return three_months_ago
-    #
-    # def stale_members(self):
-    #     smd = self.stale_member_date()
-    #     recently_used = CoworkingDay.objects.filter(visit_date__gte=smd).values('user').distinct()
-    #     memberships = Membership.objects.active_memberships().filter(start_date__lte=smd, has_desk=False)
-    #     return Member.objects.filter(user__in=memberships.values('user')).exclude(user__in=recently_used)
-    #
-    # def missing_member_agreement(self):
-    #     active_agmts = FileUpload.objects.filter(document_type=FileUpload.MEMBER_AGMT, user__in=self.active_users()).distinct()
-    #     users_with_agmts = active_agmts.values('user')
-    #     return self.active_members().exclude(user__in=users_with_agmts)
-    #
-    # def missing_key_agreement(self):
-    #     active_agmts = FileUpload.objects.filter(document_type=FileUpload.KEY_AGMT, user__in=self.active_users()).distinct()
-    #     users_with_agmts = active_agmts.values('user')
-    #     return self.members_with_keys().exclude(user__in=users_with_agmts)
-    #
-    # def missing_photo(self):
-    #     return self.active_members().filter(photo="")
-    #
-    # def invalid_billing(self):
-    #     members = []
-    #     for m in self.active_members():
-    #         membership = m.active_membership()
-    #         if membership and membership.monthly_rate > 0:
-    #             if not m.has_valid_billing():
-    #                 members.append(m)
-    #     return members
-    #
-    # def recent_members(self, days):
-    #     return Member.objects.filter(user__date_joined__gt=timezone.localtime(timezone.now()) - timedelta(days=days))
-    #
-    # def members_by_plan(self, plan):
-    #     memberships = Membership.objects.active_memberships().filter(membership_plan__name=plan)
-    #     return Member.objects.filter(user__in=memberships.values('user'))
-    #
-    # def members_by_plan_id(self, plan_id):
-    #     memberships = Membership.objects.active_memberships().filter(membership_plan=plan_id)
-    #     return Member.objects.filter(user__in=memberships.values('user'))
-    #
-    # def members_with_desks(self):
-    #     memberships = Membership.objects.active_memberships().filter(has_desk=True)
-    #     return Member.objects.filter(user__in=memberships.values('user'))
-    #
-    # def members_with_keys(self):
-    #     memberships = Membership.objects.active_memberships().filter(has_key=True)
-    #     return Member.objects.filter(user__in=memberships.values('user'))
-    #
-    # def members_with_mail(self):
-    #     return Membership.objects.active_memberships().filter(has_mail=True).values('user')
-    #
-    # def members_by_neighborhood(self, hood, active_only=True):
-    #     if active_only:
-    #         return Member.objects.filter(neighborhood=hood).filter(memberships__isnull=False).filter(Q(memberships__end_date__isnull=True) | Q(memberships__end_date__gt=timezone.now().date())).distinct()
-    #     else:
-    #         return Member.objects.filter(neighborhood=hood)
-    #
-    # def managers(self, include_future=False):
-    #     if hasattr(settings, 'TEAM_MEMBERSHIP_PLAN'):
-    #         management_plan = MembershipPlan.objects.filter(name=settings.TEAM_MEMBERSHIP_PLAN).first()
-    #         memberships = Membership.objects.active_memberships().filter(membership_plan=management_plan).distinct()
-    #         if include_future:
-    #             memberships = memberships | Membership.objects.future_memberships().filter(membership_plan=management_plan).distinct()
-    #         return Member.objects.filter(user__in=memberships.values('user'))
-    #     return None
-    #
-    # def unsubscribe_recent_dropouts(self):
-    #     """Remove mailing list subscriptions from members whose memberships expired yesterday and they do not start a membership today"""
-    #     from interlink.models import MailingList
-    #     recently_expired = Member.objects.filter(memberships__end_date=timezone.now().date() - timedelta(days=1)).exclude(memberships__start_date=timezone.now().date())
-    #     for member in recently_expired:
-    #         MailingList.objects.unsubscribe_from_all(member.user)
-    #
-    # def search(self, search_string, active_only=False):
-    #     terms = search_string.split()
-    #     if len(terms) == 0:
-    #         return None
-    #     fname_query = Q(user__first_name__icontains=terms[0])
-    #     lname_query = Q(user__last_name__icontains=terms[0])
-    #     for term in terms[1:]:
-    #         fname_query = fname_query | Q(user__first_name__icontains=term)
-    #         lname_query = lname_query | Q(user__last_name__icontains=term)
-    #
-    #     if active_only:
-    #         active_members = self.active_members()
-    #         return active_members.filter(fname_query | lname_query)
-    #
-    #     return self.filter(fname_query | lname_query)
-
-User.helper = UserQueryHelper()
-
-class MemberManager(models.Manager):
-
-    def active_members(self):
-        warnings.warn("DeprecationWarning:  Use 'User.helper.active_users'")
-        return Member.objects.filter(id__in=Membership.objects.active_memberships().values('member'))
-
-    def active_users(self):
-        warnings.warn("DeprecationWarning:  Use 'User.helper.active_users'")
-        return User.objects.filter(id__in=Membership.objects.active_memberships().values('user'))
-        #return self.active_members().values('user')
-
-    def daily_members(self):
-        warnings.warn("DeprecationWarning:  Use 'User.helper.daily_users")
-        return self.active_members().exclude(id__in=self.members_with_desks())
-
     def here_today(self, day=None):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
         if not day:
             day = timezone.now().date()
 
@@ -346,33 +154,31 @@ class MemberManager(models.Manager):
         arp_members_query = users_for_day_query(day=day)
 
         # The members who have signed in
-        daily_members_query = Member.objects.filter(user__id__in=CoworkingDay.objects.filter(visit_date=day).values('user__id'))
+        daily_members_query = User.objects.filter(id__in=CoworkingDay.objects.filter(visit_date=day).values('user__id'))
 
         # The members that have access a door
         door_query = DoorEvent.objects.users_for_day(day)
-        door_members_query = Member.objects.active_members().filter(user__in=door_query.values('user'))
+        door_members_query = User.helper.active_members().filter(id__in=door_query.values('user'))
 
         combined_query = arp_members_query | daily_members_query | door_members_query
         return combined_query.distinct()
 
     def not_signed_in(self, day=None):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
         if not day:
             day = timezone.now().date()
 
         signed_in = []
         for l in CoworkingDay.objects.filter(visit_date=day):
-            signed_in.append(l.user.profile)
+            signed_in.append(l.user)
 
         not_signed_in = []
-        for member in self.here_today(day):
-            if not member in signed_in and not member.has_desk(day):
-                not_signed_in.append({'user':member.user, 'day':day})
+        for u in self.here_today(day):
+            if not u in signed_in and not u.profile.has_desk(day):
+                not_signed_in.append({'user':u, 'day':day})
 
         return not_signed_in
 
     def not_signed_in_since(self, day=None):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
         if not day:
             day = timezone.now().date()
         not_signed_in = []
@@ -384,19 +190,7 @@ class MemberManager(models.Manager):
 
         return not_signed_in
 
-    def active_member_emails(self, include_email2=False):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
-        emails = []
-        for membership in Membership.objects.active_memberships():
-            user = membership.user
-            if user.email not in emails:
-                emails.append(user.email)
-            if include_email2 and user.profile.email2 not in emails:
-                emails.append(user.profile.email2)
-        return emails
-
     def exiting_members(self, day=None):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
         if day == None:
             day = timezone.now()
         next_day = day + timedelta(days=1)
@@ -407,10 +201,19 @@ class MemberManager(models.Manager):
         tomorrow_memberships = Membership.objects.active_memberships(next_day)
         exiting = today_memberships.exclude(user__in=tomorrow_memberships.values('user'))
 
-        return Member.objects.filter(user__in=exiting.values('user'))
+        return User.objects.filter(id__in=exiting.values('user'))
+
+    def active_member_emails(self, include_email2=False):
+        emails = []
+        for membership in Membership.objects.active_memberships():
+            user = membership.user
+            if user.email not in emails:
+                emails.append(user.email)
+            if include_email2 and user.profile.email2 not in emails:
+                emails.append(user.profile.email2)
+        return emails
 
     def expired_slack_users(self):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
         expired_users = []
         active_emails = self.active_member_emails(include_email2=True)
         slack_users = SlackAPI().users.list()
@@ -422,117 +225,95 @@ class MemberManager(models.Manager):
         return expired_users
 
     def stale_member_date(self):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
         three_months_ago = timezone.now() - MonthDelta(3)
         return three_months_ago
 
     def stale_members(self):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
         smd = self.stale_member_date()
         recently_used = CoworkingDay.objects.filter(visit_date__gte=smd).values('user').distinct()
         memberships = Membership.objects.active_memberships().filter(start_date__lte=smd, has_desk=False)
-        return Member.objects.filter(user__in=memberships.values('user')).exclude(user__in=recently_used)
+        return User.objects.filter(id__in=memberships.values('user')).exclude(id__in=recently_used).order_by('first_name')
 
     def missing_member_agreement(self):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
-        active_agmts = FileUpload.objects.filter(document_type=FileUpload.MEMBER_AGMT, user__in=self.active_users()).distinct()
+        active_agmts = FileUpload.objects.filter(document_type=FileUpload.MEMBER_AGMT, user__in=self.active_members()).distinct()
         users_with_agmts = active_agmts.values('user')
-        return self.active_members().exclude(user__in=users_with_agmts)
+        return self.active_members().exclude(id__in=users_with_agmts).order_by('first_name')
 
     def missing_key_agreement(self):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
-        active_agmts = FileUpload.objects.filter(document_type=FileUpload.KEY_AGMT, user__in=self.active_users()).distinct()
+        active_agmts = FileUpload.objects.filter(document_type=FileUpload.KEY_AGMT, user__in=self.active_members()).distinct()
         users_with_agmts = active_agmts.values('user')
-        return self.members_with_keys().exclude(user__in=users_with_agmts)
+        print users_with_agmts
+        return self.members_with_keys().exclude(id__in=users_with_agmts).order_by('first_name')
 
     def missing_photo(self):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
-        return self.active_members().filter(photo="")
+        return self.active_members().filter(member__photo="").order_by('first_name')
 
     def invalid_billing(self):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
-        members = []
-        for m in self.active_members():
-            membership = m.active_membership()
-            if membership and membership.monthly_rate > 0:
-                if not m.has_valid_billing():
-                    members.append(m)
-        return members
-
-    def recent_members(self, days):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
-        return Member.objects.filter(user__date_joined__gt=timezone.localtime(timezone.now()) - timedelta(days=days))
+        active_memberships = Membership.objects.active_memberships()
+        free_memberships = active_memberships.filter(monthly_rate=0)
+        freeloaders = Q(id__in=free_memberships.values('user'))
+        guest_memberships = active_memberships.filter(guest_of__isnull=False)
+        guests = Q(id__in=guest_memberships.values('user'))
+        active_invalids = self.active_members().filter(member__valid_billing=False)
+        return active_invalids.exclude(freeloaders).exclude(guests)
 
     def members_by_plan(self, plan):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
         memberships = Membership.objects.active_memberships().filter(membership_plan__name=plan)
-        return Member.objects.filter(user__in=memberships.values('user'))
-
-    def members_by_plan_id(self, plan_id):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
-        memberships = Membership.objects.active_memberships().filter(membership_plan=plan_id)
-        return Member.objects.filter(user__in=memberships.values('user'))
+        return User.objects.filter(id__in=memberships.values('user')).order_by('first_name')
 
     def members_with_desks(self):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
         memberships = Membership.objects.active_memberships().filter(has_desk=True)
-        return Member.objects.filter(user__in=memberships.values('user'))
+        return User.objects.filter(id__in=memberships.values('user')).order_by('first_name')
 
     def members_with_keys(self):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
         memberships = Membership.objects.active_memberships().filter(has_key=True)
-        return Member.objects.filter(user__in=memberships.values('user'))
+        return User.objects.filter(id__in=memberships.values('user')).order_by('first_name')
 
     def members_with_mail(self):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
         memberships = Membership.objects.active_memberships().filter(has_mail=True)
-        return Member.objects.filter(user__in=memberships.values('user'))
+        return User.objects.filter(id__in=memberships.values('user')).order_by('first_name')
 
     def members_by_neighborhood(self, hood, active_only=True):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
         if active_only:
-            return Member.objects.filter(neighborhood=hood).filter(memberships__isnull=False).filter(Q(memberships__end_date__isnull=True) | Q(memberships__end_date__gt=timezone.now().date())).distinct()
+            return self.active_members().filter(member__neighborhood=hood)
         else:
-            return Member.objects.filter(neighborhood=hood)
+            return User.objects.filter(member__neighborhood=hood)
+
+    def members_with_tag(self, tag):
+        return self.active_members().filter(member__tags__name__in=[tag])
 
     def managers(self, include_future=False):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
         if hasattr(settings, 'TEAM_MEMBERSHIP_PLAN'):
             management_plan = MembershipPlan.objects.filter(name=settings.TEAM_MEMBERSHIP_PLAN).first()
             memberships = Membership.objects.active_memberships().filter(membership_plan=management_plan).distinct()
             if include_future:
                 memberships = memberships | Membership.objects.future_memberships().filter(membership_plan=management_plan).distinct()
-            return Member.objects.filter(user__in=memberships.values('user'))
+            return User.objects.filter(id__in=memberships.values('user'))
         return None
 
-    def unsubscribe_recent_dropouts(self):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
-        """Remove mailing list subscriptions from members whose memberships expired yesterday and they do not start a membership today"""
-        from interlink.models import MailingList
-        recently_expired = Member.objects.filter(memberships__end_date=timezone.now().date() - timedelta(days=1)).exclude(memberships__start_date=timezone.now().date())
-        for member in recently_expired:
-            MailingList.objects.unsubscribe_from_all(member.user)
-
     def search(self, search_string, active_only=False):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
         terms = search_string.split()
         if len(terms) == 0:
             return None
-        fname_query = Q(user__first_name__icontains=terms[0])
-        lname_query = Q(user__last_name__icontains=terms[0])
-        for term in terms[1:]:
-            fname_query = fname_query | Q(user__first_name__icontains=term)
-            lname_query = lname_query | Q(user__last_name__icontains=term)
 
         if active_only:
-            active_members = self.active_members()
-            return active_members.filter(fname_query | lname_query)
+            user_query = self.active_members()
+        else:
+            user_query = User.objects.all()
 
-        return self.filter(fname_query | lname_query)
+        if '@' in terms[0]:
+            email1_query = Q(email=terms[0])
+            email2_query = Q(member__email2=terms[0])
+            return user_query.filter(email1_query | email2_query)
 
-    def get_by_natural_key(self, user_id):
-        warnings.warn("DeprecationWarning: unused method 'get_by_natural_key'")
-        return self.get(user__id=user_id)
+        fname_query = Q(first_name__icontains=terms[0])
+        lname_query = Q(last_name__icontains=terms[0])
+        for term in terms[1:]:
+            fname_query = fname_query | Q(first_name__icontains=term)
+            lname_query = lname_query | Q(last_name__icontains=term)
+        return user_query.filter(fname_query | lname_query)
+
+User.helper = UserQueryHelper()
 
 
 def user_photo_path(instance, filename):
@@ -542,8 +323,6 @@ def user_photo_path(instance, filename):
 
 class Member(models.Model):
     MAX_PHOTO_SIZE = 1024
-
-    objects = MemberManager()
 
     user = models.OneToOneField(User, blank=False)
     email2 = models.EmailField("Alternate Email", blank=True, null=True)
@@ -997,10 +776,10 @@ class MembershipPlan(models.Model):
 
 class MembershipManager(models.Manager):
 
-    def create_with_plan(self, member, start_date, end_date, membership_plan, rate=-1, guest_of=None):
+    def create_with_plan(self, user, start_date, end_date, membership_plan, rate=-1, guest_of=None):
         if rate < 0:
             rate = membership_plan.monthly_rate
-        self.create(member=member, start_date=start_date, end_date=end_date, membership_plan=membership_plan,
+        self.create(user=user, member=user.profile, start_date=start_date, end_date=end_date, membership_plan=membership_plan,
                     monthly_rate=rate, daily_rate=membership_plan.daily_rate, dropin_allowance=membership_plan.dropin_allowance,
                     has_desk=membership_plan.has_desk, guest_of=guest_of)
 
@@ -1103,7 +882,6 @@ class Membership(models.Model):
 class SentEmailLog(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, null=True)
-    #member = models.ForeignKey('Member', null=True)
     recipient = models.EmailField()
     subject = models.CharField(max_length=128, blank=True, null=True)
     success = models.NullBooleanField(blank=False, null=False, default=False)
@@ -1114,7 +892,6 @@ class SentEmailLog(models.Model):
 
 class SecurityDeposit(models.Model):
     user = models.ForeignKey(User)
-    #member = models.ForeignKey('Member', blank=False, null=False)
     received_date = models.DateField()
     returned_date = models.DateField(blank=True, null=True)
     amount = models.PositiveSmallIntegerField(default=0)
@@ -1123,7 +900,6 @@ class SecurityDeposit(models.Model):
 
 class SpecialDay(models.Model):
     user = models.ForeignKey(User)
-    #member = models.ForeignKey('Member', blank=False, null=False)
     year = models.PositiveSmallIntegerField(blank=True, null=True)
     month = models.PositiveSmallIntegerField(blank=True, null=True)
     day = models.PositiveSmallIntegerField(blank=True, null=True)
@@ -1134,7 +910,6 @@ class MemberNote(models.Model):
     user = models.ForeignKey(User)
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, null=True, related_name='+')
-    #member = models.ForeignKey('Member', blank=False, null=False)
     note = models.TextField(blank=True, null=True)
 
     def __str__(self):

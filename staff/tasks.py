@@ -71,8 +71,8 @@ def member_alert_check():
 @shared_task
 def unsubscribe_recent_dropouts_task():
     """A recurring task which checks for members who need to be unsubscribed from mailing lists"""
-    from nadine.models.core import Member
-    Member.objects.unsubscribe_recent_dropouts()
+    from interlink.models import unsubscribe_recent_dropouts
+    unsubscribe_recent_dropouts()
 
 
 @shared_task
@@ -92,17 +92,17 @@ def export_active_users():
 @shared_task
 def anniversary_checkin():
     from nadine.models.core import Member
-    for m in Member.objects.active_members():
-        d = m.duration()
+    for u in User.helper.active_members():
+        d = u.profile.duration()
         if d.years and not d.months and not d.days:
-            email.announce_anniversary(m.user)
-            email.send_edit_profile(m.user)
+            email.announce_anniversary(u)
+            email.send_edit_profile(u)
 
 
 @shared_task
 def announce_special_days():
     from nadine.models.core import Member
-    for u in Member.objects.active_users():
+    for u in User.helper.active_members():
         for sd in SpecialDay.objects.filter(user=u):
             if sd.month == today.month and sd.day == today.day:
                 email.announce_special_day(u, sd)
@@ -110,12 +110,12 @@ def announce_special_days():
 
 @shared_task
 def send_notifications():
-    here_today = Member.objects.here_today()
+    here_today = User.helper.here_today()
     for n in UserNotification.objects.filter(sent_date__isnull=True):
-        if n.notify_user.get_profile() in here_today:
-            if n.target_user.get_profile() in here_today:
+        if n.notify_user in here_today:
+            if n.target_user in here_today:
                 email.send_user_notifications(n.notify_user, n.target_user)
                 n.sent_date = timezone.localtime(timezone.now())
                 n.save()
 
-# Copyright 2012 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

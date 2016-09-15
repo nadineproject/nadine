@@ -7,7 +7,6 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponseRedirect
 
 from interlink.models import MailingList, IncomingMail
-from nadine.models.core import Member
 
 
 @staff_member_required
@@ -25,7 +24,7 @@ def list_messages(request, list_id):
 @staff_member_required
 def list_subscribers(request, list_id):
     mailing_list = get_object_or_404(MailingList, pk=list_id)
-    not_subscribed = Member.objects.active_members().exclude(user__in=mailing_list.subscribers.all())
+    not_subscribed = User.helper.active_members().exclude(id__in=mailing_list.subscribers.all())
     return render_to_response('interlink/subscribers.html', {'mailing_list': mailing_list, 'not_subscribed': not_subscribed}, context_instance=RequestContext(request))
 
 

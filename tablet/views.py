@@ -35,13 +35,13 @@ def members(request):
     list_members = request.GET.has_key("startswith")
     if list_members:
         sw = request.GET.get('startswith')
-        members = Member.objects.active_members().filter(user__first_name__startswith=sw).order_by('user__first_name')
+        members = User.helper.active_members().filter(first_name__startswith=sw).order_by('first_name')
     return render_to_response('tablet/members.html', {'members': members, 'list_members': list_members}, context_instance=RequestContext(request))
 
 
 def here_today(request):
-    members = Member.objects.here_today()
-    return render_to_response('tablet/here_today.html', {'members': members}, context_instance=RequestContext(request))
+    users_today = User.helper.here_today()
+    return render_to_response('tablet/here_today.html', {'users_today': users_today}, context_instance=RequestContext(request))
 
 
 def visitors(request):
@@ -66,7 +66,7 @@ def search(request):
     if request.method == "POST":
         member_search_form = MemberSearchForm(request.POST)
         if member_search_form.is_valid():
-            search_results = Member.objects.search(member_search_form.cleaned_data['terms'])
+            search_results = User.helper.search(member_search_form.cleaned_data['terms'])
     else:
         member_search_form = MemberSearchForm()
     return render_to_response('tablet/search.html', {'member_search_form': member_search_form, 'search_results': search_results}, context_instance=RequestContext(request))
@@ -93,13 +93,13 @@ def user_signin(request, username):
     if request.method == "POST":
         member_search_form = MemberSearchForm(request.POST)
         if member_search_form.is_valid():
-            search_results = Member.objects.search(member_search_form.cleaned_data['terms'], active_only=True)
+            search_results = User.helper.search(member_search_form.cleaned_data['terms'], active_only=True)
     else:
         member_search_form = MemberSearchForm()
 
     # Look up previous hosts for his user
     guest_days = CoworkingDay.objects.filter(user=user, guest_of__isnull=False).values("guest_of")
-    previous_hosts = Member.objects.active_members().filter(id__in=guest_days)
+    previous_hosts = User.helper.active_members().filter(member__in=guest_days)
 
     return render_to_response('tablet/user_signin.html', {'user': user, 'can_signin': can_signin,
                                                           'membership': membership, 'previous_hosts':previous_hosts,
@@ -124,7 +124,7 @@ def post_create(request, username):
     if request.method == "POST":
         member_search_form = MemberSearchForm(request.POST)
         if member_search_form.is_valid():
-            search_results = Member.objects.search(member_search_form.cleaned_data['terms'], active_only=True)
+            search_results = User.helper.search(member_search_form.cleaned_data['terms'], active_only=True)
 
     return render_to_response('tablet/post_create.html', {'user': user, 'search_results': search_results}, context_instance=RequestContext(request))
 

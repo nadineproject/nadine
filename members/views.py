@@ -112,12 +112,12 @@ def help_topic(request, slug):
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def view_members(request):
-    active_members = Member.objects.active_members().order_by('user__first_name')
-    here_today = Member.objects.here_today()
+    active_members = User.helper.active_members().order_by('first_name')
+    here_today = User.helper.here_today()
     has_key = has_mail = None
     if request.user.get_profile().is_manager():
-        has_key = Member.objects.members_with_keys()
-        has_mail = Member.objects.members_with_mail()
+        has_key = User.helper.members_with_keys()
+        has_mail = User.helper.members_with_mail()
 
     search_terms = None
     search_results = None
@@ -125,7 +125,7 @@ def view_members(request):
         search_form = MemberSearchForm(request.POST)
         if search_form.is_valid():
             search_terms = search_form.cleaned_data['terms']
-            search_results = Member.objects.search(search_terms, True)
+            search_results = User.helper.search(search_terms, True)
     else:
         search_form = MemberSearchForm()
 
@@ -255,8 +255,8 @@ def receipt(request, username, id):
 def tags(request):
     tags = []
     for tag in Member.tags.all().order_by('name'):
-        members = Member.objects.active_members().filter(tags__name__in=[tag])
-        if members:
+        members = User.helper.members_with_tag(tag)
+        if members.count() > 0:
             tags.append((tag, members))
     return render_to_response('members/tags.html', {'tags': tags, 'settings': settings}, context_instance=RequestContext(request))
 
@@ -266,16 +266,16 @@ def tags(request):
 def tag_cloud(request):
     tags = []
     for tag in Member.tags.all().order_by('name'):
-        members = Member.objects.active_members().filter(tags__name__in=[tag])
-        if members:
-            tags.append((tag, members))
+        member_count = User.helper.members_with_tag(tag).count()
+        if member_count:
+            tags.append((tag, member_count))
     return render_to_response('members/tag_cloud.html', {'tags': tags, 'settings': settings}, context_instance=RequestContext(request))
 
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def tag(request, tag):
-    members = Member.objects.active_members().filter(tags__name__in=[tag])
+    members = User.helper.members_with_tag(tag)
     return render_to_response('members/tag.html', {'tag': tag, 'members': members, 'settings': settings}, context_instance=RequestContext(request))
 
 

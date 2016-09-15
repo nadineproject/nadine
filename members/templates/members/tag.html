@@ -3,10 +3,10 @@
 {% block content %}
 	<h2>Members Tagged with: {{ tag }}</h2>
 	<ul>
-	{% for member in members %}
+	{% for u in members %}
 		<dl>
-			<dt><a href="{% url 'member_profile' member.user.username %}">{{ member }}</a>:</td<>
-			{% for t in member.tags.all %}
+			<dt><a href="{% url 'member_profile' u.username %}">{{ u.get_full_name }}</a>:</td<>
+			{% for t in u.profile.tags.all %}
 				<dd><a href="{% url 'member_tag' t %}">{{ t }}</a></dd>
 			{% endfor %}
 		</dl>

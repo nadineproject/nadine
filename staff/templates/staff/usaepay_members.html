@@ -24,11 +24,11 @@ nav #billing-tab { background: #FBD850; color: black; }
 		<th></th>
 	</tr>
 
-	{% for m in members %}
+	{% for u in members %}
 		<tr class="{% cycle 'row-even' 'row-odd' %}">
-			<td><a href="{% url 'staff_user_detail' m.username %}">{{ m.username }}</a></td>
-			<td><a href="https://secure.usaepay.com/console/billing_edit?id={{ m.customer_number }}" target="new">{{ m.customer_number }}</a></td>
-			<td>{{ m.next | slice:":10"}}</td>
+			<td><a href="{% url 'staff_user_detail' u.username %}">{{ u.username }}</a></td>
+			<td><a href="https://secure.usaepay.com/console/billing_edit?id={{ u.customer_number }}" target="new">{{ u.customer_number }}</a></td>
+			<td>{{ u.next | slice:":10"}}</td>
 			<td></td>
 		</tr>
 	{% endfor %}

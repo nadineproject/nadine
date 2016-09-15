@@ -38,26 +38,26 @@ class MemberAlertManager(models.Manager):
         # Persistent alerts apply even if a member is inactive
         persistent = key in MemberAlert.PERSISTENT_ALERTS
         if active_only and not persistent:
-            active_users = Member.objects.active_users()
+            active_users = User.helper.active_members()
             return unresolved.filter(user__in=active_users)
         return unresolved
 
     def trigger_periodic_check(self):
         # Check for exiting members in the coming week
         exit_date = timezone.now() + timedelta(days=5)
-        exiting_members = Member.objects.exiting_members(exit_date)
-        for m in exiting_members:
+        exiting_members = User.helper.exiting_members(exit_date)
+        for u in exiting_members:
             # Only trigger exiting membership if no exit alerts were created in the last week
             start = timezone.now() - timedelta(days=5)
-            if MemberAlert.objects.filter(user=m.user, key__in=MemberAlert.PERSISTENT_ALERTS, created_ts__gte=start).count() == 0:
-                self.trigger_exiting_membership(m.user, exit_date)
+            if MemberAlert.objects.filter(user=u, key__in=MemberAlert.PERSISTENT_ALERTS, created_ts__gte=start).count() == 0:
+                self.trigger_exiting_membership(u, exit_date)
 
         # Check for stale membership
-        smd = Member.objects.stale_member_date()
-        for m in Member.objects.stale_members():
-            existing_alerts = MemberAlert.objects.filter(user=m.user, key=MemberAlert.STALE_MEMBER, created_ts__gte=smd)
+        smd = User.helper.stale_member_date()
+        for u in User.helper.stale_members():
+            existing_alerts = MemberAlert.objects.filter(user=u, key=MemberAlert.STALE_MEMBER, created_ts__gte=smd)
             if not existing_alerts:
-                MemberAlert.objects.create_if_not_open(user=m.user, key=MemberAlert.STALE_MEMBER)
+                MemberAlert.objects.create_if_not_open(user=u, key=MemberAlert.STALE_MEMBER)
 
         # Expire old and unresolved alerts
         #active_users = Member.objects.active_users()

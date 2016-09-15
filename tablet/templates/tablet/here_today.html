@@ -6,14 +6,14 @@
 {% block content %}
 	<!--<h2>Members here today:</h2>-->
 	<div class="user-grid">
-		{% for member in members %}
+		{% for u in users_today %}
 			<div class="user-card">
-		      {% if member.photo %}
-		         <a class="photo" href="{% url 'tablet_profile' member.user %}" data-transition="fade"><img src="{{ member.photo.url|fit_image:"170x170" }}" /></a>
+		      {% if user.profile.photo %}
+		         <a class="photo" href="{% url 'tablet_profile' u.username %}" data-transition="fade"><img src="{{ u.profile.photo.url|fit_image:"170x170" }}" /></a>
 		      {% else %}
-		         <a class="photo" href="{% url 'tablet_profile' member.user %}" data-transition="fade">?</a>
+		         <a class="photo" href="{% url 'tablet_profile' u.username %}" data-transition="fade">?</a>
 		      {% endif %}
-		      <a href="{% url 'tablet_profile' member.user %}" data-transition="fade">{{ member.full_name }}</a>
+		      <a href="{% url 'tablet_profile' u.username %}" data-transition="fade">{{ u.get_full_name }}</a>
 			</div>
 		{% endfor %}
 	</div>

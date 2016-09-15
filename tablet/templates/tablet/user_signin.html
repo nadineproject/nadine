@@ -49,8 +49,8 @@
 			{% if previous_hosts %}
 				<div id="member-list">
 					<ul data-role="listview" data-inset="true" data-filter="false">
-						{% for member in previous_hosts %}
-							<li style="padding: 0.5em;"><a href="{% url 'tablet_signin_guest' user.username member.user %}" data-transition="fade">{{ member.full_name }}</a></li>
+						{% for u in previous_hosts %}
+							<li style="padding: 0.5em;"><a href="{% url 'tablet_signin_guest' user.username u.username %}" data-transition="fade">{{ u.get_full_name }}</a></li>
 						{% endfor %}
 					</ul>
 				</div>
@@ -59,8 +59,8 @@
 			{% if search_results %}
 				<div id="member-list">
 					<ul data-role="listview" data-inset="true" data-filter="false">
-						{% for member in search_results %}
-							<li style="padding: 0.5em;"><a href="{% url 'tablet_signin_guest' user.username member.user %}" data-transition="fade">{{ member.full_name }}</a></li>
+						{% for u in search_results %}
+							<li style="padding: 0.5em;"><a href="{% url 'tablet_signin_guest' user.username u.username %}" data-transition="fade">{{ u.get_full_name }}</a></li>
 						{% endfor %}
 					</ul>
 				</div>

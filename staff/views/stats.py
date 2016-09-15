@@ -14,7 +14,7 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.conf import settings
 
-from nadine.models.core import Member, Membership, MembershipPlan, Neighborhood
+from nadine.models.core import Membership, MembershipPlan, Neighborhood
 from nadine.models.usage import CoworkingDay
 
 from staff.views.activity import date_range_from_request, START_DATE_PARAM, END_DATE_PARAM
@@ -188,9 +188,9 @@ def neighborhood(request):
     specified_count = 0
     neighborhoods = []
     for hood in Neighborhood.objects.all():
-        members = Member.objects.members_by_neighborhood(hood, active_only)
-        specified_count = specified_count + members.count()
-        neighborhoods.append({'name': hood.name, 'id': hood.id, 'members': members, 'count': members.count(), 'perc': (100 * members.count()) / total_count})
+        users = User.helper.members_by_neighborhood(hood, active_only)
+        specified_count = specified_count + users.count()
+        neighborhoods.append({'name': hood.name, 'id': hood.id, 'users': users, 'count': users.count(), 'perc': (100 * users.count()) / total_count})
 
     # Group all our statistics into a dictionary
     stats_dict = {'member_count': total_count, 'specified_count': specified_count, 'unknown_count': total_count - specified_count,
@@ -240,15 +240,14 @@ def gender(request):
         active_only = True
 
     if active_only:
-        m = Member.objects.active_members().filter(gender='M').count()
-        f = Member.objects.active_members().filter(gender='F').count()
-        o = Member.objects.active_members().filter(gender='O').count()
-        u = Member.objects.active_members().filter(gender='U').count()
+        users = User.helper.active_members()
     else:
-        m = Member.objects.filter(gender='M').count()
-        f = Member.objects.filter(gender='F').count()
-        o = Member.objects.filter(gender='O').count()
-        u = Member.objects.filter(gender='U').count()
+        users = User.objects.all()
+
+    m = users.filter(member__gender='M').count()
+    f = users.filter(member__gender='F').count()
+    o = users.filter(member__gender='O').count()
+    u = users.filter(member__gender='U').count()
 
     t = m + f + o + u
     counts = {'male': m, 'female': f, 'other': o, 'unknown': u, 'total': t}

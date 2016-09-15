@@ -29,7 +29,7 @@ nav #stats-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {% block content %}
-{% include "staff/stats_menu.frag" %}  
+{% include "staff/stats_menu.frag" %}
 
 <h2>Stats - Neighborhoods:</h2>
 
@@ -54,12 +54,12 @@ nav #stats-tab { background: #FBD850; color: black; }
          <th>Neighborhood</th>
          <th>Members</th>
       </tr>
-   
+
       {% for hood in neighborhoods %}
 	      <tr class="{% cycle 'row-even' 'row-odd' %}">
 	         <td>
-	            {% ifnotequal hood.count 0 %} 
-	               <a class="detail-toggle" id="neighborhood-details-toggle-{{hood.id}}" 
+	            {% ifnotequal hood.count 0 %}
+	               <a class="detail-toggle" id="neighborhood-details-toggle-{{hood.id}}"
 	                  href="." onclick="toggleDetails('{{hood.id}}'); return false;">[+]</a>
 	            {% endifnotequal %}
 	         </td>
@@ -69,8 +69,8 @@ nav #stats-tab { background: #FBD850; color: black; }
 	      <tr>
 	         <td colspan="3">
 	            <div class="neighborhood-details" id="neighborhood-details-{{hood.id}}">
-	               {% with hood.members as members %}
-                     {% include "staff/member_table.frag" %}
+	               {% with hood.users as users %}
+                     {% include "staff/user_list_frag.html" %}
                   {% endwith %}
 	            </div>
 	         </td>

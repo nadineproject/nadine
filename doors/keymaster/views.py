@@ -17,7 +17,6 @@ from django.contrib.auth.models import User
 
 from doors.keymaster.models import Keymaster, Door, DoorCode, DoorEvent
 from doors.core import EncryptedConnection, Messages, DoorEventTypes
-from nadine.models.core import Member
 from staff import email
 
 logger = logging.getLogger(__name__)
@@ -126,7 +125,7 @@ def add_key(request):
         return HttpResponseRedirect(reverse('doors_keys', kwargs={'username': user.username}))
 
     # Pull a list of active members for our autocomplete
-    active_members = Member.objects.active_members()
+    active_members = User.helper.active_members()
 
     return render_to_response('keymaster/add_key.html', {'username':username, 'code':code, 'door_code':door_code, 'active_members':active_members}, context_instance=RequestContext(request))
 

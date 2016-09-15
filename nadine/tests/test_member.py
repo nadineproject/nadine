@@ -26,12 +26,12 @@ class MemberTestCase(TestCase):
         self.profile1.neighborhood = self.neighborhood1
         self.profile1.valid_billing = True
         self.profile1.save()
-        Membership.objects.create(member=self.user1.get_profile(), membership_plan=self.basicPlan, start_date=date(2008, 2, 26), end_date=date(2010, 6, 25))
-        Membership.objects.create(member=self.user1.get_profile(), membership_plan=self.residentPlan, start_date=date(2010, 6, 26))
+        Membership.objects.create(user=self.user1, member=self.user1.get_profile(), membership_plan=self.basicPlan, start_date=date(2008, 2, 26), end_date=date(2010, 6, 25))
+        Membership.objects.create(user=self.user1, member=self.user1.get_profile(), membership_plan=self.residentPlan, start_date=date(2010, 6, 26))
 
         self.user2 = User.objects.create(username='member_two', first_name='Member', last_name='Two')
         self.profile2 = self.user2.profile
-        Membership.objects.create(member=self.user2.get_profile(), membership_plan=self.pt5Plan, start_date=date(2009, 1, 1))
+        Membership.objects.create(user=self.user2, member=self.user2.get_profile(), membership_plan=self.pt5Plan, start_date=date(2009, 1, 1))
 
         self.user3 = User.objects.create(username='member_three', first_name='Member', last_name='Three')
         self.profile3 = self.user3.profile
@@ -43,26 +43,26 @@ class MemberTestCase(TestCase):
         self.profile4 = self.user4.profile
         self.profile4.neighborhood = self.neighborhood1
         self.profile4.save()
-        Membership.objects.create(member=self.user4.get_profile(), membership_plan=self.pt5Plan, start_date=date(2009, 1, 1), end_date=date(2010, 1, 1))
+        Membership.objects.create(user=self.user4, member=self.user4.get_profile(), membership_plan=self.pt5Plan, start_date=date(2009, 1, 1), end_date=date(2010, 1, 1))
 
         self.user5 = User.objects.create(username='member_five', first_name='Member', last_name='Five')
         self.profile5 = self.user5.profile
         self.profile5.valid_billing = False
         self.profile5.save()
-        Membership.objects.create(member=self.user5.get_profile(), membership_plan=self.pt5Plan, start_date=date(2009, 1, 1), guest_of=self.profile1)
+        Membership.objects.create(user=self.user5, member=self.user5.get_profile(), membership_plan=self.pt5Plan, start_date=date(2009, 1, 1), guest_of=self.profile1)
 
     def test_info_methods(self):
-        self.assertTrue(self.user1.profile in Member.objects.members_by_plan_id(self.residentPlan.id))
-        self.assertFalse(self.user1.profile in Member.objects.members_by_plan_id(self.basicPlan.id))
-        self.assertTrue(self.user2.profile in Member.objects.members_by_plan_id(self.pt5Plan.id))
-        self.assertFalse(self.user2.profile in Member.objects.members_by_plan_id(self.residentPlan.id))
+        self.assertTrue(self.user1 in User.helper.members_by_plan(self.residentPlan))
+        self.assertFalse(self.user1 in User.helper.members_by_plan(self.basicPlan))
+        self.assertTrue(self.user2 in User.helper.members_by_plan(self.pt5Plan))
+        self.assertFalse(self.user2 in User.helper.members_by_plan(self.residentPlan))
 
-        self.assertTrue(self.user1.profile in Member.objects.members_by_neighborhood(self.neighborhood1))
-        self.assertFalse(self.user2.profile in Member.objects.members_by_neighborhood(self.neighborhood1))
-        self.assertFalse(self.user3.profile in Member.objects.members_by_neighborhood(self.neighborhood1))
-        self.assertFalse(self.user4.profile in Member.objects.members_by_neighborhood(self.neighborhood1))
-        self.assertTrue(self.user3.profile in Member.objects.members_by_neighborhood(self.neighborhood1, active_only=False))
-        self.assertTrue(self.user4.profile in Member.objects.members_by_neighborhood(self.neighborhood1, active_only=False))
+        self.assertTrue(self.user1 in User.helper.members_by_neighborhood(self.neighborhood1))
+        self.assertFalse(self.user2 in User.helper.members_by_neighborhood(self.neighborhood1))
+        self.assertFalse(self.user3 in User.helper.members_by_neighborhood(self.neighborhood1))
+        self.assertFalse(self.user4 in User.helper.members_by_neighborhood(self.neighborhood1))
+        self.assertTrue(self.user3 in User.helper.members_by_neighborhood(self.neighborhood1, active_only=False))
+        self.assertTrue(self.user4 in User.helper.members_by_neighborhood(self.neighborhood1, active_only=False))
 
     def test_valid_billing(self):
         # Member 1 has valid billing

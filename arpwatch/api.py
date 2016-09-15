@@ -22,7 +22,7 @@ from django.utils import timezone
 
 import arp
 from arpwatch.models import UserDevice, ArpLog
-from nadine.models.core import Member, Membership
+from nadine.models.core import Membership
 from nadine.models.usage import CoworkingDay
 from staff.templatetags import imagetags
 
@@ -37,8 +37,8 @@ class ActivityModel(object):
         now = timezone.localtime(timezone.now())
         midnight = now - timedelta(seconds=now.hour * 60 * 60 + now.minute * 60 + now.second) - timedelta(minutes=1)
         # These are the values which are directly exposed via the ActivityModel
-        members = Member.objects.active_members()
-        self.member_count = len(members)
+        active_members = User.helper.active_members()
+        self.member_count = len(active_members)
         self.full_time_count = Membership.objects.active_memberships().filter(has_desk=True).count()
         self.part_time_count = self.member_count - self.full_time_count
         self.device_count = len(ArpLog.objects.for_range(midnight, now))
@@ -48,16 +48,16 @@ class ActivityModel(object):
     def here_today(self):
         '''This property is exposed in the ActivityModel'''
         results = []
-        for member in Member.objects.here_today()
-            member_dict = {"username": member.user.username, "name": member.full_name}
+        for u in User.helper.here_today()
+            member_dict = {"username": u.username, "name": u.get_full_name()}
             if(member.photo):
-                member_dict["photo"] = "http://%s%s%s" % (Site.objects.get_current().domain, settings.MEDIA_URL, member.photo)
-                member_dict["thumbnail"] = "http://%s%s" % (Site.objects.get_current().domain, imagetags.fit_image(member.photo.url, '170x170'))
-            member_dict["industry"] = member.industry
-            membership = member.membership_type()
+                member_dict["photo"] = "http://%s%s%s" % (Site.objects.get_current().domain, settings.MEDIA_URL, u.profile.photo)
+                member_dict["thumbnail"] = "http://%s%s" % (Site.objects.get_current().domain, imagetags.fit_image(u.profile.photo.url, '170x170'))
+            member_dict["industry"] = u.profile.industry
+            membership = u.profile.membership_type()
             member_dict["membership"] = membership
             tags = []
-            for t in member.tags.all():
+            for t in u.profile.tags.all():
                 tags.append(t)
             member_dict["tags"] = tags
             results.append(member_dict)

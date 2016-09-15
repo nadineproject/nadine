@@ -35,16 +35,16 @@
 
 	<div id="tabs-1" class="plan-section">
 		<div style="margin:auto; width:100%; text-align:center;">
-		{% for member in active_members %}
-			{% include "members/user_card.frag" %}
+		{% for user in active_members %}
+			{% include "members/user_card_frag.html" %}
 		{% endfor %}
 		</div>
 	</div>
 
 	<div id="tabs-2" class="plan-section">
 		<div style="margin:auto; width:100%; text-align:center;">
-		{% for member in here_today %}
-			{% include "members/user_card.frag" %}
+		{% for user in here_today %}
+			{% include "members/user_card_frag.html" %}
 		{% endfor %}
 		</div>
 	</div>
@@ -53,8 +53,8 @@
 		<div id="tabs-3" class="plan-section">
 			{% if search_results %}
 				<div style="margin:auto; width:100%; text-align:center;">
-				{% for member in search_results %}
-					{% include "members/user_card.frag" %}
+				{% for user in search_results %}
+					{% include "members/user_card_frag.html" %}
 				{% endfor %}
 				</div>
 			{% else %}
@@ -63,13 +63,13 @@
 		</div>
 	{% elif user.get_profile.is_manager %}
 		<div id="tabs-4" class="plan-section">
-			{% for member in has_mail %}
-				{% include "members/user_card.frag" %}
+			{% for user in has_mail %}
+				{% include "members/user_card_frag.html" %}
 			{% endfor %}
 		</div>
 		<div id="tabs-5" class="plan-section">
-			{% for member in has_key %}
-				{% include "members/user_card.frag" %}
+			{% for user in has_key %}
+				{% include "members/user_card_frag.html" %}
 			{% endfor %}
 		</div>
 	{% endif %}

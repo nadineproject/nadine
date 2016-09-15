@@ -84,8 +84,7 @@ def bills(request):
         bills[last_bill.bill_date].append(member)
     ordered_bills = OrderedDict(sorted(bills.items(), key=lambda t: t[0]))
 
-    # TODO - convert to User
-    invalids = Member.objects.invalid_billing()
+    invalids = User.helper.invalid_billing()
     return render_to_response('staff/bills.html', {'bills': ordered_bills, 'page_message': page_message, 'invalid_members': invalids}, context_instance=RequestContext(request))
 
 

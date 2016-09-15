@@ -28,8 +28,8 @@ nav #lists-tab { background: #FBD850; color: black; }
 {% for subscriber in mailing_list.subscribers.all|dictsort:"username.lower" %}
 	<tr>
 		<td>{{ subscriber.first_name }} {{ subscriber.last_name }}</td>
-		<td>{{ subscriber.get_profile.last_membership.start_date }}</td>
-		<td>{{ subscriber.get_profile.last_membership.end_date }}</td>
+		<td>{{ subscriber.profile.last_membership.start_date }}</td>
+		<td>{{ subscriber.profile.last_membership.end_date | default:'' }}</td>
 		<td><a href="{%url 'interlink_unsubscribe' mailing_list.id subscriber.username%}">unsubscribe</a></td>
 	</tr>
 {% endfor %}
@@ -50,9 +50,9 @@ nav #lists-tab { background: #FBD850; color: black; }
 {% for subscriber in not_subscribed %}
 	<tr>
 		<td>{{ subscriber.first_name }} {{ subscriber.last_name }}</td>
-		<td>{{ subscriber.last_membership.start_date }}</td>
-		<td>{{ subscriber.last_membership.end_date }}</td>
-		<td><a href="{%url 'interlink_subscribe' mailing_list.id subscriber.user%}">subscribe</a></td>
+		<td>{{ subscriber.profile.last_membership.start_date }}</td>
+		<td>{{ subscriber.profile.last_membership.end_date | default:''}}</td>
+		<td><a href="{%url 'interlink_subscribe' mailing_list.id subscriber.username %}">subscribe</a></td>
 	</tr>
 {% endfor %}
 </table>
