@@ -8,8 +8,9 @@ from django.core.urlresolvers import reverse
 from django.core.management import call_command
 from django.core import mail
 from django.utils import timezone
+from django.contrib.auth.models import User
 
-from nadine.models.core import Member, MembershipPlan, Membership
+from nadine.models.core import MembershipPlan, Membership
 
 from interlink.tests.test_utils import create_user
 from interlink.models import MailingList, IncomingMail, OutgoingMail
@@ -137,7 +138,7 @@ class ListTest(TestCase):
         self.assertFalse(user3 in self.mlist1.subscribers.all())
 
     def test_subscribe_command(self):
-        self.assertEqual(0, Member.objects.active_members().count())
+        self.assertEqual(0, User.helper.active_members().count())
         self.assertEqual(0, self.mlist1.subscribers.count())
 
         call_command('subscribe_members', '%s' % self.mlist1.id)

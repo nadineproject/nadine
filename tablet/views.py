@@ -35,7 +35,7 @@ def members(request):
     list_members = request.GET.has_key("startswith")
     if list_members:
         sw = request.GET.get('startswith')
-        members = Member.objects.active_members().filter(user__first_name__startswith=sw).order_by('user__first_name')
+        members = User.helper.active_members().filter(first_name__startswith=sw).order_by('first_name')
     return render_to_response('tablet/members.html', {'members': members, 'list_members': list_members}, context_instance=RequestContext(request))
 
 

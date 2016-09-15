@@ -7,9 +7,9 @@
 	{% if list_members %}
 		{% if members %}
 			<ul data-role="listview" data-inset="true">
-				{% for member in members %}
+				{% for u in members %}
 					<li >
-						<a href="{% url 'tablet_user_signin' member.user %}" data-transition="fade" style="font-size: 1.3em;">{{ member.full_name }}</a>
+						<a href="{% url 'tablet_user_signin' u.username %}" data-transition="fade" style="font-size: 1.3em;">{{ u.get_full_name }}</a>
 					</li>
 				{% endfor %}
 			</ul>

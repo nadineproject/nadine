@@ -20,7 +20,7 @@ from django.conf import settings
 #from django.forms.models import model_to_dict
 #from django.db.models import Sum
 
-from nadine.models.core import Member, Membership, MembershipPlan, MemberGroups, SecurityDeposit
+from nadine.models.core import Membership, MembershipPlan, MemberGroups, SecurityDeposit
 from nadine.models.alerts import MemberAlert
 from nadine.utils.slack_api import SlackAPI
 
@@ -74,12 +74,12 @@ def member_bcc(request, group=None):
 
 
 @staff_member_required
-def export_members(request):
+def export_users(request):
     if 'active_only' in request.GET:
-        members = Member.objects.active_members()
+        users = User.helper.active_members()
     else:
-        members = Member.objects.all()
-    return render_to_response('staff/memberList.csv', {'member_list': members}, content_type="text/plain")
+        users = User.objects.all()
+    return render_to_response('staff/memberList.csv', {'member_list': users}, content_type="text/plain")
 
 
 @staff_member_required
@@ -212,12 +212,11 @@ def view_user_reports(request):
 def slack_users(request):
     expired_users = User.helper.expired_slack_users()
     slack_emails = []
-    # TODO - convert to USER
     slack_users = SlackAPI().users.list().body['members']
     for u in slack_users:
         if 'profile' in u and 'email' in u['profile'] and u['profile']['email']:
             slack_emails.append(u['profile']['email'])
-    non_slack_users = Member.objects.active_members().exclude(user__email__in=slack_emails)
+    non_slack_users = User.helper.active_members().exclude(email__in=slack_emails)
     return render_to_response('staff/slack_users.html', {'expired_users':expired_users,
                                                          'slack_users':slack_users,
                                                          'non_slack_users':non_slack_users,

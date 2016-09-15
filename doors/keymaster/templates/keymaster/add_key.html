@@ -54,8 +54,8 @@ nav #doors-tab { background: #FBD850; color: black; }
 	<script>
 	$(function() {
 	  var availableUsers = [
-	    {% for m in active_members %}
-	       "{{ m.user.username }}",
+	    {% for u in active_members %}
+	       "{{ u.username }}",
 	    {% endfor %}
 	  ];
 	  $( "#username" ).autocomplete({

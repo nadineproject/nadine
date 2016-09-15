@@ -7,11 +7,11 @@
 <script type="text/javascript">
 var word_list = [
 { text: "web development", weight: 5, link: "{% url 'member_tag' 'web development' %}" },
-{% for tag, members in tags %}
+{% for tag, count in tags %}
 	{% if tag.name != "web development" %}
 	{
 		text: "{{ tag.name }}",
-		weight: {{ members|length }},
+		weight: {{ count }},
 		link: "{% url 'member_tag' tag %}"
 	},
 	{% endif %}

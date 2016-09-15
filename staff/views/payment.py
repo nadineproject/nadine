@@ -179,13 +179,13 @@ def usaepay_transactions(request, year, month, day):
 def usaepay_members(request):
     members = []
     api = PaymentAPI()
-    for m in Member.objects.active_members():
-        username = m.user.username
+    for u in User.helper.active_members():
+        username = u.username
         customers = api.get_customers(username)
         if customers:
             for c in customers:
                 if c.Enabled:
-                    members.append({'member': m, 'username': username, 'next': c.Next, 'customer_number': c.CustNum})
+                    members.append({'user': u, 'username': username, 'next': c.Next, 'customer_number': c.CustNum})
     return render_to_response('staff/usaepay_members.html', {'members': members}, context_instance=RequestContext(request))
 
 

@@ -70,7 +70,7 @@ class User_Report:
 
         # Only active members?
         if self.active_only:
-            users = users.filter(pk__in=Member.objects.active_members().values('user'))
+            users = users.filter(id__in=User.helper.active_members())
 
         # Sort them
         if self.order_by == "FIRST":

@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 from django.conf import settings
 from django.utils import timezone
 
-from nadine.models.core import Member, EmergencyContact
+from nadine.models.core import EmergencyContact
 
 class BackupError(Exception):
     pass
@@ -200,24 +200,22 @@ class BackupManager(object):
             'ec_phone',
             'ec_email',
         ]]
-        for member in Member.objects.active_members():
-            user = member.user
+        for user in User.helper.active_members():
             ec = EmergencyContact.objects.filter(user=user).first()
-            membership = member.active_membership()
+            membership = user.profile.active_membership()
             row = [
                 user.username,
                 user.first_name,
                 user.last_name,
                 user.email,
-                member.email2,
-                member.phone,
-                member.phone2,
-                member.address1,
-                member.address2,
-                member.city,
-                member.state,
-                member.zipcode,
-
+                user.profile.email2,
+                user.profile.phone,
+                user.profile.phone2,
+                user.profile.address1,
+                user.profile.address2,
+                user.profile.city,
+                user.profile.state,
+                user.profile.zipcode,
             ]
 
             if membership.has_key:

@@ -254,8 +254,8 @@ def receipt(request, username, id):
 def tags(request):
     tags = []
     for tag in Member.tags.all().order_by('name'):
-        members = Member.objects.active_members().filter(tags__name__in=[tag])
-        if members:
+        members = User.helper.members_with_tag(tag)
+        if members.count() > 0:
             tags.append((tag, members))
     return render_to_response('members/tags.html', {'tags': tags, 'settings': settings}, context_instance=RequestContext(request))
 
@@ -265,16 +265,16 @@ def tags(request):
 def tag_cloud(request):
     tags = []
     for tag in Member.tags.all().order_by('name'):
-        members = Member.objects.active_members().filter(tags__name__in=[tag])
-        if members:
-            tags.append((tag, members))
+        member_count = User.helper.members_with_tag(tag).count()
+        if member_count:
+            tags.append((tag, member_count))
     return render_to_response('members/tag_cloud.html', {'tags': tags, 'settings': settings}, context_instance=RequestContext(request))
 
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def tag(request, tag):
-    members = Member.objects.active_members().filter(tags__name__in=[tag])
+    members = User.helper.members_with_tag(tag)
     return render_to_response('members/tag.html', {'tag': tag, 'members': members, 'settings': settings}, context_instance=RequestContext(request))
 
 

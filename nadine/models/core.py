@@ -279,6 +279,9 @@ class UserQueryHelper():
         else:
             return User.objects.filter(member__neighborhood=hood)
 
+    def members_with_tag(self, tag):
+        return self.active_members().filter(member__tags__name__in=[tag])
+
     def managers(self, include_future=False):
         if hasattr(settings, 'TEAM_MEMBERSHIP_PLAN'):
             management_plan = MembershipPlan.objects.filter(name=settings.TEAM_MEMBERSHIP_PLAN).first()
@@ -312,13 +315,6 @@ class UserQueryHelper():
 
 User.helper = UserQueryHelper()
 
-class MemberManager(models.Manager):
-
-    def active_members(self):
-        # TODO - remove
-        warnings.warn("DeprecationWarning:  Use 'User.helper.active_members'")
-        return Member.objects.filter(id__in=Membership.objects.active_memberships().values('member'))
-
 
 def user_photo_path(instance, filename):
     ext = filename.split('.')[-1]
@@ -327,9 +323,6 @@ def user_photo_path(instance, filename):
 
 class Member(models.Model):
     MAX_PHOTO_SIZE = 1024
-
-    # TODO - remove
-    objects = MemberManager()
 
     user = models.OneToOneField(User, blank=False)
     email2 = models.EmailField("Alternate Email", blank=True, null=True)
@@ -889,7 +882,6 @@ class Membership(models.Model):
 class SentEmailLog(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, null=True)
-    #member = models.ForeignKey('Member', null=True)
     recipient = models.EmailField()
     subject = models.CharField(max_length=128, blank=True, null=True)
     success = models.NullBooleanField(blank=False, null=False, default=False)
@@ -900,7 +892,6 @@ class SentEmailLog(models.Model):
 
 class SecurityDeposit(models.Model):
     user = models.ForeignKey(User)
-    #member = models.ForeignKey('Member', blank=False, null=False)
     received_date = models.DateField()
     returned_date = models.DateField(blank=True, null=True)
     amount = models.PositiveSmallIntegerField(default=0)
@@ -909,7 +900,6 @@ class SecurityDeposit(models.Model):
 
 class SpecialDay(models.Model):
     user = models.ForeignKey(User)
-    #member = models.ForeignKey('Member', blank=False, null=False)
     year = models.PositiveSmallIntegerField(blank=True, null=True)
     month = models.PositiveSmallIntegerField(blank=True, null=True)
     day = models.PositiveSmallIntegerField(blank=True, null=True)
@@ -920,7 +910,6 @@ class MemberNote(models.Model):
     user = models.ForeignKey(User)
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, null=True, related_name='+')
-    #member = models.ForeignKey('Member', blank=False, null=False)
     note = models.TextField(blank=True, null=True)
 
     def __str__(self):
