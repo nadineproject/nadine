@@ -71,8 +71,8 @@ def member_alert_check():
 @shared_task
 def unsubscribe_recent_dropouts_task():
     """A recurring task which checks for members who need to be unsubscribed from mailing lists"""
-    from nadine.models.core import Member
-    Member.objects.unsubscribe_recent_dropouts()
+    from interlink.models import unsubscribe_recent_dropouts
+    unsubscribe_recent_dropouts()
 
 
 @shared_task

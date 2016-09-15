@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.utils import timezone
 import staff.billing as billing
-from interlink.models import MailingList
+from interlink.models import MailingList, unsubscribe_recent_dropouts
 from staff.views.stats import beginning_of_next_month, first_days_in_months
 from nadine.models.core import *
 
@@ -48,7 +48,7 @@ class MailingListTest(TestCase):
         self.mlist1.subscribers.add(self.user1)
         self.mlist1.subscribers.add(self.user2)
         self.mlist1.subscribers.add(self.user3)
-        Member.objects.unsubscribe_recent_dropouts()
+        unsubscribe_recent_dropouts()
         self.assertTrue(self.user1 in self.mlist1.subscribers.all())
         self.assertFalse(self.user2 in self.mlist1.subscribers.all())
         self.assertTrue(self.user3 in self.mlist1.subscribers.all())

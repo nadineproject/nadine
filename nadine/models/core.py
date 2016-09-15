@@ -466,24 +466,22 @@ class MemberManager(models.Manager):
     #     warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
     #     memberships = Membership.objects.active_memberships().filter(membership_plan=plan_id)
     #     return Member.objects.filter(user__in=memberships.values('user'))
-
+    #
     # def members_with_desks(self):
     #     warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
     #     memberships = Membership.objects.active_memberships().filter(has_desk=True)
     #     return Member.objects.filter(user__in=memberships.values('user'))
-
-    # Still used in members.views
-    def members_with_keys(self):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
-        memberships = Membership.objects.active_memberships().filter(has_key=True)
-        return Member.objects.filter(user__in=memberships.values('user'))
-
-    # Still used in members.views
-    def members_with_mail(self):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
-        memberships = Membership.objects.active_memberships().filter(has_mail=True)
-        return Member.objects.filter(user__in=memberships.values('user'))
-
+    #
+    # def members_with_keys(self):
+    #     warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
+    #     memberships = Membership.objects.active_memberships().filter(has_key=True)
+    #     return Member.objects.filter(user__in=memberships.values('user'))
+    #
+    # def members_with_mail(self):
+    #     warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
+    #     memberships = Membership.objects.active_memberships().filter(has_mail=True)
+    #     return Member.objects.filter(user__in=memberships.values('user'))
+    #
     # def members_by_neighborhood(self, hood, active_only=True):
     #     warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
     #     if active_only:
@@ -500,15 +498,15 @@ class MemberManager(models.Manager):
     #             memberships = memberships | Membership.objects.future_memberships().filter(membership_plan=management_plan).distinct()
     #         return Member.objects.filter(user__in=memberships.values('user'))
     #     return None
-
-    def unsubscribe_recent_dropouts(self):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
-        """Remove mailing list subscriptions from members whose memberships expired yesterday and they do not start a membership today"""
-        from interlink.models import MailingList
-        recently_expired = Member.objects.filter(memberships__end_date=timezone.now().date() - timedelta(days=1)).exclude(memberships__start_date=timezone.now().date())
-        for member in recently_expired:
-            MailingList.objects.unsubscribe_from_all(member.user)
-
+    #
+    # def unsubscribe_recent_dropouts(self):
+    #     warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
+    #     """Remove mailing list subscriptions from members whose memberships expired yesterday and they do not start a membership today"""
+    #     from interlink.models import MailingList
+    #     recently_expired = Member.objects.filter(memberships__end_date=timezone.now().date() - timedelta(days=1)).exclude(memberships__start_date=timezone.now().date())
+    #     for member in recently_expired:
+    #         MailingList.objects.unsubscribe_from_all(member.user)
+    #
     # def search(self, search_string, active_only=False):
     #     warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
     #     terms = search_string.split()
