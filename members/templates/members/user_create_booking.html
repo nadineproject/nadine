@@ -4,16 +4,16 @@
 
 {% block content %}
   <h2>Book a Meeting Room</h2>
-  <form action='#' method='POST'>
+  <form action='#' method='GET'>
     <input type="date" class="datepicker col s4 offset-s4" id='booking-date'>
     <div class='row'>
       <div class='row' id='time-row'>
-        <div class='col s4 offset-s2 row'>
-          <p class='col s6'>Start Time:</p>
-          <input class='col s6' name='start' type='time' step=900 id='start-time'/>
+        <div class='col s4 offset-s3 row'>
+          <p class='col s3'>Start Time:</p>
+          <input class='col s4' name='start' type='time' step=900 id='start-time'/>
         </div>
         <div class='col s4 row'>
-          <p class='col s6'>End Time:</p>
+          <p class='col s3'>End Time:</p>
           <input class='col s6' name='end' type='time' step=900 id='end-time'/>
         </div>
       </div>
@@ -42,7 +42,7 @@
         <option value="20">20+ People</option>
       </select>
       <div class='col s2 offset-s1' id='room-search'>
-        <button type='submit' class='btn'>Search</button>
+        <button type='submit' value='Search' class='btn'>Search</button>
       </div>
     </div>
   </form>

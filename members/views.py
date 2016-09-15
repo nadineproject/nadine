@@ -447,6 +447,15 @@ def register(request):
 def create_booking(request):
     page_message = None
     rooms = Room.objects.all()
+    if request.method =='GET':
+        start = request.GET.get('start', '')
+        end = request.GET.get('end', '')
+        has_av = request.GET.get('has_av', '')
+        has_phone = request.GET.get('has_phone', '')
+        floor = request.GET.get('floor', '')
+        seats = request.GET.get('seats', '')
+        # TODO rooms will now be the rooms with matching criteria and send back with render_response, maybe
+
     if request.method == 'POST':
         booking_form = EventForm()
         try:
