@@ -223,7 +223,7 @@ nav #billing-tab { background: #FBD850; color: black; }
     <input type="hidden" name="UMcustreceipt" value="yes">
     <input type="hidden" name="UMcardpresent" value="true">
     <input type="hidden" name="UMbillphone" value="{{ user.profile.phone }}">
-    <input type="hidden" name="UMname" value="{{ user.profile.full_name }}">
+    <input type="hidden" name="UMname" value="{{ user.get_full_name }}">
     <input type="hidden" name="UMemail" value="{{ user.email }}">
     <input type="hidden" name="username" value="{{ user.username }}">
     <input type="hidden" name="auth" value="{{ user.profile.usaepay_auth }}">

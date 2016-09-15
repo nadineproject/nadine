@@ -36,9 +36,6 @@ from nadine.models.usage import CoworkingDay
 
 from doors.keymaster.models import DoorEvent
 
-import warnings
-#warnings.simplefilter('always', DeprecationWarning)
-
 logger = logging.getLogger(__name__)
 
 
@@ -356,21 +353,6 @@ class Member(models.Model):
     tags = TaggableManager(blank=True)
     valid_billing = models.NullBooleanField(blank=True, null=True)
 
-    @property
-    def first_name(self): return smart_str(self.user.first_name)
-
-    @property
-    def last_name(self): return smart_str(self.user.last_name)
-
-    @property
-    def email(self): return self.user.email
-
-    @property
-    def full_name(self):
-        return '%s %s' % (smart_str(self.user.first_name), smart_str(self.user.last_name))
-
-    def natural_key(self): return [self.user.id]
-
     def all_bills(self):
         """Returns all of the open bills, both for this user and any bills for other members which are marked to be paid by this member."""
         from nadine.models.payment import Bill
@@ -496,10 +478,6 @@ class Member(models.Model):
             else:
                 retval += "%d days" % delta.days
         return retval
-
-    def is_anniversary(self):
-
-        return
 
     def host_daily_logs(self):
         return CoworkingDay.objects.filter(guest_of=self).order_by('-visit_date')

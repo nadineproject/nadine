@@ -126,18 +126,18 @@ def bill_list(request):
 @staff_member_required
 def toggle_billing_flag(request, username):
     user = get_object_or_404(User, username=username)
-    member = user.get_profile()
+    profile = user.get_profile()
 
-    page_message = member.full_name + " billing profile: "
-    if member.valid_billing:
+    page_message = user.get_full_name() + " billing profile: "
+    if profile.valid_billing:
         page_message += " Invalid"
-        member.valid_billing = False
-        member.save()
+        profile.valid_billing = False
+        profile.save()
         email.send_invalid_billing(user)
     else:
         page_message += " Valid"
-        member.valid_billing = True
-        member.save()
+        profile.valid_billing = True
+        profile.save()
 
     if 'back' in request.POST:
         return HttpResponseRedirect(request.POST.get('back'))

@@ -17,7 +17,7 @@
 <p id="label"><strong>Sent:</strong> <i>{{ message.sent_time}}</i></p>
 <p id="label"><strong>From:</strong> <i>
 	{% if message.get_user %}
-		<td nowrap><a href="{% url 'member_profile' message.get_user.username %}">{{ message.get_user.get_profile.full_name }}</a></td>
+		<td nowrap><a href="{% url 'member_profile' message.get_user.username %}">{{ message.get_user.get_full_name }}</a></td>
 	{% else %}
 		<td nowrap>{{ message.origin_address }}</td>
 	{% endif %}
