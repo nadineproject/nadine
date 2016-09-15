@@ -248,17 +248,14 @@ class UserQueryHelper():
     def missing_photo(self):
         return self.active_members().filter(member__photo="").order_by('first_name')
 
-    # def invalid_billing(self):
-    #     members = []
-    #     for m in self.active_members():
-    #         membership = m.active_membership()
-    #         if membership and membership.monthly_rate > 0:
-    #             if not m.has_valid_billing():
-    #                 members.append(m)
-    #     return members
-    #
-    # def recent_members(self, days):
-    #     return Member.objects.filter(user__date_joined__gt=timezone.localtime(timezone.now()) - timedelta(days=days))
+    def invalid_billing(self):
+        active_memberships = Membership.objects.active_memberships()
+        free_memberships = active_memberships.filter(monthly_rate=0)
+        freeloaders = Q(id__in=free_memberships.values('user'))
+        guest_memberships = active_memberships.filter(guest_of__isnull=False)
+        guests = Q(id__in=guest_memberships.values('user'))
+        active_invalids = self.active_members().filter(member__valid_billing=False)
+        return active_invalids.exclude(freeloaders).exclude(guests)
 
     def members_by_plan(self, plan):
         memberships = Membership.objects.active_memberships().filter(membership_plan__name=plan)
@@ -282,15 +279,15 @@ class UserQueryHelper():
         else:
             return User.objects.filter(member__neighborhood=hood)
 
-    # def managers(self, include_future=False):
-    #     if hasattr(settings, 'TEAM_MEMBERSHIP_PLAN'):
-    #         management_plan = MembershipPlan.objects.filter(name=settings.TEAM_MEMBERSHIP_PLAN).first()
-    #         memberships = Membership.objects.active_memberships().filter(membership_plan=management_plan).distinct()
-    #         if include_future:
-    #             memberships = memberships | Membership.objects.future_memberships().filter(membership_plan=management_plan).distinct()
-    #         return Member.objects.filter(user__in=memberships.values('user'))
-    #     return None
-    #
+    def managers(self, include_future=False):
+        if hasattr(settings, 'TEAM_MEMBERSHIP_PLAN'):
+            management_plan = MembershipPlan.objects.filter(name=settings.TEAM_MEMBERSHIP_PLAN).first()
+            memberships = Membership.objects.active_memberships().filter(membership_plan=management_plan).distinct()
+            if include_future:
+                memberships = memberships | Membership.objects.future_memberships().filter(membership_plan=management_plan).distinct()
+            return User.objects.filter(id__in=memberships.values('user'))
+        return None
+
     # def unsubscribe_recent_dropouts(self):
     #     """Remove mailing list subscriptions from members whose memberships expired yesterday and they do not start a membership today"""
     #     from interlink.models import MailingList
@@ -380,7 +377,7 @@ class MemberManager(models.Manager):
     #         d = d - timedelta(days=1)
     #
     #     return not_signed_in
-    #
+
     def active_member_emails(self, include_email2=False):
         warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
         emails = []
@@ -422,44 +419,44 @@ class MemberManager(models.Manager):
     #     warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
     #     three_months_ago = timezone.now() - MonthDelta(3)
     #     return three_months_ago
-
+    #
     # # def stale_members(self):
     #     warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
     #     smd = self.stale_member_date()
     #     recently_used = CoworkingDay.objects.filter(visit_date__gte=smd).values('user').distinct()
     #     memberships = Membership.objects.active_memberships().filter(start_date__lte=smd, has_desk=False)
     #     return Member.objects.filter(user__in=memberships.values('user')).exclude(user__in=recently_used)
-
+    #
     # def missing_member_agreement(self):
     #     warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
     #     active_agmts = FileUpload.objects.filter(document_type=FileUpload.MEMBER_AGMT, user__in=self.active_users()).distinct()
     #     users_with_agmts = active_agmts.values('user')
     #     return self.active_members().exclude(user__in=users_with_agmts)
-
+    #
     # def missing_key_agreement(self):
     #     warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
     #     active_agmts = FileUpload.objects.filter(document_type=FileUpload.KEY_AGMT, user__in=self.active_users()).distinct()
     #     users_with_agmts = active_agmts.values('user')
     #     return self.members_with_keys().exclude(user__in=users_with_agmts)
-
+    #
     # def missing_photo(self):
     #     warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
     #     return self.active_members().filter(photo="")
-
-    def invalid_billing(self):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
-        members = []
-        for m in self.active_members():
-            membership = m.active_membership()
-            if membership and membership.monthly_rate > 0:
-                if not m.has_valid_billing():
-                    members.append(m)
-        return members
-
-    def recent_members(self, days):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
-        return Member.objects.filter(user__date_joined__gt=timezone.localtime(timezone.now()) - timedelta(days=days))
-
+    #
+    # def invalid_billing(self):
+    #     warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
+    #     members = []
+    #     for m in self.active_members():
+    #         membership = m.active_membership()
+    #         if membership and membership.monthly_rate > 0:
+    #             if not m.has_valid_billing():
+    #                 members.append(m)
+    #     return members
+    #
+    # def recent_members(self, days):
+    #     warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
+    #     return Member.objects.filter(user__date_joined__gt=timezone.localtime(timezone.now()) - timedelta(days=days))
+    #
     # def members_by_plan(self, plan):
     #     warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
     #     memberships = Membership.objects.active_memberships().filter(membership_plan__name=plan)
@@ -493,16 +490,16 @@ class MemberManager(models.Manager):
     #         return Member.objects.filter(neighborhood=hood).filter(memberships__isnull=False).filter(Q(memberships__end_date__isnull=True) | Q(memberships__end_date__gt=timezone.now().date())).distinct()
     #     else:
     #         return Member.objects.filter(neighborhood=hood)
-
-    def managers(self, include_future=False):
-        warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
-        if hasattr(settings, 'TEAM_MEMBERSHIP_PLAN'):
-            management_plan = MembershipPlan.objects.filter(name=settings.TEAM_MEMBERSHIP_PLAN).first()
-            memberships = Membership.objects.active_memberships().filter(membership_plan=management_plan).distinct()
-            if include_future:
-                memberships = memberships | Membership.objects.future_memberships().filter(membership_plan=management_plan).distinct()
-            return Member.objects.filter(user__in=memberships.values('user'))
-        return None
+    #
+    # def managers(self, include_future=False):
+    #     warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")
+    #     if hasattr(settings, 'TEAM_MEMBERSHIP_PLAN'):
+    #         management_plan = MembershipPlan.objects.filter(name=settings.TEAM_MEMBERSHIP_PLAN).first()
+    #         memberships = Membership.objects.active_memberships().filter(membership_plan=management_plan).distinct()
+    #         if include_future:
+    #             memberships = memberships | Membership.objects.future_memberships().filter(membership_plan=management_plan).distinct()
+    #         return Member.objects.filter(user__in=memberships.values('user'))
+    #     return None
 
     def unsubscribe_recent_dropouts(self):
         warnings.warn("DeprecationWarning:  Migrate to 'User.helper'")

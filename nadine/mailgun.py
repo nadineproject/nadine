@@ -199,7 +199,7 @@ def team(request):
         return HttpResponse(status=200)
 
     # Goes out to all managers
-    bcc_list = list(Member.objects.managers(include_future=True).values_list('user__email', flat=True))
+    bcc_list = list(User.helper.managers(include_future=True).values_list('email', flat=True))
     mailgun_data["bcc"] = bcc_list
 
     # Hard code the recipient to be this address
