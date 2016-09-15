@@ -302,16 +302,22 @@ class UserQueryHelper():
         terms = search_string.split()
         if len(terms) == 0:
             return None
-        fname_query = Q(first_name__icontains=terms[0])
-        lname_query = Q(last_name__icontains=terms[0])
-        for term in terms[1:]:
-            fname_query = fname_query | Q(first_name__icontains=term)
-            lname_query = lname_query | Q(last_name__icontains=term)
 
         if active_only:
             user_query = self.active_members()
         else:
             user_query = User.objects.all()
+
+        if '@' in terms[0]:
+            email1_query = Q(email=terms[0])
+            email2_query = Q(member__email2=terms[0])
+            return user_query.filter(email1_query | email2_query)
+
+        fname_query = Q(first_name__icontains=terms[0])
+        lname_query = Q(last_name__icontains=terms[0])
+        for term in terms[1:]:
+            fname_query = fname_query | Q(first_name__icontains=term)
+            lname_query = lname_query | Q(last_name__icontains=term)
         return user_query.filter(fname_query | lname_query)
 
 User.helper = UserQueryHelper()
@@ -522,7 +528,7 @@ class MemberManager(models.Manager):
     #         return active_members.filter(fname_query | lname_query)
     #
     #     return self.filter(fname_query | lname_query)
-    # 
+    #
     # def get_by_natural_key(self, user_id):
     #     warnings.warn("DeprecationWarning: unused method 'get_by_natural_key'")
     #     return self.get(user__id=user_id)
