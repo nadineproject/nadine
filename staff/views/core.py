@@ -210,7 +210,7 @@ def view_user_reports(request):
 
 @staff_member_required
 def slack_users(request):
-    expired_users = Member.objects.expired_slack_users()
+    expired_users = User.helper.expired_slack_users()
     slack_emails = []
     # TODO - convert to USER
     slack_users = SlackAPI().users.list().body['members']

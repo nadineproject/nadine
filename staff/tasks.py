@@ -102,7 +102,7 @@ def anniversary_checkin():
 @shared_task
 def announce_special_days():
     from nadine.models.core import Member
-    for u in Member.objects.active_users():
+    for u in User.helper.active_members():
         for sd in SpecialDay.objects.filter(user=u):
             if sd.month == today.month and sd.day == today.day:
                 email.announce_special_day(u, sd)
