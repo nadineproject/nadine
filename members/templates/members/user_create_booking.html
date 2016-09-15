@@ -1,0 +1,153 @@
+{% extends 'members/u_base.html' %}
+
+{% block sub-title %}Book a Meeting Room | {% endblock %}
+
+{% block content %}
+  <h2>Book a Meeting Room</h2>
+  <form action='#' method='POST'>
+    <input type="date" class="datepicker col s4 offset-s4" id='booking-date'>
+    <div class='row'>
+      <div class='row' id='time-row'>
+        <div class='col s4 offset-s2 row'>
+          <p class='col s6'>Start Time:</p>
+          <input class='col s6' name='start' type='time' step=900 id='start-time'/>
+        </div>
+        <div class='col s4 row'>
+          <p class='col s6'>End Time:</p>
+          <input class='col s6' name='end' type='time' step=900 id='end-time'/>
+        </div>
+      </div>
+    </div>
+    <div class='row' id='room-criteria'>
+      <div class='col s2' id="av-box">
+        <input nam='has_av' type="checkbox" id="av-btn" class='filled-in' />
+        <label for="av-btn">Has A/V</label>
+      </div>
+      <div class='col s2' id="phone-box">
+        <input name="has_phone" type="checkbox" id='phone-btn' class='filled-in' />
+        <label for="phone-btn">Has Phone</label>
+      </div>
+      <select class='browser-default input-field col s2' name='floor'>
+        <option value="" disabled selected>On Floor:</option>
+        <option value="1">Floor 1</option>
+        <option value="2">Floor 2</option>
+        <option value="3">Floor 3</option>
+      </select>
+      <select class='browser-default input-field col s2 offset-s1' name='floor'>
+        <option value="" disabled selected>Seats:</option>
+        <option value="2">2 People</option>
+        <option value="4">4 People</option>
+        <option value="6">6 People</option>
+        <option value="10">10-20 People</option>
+        <option value="20">20+ People</option>
+      </select>
+      <div class='col s2 offset-s1' id='room-search'>
+        <button type='submit' class='btn'>Search</button>
+      </div>
+    </div>
+  </form>
+
+  {% for room in rooms %}
+    <div class='row'>
+      <div class='col s3'>
+        <h5>{{ room.name }}</h5>
+        <p>Floor {{room.floor}}</p>
+        <button class='btn room-show' id='{{ room.id }}'>More Info</button>
+        <button class='btn room-close'>Hide Info</button>
+      </div>
+      <div class='col s8' style='background:RGBA(40, 40, 40, .2);height:110px;margin-top:1%;'>
+        CALENDAR
+      </div>
+      <div class='col s1 book-room'>
+        <button class='btn'>Book</button>
+      </div>
+    </div>
+    <div class='row dropdown-room slider closed' id='dropdown-{{ room.id }}'>
+      <img class='col s3' src='{{ room.image.url }}'/>
+      <div class='col s8 offset s1'>
+        <div class='row' style='margin-bottom:0;'>
+          <h4 class='col s10'>{{ room.name }}</h4>
+          <button class='btn col s1 offset-s1 room-close'>X</p>
+        </div>
+        <ul>
+          <li>Seats: {{ room.seats }}</li>
+          <li>Max Capacity: {{ room.max_capacity }}</li>
+          <li>Has A/V?: {{ room.has_av }}</li>
+          <li>Has Phone: {{ room.has_phone }}</li>
+        </ul>
+        <p><strong>Description:</strong> {{ room.description }}</p>
+      </div>
+    </div>
+  {% endfor %}
+{% endblock %}
+
+{% block extrajs %}
+  <script>
+    $(document).ready(function() {
+      $('.room-close').hide();
+
+      $('.datepicker').pickadate({
+        selectMonths: true, // Creates a dropdown to control month
+        selectYears: 15 // Creates a dropdown of 15 years to control year
+      });
+
+      function getDate() {
+        var myDate = new Date();
+
+        var prettyDate =(myDate.getMonth()+1) + '/' + myDate.getDate() + '/' + myDate.getFullYear();
+
+        $("#booking-date").val(prettyDate);
+
+      }
+
+      function getTime() {
+        var now = new Date();
+        var hour = now.getHours();
+        var minutes = now.getMinutes();
+
+        if (minutes < 15) {
+          minutes = "00";
+        } else if (minutes < 30){
+          minutes = "15";
+        } else if (minutes < 45){
+          minutes="30"
+        } else if (minutes < 59) {
+          minutes="45"
+        } else {
+          minutes = "00";
+          ++hour;
+        }
+
+        if (hour > 23) {
+            hour = 12;
+        } else if (hour > 12) {
+            hour = hour;
+        } else if (hour == 0) {
+            hour = 12;
+        }
+
+        var startTime = hour + ":" + minutes;
+        var endTime = (hour + 1) + ":" + minutes;
+        $('#start-time').val(startTime);
+        $('#end-time').val(endTime);
+      }
+
+      getDate();
+      getTime();
+
+      $('.room-show').on('click', function(e){
+        e.preventDefault();
+        $('#dropdown-' + this.id).removeClass('closed');
+        $('.room-close').show();
+        $('.room-show').hide();
+      })
+
+      $('.room-close').on('click', function(e){
+        e.preventDefault();
+        $('.slider').addClass('closed');
+        $('.room-close').hide();
+        $('.room-show').show();
+      })
+    });
+  </script>
+{% endblock %}

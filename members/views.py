@@ -31,6 +31,7 @@ from arpwatch import arp
 from arpwatch.models import ArpLog, UserDevice
 from nadine.models.core import Member, Membership
 from nadine.models.usage import CoworkingDay
+from nadine.models.resource import Room
 from nadine.models.payment import Transaction
 from nadine.models.alerts import MemberAlert
 from staff import email
@@ -440,6 +441,28 @@ def register(request):
     else:
         registration_form = NewUserForm()
     return render_to_response('members/register.html', { 'registration_form': registration_form, 'page_message': page_message, 'settings': settings}, context_instance=RequestContext(request))
+
+@login_required
+@user_passes_test(is_active_member, login_url='member_not_active')
+def create_booking(request):
+    page_message = None
+    rooms = Room.objects.all()
+    if request.method == 'POST':
+        booking_form = EventForm()
+        try:
+            if booking_form.is_valid():
+                return HttpResponseRedirect(reverse('member_confirm_booking'), {})
+        except Exception as e:
+            page_message = str(e)
+            logger.error(str(e))
+    else:
+        booking_form = EventForm()
+    return render_to_response('members/user_create_booking.html', {'rooms': rooms}, context_instance=RequestContext(request))
+
+@login_required
+@user_passes_test(is_active_member, login_url='member_not_active')
+def confirm_booking(request):
+    return render_to_response('members/user_confirm_booking.html', {}, context_instance=RequestContext(request))
 
 #@login_required
 #@user_passes_test(is_active_member, login_url='member_not_active')
