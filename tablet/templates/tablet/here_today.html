@@ -8,7 +8,7 @@
 	<div class="user-grid">
 		{% for u in users_today %}
 			<div class="user-card">
-		      {% if user.profile.photo %}
+		      {% if u.profile.photo %}
 		         <a class="photo" href="{% url 'tablet_profile' u.username %}" data-transition="fade"><img src="{{ u.profile.photo.url|fit_image:"170x170" }}" /></a>
 		      {% else %}
 		         <a class="photo" href="{% url 'tablet_profile' u.username %}" data-transition="fade">?</a>
