@@ -10,7 +10,7 @@ from django.contrib.sites.models import Site
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
-from nadine.models.core import MembershipPlan, Membership, Member, Industry, Neighborhood
+from nadine.models.core import MembershipPlan, Membership, UserProfile, Industry, Neighborhood
 from nadine.models.usage import CoworkingDay
 from nadine.models.payment import BillingLog, Bill, Transaction
 from interlink.models import MailingList, IncomingMail, OutgoingMail
@@ -31,7 +31,7 @@ class Command(BaseCommand):
         self.delete_all(CoworkingDay)
         self.delete_all(MembershipPlan)
         self.delete_all(Membership)
-        self.delete_all(Member)
+        self.delete_all(UserProfile)
         self.delete_all(User)
         self.delete_all(Industry)
         self.delete_all(Neighborhood)
@@ -57,11 +57,11 @@ class Command(BaseCommand):
         knitters_ml.moderators.add(alice)
 
         terry = self.create_user('terry', '1234', 'Terry', 'Moofty', email='terry@example.com')
-        Membership.objects.create(member=terry.get_profile(), membership_plan=resident_plan, start_date=timezone.now().date() - timedelta(days=400), daily_rate=0, has_desk=True)
+        Membership.objects.create(user=terry, membership_plan=resident_plan, start_date=timezone.now().date() - timedelta(days=400), daily_rate=0, has_desk=True)
         knitters_ml.subscribers.add(terry)
 
         bob = self.create_user('bob', '1234', 'Bob', 'Stilton', email='bob@example.com')
-        Membership.objects.create(member=bob.get_profile(), membership_plan=basic_plan, start_date=timezone.now().date() - timedelta(days=92), daily_rate=25)
+        Membership.objects.create(user=bob, membership_plan=basic_plan, start_date=timezone.now().date() - timedelta(days=92), daily_rate=25)
         knitters_ml.subscribers.add(bob)
 
     def delete_all(self, cls):
@@ -74,4 +74,4 @@ class Command(BaseCommand):
         user.save()
         return user
 
-# Copyright 2011 Office Nomads LLC (http://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2016 Office Nomads LLC (http://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

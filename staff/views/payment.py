@@ -11,7 +11,7 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.conf import settings
 
-from nadine.models import Member, XeroContact
+from nadine.models import XeroContact
 
 from nadine.utils.xero_api import XeroAPI
 from nadine.utils.payment_api import PaymentAPI
@@ -138,10 +138,11 @@ def usaepay_transactions(request, year, month, day):
 
         for t in transactions:
             # Pull the member and the amount they owe
-            member = Member.objects.filter(user__username = t['username']).first()
-            if member:
-                t['member'] = member
-                t['open_bill_amount'] = member.open_bill_amount()
+            u = User.objects.filter(username = t['username']).first()
+            if u:
+                # TODO - change to User
+                t['member'] = u.profile
+                t['open_bill_amount'] = u.profile.open_bill_amount()
                 t['xero_invoices'] = open_xero_invoices.get(t['username'], [])
                 for i in t['xero_invoices']:
                     if i['AmountDue'] != t['amount']:

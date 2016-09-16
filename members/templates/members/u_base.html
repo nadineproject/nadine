@@ -71,7 +71,7 @@
 									<li><a>Mailing Lists</a></li>
 									<li><a>Slack</a></li>
 									<li><a>Login</a></li>
-								{% elif request.user.get_profile.is_active %}
+								{% elif request.user.profile.is_active %}
 									<li><a href="{% url 'member_members' %}">Members</a></li>
 									<li><a href="{% url 'member_events' %}">Events</a></li>
 									<li><a href="{% url 'member_tag_cloud' %}">Tags</a></li>

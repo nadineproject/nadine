@@ -244,7 +244,7 @@ class UserQueryHelper():
         return self.members_with_keys().exclude(id__in=users_with_agmts).order_by('first_name')
 
     def missing_photo(self):
-        return self.active_members().filter(member__photo="").order_by('first_name')
+        return self.active_members().filter(profile__photo="").order_by('first_name')
 
     def invalid_billing(self):
         active_memberships = Membership.objects.active_memberships()
@@ -252,7 +252,7 @@ class UserQueryHelper():
         freeloaders = Q(id__in=free_memberships.values('user'))
         guest_memberships = active_memberships.filter(paid_by__isnull=False)
         guests = Q(id__in=guest_memberships.values('user'))
-        active_invalids = self.active_members().filter(member__valid_billing=False)
+        active_invalids = self.active_members().filter(profile__valid_billing=False)
         return active_invalids.exclude(freeloaders).exclude(guests)
 
     def members_by_plan(self, plan):
@@ -273,12 +273,12 @@ class UserQueryHelper():
 
     def members_by_neighborhood(self, hood, active_only=True):
         if active_only:
-            return self.active_members().filter(member__neighborhood=hood)
+            return self.active_members().filter(profile__neighborhood=hood)
         else:
-            return User.objects.filter(member__neighborhood=hood)
+            return User.objects.filter(profile__neighborhood=hood)
 
     def members_with_tag(self, tag):
-        return self.active_members().filter(member__tags__name__in=[tag])
+        return self.active_members().filter(profile__tags__name__in=[tag])
 
     def managers(self, include_future=False):
         if hasattr(settings, 'TEAM_MEMBERSHIP_PLAN'):
@@ -301,15 +301,17 @@ class UserQueryHelper():
 
         if '@' in terms[0]:
             email1_query = Q(email=terms[0])
-            email2_query = Q(member__email2=terms[0])
-            return user_query.filter(email1_query | email2_query)
+            email2_query = Q(profile__email2=terms[0])
+            user_query = user_query.filter(email1_query | email2_query)
+        else:
+            fname_query = Q(first_name__icontains=terms[0])
+            lname_query = Q(last_name__icontains=terms[0])
+            for term in terms[1:]:
+                fname_query = fname_query | Q(first_name__icontains=term)
+                lname_query = lname_query | Q(last_name__icontains=term)
+            user_query = user_query.filter(fname_query | lname_query)
 
-        fname_query = Q(first_name__icontains=terms[0])
-        lname_query = Q(last_name__icontains=terms[0])
-        for term in terms[1:]:
-            fname_query = fname_query | Q(first_name__icontains=term)
-            lname_query = lname_query | Q(last_name__icontains=term)
-        return user_query.filter(fname_query | lname_query)
+        return user_query.order_by('first_name')
 
 User.helper = UserQueryHelper()
 
@@ -319,10 +321,10 @@ def user_photo_path(instance, filename):
     return "user_photos/%s.%s" % (instance.user.username, ext.lower())
 
 
-class Member(models.Model):
+class UserProfile(models.Model):
     MAX_PHOTO_SIZE = 1024
 
-    user = models.OneToOneField(User, blank=False)
+    user = models.OneToOneField(User, blank=False, related_name="profile")
     email2 = models.EmailField("Alternate Email", blank=True, null=True)
     phone = PhoneNumberField(blank=True, null=True)
     phone2 = PhoneNumberField("Alternate Phone", blank=True, null=True)
@@ -675,32 +677,32 @@ def profile_save_callback(sender, **kwargs):
     # Process the member alerts
     from nadine.models.alerts import MemberAlert
     MemberAlert.objects.trigger_profile_save(profile)
-post_save.connect(profile_save_callback, sender=Member)
+post_save.connect(profile_save_callback, sender=UserProfile)
 
 def user_save_callback(sender, **kwargs):
     user = kwargs['instance']
     # Make certain we have a Member record
-    if not Member.objects.filter(user=user).count() > 0:
-        Member.objects.create(user=user)
+    if not UserProfile.objects.filter(user=user).count() > 0:
+        UserProfile.objects.create(user=user)
 post_save.connect(user_save_callback, sender=User)
 
 # Add some handy methods to Django's User object
-User.get_profile = lambda self: Member.objects.get_or_create(user=self)[0]
+#User.get_profile = lambda self: Member.objects.get_or_create(user=self)[0]
 User.get_emergency_contact = lambda self: EmergencyContact.objects.get_or_create(user=self)[0]
-User.profile = property(User.get_profile)
+#User.profile = property(User.get_profile)
 
-@receiver(post_save, sender=Member)
+@receiver(post_save, sender=UserProfile)
 def size_images(sender, instance, **kwargs):
     if instance.photo:
         image = Image.open(instance.photo)
         old_x, old_y = image.size
-        if old_x > Member.MAX_PHOTO_SIZE or old_y > Member.MAX_PHOTO_SIZE:
+        if old_x > UserProfile.MAX_PHOTO_SIZE or old_y > UserProfile.MAX_PHOTO_SIZE:
             print("Resizing photo for %s" % instance.user.username)
             if old_y > old_x:
-                new_y = Member.MAX_PHOTO_SIZE
+                new_y = UserProfile.MAX_PHOTO_SIZE
                 new_x = int((float(new_y) / old_y) * old_x)
             else:
-                new_x = Member.MAX_PHOTO_SIZE
+                new_x = UserProfile.MAX_PHOTO_SIZE
                 new_y = int((float(new_x) / old_x) * old_y)
             new_image = image.resize((new_x, new_y), Image.ANTIALIAS)
             new_image.save(instance.photo.path, image.format)

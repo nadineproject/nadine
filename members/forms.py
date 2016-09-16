@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.utils.html import strip_tags
 from taggit.forms import *
 from members.models import *
-from nadine.models.core import Member, HowHeard, Industry, Neighborhood, GENDER_CHOICES
+from nadine.models.core import UserProfile, HowHeard, Industry, Neighborhood, GENDER_CHOICES
 import datetime
 from localflavor.us.us_states import US_STATES
 from localflavor.ca.ca_provinces import PROVINCE_CHOICES
@@ -16,9 +16,7 @@ def get_state_choices():
 
 
 class EditProfileForm(forms.Form):
-    # TODO Convert to username
-    member_id = forms.IntegerField(required=True, min_value=0, widget=forms.HiddenInput)
-
+    username = forms.CharField(required=True, widget=forms.HiddenInput)
     first_name = forms.CharField(max_length=100, required=True)
     last_name = forms.CharField(max_length=100, required=True)
     email = forms.EmailField(widget=forms.TextInput(attrs={'size': '50'}), required=True)
@@ -57,49 +55,40 @@ class EditProfileForm(forms.Form):
         if not self.is_valid():
             raise Exception('The form must be valid in order to save')
 
-        # Pull the profile to edit
-        member_id = self.cleaned_data['member_id']
-        profile = Member.objects.get(id=member_id)
-        if not member_id or not profile:
-            raise Exception('Can not find profile to edit')
-
-        # User data
-        user = profile.user
+        user = User.objects.get(username=self.cleaned_data['username'])
         user.first_name = self.cleaned_data['first_name']
         user.last_name = self.cleaned_data['last_name']
         user.email = self.cleaned_data['email']
         user.save()
 
         # Profile data
-        profile.phone = self.cleaned_data['phone']
-        profile.phone2 = self.cleaned_data['phone2']
-        profile.email2 = self.cleaned_data['email2']
-        profile.address1 = self.cleaned_data['address1']
-        profile.address2 = self.cleaned_data['address2']
-        profile.city = self.cleaned_data['city']
-        profile.state = self.cleaned_data['state']
-        profile.zipcode = self.cleaned_data['zipcode']
-        profile.url_personal = self.cleaned_data['url_personal']
-        profile.url_professional = self.cleaned_data['url_professional']
-        profile.url_facebook = self.cleaned_data['url_facebook']
-        profile.url_twitter = self.cleaned_data['url_twitter']
-        profile.url_linkedin = self.cleaned_data['url_linkedin']
-        profile.url_aboutme = self.cleaned_data['url_aboutme']
-        profile.url_github = self.cleaned_data['url_github']
-        profile.bio = self.cleaned_data['bio']
-        profile.gender = self.cleaned_data['gender']
-        profile.howHeard = self.cleaned_data['howHeard']
-        profile.industry = self.cleaned_data['industry']
-        profile.neighborhood = self.cleaned_data['neighborhood']
-        profile.has_kids = self.cleaned_data['has_kids']
-        profile.self_emplyed = self.cleaned_data['self_employed']
-        profile.company_name = self.cleaned_data['company_name']
-        profile.public_profile = self.cleaned_data['public_profile']
-
+        user.profile.phone = self.cleaned_data['phone']
+        user.profile.phone2 = self.cleaned_data['phone2']
+        user.profile.email2 = self.cleaned_data['email2']
+        user.profile.address1 = self.cleaned_data['address1']
+        user.profile.address2 = self.cleaned_data['address2']
+        user.profile.city = self.cleaned_data['city']
+        user.profile.state = self.cleaned_data['state']
+        user.profile.zipcode = self.cleaned_data['zipcode']
+        user.profile.url_personal = self.cleaned_data['url_personal']
+        user.profile.url_professional = self.cleaned_data['url_professional']
+        user.profile.url_facebook = self.cleaned_data['url_facebook']
+        user.profile.url_twitter = self.cleaned_data['url_twitter']
+        user.profile.url_linkedin = self.cleaned_data['url_linkedin']
+        user.profile.url_aboutme = self.cleaned_data['url_aboutme']
+        user.profile.url_github = self.cleaned_data['url_github']
+        user.profile.bio = self.cleaned_data['bio']
+        user.profile.gender = self.cleaned_data['gender']
+        user.profile.howHeard = self.cleaned_data['howHeard']
+        user.profile.industry = self.cleaned_data['industry']
+        user.profile.neighborhood = self.cleaned_data['neighborhood']
+        user.profile.has_kids = self.cleaned_data['has_kids']
+        user.profile.self_emplyed = self.cleaned_data['self_employed']
+        user.profile.company_name = self.cleaned_data['company_name']
+        user.profile.public_profile = self.cleaned_data['public_profile']
         if self.cleaned_data['photo']:
-            profile.photo = self.cleaned_data['photo']
-
-        profile.save()
+            user.profile.photo = self.cleaned_data['photo']
+        user.profile.save()
 
         # Emergency Contact data
         emergency_contact = user.get_emergency_contact()
@@ -109,4 +98,4 @@ class EditProfileForm(forms.Form):
         emergency_contact.email=self.cleaned_data['emergency_email']
         emergency_contact.save()
 
-        return profile
+        return user.profile

@@ -12,9 +12,9 @@ nav #lists-tab { background: #FBD850; color: black; }
 <h2>Unsubscribe</h2>
 
 <div align="center">
-<p>Are you sure you want to unsubscribe <strong>{{ member }}</strong> from <strong>{{ mailing_list }}</strong>?</p>
+<p>Are you sure you want to unsubscribe <strong>{{ user.get_full_name }}</strong> from <strong>{{ mailing_list }}</strong>?</p>
 <p/>
-<form action="{%url 'interlink_unsubscribe' mailing_list.id member.user%}" method='post'>
+<form action="{% url 'interlink_unsubscribe' mailing_list.id user.username %}" method='post'>
 	<input type="Submit" name="confirm" value="Yes">
 	<input type="Submit" name="confirm" value="No">
 	{% csrf_token %}

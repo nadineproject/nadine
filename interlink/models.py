@@ -16,7 +16,7 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.utils import timezone
 
-from nadine.models.core import Member, Membership
+from nadine.models.core import UserProfile, Membership
 from nadine.utils.slack_api import SlackAPI
 from interlink.message import MailingListMessage
 import interlink
@@ -35,7 +35,7 @@ def user_by_email(email):
     users = User.objects.filter(email__iexact=email)
     if len(users) > 0:
         return users[0]
-    members = Member.objects.filter(email2__iexact=email)
+    members = UserProfile.objects.filter(email2__iexact=email)
     if len(members) > 0:
         return members[0].user
     return None

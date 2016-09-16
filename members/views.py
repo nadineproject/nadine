@@ -20,16 +20,13 @@ from django.contrib.sites.models import Site
 from django.contrib import messages
 from django.contrib.auth.tokens import default_token_generator
 
-#from gather.models import Event, Location, EventAdminGroup
-#from gather.forms import EventForm
-#from gather.views import get_location
 from interlink.forms import MailingListSubscriptionForm
 from interlink.models import IncomingMail
 from members.forms import EditProfileForm
 from members.models import HelpText, UserNotification
 from arpwatch import arp
 from arpwatch.models import ArpLog, UserDevice
-from nadine.models.core import Member, Membership
+from nadine.models.core import UserProfile, Membership
 from nadine.models.usage import CoworkingDay
 from nadine.models.resource import Room
 from nadine.models.payment import Transaction
@@ -43,14 +40,12 @@ from nadine.utils.payment_api import PaymentAPI
 
 def is_active_member(user):
     if user and not user.is_anonymous():
-        profile = user.get_profile()
-        if profile:
-            # If today is their Free Trial Day count them as active
-            if CoworkingDay.objects.filter(user=user, payment='Trial', visit_date=date.today()).count() == 1:
-                return True
+        # If today is their Free Trial Day count them as active
+        if CoworkingDay.objects.filter(user=user, payment='Trial', visit_date=date.today()).count() == 1:
+            return True
 
-            # Check to make sure their currently an active member
-            return profile.is_active()
+        # Check to make sure their currently an active member
+        return user.profile.is_active()
 
     # No user, no profile, no active
     return False
@@ -58,10 +53,9 @@ def is_active_member(user):
 
 def is_manager(user):
     if user and not user.is_anonymous():
-        profile = user.get_profile()
-        if profile:
-            return profile.is_manager()
+        return user.profile.is_manager()
     return False
+
 
 @login_required
 def home(request):
@@ -115,7 +109,7 @@ def view_members(request):
     active_members = User.helper.active_members().order_by('first_name')
     here_today = User.helper.here_today()
     has_key = has_mail = None
-    if request.user.get_profile().is_manager():
+    if request.user.profile.is_manager():
         has_key = User.helper.members_with_keys()
         has_mail = User.helper.members_with_mail()
 
@@ -188,9 +182,9 @@ def edit_profile(request, username):
             profile_form.save()
             return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
     else:
-        profile = user.get_profile()
+        profile = user.profile
         emergency_contact = user.get_emergency_contact()
-        profile_form = EditProfileForm(initial={'member_id': profile.id, 'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email,
+        profile_form = EditProfileForm(initial={'username': user.username, 'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email,
                                                 'phone': profile.phone, 'phone2': profile.phone2, 'email2': profile.email2,
                                                 'address1': profile.address1, 'address2': profile.address2, 'city': profile.city, 'state': profile.state, 'zipcode': profile.zipcode,
                                                 'company_name': profile.company_name, 'url_personal': profile.url_personal, 'url_professional': profile.url_professional,
@@ -254,7 +248,7 @@ def receipt(request, username, id):
 @user_passes_test(is_active_member, login_url='member_not_active')
 def tags(request):
     tags = []
-    for tag in Member.tags.all().order_by('name'):
+    for tag in UserProfile.tags.all().order_by('name'):
         members = User.helper.members_with_tag(tag)
         if members.count() > 0:
             tags.append((tag, members))
@@ -265,7 +259,7 @@ def tags(request):
 @user_passes_test(is_active_member, login_url='member_not_active')
 def tag_cloud(request):
     tags = []
-    for tag in Member.tags.all().order_by('name'):
+    for tag in UserProfile.tags.all().order_by('name'):
         member_count = User.helper.members_with_tag(tag).count()
         if member_count:
             tags.append((tag, member_count))
@@ -285,8 +279,7 @@ def user_tags(request, username):
     if not user == request.user:
         if not request.user.is_staff:
             return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
-    profile = user.get_profile()
-    user_tags = profile.tags.all()
+    user_tags = user.profile.tags.all()
 
     error = None
     if request.method == 'POST':
@@ -297,9 +290,9 @@ def user_tags(request, username):
                     error = "Tags can't contain punctuation."
                     break
             else:
-                profile.tags.add(tag.lower())
+                user.profile.tags.add(tag.lower())
 
-    all_tags = Member.tags.all()
+    all_tags = UserProfile.tags.all()
     return render_to_response('members/user_tags.html', {'user': user, 'user_tags': user_tags, 'all_tags': all_tags, 'error': error, 'settings': settings}, context_instance=RequestContext(request))
 
 
@@ -309,7 +302,7 @@ def delete_tag(request, username, tag):
     if not user == request.user:
         if not request.user.is_staff:
             return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
-    user.get_profile().tags.remove(tag)
+    user.profile.tags.remove(tag)
     return HttpResponseRedirect(reverse('member_user_tags', kwargs={'username': username, 'settings': settings}))
 
 
@@ -319,7 +312,6 @@ def user_devices(request, username):
     if not user == request.user:
         if not request.user.is_staff:
             return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
-    profile = user.get_profile()
 
     error = None
     if request.method == 'POST':

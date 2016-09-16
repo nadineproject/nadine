@@ -12,7 +12,7 @@ from django.db.models.signals import post_save
 from django.conf import settings
 from django.utils import timezone
 
-from nadine.models.core import Member, Membership, FileUpload
+from nadine.models.core import UserProfile, Membership, FileUpload
 from nadine import mailgun
 
 logger = logging.getLogger(__name__)
@@ -60,7 +60,7 @@ class MemberAlertManager(models.Manager):
                 MemberAlert.objects.create_if_not_open(user=u, key=MemberAlert.STALE_MEMBER)
 
         # Expire old and unresolved alerts
-        #active_users = Member.objects.active_users()
+        #active_users = UserProfile.objects.active_users()
         #exiting_users = exiting_members.values('user')
         # to_clean = [MemberAlert.PAPERWORK, MemberAlert.MEMBER_INFO, MemberAlert.MEMBER_AGREEMENT, MemberAlert.TAKE_PHOTO,
         #	MemberAlert.UPLOAD_PHOTO, MemberAlert.POST_PHOTO, MemberAlert.ORIENTATION, MemberAlert.KEY_AGREEMENT]

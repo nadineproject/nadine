@@ -14,8 +14,8 @@ from nadine.models import *
 
 def print_user_data(user):
     print
-    profile = user.get_profile()
-    print("Profile: %s" % profile)
+    print("User: %s" % user)
+    print("Profile: %s" % user.profile)
     for bill in Bill.objects.filter(user=user):
         print("  Bill: %s" % bill)
         print("    Membership: %s" % bill.membership)
@@ -74,18 +74,16 @@ class BillingTestCase(TestCase):
 
     def test_guest_activity(self):
         test_date = date(2010, 6, 20)
-        member6 = self.user6.get_profile()
-        member7 = self.user7.get_profile()
-        self.assertEqual(member7.is_guest(), member6.user)
-        self.assertTrue(self.user7 in member6.guests())
-        self.assertEqual(len(member6.activity_this_month(test_date)), 15)
+        self.assertEqual(self.user7.profile.is_guest(), self.user6)
+        self.assertTrue(self.user7 in self.user6.profile.guests())
+        self.assertEqual(len(self.user6.profile.activity_this_month(test_date)), 15)
 
     def test_run(self):
-        member3 = self.user3.get_profile()
-        member4 = self.user4.get_profile()
-        member5 = self.user5.get_profile()
-        member6 = self.user6.get_profile()
-        member7 = self.user7.get_profile()
+        member3 = self.user3.profile
+        member4 = self.user4.profile
+        member5 = self.user5.profile
+        member6 = self.user6.profile
+        member7 = self.user7.profile
 
         end_time = datetime(2010, 6, 30)
         day_range = range(30)
@@ -159,7 +157,7 @@ class BillingTestCase(TestCase):
         self.assertTrue(len(user_bills) > 0)
 
         # Last membership lines up
-        last_membership = user1.get_profile().last_membership()
+        last_membership = user1.profile.last_membership()
         self.assertEqual(last_membership, user_bills[0].membership)
 
         # The bill adds up

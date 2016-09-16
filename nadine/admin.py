@@ -39,16 +39,13 @@ class BillingLogAdmin(StyledAdmin):
     list_display = ('started', 'ended', 'note', 'successful')
 admin.site.register(BillingLog, BillingLogAdmin)
 
-admin.site.unregister(User)
 
-
-class MemberInline(admin.StackedInline):
-    model = Member
+class UserProfileInline(admin.StackedInline):
+    model = UserProfile
     max_num = 1
-
-
 class UserWithProfileAdmin(UserAdmin):
-    inlines = [MemberInline]
+    inlines = [UserProfileInline]
+admin.site.unregister(User)
 admin.site.register(User, UserWithProfileAdmin)
 
 

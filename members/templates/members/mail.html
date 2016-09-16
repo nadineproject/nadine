@@ -59,7 +59,7 @@
     			{% if is_subscriber %}
     			(<a target="_self" href="." onclick="unsubscribe({{mailing_list.id}}); return false;">unsubscribe</a>)
     			{% else %}
-        			{% if request.user.get_profile.is_active or request.user.is_staff %}
+        			{% if request.user.profile.is_active or request.user.is_staff %}
         			    ( <a target="_self" href="." onclick="subscribe({{mailing_list.id}}); return false;">subscribe</a> )
         			{% endif %}
     			{% endif %}

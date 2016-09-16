@@ -50,7 +50,7 @@ class ActivityModel(object):
         results = []
         for u in User.helper.here_today()
             member_dict = {"username": u.username, "name": u.get_full_name()}
-            if(member.photo):
+            if(u.profile.photo):
                 member_dict["photo"] = "http://%s%s%s" % (Site.objects.get_current().domain, settings.MEDIA_URL, u.profile.photo)
                 member_dict["thumbnail"] = "http://%s%s" % (Site.objects.get_current().domain, imagetags.fit_image(u.profile.photo.url, '170x170'))
             member_dict["industry"] = u.profile.industry

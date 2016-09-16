@@ -30,7 +30,7 @@ nav #logs-tab { background: #FBD850; color: black; }
 	{% for l in logs %}
 		<tr>
 			<td>{{ l.logintime|date:"h:i a" }}</td>
-			<td>{{ l.user.get_profile }}</td>
+			<td>{{ l.user.profile }}</td>
 			<td>{{ l.ip_address }}</td>
 			<td></td>
 		</tr>

@@ -73,16 +73,13 @@ class MemberTestCase(TestCase):
         self.assertEquals(self.user5.profile.is_guest(), self.user1)
 
     def test_tags(self):
-        profile1 = self.user1.get_profile()
-        profile1.tags.add("coworking", "books", "beer")
-        profile2 = self.user2.get_profile()
-        profile2.tags.add("beer", "cars", "women")
-        profile3 = self.user3.get_profile()
-        profile3.tags.add("knitting", "beer", "travel")
-        self.assertTrue(profile1 in Member.objects.filter(tags__name__in=["beer"]))
-        self.assertTrue(profile2 in Member.objects.filter(tags__name__in=["beer"]))
-        self.assertTrue(profile3 in Member.objects.filter(tags__name__in=["beer"]))
-        self.assertFalse(profile1 in Member.objects.filter(tags__name__in=["knitting"]))
-        self.assertFalse(profile3 in Member.objects.filter(tags__name__in=["books"]))
+        self.user1.profile.tags.add("coworking", "books", "beer")
+        self.user2.profile.tags.add("beer", "cars", "women")
+        self.user3.profile.tags.add("knitting", "beer", "travel")
+        self.assertTrue(self.user1.profile in UserProfile.objects.filter(tags__name__in=["beer"]))
+        self.assertTrue(self.user2.profile in UserProfile.objects.filter(tags__name__in=["beer"]))
+        self.assertTrue(self.user3.profile in UserProfile.objects.filter(tags__name__in=["beer"]))
+        self.assertFalse(self.user1.profile in UserProfile.objects.filter(tags__name__in=["knitting"]))
+        self.assertFalse(self.user3.profile in UserProfile.objects.filter(tags__name__in=["books"]))
 
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
