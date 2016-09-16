@@ -513,7 +513,6 @@ class Member(models.Model):
                 alerts_by_key[alert.key] = [alert]
         return alerts_by_key
 
-    # TODO - remove
     def alerts(self):
         from nadine.models.alerts import MemberAlert
         return MemberAlert.objects.filter(user=self.user).order_by('-created_ts')
