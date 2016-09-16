@@ -43,7 +43,7 @@
 		<tr>
 			<td style="border-bottom: 1px solid gray; text-align:left;">{{ log.visit_date|date:"M d, Y" }}</td>
 			<td style="border-bottom: 1px solid gray; text-align:left;">{{ log.payment }}</td>
-			<td style="border-bottom: 1px solid gray; text-align:left;">{{ log.guest_of|default:"&nbsp;" }}</td>
+			<td style="border-bottom: 1px solid gray; text-align:left;">{{ log.paid_by|default:"&nbsp;" }}</td>
 			<td style="border-bottom: 1px solid gray; text-align:left;">{{ log.note }}&nbsp;</td>
 		</tr>
 	{% empty %}

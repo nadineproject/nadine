@@ -5,11 +5,10 @@ from django.conf import settings
 
 register = template.Library()
 @register.simple_tag
-def valid_billing_color(member):
-    if member.has_valid_billing():
+def valid_billing_color(user):
+    if user.profile.has_valid_billing():
         return "black"
-    elif member.has_billing_profile():
+    elif user.profile.has_billing_profile():
         return "orange"
     else:
         return "red"
-

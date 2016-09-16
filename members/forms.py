@@ -16,6 +16,7 @@ def get_state_choices():
 
 
 class EditProfileForm(forms.Form):
+    # TODO Convert to username
     member_id = forms.IntegerField(required=True, min_value=0, widget=forms.HiddenInput)
 
     first_name = forms.CharField(max_length=100, required=True)

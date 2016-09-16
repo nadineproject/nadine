@@ -98,8 +98,8 @@ def user_signin(request, username):
         member_search_form = MemberSearchForm()
 
     # Look up previous hosts for his user
-    guest_days = CoworkingDay.objects.filter(user=user, guest_of__isnull=False).values("guest_of")
-    previous_hosts = User.helper.active_members().filter(member__in=guest_days)
+    guest_days = CoworkingDay.objects.filter(user=user, paid_by__isnull=False).values("paid_by")
+    previous_hosts = User.helper.active_members().filter(id__in=guest_days)
 
     return render_to_response('tablet/user_signin.html', {'user': user, 'can_signin': can_signin,
                                                           'membership': membership, 'previous_hosts':previous_hosts,
@@ -133,24 +133,23 @@ def signin_user(request, username):
     return signin_user_guest(request, username, None)
 
 
-def signin_user_guest(request, username, guestof):
+def signin_user_guest(request, username, paid_by):
     user = get_object_or_404(User, username=username)
-    daily_log = CoworkingDay()
-    daily_log.user = user
-    daily_log.visit_date = timezone.localtime(timezone.now()).date()
+    day = CoworkingDay()
+    day.user = user
+    day.visit_date = timezone.localtime(timezone.now()).date()
     # Only proceed if they haven't signed in already
-    if CoworkingDay.objects.filter(user=user, visit_date=daily_log.visit_date).count() == 0:
-        if guestof:
-            guestof_user = get_object_or_404(User, username=guestof)
-            guestof_member = get_object_or_404(Member, user=guestof_user)
-            daily_log.guest_of = guestof_member
+    if CoworkingDay.objects.filter(user=user, visit_date=day.visit_date).count() == 0:
+        if paid_by:
+            host = get_object_or_404(User, username=paid_by)
+            day.paid_by = host
         if CoworkingDay.objects.filter(user=user).count() == 0:
-            daily_log.payment = 'Trial'
+            day.payment = 'Trial'
         else:
-            daily_log.payment = 'Bill'
-        daily_log.save()
+            day.payment = 'Bill'
+        day.save()
 
-        if daily_log.payment == 'Trial':
+        if day.payment == 'Trial':
             try:
                 email.announce_free_trial(user)
                 email.send_introduction(user)

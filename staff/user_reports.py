@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from datetime import date, datetime, timedelta
 from django.utils import timezone
-from nadine.models.core import Member, Membership
+from nadine.models.core import Membership
 from arpwatch.models import UserDevice
 from django.forms.extras.widgets import SelectDateWidget
 
@@ -88,17 +88,14 @@ class User_Report:
 
     def new_membership(self):
         new_memberships = Membership.objects.filter(start_date__gte=self.start_date, start_date__lte=self.end_date)
-        members = Member.objects.filter(memberships__in=new_memberships)
-        return User.objects.filter(pk__in=members.values('user'))
+        return User.objects.filter(membership__in=new_memberships)
 
     def ended_membership(self):
         ended_memberships = Membership.objects.filter(end_date__gte=self.start_date, end_date__lte=self.end_date)
-        members = Member.objects.filter(memberships__in=ended_memberships)
-        return User.objects.filter(pk__in=members.values('user'))
+        return User.objects.filter(membership__in=ended_memberships)
 
     def invalid_billing(self):
-        members = Member.objects.filter(valid_billing=False)
-        return User.objects.filter(pk__in=members.values('user'), date_joined__gte=self.start_date, date_joined__lte=self.end_date)
+        return User.objects.filter(member__valid_billing=False, date_joined__gte=self.start_date, date_joined__lte=self.end_date)
 
     def no_device(self):
         devices = UserDevice.objects.filter(user__isnull=False)

@@ -22,10 +22,15 @@ class CoworkingDay(models.Model):
     user = models.ForeignKey(User, unique_for_date="visit_date")
     visit_date = models.DateField("Date")
     payment = models.CharField("Payment", max_length=5, choices=PAYMENT_CHOICES)
-    # TODO - convert to User
-    guest_of = models.ForeignKey('Member', verbose_name="Guest Of", related_name="guest_of", blank=True, null=True)
+    paid_by = models.ForeignKey(User, null=True, related_name="guest_day")
     note = models.CharField("Note", max_length=128, blank="True")
     created_ts = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def guest_of(self):
+        if self.paid_by:
+            return self.paid_by.profile
+        return None
 
     def __str__(self):
         return '%s - %s' % (self.visit_date, self.user)

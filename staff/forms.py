@@ -184,23 +184,19 @@ class CoworkingDayForm(forms.Form):
         # Make sure there isn't another log for this member on this day
         u = User.objects.get(username=self.cleaned_data['username'])
         v = self.cleaned_data['visit_date']
-        daily_log = CoworkingDay.objects.filter(user=u, visit_date=v)
-        if daily_log:
+        if CoworkingDay.objects.filter(user=u, visit_date=v).count() > 0:
             raise Exception('Member already signed in')
 
-        daily_log = CoworkingDay()
-        daily_log.user = u
-        daily_log.visit_date = v
-        daily_log.payment = self.cleaned_data['payment']
-        #daily_log.guest_of = self.cleaned_data['guest_of']
-        daily_log.note = self.cleaned_data['note']
-        daily_log.save()
-        return daily_log
+        day = CoworkingDay()
+        day.user = u
+        day.visit_date = v
+        day.payment = self.cleaned_data['payment']
+        day.note = self.cleaned_data['note']
+        day.save()
+        return day
 
 
 class MembershipForm(forms.Form):
-    # TODO - convert to User
-    member_list = Member.objects.all()
     username = forms.CharField(required=True, widget=forms.HiddenInput)
     plan_list = MembershipPlan.objects.filter(enabled=True).order_by('name')
     membership_id = forms.IntegerField(required=False, min_value=0, widget=forms.HiddenInput)
@@ -213,7 +209,7 @@ class MembershipForm(forms.Form):
     has_desk = forms.BooleanField(initial=False, required=False)
     has_key = forms.BooleanField(initial=False, required=False)
     has_mail = forms.BooleanField(initial=False, required=False)
-    guest_of = forms.ModelChoiceField(queryset=member_list, required=False)
+    paid_by = forms.ModelChoiceField(queryset=User.helper.active_members(), required=False)
     # These are for the MemberNote
     note = forms.CharField(required=False, widget=forms.Textarea)
     created_by = None
@@ -258,7 +254,7 @@ class MembershipForm(forms.Form):
         membership.has_desk = self.cleaned_data['has_desk']
         membership.has_key = self.cleaned_data['has_key']
         membership.has_mail = self.cleaned_data['has_mail']
-        membership.guest_of = self.cleaned_data['guest_of']
+        membership.paid_by = self.cleaned_data['paid_by']
         membership.save()
 
         # Save the note if we were given one

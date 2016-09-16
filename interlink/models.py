@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 def unsubscribe_recent_dropouts():
     """Remove mailing list subscriptions from members whose memberships expired yesterday and they do not start a membership today"""
-    recently_expired = User.objects.filter(member__memberships__end_date=timezone.now().date() - timedelta(days=1)).exclude(member__memberships__start_date=timezone.now().date())
+    recently_expired = User.objects.filter(membership__end_date=timezone.now().date() - timedelta(days=1)).exclude(membership__start_date=timezone.now().date())
     for u in recently_expired:
         MailingList.objects.unsubscribe_from_all(u)
 
