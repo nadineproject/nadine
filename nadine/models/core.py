@@ -141,7 +141,8 @@ class Neighborhood(models.Model):
 class UserQueryHelper():
 
     def active_members(self):
-        return User.objects.filter(id__in=Membership.objects.active_memberships().values('user').order_by('first_name'))
+        active_members = Q(id__in=Membership.objects.active_memberships().values('user'))
+        return User.objects.select_related('profile').filter(active_members).order_by('first_name')
 
     def here_today(self, day=None):
         if not day:
@@ -769,7 +770,7 @@ class MembershipManager(models.Manager):
         current = Q(start_date__lte=target_date)
         unending = Q(end_date__isnull=True)
         future_ending = Q(end_date__gte=target_date)
-        return self.filter(current & (unending | future_ending)).distinct()
+        return self.select_related('user', 'user__profile').filter(current & (unending | future_ending)).distinct()
 
     def future_memberships(self):
         today = timezone.now().date()
