@@ -1,5 +1,6 @@
 import traceback
 import string
+import time
 from datetime import date, datetime, timedelta
 from operator import itemgetter, attrgetter
 from calendar import Calendar, HTMLCalendar
@@ -437,33 +438,37 @@ def register(request):
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def create_booking(request):
+    room_dict = {}
     page_message = None
     rooms = Room.objects.all()
     if request.method =='GET':
-        query = Room.objects.all()
-        # if request.GET.get('start'):
-        #     start = request.GET.get('start')
-        #     filters.append(start)
-        # if request.GET.get('end'):
-        #     end = request.GET.get('end')
-        #     filters.append(end)
         if request.GET.get('has_av'):
-            has_av = True
-            query = query + '.filter(has_av=has_av)'
+            rooms = rooms.filter(has_av=True)
         if request.GET.get('has_phone'):
-            has_phone = True
-            query = query + '.filter(has_phone=has_phone)'
+            rooms = rooms.filter(has_phone=True)
         if request.GET.get('floor'):
             floor = request.GET.get('floor', '')
-            query = query + '.filter(floor=floor)'
+            rooms = rooms.filter(floor=floor)
         if request.GET.get('seats'):
             seats = request.GET.get('seats', '')
-            # Needs to be a minimum
-            query = query + '.filter(seats=seats)'
-        filters = query.replace("'", "")
-        if len(query) > 13:
-            rooms = query.replace("'", "")
-            print type(rooms)
+            rooms = rooms.filter(seats__gte=seats)
+
+        for room in rooms:
+            if request.GET.get('start'):
+                date = request.GET.get('date')
+                start = request.GET.get('start')
+                end = request.GET.get('end')
+                start_ts = date + " " + start
+                end_ts = date + " " + end
+            else:
+                date = timezone.now()
+                start_ts = date
+                end_ts = date + timedelta(hours=2)
+
+            room_events = room.event_set.filter(start_ts__gte=start_ts, end_ts__lte=end_ts)
+            room_dict[room]=room_events
+
+
     if request.method == 'POST':
         booking_form = EventForm()
         try:
