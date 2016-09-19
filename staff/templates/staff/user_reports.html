@@ -52,19 +52,19 @@ table th.bottom_line { border-bottom:1px solid; }
 		<tr class="{% cycle 'row-even' 'row-odd' %}">
 			<td nowrap style="text-align:left;"><a href="{% url 'staff_user_detail' user.username %}">{{ user.get_full_name }}</a></td>
 			<td>{{ user.date_joined|date:"M d, Y" }}</td>
-			{% if user.get_profile.has_valid_billing %}
+			{% if user.profile.has_valid_billing %}
 				<td>Valid</td>
 			{% else %}
 				<td style="color: red;">Invalid</td>
 			{% endif %}
-			{% if user.get_profile.auto_bill_enabled %}
+			{% if user.profile.auto_bill_enabled %}
 				<td>On</td>
 			{% else %}
 				<td style="color: red;">Off</td>
 			{% endif %}
-			<td>{{ user.get_profile.last_membership.membership_plan }}</td>
-			<td>{{ user.get_profile.last_membership.start_date|date:"M d, Y" }}</td>
-			<td>{{ user.get_profile.last_membership.end_date|date:"M d, Y" }}</td>
+			<td>{{ user.profile.last_membership.membership_plan }}</td>
+			<td>{{ user.profile.last_membership.start_date|date:"M d, Y" }}</td>
+			<td>{{ user.profile.last_membership.end_date|date:"M d, Y" }}</td>
 			<td></td>
 		</tr>
 	{% endfor %}

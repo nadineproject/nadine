@@ -176,10 +176,10 @@
             {% endif %}
 
             <!-- Email -->
-            {% if user.profile.email %}
+            {% if user.email %}
               <tr>
                  <td>Email:</td>
-                 <td>{{ user.profile.email }}</td>
+                 <td>{{ user.email }}</td>
               </tr>
             {% endif %}
 
@@ -273,7 +273,7 @@
 
     <div id="tabs-3">
         <h3>Membership History</h3>
-        {% if user.profile.memberships.all %}
+        {% if user.membership_set.all %}
         <table>
           <thead>
             <tr>
@@ -283,7 +283,7 @@
             </tr>
           </thead>
           <tbody>
-            {% for membership in user.profile.memberships.all reversed %}
+            {% for membership in user.membership_set.all reversed %}
               <tr class="{% cycle 'row-even' 'row-odd' %}">
                  <td>{{ membership.membership_plan }}</td>
                  <td align="center">{{ membership.start_date|date:"M d, Y" }}</td>
@@ -309,21 +309,21 @@
             </div>
         {% endif %}
         <h3>Daily Activity</h3>
-        {% if user.dailylog_set.all %}
+        {% if user.coworkingday_set.all %}
         <table>
           <thead>
             <tr>
               <th>Date</th>
               <th align="center">Payment</th>
-              <th align="left">Guest of</th>
+              <th align="left">Paid by</th>
             </tr>
           </thead>
           <tbody>
-            {% for log in user.dailylog_set.all %}
+            {% for d in user.coworkingday_set.all %}
               <tr class="{% cycle 'row-even' 'row-odd' %}">
-                 <td nowrap class="date-cell">{{ log.visit_date|date:"M d, Y" }}</td>
-                 <td align="center">{{ log.payment }}</td>
-                 <td align="left">{% if log.guest_of %}{{ log.guest_of }}{% endif %}</td>
+                 <td nowrap class="date-cell">{{ d.visit_date|date:"M d, Y" }}</td>
+                 <td align="center">{{ d.payment }}</td>
+                 <td align="left">{% if d.paid_by %}{{ d.paid_by.get_full_name }}{% endif %}</td>
               </tr>
             {% endfor %}
           </tbody>
@@ -333,7 +333,7 @@
         {% endif %}
 
         <h3>Guest Activity</h3>
-        {% if user.profile.host_daily_logs.all %}
+        {% if user.profile.hosted_days.all %}
         <table>
           <thead>
             <tr>
@@ -343,7 +343,7 @@
             </tr>
           </thead>
           <tbody>
-            {% for log in user.profile.host_daily_logs.all %}
+            {% for log in user.profile.hosted_days.all %}
             <tr class="{% cycle 'row-even' 'row-odd' %}">
                 <td nowrap>{{ log.visit_date|date:"M d, Y" }}</td>
                 <td align="center">{{ log.user.get_full_name }}</td>

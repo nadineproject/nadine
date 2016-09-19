@@ -205,7 +205,7 @@ def membership_days(request):
     MembershipDays = namedtuple('MembershipDays', 'user, membership_count, total_days, daily_logs, max_days, current')
     membership_days = []
     users = User.objects.all()
-    memberships = Membership.objects.select_related('member', 'member__user').all()
+    memberships = Membership.objects.select_related('profile', 'profile__user').all()
     avg_count = 0
     avg_total = 0
     for user in users:
@@ -244,10 +244,10 @@ def gender(request):
     else:
         users = User.objects.all()
 
-    m = users.filter(member__gender='M').count()
-    f = users.filter(member__gender='F').count()
-    o = users.filter(member__gender='O').count()
-    u = users.filter(member__gender='U').count()
+    m = users.filter(profile__gender='M').count()
+    f = users.filter(profile__gender='F').count()
+    o = users.filter(profile__gender='O').count()
+    u = users.filter(profile__gender='U').count()
 
     t = m + f + o + u
     counts = {'male': m, 'female': f, 'other': o, 'unknown': u, 'total': t}

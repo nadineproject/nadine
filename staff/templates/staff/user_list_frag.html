@@ -27,24 +27,24 @@
 			</td>
 			<td style="text-align:center;">
 				{% if user.profile.guests %}
-					<a href="." onclick="$('#guest-details-{{user.profile.id}}').show(); return false;">{{user.profile.guests|length}}</a>
+					<a href="." onclick="$('#guest-details-{{user.id}}').show(); return false;">{{user.profile.guests|length}}</a>
 				{% endif %}
 			</td>
 		</tr>
-		<tr style="display: none;" id="guest-details-{{user.profile.id}}">
+		<tr style="display: none;" id="guest-details-{{user.id}}">
 			<td colspan="5"><table class="guest-detail" style="margin-left: 5em;">
 				{% for guest in user.profile.guests %}
 					<tr>
-						<td style="border-bottom: 0px solid #ccc;" width="2">{% if guest.photo %}
-							<a href="{% url 'staff_user_detail' guest.user.username %}">
-								<img class="member-table-photo" src="{{ guest.photo.url|fit_image:"48x48"}}" />
+						<td style="border-bottom: 0px solid #ccc;" width="2">{% if guest.profile.photo %}
+							<a href="{% url 'staff_user_detail' guest.username %}">
+								<img class="member-table-photo" src="{{ guest.profile.photo.url|fit_image:"48x48"}}" />
 							</a>
 						{% endif %}</td>
 						<td style="text-align: left; border-bottom: 0px solid #ccc; padding: 0.5em;">
-							<a href="{% url 'staff_user_detail' guest.user.username %}">{{ guest.user.get_full_name }}</a>
+							<a href="{% url 'staff_user_detail' guest.username %}">{{ guest.get_full_name }}</a>
 						</td>
-						<td style="text-align: left; border-bottom: 0px solid #ccc; padding: 0.5em;">{{ guest.active_membership.membership_plan }}</td>
-						<td style="text-align: left; border-bottom: 0px solid #ccc; padding: 0.5em;">{{ guest.active_membership.start_date }}</td>
+						<td style="text-align: left; border-bottom: 0px solid #ccc; padding: 0.5em;">{{ guest.profile.active_membership.membership_plan }}</td>
+						<td style="text-align: left; border-bottom: 0px solid #ccc; padding: 0.5em;">{{ guest.profile.active_membership.start_date }}</td>
 					</tr>
 				{% endfor %}
 			</table></td>

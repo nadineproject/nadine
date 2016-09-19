@@ -16,7 +16,7 @@ from monthdelta import MonthDelta, monthmod
 
 from staff import email
 from staff.forms import MemberEditForm, MembershipForm
-from nadine.models import Member, Membership, MemberNote, MembershipPlan, SentEmailLog, FileUpload, SpecialDay
+from nadine.models import Membership, MemberNote, MembershipPlan, SentEmailLog, FileUpload, SpecialDay
 
 
 @staff_member_required
@@ -74,7 +74,6 @@ def edit(request, username):
 @staff_member_required
 def detail(request, username):
     user = get_object_or_404(User, username=username)
-    member = user.get_profile()
     emergency_contact = user.get_emergency_contact()
     memberships = Membership.objects.filter(user=user).order_by('start_date').reverse()
     email_logs = SentEmailLog.objects.filter(user=user).order_by('created').reverse()
@@ -100,7 +99,7 @@ def detail(request, username):
     email_keys = email.valid_message_keys()
     email_keys.remove("all")
 
-    return render_to_response('staff/member_detail.html', {'user':user, 'member': member, 'emergency_contact': emergency_contact,
+    return render_to_response('staff/member_detail.html', {'user':user, 'emergency_contact': emergency_contact,
         'memberships': memberships, 'email_logs': email_logs, 'email_keys': email_keys, 'settings': settings}, context_instance=RequestContext(request))
 
 
@@ -108,40 +107,33 @@ def detail(request, username):
 @staff_member_required
 def transactions(request, username):
     user = get_object_or_404(User, username=username)
-    member = user.get_profile()
-    return render_to_response('staff/member_transactions.html', {'user':user, 'member': member}, context_instance=RequestContext(request))
+    return render_to_response('staff/member_transactions.html', {'user':user}, context_instance=RequestContext(request))
 
 
 @staff_member_required
 def bills(request, username):
     user = get_object_or_404(User, username=username)
-    member = user.get_profile()
-    return render_to_response('staff/member_bills.html', {'user':user, 'member': member}, context_instance=RequestContext(request))
+    return render_to_response('staff/member_bills.html', {'user':user}, context_instance=RequestContext(request))
 
 
 @staff_member_required
 def signins(request, username):
     user = get_object_or_404(User, username=username)
-    member = user.get_profile()
     payment_types = ['Visit', 'Trial', 'Waive', 'Bill']
-    return render_to_response('staff/member_signins.html', {'payment_types': payment_types, 'user':user, 'member': member}, context_instance=RequestContext(request))
+    return render_to_response('staff/member_signins.html', {'payment_types': payment_types, 'user':user}, context_instance=RequestContext(request))
 
 
 @staff_member_required
 def signins_json(request, username):
     user = get_object_or_404(User, username=username)
-    member = user.get_profile()
     response_data = {}
-    #response_data['member'] = model_to_dict(member)
-    #response_data['payment_types'] = ['Visit', 'Trial', 'Waive', 'Bill']
-    response_data['daily_logs'] = serializers.serialize('json', member.daily_logs.all())
+    response_data['coworkingdays'] = serializers.serialize('json', user.coworkingdays.all())
     return HttpResponse(json.dumps(response_data), content_type="application/json")
 
 
 @staff_member_required
 def files(request, username):
     user = get_object_or_404(User, username=username)
-    member = user.get_profile()
 
     if 'delete' in request.POST:
         upload_obj = get_object_or_404(FileUpload, pk=request.POST['file_id'])
@@ -154,14 +146,12 @@ def files(request, username):
             file_user = User.objects.get(username=request.POST['user'])
             doc_type = request.POST['doc_type']
             FileUpload.objects.create_from_file(file_user, upload, doc_type, request.user)
-            #upload_obj = FileUpload(user=file_user, file=upload, name=file_name, document_type=doc_type, content_type=upload.content_type, uploaded_by=request.user)
-            # upload_obj.save()
         except Exception as e:
             messages.add_message(request, messages.ERROR, "Could not upload file: (%s)" % e)
 
     doc_types = FileUpload.DOC_TYPES
     files = FileUpload.objects.filter(user=member.user)
-    return render_to_response('staff/member_files.html', {'user':user, 'member': member, 'files': files, 'doc_types': doc_types}, context_instance=RequestContext(request))
+    return render_to_response('staff/member_files.html', {'user':user, 'files': files, 'doc_types': doc_types}, context_instance=RequestContext(request))
 
 
 @staff_member_required

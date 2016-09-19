@@ -14,7 +14,7 @@ class MailingListSubscriptionForm(forms.Form):
             return False
 
         body = 'So says http://%s ' % Site.objects.get_current().domain
-        if self.cleaned_data['subscribe'] == 'true' and (user.get_profile().is_active() or user.is_staff):
+        if self.cleaned_data['subscribe'] == 'true' and (user.profile.is_active() or user.is_staff):
             list.subscribers.add(user)
             subject = '%s subscribed to %s' % (user.get_full_name(), list.name)
             OutgoingMail.objects.create(mailing_list=list, subject=subject, body=body, moderators_only=True)

@@ -13,7 +13,6 @@ from django.template.loader import get_template
 from django.contrib.sites.models import Site
 from django.utils import timezone
 
-from nadine.models.core import Member
 
 logger = logging.getLogger(__name__)
 

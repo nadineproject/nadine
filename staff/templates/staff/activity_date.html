@@ -35,7 +35,7 @@ nav #activity-tab { background: #FBD850; color: black; }
       <tr>
          <th>Member</th>
          <th>Payment</th>
-         <th>Guest of</th>
+         <th>Paid by</th>
          <th>Note</th>
          <th></th>
       </tr>
@@ -43,7 +43,7 @@ nav #activity-tab { background: #FBD850; color: black; }
          <tr class="{% cycle 'row-even' 'row-odd' %}">
             <td><a href="{% url 'staff_user_detail' log.user.username %}">{{ log.user.get_full_name }}</a></td>
             <td>{{ log.payment }}</td>
-            <td>{% if log.guest_of %}<a href="{% url 'staff_user_detail' log.guest_of.user.username %}">{{ log.guest_of }}</a>{% endif %}</td>
+            <td>{% if log.paid_by %}<a href="{% url 'staff_user_detail' log.paid_by.username %}">{{ log.paid_by.get_full_name }}</a>{% endif %}</td>
             <td class="log-note">{{ log.note }}</td>
             <td style="text-align: center;">
                 <a href="{% url 'admin:nadine_coworkingday_change' log.id %}">edit data </a> |

@@ -73,15 +73,14 @@ def bills(request):
                 page_message = 'Created a <a href="%s">transaction for %s</a>' % (transaction_url, user.get_full_name())
 
     bills = {}
-    # TODO - convert to User
-    unpaid = models.Q(bills__isnull=False, bills__transactions=None, bills__paid_by__isnull=True)
+    unpaid = models.Q(bill__isnull=False, bill__transactions=None, bill__paid_by__isnull=True)
     unpaid_guest = models.Q(guest_bills__isnull=False, guest_bills__transactions=None)
-    members = Member.objects.filter(unpaid | unpaid_guest).distinct().order_by('user__last_name')
-    for member in members:
-        last_bill = member.open_bills()[0]
+    users = User.objects.filter(unpaid | unpaid_guest).distinct().order_by('last_name')
+    for u in users:
+        last_bill = u.profile.open_bills()[0]
         if not last_bill.bill_date in bills:
             bills[last_bill.bill_date] = []
-        bills[last_bill.bill_date].append(member)
+        bills[last_bill.bill_date].append(u)
     ordered_bills = OrderedDict(sorted(bills.items(), key=lambda t: t[0]))
 
     invalids = User.helper.invalid_billing()
@@ -126,18 +125,16 @@ def bill_list(request):
 @staff_member_required
 def toggle_billing_flag(request, username):
     user = get_object_or_404(User, username=username)
-    member = user.get_profile()
 
-    page_message = member.full_name + " billing profile: "
-    if member.valid_billing:
+    page_message = user.get_full_name() + " billing profile: "
+    if user.profile.valid_billing:
         page_message += " Invalid"
-        member.valid_billing = False
-        member.save()
+        user.profile.valid_billing = False
         email.send_invalid_billing(user)
     else:
         page_message += " Valid"
-        member.valid_billing = True
-        member.save()
+        user.profile.valid_billing = True
+    user.profile.save()
 
     if 'back' in request.POST:
         return HttpResponseRedirect(request.POST.get('back'))

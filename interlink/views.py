@@ -36,7 +36,7 @@ def subscribe(request, list_id, username):
         if request.POST.get('confirm', 'No') == "Yes":
             mailing_list.subscribers.add(user)
         return HttpResponseRedirect(reverse('interlink_subscribers', args=[list_id]))
-    return render_to_response('interlink/subscribe.html', {'member': user.get_profile(), 'mailing_list': mailing_list}, context_instance=RequestContext(request))
+    return render_to_response('interlink/subscribe.html', {'user': user, 'mailing_list': mailing_list}, context_instance=RequestContext(request))
 
 
 @login_required
@@ -47,7 +47,7 @@ def unsubscribe(request, list_id, username):
         if request.POST.get('confirm', 'No') == "Yes":
             mailing_list.subscribers.remove(user)
         return HttpResponseRedirect(reverse('interlink_subscribers', args=[list_id]))
-    return render_to_response('interlink/unsubscribe.html', {'member': user.get_profile(), 'mailing_list': mailing_list}, context_instance=RequestContext(request))
+    return render_to_response('interlink/unsubscribe.html', {'user': user, 'mailing_list': mailing_list}, context_instance=RequestContext(request))
 
 
 @staff_member_required

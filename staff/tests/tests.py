@@ -14,8 +14,7 @@ from nadine.models.core import *
 
 def print_user_data(user):
     print
-    profile = user.get_profile()
-    print("Profile: %s" % profile)
+    print("Profile: %s" % user.profile)
     for bill in Bill.objects.filter(user=user):
         print("  Bill: %s" % bill)
         print("    Membership: %s" % bill.membership)
@@ -35,14 +34,14 @@ class MailingListTest(TestCase):
         resident_plan = MembershipPlan.objects.create(name="Resident", monthly_rate="475", dropin_allowance="5", daily_rate="20", has_desk=True)
 
         self.user1 = User.objects.create(username='member_one', first_name='Member', last_name='One')
-        Membership.objects.create(user=self.user1, member=self.user1.get_profile(), membership_plan=resident_plan, start_date=date(2008, 6, 26))
+        Membership.objects.create(user=self.user1, membership_plan=resident_plan, start_date=date(2008, 6, 26))
 
         self.user2 = User.objects.create(username='member_two', first_name='Member', last_name='Two')
-        Membership.objects.create(user=self.user2, member=self.user2.get_profile(), membership_plan=resident_plan, start_date=date(2008, 6, 26), end_date=(timezone.now().date() - timedelta(days=1)))
+        Membership.objects.create(user=self.user2, membership_plan=resident_plan, start_date=date(2008, 6, 26), end_date=(timezone.now().date() - timedelta(days=1)))
 
         self.user3 = User.objects.create(username='member_three', first_name='Member', last_name='Three')
-        Membership.objects.create(user=self.user3, member=self.user3.get_profile(), membership_plan=resident_plan, start_date=date(2008, 6, 26), end_date=(timezone.now().date() - timedelta(days=1)))
-        Membership.objects.create(user=self.user3, member=self.user3.get_profile(), membership_plan=resident_plan, start_date=timezone.now().date())
+        Membership.objects.create(user=self.user3, membership_plan=resident_plan, start_date=date(2008, 6, 26), end_date=(timezone.now().date() - timedelta(days=1)))
+        Membership.objects.create(user=self.user3, membership_plan=resident_plan, start_date=timezone.now().date())
 
     def test_auto_unsubscribe(self):
         self.mlist1.subscribers.add(self.user1)

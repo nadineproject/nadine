@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 from django.utils import timezone
 
-from nadine.models.core import Member, Membership
+from nadine.models.core import Membership
 from nadine.models.usage import CoworkingDay
 from nadine.models.payment import BillingLog
 from members.models import UserNotification
@@ -91,7 +91,6 @@ def export_active_users():
 
 @shared_task
 def anniversary_checkin():
-    from nadine.models.core import Member
     for u in User.helper.active_members():
         d = u.profile.duration()
         if d.years and not d.months and not d.days:
@@ -101,7 +100,6 @@ def anniversary_checkin():
 
 @shared_task
 def announce_special_days():
-    from nadine.models.core import Member
     for u in User.helper.active_members():
         for sd in SpecialDay.objects.filter(user=u):
             if sd.month == today.month and sd.day == today.day:

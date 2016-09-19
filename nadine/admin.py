@@ -39,22 +39,19 @@ class BillingLogAdmin(StyledAdmin):
     list_display = ('started', 'ended', 'note', 'successful')
 admin.site.register(BillingLog, BillingLogAdmin)
 
-admin.site.unregister(User)
 
-
-class MemberInline(admin.StackedInline):
-    model = Member
+class UserProfileInline(admin.StackedInline):
+    model = UserProfile
     max_num = 1
-
-
 class UserWithProfileAdmin(UserAdmin):
-    inlines = [MemberInline]
+    inlines = [UserProfileInline]
+admin.site.unregister(User)
 admin.site.register(User, UserWithProfileAdmin)
 
 
 class CoworkingDayAdmin(StyledAdmin):
-    list_display = ('visit_date', 'user', 'guest_of', 'created_ts')
-    search_fields = ('user__first_name', 'user__last_name', 'guest_of__user__first_name', 'guest_of__user__last_name')
+    list_display = ('visit_date', 'user', 'paid_by', 'created_ts')
+    search_fields = ('user__first_name', 'user__last_name', 'paid_by__first_name', 'paid_by__last_name')
 admin.site.register(CoworkingDay, CoworkingDayAdmin)
 
 

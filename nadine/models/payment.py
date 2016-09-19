@@ -43,14 +43,12 @@ class Bill(models.Model):
     """A record of what fees a Member owes."""
     bill_date = models.DateField(blank=False, null=False)
     user = models.ForeignKey(User)
-    # TODO - remove member
-    member = models.ForeignKey('Member', blank=False, null=False, related_name="bills")
     amount = models.DecimalField(max_digits=7, decimal_places=2)
     membership = models.ForeignKey('Membership', blank=True, null=True)
     dropins = models.ManyToManyField('CoworkingDay', related_name='bills')
     guest_dropins = models.ManyToManyField('CoworkingDay', related_name='guest_bills')
     new_member_deposit = models.BooleanField(default=False, blank=False, null=False)
-    paid_by = models.ForeignKey('Member', blank=True, null=True, related_name='guest_bills')
+    paid_by = models.ForeignKey(User, blank=True, null=True, related_name='guest_bills')
 
     def overage_days(self):
         return self.dropins.count() - self.membership.dropin_allowance
@@ -72,7 +70,6 @@ class Transaction(models.Model):
     """A record of charges for a user."""
     transaction_date = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User)
-    #member = models.ForeignKey('Member', blank=False, null=False)
     TRANSACTION_STATUS_CHOICES = (('open', 'Open'), ('closed', 'Closed'))
     status = models.CharField(max_length=10, choices=TRANSACTION_STATUS_CHOICES, blank=False, null=False, default='open')
     bills = models.ManyToManyField(Bill, related_name='transactions')

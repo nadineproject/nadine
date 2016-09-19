@@ -23,7 +23,7 @@ nav #activity-tab { background: #FBD850; color: black; }
          <th>Member</th>
          <th>Date</th>
          <th>Payment</th>
-         <th>Guest of</th>
+         <th>Paid by</th>
          <th>Note</th>
       </tr>
       {% for log in daily_logs %}
@@ -31,7 +31,7 @@ nav #activity-tab { background: #FBD850; color: black; }
             <td><a href="{% url 'staff_user_signins' log.user.username %}">{{ log.user.get_full_name }}</a></td>
             <td><a href="{% url 'staff_activity_day' log.visit_date.year log.visit_date.month log.visit_date.day %}">{{ log.visit_date|date:"M d, Y" }}</td>
             <td>{{ log.payment }}</td>
-            <td>{{ log.guest_of }}</td>
+            <td>{{ log.paid_by }}</td>
             <td class="log-note">{{ log.note }}</td>
          </tr>
       {% endfor %}

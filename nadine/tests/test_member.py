@@ -6,11 +6,7 @@ from django.core import management
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.utils import timezone
-import staff.billing as billing
-from interlink.models import MailingList
-from staff.views.stats import beginning_of_next_month, first_days_in_months
-from nadine.models.core import *
-from nadine.models.payment import *
+from nadine.models import *
 
 
 class MemberTestCase(TestCase):
@@ -26,12 +22,12 @@ class MemberTestCase(TestCase):
         self.profile1.neighborhood = self.neighborhood1
         self.profile1.valid_billing = True
         self.profile1.save()
-        Membership.objects.create(user=self.user1, member=self.user1.get_profile(), membership_plan=self.basicPlan, start_date=date(2008, 2, 26), end_date=date(2010, 6, 25))
-        Membership.objects.create(user=self.user1, member=self.user1.get_profile(), membership_plan=self.residentPlan, start_date=date(2010, 6, 26))
+        Membership.objects.create(user=self.user1, membership_plan=self.basicPlan, start_date=date(2008, 2, 26), end_date=date(2010, 6, 25))
+        Membership.objects.create(user=self.user1, membership_plan=self.residentPlan, start_date=date(2010, 6, 26))
 
         self.user2 = User.objects.create(username='member_two', first_name='Member', last_name='Two')
         self.profile2 = self.user2.profile
-        Membership.objects.create(user=self.user2, member=self.user2.get_profile(), membership_plan=self.pt5Plan, start_date=date(2009, 1, 1))
+        Membership.objects.create(user=self.user2, membership_plan=self.pt5Plan, start_date=date(2009, 1, 1))
 
         self.user3 = User.objects.create(username='member_three', first_name='Member', last_name='Three')
         self.profile3 = self.user3.profile
@@ -43,13 +39,13 @@ class MemberTestCase(TestCase):
         self.profile4 = self.user4.profile
         self.profile4.neighborhood = self.neighborhood1
         self.profile4.save()
-        Membership.objects.create(user=self.user4, member=self.user4.get_profile(), membership_plan=self.pt5Plan, start_date=date(2009, 1, 1), end_date=date(2010, 1, 1))
+        Membership.objects.create(user=self.user4, membership_plan=self.pt5Plan, start_date=date(2009, 1, 1), end_date=date(2010, 1, 1))
 
         self.user5 = User.objects.create(username='member_five', first_name='Member', last_name='Five')
         self.profile5 = self.user5.profile
         self.profile5.valid_billing = False
         self.profile5.save()
-        Membership.objects.create(user=self.user5, member=self.user5.get_profile(), membership_plan=self.pt5Plan, start_date=date(2009, 1, 1), guest_of=self.profile1)
+        Membership.objects.create(user=self.user5, membership_plan=self.pt5Plan, start_date=date(2009, 1, 1), paid_by=self.user1)
 
     def test_info_methods(self):
         self.assertTrue(self.user1 in User.helper.members_by_plan(self.residentPlan))
@@ -74,19 +70,16 @@ class MemberTestCase(TestCase):
         # Member 5 does not have valid billing but is a guest of Member 1
         self.assertFalse(self.user5.profile.valid_billing)
         self.assertTrue(self.user5.profile.has_valid_billing())
-        self.assertEquals(self.user5.profile.is_guest(), self.user1.profile)
+        self.assertEquals(self.user5.profile.is_guest(), self.user1)
 
     def test_tags(self):
-        member1 = self.user1.get_profile()
-        member1.tags.add("coworking", "books", "beer")
-        member2 = self.user2.get_profile()
-        member2.tags.add("beer", "cars", "women")
-        member3 = self.user3.get_profile()
-        member3.tags.add("knitting", "beer", "travel")
-        self.assertTrue(member1 in Member.objects.filter(tags__name__in=["beer"]))
-        self.assertTrue(member2 in Member.objects.filter(tags__name__in=["beer"]))
-        self.assertTrue(member3 in Member.objects.filter(tags__name__in=["beer"]))
-        self.assertFalse(member1 in Member.objects.filter(tags__name__in=["knitting"]))
-        self.assertFalse(member3 in Member.objects.filter(tags__name__in=["books"]))
+        self.user1.profile.tags.add("coworking", "books", "beer")
+        self.user2.profile.tags.add("beer", "cars", "women")
+        self.user3.profile.tags.add("knitting", "beer", "travel")
+        self.assertTrue(self.user1.profile in UserProfile.objects.filter(tags__name__in=["beer"]))
+        self.assertTrue(self.user2.profile in UserProfile.objects.filter(tags__name__in=["beer"]))
+        self.assertTrue(self.user3.profile in UserProfile.objects.filter(tags__name__in=["beer"]))
+        self.assertFalse(self.user1.profile in UserProfile.objects.filter(tags__name__in=["knitting"]))
+        self.assertFalse(self.user3.profile in UserProfile.objects.filter(tags__name__in=["books"]))
 
-# Copyright 2010 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

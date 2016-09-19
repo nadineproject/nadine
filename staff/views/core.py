@@ -188,7 +188,7 @@ def membership(request, membership_id):
         membership_form = MembershipForm(initial={'membership_id': membership.id, 'username': membership.user.username, 'membership_plan': membership.membership_plan,
                                                   'start_date': membership.start_date, 'end_date': membership.end_date, 'monthly_rate': membership.monthly_rate, 'dropin_allowance': membership.dropin_allowance,
                                                   'daily_rate': membership.daily_rate, 'has_desk': membership.has_desk, 'has_key': membership.has_key, 'has_mail': membership.has_mail,
-                                                  'guest_of': membership.guest_of})
+                                                  'paid_by': membership.paid_by})
 
     today = timezone.localtime(timezone.now()).date()
     last = membership.next_billing_date() - timedelta(days=1)

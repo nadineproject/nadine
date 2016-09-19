@@ -9,7 +9,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.contrib.auth.models import User
 
-from nadine.models.core import Member, Membership
+from nadine.models.core import Membership
 from nadine.models.payment import Bill, BillingLog, Transaction
 from nadine.models.usage import CoworkingDay
 
@@ -93,34 +93,32 @@ class Run:
 
     def populate_daily_logs(self):
         # Grab all the daily_logs from this user
-        daily_logs = CoworkingDay.objects.filter(user=self.user, payment="Bill", guest_of=None).filter(visit_date__gte=self.start_date).filter(visit_date__lte=self.end_date)
+        daily_logs = CoworkingDay.objects.filter(user=self.user, payment="Bill", paid_by=None).filter(visit_date__gte=self.start_date).filter(visit_date__lte=self.end_date)
         if self.filter_closed_logs:
             daily_logs = daily_logs.annotate(bill_count=Count('bills')).filter(bill_count=0)
         for log in daily_logs.order_by('visit_date'):
             self.add_daily_log(log)
 
         # Grab all the daily_logs marked as a guest of this user
-        # TODO - convert guest_of to user object
-        daily_logs = CoworkingDay.objects.filter(guest_of=self.user.profile, payment="Bill").filter(visit_date__gte=self.start_date).filter(visit_date__lte=self.end_date)
+        daily_logs = CoworkingDay.objects.filter(paid_by=self.user, payment="Bill").filter(visit_date__gte=self.start_date).filter(visit_date__lte=self.end_date)
         if self.filter_closed_logs:
             daily_logs = daily_logs.annotate(bill_count=Count('bills')).filter(bill_count=0)
         for log in daily_logs.order_by('visit_date'):
             self.add_guest_log(log)
 
         # Grab all the daily_logs attached to memberships marked as guests of this user
-        # TODO - convert guest_of to user object
-        for membership in Membership.objects.filter(guest_of=self.user.profile).order_by('start_date'):
+        for membership in Membership.objects.filter(paid_by=self.user).order_by('start_date'):
             if membership.end_date and membership.end_date < self.start_date:
                 continue
             if membership.start_date > self.end_date:
                 continue
-            for log in CoworkingDay.objects.filter(user=membership.user, payment="Bill", guest_of=None).filter(visit_date__gte=self.start_date).filter(visit_date__lte=self.end_date):
+            for log in CoworkingDay.objects.filter(user=membership.user, payment="Bill", paid_by=None).filter(visit_date__gte=self.start_date).filter(visit_date__lte=self.end_date):
                 self.add_guest_log(log)
 
     def add_daily_log(self, log):
         for i in range(0, len(self.days)):
             if log.visit_date == self.days[i].date:
-                if self.days[i].membership and self.days[i].membership.guest_of:
+                if self.days[i].membership and self.days[i].membership.paid_by:
                     # Skip guest activity.  It will get picked up by the host's bill.
                     break
                 self.days[i].daily_log = log
@@ -199,8 +197,7 @@ def run_billing(bill_time=None):
                         monthly_fee = 0
                     billable_dropin_count = max(0, len(bill_dropins) + len(bill_guest_dropins) - day.membership.dropin_allowance)
                     bill_amount = monthly_fee + (billable_dropin_count * day.membership.daily_rate)
-                    # TODO - remove Member
-                    day.bill = Bill(bill_date=day.date, amount=bill_amount, user=user, member=user.profile, paid_by=day.membership.guest_of, membership=day.membership)
+                    day.bill = Bill(bill_date=day.date, amount=bill_amount, user=user, paid_by=day.membership.paid_by, membership=day.membership)
                     #logger.debug('saving bill: %s - %s - %s' % (day.bill, day, billable_dropin_count))
                     day.bill.save()
                     bill_count += 1

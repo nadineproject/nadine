@@ -33,11 +33,9 @@ from PIL import Image
 from nadine.utils.payment_api import PaymentAPI
 from nadine.utils.slack_api import SlackAPI
 from nadine.models.usage import CoworkingDay
+from nadine.models.payment import Bill
 
 from doors.keymaster.models import DoorEvent
-
-import warnings
-#warnings.simplefilter('always', DeprecationWarning)
 
 logger = logging.getLogger(__name__)
 
@@ -143,7 +141,8 @@ class Neighborhood(models.Model):
 class UserQueryHelper():
 
     def active_members(self):
-        return User.objects.filter(id__in=Membership.objects.active_memberships().values('user'))
+        active_members = Q(id__in=Membership.objects.active_memberships().values('user'))
+        return User.objects.select_related('profile').filter(active_members).order_by('first_name')
 
     def here_today(self, day=None):
         if not day:
@@ -246,15 +245,15 @@ class UserQueryHelper():
         return self.members_with_keys().exclude(id__in=users_with_agmts).order_by('first_name')
 
     def missing_photo(self):
-        return self.active_members().filter(member__photo="").order_by('first_name')
+        return self.active_members().filter(profile__photo="").order_by('first_name')
 
     def invalid_billing(self):
         active_memberships = Membership.objects.active_memberships()
         free_memberships = active_memberships.filter(monthly_rate=0)
         freeloaders = Q(id__in=free_memberships.values('user'))
-        guest_memberships = active_memberships.filter(guest_of__isnull=False)
+        guest_memberships = active_memberships.filter(paid_by__isnull=False)
         guests = Q(id__in=guest_memberships.values('user'))
-        active_invalids = self.active_members().filter(member__valid_billing=False)
+        active_invalids = self.active_members().filter(profile__valid_billing=False)
         return active_invalids.exclude(freeloaders).exclude(guests)
 
     def members_by_plan(self, plan):
@@ -275,12 +274,12 @@ class UserQueryHelper():
 
     def members_by_neighborhood(self, hood, active_only=True):
         if active_only:
-            return self.active_members().filter(member__neighborhood=hood)
+            return self.active_members().filter(profile__neighborhood=hood)
         else:
-            return User.objects.filter(member__neighborhood=hood)
+            return User.objects.filter(profile__neighborhood=hood)
 
     def members_with_tag(self, tag):
-        return self.active_members().filter(member__tags__name__in=[tag])
+        return self.active_members().filter(profile__tags__name__in=[tag])
 
     def managers(self, include_future=False):
         if hasattr(settings, 'TEAM_MEMBERSHIP_PLAN'):
@@ -303,15 +302,17 @@ class UserQueryHelper():
 
         if '@' in terms[0]:
             email1_query = Q(email=terms[0])
-            email2_query = Q(member__email2=terms[0])
-            return user_query.filter(email1_query | email2_query)
+            email2_query = Q(profile__email2=terms[0])
+            user_query = user_query.filter(email1_query | email2_query)
+        else:
+            fname_query = Q(first_name__icontains=terms[0])
+            lname_query = Q(last_name__icontains=terms[0])
+            for term in terms[1:]:
+                fname_query = fname_query | Q(first_name__icontains=term)
+                lname_query = lname_query | Q(last_name__icontains=term)
+            user_query = user_query.filter(fname_query | lname_query)
 
-        fname_query = Q(first_name__icontains=terms[0])
-        lname_query = Q(last_name__icontains=terms[0])
-        for term in terms[1:]:
-            fname_query = fname_query | Q(first_name__icontains=term)
-            lname_query = lname_query | Q(last_name__icontains=term)
-        return user_query.filter(fname_query | lname_query)
+        return user_query.order_by('first_name')
 
 User.helper = UserQueryHelper()
 
@@ -321,10 +322,10 @@ def user_photo_path(instance, filename):
     return "user_photos/%s.%s" % (instance.user.username, ext.lower())
 
 
-class Member(models.Model):
+class UserProfile(models.Model):
     MAX_PHOTO_SIZE = 1024
 
-    user = models.OneToOneField(User, blank=False)
+    user = models.OneToOneField(User, blank=False, related_name="profile")
     email2 = models.EmailField("Alternate Email", blank=True, null=True)
     phone = PhoneNumberField(blank=True, null=True)
     phone2 = PhoneNumberField("Alternate Phone", blank=True, null=True)
@@ -356,30 +357,13 @@ class Member(models.Model):
     tags = TaggableManager(blank=True)
     valid_billing = models.NullBooleanField(blank=True, null=True)
 
-    @property
-    def first_name(self): return smart_str(self.user.first_name)
-
-    @property
-    def last_name(self): return smart_str(self.user.last_name)
-
-    @property
-    def email(self): return self.user.email
-
-    @property
-    def full_name(self):
-        return '%s %s' % (smart_str(self.user.first_name), smart_str(self.user.last_name))
-
-    def natural_key(self): return [self.user.id]
-
     def all_bills(self):
         """Returns all of the open bills, both for this user and any bills for other members which are marked to be paid by this member."""
-        from nadine.models.payment import Bill
-        return Bill.objects.filter(models.Q(user=self.user) | models.Q(paid_by=self)).order_by('-bill_date')
+        return Bill.objects.filter(models.Q(user=self.user) | models.Q(paid_by=self.user)).order_by('-bill_date')
 
     def open_bills(self):
         """Returns all of the open bills, both for this user and any bills for other members which are marked to be paid by this member."""
-        from nadine.models.payment import Bill
-        return Bill.objects.filter(models.Q(user=self.user) | models.Q(paid_by=self)).filter(transactions=None).order_by('bill_date')
+        return Bill.objects.filter(models.Q(user=self.user) | models.Q(paid_by=self.user)).filter(transactions=None).order_by('bill_date')
 
     def open_bill_amount(self):
         total = 0
@@ -389,8 +373,7 @@ class Member(models.Model):
 
     def open_bills_amount(self):
         """Returns the amount of all of the open bills, both for this member and any bills for other members which are marked to be paid by this member."""
-        from nadine.models.payment import Bill
-        return Bill.objects.filter(models.Q(user=self.user) | models.Q(paid_by=self)).filter(transactions=None).aggregate(models.Sum('amount'))['amount__sum']
+        return Bill.objects.filter(models.Q(user=self.user) | models.Q(paid_by=self.user)).filter(transactions=None).aggregate(models.Sum('amount'))['amount__sum']
 
     def open_xero_invoices(self):
         from nadine.utils.xero_api import XeroAPI
@@ -404,7 +387,6 @@ class Member(models.Model):
     def last_bill(self):
         """Returns the latest Bill, or None if the member has not been billed.
         NOTE: This does not (and should not) return bills which are for other members but which are to be paid by this member."""
-        from nadine.models.payment import Bill
         bills = Bill.objects.filter(user=self.user)
         if len(bills) == 0:
             return None
@@ -438,20 +420,20 @@ class Member(models.Model):
 
         membership = self.active_membership()
         if membership:
-            if membership.guest_of:
+            if membership.paid_by:
                 # Return host's activity
-                host = membership.guest_of
-                return host.activity_this_month()
+                host = membership.paid_by
+                return host.profile.activity_this_month()
             month_start = membership.prev_billing_date(test_date)
         else:
             # Just go back one month from this date since there isn't a membership to work with
             month_start = test_date - MonthDelta(1)
 
         activity = []
-        for m in [self] + self.guests():
-            for l in CoworkingDay.objects.filter(user=m.user, payment='Bill', visit_date__gte=month_start):
+        for h in [self.user] + self.guests():
+            for l in CoworkingDay.objects.filter(user=h, payment='Bill', visit_date__gte=month_start):
                 activity.append(l)
-        for l in CoworkingDay.objects.filter(guest_of=self, payment='Bill', visit_date__gte=month_start):
+        for l in CoworkingDay.objects.filter(paid_by=self.user, payment='Bill', visit_date__gte=month_start):
             activity.append(l)
         return activity
 
@@ -497,12 +479,8 @@ class Member(models.Model):
                 retval += "%d days" % delta.days
         return retval
 
-    def is_anniversary(self):
-
-        return
-
-    def host_daily_logs(self):
-        return CoworkingDay.objects.filter(guest_of=self).order_by('-visit_date')
+    def hosted_days(self):
+        return CoworkingDay.objects.filter(paid_by=self.user).order_by('-visit_date')
 
     def has_file_uploads(self):
         return FileUpload.objects.filter(user=self.user).count() > 0
@@ -599,14 +577,21 @@ class Member(models.Model):
 
     def is_guest(self):
         m = self.active_membership()
-        if m and m.is_active() and m.guest_of:
-            return m.guest_of
+        if m and m.is_active() and m.paid_by:
+            return m.paid_by
         return None
+
+    def guests(self):
+        guests = []
+        for membership in Membership.objects.filter(paid_by=self.user):
+            if membership.is_active():
+                guests.append(membership.user)
+        return guests
 
     def has_valid_billing(self):
         host = self.is_guest()
-        if host:
-            return host.has_valid_billing()
+        if host and host != self.user:
+            return host.profile.has_valid_billing()
         if self.valid_billing is None:
             logger.debug("%s: Null Valid Billing" % self)
             if self.has_new_card():
@@ -635,13 +620,7 @@ class Member(models.Model):
             pass
         return False
 
-    def guests(self):
-        guests = []
-        for membership in Membership.objects.filter(guest_of=self):
-            if membership.is_active():
-                guests.append(membership.member)
-        return guests
-
+    # TODO - Remove
     def deposits(self):
         return SecurityDeposit.objects.filter(user=self.user)
 
@@ -651,9 +630,11 @@ class Member(models.Model):
         api = PaymentAPI()
         return api.auto_bill_enabled(self.user.username)
 
+    # TODO - Remove
     def member_notes(self):
         return MemberNote.objects.filter(user=self.user)
 
+    # TODO - Remove
     def special_days(self):
         return SpecialDay.objects.filter(user=self.user)
 
@@ -697,32 +678,32 @@ def profile_save_callback(sender, **kwargs):
     # Process the member alerts
     from nadine.models.alerts import MemberAlert
     MemberAlert.objects.trigger_profile_save(profile)
-post_save.connect(profile_save_callback, sender=Member)
+post_save.connect(profile_save_callback, sender=UserProfile)
 
 def user_save_callback(sender, **kwargs):
     user = kwargs['instance']
     # Make certain we have a Member record
-    if not Member.objects.filter(user=user).count() > 0:
-        Member.objects.create(user=user)
+    if not UserProfile.objects.filter(user=user).count() > 0:
+        UserProfile.objects.create(user=user)
 post_save.connect(user_save_callback, sender=User)
 
 # Add some handy methods to Django's User object
-User.get_profile = lambda self: Member.objects.get_or_create(user=self)[0]
+#User.get_profile = lambda self: Member.objects.get_or_create(user=self)[0]
 User.get_emergency_contact = lambda self: EmergencyContact.objects.get_or_create(user=self)[0]
-User.profile = property(User.get_profile)
+#User.profile = property(User.get_profile)
 
-@receiver(post_save, sender=Member)
+@receiver(post_save, sender=UserProfile)
 def size_images(sender, instance, **kwargs):
     if instance.photo:
         image = Image.open(instance.photo)
         old_x, old_y = image.size
-        if old_x > Member.MAX_PHOTO_SIZE or old_y > Member.MAX_PHOTO_SIZE:
+        if old_x > UserProfile.MAX_PHOTO_SIZE or old_y > UserProfile.MAX_PHOTO_SIZE:
             print("Resizing photo for %s" % instance.user.username)
             if old_y > old_x:
-                new_y = Member.MAX_PHOTO_SIZE
+                new_y = UserProfile.MAX_PHOTO_SIZE
                 new_x = int((float(new_y) / old_y) * old_x)
             else:
-                new_x = Member.MAX_PHOTO_SIZE
+                new_x = UserProfile.MAX_PHOTO_SIZE
                 new_y = int((float(new_x) / old_x) * old_y)
             new_image = image.resize((new_x, new_y), Image.ANTIALIAS)
             new_image.save(instance.photo.path, image.format)
@@ -776,12 +757,12 @@ class MembershipPlan(models.Model):
 
 class MembershipManager(models.Manager):
 
-    def create_with_plan(self, user, start_date, end_date, membership_plan, rate=-1, guest_of=None):
+    def create_with_plan(self, user, start_date, end_date, membership_plan, rate=-1, paid_by=None):
         if rate < 0:
             rate = membership_plan.monthly_rate
-        self.create(user=user, member=user.profile, start_date=start_date, end_date=end_date, membership_plan=membership_plan,
+        self.create(user=user, start_date=start_date, end_date=end_date, membership_plan=membership_plan,
                     monthly_rate=rate, daily_rate=membership_plan.daily_rate, dropin_allowance=membership_plan.dropin_allowance,
-                    has_desk=membership_plan.has_desk, guest_of=guest_of)
+                    has_desk=membership_plan.has_desk, paid_by=paid_by)
 
     def active_memberships(self, target_date=None):
         if not target_date:
@@ -789,7 +770,7 @@ class MembershipManager(models.Manager):
         current = Q(start_date__lte=target_date)
         unending = Q(end_date__isnull=True)
         future_ending = Q(end_date__gte=target_date)
-        return self.filter(current & (unending | future_ending)).distinct()
+        return self.select_related('user', 'user__profile').filter(current & (unending | future_ending)).distinct()
 
     def future_memberships(self):
         today = timezone.now().date()
@@ -800,7 +781,6 @@ class Membership(models.Model):
 
     """A membership level which is billed monthly"""
     user = models.ForeignKey(User)
-    member = models.ForeignKey(Member, related_name="memberships")
     membership_plan = models.ForeignKey(MembershipPlan, null=True)
     start_date = models.DateField(db_index=True)
     end_date = models.DateField(blank=True, null=True, db_index=True)
@@ -810,9 +790,15 @@ class Membership(models.Model):
     has_desk = models.BooleanField(default=False)
     has_key = models.BooleanField(default=False)
     has_mail = models.BooleanField(default=False)
-    guest_of = models.ForeignKey(Member, blank=True, null=True, related_name="monthly_guests")
+    paid_by = models.ForeignKey(User, null=True, blank=True, related_name="guest_membership")
 
     objects = MembershipManager()
+
+    @property
+    def guest_of(self):
+        if self.paid_by:
+            return self.paid_by.profile
+        return None
 
     def save(self, *args, **kwargs):
         if Membership.objects.active_memberships(self.start_date).exclude(pk=self.pk).filter(user=self.user).count() != 0:
@@ -858,8 +844,8 @@ class Membership(models.Model):
         return self.prev_billing_date(test_date) + MonthDelta(1)
 
     def get_allowance(self):
-        if self.guest_of:
-            m = self.guest_of.active_membership()
+        if self.paid_by:
+            m = self.paid_by.profile.active_membership()
             if m:
                 return m.dropin_allowance
             else:
@@ -867,7 +853,7 @@ class Membership(models.Model):
         return self.dropin_allowance
 
     def __str__(self):
-        return '%s - %s - %s' % (self.start_date, self.member, self.membership_plan)
+        return '%s - %s - %s' % (self.start_date, self.user, self.membership_plan)
 
     def get_admin_url(self):
         return urlresolvers.reverse('admin:nadine_membership_change', args=[self.id])
@@ -999,4 +985,4 @@ def file_upload_callback(sender, **kwargs):
     MemberAlert.objects.trigger_file_upload(file_upload.user)
 post_save.connect(file_upload_callback, sender=FileUpload)
 
-# Copyright 2014 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

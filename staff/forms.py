@@ -58,7 +58,7 @@ class NewUserForm(forms.Form):
         return clean_username
 
     def save(self):
-        "Creates the User and Member records with the field data and returns the user"
+        "Creates the User and Profile records with the field data and returns the user"
         if not self.is_valid():
             raise Exception('The form must be valid in order to save')
 
@@ -126,7 +126,7 @@ class MemberEditForm(forms.Form):
     emergency_email = forms.EmailField(widget=forms.TextInput(attrs={'size': '50'}), label="E-mail", required=False)
 
     def save(self):
-        "Creates the User and Member records with the field data and returns the user"
+        "Creates the User and Profile records with the field data and returns the user"
         if not self.is_valid():
             raise Exception('The form must be valid in order to save')
 
@@ -136,32 +136,31 @@ class MemberEditForm(forms.Form):
         user.email=self.cleaned_data['email']
         user.save()
 
-        profile = user.get_profile()
-        profile.email2 = self.cleaned_data['email2']
-        profile.phone = self.cleaned_data['phone']
-        profile.phone2 = self.cleaned_data['phone2']
-        profile.address1 = self.cleaned_data['address1']
-        profile.address2 = self.cleaned_data['address2']
-        profile.city = self.cleaned_data['city']
-        profile.state = self.cleaned_data['state']
-        profile.zipcode = self.cleaned_data['zipcode']
-        profile.url_personal = self.cleaned_data['url_personal']
-        profile.url_professional = self.cleaned_data['url_professional']
-        profile.url_facebook = self.cleaned_data['url_facebook']
-        profile.url_twitter = self.cleaned_data['url_twitter']
-        profile.url_linkedin = self.cleaned_data['url_linkedin']
-        profile.url_github = self.cleaned_data['url_github']
-        profile.url_aboutme = self.cleaned_data['url_aboutme']
-        profile.gender = self.cleaned_data['gender']
-        profile.howHeard = self.cleaned_data['howHeard']
-        profile.industry = self.cleaned_data['industry']
-        profile.neighborhood = self.cleaned_data['neighborhood']
-        profile.has_kids = self.cleaned_data['has_kids']
-        profile.self_emplyed = self.cleaned_data['self_employed']
-        profile.company_name = self.cleaned_data['company_name']
+        user.profile.email2 = self.cleaned_data['email2']
+        user.profile.phone = self.cleaned_data['phone']
+        user.profile.phone2 = self.cleaned_data['phone2']
+        user.profile.address1 = self.cleaned_data['address1']
+        user.profile.address2 = self.cleaned_data['address2']
+        user.profile.city = self.cleaned_data['city']
+        user.profile.state = self.cleaned_data['state']
+        user.profile.zipcode = self.cleaned_data['zipcode']
+        user.profile.url_personal = self.cleaned_data['url_personal']
+        user.profile.url_professional = self.cleaned_data['url_professional']
+        user.profile.url_facebook = self.cleaned_data['url_facebook']
+        user.profile.url_twitter = self.cleaned_data['url_twitter']
+        user.profile.url_linkedin = self.cleaned_data['url_linkedin']
+        user.profile.url_github = self.cleaned_data['url_github']
+        user.profile.url_aboutme = self.cleaned_data['url_aboutme']
+        user.profile.gender = self.cleaned_data['gender']
+        user.profile.howHeard = self.cleaned_data['howHeard']
+        user.profile.industry = self.cleaned_data['industry']
+        user.profile.neighborhood = self.cleaned_data['neighborhood']
+        user.profile.has_kids = self.cleaned_data['has_kids']
+        user.profile.self_emplyed = self.cleaned_data['self_employed']
+        user.profile.company_name = self.cleaned_data['company_name']
         if self.cleaned_data['photo']:
-            profile.photo = self.cleaned_data['photo']
-        profile.save()
+            user.profile.photo = self.cleaned_data['photo']
+        user.profile.save()
 
         emergency_contact = user.get_emergency_contact()
         emergency_contact.name=self.cleaned_data['emergency_name']
@@ -184,23 +183,19 @@ class CoworkingDayForm(forms.Form):
         # Make sure there isn't another log for this member on this day
         u = User.objects.get(username=self.cleaned_data['username'])
         v = self.cleaned_data['visit_date']
-        daily_log = CoworkingDay.objects.filter(user=u, visit_date=v)
-        if daily_log:
+        if CoworkingDay.objects.filter(user=u, visit_date=v).count() > 0:
             raise Exception('Member already signed in')
 
-        daily_log = CoworkingDay()
-        daily_log.user = u
-        daily_log.visit_date = v
-        daily_log.payment = self.cleaned_data['payment']
-        #daily_log.guest_of = self.cleaned_data['guest_of']
-        daily_log.note = self.cleaned_data['note']
-        daily_log.save()
-        return daily_log
+        day = CoworkingDay()
+        day.user = u
+        day.visit_date = v
+        day.payment = self.cleaned_data['payment']
+        day.note = self.cleaned_data['note']
+        day.save()
+        return day
 
 
 class MembershipForm(forms.Form):
-    # TODO - convert to User
-    member_list = Member.objects.all()
     username = forms.CharField(required=True, widget=forms.HiddenInput)
     plan_list = MembershipPlan.objects.filter(enabled=True).order_by('name')
     membership_id = forms.IntegerField(required=False, min_value=0, widget=forms.HiddenInput)
@@ -213,7 +208,7 @@ class MembershipForm(forms.Form):
     has_desk = forms.BooleanField(initial=False, required=False)
     has_key = forms.BooleanField(initial=False, required=False)
     has_mail = forms.BooleanField(initial=False, required=False)
-    guest_of = forms.ModelChoiceField(queryset=member_list, required=False)
+    paid_by = forms.ModelChoiceField(queryset=User.helper.active_members(), required=False)
     # These are for the MemberNote
     note = forms.CharField(required=False, widget=forms.Textarea)
     created_by = None
@@ -258,7 +253,7 @@ class MembershipForm(forms.Form):
         membership.has_desk = self.cleaned_data['has_desk']
         membership.has_key = self.cleaned_data['has_key']
         membership.has_mail = self.cleaned_data['has_mail']
-        membership.guest_of = self.cleaned_data['guest_of']
+        membership.paid_by = self.cleaned_data['paid_by']
         membership.save()
 
         # Save the note if we were given one
