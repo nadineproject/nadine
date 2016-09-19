@@ -39,4 +39,4 @@ class Room(models.Model):
         return self.name
 
     def get_events(self, start, end):
-        return Event.objects.filter(room=self, start_ts__gte=start, end_ts__lte=end)
+        return self.event_set.filter(start_ts__gte=start, end_ts__lte=end)
