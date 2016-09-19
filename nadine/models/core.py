@@ -590,7 +590,7 @@ class UserProfile(models.Model):
 
     def has_valid_billing(self):
         host = self.is_guest()
-        if host:
+        if host and host != self.user:
             return host.profile.has_valid_billing()
         if self.valid_billing is None:
             logger.debug("%s: Null Valid Billing" % self)
