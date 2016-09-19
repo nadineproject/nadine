@@ -452,22 +452,20 @@ def create_booking(request):
         if request.GET.get('seats'):
             seats = request.GET.get('seats', '')
             rooms = rooms.filter(seats__gte=seats)
+        if request.GET.get('start'):
+            date = request.GET.get('date')
+            start = request.GET.get('start')
+            end = request.GET.get('end')
+            start_ts = date + " " + start
+            end_ts = date + " " + end
+        else:
+            date = timezone.now()
+            start_ts = date
+            end_ts = date + timedelta(hours=2)
 
         for room in rooms:
-            if request.GET.get('start'):
-                date = request.GET.get('date')
-                start = request.GET.get('start')
-                end = request.GET.get('end')
-                start_ts = date + " " + start
-                end_ts = date + " " + end
-            else:
-                date = timezone.now()
-                start_ts = date
-                end_ts = date + timedelta(hours=2)
-
             room_events = room.event_set.filter(start_ts__gte=start_ts, end_ts__lte=end_ts)
             room_dict[room]=room_events
-
 
     if request.method == 'POST':
         booking_form = EventForm()

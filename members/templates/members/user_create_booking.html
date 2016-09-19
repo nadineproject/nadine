@@ -49,14 +49,119 @@
 
   {% for room in rooms %}
     <div class='row'>
-      <div class='col s3'>
+      <div class='col s2'>
         <h5>{{ room.name }}</h5>
         <p>Floor {{room.floor}}</p>
         <button class='btn room-show' id='{{ room.id }}'>More Info</button>
         <button class='btn room-close'>Hide Info</button>
       </div>
-      <div class='col s8' style='background:RGBA(40, 40, 40, .2);height:110px;margin-top:1%;'>
-        CALENDAR
+      <div class='col s8 cal-div' style='height:110px;'>
+        <table class='cal-table'>
+          <thead>
+            <th>
+              8:00
+            </th>
+            <th>
+              8:30
+            </th>
+            <th>
+              9:00
+            </th>
+            <th>
+              9:30
+            </th>
+            <th>
+              10:00
+            </th>
+            <th>
+              10:30
+            </th>
+            <th>
+              11:00
+            </th>
+            <th>
+              11:30
+            </th>
+            <th>
+              12:00
+            </th>
+            <th>
+              12:30
+            </th>
+            <th>
+              1:00
+            </th>
+            <th>
+              1:30
+            </th>
+            <th>
+              2:00
+            </th>
+            <th>
+              2:30
+            </th>
+            <th>
+              3:00
+            </th>
+            <th>
+              3:30
+            </th>
+            <th>
+              4:00
+            </th>
+            <th>
+              4:30
+            </th>
+            <th>
+              5:00
+            </th>
+            <th>
+              5:30
+            </th>
+          </thead>
+          <tr>
+            <td class='cal-box' id='hour-800'>
+            </td>
+            <td class='cal-box' id='hour-830'>
+            </td>
+            <td class='cal-box' id='hour-900'>
+            </td>
+            <td class='cal-box' id='hour-930'>
+            </td>
+            <td class='cal-box' id='hour-1000'>
+            </td>
+            <td class='cal-box' id='hour-1030'>
+            </td>
+            <td class='cal-box' id='hour-1100'>
+            </td>
+            <td class='cal-box' id='hour-1130'>
+            </td>
+            <td class='cal-box' id='hour-1200'>
+            </td>
+            <td class='cal-box' id='hour-1230'>
+            </td>
+            <td class='cal-box' id='hour-1300'>
+            </td>
+            <td class='cal-box' id='hour-1330'>
+            </td>
+            <td class='cal-box' id='hour-1400'>
+            </td>
+            <td class='cal-box' id='hour-1430'>
+            </td>
+            <td class='cal-box' id='hour-1500'>
+            </td>
+            <td class='cal-box' id='hour-1530'>
+            </td>
+            <td class='cal-box' id='hour-1600'>
+            </td>
+            <td class='cal-box' id='hour-1630'>
+            </td>
+            <td class='cal-box' id='hour-1700'>
+            </td>
+            <td class='cal-box' id='hour-1730'>
+            </td>
+          </tr>
+        </table>
       </div>
       <div class='col s1 book-room'>
         <button class='btn'>Book</button>

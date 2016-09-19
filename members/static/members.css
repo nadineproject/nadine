@@ -370,6 +370,44 @@ input#id_photo {
 	margin: 0px 1em 1em 0px;
 }
 
+dt, dd {
+	display: inline-block;
+	margin: 0.25em;
+}
+
+dt {
+	font-weight: bold;
+}
+
+dd:after {
+	content:"|";
+	margin-left: 0.5em;
+	font-size: 1.2em;
+}
+
+dl dd:last-child:after {
+	content: "";
+}
+
+table th {
+	padding: 0.5em 0.5em 0.25em;
+}
+
+table th:first-child {
+	text-align: left;
+	width: 15%;
+}
+
+table td:first-child, table td:last-child {
+	text-align: left;
+}
+
+table td {
+	text-align: center;
+	border-bottom: 1px solid #ccc;
+	padding: 0.5em;
+}
+
 /*booking_create styling*/
 	#booking-date {
 		text-align: center;
@@ -396,6 +434,28 @@ input#id_photo {
 		margin-top: 4%;
 	}
 
+	.cal-table th{
+		font-weight: lighter;
+		font-size: .8em;
+		text-align: left;
+		height: 10px;
+		width: 5%;
+		padding-left: 0;
+	}
+
+	.cal-table th:first-child {
+		width: 5%;
+	}
+
+	.cal-box {
+		width: 5%;
+		height: 90px;
+		background-color: RGBA(240, 241, 248, 1);
+		border-right: 1px solid white;
+		box-sizing: border-box;
+		padding: 0;
+	}
+
 	.slider {
 		overflow-y: hidden;
 		max-height: 500px; /* approximate max height */
@@ -407,18 +467,6 @@ input#id_photo {
 	.slider.closed {
 		max-height: 0;
 	}
-
-dt, dd {
-	display: inline-block;
-	margin: 0.25em;
-}
-dt { font-weight: bold; }
-dd:after { content:"|"; margin-left: 0.5em; font-size: 1.2em; }
-dl dd:last-child:after { content: ""; }
-table th { padding: 0.5em 0.5em 0.25em; }
-table th:first-child { text-align: left; width: 15%;}
-table td:first-child, table td:last-child { text-align: left; }
-table td { text-align: center; border-bottom: 1px solid #ccc; padding: 0.5em; }
 
 /* Footer */
 
