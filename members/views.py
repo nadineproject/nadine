@@ -448,14 +448,30 @@ def create_booking(request):
     page_message = None
     rooms = Room.objects.all()
     if request.method =='GET':
-        start = request.GET.get('start', '')
-        end = request.GET.get('end', '')
-        has_av = request.GET.get('has_av', '')
-        has_phone = request.GET.get('has_phone', '')
-        floor = request.GET.get('floor', '')
-        seats = request.GET.get('seats', '')
-        # TODO rooms will now be the rooms with matching criteria and send back with render_response, maybe
-
+        query = Room.objects.all()
+        # if request.GET.get('start'):
+        #     start = request.GET.get('start')
+        #     filters.append(start)
+        # if request.GET.get('end'):
+        #     end = request.GET.get('end')
+        #     filters.append(end)
+        if request.GET.get('has_av'):
+            has_av = True
+            query = query + '.filter(has_av=has_av)'
+        if request.GET.get('has_phone'):
+            has_phone = True
+            query = query + '.filter(has_phone=has_phone)'
+        if request.GET.get('floor'):
+            floor = request.GET.get('floor', '')
+            query = query + '.filter(floor=floor)'
+        if request.GET.get('seats'):
+            seats = request.GET.get('seats', '')
+            # Needs to be a minimum
+            query = query + '.filter(seats=seats)'
+        filters = query.replace("'", "")
+        if len(query) > 13:
+            rooms = query.replace("'", "")
+            print type(rooms)
     if request.method == 'POST':
         booking_form = EventForm()
         try:
