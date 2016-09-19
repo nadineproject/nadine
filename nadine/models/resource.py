@@ -37,3 +37,6 @@ class Room(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def get_events(self, start, end):
+        return Event.objects.filter(room=self, start_ts__gte=start, end_ts__lte=end)
