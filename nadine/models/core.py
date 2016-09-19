@@ -790,7 +790,7 @@ class Membership(models.Model):
     has_desk = models.BooleanField(default=False)
     has_key = models.BooleanField(default=False)
     has_mail = models.BooleanField(default=False)
-    paid_by = models.ForeignKey(User, null=True, related_name="guest_membership")
+    paid_by = models.ForeignKey(User, null=True, blank=True, related_name="guest_membership")
 
     objects = MembershipManager()
 
