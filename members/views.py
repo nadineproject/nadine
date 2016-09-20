@@ -1,5 +1,6 @@
-import traceback
+import json
 import string
+import traceback
 from datetime import date, datetime, timedelta
 from operator import itemgetter, attrgetter
 from calendar import Calendar, HTMLCalendar
@@ -8,6 +9,7 @@ from django.conf import settings
 from django.template import RequestContext, Template, Context
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.core import serializers
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404, HttpRequest
 from django.http import JsonResponse
@@ -148,6 +150,57 @@ def user(request, username):
     user = get_object_or_404(User, username=username)
     emergency_contact = user.get_emergency_contact()
     return render_to_response('members/user.html', {'user': user, 'emergency_contact': emergency_contact, 'settings': settings}, context_instance=RequestContext(request))
+
+
+@csrf_exempt
+@login_required
+def profile_membership(request, username):
+    user = get_object_or_404(User, username=username)
+    memberships = user.membership_set.all().reverse()
+    return render_to_response('members/profile_membership.html', {'user': user, 'memberships': memberships}, context_instance=RequestContext(request))
+
+
+@csrf_exempt
+@login_required
+def user_activity_json(request, username):
+    user = get_object_or_404(User.objects.select_related('profile'), username=username)
+    response_data = {}
+    active_membership = user.profile.active_membership()
+    if active_membership:
+        response_data['is_active'] = True
+        response_data['allowance'] = active_membership.get_allowance()
+    activity_this_month = user.profile.activity_this_month()
+    #response_data['activity_this_month'] = serializers.serialize('json', activity_this_month)
+    response_data['usage_this_month'] = len(activity_this_month)
+    #response_data['coworkingdays'] = serializers.serialize('json', user.coworkingday_set.all())
+    print response_data
+    return JsonResponse(response_data)
+
+
+@csrf_exempt
+@login_required
+def profile_activity(request, username):
+    user = get_object_or_404(User.objects.select_related('profile'), username=username)
+    is_active = False
+    allowance = 0
+    active_membership = user.profile.active_membership()
+    if active_membership:
+        is_active = True
+        allowance = active_membership.get_allowance()
+    activity = user.profile.activity_this_month()
+    return render_to_response('members/profile_activity.html', {'user': user, 'is_active': is_active, 'activity':activity, 'allowance':allowance}, context_instance=RequestContext(request))
+
+
+@csrf_exempt
+@login_required
+def profile_billing(request, username):
+    user = get_object_or_404(User.objects.prefetch_related('transaction_set', 'bill_set'), username=username)
+    six_months_ago = timezone.now() - relativedelta(months=6)
+    active_membership = user.profile.active_membership()
+    bills = user.bill_set.filter(bill_date__gte=six_months_ago)
+    payments = user.transaction_set.prefetch_related('bills').filter(transaction_date__gte=six_months_ago)
+    return render_to_response('members/profile_billing.html', {'user':user, 'active_membership':active_membership,
+        'bills':bills, 'payments':payments}, context_instance=RequestContext(request))
 
 
 @login_required

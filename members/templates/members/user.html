@@ -1,40 +1,9 @@
 {% extends "members/u_base.html" %}
 {% load imagetags %}
-{% load list_tags %}
 
 {% block sub-title %}{{ user.get_full_name }} | {% endblock %}
 
-{%block sub-head %}
-    <script>
-        $(function () {
-            $("#payment-details").hide();
-            $("#bill-details").hide();
-            jQuery('#tabs').tabs();
-        });
-    </script>
 
-    <script>
-    function toggleBillDetails(){
-        if($("#bill-details").is(':hidden')) {
-            $("#bill-details").show();
-            $("#bill-details-toggle").html('[-]');
-        } else {
-            $("#bill-details").hide();
-            $("#bill-details-toggle").html('[+]');
-        }
-    }
-
-    function togglePaymentDetails(){
-        if($("#payment-details").is(':hidden')) {
-            $("#payment-details").show();
-            $("#payment-details-toggle").html('[-]');
-        } else {
-            $("#payment-details").hide();
-            $("#payment-details-toggle").html('[+]');
-        }
-    }
-    </script>
-{% endblock %}
 
 {% block style %}
 {% endblock %}
@@ -96,9 +65,9 @@
             <li class="tab col s2"><a href="#tabs-0">Member Profile</a></li>
             <li class="tab col s2"><a href="#tabs-1">Private Details</a></li>
             <li class="tab col s2"><a href="#tabs-2">Documents</a></li>
-            <li class="tab col s2"><a href="#tabs-3">Membership History</a></li>
-            <li class="tab col s2"><a href="#tabs-4">Daily Activity</a></li>
-            <li class="tab col s2"><a href="#tabs-5">Billing</a></li>
+            <li class="tab col s2"><a id="membership_tab" href="#tabs-3">Membership</a></li>
+            <li class="tab col s2"><a id="activity_tab" href="#tabs-4">Activity</a></li>
+            <li class="tab col s2"><a id="billing_tab" href="#tabs-5">Billing</a></li>
         </ul>
       {% endblock %}
     <div id="tabs-0">
@@ -131,27 +100,6 @@
                 <td>{{ user.profile.last_membership.start_date|date:"M d, Y" }}</td>
             </tr>
             {% endif %}
-
-            <!-- Stats
-            {% if user.profile.last_membership %}
-            <tr>
-              <td>Plan Start</td>
-              <td>{{ user.profile.last_membership.start_date|date:"Y-m-d" }}</td>
-            </tr>
-            {% endif %}
-            <tr>
-              <td>Paid Visits</td>
-              <td>{{ user.profile.paid_count }}</td>
-            </tr>
-            <tr>
-              <td>First Visit</td>
-              <td>{{ user.profile.first_visit }}</td>
-            </tr>
-            <tr>
-              <td>Last Visit</td>
-              <td>{{ user.profile.last_visit }}</td>
-            </tr>
-            -->
 
             <!-- Address1 -->
             {% if user.profile.address1 %}
@@ -273,199 +221,18 @@
 
     <div id="tabs-3">
         <h3>Membership History</h3>
-        {% if user.membership_set.all %}
-        <table>
-          <thead>
-            <tr>
-              <th>Plan</th>
-              <th align="center">Start Date</th>
-              <th align="left">End Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for membership in user.membership_set.all reversed %}
-              <tr class="{% cycle 'row-even' 'row-odd' %}">
-                 <td>{{ membership.membership_plan }}</td>
-                 <td align="center">{{ membership.start_date|date:"M d, Y" }}</td>
-                 <td align="left">{% if membership.end_date %}{{ membership.end_date|date:"M d, Y" }}{% endif %}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-        {% else %}
-            No membership history...
-        {% endif %}
+        Loading membership information...
     </div>
 
     <div id="tabs-4">
-        {% if user.profile.is_active %}
-            <h3>Visits This Cycle</h3>
-            <div style="font-weight:bold; padding-left:1em; font-size:120%">
-                {{ user.profile.activity_this_month | length }}
-                {% if user.profile.active_membership.get_allowance %}
-                    of {{ user.profile.active_membership.get_allowance }}
-                {% endif %}
-                Days
-            </div>
-        {% endif %}
-        <h3>Daily Activity</h3>
-        {% if user.coworkingday_set.all %}
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th align="center">Payment</th>
-              <th align="left">Paid by</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for d in user.coworkingday_set.all %}
-              <tr class="{% cycle 'row-even' 'row-odd' %}">
-                 <td nowrap class="date-cell">{{ d.visit_date|date:"M d, Y" }}</td>
-                 <td align="center">{{ d.payment }}</td>
-                 <td align="left">{% if d.paid_by %}{{ d.paid_by.get_full_name }}{% endif %}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-        {% else %}
-            No daily activity....
-        {% endif %}
-
-        <h3>Guest Activity</h3>
-        {% if user.profile.hosted_days.all %}
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th align="center">Guest</th>
-              <th align="left">Payment</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for log in user.profile.hosted_days.all %}
-            <tr class="{% cycle 'row-even' 'row-odd' %}">
-                <td nowrap>{{ log.visit_date|date:"M d, Y" }}</td>
-                <td align="center">{{ log.user.get_full_name }}</td>
-                <td align="left">{{ log.payment }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-        {% else %}
-            No guest activity....
-        {% endif %}
-  </div>
+        <h3>View Activity</h3>
+        Loading activity information...
+    </div>
 
 
     <div id="tabs-5">
         <h3>Billing Profile</h3>
-        <table width="65%">
-        <tr>
-            <td>{% include "members/billing_profile.frag" %}</td>
-            <td>
-                <div style="margin-bottom: .5em; text-align:left;">
-                    Automatic Billing: <span id="auto_billing" style="color:green;">The {{ user.profile.active_membership.start_date|date:"jS" }}</span>
-                </div>
-                <form id="disable_billing_form" action="{% url 'member_disable_billing' user.username %}">
-                    <input id="disable_billing_button" type="submit" value="Disable Automatic Billing" />
-                </form>
-            </td>
-        </tr>
-        <tr><td colspan="2">
-            If you have any questions, or need to make any changes to your membership, please email
-            <a target="_self" href="mailto:billing@officenomads.com" style="color:green;">billing@officenomads.com</a>.     We need at least one
-            full business day to make any changes, otherwise your payment will be processed automatically.
-        </td></tr>
-        </table>
-
-        {% if not user.profile.auto_bill_enabled %}
-            <script>
-                ab = document.getElementById("auto_billing");
-                ab.innerHTML = "Disabled";
-                ab.style.color = "red";
-                document.getElementById("disable_billing_button").disabled = true;
-            </script>
-        {% endif %}
-
-        <h3>View All Payments <a target="_self" id="payment-details-toggle" href="." onclick="togglePaymentDetails(); return false;">[+]</a></h3>
-        <div id="payment-details">
-        {% if user.transaction_set.all %}
-        <table>
-         <thead>
-            <tr>
-                <th>Date</th>
-                <th align="center">Amount</th>
-                <th align="left">Bills</th>
-            </tr>
-         </thead>
-         <tbody>
-            {% for transaction in user.transaction_set.all %}
-            <tr class="{% cycle 'row-even' 'row-odd' %}">
-                <td nowrap><a target="_self" href="{% url 'member_receipt' user.username transaction.id %}">{{ transaction.transaction_date | date:"M d, Y" }}</a></td>
-                <td>${{ transaction.amount }}</td>
-                <td>
-                    {% for bill in transaction.bills.all %}
-                      {{ bill.bill_date|date:"M d, Y" }} (${{ bill.amount }}){% loop_comma %}
-                    {% endfor %}
-                </td>
-            </tr>
-             {% endfor %}
-         </tbody>
-        </table>
-        {% else %}
-            No bills...
-        {% endif %}
-        </div>
-
-        <h3>View All Bills <a target="_self" id="bill-details-toggle" href="." onclick="toggleBillDetails(); return false;">[+]</a></h3>
-        <div id="bill-details">
-        {% if user.profile.all_bills %}
-        <table>
-          <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Amount</th>
-                    <th>Plan</th>
-                    <th align="left">Details</th>
-                </tr>
-          </thead>
-          <tbody>
-        {% for bill in user.profile.all_bills %}
-            <tr class="{% cycle 'row-even' 'row-odd' %}">
-                <td nowrap>{{ bill.bill_date|date:"M d, Y" }}</td>
-                <td>${{ bill.amount }}</td>
-                <td nowrap>{% if bill.membership %}{{ bill.membership.membership_plan }}{% endif %}</td>
-                <td>
-
-                    {% if bill.paid_by %}
-                    <b>For {{ bill.user.get_full_name }}</b>
-                    {% endif %}
-                    {% if bill.new_member_deposit %}
-                    <b class="bill-info">Deposit: ${{ bill.new_member_deposit }}</b>
-                    {% endif %}
-                    {% if bill.dropins.all %}
-                    <b class="bill-info">Drop-ins:
-                        {% for dropin in bill.dropins.all %}
-                            {{ dropin.visit_date|date:"m/d" }}{% loop_comma %}
-                        {% endfor %}
-                    </b>
-                    {% endif %}
-                    {% if bill.guest_dropins.all %}
-                    <b class="bill-info">Guest Drop-ins:
-                        {% for dropin in bill.guest_dropins.all %}
-                            {{ dropin.user.get_full_name }} on {{ dropin.visit_date|date:"m/d" }}{% loop_comma %}
-                        {% endfor %}
-                    </b>
-                    {% endif %}
-                </td>
-            </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-        {% else %}
-            No bills...
-        {% endif %}
+        Loading billing information...
     </div>
 </div>
 
@@ -475,5 +242,40 @@
     <h2>Member Profile</h2>
     {% include "members/profile.frag" %}
 {% endif %}
+
+{%block sub-extrajs %}
+    <script>
+        $(function () {
+            jQuery('#tabs').tabs();
+        });
+
+        function draw_tab(url, div_id) {
+            $.post(url, {}, function(content) {
+                div = $(div_id);
+                div.html(content);
+            });
+        }
+
+        $(document).ready(function() {
+            $('#membership_tab').on("click", function(e) {
+                e.preventDefault();
+                url = "{% url 'member_profile_membership' user.username %}"
+                draw_tab(url, "#tabs-3")
+            });
+
+            $('#activity_tab').on("click", function(e) {
+                e.preventDefault();
+                url = "{% url 'member_profile_activity' user.username %}"
+                draw_tab(url, "#tabs-4")
+            });
+
+            // $('#billing_tab').on("click", function(e) {
+                // e.preventDefault();
+                url = "{% url 'member_profile_billing' user.username %}"
+                draw_tab(url, "#tabs-5")
+            // });
+        });
+    </script>
+{% endblock %}
 
 {% endblock %}
