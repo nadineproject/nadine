@@ -1,6 +1,7 @@
 import json
 import string
 import traceback
+import time
 from datetime import date, datetime, timedelta
 from operator import itemgetter, attrgetter
 from calendar import Calendar, HTMLCalendar
@@ -490,16 +491,34 @@ def register(request):
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def create_booking(request):
+    room_dict = {}
     page_message = None
     rooms = Room.objects.all()
     if request.method =='GET':
-        start = request.GET.get('start', '')
-        end = request.GET.get('end', '')
-        has_av = request.GET.get('has_av', '')
-        has_phone = request.GET.get('has_phone', '')
-        floor = request.GET.get('floor', '')
-        seats = request.GET.get('seats', '')
-        # TODO rooms will now be the rooms with matching criteria and send back with render_response, maybe
+        if request.GET.get('has_av'):
+            rooms = rooms.filter(has_av=True)
+        if request.GET.get('has_phone'):
+            rooms = rooms.filter(has_phone=True)
+        if request.GET.get('floor'):
+            floor = request.GET.get('floor', '')
+            rooms = rooms.filter(floor=floor)
+        if request.GET.get('seats'):
+            seats = request.GET.get('seats', '')
+            rooms = rooms.filter(seats__gte=seats)
+        if request.GET.get('start'):
+            date = request.GET.get('date')
+            start = request.GET.get('start')
+            end = request.GET.get('end')
+            start_ts = date + " " + start
+            end_ts = date + " " + end
+        else:
+            date = timezone.now()
+            start_ts = date
+            end_ts = date + timedelta(hours=2)
+
+        for room in rooms:
+            room_events = room.event_set.filter(start_ts__gte=start_ts, end_ts__lte=end_ts)
+            room_dict[room]=room_events
 
     if request.method == 'POST':
         booking_form = EventForm()

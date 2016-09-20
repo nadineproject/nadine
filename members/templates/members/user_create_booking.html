@@ -5,7 +5,7 @@
 {% block content %}
   <h2>Book a Meeting Room</h2>
   <form action='#' method='GET'>
-    <input type="date" class="datepicker col s4 offset-s4" id='booking-date'>
+    <input type="date" name="date" class="datepicker col s4 offset-s4" id='booking-date' >
     <div class='row'>
       <div class='row' id='time-row'>
         <div class='col s4 offset-s3 row'>
@@ -20,7 +20,7 @@
     </div>
     <div class='row' id='room-criteria'>
       <div class='col s2' id="av-box">
-        <input nam='has_av' type="checkbox" id="av-btn" class='filled-in' />
+        <input name='has_av' type="checkbox" id="av-btn" class='filled-in' />
         <label for="av-btn">Has A/V</label>
       </div>
       <div class='col s2' id="phone-box">
@@ -33,7 +33,7 @@
         <option value="2">Floor 2</option>
         <option value="3">Floor 3</option>
       </select>
-      <select class='browser-default input-field col s2 offset-s1' name='floor'>
+      <select class='browser-default input-field col s2 offset-s1' name='seats'>
         <option value="" disabled selected>Seats:</option>
         <option value="2">2 People</option>
         <option value="4">4 People</option>
@@ -49,14 +49,119 @@
 
   {% for room in rooms %}
     <div class='row'>
-      <div class='col s3'>
+      <div class='col s2'>
         <h5>{{ room.name }}</h5>
         <p>Floor {{room.floor}}</p>
         <button class='btn room-show' id='{{ room.id }}'>More Info</button>
         <button class='btn room-close'>Hide Info</button>
       </div>
-      <div class='col s8' style='background:RGBA(40, 40, 40, .2);height:110px;margin-top:1%;'>
-        CALENDAR
+      <div class='col s8 cal-div' style='height:110px;'>
+        <table class='cal-table'>
+          <thead>
+            <th>
+              8:00
+            </th>
+            <th>
+              8:30
+            </th>
+            <th>
+              9:00
+            </th>
+            <th>
+              9:30
+            </th>
+            <th>
+              10:00
+            </th>
+            <th>
+              10:30
+            </th>
+            <th>
+              11:00
+            </th>
+            <th>
+              11:30
+            </th>
+            <th>
+              12:00
+            </th>
+            <th>
+              12:30
+            </th>
+            <th>
+              1:00
+            </th>
+            <th>
+              1:30
+            </th>
+            <th>
+              2:00
+            </th>
+            <th>
+              2:30
+            </th>
+            <th>
+              3:00
+            </th>
+            <th>
+              3:30
+            </th>
+            <th>
+              4:00
+            </th>
+            <th>
+              4:30
+            </th>
+            <th>
+              5:00
+            </th>
+            <th>
+              5:30
+            </th>
+          </thead>
+          <tr>
+            <td class='cal-box' id='hour-800'>
+            </td>
+            <td class='cal-box' id='hour-830'>
+            </td>
+            <td class='cal-box' id='hour-900'>
+            </td>
+            <td class='cal-box' id='hour-930'>
+            </td>
+            <td class='cal-box' id='hour-1000'>
+            </td>
+            <td class='cal-box' id='hour-1030'>
+            </td>
+            <td class='cal-box' id='hour-1100'>
+            </td>
+            <td class='cal-box' id='hour-1130'>
+            </td>
+            <td class='cal-box' id='hour-1200'>
+            </td>
+            <td class='cal-box' id='hour-1230'>
+            </td>
+            <td class='cal-box' id='hour-1300'>
+            </td>
+            <td class='cal-box' id='hour-1330'>
+            </td>
+            <td class='cal-box' id='hour-1400'>
+            </td>
+            <td class='cal-box' id='hour-1430'>
+            </td>
+            <td class='cal-box' id='hour-1500'>
+            </td>
+            <td class='cal-box' id='hour-1530'>
+            </td>
+            <td class='cal-box' id='hour-1600'>
+            </td>
+            <td class='cal-box' id='hour-1630'>
+            </td>
+            <td class='cal-box' id='hour-1700'>
+            </td>
+            <td class='cal-box' id='hour-1730'>
+            </td>
+          </tr>
+        </table>
       </div>
       <div class='col s1 book-room'>
         <button class='btn'>Book</button>
@@ -87,14 +192,15 @@
       $('.room-close').hide();
 
       $('.datepicker').pickadate({
-        selectMonths: true, // Creates a dropdown to control month
-        selectYears: 15 // Creates a dropdown of 15 years to control year
+        selectMonths: true,
+        selectYears: 3,
+        format: 'yyyy-mm-dd'
       });
 
       function getDate() {
         var myDate = new Date();
 
-        var prettyDate =(myDate.getMonth()+1) + '/' + myDate.getDate() + '/' + myDate.getFullYear();
+        var prettyDate = myDate.getFullYear() + '-' + (myDate.getMonth()+1) + '-' + myDate.getDate();
 
         $("#booking-date").val(prettyDate);
 
