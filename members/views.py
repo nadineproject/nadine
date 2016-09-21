@@ -488,16 +488,30 @@ def register(request):
         registration_form = NewUserForm()
     return render_to_response('members/register.html', { 'registration_form': registration_form, 'page_message': page_message, 'settings': settings}, context_instance=RequestContext(request))
 
+def get_open_time():
+    if hasattr(settings, 'OPEN_TIME') and ':' in settings.OPEN_TIME:
+        hour = settings.OPEN_TIME.split(':')[0]
+        minute = settings.OPEN_TIME.split(':')[1]
+        return hour, minute
+    # Default to 8AM
+    return 8, 0
+
+def get_close_time():
+    # Default to 6PM
+    hour = 18
+    minute = 0
+    if hasattr(settings, 'CLOSE_TIME') and ':' in settings.CLOSE_TIME:
+        hour = settings.CLOSE_TIME.split(':')[0]
+        minute = settings.CLOSE_TIME.split(':')[1]
+    return hour, minute
+
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def create_booking(request):
-    room_dict = {}
-    hours = []
-    opening = settings.OPEN_HR.split(':')
-    closing = settings.CLOSING_HR.split(':')
-    open = int(opening[0])
-    close = int(closing[0])
+    open_hour, open_min = get_open_time()
+    closed_hour, closed_min = get_close_time()
 
+    hours = []
     for num in range(open, close):
         minutes = '00'
         for count in range(0, 4):
@@ -523,42 +537,32 @@ def create_booking(request):
                 minutes = '00'
                 hours.append(hour)
 
-    rooms = Room.objects.all()
-    if request.method =='GET':
-        if request.GET.get('has_av'):
-            rooms = rooms.filter(has_av=True)
-        if request.GET.get('has_phone'):
-            rooms = rooms.filter(has_phone=True)
-        if request.GET.get('floor'):
-            floor = request.GET.get('floor', '')
-            rooms = rooms.filter(floor=floor)
-        if request.GET.get('seats'):
-            seats = request.GET.get('seats', '')
-            rooms = rooms.filter(seats__gte=seats)
-        if request.GET.get('start'):
-            date = request.GET.get('date')
-            start = request.GET.get('start')
-            end = request.GET.get('end')
-            start_ts = date + " " + start
-            end_ts = date + " " + end
-            target_date = date + " 00:00:00"
-            end_date = date + " 23:59:59"
-        else:
-            date = timezone.now()
-            start_ts = date
-            end_ts = date + timedelta(hours=2)
-            target_date = start_ts.replace(hour=0, minute=0, second=0, microsecond=0)
-            end_date = target_date + timedelta(days=1)
+    # Process URL variables
+    has_av = request.GET.get('has_av', None)
+    has_phone = request.GET.get('has_phone', None)
+    floor = request.GET.get('floor', None)
+    seats = request.GET.get('seats', None)
+    date = request.GET.get('date', str(timezone.now().date()))
+    start = request.GET.get('start', open_hour + ":" + open_min)
+    end = request.GET.get('end', closed_hour + ":" + closed_min)
 
-        for room in rooms:
-            room_events =  room.event_set.filter(room=room,start_ts__gte=target_date, end_ts__lte=end_date)
-            room_dict[room] = room_events
+    # Turn our date, start, and end strings in to timestamps
+    start_dt = datetime.strptime(date + " " + start, "%Y-%m-%d %H:%M")
+    start_ts = timezone.make_aware(start_dt, timezone.get_current_timezone())
+    end_dt = datetime.strptime(date + " " + end, "%Y-%m-%d %H:%M")
+    end_ts = timezone.make_aware(end_dt, timezone.get_current_timezone())
 
-            # double check event times and criteria times
-            # don't show rooms w/ time conflicts
-            # add events & bookings to each room calendar
-            # room_events = room.event_set.filter(start_ts__gte=start_ts, end_ts__lte=end_ts)
-            # room_dict[room]=room_events
+    room_dict = {}
+    rooms = Room.objects.available(start=start_ts, end=end_ts, has_av=has_av, has_phone=has_phone, floor=floor, seats=seats)
+    for room in rooms:
+        room_events =  room.event_set.filter(room=room,start_ts__gte=target_date, end_ts__lte=end_date)
+        room_dict[room] = room_events
+
+    # double check event times and criteria times
+    # don't show rooms w/ time conflicts
+    # add events & bookings to each room calendar
+    # room_events = room.event_set.filter(start_ts__gte=start_ts, end_ts__lte=end_ts)
+    # room_dict[room]=room_events
 
     return render_to_response('members/user_create_booking.html', {'rooms': rooms, 'hours':hours, 'room_dict': room_dict}, context_instance=RequestContext(request))
 
