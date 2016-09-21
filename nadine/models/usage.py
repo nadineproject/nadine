@@ -65,5 +65,5 @@ class Event(models.Model):
         if self.description:
             return self.description
         if self.is_public:
-            return "Public Event (%s)" % user.get_full_name()
-        return "Private Event (%s)" % user.get_full_name()
+            return "Public Event (%s)" % self.user.get_full_name()
+        return "Private Event (%s)" % self.user.get_full_name()
