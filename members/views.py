@@ -541,14 +541,24 @@ def create_booking(request):
             end = request.GET.get('end')
             start_ts = date + " " + start
             end_ts = date + " " + end
+            target_date = date + " 00:00:00"
+            end_date = date + " 23:59:59"
         else:
             date = timezone.now()
             start_ts = date
             end_ts = date + timedelta(hours=2)
+            target_date = start_ts.replace(hour=0, minute=0, second=0, microsecond=0)
+            end_date = target_date + timedelta(days=1)
 
         for room in rooms:
-            room_events = room.event_set.filter(start_ts__gte=start_ts, end_ts__lte=end_ts)
-            room_dict[room]=room_events
+            room_events =  room.event_set.filter(room=room,start_ts__gte=target_date, end_ts__lte=end_date)
+            room_dict[room] = room_events
+
+            # double check event times and criteria times
+            # don't show rooms w/ time conflicts
+            # add events & bookings to each room calendar
+            # room_events = room.event_set.filter(start_ts__gte=start_ts, end_ts__lte=end_ts)
+            # room_dict[room]=room_events
 
     return render_to_response('members/user_create_booking.html', {'rooms': rooms, 'hours':hours, 'room_dict': room_dict}, context_instance=RequestContext(request))
 
