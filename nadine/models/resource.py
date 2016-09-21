@@ -23,8 +23,18 @@ def room_img_upload_to(instance, filename):
     return os.path.join(upload_path, filename)
 
 class RoomManager(models.Manager):
-    def available(self, start, end):
-        return self.all()
+
+    def available(self, start=None, end=None, has_av=None, has_phone=None, floor=None, seats=None):
+        rooms = self.all()
+        if has_av != None:
+            rooms = rooms.filter(has_av=has_av)
+        if has_phone != None:
+            rooms = rooms.filter(has_phone=has_phone)
+        if floor != None:
+            rooms = rooms.filter(floor=floor)
+        if seats != None:
+            rooms = rooms.filter(seats__gte=seats)
+        return rooms
 
 
 class Room(models.Model):
