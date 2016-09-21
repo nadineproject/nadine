@@ -494,26 +494,21 @@ def get_open_time():
         minute = settings.OPEN_TIME.split(':')[1]
         return hour, minute
     # Default to 8AM
-    return 8, 0
+    return '8', '00'
 
 def get_close_time():
     # Default to 6PM
-    hour = 18
-    minute = 0
+    hour = '18'
+    minute = '00'
     if hasattr(settings, 'CLOSE_TIME') and ':' in settings.CLOSE_TIME:
         hour = settings.CLOSE_TIME.split(':')[0]
         minute = settings.CLOSE_TIME.split(':')[1]
     return hour, minute
 
-@login_required
-@user_passes_test(is_active_member, login_url='member_not_active')
-def create_booking(request):
-    open_hour, open_min = get_open_time()
-    closed_hour, closed_min = get_close_time()
-
+def time_blocks(open_hour, open_min, closed_hour):
     hours = []
-    for num in range(open, close):
-        minutes = '00'
+    for num in range(int(open_hour), int(closed_hour)):
+        minutes = str(open_min)
         for count in range(0, 4):
             hour = str(num) + ':' + minutes
             if minutes == '00':
@@ -536,6 +531,14 @@ def create_booking(request):
                     hour = str(num - 12) + ':' + minutes
                 minutes = '00'
                 hours.append(hour)
+    return hours
+
+@login_required
+@user_passes_test(is_active_member, login_url='member_not_active')
+def create_booking(request):
+    open_hour, open_min = get_open_time()
+    closed_hour, closed_min = get_close_time()
+    hours = time_blocks(open_hour, open_min, closed_hour)
 
     # Process URL variables
     has_av = request.GET.get('has_av', None)
@@ -547,22 +550,21 @@ def create_booking(request):
     end = request.GET.get('end', closed_hour + ":" + closed_min)
 
     # Turn our date, start, and end strings in to timestamps
-    start_dt = datetime.strptime(date + " " + start, "%Y-%m-%d %H:%M")
+    start_dt = datetime.datetime.strptime(date + " " + start, "%Y-%m-%d %H:%M")
     start_ts = timezone.make_aware(start_dt, timezone.get_current_timezone())
-    end_dt = datetime.strptime(date + " " + end, "%Y-%m-%d %H:%M")
+    end_dt = datetime.datetime.strptime(date + " " + end, "%Y-%m-%d %H:%M")
     end_ts = timezone.make_aware(end_dt, timezone.get_current_timezone())
+
+    target_date = start_ts.replace(hour=0, minute=0, second=0, microsecond=0)
+    end_date = target_date + timedelta(days=1)
 
     room_dict = {}
     rooms = Room.objects.available(start=start_ts, end=end_ts, has_av=has_av, has_phone=has_phone, floor=floor, seats=seats)
-    for room in rooms:
-        room_events =  room.event_set.filter(room=room,start_ts__gte=target_date, end_ts__lte=end_date)
-        room_dict[room] = room_events
 
-    # double check event times and criteria times
-    # don't show rooms w/ time conflicts
-    # add events & bookings to each room calendar
-    # room_events = room.event_set.filter(start_ts__gte=start_ts, end_ts__lte=end_ts)
-    # room_dict[room]=room_events
+    # Get all the events for each room in that day
+    for room in rooms:
+        room_events = room.event_set.filter(room=room, start_ts__gte=target_date, end_ts__lte=end_date)
+        room_dict[room] = room_events
 
     return render_to_response('members/user_create_booking.html', {'rooms': rooms, 'hours':hours, 'room_dict': room_dict}, context_instance=RequestContext(request))
 
