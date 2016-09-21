@@ -29,9 +29,8 @@ def update_content_types(apps, schema_editor):
 
     member_content_type = ContentType.objects.filter(app_label="nadine", model="member").first()
     if not member_content_type:
-        raise Exception("Can't find 'Member' ContentType")
-
-    # profile_content_type = ContentType.objects.filter(app_label="nadine", model="user profile").first()
+        # Nothing to do here
+        return
 
     profile_content_type = ContentType.objects.get_for_model(UserProfile)
     if not profile_content_type:
