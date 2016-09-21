@@ -22,7 +22,7 @@ class CoworkingDay(models.Model):
     user = models.ForeignKey(User, unique_for_date="visit_date")
     visit_date = models.DateField("Date")
     payment = models.CharField("Payment", max_length=5, choices=PAYMENT_CHOICES)
-    paid_by = models.ForeignKey(User, null=True, related_name="guest_day")
+    paid_by = models.ForeignKey(User, blank=True, null=True, related_name="guest_day")
     note = models.CharField("Note", max_length=128, blank="True")
     created_ts = models.DateTimeField(auto_now_add=True)
 
@@ -58,7 +58,7 @@ class Event(models.Model):
     end_ts = models.DateTimeField(verbose_name="End time")
     description = models.CharField(max_length=128, null=True)
     charge = models.DecimalField(decimal_places=2, max_digits=9, null=True)
-    paid_by = models.ForeignKey(User, null=True, related_name="guest_event")
+    paid_by = models.ForeignKey(User, blank=True, null=True, related_name="guest_event")
     is_public = models.BooleanField(default=False)
 
     def __unicode__(self):

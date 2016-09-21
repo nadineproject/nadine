@@ -24,4 +24,14 @@ class Migration(migrations.Migration):
             name='user',
             field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='profile', to=settings.AUTH_USER_MODEL),
         ),
+        migrations.AlterField(
+            model_name='coworkingday',
+            name='paid_by',
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='guest_day', to=settings.AUTH_USER_MODEL),
+        ),
+        migrations.AlterField(
+            model_name='event',
+            name='paid_by',
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='guest_event', to=settings.AUTH_USER_MODEL),
+        ),
     ]
