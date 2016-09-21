@@ -523,7 +523,6 @@ def create_booking(request):
                 minutes = '00'
                 hours.append(hour)
 
-    page_message = None
     rooms = Room.objects.all()
     if request.method =='GET':
         if request.GET.get('has_av'):
@@ -550,8 +549,13 @@ def create_booking(request):
         for room in rooms:
             room_events = room.event_set.filter(start_ts__gte=start_ts, end_ts__lte=end_ts)
             room_dict[room]=room_events
-    print room_dict
 
+    return render_to_response('members/user_create_booking.html', {'rooms': rooms, 'hours':hours, 'room_dict': room_dict}, context_instance=RequestContext(request))
+
+@login_required
+@user_passes_test(is_active_member, login_url='member_not_active')
+def confirm_booking(request):
+    page_message = None
     if request.method == 'POST':
         booking_form = EventForm()
         try:
@@ -562,11 +566,7 @@ def create_booking(request):
             logger.error(str(e))
     else:
         booking_form = EventForm()
-    return render_to_response('members/user_create_booking.html', {'rooms': rooms, 'hours':hours, 'room_dict': room_dict}, context_instance=RequestContext(request))
 
-@login_required
-@user_passes_test(is_active_member, login_url='member_not_active')
-def confirm_booking(request):
     return render_to_response('members/user_confirm_booking.html', {}, context_instance=RequestContext(request))
 
 #@login_required
