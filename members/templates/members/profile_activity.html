@@ -1,0 +1,29 @@
+<h3>
+    Activity This Cycle
+    {% if is_active %}
+        ({{ activity | length}} {% if allowance %} of {{ allowance }} Days{% endif %})
+    {% endif %}
+</h3>
+
+{% if activity %}
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th align="center">Payment</th>
+          <th align="left">Paid by</th>
+        </tr>
+      </thead>
+      <tbody>
+          {% for d in activity %}
+              <tr class="{% cycle 'row-even' 'row-odd' %}">
+                 <td nowrap class="date-cell">{{ d.visit_date|date:"M d, Y" }}</td>
+                 <td align="center">{{ d.payment }}</td>
+                 <td align="left">{% if d.paid_by %}{{ d.paid_by.get_full_name }}{% endif %}</td>
+              </tr>
+          {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+        No activity...
+    {% endif %}

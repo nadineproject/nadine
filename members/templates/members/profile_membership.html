@@ -1,0 +1,24 @@
+<h3>Membership History</h3>
+
+{% if memberships %}
+<table>
+  <thead>
+    <tr>
+      <th>Plan</th>
+      <th align="center">Start Date</th>
+      <th align="left">End Date</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for membership in memberships %}
+      <tr class="{% cycle 'row-even' 'row-odd' %}">
+         <td>{{ membership.membership_plan }}</td>
+         <td align="center">{{ membership.start_date|date:"M d, Y" }}</td>
+         <td align="left">{% if membership.end_date %}{{ membership.end_date|date:"M d, Y" }}{% endif %}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+    No membership history...
+{% endif %}
