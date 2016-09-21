@@ -68,7 +68,7 @@ def edit(request, username):
         }
         edit_form = MemberEditForm(initial=member_data)
 
-    return render_to_response('staff/member_edit.html', { 'user':user, 'member':user.profile, 'edit_form': edit_form }, context_instance=RequestContext(request))
+    return render_to_response('staff/member_edit.html', { 'user':user, 'edit_form': edit_form }, context_instance=RequestContext(request))
 
 
 @staff_member_required
@@ -150,7 +150,7 @@ def files(request, username):
             messages.add_message(request, messages.ERROR, "Could not upload file: (%s)" % e)
 
     doc_types = FileUpload.DOC_TYPES
-    files = FileUpload.objects.filter(user=member.user)
+    files = FileUpload.objects.filter(user=user)
     return render_to_response('staff/member_files.html', {'user':user, 'files': files, 'doc_types': doc_types}, context_instance=RequestContext(request))
 
 
