@@ -98,6 +98,7 @@ class EncryptedConnection(object):
         finally:
             self.lock.release()
         if not response:
+            logger.warn("Received blank response from Keymaster")
             return None
 
         # Process the response
