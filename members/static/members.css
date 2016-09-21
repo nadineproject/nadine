@@ -434,6 +434,10 @@ table td {
 		margin-top: 5%;
 	}
 
+	.book-btn, .room-show {
+		background-color: RGBA(82, 144, 159, 1);
+	}
+
 	.cal-table {
 		margin-top: 10px;
 	}
