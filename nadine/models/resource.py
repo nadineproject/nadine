@@ -35,8 +35,9 @@ class RoomManager(models.Manager):
         if seats != None:
             rooms = rooms.filter(seats__gte=seats)
         if start != None:
-            print ("Got Start: %s" % start)
-            rooms = rooms.filter(event__start_ts__gte=start)
+            rooms = rooms.exclude(event__start_ts__lt=start)
+        if end != None:
+            rooms = rooms.exclude(event__end_ts__gt=end)
         return rooms
 
 

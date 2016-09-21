@@ -19,7 +19,6 @@ class RoomTestCase(TestCase):
         start = timezone.now() - timedelta(hours=4)
         end = timezone.now() - timedelta(hours=2)
         self.event1 = Event.objects.create(user=self.user1, room=self.room1, start_ts=start, end_ts=end)
-        print self.event1
 
     def test_available_start(self):
         start = timezone.now() - timedelta(hours=3)
