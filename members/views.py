@@ -201,7 +201,7 @@ def profile_billing(request, username):
     bills = user.bill_set.filter(bill_date__gte=six_months_ago)
     payments = user.transaction_set.prefetch_related('bills').filter(transaction_date__gte=six_months_ago)
     return render_to_response('members/profile_billing.html', {'user':user, 'active_membership':active_membership,
-        'bills':bills, 'payments':payments}, context_instance=RequestContext(request))
+        'bills':bills, 'payments':payments, 'settings':settings}, context_instance=RequestContext(request))
 
 
 @login_required
