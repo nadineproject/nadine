@@ -94,10 +94,11 @@ class EncryptedConnection(object):
         # Send the message
         self.lock.acquire()
         try:
-            #
             response = requests.post(self.keymaster_url, data=request_package)
         finally:
             self.lock.release()
+        if not response:
+            return None
 
         # Process the response
         response_json = response.json()
@@ -107,7 +108,7 @@ class EncryptedConnection(object):
             raise Exception(error)
 
         if 'text_message' in response_json:
-            return response.json()['text_message']
+            return response_json['text_message']
 
         if 'message' in response_json:
             encrypted_return_message = response.json()['message']
