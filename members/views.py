@@ -439,6 +439,37 @@ def register(request):
 @user_passes_test(is_active_member, login_url='member_not_active')
 def create_booking(request):
     room_dict = {}
+    hours = []
+    opening = settings.OPEN_HR.split(':')
+    closing = settings.CLOSING_HR.split(':')
+    open = int(opening[0])
+    close = int(closing[0])
+
+    for num in range(open, close):
+        minutes = '00'
+        for count in range(0, 4):
+            hour = str(num) + ':' + minutes
+            if minutes == '00':
+                if num > 12:
+                    hour = str (num - 12)+ ":" + minutes
+                minutes = '15'
+                hours.append(hour)
+            elif minutes =='15':
+                if num > 12:
+                    hour = str(num - 12) + ':' + minutes
+                minutes = '30'
+                hours.append(hour)
+            elif minutes =='30':
+                if num > 12:
+                    hour = str(num - 12) + ':' + minutes
+                minutes = '45'
+                hours.append(hour)
+            else:
+                if num > 12:
+                    hour = str(num - 12) + ':' + minutes
+                minutes = '00'
+                hours.append(hour)
+
     page_message = None
     rooms = Room.objects.all()
     if request.method =='GET':
@@ -477,7 +508,7 @@ def create_booking(request):
             logger.error(str(e))
     else:
         booking_form = EventForm()
-    return render_to_response('members/user_create_booking.html', {'rooms': rooms}, context_instance=RequestContext(request))
+    return render_to_response('members/user_create_booking.html', {'rooms': rooms, 'hours':hours}, context_instance=RequestContext(request))
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
