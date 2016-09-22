@@ -220,8 +220,7 @@ def run_billing(bill_time=None):
                 if time_to_bill_guests or time_to_bill_dropins:
                     bill_amount = (len(bill_dropins) + len(guest_bill_dropins)) * settings.NON_MEMBER_DROPIN_FEE
                     last_day = run.days[len(run.days) - 1]
-                    # TODO - remove member from Bill
-                    last_day.bill = Bill(bill_date=last_day.date, amount=bill_amount, user=user, member=user.profile)
+                    last_day.bill = Bill(bill_date=last_day.date, amount=bill_amount, user=user)
                     last_day.bill.save()
                     bill_count += 1
                     last_day.bill.dropins = [dropin.id for dropin in bill_dropins]
