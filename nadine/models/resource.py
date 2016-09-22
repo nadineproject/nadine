@@ -3,13 +3,13 @@ import os, uuid
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+from django.db.models import Q
 from django.contrib.auth.models import User
 
 from PIL import Image
 import logging
 
 logger = logging.getLogger(__name__)
-
 
 def room_img_upload_to(instance, filename):
     # rename file to a unique string
@@ -24,7 +24,7 @@ def room_img_upload_to(instance, filename):
 
 class RoomManager(models.Manager):
 
-    def available(self, start=None, end=None, has_av=None, has_phone=None, floor=None, seats=None):
+    def available(self, start, end, has_av=None, has_phone=None, floor=None, seats=None):
         rooms = self.all()
         if has_av != None:
             rooms = rooms.filter(has_av=has_av)
@@ -34,10 +34,10 @@ class RoomManager(models.Manager):
             rooms = rooms.filter(floor=floor)
         if seats != None:
             rooms = rooms.filter(seats__gte=seats)
-        if start != None:
-            rooms = rooms.exclude(event__start_ts__lt=start)
-        if end != None:
-            rooms = rooms.exclude(event__end_ts__gt=end)
+        straddling = Q(event__start_ts__lte=start, event__end_ts__gt=start)
+        sandwich = Q(event__start_ts__gte=start, event__start_ts__lte=end)
+        overlap = Q(event__start_ts__lte=start, event__end_ts__gte=end)
+        rooms = rooms.exclude(straddling | sandwich | overlap)
         return rooms
 
 
