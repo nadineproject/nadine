@@ -10,7 +10,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
 def room_img_upload_to(instance, filename):
     # rename file to a unique string
     ext = filename.split('.')[-1]
@@ -36,6 +35,10 @@ class RoomManager(models.Manager):
             rooms = rooms.filter(seats__gte=seats)
         if start != None:
             rooms = rooms.exclude(event__start_ts__lt=start)
+            # The three ways to filter out overlapping times
+            #  event__start_ts__lte=start and event__end_ts__gt=start
+            #  event__start_ts__gte=start and event__start_ts__lte=end
+            #  event__start_ts__lte=start and event__end_ts__gte=end)
         if end != None:
             rooms = rooms.exclude(event__end_ts__gt=end)
         return rooms

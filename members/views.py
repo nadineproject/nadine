@@ -555,11 +555,12 @@ def create_booking(request):
     end_dt = datetime.datetime.strptime(date + " " + end, "%Y-%m-%d %H:%M")
     end_ts = timezone.make_aware(end_dt, timezone.get_current_timezone())
 
-    target_date = start_ts.replace(hour=0, minute=0, second=0, microsecond=0)
-    end_date = target_date + timedelta(days=1)
-
     room_dict = {}
     rooms = Room.objects.available(start=start_ts, end=end_ts, has_av=has_av, has_phone=has_phone, floor=floor, seats=seats)
+
+    #Make a target date to get all events for that date
+    target_date = start_ts.replace(hour=0, minute=0, second=0, microsecond=0)
+    end_date = target_date + timedelta(days=1)
 
     # Get all the events for each room in that day
     for room in rooms:
