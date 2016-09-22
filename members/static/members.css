@@ -150,7 +150,7 @@ p {
 	text-align: center;
 }
 
-#profile_form {
+#profile_form, #booking_form {
 	background-color: RGBA(239, 238, 231, 1);
 	padding: 2%;
 	margin-left: 15%;
@@ -169,7 +169,6 @@ textarea#id_bio {
 select#id_public_profile.browser-default {
 	width: 45%;
 }
-
 
 #reg_box, #login_box {
 	margin-top: 3%;
@@ -208,14 +207,22 @@ select#id_public_profile.browser-default {
 	padding-bottom: 5%;
 }
 
-#profile_form tr, #registration_form tr, #login_form tr {
+#profile_form tr, #registration_form tr, #login_form tr, #booking_form tr {
 	border: none;
 }
 
-#profile_form input, #registration_form input, #login_form input {
+#profile_form input, #registration_form input, #login_form input, #booking_form input {
 	padding-left: 2%;
 	background-color: white;
 	border-bottom: none;
+}
+
+#booking_form td {
+	border-bottom: 0;
+}
+
+#booking_form h4 {
+	text-align: center;
 }
 
 input#id_photo {
@@ -227,7 +234,7 @@ input#id_photo {
 	margin-right: 2%;
 }
 
-.sub-btn {
+.sub-btn, #confirm-btn {
 	background: RGBA(63, 146, 161, 1);
 	margin-top: 2%;
 	margin-left: 35%;

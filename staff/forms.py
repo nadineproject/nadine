@@ -273,7 +273,7 @@ class EventForm(forms.Form):
     end_time = forms.DateTimeField(widget=forms.DateTimeInput(attrs={'placeholder':'e.g. 12/28/16 16:30'}, format='%m/%d/%Y %H:%M:%S'), required=True)
     description = forms.CharField(max_length=100, required=False)
     charge = forms.DecimalField(decimal_places=2, max_digits=9, required=True)
-    publicly_viewable = forms.BooleanField(required=False)
+    publicly_viewable = forms.ChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), choices=((True, 'Yes'), (False, 'No')), required=False)
 
     def save(self):
         if not self.is_valid():

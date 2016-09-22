@@ -568,18 +568,24 @@ def create_booking(request):
     for room in rooms:
         room_events = room.event_set.filter(room=room, start_ts__gte=target_date, end_ts__lte=end_date)
         room_dict[room] = room_events
-
+    #
     if request.method == 'POST':
         room = request.POST.get('room')
-        print room
-        # return HttpRespondeRedirect(reverse('member_confirm_booking'), {})
+        start = request.POST.get('start')
+        end = request.POST.get('end')
+        return render_to_response('members/user_confirm_booking.html', {'start':start, 'end':end, 'room':room}, context_instance=RequestContext(request))
 
-    return render_to_response('members/user_create_booking.html', {'rooms': rooms, 'hours':hours, 'room_dict': room_dict}, context_instance=RequestContext(request))
+    return render_to_response('members/user_create_booking.html', {'rooms': rooms, 'hours':hours, 'room_dict': room_dict, 'start_ts':start_ts, 'end_ts':end_ts}, context_instance=RequestContext(request))
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def confirm_booking(request):
+    user = request.user
+    room = request.GET.room
+    start = request.GET.start
+    end = request.GET.end
     page_message = None
+
     if request.method == 'POST':
         booking_form = EventForm()
         try:
@@ -591,7 +597,7 @@ def confirm_booking(request):
     else:
         booking_form = EventForm()
 
-    return render_to_response('members/user_confirm_booking.html', {}, context_instance=RequestContext(request))
+    return render_to_response('members/user_confirm_booking.html', {'booking_form':booking_form, 'start':start, 'end':end, 'room': room}, context_instance=RequestContext(request))
 
 #@login_required
 #@user_passes_test(is_active_member, login_url='member_not_active')

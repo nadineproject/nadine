@@ -3,6 +3,61 @@
 {% block sub-title %}Confirm Booking | {% endblock %}
 
 {% block content %}
+  <div id='booking_form'>
+    <form enctype="multipart/form-data" action='.' method='POST'>
+      <h4>Confirm Booking</h4>
+      <p style='text-align:center;'>
+        Reminder: Make sure you include your setup and breakdown time in your reservation time.
+      </p>
+      <table>
+        <tr>
+          <td>Booking For:</td>
+          <td><input value='{{ user.first_name }} {{ user.last_name }}' readonly /></td>
+        </tr>
+        <tr>
+          <td id='room'>Room:</td>
+          <td><input value='{{ room }}' readonly  /></td>
+          <td>{{ booking_form.room.errors }}</td>
+        </tr>
+        <!-- <tr>
+          <td>Date:</td>
+          <td>
+            <input type="date" name="date" class="datepicker col s4 offset-s4" id='booking-date' >
+          </td>
+        </tr> -->
+        <tr>
+          <td>From:</td>
+          <td><input value='{{ start }}'/></td>
+        </tr>
+        <tr>
+          <td>To:</td>
+          <td><input value='{{ end }}'/></td>
+        </tr>
+        <tr>
+          <td>Description:</td>
+          <td><input type='text' name='description' id='confirm_desc' placeholder='O.N. Team Meeting'/></td>
+          <td>{{ booking_form.description.errors }}</td>
+        </tr>
+        <tr>
+          <td>Is this a public event?</td>
+          <td>{{ booking_form.publicly_viewable }}</td>
+          <td>{{ booking_form.publicly_viewable.errors }}</td>
+        </tr>
+      </table>
+      <button type='submit' class='btn' id='confirm-btn'>Confirm</button>
+      {% csrf_token %}
+    </form>
+  </div>
+{% endblock %}
 
-
+{% block extrajs %}
+  <script>
+    $(document).ready(function() {
+      $('.datepicker').pickadate({
+        selectMonths: true,
+        selectYears: 3,
+        format: 'yyyy-mm-dd'
+      });
+    });
+  </script>
 {% endblock %}

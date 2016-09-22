@@ -37,7 +37,7 @@ class RoomManager(models.Manager):
         straddling = Q(event__start_ts__lte=start, event__end_ts__gt=start)
         sandwich = Q(event__start_ts__gte=start, event__start_ts__lte=end)
         overlap = Q(event__start_ts__lte=start, event__end_ts__gte=end)
-        rooms = rooms.exclude(straddling | sandwich | overlap)
+        rooms = rooms.exclude(straddling| sandwich | overlap)
         return rooms
 
 
