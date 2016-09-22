@@ -116,19 +116,19 @@ def bills(request, username):
     return render_to_response('staff/member_bills.html', {'user':user}, context_instance=RequestContext(request))
 
 
-@staff_member_required
-def signins(request, username):
-    user = get_object_or_404(User, username=username)
-    payment_types = ['Visit', 'Trial', 'Waive', 'Bill']
-    return render_to_response('staff/member_signins.html', {'payment_types': payment_types, 'user':user}, context_instance=RequestContext(request))
-
-
-@staff_member_required
-def signins_json(request, username):
-    user = get_object_or_404(User, username=username)
-    response_data = {}
-    response_data['coworkingdays'] = serializers.serialize('json', user.coworkingdays.all())
-    return HttpResponse(json.dumps(response_data), content_type="application/json")
+# @staff_member_required
+# def signins(request, username):
+#     user = get_object_or_404(User, username=username)
+#     payment_types = ['Visit', 'Trial', 'Waive', 'Bill']
+#     return render_to_response('staff/member_signins.html', {'payment_types': payment_types, 'user':user}, context_instance=RequestContext(request))
+#
+#
+# @staff_member_required
+# def signins_json(request, username):
+#     user = get_object_or_404(User, username=username)
+#     response_data = {}
+#     response_data['coworkingdays'] = serializers.serialize('json', user.coworkingdays.all())
+#     return HttpResponse(json.dumps(response_data), content_type="application/json")
 
 
 @staff_member_required

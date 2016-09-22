@@ -32,8 +32,8 @@ urlpatterns = [
     url(r'^toggle_billing_flag/(?P<username>[^/]+)/$', billing.toggle_billing_flag, name='staff_toggle_bill'),
 
     url(r'^detail/(?P<username>[^/]+)/$', member.detail, name='staff_user_detail'),
-    url(r'^signins/(?P<username>[^/]+)/$', member.signins, name='staff_user_signins'),
-    url(r'^signins/json/(?P<username>[^/]+)/$', member.signins_json, name='staff_json_signins'),
+    # url(r'^signins/(?P<username>[^/]+)/$', member.signins, name='staff_user_signins'),
+    # url(r'^signins/json/(?P<username>[^/]+)/$', member.signins_json, name='staff_json_signins'),
     url(r'^transactions/(?P<username>[^/]+)/$', member.transactions, name='staff_user_transactions'),
     url(r'^bill/(?P<username>[^/]+)/$', member.bills, name='staff_user_bills'),
     url(r'^membership/(?P<username>[^/]+)/$', member.membership, name='staff_user_membership'),

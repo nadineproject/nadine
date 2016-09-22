@@ -28,7 +28,7 @@ nav #activity-tab { background: #FBD850; color: black; }
       </tr>
       {% for log in daily_logs %}
          <tr class="{% cycle 'row-even' 'row-odd' %}">
-            <td><a href="{% url 'staff_user_signins' log.user.username %}">{{ log.user.get_full_name }}</a></td>
+            <td><a href="{% url 'staff_activity_user' log.user.username %}">{{ log.user.get_full_name }}</a></td>
             <td><a href="{% url 'staff_activity_day' log.visit_date.year log.visit_date.month log.visit_date.day %}">{{ log.visit_date|date:"M d, Y" }}</td>
             <td>{{ log.payment }}</td>
             <td>{{ log.paid_by }}</td>
