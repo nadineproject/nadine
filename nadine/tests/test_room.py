@@ -22,7 +22,8 @@ class RoomTestCase(TestCase):
 
     def test_available_start(self):
         start = timezone.now() - timedelta(hours=3)
-        rooms = Room.objects.available(start=start)
+        end = timezone.now() - timedelta(hours=2)
+        rooms = Room.objects.available(start=start, end=end)
         self.assertTrue(len(rooms) > 0)
         self.assertFalse(rooms[0] == self.room1)
         self.assertTrue(rooms[0] == self.room2)

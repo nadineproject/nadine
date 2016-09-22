@@ -69,15 +69,16 @@
           </thead>
           <tr>
             {% for hour in hours %}
-              <td class='cal-box' id='hour-{{ hour }}'>
+              <td class='cal-box available' id='hour-{{ hour }}'>
               </td>
             {% endfor %}
           </tr>
         </table>
       </div>
-      <div class='col s1 book-room'>
-        <button class='book-btn btn'>Book</button>
-      </div>
+      <form class='col s1 book-room' action='.' method='POST'>
+        <button type='submit' name='room' value='{{ room.name }}' class='book-btn btn'>Book</button>
+        {% csrf_token %}
+      </form>
     </div>
     <div class='row dropdown-room slider closed' id='dropdown-{{ room.id }}'>
       <img class='col s3' src='{{ room.image.url }}'/>

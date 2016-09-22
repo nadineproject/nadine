@@ -555,6 +555,8 @@ def create_booking(request):
     end_dt = datetime.datetime.strptime(date + " " + end, "%Y-%m-%d %H:%M")
     end_ts = timezone.make_aware(end_dt, timezone.get_current_timezone())
 
+    #Make auto date for start and end if not otherwise given
+
     room_dict = {}
     rooms = Room.objects.available(start=start_ts, end=end_ts, has_av=has_av, has_phone=has_phone, floor=floor, seats=seats)
 
@@ -566,6 +568,11 @@ def create_booking(request):
     for room in rooms:
         room_events = room.event_set.filter(room=room, start_ts__gte=target_date, end_ts__lte=end_date)
         room_dict[room] = room_events
+
+    if request.method == 'POST':
+        room = request.POST.get('room')
+        print room
+        # return HttpRespondeRedirect(reverse('member_confirm_booking'), {})
 
     return render_to_response('members/user_create_booking.html', {'rooms': rooms, 'hours':hours, 'room_dict': room_dict}, context_instance=RequestContext(request))
 
