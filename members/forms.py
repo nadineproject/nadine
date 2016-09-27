@@ -20,7 +20,6 @@ class EditProfileForm(forms.Form):
     first_name = forms.CharField(max_length=100, required=True)
     last_name = forms.CharField(max_length=100, required=True)
     email = forms.EmailField(widget=forms.TextInput(attrs={'size': '50'}), required=True)
-    email2 = forms.EmailField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
     address1 = forms.CharField(max_length=100, required=False)
     address2 = forms.CharField(max_length=100, required=False)
     city = forms.CharField(max_length=100, required=False)
@@ -59,12 +58,12 @@ class EditProfileForm(forms.Form):
         user.first_name = self.cleaned_data['first_name']
         user.last_name = self.cleaned_data['last_name']
         user.email = self.cleaned_data['email']
+        # TODO - set_primary
         user.save()
 
         # Profile data
         user.profile.phone = self.cleaned_data['phone']
         user.profile.phone2 = self.cleaned_data['phone2']
-        user.profile.email2 = self.cleaned_data['email2']
         user.profile.address1 = self.cleaned_data['address1']
         user.profile.address2 = self.cleaned_data['address2']
         user.profile.city = self.cleaned_data['city']

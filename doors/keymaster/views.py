@@ -17,7 +17,7 @@ from django.contrib.auth.models import User
 
 from doors.keymaster.models import Keymaster, Door, DoorCode, DoorEvent
 from doors.core import EncryptedConnection, Messages, DoorEventTypes
-from staff import email
+from nadine import email
 
 logger = logging.getLogger(__name__)
 

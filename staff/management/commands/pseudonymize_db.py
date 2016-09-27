@@ -80,7 +80,6 @@ class Command(NoArgsCommand):
             member.user.username = '%s_%s' % (member.user.first_name, member.user.last_name)
             member.user.set_password('1234')  # User.objects.make_random_password()
             member.user.email = self.generate_email(member)
-            member.email2 = None
             member.phone = self.generate_phone_number()
             member.phone2 = ''
             member.url_personal = 'http://%s/' % DOMAINS[random.randint(0, len(DOMAINS) - 1)]

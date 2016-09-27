@@ -5,6 +5,7 @@ from datetime import datetime, time, date, timedelta
 
 from django.conf import settings
 from django.contrib.sites.models import Site
+from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.template import Template, TemplateDoesNotExist, Context
 from django.core.mail import send_mail, EmailMessage
@@ -12,7 +13,6 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 
 from nadine.utils.slack_api import SlackAPI
-from nadine.models.core import SentEmailLog
 from nadine import mailgun
 
 logger = logging.getLogger(__name__)
@@ -57,9 +57,61 @@ def send_manual(user, message):
     return True
 
 #####################################################################
-#                        User Alerts
+#                        Email Verification
 #####################################################################
 
+def send_verification(emailObj, request=None):
+    """Send email verification link for this EmailAddress object.
+    Raises smtplib.SMTPException, and NoRouteToHost.
+    """
+    html_template = get_template('email/verification_email.html')
+    text_template = get_template('email/verification_email.txt')
+
+    # Build our context
+    site = get_current_site()
+    context_dict = {
+        'current_site': site.domain,
+        'current_site_id': site.pk,
+        'current_site_name': site.name,
+        'emailaddress_id': emailObj.pk,
+        'email': emailObj.email,
+        'username': emailObj.user.username,
+        'first_name': emailObj.user.first_name,
+        'last_name': emailObj.user.last_name,
+        'primary_email': emailObj.user.email,
+        'verif_key': emailObj.verif_key,
+    }
+    verify_link = settings.EMAIL_VERIFICATION_URL % d
+    d['verify_link'] = verify_link
+    if request:
+        context = RequestContext(request, d)
+    else:
+        context = Context(d)
+
+    subject = ""
+    msg = EmailMultiAlternatives(MM.VERIFICATION_EMAIL_SUBJECT % d,
+        text_template.render(context),MM.FROM_EMAIL_ADDRESS,
+        [self.email])
+    msg.attach_alternative(html_template.render(context), 'text/html')
+    msg.send(fail_silently=False)
+    if MM.USE_MESSAGES:
+        message = MM.VERIFICATION_LINK_SENT_MESSAGE % d
+        if request is not None:
+            messages.success(request, message,
+                fail_silently=not MM.USE_MESSAGES)
+        else:
+            try:
+                self.user.message_set.create(message=message)
+            except AttributeError:
+                pass # user.message_set is deprecated and has been
+                     # fully removed as of Django 1.4. Thus, display
+                     # of this message without passing in a view is
+                     # supported only in 1.3
+
+
+#####################################################################
+#                        User Alerts
+#####################################################################
 
 def send_introduction(user):
     site = Site.objects.get_current()
@@ -257,14 +309,11 @@ def team_signature(user):
     site = Site.objects.get_current()
     return render_to_string('email/team_email_signature.txt', context={'user': user, 'site': site})
 
-
 def send(recipient, subject, message):
     send_email(recipient, subject, message, False)
 
-
 def send_quietly(recipient, subject, message):
     send_email(recipient, subject, message, True)
-
 
 def send_email(recipient, subject, message, fail_silently):
     # A little safety net when debugging
@@ -286,6 +335,7 @@ def send_email(recipient, subject, message, fail_silently):
     finally:
         user = User.objects.filter(email=recipient).first()
         try:
+            from nadine.models.core import SentEmailLog
             log = SentEmailLog(user=user, member=user.profile, recipient=recipient, subject=subject, success=success)
             if note:
                 log.note = note

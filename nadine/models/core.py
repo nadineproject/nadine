@@ -4,7 +4,8 @@ import pprint
 import traceback
 import operator
 import logging
-
+import hashlib
+from random import random
 from datetime import datetime, time, date, timedelta
 from dateutil.relativedelta import relativedelta
 
@@ -34,6 +35,7 @@ from nadine.utils.payment_api import PaymentAPI
 from nadine.utils.slack_api import SlackAPI
 from nadine.models.usage import CoworkingDay
 from nadine.models.payment import Bill
+from nadine import email
 
 from doors.keymaster.models import DoorEvent
 
@@ -202,19 +204,17 @@ class UserQueryHelper():
 
         return User.objects.filter(id__in=exiting.values('user'))
 
-    def active_member_emails(self, include_email2=False):
+    def active_member_emails(self):
         emails = []
         for membership in Membership.objects.active_memberships():
-            user = membership.user
-            if user.email not in emails:
-                emails.append(user.email)
-            if include_email2 and user.profile.email2 not in emails:
-                emails.append(user.profile.email2)
+            for e in EmailAddress.objects.filter(user=membership.user):
+                if e.email not in emails:
+                    emails.append(e.email)
         return emails
 
     def expired_slack_users(self):
         expired_users = []
-        active_emails = self.active_member_emails(include_email2=True)
+        active_emails = self.active_member_emails()
         slack_users = SlackAPI().users.list()
         for u in slack_users.body['members']:
             if 'profile' in u and 'real_name' in u and 'email' in u['profile']:
@@ -301,9 +301,7 @@ class UserQueryHelper():
             user_query = User.objects.all()
 
         if '@' in terms[0]:
-            email1_query = Q(email=terms[0])
-            email2_query = Q(profile__email2=terms[0])
-            user_query = user_query.filter(email1_query | email2_query)
+            return user_query.filter(id__in=EmailAddress.objects.filter(email=terms[0]).values('user'))
         else:
             fname_query = Q(first_name__icontains=terms[0])
             lname_query = Q(last_name__icontains=terms[0])
@@ -313,6 +311,12 @@ class UserQueryHelper():
             user_query = user_query.filter(fname_query | lname_query)
 
         return user_query.order_by('first_name')
+
+    def by_email(self, email):
+        email_address = EmailAddress.objects.filter(email=email).first()
+        if email_address:
+            return email_address.user
+        return None
 
 User.helper = UserQueryHelper()
 
@@ -326,7 +330,6 @@ class UserProfile(models.Model):
     MAX_PHOTO_SIZE = 1024
 
     user = models.OneToOneField(User, blank=False, related_name="profile")
-    email2 = models.EmailField("Alternate Email", blank=True, null=True)
     phone = PhoneNumberField(blank=True, null=True)
     phone2 = PhoneNumberField("Alternate Phone", blank=True, null=True)
     address1 = models.CharField(max_length=128, blank=True)
@@ -351,7 +354,6 @@ class UserProfile(models.Model):
     has_kids = models.NullBooleanField(blank=True, null=True)
     self_employed = models.NullBooleanField(blank=True, null=True)
     company_name = models.CharField(max_length=128, blank=True, null=True)
-    promised_followup = models.DateField(blank=True, null=True)
     last_modified = models.DateField(auto_now=True, editable=False)
     photo = models.ImageField(upload_to=user_photo_path, blank=True, null=True)
     tags = TaggableManager(blank=True)
@@ -710,6 +712,68 @@ def size_images(sender, instance, **kwargs):
         image.close()
 
 
+class EmailAddress(models.Model):
+    """An e-mail address for a Django User. Users may have more than one
+    e-mail address. The address that is on the user object itself as the
+    email property is considered to be the primary address, for which there
+    should also be an EmailAddress object associated with the user.
+
+    Pulled from https://github.com/scott2b/django-multimail
+    """
+    user = models.ForeignKey(User)
+    email = models.EmailField(max_length=100, unique=True)
+    created_ts = models.DateTimeField(auto_now_add=True)
+    verif_key = models.CharField(max_length=40)
+    verified_ts = models.DateTimeField(default=None, null=True, blank=True)
+    remote_addr = models.GenericIPAddressField(null=True, blank=True)
+    remote_host = models.CharField(max_length=255, null=True, blank=True)
+    is_primary = models.BooleanField(default=False)
+
+    def __unicode__(self):
+        return self.email
+
+    def is_verified(self):
+        """Is this e-mail address verified? Verification is indicated by
+        existence of a verified timestamp which is the time the user
+        followed the e-mail verification link."""
+        return bool(self.verified_ts)
+
+    def set_primary(self):
+        """Set this e-mail address to the primary address by setting the
+        email property on the user."""
+        self.user.email = self.email
+        self.user.save()
+        for email in self.user.emailaddress_set.all():
+            if email == self:
+                if not email.is_primary:
+                    email.is_primary = True
+                    email.save()
+            else:
+                if email.is_primary:
+                    email.is_primary = False
+                    email.save()
+
+    def save(self, verify=True, request=None, *args, **kwargs):
+        """Save this EmailAddress object."""
+        if not self.verif_key:
+            salt = hashlib.sha1(str(random())).hexdigest()[:5]
+            self.verif_key = hashlib.sha1(salt + self.email).hexdigest()
+        if verify and not self.pk:
+            verify = True
+        else:
+            verify = False
+        super(EmailAddress,self).save(*args, **kwargs)
+        # TODO
+        # if verify:
+        #     email.send_verification(self, request=request)
+
+    def delete(self):
+        """Delete this EmailAddress object."""
+        if self.is_primary:
+            raise Exception("Can not delete primary email address!")
+        super(EmailAddress, self).delete()
+
+
 class EmergencyContact(models.Model):
     user = models.OneToOneField(User, blank=False)
     name = models.CharField(max_length=254, blank=True)
@@ -899,7 +963,7 @@ class MemberNote(models.Model):
     note = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return '%s - %s: %s' % (self.created.date(), self.member, self.note)
+        return '%s - %s: %s' % (self.created.date(), self.user.username, self.note)
 
 
 class FileUploadManager(models.Manager):

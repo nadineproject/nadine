@@ -14,9 +14,9 @@ from django.conf import settings
 
 from monthdelta import MonthDelta, monthmod
 
-from staff import email
 from staff.forms import MemberEditForm, MembershipForm
 from nadine.models import Membership, MemberNote, MembershipPlan, SentEmailLog, FileUpload, SpecialDay
+from nadine import email
 
 
 @staff_member_required
@@ -38,7 +38,6 @@ def edit(request, username):
             'first_name': user.first_name,
             'last_name': user.last_name,
             'email': user.email,
-            'email2': user.profile.email2,
             'phone': user.profile.phone,
             'phone2': user.profile.phone2,
             'address1': user.profile.address1,

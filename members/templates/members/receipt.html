@@ -17,7 +17,6 @@
 <table id="user_detail"><tr><td>
 	{{ transaction.user.get_full_name }}<br>
 	{% if transaction.user.email %}{{ transaction.user.email }}<br>{% endif %}
-	{% if transaction.user.profile.email2 %}{{ transaction.user.profile.email2 }}<br>{% endif %}
 	{% if transaction.user.profile.phone %}{{ transaction.user.profile.phone }}<br>{% endif %}
 	{% if transaction.user.profile.phone2 %}{{ transaction.user.profile.phone2 }}<br>{% endif %}
 </td></tr></table>

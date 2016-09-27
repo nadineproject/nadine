@@ -15,6 +15,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.utils import timezone
 
+from nadine import email
 from nadine import mailgun
 from nadine.models.core import FileUpload
 from nadine.models.usage import CoworkingDay
@@ -22,7 +23,6 @@ from nadine.models.payment import Bill
 from nadine.utils.slack_api import SlackAPI
 from members.models import MOTD
 from staff.forms import NewUserForm, MemberSearchForm
-from staff import email
 from .forms import SignatureForm
 
 from easy_pdf.rendering import render_to_pdf, render_to_pdf_response
