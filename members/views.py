@@ -507,38 +507,46 @@ def get_close_time():
 
 def time_blocks(open_hour, open_min, closed_hour):
     hours = []
+    ids = []
     for num in range(int(open_hour), int(closed_hour)):
         minutes = str(open_min)
         for count in range(0, 4):
             hour = str(num) + ':' + minutes
+            id = str(num) + minutes
             if minutes == '00':
+                ids.append(id)
                 if num > 12:
                     hour = str (num - 12)+ ":" + minutes
                 minutes = '15'
                 hours.append(hour)
             elif minutes =='15':
+                ids.append(id)
                 if num > 12:
                     hour = str(num - 12) + ':' + minutes
                 minutes = '30'
                 hours.append(hour)
             elif minutes =='30':
+                ids.append(id)
                 if num > 12:
                     hour = str(num - 12) + ':' + minutes
                 minutes = '45'
                 hours.append(hour)
             else:
+                ids.append(id)
                 if num > 12:
                     hour = str(num - 12) + ':' + minutes
                 minutes = '00'
                 hours.append(hour)
-    return hours
+    return hours, ids
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def create_booking(request):
     open_hour, open_min = get_open_time()
     closed_hour, closed_min = get_close_time()
-    hours = time_blocks(open_hour, open_min, closed_hour)
+    hours = time_blocks(open_hour, open_min, closed_hour)[0]
+    ids = time_blocks(open_hour, open_min, closed_hour)[1]
+    print ids
 
     # Process URL variables
     has_av = request.GET.get('has_av', None)
@@ -556,7 +564,6 @@ def create_booking(request):
     end_ts = timezone.make_aware(end_dt, timezone.get_current_timezone())
 
     #Make auto date for start and end if not otherwise given
-
     room_dict = {}
     rooms = Room.objects.available(start=start_ts, end=end_ts, has_av=has_av, has_phone=has_phone, floor=floor, seats=seats)
 
@@ -576,7 +583,7 @@ def create_booking(request):
         date = request.POST.get('date')
         return render_to_response('members/user_confirm_booking.html', {'start':start, 'end':end, 'room':room, 'date': date}, context_instance=RequestContext(request))
 
-    return render_to_response('members/user_create_booking.html', {'rooms': rooms, 'hours':hours, 'room_dict': room_dict, 'start':start, 'end':end, 'start_ts':start_ts,'end_ts':end_ts, 'date': date}, context_instance=RequestContext(request))
+    return render_to_response('members/user_create_booking.html', {'rooms': rooms, 'hours':hours, 'room_dict': room_dict, 'start':start, 'end':end, 'start_ts':start_ts,'end_ts':end_ts, 'date': date, 'ids': ids}, context_instance=RequestContext(request))
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')

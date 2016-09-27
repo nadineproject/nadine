@@ -68,8 +68,8 @@
             {% endfor %}
           </thead>
           <tr>
-            {% for hour in hours %}
-              <td class='cal-box available' id='hour-{{ hour }}'>
+            {% for id in ids %}
+              <td class='cal-box available' id='hour-{{ date }}-{{ id }}'>
               </td>
             {% endfor %}
           </tr>
