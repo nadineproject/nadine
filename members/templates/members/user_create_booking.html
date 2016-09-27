@@ -77,8 +77,9 @@
       </div>
       <form class='col s1 book-room' action='.' method='POST'>
         <input type='hidden' name='room' value='{{ room.name }}' />
-        <input type='hidden' name='start' value='{{ start_ts }}'/>
-        <input type='hidden' name='end' value='{{ end_ts }}' />
+        <input type='hidden' name='start' value='{{ start }}'/>
+        <input type='hidden' name='end' value='{{ end }}' />
+        <input type='hidden' name='date' value='{{ date }}' />
         <button type='submit' class='book-btn btn'>Book</button>
         {% csrf_token %}
       </form>

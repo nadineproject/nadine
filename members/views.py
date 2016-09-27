@@ -549,7 +549,7 @@ def create_booking(request):
     start = request.GET.get('start', open_hour + ":" + open_min)
     end = request.GET.get('end', closed_hour + ":" + closed_min)
 
-    # Turn our date, start, and end strings in to timestamps
+    # Turn our date, start, and end strings into timestamps
     start_dt = datetime.datetime.strptime(date + " " + start, "%Y-%m-%d %H:%M")
     start_ts = timezone.make_aware(start_dt, timezone.get_current_timezone())
     end_dt = datetime.datetime.strptime(date + " " + end, "%Y-%m-%d %H:%M")
@@ -573,9 +573,10 @@ def create_booking(request):
         room = request.POST.get('room')
         start = request.POST.get('start')
         end = request.POST.get('end')
-        return render_to_response('members/user_confirm_booking.html', {'start':start, 'end':end, 'room':room}, context_instance=RequestContext(request))
+        date = request.POST.get('date')
+        return render_to_response('members/user_confirm_booking.html', {'start':start, 'end':end, 'room':room, 'date': date}, context_instance=RequestContext(request))
 
-    return render_to_response('members/user_create_booking.html', {'rooms': rooms, 'hours':hours, 'room_dict': room_dict, 'start_ts':start_ts, 'end_ts':end_ts}, context_instance=RequestContext(request))
+    return render_to_response('members/user_create_booking.html', {'rooms': rooms, 'hours':hours, 'room_dict': room_dict, 'start':start, 'end':end, 'start_ts':start_ts,'end_ts':end_ts, 'date': date}, context_instance=RequestContext(request))
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
@@ -584,6 +585,7 @@ def confirm_booking(request):
     room = request.GET.room
     start = request.GET.start
     end = request.GET.end
+    date = request.GET.date
     page_message = None
 
     if request.method == 'POST':
@@ -597,7 +599,7 @@ def confirm_booking(request):
     else:
         booking_form = EventForm()
 
-    return render_to_response('members/user_confirm_booking.html', {'booking_form':booking_form, 'start':start, 'end':end, 'room': room}, context_instance=RequestContext(request))
+    return render_to_response('members/user_confirm_booking.html', {'booking_form':booking_form, 'start':start, 'end':end, 'room': room, 'date': date}, context_instance=RequestContext(request))
 
 #@login_required
 #@user_passes_test(is_active_member, login_url='member_not_active')

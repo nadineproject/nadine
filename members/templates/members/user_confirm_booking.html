@@ -19,19 +19,21 @@
           <td><input value='{{ room }}' readonly  /></td>
           <td>{{ booking_form.room.errors }}</td>
         </tr>
-        <!-- <tr>
+        <tr>
           <td>Date:</td>
           <td>
-            <input type="date" name="date" class="datepicker col s4 offset-s4" id='booking-date' >
+            <input type="date" name="date" value='{{ date }}' format='yyyy-mm-dd' class="datepicker col s4 offset-s4" id='booking-date' >
           </td>
-        </tr> -->
+        </tr>
         <tr>
           <td>From:</td>
-          <td><input value='{{ start }}'/></td>
+          <td>
+            <input type='time' step=900 name='start' value='{{ start }}'/>
+          </td>
         </tr>
         <tr>
           <td>To:</td>
-          <td><input value='{{ end }}'/></td>
+          <td><input type='time' step=900 name='end' value='{{ end }}'/></td>
         </tr>
         <tr>
           <td>Description:</td>
@@ -40,7 +42,7 @@
         </tr>
         <tr>
           <td>Is this a public event?</td>
-          <td>{{ booking_form.publicly_viewable }}</td>
+          <td>Wahoo</td>
           <td>{{ booking_form.publicly_viewable.errors }}</td>
         </tr>
       </table>
