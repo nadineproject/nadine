@@ -535,6 +535,16 @@ table td {
 		max-height: 0;
 	}
 
+	div#time-range {
+		max-height: 60px;
+	}
+
+	div#slider-range {
+		/*position: absolute;*/
+		max-height: 50px;
+		min-width: 50px;
+		margin-bottom: 5%;
+	}
 /* Footer */
 
 footer.home-footer {
