@@ -123,14 +123,6 @@
               </tr>
             {% endif %}
 
-            <!-- Email -->
-            {% if user.email %}
-              <tr>
-                 <td>Email:</td>
-                 <td>{{ user.email }}</td>
-              </tr>
-            {% endif %}
-
             <!-- Phone -->
             {% if user.profile.phone %}
               <tr>
@@ -162,6 +154,20 @@
                  <td>{{ user.profile.gender }}</td>
               </tr>
             {% endif %}
+        </table>
+
+        <h3>Email Addresses</h3>
+        <table>
+            <tr>
+                <th>Address</th>
+                <th>Verified</th>
+            </tr>
+            {% for email in user.emailaddress_set.all %}
+              <tr>
+                 <td>{{ email }}</td>
+                 <td>{{ email.is_verified|yesno:"yes,no" }}</td>
+              </tr>
+            {% endfor %}
         </table>
 
         <h3>
