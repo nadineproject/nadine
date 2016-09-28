@@ -51,6 +51,7 @@ admin.site.register(BillingLog, BillingLogAdmin)
 
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
+    can_delete = False
     max_num = 1
 class EmailAddressInline(admin.TabularInline):
     model = EmailAddress
@@ -60,10 +61,12 @@ class EmailAddressInline(admin.TabularInline):
 class EmergencyContactInline(admin.StackedInline):
     model = EmergencyContact
     can_delete = False
+    max_num = 1
 class XeroContactInline(admin.TabularInline):
     model = XeroContact
     readonly_fields=['last_sync', ]
     can_delete = False
+    max_num = 1
 class UserWithProfileAdmin(UserAdmin):
     inlines = [EmailAddressInline, UserProfileInline, EmergencyContactInline, XeroContactInline]
 admin.site.unregister(User)

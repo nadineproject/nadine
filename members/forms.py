@@ -1,12 +1,15 @@
+import datetime
+
 from django import forms
 from django.contrib.auth.models import User
 from django.utils.html import strip_tags
+
 from taggit.forms import *
 from members.models import *
 from nadine.models.core import UserProfile, HowHeard, Industry, Neighborhood, GENDER_CHOICES
-import datetime
 from localflavor.us.us_states import US_STATES
 from localflavor.ca.ca_provinces import PROVINCE_CHOICES
+
 
 def get_state_choices():
     if settings.COUNTRY == 'US':
@@ -58,7 +61,6 @@ class EditProfileForm(forms.Form):
         user.first_name = self.cleaned_data['first_name']
         user.last_name = self.cleaned_data['last_name']
         user.email = self.cleaned_data['email']
-        # TODO - set_primary
         user.save()
 
         # Profile data

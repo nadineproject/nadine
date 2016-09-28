@@ -691,7 +691,6 @@ post_save.connect(user_save_callback, sender=User)
 
 # Add some handy methods to Django's User object
 #User.get_profile = lambda self: Member.objects.get_or_create(user=self)[0]
-User.get_emergency_contact = lambda self: EmergencyContact.objects.get_or_create(user=self)[0]
 #User.profile = property(User.get_profile)
 
 @receiver(post_save, sender=UserProfile)
@@ -741,17 +740,24 @@ class EmailAddress(models.Model):
     def set_primary(self):
         """Set this e-mail address to the primary address by setting the
         email property on the user."""
-        self.user.email = self.email
-        self.user.save()
+        # If we are already primary, we're done
+        if self.is_primary:
+            return
+
+        # Make sure the user has the same email address
+        if self.user.email != self.email:
+            self.user.email = self.email
+            self.user.save()
+
+        # Now go through and unset all other email addresses
         for email in self.user.emailaddress_set.all():
             if email == self:
-                if not email.is_primary:
-                    email.is_primary = True
-                    email.save()
+                email.is_primary = True
+                email.save(verify=False)
             else:
                 if email.is_primary:
                     email.is_primary = False
-                    email.save()
+                    email.save(verify=False)
 
     def save(self, verify=True, request=None, *args, **kwargs):
         """Save this EmailAddress object."""
@@ -762,7 +768,7 @@ class EmailAddress(models.Model):
             verify = True
         else:
             verify = False
-        super(EmailAddress,self).save(*args, **kwargs)
+        super(EmailAddress, self).save(*args, **kwargs)
         # TODO
         # if verify:
         #     email.send_verification(self, request=request)
@@ -770,9 +776,21 @@ class EmailAddress(models.Model):
     def delete(self):
         """Delete this EmailAddress object."""
         if self.is_primary:
-            raise Exception("Can not delete primary email address!")
+            next_email = self.user.emailaddress_set.exclude(email=self.email).first()
+            if not next_email:
+                raise Exception("Can not delete last email address!")
+            next_email.set_primary()
         super(EmailAddress, self).delete()
 
+def sync_primary_callback(sender, **kwargs):
+    user = kwargs['instance']
+    try:
+        email_address = EmailAddress.objects.get(email=user.email)
+    except DoesNotExist:
+        email_adress = EmailAddress(user=user, email=user.email)
+        email_address.save(verify=False)
+    email_address.set_primary()
+post_save.connect(sync_primary_callback, sender=User)
 
 class EmergencyContact(models.Model):
     user = models.OneToOneField(User, blank=False)
@@ -782,10 +800,16 @@ class EmergencyContact(models.Model):
     email = models.EmailField(blank=True, null=True)
     last_updated = models.DateTimeField(auto_now_add=True)
 
+    def __unicode__(self):
+        return '%s - %s' % (self.user.username, self.name)
+
 def emergency_callback_save_callback(sender, **kwargs):
     contact = kwargs['instance']
     contact.last_updated = timezone.now()
 pre_save.connect(emergency_callback_save_callback, sender=EmergencyContact)
+
+# Create a handy method on User to get an EmergencyContact
+User.get_emergency_contact = lambda self: EmergencyContact.objects.get_or_create(user=self)[0]
 
 
 class XeroContact(models.Model):
@@ -793,7 +817,7 @@ class XeroContact(models.Model):
     xero_id = models.CharField(max_length=64)
     last_sync = models.DateTimeField(null=True, blank=True)
 
-    def __str__(self):
+    def __unicode__(self):
         return '%s - %s' % (self.user.username, self.xero_id)
 
 

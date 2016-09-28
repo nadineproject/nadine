@@ -26,7 +26,7 @@ class EmailVerify(View):
         email_address.save()
         email_verified.send_robust(sender=email_address)
         messages.success(request, "Email address has been verified.")
-        
+
         next_url = settings.EMAIL_POST_VERIFY_URL
         if not next_url:
             next_url = reverse('member_profile', kwargs={'username': email_address.user.username})
@@ -58,9 +58,7 @@ def set_as_primary(request, email_pk):
         messages.error(request, 'Invalid request.')
     elif email.is_verified():
         email.set_primary()
-        messages.success(
-            request, '%s is now marked as your primary email address.' % email
-        )
+        messages.success(request, '%s is now marked as your primary email address.' % email)
 
     try:
         return redirect(request.META['HTTP_REFERER'])
