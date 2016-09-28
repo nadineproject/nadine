@@ -72,7 +72,7 @@
       {% endblock %}
     <div id="tabs-0">
         <h3>Member Profile</h3>
-        {% include "members/profile.frag" %}
+        {% include "members/profile_public_frag.html" %}
     </div>
 
     <div id="tabs-1">
@@ -232,7 +232,7 @@
 {% else %}
     <div class="clearfix"></div>
     <h2>Member Profile</h2>
-    {% include "members/profile.frag" %}
+    {% include "members/profile_public_frag.html" %}
 {% endif %}
 
 {%block sub-extrajs %}

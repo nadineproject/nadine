@@ -335,7 +335,7 @@ function gotoEmailReset(emailAddress){
     </div>
     <!-- Billing Profile -->
     <h2>Billing Profile</h2>
-    {% include "members/billing_profile.frag" %}
+    {% include "members/profile_billing_frag.html" %}
     <div style="margin-left: 2em; margin-top: .5em;">
         <form method=POST action="{% url 'staff_toggle_bill' user.username %}" onSubmit="return confirm('Are you sure?');">
             <input type="hidden" name="back" value="{{ request.get_full_path }}">

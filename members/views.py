@@ -150,7 +150,7 @@ def profile_redirect(request):
 def user(request, username):
     user = get_object_or_404(User, username=username)
     emergency_contact = user.get_emergency_contact()
-    return render_to_response('members/user.html', {'user': user, 'emergency_contact': emergency_contact, 'settings': settings}, context_instance=RequestContext(request))
+    return render_to_response('members/profile.html', {'user': user, 'emergency_contact': emergency_contact, 'settings': settings}, context_instance=RequestContext(request))
 
 
 @csrf_exempt
@@ -239,7 +239,7 @@ def edit_profile(request, username):
         profile = user.profile
         emergency_contact = user.get_emergency_contact()
         profile_form = EditProfileForm(initial={'username': user.username, 'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email,
-                                                'phone': profile.phone, 'phone2': profile.phone2, 
+                                                'phone': profile.phone, 'phone2': profile.phone2,
                                                 'address1': profile.address1, 'address2': profile.address2, 'city': profile.city, 'state': profile.state, 'zipcode': profile.zipcode,
                                                 'company_name': profile.company_name, 'url_personal': profile.url_personal, 'url_professional': profile.url_professional,
                                                 'url_facebook': profile.url_facebook, 'url_twitter': profile.url_twitter,
