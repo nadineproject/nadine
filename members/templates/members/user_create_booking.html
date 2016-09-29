@@ -32,7 +32,7 @@
         <input name="has_phone" type="checkbox" id='phone-btn' class='filled-in' />
         <label for="phone-btn">Has Phone</label>
       </div>
-      <select class='browser-default input-field col s2' name='floor'>
+      <select class='browser-default input-field col s2' name='floor' id='floor'>
         <option value="" disabled selected>On Floor:</option>
         <option value="1">Floor 1</option>
         <option value="2">Floor 2</option>
@@ -123,7 +123,22 @@
 {% block extrajs %}
   <script>
     $(document).ready(function() {
-      $('.room-close').hide();
+      $('#booking-date').val('{{ date }}');
+
+      var phone = '{{ has_phone }}';
+      var av = '{{ has_av }}';
+
+      if (phone === 'None') {
+        $('#phone-btn').attr('checked', false);
+      } else {
+        $('#phone-btn').attr('checked', true);
+      }
+
+      if (av === 'None') {
+        $('#av-btn').attr('checked', false);
+      } else {
+        $('#av-btn').attr('checked', true);
+      }
 
       $('.datepicker').pickadate({
         selectMonths: true,
@@ -131,19 +146,7 @@
         format: 'yyyy-mm-dd'
       });
 
-      function getDate() {
-        var myDate = new Date();
-        var prettyDate = myDate.getFullYear() + '-' + (myDate.getMonth()+1) + '-' + myDate.getDate();
-
-        $("#booking-date").val(prettyDate);
-
-      }
-
-      function getTime() {
-        var now = new Date();
-        var hour = now.getHours();
-        var minutes = now.getMinutes();
-
+      function changeTimes(hour, minutes) {
         if (minutes < 15) {
           minutes = "00";
         } else if (minutes < 30){
@@ -165,14 +168,35 @@
             hour = 12;
         }
 
-        var startTime = hour + ":" + minutes;
-        var endTime = (hour + 1) + ":" + minutes;
-        $('#start-time').val(startTime);
-        $('#end-time').val(endTime);
+        var time = hour + ':' + minutes
+
+        return time
       }
 
-      getDate();
-      getTime();
+      function getStart() {
+        var start = '{{ start }}';
+        var hour = start.split(':')[0];
+        var minutes = start.split(':')[1];
+
+        var time = changeTimes(hour, minutes);
+
+        $('#start-time').val(time);
+      }
+
+      function getEnd() {
+        var end = '{{ end }}';
+        var hour = end.split(':')[0];
+        var minutes = end.split(':')[1];
+
+        var time = changeTimes(hour, minutes);
+
+        $('#end-time').val(time)
+      }
+
+      getStart();
+      getEnd();
+
+      $('.room-close').hide();
 
       $('.room-show').on('click', function(e){
         e.preventDefault();
