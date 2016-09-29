@@ -564,6 +564,9 @@ def create_booking(request):
     end_dt = datetime.datetime.strptime(date + " " + end, "%Y-%m-%d %H:%M")
     end_ts = timezone.make_aware(end_dt, timezone.get_current_timezone())
 
+    # Get time blocks of desired reservation to show on page
+    search_block = Room.objects.searched(start, end, ids)
+
     #Make auto date for start and end if not otherwise given
     room_dict = {}
     rooms = Room.objects.available(start=start_ts, end=end_ts, has_av=has_av, has_phone=has_phone, floor=floor, seats=seats)
@@ -586,7 +589,7 @@ def create_booking(request):
         date = request.POST.get('date')
         return render_to_response('members/user_confirm_booking.html', {'start':start, 'end':end, 'room':room, 'date': date}, context_instance=RequestContext(request))
 
-    return render_to_response('members/user_create_booking.html', {'rooms': rooms, 'hours':hours, 'room_dict': room_dict, 'start':start, 'end':end, 'start_ts':start_ts, 'end_ts':end_ts, 'date': date, 'ids': ids, 'reserved': reserved}, context_instance=RequestContext(request))
+    return render_to_response('members/user_create_booking.html', {'rooms': rooms, 'hours':hours, 'room_dict': room_dict, 'start':start, 'end':end, 'start_ts':start_ts, 'end_ts':end_ts, 'date': date, 'ids': ids, 'reserved': reserved, 'search_block': search_block }, context_instance=RequestContext(request))
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')

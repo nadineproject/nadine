@@ -525,6 +525,10 @@ table td {
 		background-color: RGBA(217, 95, 73, .4);
 	}
 
+	.cal-table .searched {
+		background-color: RGBA(49, 39, 50, .7);
+	}
+
 	.cal-table td:first-child {
 		border-radius: 4px 0px 0px 4px;
 	}

@@ -63,6 +63,13 @@ class RoomManager(models.Manager):
                 res_dict[room] = {}
         return res_dict
 
+    def searched(self, start, end, ids):
+        search_block = []
+        for id in ids:
+            if int(start.replace(':', '')) <= int(id) and int(id) <= int(end.replace(':', '')):
+                search_block.append(id)
+        return search_block
+
 
 class Room(models.Model):
     name = models.CharField(max_length=64)
