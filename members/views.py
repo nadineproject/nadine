@@ -577,26 +577,7 @@ def create_booking(request):
         room_events = room.event_set.filter(room=room, start_ts__gte=target_date, end_ts__lte=end_date)
         room_dict[room] = room_events
 
-    res_dict = {}
-    for room, events in room_dict.items():
-        if events:
-            for event in events:
-                start_wtz = timezone.make_naive(event.start_ts, timezone.get_current_timezone())
-                end_wtz = timezone.make_naive(event.end_ts, timezone.get_current_timezone())
-                starts = start_wtz.strftime('%H%M')
-                ends = end_wtz.strftime('%H%M')
-                reserved = []
-                if room not in res_dict.keys():
-                    for id in ids:
-                        if int(starts) <= int(id) and int(id) <= int(ends):
-                            reserved.append(id)
-                    res_dict[room] = reserved
-                else:
-                    for id in ids:
-                        if int(starts) <= int(id) and int(id) <= int(ends):
-                            res_dict[room].append(id)
-        else:
-            res_dict[room] = {}
+    reserved = Room.objects.reservations(room_dict, ids)
 
     if request.method == 'POST':
         room = request.POST.get('room')
@@ -605,7 +586,7 @@ def create_booking(request):
         date = request.POST.get('date')
         return render_to_response('members/user_confirm_booking.html', {'start':start, 'end':end, 'room':room, 'date': date}, context_instance=RequestContext(request))
 
-    return render_to_response('members/user_create_booking.html', {'rooms': rooms, 'hours':hours, 'room_dict': room_dict, 'start':start, 'end':end, 'start_ts':start_ts,'end_ts':end_ts, 'date': date, 'ids': ids, 'res_dict': res_dict}, context_instance=RequestContext(request))
+    return render_to_response('members/user_create_booking.html', {'rooms': rooms, 'hours':hours, 'room_dict': room_dict, 'start':start, 'end':end, 'start_ts':start_ts, 'end_ts':end_ts, 'date': date, 'ids': ids, 'reserved': reserved}, context_instance=RequestContext(request))
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')

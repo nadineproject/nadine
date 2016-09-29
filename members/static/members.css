@@ -157,6 +157,12 @@ p {
 	width: 70%;
 }
 
+.booking-box {
+	background-color: RGBA(239, 238, 231, 1);
+	border-radius: 2px;
+	padding: 2%;
+}
+
 textarea#id_bio {
 	background-color: white;
 	height: 100px;
@@ -512,11 +518,11 @@ table td {
 		box-sizing: border-box;
 		padding: 0;
 		border-radius: 0px 0px 0px 0px;
-		background-color: RGBA(178, 205, 203, .6);
+		background-color: RGBA(178, 225, 203, .6);
 	}
 
 	.cal-table .reserved {
-		background-color: RGBA(217, 95, 73, .6);
+		background-color: RGBA(217, 95, 73, .4);
 	}
 
 	.cal-table td:first-child {
