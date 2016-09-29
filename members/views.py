@@ -555,8 +555,10 @@ def create_booking(request):
     floor = request.GET.get('floor', None)
     seats = request.GET.get('seats', None)
     date = request.GET.get('date', str(timezone.now().date()))
-    start = request.GET.get('start', open_hour + ":" + open_min)
-    end = request.GET.get('end', closed_hour + ":" + closed_min)
+    start = request.GET.get('start', str(datetime.datetime.now().hour) + ':' + str(datetime.datetime.now().minute))
+    end = request.GET.get('end', str(datetime.datetime.now().hour + 2) + ':' + str(datetime.datetime.now().minute))
+
+    print start
 
     # Turn our date, start, and end strings into timestamps
     start_dt = datetime.datetime.strptime(date + " " + start, "%Y-%m-%d %H:%M")
@@ -589,7 +591,7 @@ def create_booking(request):
         date = request.POST.get('date')
         return render_to_response('members/user_confirm_booking.html', {'start':start, 'end':end, 'room':room, 'date': date}, context_instance=RequestContext(request))
 
-    return render_to_response('members/user_create_booking.html', {'rooms': rooms, 'hours':hours, 'room_dict': room_dict, 'start':start, 'end':end, 'start_ts':start_ts, 'end_ts':end_ts, 'date': date, 'ids': ids, 'reserved': reserved, 'search_block': search_block }, context_instance=RequestContext(request))
+    return render_to_response('members/user_create_booking.html', {'rooms': rooms, 'hours':hours, 'start':start, 'end':end, 'date': date, 'ids': ids, 'reserved': reserved, 'search_block': search_block }, context_instance=RequestContext(request))
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
