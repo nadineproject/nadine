@@ -508,11 +508,15 @@ table td {
 		border-top: none;
 		width: 2%;
 		height: 65px;
-		background-color: RGBA(178, 205, 203, .6);
 		border-right: 1px solid white;
 		box-sizing: border-box;
 		padding: 0;
 		border-radius: 0px 0px 0px 0px;
+		background-color: RGBA(178, 205, 203, .6);
+	}
+
+	.cal-table .reserved {
+		background-color: RGBA(217, 95, 73, .6);
 	}
 
 	.cal-table td:first-child {

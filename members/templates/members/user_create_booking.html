@@ -69,8 +69,17 @@
           </thead>
           <tr>
             {% for id in ids %}
-              <td class='cal-box available' id='hour-{{ date }}-{{ id }}'>
-              </td>
+              {% for here, reservations in res_dict.items %}
+                {% if here == room %}
+                  {% if id in reservations %}
+                    <td class='cal-box reserved' id='hour-{{ date }}-{{ id }}'>
+                    </td>
+                  {% else %}
+                    <td class='cal-box available' id='hour-{{ date }}-{{ id }}'>
+                    </td>
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
             {% endfor %}
           </tr>
         </table>
