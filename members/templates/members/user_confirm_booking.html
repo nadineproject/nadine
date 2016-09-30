@@ -60,12 +60,12 @@
         <tr>
           <td>From:</td>
           <td>
-            <input type='time' step=900 name='start' value='{{ start }}'/>
+            <input type='time' step=900 name='start' id='start-time' value='{{ start }}'/>
           </td>
         </tr>
         <tr>
           <td>To:</td>
-          <td><input type='time' step=900 name='end' value='{{ end }}'/></td>
+          <td><input type='time' step=900 name='end' id='end-time' value='{{ end }}'/></td>
         </tr>
         <tr>
           <td>Description:</td>
@@ -91,20 +91,113 @@
 {% block extrajs %}
   <script>
     $(document).ready(function() {
+
       $('.datepicker').pickadate({
         selectMonths: true,
         selectYears: 3,
         format: 'yyyy-mm-dd'
       });
 
+      $('.cal-box').on('hover', function() {
+        // Pop up with time of that box
+      })
+
+      function toggleStatus(id) {
+        if ($('#hour-' + id).hasClass('available')) {
+          $('#hour-' + id).removeClass('available').addClass('searched');
+        } else if ($('#hour-' + id).hasClass('searched')) {
+          $('#hour-' + id).removeClass('searched').addClass('available');
+        }
+      }
+
+      function extendStart(start, time, available) {
+        for(var i = 0; i < available.length; i++) {
+          var avId = available[i].id;
+          var id = parseInt(avId.split('-')[1]);
+
+          if (time <= id && id <= start) {
+            toggleStatus(id);
+          }
+        }
+      }
+
+      function extendEnd(end, time, available) {
+        for(var i = 0; i < available.length; i++) {
+          var avId = available[i].id;
+          var id = parseInt(avId.split('-')[1]);
+
+          if(end <= id && id <= time) {
+            toggleStatus(id);
+          }
+        }
+      }
+
+      function changeEnd(end, time, searched) {
+        for(var i = 0; i < searched.length; i++) {
+          var searchId = searched[i].id;
+          var id = parseInt(searchId.split('-')[1]);
+
+          if (time <= id && id <= end) {
+            toggleStatus(id);
+          }
+        }
+      }
+
       $('.cal-box').on('click', function() {
+        var startTime = $('#start-time').val();
+        var start = parseInt(startTime.replace(':', ''));
+        var endTime = $('#end-time').val();
+        var end = parseInt(endTime.replace(':', ''));
+        var available = $('.available');
+        var searched = $('.searched');
+        var time = parseInt(this.id.split('-')[1]);
+        var clicked = $(this);
+
+        if(clicked.hasClass('available')) {
+
+          if(time < start) {
+            extendStart(start, time, available);
+            start = time.toString();
+
+            if (start.length > 3) {
+              startTime = start[0] + start[1] + ':' + start[2] + start[3]
+            } else {
+              startTime = '0' + start[0]  + ':' + start[1] + start[2]
+            }
+
+            $('#start-time').val(startTime);
+          } else if (end < time) {
+            extendEnd(end, time, available);
+            end = time.toString();
+
+            if (end.length > 3) {
+              endTime = end[0] + end[1] + ':' + end[2] + end[3]
+            } else {
+              endTime = '0' + end[0]  + ':' + end[1] + end[2]
+            }
+
+            $('#end-time').val(endTime);
+          }
+        // if greater than end, change end
+        } else if (clicked.hasClass('reserved')) {
         // if the div has class of reserved, throw error
+        } else if (clicked.hasClass('searched')) {
+          changeEnd(end, time, searched);
 
+          end = time.toString();
+
+          if (end.length > 3) {
+            endTime = end[0] + end[1] + ':' + end[2] + end[3]
+          } else {
+            endTime = '0' + end[0]  + ':' + end[1] + end[2]
+          }
+
+          $('#end-time').val(endTime);
         // if box has class of searched, adjust time accordingly
+        // if less than start time, change start
+        // if greater than end, change end
+        }
 
-        // if box has class of available, adjust time and change class
-
-        // update time values on the clicks
       });
     });
   </script>
