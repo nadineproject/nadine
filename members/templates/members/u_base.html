@@ -9,15 +9,14 @@
 	<meta charset="utf-8">
 	<meta name="DC.title" content="{{ site.name }}" />
 	<title>{% block title %}{% block sub-title %}{% endblock %}{{ site.name }}{% endblock %}</title>
+	<link rel="stylesheet" href="{% static 'css/jquery-ui.min.css' %}"  />
 	<link rel="stylesheet" href="{% static 'js/jquery-custom.css' %}">
-	<link rel="stylesheet" type="text/css" href= "{% static 'members.css'%}" />
 	<!--[if IE]>
 		<script src="{{ STATIC_URL }}html5.js"></script>
 	<![endif]-->
 	<script src="{% static 'js/jquery-2.1.0.min.js' %}"></script>
 	<script src="{% static 'js/jquery-ui-1.10.4.custom.min.js' %}"></script>
-	<link rel="stylesheet" href="{% static 'css/jquery-ui.min.css' %}"  />
-
+	<link rel="stylesheet" type="text/css" href= "{% static 'members.css'%}" />
 {% block scripts %}
 	<!-- Compiled and minified CSS -->
 	<link rel="stylesheet" href="{% static 'css/materialize.min.css' %}" />
