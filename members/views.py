@@ -430,7 +430,7 @@ def disable_billing(request, username):
         api = PaymentAPI()
         api.disable_recurring(username)
         email.announce_billing_disable(user)
-    return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username, 'settings': settings}))
+    return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
 
 
 @login_required
