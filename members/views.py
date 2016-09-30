@@ -541,13 +541,20 @@ def time_blocks(open_hour, open_min, closed_hour):
                 hours.append(hour)
     return hours, ids
 
+def coerce_times(start, end, date):
+    start_dt = datetime.datetime.strptime(date + " " + start, "%Y-%m-%d %H:%M")
+    start_ts = timezone.make_aware(start_dt, timezone.get_current_timezone())
+    end_dt = datetime.datetime.strptime(date + " " + end, "%Y-%m-%d %H:%M")
+    end_ts = timezone.make_aware(end_dt, timezone.get_current_timezone())
+
+    return start_ts, end_ts
+
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def create_booking(request):
     open_hour, open_min = get_open_time()
     closed_hour, closed_min = get_close_time()
-    hours = time_blocks(open_hour, open_min, closed_hour)[0]
-    ids = time_blocks(open_hour, open_min, closed_hour)[1]
+    hours, ids = time_blocks(open_hour, open_min, closed_hour)
 
     # Process URL variables
     has_av = request.GET.get('has_av', None)
@@ -559,10 +566,7 @@ def create_booking(request):
     end = request.GET.get('end', str(datetime.datetime.now().hour + 2) + ':' + str(datetime.datetime.now().minute))
 
     # Turn our date, start, and end strings into timestamps
-    start_dt = datetime.datetime.strptime(date + " " + start, "%Y-%m-%d %H:%M")
-    start_ts = timezone.make_aware(start_dt, timezone.get_current_timezone())
-    end_dt = datetime.datetime.strptime(date + " " + end, "%Y-%m-%d %H:%M")
-    end_ts = timezone.make_aware(end_dt, timezone.get_current_timezone())
+    start_ts, end_ts = coerce_times(start, end, date)
 
     # Get time blocks of desired reservation to show on page
     search_block = Room.objects.searched(start, end, ids)
@@ -588,14 +592,31 @@ def create_booking(request):
         end = request.POST.get('end')
         date = request.POST.get('date')
 
-        return HttpResponseRedirect(reverse('member_confirm_booking', kwargs={'room': room, 'start': start, 'end': end, 'date': date}))
+        return HttpResponseRedirect(reverse('member_confirm_booking', kwargs={'space': room, 'start': start, 'end': end, 'date': date}))
 
     return render_to_response('members/user_create_booking.html', {'rooms': rooms, 'hours':hours, 'start':start, 'end':end, 'date': date, 'has_av':has_av, 'floor': floor, 'has_phone': has_phone, 'ids': ids, 'reserved': reserved, 'search_block': search_block }, context_instance=RequestContext(request))
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
-def confirm_booking(request, room, start, end, date):
+def confirm_booking(request, space, start, end, date):
     user = request.user
+    open_hour, open_min = get_open_time()
+    closed_hour, closed_min = get_close_time()
+    hours = time_blocks(open_hour, open_min, closed_hour)[0]
+    ids = time_blocks(open_hour, open_min, closed_hour)[1]
+    room = get_object_or_404(Room, name=space)
+
+    start_ts, end_ts = coerce_times(start, end, date)
+    search_block = Room.objects.searched(start, end, ids)
+
+    target_date = start_ts.replace(hour=0, minute=0, second=0, microsecond=0)
+    end_date = target_date + timedelta(days=1)
+
+    event_dict = {}
+    room_events = room.event_set.filter(room=room, start_ts__gte=target_date, end_ts__lte=end_date)
+    event_dict[room] = room_events
+
+    reserved = Room.objects.reservations(event_dict, ids)
 
     if request.method == 'POST':
         booking_form = EventForm()
@@ -609,7 +630,7 @@ def confirm_booking(request, room, start, end, date):
     else:
         booking_form = EventForm()
 
-    return render_to_response('members/user_confirm_booking.html', {'booking_form':booking_form, 'start':start, 'end':end, 'room': room, 'date': date}, context_instance=RequestContext(request))
+    return render_to_response('members/user_confirm_booking.html', {'booking_form':booking_form, 'start':start, 'end':end, 'room': room, 'date': date, 'hours': hours, 'ids': ids, 'reserved': reserved, 'search_block': search_block }, context_instance=RequestContext(request))
 
 #@login_required
 #@user_passes_test(is_active_member, login_url='member_not_active')
