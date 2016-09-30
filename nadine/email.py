@@ -5,10 +5,10 @@ from datetime import datetime, time, date, timedelta
 
 from django.conf import settings
 from django.contrib.sites.models import Site
-from django.contrib.sites.shortcuts import get_current_site
-from django.template.loader import render_to_string
-from django.template import Template, TemplateDoesNotExist, Context
-from django.core.mail import send_mail, EmailMessage
+from django.template.loader import get_template, render_to_string
+from django.template import Template, TemplateDoesNotExist, Context, RequestContext
+from django.core.mail import send_mail, EmailMessage, EmailMultiAlternatives
+from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
 
@@ -64,49 +64,31 @@ def send_verification(emailObj, request=None):
     """Send email verification link for this EmailAddress object.
     Raises smtplib.SMTPException, and NoRouteToHost.
     """
-    html_template = get_template('email/verification_email.html')
-    text_template = get_template('email/verification_email.txt')
 
     # Build our context
-    site = get_current_site()
+    site = Site.objects.get_current()
     context_dict = {
-        'current_site': site.domain,
-        'current_site_id': site.pk,
-        'current_site_name': site.name,
-        'emailaddress_id': emailObj.pk,
-        'email': emailObj.email,
-        'username': emailObj.user.username,
-        'first_name': emailObj.user.first_name,
-        'last_name': emailObj.user.last_name,
-        'primary_email': emailObj.user.email,
+        'site': site,
+        'user': emailObj.user,
         'verif_key': emailObj.verif_key,
     }
-    verify_link = settings.EMAIL_VERIFICATION_URL % d
-    d['verify_link'] = verify_link
-    if request:
-        context = RequestContext(request, d)
-    else:
-        context = Context(d)
+    verify_link = settings.EMAIL_VERIFICATION_URL
+    if not verify_link:
+        uri = reverse('member_email_verify', kwargs={'email_pk': emailObj.id, 'verif_key':emailObj.verif_key})
+        verify_link = "http://" + site.domain + uri
+    context_dict['verify_link'] = verify_link
 
-    subject = ""
-    msg = EmailMultiAlternatives(MM.VERIFICATION_EMAIL_SUBJECT % d,
-        text_template.render(context),MM.FROM_EMAIL_ADDRESS,
-        [self.email])
-    msg.attach_alternative(html_template.render(context), 'text/html')
-    msg.send(fail_silently=False)
-    if MM.USE_MESSAGES:
-        message = MM.VERIFICATION_LINK_SENT_MESSAGE % d
-        if request is not None:
-            messages.success(request, message,
-                fail_silently=not MM.USE_MESSAGES)
-        else:
-            try:
-                self.user.message_set.create(message=message)
-            except AttributeError:
-                pass # user.message_set is deprecated and has been
-                     # fully removed as of Django 1.4. Thus, display
-                     # of this message without passing in a view is
-                     # supported only in 1.3
+    # if request:
+    #     context = RequestContext(request, context_dict)
+    # else:
+    #     context = Context(context_dict)
+
+    subject = "Please Verify Your Email Address"
+    text_template = get_template('email/verification_email.txt')
+    text_msg = text_template.render(context=context_dict)
+    html_template = get_template('email/verification_email.html')
+    html_msg = html_template.render(context=context_dict)
+    send_email(emailObj.email, subject, text_msg, html_msg)
 
 
 #####################################################################
@@ -309,13 +291,13 @@ def team_signature(user):
     site = Site.objects.get_current()
     return render_to_string('email/team_email_signature.txt', context={'user': user, 'site': site})
 
-def send(recipient, subject, message):
-    send_email(recipient, subject, message, False)
+def send(recipient, subject, text_message, html_message=None):
+    send_email(recipient, subject, text_message, html_message=html_message, fail_silently=False)
 
-def send_quietly(recipient, subject, message):
-    send_email(recipient, subject, message, True)
+def send_quietly(recipient, subject, text_message, html_message=None):
+    send_email(recipient, subject, text_message, html_message=html_message, fail_silently=True)
 
-def send_email(recipient, subject, message, fail_silently):
+def send_email(recipient, subject, text_message, html_message=None, fail_silently=False):
     # A little safety net when debugging
     if settings.DEBUG:
         recipient = settings.EMAIL_ADDRESS
@@ -323,9 +305,10 @@ def send_email(recipient, subject, message, fail_silently):
     note = None
     success = False
     try:
-        msg = EmailMessage(subject, message, settings.EMAIL_ADDRESS, [recipient])
-        # msg.content_subtype = "html"  # Main content is now text/html
-        msg.send()
+        msg = EmailMultiAlternatives(subject, text_message, settings.EMAIL_ADDRESS, [recipient])
+        if html_message:
+            msg.attach_alternative(html_message, 'text/html')
+        msg.send(fail_silently=False)
         success = True
     except:
         note = traceback.format_exc()
@@ -334,13 +317,14 @@ def send_email(recipient, subject, message, fail_silently):
         raise
     finally:
         user = User.objects.filter(email=recipient).first()
-        try:
-            from nadine.models.core import SentEmailLog
-            log = SentEmailLog(user=user, member=user.profile, recipient=recipient, subject=subject, success=success)
-            if note:
-                log.note = note
-            log.save()
-        except:
-            pass
+        if user:
+            try:
+                from nadine.models.core import SentEmailLog
+                log = SentEmailLog(user=user, recipient=recipient, subject=subject, success=success)
+                if note:
+                    log.note = note
+                log.save()
+            except:
+                pass
 
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
