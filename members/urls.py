@@ -39,8 +39,7 @@ urlpatterns = [
     url(r'^disable_billing/(?P<username>[^/]+)$', views.disable_billing, name='member_disable_billing'),
     url(r'^file/(?P<disposition>[^/]+)/(?P<username>[^/]+)/(?P<file_name>[^/]+)$', views.file_view, name='member_files'),
     url(r'^booking/create/$', views.create_booking, name='member_create_booking'),
-    url(r'^booking/confirm/$', views.confirm_booking, name='member_confirm_booking'),
-
+    url(r'^booking/confirm/(?P<room>[^/]+)/(?P<start>[^/]+)/(?P<end>[^/]+)/(?P<date>[^/]+)$', views.confirm_booking, name='member_confirm_booking')
     url(r'^send_verification/(?P<email_pk>\d+)/$', views.send_email_verification, name='member_send_verification'),
     url(r'^verify/(?P<email_pk>\d+)/(?P<verif_key>[^/]+)/$', views.email_verify, name='member_email_verify'),
 ]

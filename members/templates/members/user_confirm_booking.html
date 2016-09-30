@@ -26,18 +26,36 @@
           </td>
         </tr>
         <tr>
-          <td>
-            Slider:
-          </td>
-          <td>
-            <div id="time-range">
-              <p>Time Range: <span class="slider-time">{{ start }}</span> - <span class="slider-time2">{{ end }}</span>
-              </p>
-              <div class="sliders_step1">
-                  <div id="slider-range"></div>
-              </div>
-            </div>
-          </td>
+          <table class='confirm-table'>
+            <thead>
+              {% for hour in hours %}
+                {% if forloop.counter0|divisibleby:2 %}
+                  <th class="rotate"><div><span>
+                    {{ hour }}
+                  </div></span></th>
+                {% else %}
+                  <th></th>
+                {% endif %}
+              {% endfor %}
+            </thead>
+            <tr>
+              {% for id in ids %}
+                {% for here, reservations in reserved.items %}
+                  {% if here == room %}
+                    {% if id in reservations %}
+                      <td class='cal-box reserved' id='hour-{{ id }}'>
+                      </td>
+                    {% elif id in search_block %}
+                      <td class='cal-box searched' id='hour-{{ id }}'></td>
+                    {% else %}
+                      <td class='cal-box available' id='hour-{{ id }}'>
+                      </td>
+                    {% endif %}
+                  {% endif %}
+                {% endfor %}
+              {% endfor %}
+            </tr>
+          </table>
         </tr>
         <tr>
           <td>From:</td>
@@ -56,7 +74,11 @@
         </tr>
         <tr>
           <td>Is this a public event?</td>
-          <td>Wahoo</td>
+          <td><select class='browser-default input-field col s2' name='public_bool' id='publicly_view'>
+            <option value="" disabled selected></option>
+            <option value="False">No</option>
+            <option value="True">Yes</option>
+          </select></td>
           <td>{{ booking_form.publicly_viewable.errors }}</td>
         </tr>
       </table>
