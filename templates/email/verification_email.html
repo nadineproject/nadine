@@ -1,6 +1,11 @@
 {% load i18n %}
 <p>{% trans "Please verify your e-mail address." %}</p>
 
-<p>{% trans "A new e-mail address has been associated with your account at" %} {{ current_site_name }}. {% trans "Please click the link below to verify your new address." %}</p>
+<p>{% trans "A new e-mail address has been associated with your account at" %} {{ site.name }}. {% trans "Please click the link below to verify your new address." %}</p>
 
 <p><a href="{{ verify_link }}">{% trans "Click here to verify your e-mail." %}</a></p>
+
+<p>
+Thanks!<br>
+The {{ site.name }} Team
+</p>

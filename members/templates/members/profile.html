@@ -1,5 +1,6 @@
 {% extends "members/u_base.html" %}
 {% load imagetags %}
+{% load email_tags %}
 
 {% block sub-title %}{{ user.get_full_name }} | {% endblock %}
 
@@ -82,10 +83,22 @@
         </h3>
         <table>
             <!-- Username -->
+            <!-- <tr>
+                <td>Username:</td>
+                <td>{{ user.username }}</td>
+            </tr> -->
             <tr>
-              <td>Username:</td>
-              <td>{{ user.username }}</td>
+                <td>Primary Email:</td>
+                <td>{{ user.email }} {% email_verified user.email %}</td>
             </tr>
+            {% for email in user.profile.non_primary_emails %}
+              <tr>
+                  <td>Alternate Email:</td>
+                  <td>
+                      {{ email }} {% email_verified email %}
+                  </td>
+              </tr>
+            {% endfor %}
 
             <!-- Status -->
             <tr>
@@ -154,20 +167,6 @@
                  <td>{{ user.profile.gender }}</td>
               </tr>
             {% endif %}
-        </table>
-
-        <h3>Email Addresses</h3>
-        <table>
-            <tr>
-                <th>Address</th>
-                <th>Verified</th>
-            </tr>
-            {% for email in user.emailaddress_set.all %}
-              <tr>
-                 <td>{{ email }}</td>
-                 <td>{{ email.is_verified|yesno:"yes,no" }}</td>
-              </tr>
-            {% endfor %}
         </table>
 
         <h3>

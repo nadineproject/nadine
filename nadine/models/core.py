@@ -20,6 +20,7 @@ from django.conf import settings
 from django.utils.encoding import smart_str
 from django_localflavor_us.models import USStateField, PhoneNumberField
 from django.utils import timezone
+from django.core.exceptions import ObjectDoesNotExist
 
 from monthdelta import MonthDelta, monthmod
 from taggit.managers import TaggableManager
@@ -454,6 +455,15 @@ class UserProfile(models.Model):
             else:
                 return None
 
+    def all_emails(self):
+        # Done in two queries so that the primary email address is always on top.
+        primary = self.user.emailaddress_set.filter(is_primary=True)
+        non_primary = self.user.emailaddress_set.filter(is_primary=False)
+        return list(primary) + list(non_primary)
+
+    def non_primary_emails(self):
+        return self.user.emailaddress_set.filter(is_primary=False)
+
     def duration(self):
         return relativedelta(timezone.now().date(), self.first_visit())
 
@@ -786,8 +796,8 @@ def sync_primary_callback(sender, **kwargs):
     user = kwargs['instance']
     try:
         email_address = EmailAddress.objects.get(email=user.email)
-    except DoesNotExist:
-        email_adress = EmailAddress(user=user, email=user.email)
+    except ObjectDoesNotExist:
+        email_address = EmailAddress(user=user, email=user.email)
         email_address.save(verify=False)
     email_address.set_primary()
 post_save.connect(sync_primary_callback, sender=User)

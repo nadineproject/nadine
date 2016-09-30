@@ -615,4 +615,35 @@ def confirm_booking(request):
     return render_to_response('members/user_confirm_booking.html', {'booking_form':booking_form, 'start':start, 'end':end, 'room': room, 'date': date}, context_instance=RequestContext(request))
 
 
+def send_email_verification(request, email_pk, next=None):
+    email_address = get_object_or_404(EmailAddress, pk=email_pk)
+    if email_address.is_verified():
+        messages.error(request, "Email address was already verified.")
+    else:
+        email.send_verification(email_address, request=request)
+        messages.success(request, "Email verification sent.")
+    if next:
+        return redirect(next)
+    else:
+        return redirect(request.META['HTTP_REFERER'])
+
+
+def email_verify(request, email_pk, verif_key):
+    email_address = get_object_or_404(EmailAddress, pk=email_pk)
+    if email_address.is_verified():
+        messages.error(request, "Email address was already verified.")
+    if email_address.verif_key != verif_key:
+        messages.error(request, "Invalid key.")
+
+    # Looks good!  Mark as verified
+    email_address.remote_addr = request.META.get('REMOTE_ADDR')
+    email_address.remote_host = request.META.get('REMOTE_HOST')
+    email_address.verified_ts = timezone.now()
+    email_address.save()
+    # email_verified.send_robust(sender=email_address)
+    messages.success(request, "Email address has been verified.")
+
+    next_url = reverse('member_profile', kwargs={'username': email_address.user.username})
+    return HttpResponseRedirect(next_url)
+
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

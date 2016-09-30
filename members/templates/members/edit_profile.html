@@ -1,4 +1,5 @@
 {% extends "members/u_base.html" %}
+{% load email_tags %}
 
 {% block sub-title %}Edit Profile | {% endblock %}
 
@@ -9,6 +10,39 @@
 <p align="center"><em>NOTE: Items in <strong>bold</strong> are viewable by all active members.</em></p>
 
 <div id="profile_form">
+  <h4>Email Addresses</h4>
+  <table id="emails">
+      {% for email in user.profile.all_emails %}
+        <tr>
+            <td>{{ email }}</td>
+            <td>
+                {% if not email.is_primary %}
+                    <button>Make Primary</button>
+                {% endif %}
+            </td>
+            <td>
+                {% if not email.is_verified %}
+                    <button>Verify</button>
+                {% endif %}
+            </td>
+            <td>
+                {% if user.emailaddress_set.count > 1 %}
+                    <button>Delete</button>
+                {% endif %}
+            </td>
+        </tr>
+      {% endfor %}
+      <tr>
+          <td colspan=2>
+              <input name="email"/>
+          </td>
+          <td></td>
+          <td>
+              <button>Add</button>
+          </td>
+      </tr>
+  </table>
+
   <form enctype="multipart/form-data" action='.' method='post'>
       {{ profile_form.username }}
       <h4>Contact Information</h4>
@@ -22,11 +56,6 @@
               <td class='cap-label'><strong>Last Name</strong></td>
               <td>{{ profile_form.last_name }}</td>
               <td>{{ profile_form.last_name.errors }}</td>
-          </tr>
-          <tr class="row-even">
-              <td class='cap-label'>Email Address</td>
-              <td>{{ profile_form.email }}</td>
-              <td>{{ profile_form.email.errors }}</td>
           </tr>
           <tr class="row-even">
               <td class='cap-label'>Address 1</td>
