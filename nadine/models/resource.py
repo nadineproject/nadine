@@ -40,6 +40,36 @@ class RoomManager(models.Manager):
         rooms = rooms.exclude(straddling| sandwich | overlap)
         return rooms
 
+    def reservations(self, room_dict, ids):
+        res_dict = {}
+        for room, events in room_dict.items():
+            if events:
+                for event in events:
+                    start_wtz = timezone.make_naive(event.start_ts, timezone.get_current_timezone())
+                    end_wtz = timezone.make_naive(event.end_ts, timezone.get_current_timezone())
+                    starts = start_wtz.strftime('%H%M')
+                    ends = end_wtz.strftime('%H%M')
+                    reserved = []
+                    if room not in res_dict.keys():
+                        for id in ids:
+                            if int(starts) <= int(id) and int(id) <= int(ends):
+                                reserved.append(id)
+                        res_dict[room] = reserved
+                    else:
+                        for id in ids:
+                            if int(starts) <= int(id) and int(id) <= int(ends):
+                                res_dict[room].append(id)
+            else:
+                res_dict[room] = {}
+        return res_dict
+
+    def searched(self, start, end, ids):
+        search_block = []
+        for id in ids:
+            if int(start.replace(':', '')) <= int(id) and int(id) <= int(end.replace(':', '')):
+                search_block.append(id)
+        return search_block
+
 
 class Room(models.Model):
     name = models.CharField(max_length=64)

@@ -3,17 +3,22 @@
 {% block sub-title %}Book a Meeting Room | {% endblock %}
 
 {% block content %}
+<div class='booking-box'>
   <h2>Book a Meeting Room</h2>
+  <br />
   <form action='#' method='GET'>
-    <input type="date" name="date" class="datepicker col s4 offset-s4" id='booking-date' >
+    <div class='row'>
+      <p class='col s1 offset-s3'><strong>Date:</strong></p>
+      <input type="date" name="date" class="datepicker col s4" id='booking-date' >
+    </div>
     <div class='row'>
       <div class='row' id='time-row'>
-        <div class='col s4 offset-s3 row'>
-          <p class='col s3'>Start Time:</p>
-          <input class='col s4' name='start' type='time' step=900 id='start-time'/>
+        <div class='col s4 offset-s2 row'>
+          <p class='col s4'><strong>Start Time:</strong></p>
+          <input class='col s6' name='start' type='time' step=900 id='start-time'/>
         </div>
         <div class='col s4 row'>
-          <p class='col s3'>End Time:</p>
+          <p class='col s3'><strong>End Time:</strong></p>
           <input class='col s6' name='end' type='time' step=900 id='end-time'/>
         </div>
       </div>
@@ -68,17 +73,29 @@
             {% endfor %}
           </thead>
           <tr>
-            {% for hour in hours %}
-              <td class='cal-box available' id='hour-{{ hour }}'>
-              </td>
+            {% for id in ids %}
+              {% for here, reservations in reserved.items %}
+                {% if here == room %}
+                  {% if id in reservations %}
+                    <td class='cal-box reserved' id='hour-{{ id }}'>
+                    </td>
+                  {% elif id in search_block %}
+                    <td class='cal-box searched' id='hour-{{ id }}'></td>
+                  {% else %}
+                    <td class='cal-box available' id='hour-{{ id }}'>
+                    </td>
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
             {% endfor %}
           </tr>
         </table>
       </div>
       <form class='col s1 book-room' action='.' method='POST'>
         <input type='hidden' name='room' value='{{ room.name }}' />
-        <input type='hidden' name='start' value='{{ start_ts }}'/>
-        <input type='hidden' name='end' value='{{ end_ts }}' />
+        <input type='hidden' name='start' value='{{ start }}'/>
+        <input type='hidden' name='end' value='{{ end }}' />
+        <input type='hidden' name='date' value='{{ date }}' />
         <button type='submit' class='book-btn btn'>Book</button>
         {% csrf_token %}
       </form>
@@ -100,6 +117,7 @@
       </div>
     </div>
   {% endfor %}
+</div>
 {% endblock %}
 
 {% block extrajs %}

@@ -5,6 +5,7 @@ import time
 from datetime import date, datetime, timedelta
 from operator import itemgetter, attrgetter
 from calendar import Calendar, HTMLCalendar
+from collections import defaultdict
 
 from django.conf import settings
 from django.template import RequestContext, Template, Context
@@ -429,7 +430,7 @@ def disable_billing(request, username):
         api = PaymentAPI()
         api.disable_recurring(username)
         email.announce_billing_disable(user)
-    return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username, 'settings': settings}))
+    return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username, 'settings': settings}))
 
 
 @login_required
@@ -507,38 +508,46 @@ def get_close_time():
 
 def time_blocks(open_hour, open_min, closed_hour):
     hours = []
+    ids = []
     for num in range(int(open_hour), int(closed_hour)):
         minutes = str(open_min)
         for count in range(0, 4):
             hour = str(num) + ':' + minutes
+            id = str(num) + minutes
             if minutes == '00':
+                ids.append(id)
                 if num > 12:
                     hour = str (num - 12)+ ":" + minutes
                 minutes = '15'
                 hours.append(hour)
             elif minutes =='15':
+                ids.append(id)
                 if num > 12:
                     hour = str(num - 12) + ':' + minutes
                 minutes = '30'
                 hours.append(hour)
             elif minutes =='30':
+                ids.append(id)
                 if num > 12:
                     hour = str(num - 12) + ':' + minutes
                 minutes = '45'
                 hours.append(hour)
             else:
+                ids.append(id)
                 if num > 12:
                     hour = str(num - 12) + ':' + minutes
                 minutes = '00'
+                num += 1
                 hours.append(hour)
-    return hours
+    return hours, ids
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def create_booking(request):
     open_hour, open_min = get_open_time()
     closed_hour, closed_min = get_close_time()
-    hours = time_blocks(open_hour, open_min, closed_hour)
+    hours = time_blocks(open_hour, open_min, closed_hour)[0]
+    ids = time_blocks(open_hour, open_min, closed_hour)[1]
 
     # Process URL variables
     has_av = request.GET.get('has_av', None)
@@ -549,14 +558,16 @@ def create_booking(request):
     start = request.GET.get('start', open_hour + ":" + open_min)
     end = request.GET.get('end', closed_hour + ":" + closed_min)
 
-    # Turn our date, start, and end strings in to timestamps
+    # Turn our date, start, and end strings into timestamps
     start_dt = datetime.datetime.strptime(date + " " + start, "%Y-%m-%d %H:%M")
     start_ts = timezone.make_aware(start_dt, timezone.get_current_timezone())
     end_dt = datetime.datetime.strptime(date + " " + end, "%Y-%m-%d %H:%M")
     end_ts = timezone.make_aware(end_dt, timezone.get_current_timezone())
 
-    #Make auto date for start and end if not otherwise given
+    # Get time blocks of desired reservation to show on page
+    search_block = Room.objects.searched(start, end, ids)
 
+    #Make auto date for start and end if not otherwise given
     room_dict = {}
     rooms = Room.objects.available(start=start_ts, end=end_ts, has_av=has_av, has_phone=has_phone, floor=floor, seats=seats)
 
@@ -568,14 +579,17 @@ def create_booking(request):
     for room in rooms:
         room_events = room.event_set.filter(room=room, start_ts__gte=target_date, end_ts__lte=end_date)
         room_dict[room] = room_events
-    #
+
+    reserved = Room.objects.reservations(room_dict, ids)
+
     if request.method == 'POST':
         room = request.POST.get('room')
         start = request.POST.get('start')
         end = request.POST.get('end')
-        return render_to_response('members/user_confirm_booking.html', {'start':start, 'end':end, 'room':room}, context_instance=RequestContext(request))
+        date = request.POST.get('date')
+        return render_to_response('members/user_confirm_booking.html', {'start':start, 'end':end, 'room':room, 'date': date}, context_instance=RequestContext(request))
 
-    return render_to_response('members/user_create_booking.html', {'rooms': rooms, 'hours':hours, 'room_dict': room_dict, 'start_ts':start_ts, 'end_ts':end_ts}, context_instance=RequestContext(request))
+    return render_to_response('members/user_create_booking.html', {'rooms': rooms, 'hours':hours, 'room_dict': room_dict, 'start':start, 'end':end, 'start_ts':start_ts, 'end_ts':end_ts, 'date': date, 'ids': ids, 'reserved': reserved, 'search_block': search_block }, context_instance=RequestContext(request))
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
@@ -584,6 +598,7 @@ def confirm_booking(request):
     room = request.GET.room
     start = request.GET.start
     end = request.GET.end
+    date = request.GET.date
     page_message = None
 
     if request.method == 'POST':
@@ -597,7 +612,7 @@ def confirm_booking(request):
     else:
         booking_form = EventForm()
 
-    return render_to_response('members/user_confirm_booking.html', {'booking_form':booking_form, 'start':start, 'end':end, 'room': room}, context_instance=RequestContext(request))
+    return render_to_response('members/user_confirm_booking.html', {'booking_form':booking_form, 'start':start, 'end':end, 'room': room, 'date': date}, context_instance=RequestContext(request))
 
 
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
