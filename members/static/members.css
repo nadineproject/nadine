@@ -451,15 +451,15 @@ table td {
 		background-color: RGBA(82, 144, 159, 1);
 	}
 
-	.cal-table {
+	.cal-table, .booking-bar {
 		margin-top: 10px;
 	}
 
-	.cal-table thead {
+	.cal-table thead, .booking-bar thead {
 		border: none;
 	}
 
-	.cal-table th{
+	.cal-table th, .booking-bar th{
 		font-size: .8em;
 		text-align: left;
 		height: 10px;
@@ -506,8 +506,12 @@ table td {
 		white-space: nowrap;
 	}
 
-	.cal-table th:first-child {
+	.cal-table th:first-child, .booking-bar th:first-child {
 		width: 2%;
+	}
+
+	.booking-bar {
+		margin-bottom: 5%;
 	}
 
 	.cal-box {
@@ -522,19 +526,19 @@ table td {
 		background-color: RGBA(178, 225, 203, .6);
 	}
 
-	.cal-table .reserved {
+	.cal-table .reserved, .booking-bar .reserved {
 		background-color: RGBA(217, 95, 73, .4);
 	}
 
-	.cal-table .searched {
+	.cal-table .searched, .booking-bar .searched {
 		background-color: RGBA(49, 39, 50, .7);
 	}
 
-	.cal-table td:first-child {
+	.cal-table td:first-child, .booking-bar td:first-child {
 		border-radius: 4px 0px 0px 4px;
 	}
 
-	.cal-table td:last-child {
+	.cal-table td:last-child, .booking-bar td:last-child {
 		border-radius: 0px 4px 4px 0px;
 	}
 

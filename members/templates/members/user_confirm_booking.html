@@ -11,70 +11,67 @@
       </p>
       <table>
         <tr>
-          <td>Booking For:</td>
+          <td><strong>Booking For:</strong></td>
           <td><input value='{{ user.first_name }} {{ user.last_name }}' readonly /></td>
         </tr>
         <tr>
-          <td id='room'>Room:</td>
+          <td id='room'><strong>Room:</strong></td>
           <td><input value='{{ room }}' readonly  /></td>
           <td>{{ booking_form.room.errors }}</td>
         </tr>
         <tr>
-          <td>Date:</td>
+          <td><strong>Date:</strong></td>
           <td>
             <input type="date" name="date" value='{{ date }}' class="datepicker col s4 offset-s4" id='booking-date' >
           </td>
         </tr>
-        <tr>
-          <table class='cal-table'>
-            <thead>
-              {% for hour in hours %}
-                {% if forloop.counter0|divisibleby:2 %}
-                  <th class="rotate"><div><span>
-                    {{ hour }}
-                  </div></span></th>
+      </table>
+      <table class='booking-bar'>
+        <thead>
+          {% for hour in hours %}
+            {% if forloop.counter0|divisibleby:2 %}
+              <th class="rotate"><div><span>
+                {{ hour }}
+              </div></span></th>
+            {% else %}
+              <th></th>
+            {% endif %}
+          {% endfor %}
+        </thead>
+        <tbody>
+          <tr>
+          {% for id in ids %}
+            {% for here, reservations in reserved.items %}
+              {% if here == room %}
+                {% if id in reservations %}
+                  <td class='cal-box reserved' id='hour-{{ id }}'>
+                  </td>
+                {% elif id in search_block %}
+                  <td class='cal-box searched' id='hour-{{ id }}'></td>
                 {% else %}
-                  <th></th>
+                  <td class='cal-box available' id='hour-{{ id }}'>
+                  </td>
                 {% endif %}
-              {% endfor %}
-            </thead>
-            <tr>
-              {% for id in ids %}
-                {% for here, reservations in reserved.items %}
-                  {% if here == room %}
-                    {% if id in reservations %}
-                      <td class='cal-box reserved' id='hour-{{ id }}'>
-                      </td>
-                    {% elif id in search_block %}
-                      <td class='cal-box searched' id='hour-{{ id }}'></td>
-                    {% else %}
-                      <td class='cal-box available' id='hour-{{ id }}'>
-                      </td>
-                    {% endif %}
-                  {% endif %}
-                {% endfor %}
-              {% endfor %}
-            </tr>
-          </table>
-        </tr>
+              {% endif %}
+            {% endfor %}
+          {% endfor %}
+          </tr>
+        </tbody>
+      </table>
+      <table>
         <tr>
-          <td>From:</td>
-          <td>
-            <input type='time' step=900 name='start' id='start-time' value='{{ start }}'/>
+          <td><strong>From: </strong><input style="width:70%;margin-left:5%;" type='time' step=900 name='start' id='start-time' value='{{ start }}'/>
           </td>
+          <td><strong>To: </strong><input style="width:70%;margin-left:5%;" type='time' step=900 name='end' id='end-time' value='{{ end }}'/></td>
         </tr>
         <tr>
-          <td>To:</td>
-          <td><input type='time' step=900 name='end' id='end-time' value='{{ end }}'/></td>
-        </tr>
-        <tr>
-          <td>Description:</td>
+          <td><strong>Description:</strong></td>
           <td><input type='text' name='description' id='confirm_desc' placeholder='O.N. Team Meeting'/></td>
           <td>{{ booking_form.description.errors }}</td>
         </tr>
         <tr>
-          <td>Is this a public event?</td>
-          <td><select class='browser-default input-field col s2' name='public_bool' id='publicly_view'>
+          <td><strong>Is this a public event?</strong></td>
+          <td><select class='browser-default input-field col s4' name='public_bool' id='publicly_view'>
             <option value="" disabled selected></option>
             <option value="False">No</option>
             <option value="True">Yes</option>
@@ -98,16 +95,14 @@
         format: 'yyyy-mm-dd'
       });
 
-      $('.cal-box').on('hover', function() {
-        // Pop up with time of that box
-      })
-
+      //Helper functions for toggling calendar bar
       function toggleStatus(id) {
         if ($('#hour-' + id).hasClass('available')) {
           $('#hour-' + id).removeClass('available').addClass('searched');
         } else if ($('#hour-' + id).hasClass('searched')) {
           $('#hour-' + id).removeClass('searched').addClass('available');
         }
+        //TODO: needs to break if one of the blocks hasClass('reserved')
       }
 
       function extendStart(start, time, available) {
@@ -143,11 +138,13 @@
         }
       }
 
+      //TODO: what if one of the included blocks is reserved???
       $('.cal-box').on('click', function() {
         var startTime = $('#start-time').val();
         var start = parseInt(startTime.replace(':', ''));
         var endTime = $('#end-time').val();
         var end = parseInt(endTime.replace(':', ''));
+
         var available = $('.available');
         var searched = $('.searched');
         var time = parseInt(this.id.split('-')[1]);
@@ -178,12 +175,10 @@
 
             $('#end-time').val(endTime);
           }
-        // if greater than end, change end
         } else if (clicked.hasClass('reserved')) {
         // if the div has class of reserved, throw error
         } else if (clicked.hasClass('searched')) {
           changeEnd(end, time, searched);
-
           end = time.toString();
 
           if (end.length > 3) {
@@ -193,11 +188,7 @@
           }
 
           $('#end-time').val(endTime);
-        // if box has class of searched, adjust time accordingly
-        // if less than start time, change start
-        // if greater than end, change end
         }
-
       });
     });
   </script>
