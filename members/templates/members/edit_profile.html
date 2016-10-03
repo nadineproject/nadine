@@ -3,6 +3,14 @@
 
 {% block sub-title %}Edit Profile | {% endblock %}
 
+{% block style %}
+    .help_text {
+        background:white;
+        padding: 1em;
+        display: none;
+    }
+{% endblock %}
+
 {% block content %}
 
 <h3 style='text-align:center;'>Edit Your Profile:</h3>
@@ -10,223 +18,252 @@
 <p align="center"><em>NOTE: Items in <strong>bold</strong> are viewable by all active members.</em></p>
 
 <div id="profile_form">
-  <h4>Email Addresses</h4>
-  <table id="emails">
-      {% for email in user.profile.all_emails %}
+
+<h4>
+    Email Addresses
+    (<a onclick="$('#email_help').toggle();">?</a>)
+</h4>
+
+
+
+<table id="emails">
+    <tr id="email_help" class="help_text">
+        <td colspan="2">
+            <strong>Email Help</strong>
+            <p>You can have multiple email addresses associated with your membership.
+            These emails are used at login, and when messages are sent to various mailing
+            lists.  If you send email from an address that is not associated with a
+            membership, it will be moderated.</p>
+            <p>Your primary email address is the address we send notifications and
+            mailing list messages to.</p>
+        </td>
+    </tr>
+    {% for email in user.profile.all_emails %}
+    <tr>
+        <td>{{ email }}</td>
+        <td nowrap style="text-align:right">
+            {% if not email.is_primary %}
+                <button onclick="location.href = '{{ email.get_set_primary_link }}';">Make Primary</button>
+                <button onclick="location.href = '{{ email.get_delete_link }}';">Delete</button>
+            {% endif %}
+            {% if not email.is_verified %}
+                <button onclick="location.href = '{{ email.get_send_verif_link }}';">Verify</button>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+
+    <form action="{% url 'email_add' %}" method="POST">
+        <input type="hidden" name="username" value="{{ user.username }}" />
         <tr>
-            <td>{{ email }}</td>
-            <td nowrap style="text-align:right">
-                {% if not email.is_primary %}
-                    <button onclick="location.href = '{{ email.get_set_primary_link }}';">Make Primary</button>
-                    <button onclick="location.href = '{{ email.get_delete_link }}';">Delete</button>
-                {% endif %}
-                {% if not email.is_verified %}
-                    <button onclick="location.href = '{{ email.get_send_verif_link }}';">Verify</button>
-                {% endif %}
+            <td width="100%">
+              <input name="email" placeholder="Alternate Email"/>
+            </td>
+            <td style="text-align:right">
+              <button type="submit">Add Email Address</button>
             </td>
         </tr>
-      {% endfor %}
+        {% csrf_token %}
+    </form>
+</table>
 
-      <form action="{% url 'email_add' %}" method="POST">
-      <input type="hidden" name="username" value="{{ user.username }}" />
-      <tr>
-          <td width="100%">
-              <input name="email" placeholder="Alternate Email"/>
-          </td>
-          <td style="text-align:right">
-              <button type="submit">Add Email Address</button>
-          </td>
-      </tr>
-      {% csrf_token %}
-      </form>
-  </table>
-
-  <form enctype="multipart/form-data" action='.' method='post'>
-      {{ profile_form.username }}
-      <h4>Contact Information</h4>
-      <table id="contact">
-          <tr class="row-even">
-              <td class='cap-label'><strong>First Name</strong></td>
-              <td>{{ profile_form.first_name }}</td>
-              <td>{{ profile_form.first_name.errors }}</td>
-          </tr>
-          <tr class="row-odd">
-              <td class='cap-label'><strong>Last Name</strong></td>
-              <td>{{ profile_form.last_name }}</td>
-              <td>{{ profile_form.last_name.errors }}</td>
-          </tr>
-          <tr class="row-even">
-              <td class='cap-label'>Address 1</td>
-              <td>{{ profile_form.address1 }}</td>
-              <td>{{ profile_form.address1.errors }}</td>
-          </tr>
-          <tr class="row-odd">
-              <td class='cap-label'>Address 2</td>
-              <td>{{ profile_form.address2 }}</td>
-              <td>{{ profile_form.address2.errors }}</td>
-          </tr>
-          <tr class="row-even">
-              <td class='cap-label'>City</td>
-              <td>{{ profile_form.city }}</td>
-              <td>{{ profile_form.city.errors }}</td>
-          </tr>
-          <tr class="row-odd">
-              <td class='cap-label'>State</td>
-              <td>{{ profile_form.state }}</td>
-              <td>{{ profile_form.state.errors }}</td>
-          </tr>
-          <tr class="row-even">
-              <td class='cap-label'>Zipcode</td>
-              <td>{{ profile_form.zipcode }}</td>
-              <td>{{ profile_form.zipcode.errors }}</td>
-          </tr>
-          <tr class="row-odd">
-              <td class='cap-label'>Primary Phone</td>
-              <td>{{ profile_form.phone }}</td>
-              <td>{{ profile_form.phone.errors }}</td>
-          </tr>
-          <tr class="row-even">
-              <td class='cap-label'>Alternate Phone</td>
-              <td>{{ profile_form.phone2 }}</td>
-              <td>{{ profile_form.phone2.errors }}</td>
-          </tr>
-          {% if ALLOW_PHOTO_UPLOAD %}
-          <tr class="row-odd">
+<form enctype="multipart/form-data" action='.' method='POST'>
+    {{ profile_form.username }}
+    <h4>Contact Information</h4>
+    <table id="contact">
+        <tr class="row-even">
+            <td class='cap-label'><strong>First Name</strong></td>
+            <td>{{ profile_form.first_name }}</td>
+            <td>{{ profile_form.first_name.errors }}</td>
+        </tr>
+        <tr class="row-odd">
+            <td class='cap-label'><strong>Last Name</strong></td>
+            <td>{{ profile_form.last_name }}</td>
+            <td>{{ profile_form.last_name.errors }}</td>
+        </tr>
+        <tr class="row-even">
+            <td class='cap-label'>Address 1</td>
+            <td>{{ profile_form.address1 }}</td>
+            <td>{{ profile_form.address1.errors }}</td>
+        </tr>
+        <tr class="row-odd">
+            <td class='cap-label'>Address 2</td>
+            <td>{{ profile_form.address2 }}</td>
+            <td>{{ profile_form.address2.errors }}</td>
+        </tr>
+        <tr class="row-even">
+            <td class='cap-label'>City</td>
+            <td>{{ profile_form.city }}</td>
+            <td>{{ profile_form.city.errors }}</td>
+        </tr>
+        <tr class="row-odd">
+            <td class='cap-label'>State</td>
+            <td>{{ profile_form.state }}</td>
+            <td>{{ profile_form.state.errors }}</td>
+        </tr>
+        <tr class="row-even">
+            <td class='cap-label'>Zipcode</td>
+            <td>{{ profile_form.zipcode }}</td>
+            <td>{{ profile_form.zipcode.errors }}</td>
+        </tr>
+        <tr class="row-odd">
+            <td class='cap-label'>Primary Phone</td>
+            <td>{{ profile_form.phone }}</td>
+            <td>{{ profile_form.phone.errors }}</td>
+        </tr>
+        <tr class="row-even">
+            <td class='cap-label'>Alternate Phone</td>
+            <td>{{ profile_form.phone2 }}</td>
+            <td>{{ profile_form.phone2.errors }}</td>
+        </tr>
+        {% if ALLOW_PHOTO_UPLOAD %}
+        <tr class="row-odd">
             <td><strong>Upload Photo</strong></td>
             <td>
-              <input type='file' name='photo' style='background-color:RGBA(255, 255, 255, 0);'/>
+                <input type='file' name='photo' style='background-color:RGBA(255, 255, 255, 0);'/>
             </td>
-          </tr>
-          {% endif %}
-      </table>
+        </tr>
+        {% endif %}
+    </table>
 
-      <h4>Websites &amp; Other Profiles</h4>
-     <table id="websites">
-          <tr class="row-even">
-              <td class='cap-label'><strong>Professional Website</strong></td>
-              <td>{{ profile_form.url_professional }}</td>
-              <td width="200px">{{ profile_form.url_professional.errors }}</td>
-          </tr>
-          <tr class="row-odd">
-              <td class='cap-label'><strong>Personal Website</strong></td>
-              <td>{{ profile_form.url_personal }}</td>
-              <td>{{ profile_form.url_personal.errors }}</td>
-          </tr>
-          <tr class="row-even">
-              <td class='cap-label'><strong>Twitter</strong></td>
-              <td>{{ profile_form.url_twitter }}</td>
-              <td>{{ profile_form.url_twitter.errors }}</td>
-          </tr>
-          <tr class="row-odd">
-              <td class='cap-label'><strong>Facebook</strong></td>
-              <td>{{ profile_form.url_facebook }}</td>
-              <td>{{ profile_form.url_facebook.errors }}</td>
-          </tr>
-          <tr class="row-even">
-              <td><strong>LINKEDIN PROFILE</strong></td>
-              <td>{{ profile_form.url_linkedin }}</td>
-              <td>{{ profile_form.url_linkedin.errors }}</td>
-          </tr>
-          <tr class="row-odd">
-              <td class='cap-label'><strong>Github Profile</strong></td>
-              <td>{{ profile_form.url_github }}</td>
-              <td>{{ profile_form.url_github.errors }}</td>
-          </tr>
-          <tr class="row-even">
-              <td class='cap-label'><strong>About Me Profile</strong></td>
-              <td>{{ profile_form.url_aboutme }}</td>
-              <td>{{ profile_form.url_aboutme.errors }}</td>
-          </tr>
-      </table>
-
-      <h4>Other Information</h4>
-      <table id="otherinfo">
-          <tr class="row-even">
-              <td class='cap-label'><strong>Company Name</strong></td>
-              <td>{{ profile_form.company_name }}</td>
-              <td>{{ profile_form.company_name.errors }}</td>
-          </tr>
-          <tr class="row-odd">
-              <td class='cap-label'><strong>What industry are you in?</strong></td>
-              <td>{{ profile_form.industry }}</td>
-              <td>{{ profile_form.industry.errors }}</td>
-          </tr>
-          <tr class="row-even">
-              <td class='cap-label'><strong>Neighborhood:</strong>:</td>
-              <td>{{ profile_form.neighborhood }}</td>
-              <td width="300px">{{ profile_form.neighborhood.errors }}</td>
-          </tr>
-          <tr class='row odd'>
+    <h4>Websites &amp; Other Profiles</h4>
+    <table id="websites">
+        <tr class="row-even">
+            <td class='cap-label' nowrap>Make Your profile Public?
+                (<a onclick="$('#public_help').toggle();">?</a>)
+            </td>
+            <td>
+                {{ profile_form.public_profile }}
+            </td>
+            <td>
+                {{ profile_form.public_profile.errors }}
+            </td>
+        </tr>
+        <tr id=public_help class=help_text>
+            <td colspan=3>
+                <strong>Public Profile </strong>
+                <p>By default your profile is only viewable by active members.
+                if you you make this profile public, it will also be visable to
+                non-members.</p>
+            </td>
+        </tr>
+        <tr class='row odd'>
             <td class='cap-label'><strong>Bio</strong></td>
             <td id='pf_bio'>{{ profile_form.bio }}</td>
             <td>{{ profile_form.bio.errors }}</td>
-          </tr>
-          <tr class="row-even">
-              <td class='cap-label'>Do you have children?</td>
-              <td>{{ profile_form.has_kids }}</td>
-              <td>{{ profile_form.has_kids.errors }}</td>
-          </tr>
-          <tr class="row-odd">
-              <td class='cap-label'>Are you self employed?</td>
-              <td>{{ profile_form.self_employed }}</td>
-              <td>{{ profile_form.self_employed.errors }}</td>
-          </tr>
-          <tr class="row-even">
-              <td class='cap-label'>How did you hear about us?</td>
-              <td>{{ profile_form.howHeard }}</td>
-              <td>{{ profile_form.howHeard.errors }}</td>
-          </tr>
-          <tr class="row-odd">
-              <td class='cap-label'>Gender</td>
-              <td>{{ profile_form.gender }}</td>
-              <td width="300px">{{ profile_form.gender.errors }}</td>
-          </tr>
-      </table>
-
-      <h4>Emergency Contact Information</h4>
-      <a name="emergency_contact"></a>
-      <table id="otherinfo">
-          <tr class="row-even">
-              <td class='cap-label'>Name</td>
-              <td>{{ profile_form.emergency_name }}</td>
-              <td>{{ profile_form.emergency_name.errors }}</td>
-          </tr>
-          <tr class="row-even">
-              <td class='cap-label'>Relationship</td>
-              <td>{{ profile_form.emergency_relationship }}</td>
-              <td>{{ profile_form.emergency_relationship.errors }}</td>
-          </tr>
-          <tr class="row-even">
-              <td class='cap-label'>Phone</td>
-              <td>{{ profile_form.emergency_phone }}</td>
-              <td>{{ profile_form.emergency_phone.errors }}</td>
-          </tr>
-          <tr class="row-even">
-              <td class='cap-label'>Email</td>
-              <td>{{ profile_form.emergency_email }}</td>
-              <td>{{ profile_form.emergency_email.errors }}</td>
-          </tr>
-      </table>
-
-      <a name="public_profile"></a>
-      <table id='publicprofile'>
-        <tr>
-          <td class='public_bool'><strong>Make your profile public?</strong></td>
-          <td>{{ profile_form.public_profile }}</td>
         </tr>
-      </table>
-      <button class="btn waves-effect waves-light sub-btn" type="submit" value="Update Your Profile" />Update Your Profile</button>
-      {% csrf_token %}
-  </form>
+        <tr class="row-even">
+            <td class='cap-label'><strong>Professional Website</strong></td>
+            <td>{{ profile_form.url_professional }}</td>
+            <td width="200px">{{ profile_form.url_professional.errors }}</td>
+        </tr>
+        <tr class="row-odd">
+            <td class='cap-label'><strong>Personal Website</strong></td>
+            <td>{{ profile_form.url_personal }}</td>
+            <td>{{ profile_form.url_personal.errors }}</td>
+        </tr>
+        <tr class="row-even">
+            <td class='cap-label'><strong>Twitter</strong></td>
+            <td>{{ profile_form.url_twitter }}</td>
+            <td>{{ profile_form.url_twitter.errors }}</td>
+        </tr>
+        <tr class="row-odd">
+            <td class='cap-label'><strong>Facebook</strong></td>
+            <td>{{ profile_form.url_facebook }}</td>
+            <td>{{ profile_form.url_facebook.errors }}</td>
+        </tr>
+        <tr class="row-even">
+            <td><strong>Linked-In </strong></td>
+            <td>{{ profile_form.url_linkedin }}</td>
+            <td>{{ profile_form.url_linkedin.errors }}</td>
+        </tr>
+        <tr class="row-odd">
+            <td class='cap-label'><strong>Github</strong></td>
+            <td>{{ profile_form.url_github }}</td>
+            <td>{{ profile_form.url_github.errors }}</td>
+        </tr>
+        <!--
+        <tr class="row-even">
+            <td class='cap-label'><strong>About Me Profile</strong></td>
+            <td>{{ profile_form.url_aboutme }}</td>
+            <td>{{ profile_form.url_aboutme.errors }}</td>
+        </tr>
+        -->
+
+    </table>
+
+    <h4>Other Information</h4>
+    <table id="otherinfo">
+        <tr class="row-even">
+            <td class='cap-label'><strong>Company Name</strong></td>
+            <td>{{ profile_form.company_name }}</td>
+            <td>{{ profile_form.company_name.errors }}</td>
+        </tr>
+        <tr class="row-odd">
+            <td class='cap-label'><strong>What industry are you in?</strong></td>
+            <td>{{ profile_form.industry }}</td>
+            <td>{{ profile_form.industry.errors }}</td>
+        </tr>
+        <tr class="row-even">
+            <td class='cap-label'><strong>Neighborhood:</strong>:</td>
+            <td>{{ profile_form.neighborhood }}</td>
+            <td width="300px">{{ profile_form.neighborhood.errors }}</td>
+        </tr>
+        <tr class="row-even">
+            <td class='cap-label'>Do you have children?</td>
+            <td>{{ profile_form.has_kids }}</td>
+            <td>{{ profile_form.has_kids.errors }}</td>
+        </tr>
+        <tr class="row-odd">
+            <td class='cap-label'>Are you self employed?</td>
+            <td>{{ profile_form.self_employed }}</td>
+            <td>{{ profile_form.self_employed.errors }}</td>
+        </tr>
+        <tr class="row-even">
+            <td class='cap-label'>How did you hear about us?</td>
+            <td>{{ profile_form.howHeard }}</td>
+            <td>{{ profile_form.howHeard.errors }}</td>
+        </tr>
+        <tr class="row-odd">
+            <td class='cap-label'>Gender</td>
+            <td>{{ profile_form.gender }}</td>
+            <td width="300px">{{ profile_form.gender.errors }}</td>
+        </tr>
+    </table>
+
+    <h4>Emergency Contact Information</h4>
+    <a name="emergency_contact"></a>
+    <table id="otherinfo">
+      <tr class="row-even">
+          <td class='cap-label'>Name</td>
+          <td>{{ profile_form.emergency_name }}</td>
+          <td>{{ profile_form.emergency_name.errors }}</td>
+      </tr>
+      <tr class="row-even">
+          <td class='cap-label'>Relationship</td>
+          <td>{{ profile_form.emergency_relationship }}</td>
+          <td>{{ profile_form.emergency_relationship.errors }}</td>
+      </tr>
+      <tr class="row-even">
+          <td class='cap-label'>Phone</td>
+          <td>{{ profile_form.emergency_phone }}</td>
+          <td>{{ profile_form.emergency_phone.errors }}</td>
+      </tr>
+      <tr class="row-even">
+          <td class='cap-label'>Email</td>
+          <td>{{ profile_form.emergency_email }}</td>
+          <td>{{ profile_form.emergency_email.errors }}</td>
+      </tr>
+    </table>
+
+    <button class="btn waves-effect waves-light sub-btn" type="submit" value="Update Your Profile" />Update Your Profile</button>
+    {% csrf_token %}
+</form>
+
 </div>
 
 {% endblock %}
 
 {% block extrajs %}
-  <script>
-  $(document).on('ready', function() {
 
-
-  });
-  </script>
 {% endblock %}

@@ -22,6 +22,6 @@ def email_verified(email):
         return ""
 
     html = '<span style="color:red;">( <a target="_top" style="color:red;" href="{}">{}</a> )</span>'
-    link = email.get_verif_send_link()
+    link = email.get_send_verif_link()
     label = "Not Verified"
     return format_html(html, link, label)
