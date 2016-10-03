@@ -546,6 +546,24 @@ table td {
 		border-radius: 0px 4px 4px 0px;
 	}
 
+	#start-forw, #start-back, #end-forw, #end-back {
+		border-radius: 100px;
+		width: 30px;
+		height: 30px;
+		background: RGBA(63, 146, 161, 1);
+		color: white;
+		box-shadow: none;
+		border: none;
+	}
+
+	#start-forw {
+		margin-left: 10%;
+	}
+
+	#end-forw {
+		margin-left: 15%;
+	}
+
 	#cal-error td {
 		text-align: center;
 		color: red;
