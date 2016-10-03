@@ -60,7 +60,7 @@ def send_manual(user, message):
 #                        Email Verification
 #####################################################################
 
-def send_verification(emailObj, request=None):
+def send_verification(emailObj):
     """Send email verification link for this EmailAddress object.
     Raises smtplib.SMTPException, and NoRouteToHost.
     """
@@ -74,7 +74,7 @@ def send_verification(emailObj, request=None):
     }
     verify_link = settings.EMAIL_VERIFICATION_URL
     if not verify_link:
-        uri = reverse('member_email_verify', kwargs={'email_pk': emailObj.id, 'verif_key':emailObj.verif_key})
+        uri = reverse('email_verify', kwargs={'email_pk': emailObj.id}) + "?verif_key=" + emailObj.verif_key
         verify_link = "http://" + site.domain + uri
     context_dict['verify_link'] = verify_link
 
@@ -302,6 +302,10 @@ def send_email(recipient, subject, text_message, html_message=None, fail_silentl
     if settings.DEBUG:
         recipient = settings.EMAIL_ADDRESS
 
+    # Adjust the subject if we have a prefix
+    if setting.hasAttribute("EMAIL_SUBJECT_PREFIX"):
+        subject = settings.EMAIL_SUBJECT_PREFIX.strip() + " " + subject
+    
     note = None
     success = False
     try:
