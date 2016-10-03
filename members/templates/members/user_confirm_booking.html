@@ -403,10 +403,11 @@
         }
 
         var end = hour + ':' + minutes;
+        var id = hour + minutes;
         start = parseFloat(start);
 
-        if ($('#hour-' + start).hasClass('reserved')) {
-          $('#cal-error').html('<tr><td>Your requested booking overlaps with another reservation.</td></tr>');
+        if ($('#hour-' + id).hasClass('available')) {
+          $('#cal-error').html('<tr><td>You made your reservation too short.</td></tr>');
         } else {
           $('#hour-' + start).addClass('available').removeClass('searched');
           $('#start-time').val(end)
@@ -507,11 +508,12 @@
         } else {
           minutes = '30';
         }
+
         var newEnd = hour + ':' + minutes;
         var id = hour + minutes;
 
-        if ($('#hour-' + id).hasClass('reserved')) {
-          $('#cal-error').html('<tr><td>Your requested booking overlaps with another reservation.</td></tr>');
+        if ($('#hour-' + id).hasClass('available')) {
+          $('#cal-error').html('<tr><td>You made your reservation too short.</td></tr>');
         } else {
           toggleStatus(end);
           $('#end-time').val(newEnd);
