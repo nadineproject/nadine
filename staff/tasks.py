@@ -11,7 +11,8 @@ from nadine.models.payment import BillingLog
 from members.models import UserNotification
 
 from arpwatch import arp
-from staff import email, billing
+from nadine import email
+from staff import billing
 
 
 @shared_task

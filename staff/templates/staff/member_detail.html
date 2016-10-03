@@ -145,21 +145,13 @@ function gotoEmailReset(emailAddress){
             </tr>
         {% endif %}
 
-        <!-- Email -->
-        {% if user.email %}
+        <!-- Emails -->
+        {% for e in user.profile.all_emails %}
             <tr>
-                <td>Email</td>
-                <td>{{ user.email }}</td>
+                <td>Email Address {{forloop.counter}}</td>
+                <td>{{ e.email }}</td>
             </tr>
-        {% endif %}
-
-        <!-- Email2 -->
-        {% if user.profile.email2 %}
-            <tr>
-                <td>Alternate Email</td>
-                <td>{{ user.profile.email2 }}</td>
-            </tr>
-        {% endif %}
+        {% endfor %}
 
         <!-- Phone -->
         {% if user.profile.phone %}
@@ -343,7 +335,7 @@ function gotoEmailReset(emailAddress){
     </div>
     <!-- Billing Profile -->
     <h2>Billing Profile</h2>
-    {% include "members/billing_profile.frag" %}
+    {% include "members/profile_billing_frag.html" %}
     <div style="margin-left: 2em; margin-top: .5em;">
         <form method=POST action="{% url 'staff_toggle_bill' user.username %}" onSubmit="return confirm('Are you sure?');">
             <input type="hidden" name="back" value="{{ request.get_full_path }}">

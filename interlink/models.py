@@ -31,17 +31,6 @@ def unsubscribe_recent_dropouts():
         MailingList.objects.unsubscribe_from_all(u)
 
 
-def user_by_email(email):
-    users = User.objects.filter(email__iexact=email)
-    if len(users) > 0:
-        return users[0]
-    members = UserProfile.objects.filter(email2__iexact=email)
-    if len(members) > 0:
-        return members[0].user
-    return None
-User.objects.find_by_email = user_by_email
-
-
 def membership_save_callback(sender, **kwargs):
     """When a membership is created, add the user to any opt-out mailing lists"""
     membership = kwargs['instance']
@@ -293,7 +282,7 @@ class IncomingMail(models.Model):
         return outgoing
 
     def process(self):
-        self.owner = User.objects.find_by_email(self.origin_address)
+        self.owner = User.helper.by_email(self.origin_address)
 
         if self.mailing_list.moderator_controlled:
             if self.owner in self.mailing_list.moderators.all():
@@ -313,7 +302,7 @@ class IncomingMail(models.Model):
             self.create_outgoing()
 
     def get_user(self):
-        return user_by_email(self.origin_address)
+        return User.helper.by_email(self.origin_address)
 
     @property
     def approve_url(self): return 'https://%s%s' % (Site.objects.get_current().domain, reverse('interlink_approve', kwargs={'id': self.id}, current_app='interlink'))

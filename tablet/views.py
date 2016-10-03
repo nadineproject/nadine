@@ -15,6 +15,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.utils import timezone
 
+from nadine import email
 from nadine import mailgun
 from nadine.models.core import FileUpload
 from nadine.models.usage import CoworkingDay
@@ -22,7 +23,6 @@ from nadine.models.payment import Bill
 from nadine.utils.slack_api import SlackAPI
 from members.models import MOTD
 from staff.forms import NewUserForm, MemberSearchForm
-from staff import email
 from .forms import SignatureForm
 
 from easy_pdf.rendering import render_to_pdf, render_to_pdf_response
@@ -83,11 +83,15 @@ def user_signin(request, username):
     user = get_object_or_404(User, username=username)
     membership = user.profile.active_membership()
 
-    can_signin = False
+    can_signin = True
     active_membership = user.profile.active_membership()
-    if not active_membership or active_membership.end_date or not active_membership.has_desk:
-        if not CoworkingDay.objects.filter(user=user, visit_date=timezone.localtime(timezone.now()).date()):
-            can_signin = True
+    if active_membership and active_membership.has_desk:
+        # They have a desk so they can't sign in
+        can_signin = False
+    else:
+        signins_today = CoworkingDay.objects.filter(user=user, visit_date=timezone.localtime(timezone.now()).date())
+        if signins_today.count() > 0:
+            can_signin = False
 
     search_results = None
     if request.method == "POST":

@@ -6,7 +6,7 @@ from taggit.forms import *
 
 from nadine.models import *
 from nadine.utils.payment_api import PaymentAPI
-from staff import email
+from nadine import email
 
 import datetime
 import logging
@@ -136,7 +136,13 @@ class MemberEditForm(forms.Form):
         user.email=self.cleaned_data['email']
         user.save()
 
-        user.profile.email2 = self.cleaned_data['email2']
+        # Alternate Emails
+        email2 = self.cleaned_data['email2']
+        if email2 and not email2 in user.profile.all_emails():
+            e2 = EmailAddress(user=user, email=email2)
+            e2.save()
+
+        # Save profile fields
         user.profile.phone = self.cleaned_data['phone']
         user.profile.phone2 = self.cleaned_data['phone2']
         user.profile.address1 = self.cleaned_data['address1']

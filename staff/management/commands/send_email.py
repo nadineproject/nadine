@@ -4,7 +4,7 @@ import urllib
 import sys
 import datetime
 
-from staff import email
+from nadine import email
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand, CommandError
 

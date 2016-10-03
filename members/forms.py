@@ -1,12 +1,15 @@
+import datetime
+
 from django import forms
 from django.contrib.auth.models import User
 from django.utils.html import strip_tags
+
 from taggit.forms import *
 from members.models import *
 from nadine.models.core import UserProfile, HowHeard, Industry, Neighborhood, GENDER_CHOICES
-import datetime
 from localflavor.us.us_states import US_STATES
 from localflavor.ca.ca_provinces import PROVINCE_CHOICES
+
 
 def get_state_choices():
     if settings.COUNTRY == 'US':
@@ -20,7 +23,6 @@ class EditProfileForm(forms.Form):
     first_name = forms.CharField(max_length=100, required=True)
     last_name = forms.CharField(max_length=100, required=True)
     email = forms.EmailField(widget=forms.TextInput(attrs={'size': '50'}), required=True)
-    email2 = forms.EmailField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
     address1 = forms.CharField(max_length=100, required=False)
     address2 = forms.CharField(max_length=100, required=False)
     city = forms.CharField(max_length=100, required=False)
@@ -64,7 +66,6 @@ class EditProfileForm(forms.Form):
         # Profile data
         user.profile.phone = self.cleaned_data['phone']
         user.profile.phone2 = self.cleaned_data['phone2']
-        user.profile.email2 = self.cleaned_data['email2']
         user.profile.address1 = self.cleaned_data['address1']
         user.profile.address2 = self.cleaned_data['address2']
         user.profile.city = self.cleaned_data['city']

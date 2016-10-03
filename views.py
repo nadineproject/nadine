@@ -8,8 +8,8 @@ from django.conf import settings
 from django.db.models import Q
 from django.template import Context, loader
 from django.http import HttpResponse, Http404, HttpResponseServerError, HttpResponseRedirect, HttpResponsePermanentRedirect
-from django.shortcuts import render_to_response, get_object_or_404
-from django.contrib import auth
+from django.shortcuts import render_to_response, get_object_or_404, redirect
+from django.contrib import auth, messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.models import Site
@@ -20,12 +20,14 @@ from django.core.cache import cache
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
-from django.utils import feedgenerator
+from django.utils import feedgenerator, timezone
 from django.core.urlresolvers import reverse
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.forms import PasswordResetForm
 from django.views.decorators.csrf import csrf_protect
 
+from nadine.models.core import EmailAddress
+from nadine import email
 from arpwatch import arp
 
 logger = logging.getLogger(__name__)
@@ -73,5 +75,113 @@ def password_reset(request, is_admin_site=False, template_name='registration/pas
         form = password_reset_form()
     return render_to_response(template_name, {'form': form}, context_instance=RequestContext(request))
 
+# @csrf_protect
+# def email_manage(request, email_pk, action, next_url=None):
+#     email_address = get_object_or_404(EmailAddress, pk=email_pk)
+#     if email_address.is_verified():
+#         messages.error(request, "Email address was already verified.")
+#     else:
+#         email.send_verification(email_address, request=request)
+#         messages.success(request, "Email verification sent.")
+#
+#     if next_url:
+#         return redirect(next_url)
+#     else:
+#         return redirect(request.META['HTTP_REFERER'])
+
+
+@login_required
+def email_manage(request, email_pk, action):
+    """Set the requested email address as the primary. Can only be
+    requested by the owner of the email address."""
+    email_address = get_object_or_404(EmailAddress, pk=email_pk)
+    if not email_address.user == request.user and not request.user.is_staff:
+        messages.error(request, "You are not authorized to manage this email address")
+    # if not email_address.is_verified():
+    #     messages.error(request, "Email '%s' needs to be verified first." % email_address.email)
+
+    if action == "set_primary":
+        email_address.set_primary()
+        messages.success(request, "'%s' is now marked as your primary email address." % email_address.email)
+    elif action == "delete":
+        email_address.delete()
+        messages.success(request, "'%s' has been removed." % email_address.email)
+
+    if 'HTTP_REFERER' in request.META:
+        return redirect(request.META['HTTP_REFERER'])
+    else:
+        return redirect(reverse('member_profile', kwargs={'username': email_address.user.username}))
+
+
+@login_required
+def email_add(request):
+    user = get_object_or_404(User, username=request.POST.get("username"))
+    email = request.POST.get("email")
+    if email:
+        e = EmailAddress(user=user, email=email)
+        e.save(Verify=True)
+    if 'HTTP_REFERER' in request.META:
+        return redirect(request.META['HTTP_REFERER'])
+    else:
+        return redirect(reverse('member_profile', kwargs={'username': email_address.user.username}))
+
+
+@login_required
+def email_delete(request, email_pk):
+    """Delete the given email. Must be owned by current user."""
+    email = get_object_or_404(EmailAddress, pk=int(email_pk))
+    if email.user == request.user:
+        if not email.is_verified():
+            email.delete()
+        else:
+            num_verified_emails = len(request.user.emailaddress_set.filter(
+                verified_at__isnull=False))
+            if num_verified_emails > 1:
+                email.delete()
+            elif num_verified_emails == 1:
+                if MM.ALLOW_REMOVE_LAST_VERIFIED_EMAIL:
+                    email.delete()
+                else:
+                    messages.error(request,
+                        MM.REMOVE_LAST_VERIFIED_EMAIL_ATTEMPT_MSG,
+                            extra_tags='alert-error')
+    else:
+        messages.error(request, 'Invalid request.')
+    return redirect(MM.DELETE_EMAIL_REDIRECT)
+
+
+@csrf_protect
+def email_verify(request, email_pk):
+    email_address = get_object_or_404(EmailAddress, pk=email_pk)
+    if email_address.is_verified():
+        messages.error(request, "Email address was already verified.")
+    if not email_address.user == request.user and not request.user.is_staff:
+        messages.error(request, "You are not authorized to verify this email address")
+
+    # Send the verification link if that was requested
+    if 'send_link' in request.GET:
+        email.send_verification(email_address)
+
+    verif_key = request.GET.get('verif_key', "").strip()
+    if len(verif_key) != 0:
+        if email_address.verif_key == verif_key:
+            # Looks good!  Mark as verified
+            email_address.remote_addr = request.META.get('REMOTE_ADDR')
+            email_address.remote_host = request.META.get('REMOTE_HOST')
+            email_address.verified_ts = timezone.now()
+            email_address.save()
+            messages.success(request, "Email address has been verified.")
+
+            if 'NEXT_URL' in request.GET:
+                next_url = request.GET.get('NEXT_URL')
+            elif 'HTTP_REFERER' in request.META:
+                next_url = request.META['HTTP_REFERER']
+            else:
+                next_url = reverse('member_profile', kwargs={'username': email_address.user.username})
+            return HttpResponseRedirect(next_url)
+        else:
+            messages.error(request, "Invalid Key")
+
+    return render_to_response("email_verify.html", {'email':email_address.email}, context_instance=RequestContext(request))
 
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

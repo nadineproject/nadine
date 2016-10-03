@@ -1,9 +1,8 @@
 {% extends "members/u_base.html" %}
 {% load imagetags %}
+{% load email_tags %}
 
 {% block sub-title %}{{ user.get_full_name }} | {% endblock %}
-
-
 
 {% block style %}
 {% endblock %}
@@ -56,6 +55,14 @@
   </dl>
 {% endif %}
 
+{% if messages %}
+	<div class="messages">
+		{% for message in messages %}
+			<div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+		{% endfor %}
+	</div>
+{% endif %}
+
 {% if user.username == request.user.username or request.user.is_staff %}
     <div class="clearfix"></div>
 
@@ -72,7 +79,7 @@
       {% endblock %}
     <div id="tabs-0">
         <h3>Member Profile</h3>
-        {% include "members/profile.frag" %}
+        {% include "members/profile_public_frag.html" %}
     </div>
 
     <div id="tabs-1">
@@ -82,10 +89,22 @@
         </h3>
         <table>
             <!-- Username -->
+            <!-- <tr>
+                <td>Username:</td>
+                <td>{{ user.username }}</td>
+            </tr> -->
             <tr>
-              <td>Username:</td>
-              <td>{{ user.username }}</td>
+                <td>Primary Email:</td>
+                <td>{{ user.email }} {% email_verified user.email %}</td>
             </tr>
+            {% for email in user.profile.non_primary_emails %}
+              <tr>
+                  <td>Alternate Email:</td>
+                  <td>
+                      {{ email }} {% email_verified email %}
+                  </td>
+              </tr>
+            {% endfor %}
 
             <!-- Status -->
             <tr>
@@ -120,22 +139,6 @@
               <tr>
                  <td>City:</td>
                  <td>{{ user.profile.city }}, {{ user.profile.state }} {{ user.profile.zipcode }}</td>
-              </tr>
-            {% endif %}
-
-            <!-- Email -->
-            {% if user.email %}
-              <tr>
-                 <td>Email:</td>
-                 <td>{{ user.email }}</td>
-              </tr>
-            {% endif %}
-
-            <!-- Email2 -->
-            {% if user.profile.email2 %}
-              <tr>
-                 <td>Alternate Email:</td>
-                 <td>{{ user.profile.email2 }}</td>
               </tr>
             {% endif %}
 
@@ -240,7 +243,7 @@
 {% else %}
     <div class="clearfix"></div>
     <h2>Member Profile</h2>
-    {% include "members/profile.frag" %}
+    {% include "members/profile_public_frag.html" %}
 {% endif %}
 
 {%block sub-extrajs %}

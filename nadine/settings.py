@@ -155,6 +155,14 @@ try:
 except ImportError:
     pass
 
+# Multimail settings
+# https://github.com/scott2b/django-multimail
+#MULTIMAIL_FROM_EMAIL_ADDRESS = ''
+#MULTIMAIL_EMAIL_VERIFICATION_URL = "https://apps.officenomads.com/mail/verify/%(emailaddress_id)s/%(verif_key)s"
+#MULTIMAIL_FROM_EMAIL_ADDRESS = 'nadine@officenomads.com"
+EMAIL_VERIFICATION_URL = ''
+EMAIL_POST_VERIFY_URL = "/members/profile/"
+
 # JSignature Settings
 JSIGNATURE_WIDTH = 500
 JSIGNATURE_HEIGHT = 200

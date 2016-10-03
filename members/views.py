@@ -35,7 +35,7 @@ from nadine.models.usage import CoworkingDay
 from nadine.models.resource import Room
 from nadine.models.payment import Transaction
 from nadine.models.alerts import MemberAlert
-from staff import email
+from nadine import email
 from staff.forms import *
 
 from nadine import mailgun
@@ -151,7 +151,7 @@ def profile_redirect(request):
 def user(request, username):
     user = get_object_or_404(User, username=username)
     emergency_contact = user.get_emergency_contact()
-    return render_to_response('members/user.html', {'user': user, 'emergency_contact': emergency_contact, 'settings': settings}, context_instance=RequestContext(request))
+    return render_to_response('members/profile.html', {'user': user, 'emergency_contact': emergency_contact, 'settings': settings}, context_instance=RequestContext(request))
 
 
 @csrf_exempt
@@ -240,7 +240,7 @@ def edit_profile(request, username):
         profile = user.profile
         emergency_contact = user.get_emergency_contact()
         profile_form = EditProfileForm(initial={'username': user.username, 'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email,
-                                                'phone': profile.phone, 'phone2': profile.phone2, 'email2': profile.email2,
+                                                'phone': profile.phone, 'phone2': profile.phone2,
                                                 'address1': profile.address1, 'address2': profile.address2, 'city': profile.city, 'state': profile.state, 'zipcode': profile.zipcode,
                                                 'company_name': profile.company_name, 'url_personal': profile.url_personal, 'url_professional': profile.url_professional,
                                                 'url_facebook': profile.url_facebook, 'url_twitter': profile.url_twitter,
@@ -632,9 +632,5 @@ def confirm_booking(request, space, start, end, date):
 
     return render_to_response('members/user_confirm_booking.html', {'booking_form':booking_form, 'start':start, 'end':end, 'room': room, 'date': date, 'hours': hours, 'ids': ids, 'reserved': reserved, 'search_block': search_block }, context_instance=RequestContext(request))
 
-#@login_required
-#@user_passes_test(is_active_member, login_url='member_not_active')
-# def my_create_event(request, location_slug=None):
-#	return create_event(request, location_slug)
 
-# Copyright 2014 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

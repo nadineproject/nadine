@@ -91,7 +91,6 @@
 {% block extrajs %}
   <script>
     $(document).ready(function() {
-      invalid = 0
 
       $('.datepicker').pickadate({
         selectMonths: true,
@@ -129,6 +128,8 @@
           }
         }
       }
+
+      //TODO function for time coercion
 
       function changeEnd(end, time, searched) {
         for(var i = 0; i < searched.length; i++) {
@@ -229,7 +230,6 @@
                 var endTime = '0' + visHour + ':' + visMin;
               }
 
-              console.log(start);
               if (start.length > 3) {
                 startTime = start[0] + start[1] + ':' + start[2] + start[3]
               } else {

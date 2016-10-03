@@ -1,0 +1,27 @@
+{% load i18n %}
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "EmailMessage",
+  "potentialAction": {
+    "@type": "ConfirmAction",
+    "name": "Verify Email",
+    "handler": {
+      "@type": "HttpActionHandler",
+      "url": "{{ verify_link }}"
+    }
+  },
+  "description": "Verify your email address for {{ site.name }}."
+}
+</script>
+
+<p>{% trans "Please verify your e-mail address." %}</p>
+
+<p>{% trans "A new e-mail address has been associated with your account at" %} {{ site.name }}. {% trans "Please click the link below to verify your new address." %}</p>
+
+<h3>Your Verification Key: <a href="{{ verify_link }}">{{ verif_key }}</a></h3>
+
+<p>
+Thanks!<br>
+The {{ site.name }} Team
+</p>

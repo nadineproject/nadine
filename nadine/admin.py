@@ -40,14 +40,37 @@ class BillingLogAdmin(StyledAdmin):
 admin.site.register(BillingLog, BillingLogAdmin)
 
 
+# class EmergencyContactAdmin(StyledAdmin):
+#     list_display = ('user', 'name', 'relationship', 'phone', 'email', 'last_updated')
+#     search_fields = ('user__username', 'user__first_name', 'user__last_name')
+# admin.site.register(EmergencyContact, EmergencyContactAdmin)
+# class XeroContactAdmin(StyledAdmin):
+#     list_display = ('user', 'xero_id', 'last_sync')
+#     search_fields = ('user__username', 'user__first_name', 'user__last_name')
+# admin.site.register(XeroContact, XeroContactAdmin)
+
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
+    can_delete = False
+    max_num = 1
+class EmailAddressInline(admin.TabularInline):
+    model = EmailAddress
+    fields=['id', 'is_primary', 'email', 'verified_ts',]
+    readonly_fields=['id', 'is_primary', 'verified_ts', ]
+    extra = 0
+class EmergencyContactInline(admin.StackedInline):
+    model = EmergencyContact
+    can_delete = False
+    max_num = 1
+class XeroContactInline(admin.TabularInline):
+    model = XeroContact
+    readonly_fields=['last_sync', ]
+    can_delete = False
     max_num = 1
 class UserWithProfileAdmin(UserAdmin):
-    inlines = [UserProfileInline]
+    inlines = [EmailAddressInline, UserProfileInline, EmergencyContactInline, XeroContactInline]
 admin.site.unregister(User)
 admin.site.register(User, UserWithProfileAdmin)
-
 
 class CoworkingDayAdmin(StyledAdmin):
     list_display = ('visit_date', 'user', 'paid_by', 'created_ts')
@@ -105,16 +128,6 @@ class FileUploadAdmin(StyledAdmin):
 admin.site.register(FileUpload, FileUploadAdmin)
 
 
-class EmergencyContactAdmin(StyledAdmin):
-    list_display = ('user', 'name', 'relationship', 'phone', 'email', 'last_updated')
-    search_fields = ('user__username', 'user__first_name', 'user__last_name')
-admin.site.register(EmergencyContact, EmergencyContactAdmin)
-
-
-class XeroContactAdmin(StyledAdmin):
-    list_display = ('user', 'xero_id', 'last_sync')
-    search_fields = ('user__username', 'user__first_name', 'user__last_name')
-admin.site.register(XeroContact, XeroContactAdmin)
 
 
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

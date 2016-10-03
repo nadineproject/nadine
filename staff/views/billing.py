@@ -17,9 +17,10 @@ from django.conf import settings
 from decimal import Decimal
 
 from nadine.models import *
+from nadine import email
 from staff.views.activity import date_range_from_request, START_DATE_PARAM, END_DATE_PARAM
 from staff.forms import PayBillsForm, RunBillingForm, DateRangeForm
-from staff import email, billing
+from staff import billing
 
 
 @staff_member_required

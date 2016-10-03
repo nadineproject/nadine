@@ -5,14 +5,14 @@ from datetime import datetime, time, date, timedelta
 
 from django.conf import settings
 from django.contrib.sites.models import Site
-from django.template.loader import render_to_string
-from django.template import Template, TemplateDoesNotExist, Context
-from django.core.mail import send_mail, EmailMessage
+from django.template.loader import get_template, render_to_string
+from django.template import Template, TemplateDoesNotExist, Context, RequestContext
+from django.core.mail import send_mail, EmailMessage, EmailMultiAlternatives
+from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
 
 from nadine.utils.slack_api import SlackAPI
-from nadine.models.core import SentEmailLog
 from nadine import mailgun
 
 logger = logging.getLogger(__name__)
@@ -57,9 +57,40 @@ def send_manual(user, message):
     return True
 
 #####################################################################
-#                        User Alerts
+#                        Email Verification
 #####################################################################
 
+def send_verification(emailObj):
+    """Send email verification link for this EmailAddress object.
+    Raises smtplib.SMTPException, and NoRouteToHost.
+    """
+
+    # Build our context
+    site = Site.objects.get_current()
+    verif_key = emailObj.get_verif_key()
+    context_dict = {
+        'site': site,
+        'user': emailObj.user,
+        'verif_key': verif_key,
+    }
+    context_dict['verify_link'] = emailObj.get_verify_link()
+
+    # if request:
+    #     context = RequestContext(request, context_dict)
+    # else:
+    #     context = Context(context_dict)
+
+    subject = "Please Verify Your Email Address"
+    text_template = get_template('email/verification_email.txt')
+    text_msg = text_template.render(context=context_dict)
+    html_template = get_template('email/verification_email.html')
+    html_msg = html_template.render(context=context_dict)
+    send_email(emailObj.email, subject, text_msg, html_msg)
+
+
+#####################################################################
+#                        User Alerts
+#####################################################################
 
 def send_introduction(user):
     site = Site.objects.get_current()
@@ -257,26 +288,28 @@ def team_signature(user):
     site = Site.objects.get_current()
     return render_to_string('email/team_email_signature.txt', context={'user': user, 'site': site})
 
+def send(recipient, subject, text_message, html_message=None):
+    send_email(recipient, subject, text_message, html_message=html_message, fail_silently=False)
 
-def send(recipient, subject, message):
-    send_email(recipient, subject, message, False)
+def send_quietly(recipient, subject, text_message, html_message=None):
+    send_email(recipient, subject, text_message, html_message=html_message, fail_silently=True)
 
-
-def send_quietly(recipient, subject, message):
-    send_email(recipient, subject, message, True)
-
-
-def send_email(recipient, subject, message, fail_silently):
+def send_email(recipient, subject, text_message, html_message=None, fail_silently=False):
     # A little safety net when debugging
     if settings.DEBUG:
         recipient = settings.EMAIL_ADDRESS
 
+    # Adjust the subject if we have a prefix
+    if hasattr(settings, "EMAIL_SUBJECT_PREFIX"):
+        subject = settings.EMAIL_SUBJECT_PREFIX.strip() + " " + subject
+
     note = None
     success = False
     try:
-        msg = EmailMessage(subject, message, settings.EMAIL_ADDRESS, [recipient])
-        # msg.content_subtype = "html"  # Main content is now text/html
-        msg.send()
+        msg = EmailMultiAlternatives(subject, text_message, settings.EMAIL_ADDRESS, [recipient])
+        if html_message:
+            msg.attach_alternative(html_message, 'text/html')
+        msg.send(fail_silently=False)
         success = True
     except:
         note = traceback.format_exc()
@@ -285,12 +318,14 @@ def send_email(recipient, subject, message, fail_silently):
         raise
     finally:
         user = User.objects.filter(email=recipient).first()
-        try:
-            log = SentEmailLog(user=user, member=user.profile, recipient=recipient, subject=subject, success=success)
-            if note:
-                log.note = note
-            log.save()
-        except:
-            pass
+        if user:
+            try:
+                from nadine.models.core import SentEmailLog
+                log = SentEmailLog(user=user, recipient=recipient, subject=subject, success=success)
+                if note:
+                    log.note = note
+                log.save()
+            except:
+                pass
 
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

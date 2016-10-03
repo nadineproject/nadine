@@ -33,7 +33,7 @@ function togglePaymentDetails(){
 
 <table width="65%">
 <tr>
-    <td>{% include "members/billing_profile.frag" %}</td>
+    <td>{% include "members/profile_billing_frag.html" %}</td>
     <td>
         <div style="margin-bottom: .5em; text-align:left;">
             Automatic Billing: <span id="auto_billing" style="color:green;">The {{ active_membership.start_date|date:"jS" }}</span>

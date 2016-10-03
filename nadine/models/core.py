@@ -4,7 +4,8 @@ import pprint
 import traceback
 import operator
 import logging
-
+import hashlib
+from random import random
 from datetime import datetime, time, date, timedelta
 from dateutil.relativedelta import relativedelta
 
@@ -19,6 +20,9 @@ from django.conf import settings
 from django.utils.encoding import smart_str
 from django_localflavor_us.models import USStateField, PhoneNumberField
 from django.utils import timezone
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.urlresolvers import reverse
+from django.contrib.sites.models import Site
 
 from monthdelta import MonthDelta, monthmod
 from taggit.managers import TaggableManager
@@ -34,6 +38,7 @@ from nadine.utils.payment_api import PaymentAPI
 from nadine.utils.slack_api import SlackAPI
 from nadine.models.usage import CoworkingDay
 from nadine.models.payment import Bill
+from nadine import email
 
 from doors.keymaster.models import DoorEvent
 
@@ -202,19 +207,17 @@ class UserQueryHelper():
 
         return User.objects.filter(id__in=exiting.values('user'))
 
-    def active_member_emails(self, include_email2=False):
+    def active_member_emails(self):
         emails = []
         for membership in Membership.objects.active_memberships():
-            user = membership.user
-            if user.email not in emails:
-                emails.append(user.email)
-            if include_email2 and user.profile.email2 not in emails:
-                emails.append(user.profile.email2)
+            for e in EmailAddress.objects.filter(user=membership.user):
+                if e.email not in emails:
+                    emails.append(e.email)
         return emails
 
     def expired_slack_users(self):
         expired_users = []
-        active_emails = self.active_member_emails(include_email2=True)
+        active_emails = self.active_member_emails()
         slack_users = SlackAPI().users.list()
         for u in slack_users.body['members']:
             if 'profile' in u and 'real_name' in u and 'email' in u['profile']:
@@ -301,9 +304,7 @@ class UserQueryHelper():
             user_query = User.objects.all()
 
         if '@' in terms[0]:
-            email1_query = Q(email=terms[0])
-            email2_query = Q(profile__email2=terms[0])
-            user_query = user_query.filter(email1_query | email2_query)
+            return user_query.filter(id__in=EmailAddress.objects.filter(email=terms[0]).values('user'))
         else:
             fname_query = Q(first_name__icontains=terms[0])
             lname_query = Q(last_name__icontains=terms[0])
@@ -313,6 +314,12 @@ class UserQueryHelper():
             user_query = user_query.filter(fname_query | lname_query)
 
         return user_query.order_by('first_name')
+
+    def by_email(self, email):
+        email_address = EmailAddress.objects.filter(email=email).first()
+        if email_address:
+            return email_address.user
+        return None
 
 User.helper = UserQueryHelper()
 
@@ -326,7 +333,6 @@ class UserProfile(models.Model):
     MAX_PHOTO_SIZE = 1024
 
     user = models.OneToOneField(User, blank=False, related_name="profile")
-    email2 = models.EmailField("Alternate Email", blank=True, null=True)
     phone = PhoneNumberField(blank=True, null=True)
     phone2 = PhoneNumberField("Alternate Phone", blank=True, null=True)
     address1 = models.CharField(max_length=128, blank=True)
@@ -351,7 +357,6 @@ class UserProfile(models.Model):
     has_kids = models.NullBooleanField(blank=True, null=True)
     self_employed = models.NullBooleanField(blank=True, null=True)
     company_name = models.CharField(max_length=128, blank=True, null=True)
-    promised_followup = models.DateField(blank=True, null=True)
     last_modified = models.DateField(auto_now=True, editable=False)
     photo = models.ImageField(upload_to=user_photo_path, blank=True, null=True)
     tags = TaggableManager(blank=True)
@@ -451,6 +456,15 @@ class UserProfile(models.Model):
                 return CoworkingDay.objects.filter(user=self.user).order_by('visit_date')[0].visit_date
             else:
                 return None
+
+    def all_emails(self):
+        # Done in two queries so that the primary email address is always on top.
+        primary = self.user.emailaddress_set.filter(is_primary=True)
+        non_primary = self.user.emailaddress_set.filter(is_primary=False)
+        return list(primary) + list(non_primary)
+
+    def non_primary_emails(self):
+        return self.user.emailaddress_set.filter(is_primary=False)
 
     def duration(self):
         return relativedelta(timezone.now().date(), self.first_visit())
@@ -689,7 +703,6 @@ post_save.connect(user_save_callback, sender=User)
 
 # Add some handy methods to Django's User object
 #User.get_profile = lambda self: Member.objects.get_or_create(user=self)[0]
-User.get_emergency_contact = lambda self: EmergencyContact.objects.get_or_create(user=self)[0]
 #User.profile = property(User.get_profile)
 
 @receiver(post_save, sender=UserProfile)
@@ -710,6 +723,114 @@ def size_images(sender, instance, **kwargs):
         image.close()
 
 
+class EmailAddress(models.Model):
+    """An e-mail address for a Django User. Users may have more than one
+    e-mail address. The address that is on the user object itself as the
+    email property is considered to be the primary address, for which there
+    should also be an EmailAddress object associated with the user.
+
+    Pulled from https://github.com/scott2b/django-multimail
+    """
+    user = models.ForeignKey(User)
+    email = models.EmailField(max_length=100, unique=True)
+    created_ts = models.DateTimeField(auto_now_add=True)
+    verif_key = models.CharField(max_length=40)
+    verified_ts = models.DateTimeField(default=None, null=True, blank=True)
+    remote_addr = models.GenericIPAddressField(null=True, blank=True)
+    remote_host = models.CharField(max_length=255, null=True, blank=True)
+    is_primary = models.BooleanField(default=False)
+
+    def __unicode__(self):
+        return self.email
+
+    def is_verified(self):
+        """Is this e-mail address verified? Verification is indicated by
+        existence of a verified timestamp which is the time the user
+        followed the e-mail verification link."""
+        return bool(self.verified_ts)
+
+    def set_primary(self):
+        """Set this e-mail address to the primary address by setting the
+        email property on the user."""
+        # If we are already primary, we're done
+        if self.is_primary:
+            return
+
+        # Make sure the user has the same email address
+        if self.user.email != self.email:
+            self.user.email = self.email
+            self.user.save()
+
+        # Now go through and unset all other email addresses
+        for email in self.user.emailaddress_set.all():
+            if email == self:
+                email.is_primary = True
+                email.save(verify=False)
+            else:
+                if email.is_primary:
+                    email.is_primary = False
+                    email.save(verify=False)
+
+    def generate_verif_key(self):
+        salt = hashlib.sha1(str(random())).hexdigest()[:5]
+        self.verif_key = hashlib.sha1(salt + self.email).hexdigest()
+        self.save()
+
+    def get_verif_key(self):
+        if not self.verif_key:
+            self.generate_verif_key()
+        return self.verif_key
+
+    def get_verify_link(self):
+        verify_link = settings.EMAIL_VERIFICATION_URL
+        if not verify_link:
+            site = Site.objects.get_current()
+            verif_key = self.get_verif_key()
+            uri = reverse('email_verify', kwargs={'email_pk': self.id}) + "?verif_key=" + verif_key
+            verify_link = "http://" + site.domain + uri
+        return verify_link
+
+    def get_send_verif_link(self):
+        return reverse('email_verify', kwargs={'email_pk': self.id}) + "?send_link=True"
+
+    def get_set_primary_link(self):
+        return reverse('email_manage', kwargs={'email_pk': self.id, 'action':'set_primary'})
+
+    def get_delete_link(self):
+        return reverse('email_manage', kwargs={'email_pk': self.id, 'action':'delete'})
+
+    def save(self, verify=True, *args, **kwargs):
+        """Save this EmailAddress object."""
+        if not self.verif_key:
+            self.generate_verif_key()
+        if verify and not self.pk:
+            # Skip verification if this is an update
+            verify = True
+        else:
+            verify = False
+        super(EmailAddress, self).save(*args, **kwargs)
+        if verify:
+            email.send_verification(self)
+
+    def delete(self):
+        """Delete this EmailAddress object."""
+        if self.is_primary:
+            next_email = self.user.emailaddress_set.exclude(email=self.email).first()
+            if not next_email:
+                raise Exception("Can not delete last email address!")
+            next_email.set_primary()
+        super(EmailAddress, self).delete()
+
+def sync_primary_callback(sender, **kwargs):
+    user = kwargs['instance']
+    try:
+        email_address = EmailAddress.objects.get(email=user.email)
+    except ObjectDoesNotExist:
+        email_address = EmailAddress(user=user, email=user.email)
+        email_address.save(verify=False)
+    email_address.set_primary()
+post_save.connect(sync_primary_callback, sender=User)
+
 class EmergencyContact(models.Model):
     user = models.OneToOneField(User, blank=False)
     name = models.CharField(max_length=254, blank=True)
@@ -718,10 +839,16 @@ class EmergencyContact(models.Model):
     email = models.EmailField(blank=True, null=True)
     last_updated = models.DateTimeField(auto_now_add=True)
 
+    def __unicode__(self):
+        return '%s - %s' % (self.user.username, self.name)
+
 def emergency_callback_save_callback(sender, **kwargs):
     contact = kwargs['instance']
     contact.last_updated = timezone.now()
 pre_save.connect(emergency_callback_save_callback, sender=EmergencyContact)
+
+# Create a handy method on User to get an EmergencyContact
+User.get_emergency_contact = lambda self: EmergencyContact.objects.get_or_create(user=self)[0]
 
 
 class XeroContact(models.Model):
@@ -729,7 +856,7 @@ class XeroContact(models.Model):
     xero_id = models.CharField(max_length=64)
     last_sync = models.DateTimeField(null=True, blank=True)
 
-    def __str__(self):
+    def __unicode__(self):
         return '%s - %s' % (self.user.username, self.xero_id)
 
 
@@ -899,7 +1026,7 @@ class MemberNote(models.Model):
     note = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return '%s - %s: %s' % (self.created.date(), self.member, self.note)
+        return '%s - %s: %s' % (self.created.date(), self.user.username, self.note)
 
 
 class FileUploadManager(models.Manager):
