@@ -14,6 +14,8 @@ register = template.Library()
 @register.simple_tag
 def email_verified(email):
     if isinstance(email, unicode):
+        if not email:
+            return None
         email = EmailAddress.objects.get(email=email)
 
     if email.is_verified():
