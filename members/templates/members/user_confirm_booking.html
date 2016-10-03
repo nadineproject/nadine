@@ -63,9 +63,9 @@
       </table>
       <table>
         <tr>
-          <td><strong>From: </strong><input style="width:70%;margin-left:5%;" type='time' step=900 name='start' id='start-time' value='{{ start }}'/>
+          <td><strong>From: </strong><input style="width:70%;margin-left:5%;" type='time' step=900 name='start' id='start-time' value='{{ start }}' readonly/>
           </td>
-          <td><strong>To: </strong><input style="width:70%;margin-left:5%;" type='time' step=900 name='end' id='end-time' value='{{ end }}'/></td>
+          <td><strong>To: </strong><input style="width:70%;margin-left:5%;" type='time' step=900 name='end' id='end-time' value='{{ end }}' readonly /></td>
         </tr>
         <tr>
           <td><strong>Description:</strong></td>
@@ -106,7 +106,6 @@
         } else if ($('#hour-' + id).hasClass('searched')) {
           $('#hour-' + id).removeClass('searched').addClass('available');
         }
-        //TODO: needs to break if one of the blocks hasClass('reserved')
       }
 
       function extendStart(start, time, available) {
@@ -142,7 +141,7 @@
         }
       }
 
-      //TODO: what if one of the included blocks is reserved???
+      //click on box to change the reservation
       $('.cal-box').on('click', function() {
         var startTime = $('#start-time').val();
         var start = parseInt(startTime.replace(':', ''));
@@ -219,14 +218,39 @@
               end = time.toString();
 
               if (end.length > 3) {
-                endTime = end[0] + end[1] + ':' + end[2] + end[3]
+                var minutes = end[2] + end[3];
+                var hour = end[0] + end[1];
+
+                if (minutes == '00') {
+                  minutes = '15';
+                } else if (minutes == '15') {
+                  minutes = '30';
+                } else if (minutes == '30') {
+                  minutes = '45';
+                } else {
+                  minutes = '00';
+                  hour ++;
+                }
+                endTime = hour + ':' + minutes;
               } else {
-                endTime = '0' + end[0]  + ':' + end[1] + end[2]
-              }
+                var hour = end[0]
+                var minutes = end[1] + end[2];
 
-              $('#end-time').val(endTime);
+                if (minutes == '00') {
+                  minutes = '15';
+                } else if (minutes == '15') {
+                  minutes = '30';
+                } else if (minutes == '30') {
+                  minutes = '45';
+                } else {
+                  minutes = '00';
+                  hour ++;
+                }
+                endTime = hour + ':' + minutes;
 
-            } else {
+            }
+            $('#end-time').val(endTime);
+          } else {
               $('#cal-error').html('<tr><td>Your requested booking overlaps with another reservation.</td></tr>');
               invalid = 0;
             }
