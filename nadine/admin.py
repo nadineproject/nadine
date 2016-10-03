@@ -55,8 +55,8 @@ class UserProfileInline(admin.StackedInline):
     max_num = 1
 class EmailAddressInline(admin.TabularInline):
     model = EmailAddress
-    fields=['is_primary', 'email', 'verified_ts',]
-    readonly_fields=['is_primary', 'verified_ts', ]
+    fields=['id', 'is_primary', 'email', 'verified_ts',]
+    readonly_fields=['id', 'is_primary', 'verified_ts', ]
     extra = 0
 class EmergencyContactInline(admin.StackedInline):
     model = EmergencyContact
