@@ -97,8 +97,8 @@ def email_manage(request, email_pk, action):
     email_address = get_object_or_404(EmailAddress, pk=email_pk)
     if not email_address.user == request.user and not request.user.is_staff:
         messages.error(request, "You are not authorized to manage this email address")
-    if not email_address.is_verified():
-        messages.error(request, "Email '%s' needs to be verified first." % email_address.email)
+    # if not email_address.is_verified():
+    #     messages.error(request, "Email '%s' needs to be verified first." % email_address.email)
 
     if action == "set_primary":
         email_address.set_primary()

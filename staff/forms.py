@@ -96,6 +96,7 @@ class MemberEditForm(forms.Form):
     first_name = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}))
     last_name = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}))
     email = forms.EmailField(widget=forms.TextInput(attrs={'size': '50'}))
+    email2 = forms.EmailField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
     phone = forms.CharField(widget=forms.TextInput(attrs={'size': '16'}), required=False)
     phone2 = forms.CharField(widget=forms.TextInput(attrs={'size': '16'}), required=False)
     address1 = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
@@ -133,9 +134,15 @@ class MemberEditForm(forms.Form):
         user.first_name=self.cleaned_data['first_name']
         user.last_name=self.cleaned_data['last_name']
         user.email=self.cleaned_data['email']
-        # TODO - set_primary
         user.save()
 
+        # Alternate Emails
+        email2 = self.cleaned_data['email2']
+        if email2 and not email2 in user.profile.all_emails():
+            e2 = EmailAddress(user=user, email=email2)
+            e2.save()
+
+        # Save profile fields
         user.profile.phone = self.cleaned_data['phone']
         user.profile.phone2 = self.cleaned_data['phone2']
         user.profile.address1 = self.cleaned_data['address1']

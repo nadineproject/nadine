@@ -19,12 +19,18 @@
 
 <div id="profile_form">
 
+{% if messages %}
+	<div class="messages">
+		{% for message in messages %}
+			<div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+		{% endfor %}
+	</div>
+{% endif %}
+
 <h4>
     Email Addresses
     (<a onclick="$('#email_help').toggle();">?</a>)
 </h4>
-
-
 
 <table id="emails">
     <tr id="email_help" class="help_text">
@@ -59,7 +65,7 @@
             <td width="100%">
               <input name="email" placeholder="Alternate Email"/>
             </td>
-            <td style="text-align:right">
+            <td style="text-align:right" nowrap>
               <button type="submit">Add Email Address</button>
             </td>
         </tr>
