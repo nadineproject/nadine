@@ -587,12 +587,12 @@ def create_booking(request):
     reserved = Room.objects.reservations(room_dict, ids)
 
     if request.method == 'POST':
-        room = request.POST.get('room')
+        space = request.POST.get('room')
         start = request.POST.get('start')
         end = request.POST.get('end')
         date = request.POST.get('date')
 
-        return HttpResponseRedirect(reverse('member_confirm_booking', kwargs={'space': room, 'start': start, 'end': end, 'date': date}))
+        return HttpResponseRedirect(reverse('member_confirm_booking', kwargs={'space': space, 'start': start, 'end': end, 'date': date}))
 
     return render_to_response('members/user_create_booking.html', {'rooms': rooms, 'hours':hours, 'start':start, 'end':end, 'date': date, 'has_av':has_av, 'floor': floor, 'has_phone': has_phone, 'ids': ids, 'reserved': reserved, 'search_block': search_block }, context_instance=RequestContext(request))
 
