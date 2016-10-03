@@ -769,19 +769,29 @@ class EmailAddress(models.Model):
                     email.is_primary = False
                     email.save(verify=False)
 
-    def save(self, verify=True, request=None, *args, **kwargs):
+    def generate_verif_key(self):
+        salt = hashlib.sha1(str(random())).hexdigest()[:5]
+        self.verif_key = hashlib.sha1(salt + self.email).hexdigest()
+        self.save()
+
+    def get_verif_key(self):
+        if not self.verif_key:
+            self.generate_verif_key()
+        return self.verif_key
+
+    def save(self, verify=True, *args, **kwargs):
         """Save this EmailAddress object."""
         if not self.verif_key:
-            salt = hashlib.sha1(str(random())).hexdigest()[:5]
-            self.verif_key = hashlib.sha1(salt + self.email).hexdigest()
+            self.generate_verif_key()
         if verify and not self.pk:
+            # Skip verification if this is an update
             verify = True
         else:
             verify = False
         super(EmailAddress, self).save(*args, **kwargs)
         # TODO
         # if verify:
-        #     email.send_verification(self, request=request)
+        #     email.send_verification(self)
 
     def delete(self):
         """Delete this EmailAddress object."""

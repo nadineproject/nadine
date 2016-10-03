@@ -67,14 +67,15 @@ def send_verification(emailObj):
 
     # Build our context
     site = Site.objects.get_current()
+    verif_key = emailObj.get_verif_key()
     context_dict = {
         'site': site,
         'user': emailObj.user,
-        'verif_key': emailObj.verif_key,
+        'verif_key': verif_key,
     }
     verify_link = settings.EMAIL_VERIFICATION_URL
     if not verify_link:
-        uri = reverse('email_verify', kwargs={'email_pk': emailObj.id}) + "?verif_key=" + emailObj.verif_key
+        uri = reverse('email_verify', kwargs={'email_pk': emailObj.id}) + "?verif_key=" + verif_key
         verify_link = "http://" + site.domain + uri
     context_dict['verify_link'] = verify_link
 
@@ -303,9 +304,9 @@ def send_email(recipient, subject, text_message, html_message=None, fail_silentl
         recipient = settings.EMAIL_ADDRESS
 
     # Adjust the subject if we have a prefix
-    if setting.hasAttribute("EMAIL_SUBJECT_PREFIX"):
+    if hasattr(settings, "EMAIL_SUBJECT_PREFIX"):
         subject = settings.EMAIL_SUBJECT_PREFIX.strip() + " " + subject
-    
+
     note = None
     success = False
     try:
