@@ -197,42 +197,39 @@
               if (start.length > 3) {
                 var minutes = start[2] + start[3];
                 var hour = start[0] + start[1];
-
-                if (minutes == '00') {
-                  minutes = '15';
-                } else if (minutes == '15') {
-                  minutes = '30';
-                } else if (minutes == '30') {
-                  minutes = '45';
-                } else {
-                  minutes = '00';
-                  hour ++;
-                }
-                var endId = hour + minutes;
-                var endTime = hour + ':' + minutes;
               } else {
                 var hour = start[0]
                 var minutes = start[1] + start[2];
-
-                if (minutes == '00') {
-                  minutes = '15';
-                } else if (minutes == '15') {
-                  minutes = '30';
-                } else if (minutes == '30') {
-                  minutes = '45';
-                } else {
-                  minutes = '00';
-                  hour ++;
-                }
-                var endId = hour + minutes;
-
-                if (endId.length > 3) {
-                  var endTime = hour + ':' + minutes;
-                } else {
-                  var endTime = '0' + hour + ':' + minutes;
-                }
               }
 
+              if (minutes == '00') {
+                minutes = '15';
+                var visMin = '30';
+                var visHour = hour;
+              } else if (minutes == '15') {
+                minutes = '30';
+                var visMin = '45';
+                var visHour = hour;
+              } else if (minutes == '30') {
+                minutes = '45';
+                var visMin = '00';
+                var visHour = parseInt(hour) + 1;
+              } else {
+                minutes = '00';
+                hour ++;
+                var visHour = parseInt(hour) + 1;
+                var visMin = '30';
+              }
+
+              var endId = hour + minutes;
+
+              if (endId.length > 3) {
+                var endTime = visHour + ':' + visMin;
+              } else {
+                var endTime = '0' + visHour + ':' + visMin;
+              }
+
+              console.log(start);
               if (start.length > 3) {
                 startTime = start[0] + start[1] + ':' + start[2] + start[3]
               } else {
@@ -315,34 +312,38 @@
             if (end.length > 3) {
               var minutes = end[2] + end[3];
               var hour = end[0] + end[1];
+              startTime = end[0] + end[1] + ':' + end[2] + end[3];
             } else {
               var hour = end[0];
               var minutes = end[1] + end[2];
+              startTime = '0' + end[0]  + ':' + end[1] + end[2];
             }
 
             if (minutes == '00') {
               minutes = '15';
+              var visMin = '30';
+              var visHour = hour;
             } else if (minutes == '15') {
               minutes = '30';
+              var visMin = '45';
+              var visHour = hour;
             } else if (minutes == '30') {
               minutes = '45';
+              var visMin = '00';
+              var visHour = parseInt(hour) + 1;
             } else {
               minutes = '00';
               hour ++;
+              var visHour = parseInt(hour) + 1;
+              var visMin = '30';
             }
 
             var endId = hour + minutes;
 
             if (endId.length > 3) {
-              var endTime = hour + ':' + minutes;
+              var endTime = visHour + ':' + visMin;
             } else {
-              var endTime = '0' + hour + ':' + minutes;
-            }
-
-            if (end.length > 3) {
-              startTime = end[0] + end[1] + ':' + end[2] + end[3]
-            } else {
-              startTime = '0' + end[0]  + ':' + end[1] + end[2]
+              var endTime = '0' + visHour + ':' + visMin;
             }
 
             toggleStatus(time);
