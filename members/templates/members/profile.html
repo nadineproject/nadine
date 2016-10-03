@@ -4,8 +4,6 @@
 
 {% block sub-title %}{{ user.get_full_name }} | {% endblock %}
 
-
-
 {% block style %}
 {% endblock %}
 
@@ -55,6 +53,14 @@
     <dt>Bio:</dt>
     <dd>{{ user.profile.bio }}</dd>
   </dl>
+{% endif %}
+
+{% if messages %}
+	<div class="messages">
+		{% for message in messages %}
+			<div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+		{% endfor %}
+	</div>
 {% endif %}
 
 {% if user.username == request.user.username or request.user.is_staff %}

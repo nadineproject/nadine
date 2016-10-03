@@ -1,8 +1,11 @@
 import os
+
 from django.template import Library
 from django import template
 from django.conf import settings
 from django.utils.html import format_html
+from django.core.urlresolvers import reverse
+
 
 from nadine.models.core import EmailAddress
 
@@ -13,12 +16,10 @@ def email_verified(email):
     if isinstance(email, unicode):
         email = EmailAddress.objects.get(email=email)
 
-    html = '<span style="color:{};">( {} )</span>'
     if email.is_verified():
-        color = "green"
-        label = "Verified"
-    else:
-        # TODO - make this a link to verify
-        color = "red"
-        label = "Not Verified"
-    return format_html(html, color, label)
+        return ""
+
+    html = '<span style="color:red;">( <a target="_top" style="color:red;" href="{}">{}</a> )</span>'
+    link = reverse('email_verify', kwargs={'email_pk': email.id}) + "?send_link=True"
+    label = "Not Verified"
+    return format_html(html, link, label)

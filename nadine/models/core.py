@@ -21,6 +21,8 @@ from django.utils.encoding import smart_str
 from django_localflavor_us.models import USStateField, PhoneNumberField
 from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.urlresolvers import reverse
+from django.contrib.sites.models import Site
 
 from monthdelta import MonthDelta, monthmod
 from taggit.managers import TaggableManager
@@ -778,6 +780,15 @@ class EmailAddress(models.Model):
         if not self.verif_key:
             self.generate_verif_key()
         return self.verif_key
+
+    def get_verify_link(self):
+        verify_link = settings.EMAIL_VERIFICATION_URL
+        if not verify_link:
+            site = Site.objects.get_current()
+            verif_key = self.get_verif_key()
+            uri = reverse('email_verify', kwargs={'email_pk': self.id}) + "?verif_key=" + verif_key
+            verify_link = "http://" + site.domain + uri
+        return verify_link
 
     def save(self, verify=True, *args, **kwargs):
         """Save this EmailAddress object."""

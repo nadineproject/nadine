@@ -73,11 +73,7 @@ def send_verification(emailObj):
         'user': emailObj.user,
         'verif_key': verif_key,
     }
-    verify_link = settings.EMAIL_VERIFICATION_URL
-    if not verify_link:
-        uri = reverse('email_verify', kwargs={'email_pk': emailObj.id}) + "?verif_key=" + verif_key
-        verify_link = "http://" + site.domain + uri
-    context_dict['verify_link'] = verify_link
+    context_dict['verify_link'] = emailObj.get_verify_link()
 
     # if request:
     #     context = RequestContext(request, context_dict)
