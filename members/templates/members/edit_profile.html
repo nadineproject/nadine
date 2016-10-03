@@ -15,32 +15,30 @@
       {% for email in user.profile.all_emails %}
         <tr>
             <td>{{ email }}</td>
-            <td>
+            <td nowrap style="text-align:right">
                 {% if not email.is_primary %}
-                    <button>Make Primary</button>
+                    <button onclick="location.href = '{{ email.get_set_primary_link }}';">Make Primary</button>
+                    <button onclick="location.href = '{{ email.get_delete_link }}';">Delete</button>
                 {% endif %}
-            </td>
-            <td>
                 {% if not email.is_verified %}
-                    <button>Verify</button>
-                {% endif %}
-            </td>
-            <td>
-                {% if user.emailaddress_set.count > 1 %}
-                    <button>Delete</button>
+                    <button onclick="location.href = '{{ email.get_send_verif_link }}';">Verify</button>
                 {% endif %}
             </td>
         </tr>
       {% endfor %}
+
+      <form action="{% url 'email_add' %}" method="POST">
+      <input type="hidden" name="username" value="{{ user.username }}" />
       <tr>
-          <td colspan=2>
-              <input name="email"/>
+          <td width="100%">
+              <input name="email" placeholder="Alternate Email"/>
           </td>
-          <td></td>
-          <td>
-              <button>Add</button>
+          <td style="text-align:right">
+              <button type="submit">Add Email Address</button>
           </td>
       </tr>
+      {% csrf_token %}
+      </form>
   </table>
 
   <form enctype="multipart/form-data" action='.' method='post'>

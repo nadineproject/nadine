@@ -790,6 +790,15 @@ class EmailAddress(models.Model):
             verify_link = "http://" + site.domain + uri
         return verify_link
 
+    def get_send_verif_link(self):
+        return reverse('email_verify', kwargs={'email_pk': self.id}) + "?send_link=True"
+
+    def get_set_primary_link(self):
+        return reverse('email_manage', kwargs={'email_pk': self.id, 'action':'set_primary'})
+
+    def get_delete_link(self):
+        return reverse('email_manage', kwargs={'email_pk': self.id, 'action':'delete'})
+
     def save(self, verify=True, *args, **kwargs):
         """Save this EmailAddress object."""
         if not self.verif_key:
@@ -800,9 +809,8 @@ class EmailAddress(models.Model):
         else:
             verify = False
         super(EmailAddress, self).save(*args, **kwargs)
-        # TODO
-        # if verify:
-        #     email.send_verification(self)
+        if verify:
+            email.send_verification(self)
 
     def delete(self):
         """Delete this EmailAddress object."""

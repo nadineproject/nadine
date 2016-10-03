@@ -75,19 +75,80 @@ def password_reset(request, is_admin_site=False, template_name='registration/pas
         form = password_reset_form()
     return render_to_response(template_name, {'form': form}, context_instance=RequestContext(request))
 
-@csrf_protect
-def email_verification(request, email_pk, action, next_url=None):
-    email_address = get_object_or_404(EmailAddress, pk=email_pk)
-    if email_address.is_verified():
-        messages.error(request, "Email address was already verified.")
-    else:
-        email.send_verification(email_address, request=request)
-        messages.success(request, "Email verification sent.")
+# @csrf_protect
+# def email_manage(request, email_pk, action, next_url=None):
+#     email_address = get_object_or_404(EmailAddress, pk=email_pk)
+#     if email_address.is_verified():
+#         messages.error(request, "Email address was already verified.")
+#     else:
+#         email.send_verification(email_address, request=request)
+#         messages.success(request, "Email verification sent.")
+#
+#     if next_url:
+#         return redirect(next_url)
+#     else:
+#         return redirect(request.META['HTTP_REFERER'])
 
-    if next_url:
-        return redirect(next_url)
-    else:
+
+@login_required
+def email_manage(request, email_pk, action):
+    """Set the requested email address as the primary. Can only be
+    requested by the owner of the email address."""
+    email_address = get_object_or_404(EmailAddress, pk=email_pk)
+    if not email_address.user == request.user and not request.user.is_staff:
+        messages.error(request, "You are not authorized to manage this email address")
+    if not email_address.is_verified():
+        messages.error(request, "Email '%s' needs to be verified first." % email_address.email)
+
+    if action == "set_primary":
+        email_address.set_primary()
+        messages.success(request, "'%s' is now marked as your primary email address." % email_address.email)
+    elif action == "delete":
+        email_address.delete()
+        messages.success(request, "'%s' has been removed." % email_address.email)
+
+    if 'HTTP_REFERER' in request.META:
         return redirect(request.META['HTTP_REFERER'])
+    else:
+        return redirect(reverse('member_profile', kwargs={'username': email_address.user.username}))
+
+
+@login_required
+def email_add(request):
+    user = get_object_or_404(User, username=request.POST.get("username"))
+    email = request.POST.get("email")
+    if email:
+        e = EmailAddress(user=user, email=email)
+        e.save(Verify=True)
+    if 'HTTP_REFERER' in request.META:
+        return redirect(request.META['HTTP_REFERER'])
+    else:
+        return redirect(reverse('member_profile', kwargs={'username': email_address.user.username}))
+
+
+@login_required
+def email_delete(request, email_pk):
+    """Delete the given email. Must be owned by current user."""
+    email = get_object_or_404(EmailAddress, pk=int(email_pk))
+    if email.user == request.user:
+        if not email.is_verified():
+            email.delete()
+        else:
+            num_verified_emails = len(request.user.emailaddress_set.filter(
+                verified_at__isnull=False))
+            if num_verified_emails > 1:
+                email.delete()
+            elif num_verified_emails == 1:
+                if MM.ALLOW_REMOVE_LAST_VERIFIED_EMAIL:
+                    email.delete()
+                else:
+                    messages.error(request,
+                        MM.REMOVE_LAST_VERIFIED_EMAIL_ATTEMPT_MSG,
+                            extra_tags='alert-error')
+    else:
+        messages.error(request, 'Invalid request.')
+    return redirect(MM.DELETE_EMAIL_REDIRECT)
+
 
 @csrf_protect
 def email_verify(request, email_pk):

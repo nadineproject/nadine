@@ -35,8 +35,9 @@ urlpatterns = [
     url(r'^logout/$', logout_then_login, name="logout"),
     url(r'^accounts/profile/$', lambda r: redirect('/')),
 
-    #url(r'^email/(?P<email_pk>\d+)/(?P<action>[^/]+)/$', views.email_verification, name='email_verification'),
-    url(r'^email/(?P<email_pk>\d+)/$', views.email_verify, name='email_verify'),
+    url(r'^email/add/$', views.email_add, name='email_add'),
+    url(r'^email/manage/(?P<email_pk>\d+)/(?P<action>.+)/$', views.email_manage, name='email_manage'),
+    url(r'^email/verify/(?P<email_pk>\d+)/$', views.email_verify, name='email_verify'),
 
     url(r'^reset/$', views.password_reset, {'template_name': 'password_reset_form.html', 'email_template_name': 'email/password_reset_email.txt'}, 'password_reset'),
     url(r'^reset/done/$', password_reset_done, {'template_name': 'password_reset_done.html'}, 'password_reset_done'),
