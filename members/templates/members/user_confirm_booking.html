@@ -58,6 +58,9 @@
           </tr>
         </tbody>
       </table>
+      <table id='cal-error'>
+
+      </table>
       <table>
         <tr>
           <td><strong>From: </strong><input style="width:70%;margin-left:5%;" type='time' step=900 name='start' id='start-time' value='{{ start }}'/>
@@ -88,6 +91,7 @@
 {% block extrajs %}
   <script>
     $(document).ready(function() {
+      invalid = 0
 
       $('.datepicker').pickadate({
         selectMonths: true,
@@ -106,8 +110,8 @@
       }
 
       function extendStart(start, time, available) {
-        for(var i = 0; i < available.length; i++) {
-          var avId = available[i].id;
+        for(var l = 0; l < available.length; l++) {
+          var avId = available[l].id;
           var id = parseInt(avId.split('-')[1]);
 
           if (time <= id && id <= start) {
@@ -117,8 +121,8 @@
       }
 
       function extendEnd(end, time, available) {
-        for(var i = 0; i < available.length; i++) {
-          var avId = available[i].id;
+        for (var k = 0; k < available.length; k++) {
+          var avId = available[k].id;
           var id = parseInt(avId.split('-')[1]);
 
           if(end <= id && id <= time) {
@@ -146,39 +150,92 @@
         var end = parseInt(endTime.replace(':', ''));
 
         var available = $('.available');
+        var allBoxes = $('.cal-box');
         var searched = $('.searched');
         var time = parseInt(this.id.split('-')[1]);
         var clicked = $(this);
 
         if(clicked.hasClass('available')) {
-
           if(time < start) {
-            extendStart(start, time, available);
-            start = time.toString();
+            var invalid = 0;
+            var times = [];
 
-            if (start.length > 3) {
-              startTime = start[0] + start[1] + ':' + start[2] + start[3]
-            } else {
-              startTime = '0' + start[0]  + ':' + start[1] + start[2]
+            for (var j = 0; j < allBoxes.length; j++) {
+              var boxHour = allBoxes[j].id;
+              var bId = parseInt(boxHour.split('-')[1]);
+
+              if(time <= bId && bId <= start) {
+                times.push(bId);
+              }
             }
 
-            $('#start-time').val(startTime);
+            times.forEach( function(time) {
+              if ($('#hour-' + time).hasClass('reserved')) {
+                invalid ++;
+              }
+            });
+
+            if ( invalid == 0) {
+              $('#cal-error').html('');
+
+              extendStart(start, time, available);
+              start = time.toString();
+
+              if (start.length > 3) {
+                startTime = start[0] + start[1] + ':' + start[2] + start[3]
+              } else {
+                startTime = '0' + start[0]  + ':' + start[1] + start[2]
+              }
+
+              $('#start-time').val(startTime);
+            } else {
+              $('#cal-error').html('<tr><td>Your requested booking overlaps with another reservation.</td></tr>');
+              invalid = 0;
+            }
           } else if (end < time) {
-            extendEnd(end, time, available);
-            end = time.toString();
+            var invalid = 0;
+            var times = [];
 
-            if (end.length > 3) {
-              endTime = end[0] + end[1] + ':' + end[2] + end[3]
-            } else {
-              endTime = '0' + end[0]  + ':' + end[1] + end[2]
+            for (var j = 0; j < allBoxes.length; j++) {
+              var boxHour = allBoxes[j].id;
+              var bId = parseInt(boxHour.split('-')[1]);
+
+              if(end <= bId && bId < time) {
+                times.push(bId);
+              }
             }
 
-            $('#end-time').val(endTime);
+            times.forEach( function(time) {
+              if ($('#hour-' + time).hasClass('reserved')) {
+                invalid ++;
+              }
+            });
+
+            if (invalid === 0) {
+              $('#cal-error').html('');
+
+              extendEnd(end, time, available);
+
+              end = time.toString();
+
+              if (end.length > 3) {
+                endTime = end[0] + end[1] + ':' + end[2] + end[3]
+              } else {
+                endTime = '0' + end[0]  + ':' + end[1] + end[2]
+              }
+
+              $('#end-time').val(endTime);
+
+            } else {
+              $('#cal-error').html('<tr><td>Your requested booking overlaps with another reservation.</td></tr>');
+              invalid = 0;
+            }
           }
-        } else if (clicked.hasClass('reserved')) {
-        // if the div has class of reserved, throw error
         } else if (clicked.hasClass('searched')) {
-          changeEnd(end, time, searched);
+          $('#cal-error').html('');
+
+          changeEnd(end, time, searched, invalid);
+
           end = time.toString();
 
           if (end.length > 3) {
@@ -188,6 +245,8 @@
           }
 
           $('#end-time').val(endTime);
+        } else if (clicked.hasClass('reserved')) {
+          $('#cal-error').html('<tr><td>Your requested booking overlaps with another reservation.</td></tr>');
         }
       });
     });

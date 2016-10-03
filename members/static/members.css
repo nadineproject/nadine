@@ -511,7 +511,7 @@ table td {
 	}
 
 	.booking-bar {
-		margin-bottom: 5%;
+		margin-bottom: 2%;
 	}
 
 	.cal-box {
@@ -524,6 +524,10 @@ table td {
 		padding: 0;
 		border-radius: 0px 0px 0px 0px;
 		background-color: RGBA(178, 225, 203, .6);
+	}
+
+	.cal-table td:last-child, .booking-bar td:last-child {
+		border-right: none;
 	}
 
 	.cal-table .reserved, .booking-bar .reserved {
@@ -540,6 +544,11 @@ table td {
 
 	.cal-table td:last-child, .booking-bar td:last-child {
 		border-radius: 0px 4px 4px 0px;
+	}
+
+	#cal-error td {
+		text-align: center;
+		color: red;
 	}
 
 	.slider {

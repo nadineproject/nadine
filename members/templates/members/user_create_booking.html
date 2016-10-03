@@ -168,6 +168,10 @@
             hour = 12;
         }
 
+        if (hour.length != 2) {
+          hour = '0' + hour;
+        }
+
         var time = hour + ':' + minutes
 
         return time
