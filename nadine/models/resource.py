@@ -91,3 +91,49 @@ class Room(models.Model):
 
     def get_events(self, start, end):
         return self.event_set.filter(start_ts__gte=start, end_ts__lte=end)
+
+
+    def get_raw_calendar(self):
+        # Calendar is a list of {hour, minute} time blocks
+        calendar = []
+
+        # Default OPEN_TIME is 8AM
+        open_hour = '8'
+        open_minute = '00'
+        if hasattr(settings, 'OPEN_TIME') and ':' in settings.OPEN_TIME:
+            open_hour = settings.OPEN_TIME.split(':')[0]
+            open_minute = settings.OPEN_TIME.split(':')[1]
+
+        # Default CLOSE_TIME is 6PM
+        close_hour = '18'
+        close_minute = '00'
+        if hasattr(settings, 'CLOSE_TIME') and ':' in settings.CLOSE_TIME:
+            close_hour = settings.CLOSE_TIME.split(':')[0]
+            close_minute = settings.CLOSE_TIME.split(':')[1]
+
+        for num in range(int(open_hour), int(close_hour)):
+            minutes = open_minute
+            for count in range(0, 4):
+                time_block = {}
+                calendar.append(time_block)
+                if num <= 12:
+                    time_block['hour'] = str(num)
+                else:
+                    time_block['hour'] = str(num - 12)
+
+                time_block['minutes'] = minutes
+                if minutes == '00':
+                    minutes = '15'
+                elif minutes =='15':
+                    minutes = '30'
+                elif minutes =='30':
+                    minutes = '45'
+                else:
+                    minutes = '00'
+                    num += 1
+        return calendar
+
+    def get_calendar(self):
+        calendar = self.get_raw_calendar()
+        # Populate raw calendar with 
+        return calendar

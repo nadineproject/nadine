@@ -59,3 +59,31 @@ class RoomTestCase(TestCase):
         self.assertEquals(len(rooms), 1)
         self.assertEquals(self.room1, rooms[0])
         self.assertFalse(rooms[0].has_phone)
+
+    def test_get_raw_calendar(self):
+        settings.OPEN_TIME = "8:00"
+        settings.CLOSE_TIME = "18:00"
+        calendar1 = self.room1.get_raw_calendar()
+        self.assertEquals(len(calendar1), 40)
+        self.assertEquals(calendar1[0]['hour'], '8')
+        self.assertEquals(calendar1[0]['minutes'], '00')
+        self.assertEquals(calendar1[1]['hour'], '8')
+        self.assertEquals(calendar1[1]['minutes'], '15')
+        self.assertEquals(calendar1[2]['hour'], '8')
+        self.assertEquals(calendar1[2]['minutes'], '30')
+        self.assertEquals(calendar1[3]['hour'], '8')
+        self.assertEquals(calendar1[3]['minutes'], '45')
+        self.assertEquals(calendar1[4]['hour'], '9')
+        self.assertEquals(calendar1[4]['minutes'], '00')
+        self.assertEquals(calendar1[39]['hour'], '5')
+        self.assertEquals(calendar1[39]['minutes'], '45')
+
+    def test_get_raw_calendar2(self):
+        settings.OPEN_TIME = "7:30"
+        settings.CLOSE_TIME = "18:30"
+        calendar1 = self.room1.get_raw_calendar()
+        self.assertEquals(len(calendar1), 44)
+        self.assertEquals(calendar1[0]['hour'], '7')
+        self.assertEquals(calendar1[0]['minutes'], '30')
+        self.assertEquals(calendar1[43]['hour'], '6')
+        self.assertEquals(calendar1[43]['minutes'], '15')

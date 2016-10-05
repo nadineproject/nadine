@@ -46,7 +46,14 @@
     </tr>
     {% for email in user.profile.all_emails %}
     <tr>
-        <td>{{ email }}</td>
+        <td>
+            {% if email.is_primary %}
+                <em>{{ email }}</em> (Primary)
+            {% else %}
+                {{ email }}
+            {% endif %}
+
+        </td>
         <td nowrap style="text-align:right">
             {% if not email.is_primary %}
                 <button onclick="location.href = '{{ email.get_set_primary_link }}';">Make Primary</button>
