@@ -4,7 +4,7 @@
 
 {% block content %}
   <div id='booking_form'>
-    <form enctype="multipart/form-data" action='.' method='POST'>
+    <form enctype="multipart/form-data" action='#' method='POST'>
       <h4>Confirm Booking</h4>
       <p style='text-align:center;'>
         Reminder: Make sure you include your setup and breakdown time in your reservation time.
@@ -12,11 +12,11 @@
       <table>
         <tr>
           <td><strong>Booking For:</strong></td>
-          <td><input value='{{ user.first_name }} {{ user.last_name }}' readonly /></td>
+          <td><input name='user' value='{{ user.first_name }} {{ user.last_name }}' readonly /></td>
         </tr>
         <tr>
           <td id='room'><strong>Room:</strong></td>
-          <td><input value='{{ room }}' readonly  /></td>
+          <td><input name='room' value='{{ room }}' readonly  /></td>
           <td>{{ booking_form.room.errors }}</td>
         </tr>
         <tr>
@@ -422,7 +422,7 @@
       $('#end-forw').on('click', function(e) {
         e.preventDefault();
         $('#cal-error').html('');
-        
+
         var endTime = $('#end-time').val();
         var end = endTime.replace(':', '');
         var minutes = getMinAndHour(end)[0];

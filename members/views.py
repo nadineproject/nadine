@@ -605,6 +605,8 @@ def confirm_booking(request, space, start, end, date):
     hours = time_blocks(open_hour, open_min, closed_hour)[0]
     ids = time_blocks(open_hour, open_min, closed_hour)[1]
     room = get_object_or_404(Room, name=space)
+    page_message = None
+    booking_form = EventForm()
 
     start_ts, end_ts = coerce_times(start, end, date)
     search_block = Room.objects.searched(start, end, ids)
@@ -619,18 +621,30 @@ def confirm_booking(request, space, start, end, date):
     reserved = Room.objects.reservations(event_dict, ids)
 
     if request.method == 'POST':
-        booking_form = EventForm()
+        user = request.user
+        space = request.POST.get('room')
+        room = get_object_or_404(Room, name=space)
+        start = request.POST.get('start')
+        end = request.POST.get('end')
+        date = request.POST.get('date')
+        start_ts, end_ts = coerce_times(start, end, date)
+        description = request.POST.get('description', '')
+        charge = request.POST.get('charge', 0)
+        is_public = request.POST.get('is_public', False)
+        event = Event(user=user, room=room, start_ts=start_ts, end_ts=end_ts, description=description, charge=charge, is_public=is_public)
+
         try:
-            if booking_form.is_valid():
-                # booking_form.save()
-                return HttpResponseRedirect(reverse('member_confirm_booking'), {})
+            event.save()
+
+            return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
+
         except Exception as e:
             page_message = str(e)
             logger.error(str(e))
     else:
         booking_form = EventForm()
 
-    return render_to_response('members/user_confirm_booking.html', {'booking_form':booking_form, 'start':start, 'end':end, 'room': room, 'date': date, 'hours': hours, 'ids': ids, 'reserved': reserved, 'search_block': search_block }, context_instance=RequestContext(request))
+    return render_to_response('members/user_confirm_booking.html', {'booking_form':booking_form, 'start':start, 'end':end, 'room': room, 'date': date, 'hours': hours, 'ids': ids, 'reserved': reserved, 'search_block': search_block, }, context_instance=RequestContext(request))
 
 
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
