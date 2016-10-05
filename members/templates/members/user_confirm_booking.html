@@ -9,6 +9,14 @@
       <p style='text-align:center;'>
         Reminder: Make sure you include your setup and breakdown time in your reservation time.
       </p>
+      {% if page_message %}
+        <div>
+          <p style='color:red;text-align:center;'>
+            <strong> {{ page_message }} </strong>
+          </p>
+          <br />
+        </div>
+      {% endif %}
       <table>
         <tr>
           <td><strong>Booking For:</strong></td>

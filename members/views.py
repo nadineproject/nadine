@@ -633,18 +633,23 @@ def confirm_booking(request, space, start, end, date):
         is_public = request.POST.get('is_public', False)
         event = Event(user=user, room=room, start_ts=start_ts, end_ts=end_ts, description=description, charge=charge, is_public=is_public)
 
-        try:
-            event.save()
+        stillAv = Room.objects.available(start=start_ts, end=end_ts)
+        if room in stillAv:
+            print room, stillAv
+            try:
+                event.save()
 
-            return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
+                return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
 
-        except Exception as e:
-            page_message = str(e)
-            logger.error(str(e))
+            except Exception as e:
+                page_message = str(e)
+                logger.error(str(e))
+        else:
+            page_message = 'This room is no longer available at the requested time.'
     else:
         booking_form = EventForm()
 
-    return render_to_response('members/user_confirm_booking.html', {'booking_form':booking_form, 'start':start, 'end':end, 'room': room, 'date': date, 'hours': hours, 'ids': ids, 'reserved': reserved, 'search_block': search_block, }, context_instance=RequestContext(request))
+    return render_to_response('members/user_confirm_booking.html', {'booking_form':booking_form, 'start':start, 'end':end, 'room': room, 'date': date, 'hours': hours, 'ids': ids, 'reserved': reserved, 'search_block': search_block, 'page_message': page_message}, context_instance=RequestContext(request))
 
 
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
