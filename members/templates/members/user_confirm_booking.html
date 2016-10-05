@@ -161,7 +161,7 @@
         var newId = hour + minutes;
         data.push(newId)
 
-        if (hour < 10) {
+        if (hour <= 9) {
           var visTime = '0' + visHour + ':' + visMin;
           data.push(visTime)
         } else {
@@ -422,7 +422,7 @@
         if ($('#hour-' + end).hasClass('reserved')) {
           $('#cal-error').html('<tr><td>Your requested booking overlaps with another reservation.</td></tr>');
         } else {
-          toggleStatus(id);
+          toggleStatus(end);
           $('#end-time').val(newEnd);
         }
       });
