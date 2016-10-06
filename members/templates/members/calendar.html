@@ -1,0 +1,31 @@
+{% extends "members/u_base.html" %}
+
+{% block content %}
+  <div id='calendar'></div>
+{% endblock %}
+
+{% block extrajs %}
+  <script>
+    $(document).ready(function() {
+      var today = moment();
+      $('#calendar').fullCalendar({
+        header: {
+          left:'prev,next today',
+          center: 'title',
+          right: 'month,basicWeek,basicDay'
+        },
+        defaultDate: moment(),
+        navLinks: true,
+  			editable: true,
+  			eventLimit: true,
+        events: [
+          {
+            title: 'Team meeting',
+            start: moment(),
+            end: moment().add(1, 'days')
+          }
+        ]
+      });
+    });
+  </script>
+{% endblock %}

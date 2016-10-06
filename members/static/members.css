@@ -605,6 +605,11 @@ table td {
 		margin-bottom: 5%;
 	}
 
+	#calendar {
+		max-width: 900px;
+		margin: 0 auto;
+	}
+
 /* Footer */
 
 footer.home-footer {

@@ -597,5 +597,12 @@ def confirm_booking(request, room, start, end, date):
 
     return render_to_response('members/user_confirm_booking.html', {'booking_form':booking_form, 'start':start, 'end':end, 'room': room, 'date': date, 'labels': labels, 'page_message': page_message, 'event_dict': event_dict}, context_instance=RequestContext(request))
 
+@login_required
+@user_passes_test(is_active_member, login_url='member_not_active')
+def calendar(request):
+    #get month and days of that month
+    #create table with 5 rows of 7 tds
+
+    return render_to_response('members/calendar.html', {}, context_instance=RequestContext(request))
 
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
