@@ -157,6 +157,10 @@ p {
 	width: 70%;
 }
 
+#booking_form {
+	min-width: 700px;
+}
+
 .booking-box {
 	background-color: RGBA(239, 238, 231, 1);
 	border-radius: 2px;
@@ -455,6 +459,10 @@ table td {
 		margin-top: 10px;
 	}
 
+	.booking-bar {
+		min-width: 670px;
+	}
+
 	.cal-table thead, .booking-bar thead {
 		border: none;
 	}
@@ -562,6 +570,11 @@ table td {
 
 	#end-forw {
 		margin-left: 15%;
+	}
+
+	.time-btns {
+		min-width: 300px;
+		overflow: auto;
 	}
 
 	#cal-error td {
@@ -709,5 +722,11 @@ footer.sticky-footer {
 
 	#profile_form input {
 		margin-right: 1%;
+	}
+
+	#booking_form {
+		width: 100%;
+		min-width: 700px;
+		margin-left: 0;
 	}
 }

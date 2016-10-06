@@ -56,32 +56,16 @@
                 {% endfor %}
               {% endif %}
             {% endfor %}
-          <!-- {% for id in ids %}
-            {% for here, reservations in reserved.items %}
-              {% if here == room %}
-                {% if id in reservations %}
-                  <td class='cal-box reserved' id='hour-{{ id }}'>
-                  </td>
-                {% elif id in search_block %}
-                  <td class='cal-box searched' id='hour-{{ id }}'></td>
-                {% else %}
-                  <td class='cal-box available' id='hour-{{ id }}'>
-                  </td>
-                {% endif %}
-              {% endif %}
-            {% endfor %}
-          {% endfor %} -->
           </tr>
         </tbody>
       </table>
       <table id='cal-error'>
-
       </table>
       <table>
         <tr>
-          <td><button id='start-forw' class='waves-effect'><</button><input style="width:50%;margin:2%;" type='time' step=900 name='start' id='start-time' value='{{ start }}' readonly/> <button id='start-back' class='waves-effect'>></button>
+          <td class='time-btns'><button id='start-forw' class='waves-effect'><</button><input style="width:50%;margin:2%;" type='time' step=900 name='start' id='start-time' value='{{ start }}' readonly/> <button id='start-back' class='waves-effect'>></button>
           </td>
-          <td><strong>TO </strong><button id='end-forw' class='waves-effect'><</button><input style="width:50%;margin:2%;" type='time' step=900 name='end' id='end-time' value='{{ end }}' readonly /><button id='end-back' class='waves-effect'>></button></td>
+          <td class='time-btns'><strong>TO </strong><button id='end-forw' class='waves-effect'><</button><input style="width:50%;margin:2%;" type='time' step=900 name='end' id='end-time' value='{{ end }}' readonly /><button id='end-back' class='waves-effect'>></button></td>
         </tr>
         <tr>
           <td><strong>Description:</strong></td>

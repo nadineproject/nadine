@@ -83,21 +83,6 @@
                 {% endif %}
               {% endfor %}
             {% endif %}
-            <!-- {% for id in ids %}
-              {% for here, reservations in reserved.items %}
-                {% if here == room %}
-                  {% if id in reservations %}
-                    <td class='cal-box reserved' id='hour-{{ id }}'>
-                    </td>
-                  {% elif id in search_block %}
-                    <td class='cal-box searched' id='hour-{{ id }}'></td>
-                  {% else %}
-                    <td class='cal-box available' id='hour-{{ id }}'>
-                    </td>
-                  {% endif %}
-                {% endif %}
-              {% endfor %}
-            {% endfor %} -->
           </tr>
         </table>
       </div>
