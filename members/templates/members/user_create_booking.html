@@ -62,10 +62,10 @@
       <div class='col s8 cal-div' style='height:110px;'>
         <table class='cal-table'>
           <thead>
-            {% for hour in hours %}
+            {% for label in labels %}
               {% if forloop.counter0|divisibleby:2 %}
                 <th class="rotate"><div><span>
-                  {{ hour }}
+                  {{ label }}
                 </div></span></th>
               {% else %}
                 <th></th>
@@ -73,7 +73,17 @@
             {% endfor %}
           </thead>
           <tr>
-            {% for id in ids %}
+            {% if room in room_dict %}
+              {% for block, times in room_dict.items %}
+                {% if room == block %}
+                  {% for time in times %}
+                    <td class="cal-box {{ time.status }}" id="hour-{{time.mil_hour}}{{time.minutes}}">
+                    </td>
+                  {% endfor %}
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+            <!-- {% for id in ids %}
               {% for here, reservations in reserved.items %}
                 {% if here == room %}
                   {% if id in reservations %}
@@ -87,7 +97,7 @@
                   {% endif %}
                 {% endif %}
               {% endfor %}
-            {% endfor %}
+            {% endfor %} -->
           </tr>
         </table>
       </div>

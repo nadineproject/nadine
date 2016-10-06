@@ -216,6 +216,10 @@ COUNTRY = 'US'
 #YELP_URL = 'https://www.yelp.com/biz/office-nomads-seattle-2'
 #INSTAGRAM_URL = 'https://www.instagram.com/officenomads/'
 
+# These are business hours used to organize reservations. Times MUST be in military time. Calendar will be broken up via 15 minute increments
+# OPEN_TIME = '8:30'
+# CLOSE_TIME = '18:00'
+
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 # Logging

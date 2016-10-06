@@ -489,58 +489,6 @@ def register(request):
         registration_form = NewUserForm()
     return render_to_response('members/register.html', { 'registration_form': registration_form, 'page_message': page_message, 'settings': settings}, context_instance=RequestContext(request))
 
-def get_open_time():
-    if hasattr(settings, 'OPEN_TIME') and ':' in settings.OPEN_TIME:
-        hour = settings.OPEN_TIME.split(':')[0]
-        minute = settings.OPEN_TIME.split(':')[1]
-        return hour, minute
-    # Default to 8AM
-    return '8', '00'
-
-def get_close_time():
-    # Default to 6PM
-    hour = '18'
-    minute = '00'
-    if hasattr(settings, 'CLOSE_TIME') and ':' in settings.CLOSE_TIME:
-        hour = settings.CLOSE_TIME.split(':')[0]
-        minute = settings.CLOSE_TIME.split(':')[1]
-    return hour, minute
-
-def time_blocks(open_hour, open_min, closed_hour):
-    hours = []
-    ids = []
-    for num in range(int(open_hour), int(closed_hour)):
-        minutes = str(open_min)
-        for count in range(0, 4):
-            hour = str(num) + ':' + minutes
-            id = str(num) + minutes
-            if minutes == '00':
-                ids.append(id)
-                if num > 12:
-                    hour = str (num - 12)+ ":" + minutes
-                minutes = '15'
-                hours.append(hour)
-            elif minutes =='15':
-                ids.append(id)
-                if num > 12:
-                    hour = str(num - 12) + ':' + minutes
-                minutes = '30'
-                hours.append(hour)
-            elif minutes =='30':
-                ids.append(id)
-                if num > 12:
-                    hour = str(num - 12) + ':' + minutes
-                minutes = '45'
-                hours.append(hour)
-            else:
-                ids.append(id)
-                if num > 12:
-                    hour = str(num - 12) + ':' + minutes
-                minutes = '00'
-                num += 1
-                hours.append(hour)
-    return hours, ids
-
 def coerce_times(start, end, date):
     start_dt = datetime.datetime.strptime(date + " " + start, "%Y-%m-%d %H:%M")
     start_ts = timezone.make_aware(start_dt, timezone.get_current_timezone())
@@ -552,9 +500,12 @@ def coerce_times(start, end, date):
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def create_booking(request):
-    open_hour, open_min = get_open_time()
-    closed_hour, closed_min = get_close_time()
-    hours, ids = time_blocks(open_hour, open_min, closed_hour)
+    calendar = Room().get_raw_calendar()
+    labels = []
+
+    for block in calendar:
+        label = block['hour'] + ":" + block['minutes']
+        labels.append(label)
 
     # Process URL variables
     has_av = request.GET.get('has_av', None)
@@ -568,9 +519,6 @@ def create_booking(request):
     # Turn our date, start, and end strings into timestamps
     start_ts, end_ts = coerce_times(start, end, date)
 
-    # Get time blocks of desired reservation to show on page
-    search_block = Room.objects.searched(start, end, ids)
-
     #Make auto date for start and end if not otherwise given
     room_dict = {}
     rooms = Room.objects.available(start=start_ts, end=end_ts, has_av=has_av, has_phone=has_phone, floor=floor, seats=seats)
@@ -582,48 +530,45 @@ def create_booking(request):
     # Get all the events for each room in that day
     for room in rooms:
         room_events = room.event_set.filter(room=room, start_ts__gte=target_date, end_ts__lte=end_date)
-        room_dict[room] = room_events
-
-    reserved = Room.objects.reservations(room_dict, ids)
+        room_dict[room] = Room().get_calendar(room, room_events, start, end)
 
     if request.method == 'POST':
-        space = request.POST.get('room')
+        room = request.POST.get('room')
         start = request.POST.get('start')
         end = request.POST.get('end')
         date = request.POST.get('date')
 
-        return HttpResponseRedirect(reverse('member_confirm_booking', kwargs={'space': space, 'start': start, 'end': end, 'date': date}))
+        return HttpResponseRedirect(reverse('member_confirm_booking', kwargs={'room': room, 'start': start, 'end': end, 'date': date}))
 
-    return render_to_response('members/user_create_booking.html', {'rooms': rooms, 'hours':hours, 'start':start, 'end':end, 'date': date, 'has_av':has_av, 'floor': floor, 'has_phone': has_phone, 'ids': ids, 'reserved': reserved, 'search_block': search_block }, context_instance=RequestContext(request))
+    return render_to_response('members/user_create_booking.html', {'rooms': rooms, 'labels':labels, 'start':start, 'end':end, 'date': date, 'has_av':has_av, 'floor': floor, 'has_phone': has_phone, 'room_dict': room_dict}, context_instance=RequestContext(request))
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
-def confirm_booking(request, space, start, end, date):
+def confirm_booking(request, room, start, end, date):
     user = request.user
-    open_hour, open_min = get_open_time()
-    closed_hour, closed_min = get_close_time()
-    hours = time_blocks(open_hour, open_min, closed_hour)[0]
-    ids = time_blocks(open_hour, open_min, closed_hour)[1]
-    room = get_object_or_404(Room, name=space)
+    room = get_object_or_404(Room, name=room)
     page_message = None
     booking_form = EventForm()
+    calendar = Room().get_raw_calendar()
+    labels = []
+
+    for block in calendar:
+        label = block['hour'] + ":" + block['minutes']
+        labels.append(label)
 
     start_ts, end_ts = coerce_times(start, end, date)
-    search_block = Room.objects.searched(start, end, ids)
 
     target_date = start_ts.replace(hour=0, minute=0, second=0, microsecond=0)
     end_date = target_date + timedelta(days=1)
 
     event_dict = {}
     room_events = room.event_set.filter(room=room, start_ts__gte=target_date, end_ts__lte=end_date)
-    event_dict[room] = room_events
-
-    reserved = Room.objects.reservations(event_dict, ids)
+    event_dict[room] = Room().get_calendar(room, room_events, start, end)
 
     if request.method == 'POST':
         user = request.user
-        space = request.POST.get('room')
-        room = get_object_or_404(Room, name=space)
+        room = request.POST.get('room')
+        room = get_object_or_404(Room, name=room)
         start = request.POST.get('start')
         end = request.POST.get('end')
         date = request.POST.get('date')
@@ -634,6 +579,7 @@ def confirm_booking(request, space, start, end, date):
         event = Event(user=user, room=room, start_ts=start_ts, end_ts=end_ts, description=description, charge=charge, is_public=is_public)
 
         stillAv = Room.objects.available(start=start_ts, end=end_ts)
+
         if room in stillAv:
             print room, stillAv
             try:
@@ -649,7 +595,7 @@ def confirm_booking(request, space, start, end, date):
     else:
         booking_form = EventForm()
 
-    return render_to_response('members/user_confirm_booking.html', {'booking_form':booking_form, 'start':start, 'end':end, 'room': room, 'date': date, 'hours': hours, 'ids': ids, 'reserved': reserved, 'search_block': search_block, 'page_message': page_message}, context_instance=RequestContext(request))
+    return render_to_response('members/user_confirm_booking.html', {'booking_form':booking_form, 'start':start, 'end':end, 'room': room, 'date': date, 'labels': labels, 'page_message': page_message, 'event_dict': event_dict}, context_instance=RequestContext(request))
 
 
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
