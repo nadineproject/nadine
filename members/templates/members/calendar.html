@@ -1,13 +1,31 @@
 {% extends "members/u_base.html" %}
 
 {% block content %}
-  <div id='calendar'></div>
+  <div class='row'>
+    <div class='col s10' id='calendar'></div>
+    <button class='btn waves-effect col s1' id='make-event'>Add Event</button>
+  </div>
+  <div id='infoModal' class='modal row'>
+    <div class='modal-content'>
+      <p>
+        TITLE
+      </p>
+      <div class='modal-body'>
+        <div>
+          ALL THE EVENT INFO!!!!
+        </div>
+      </div>
+      <button class='btn waves-effect' id='modal-btn'>Close</button>
+    </div>
+  </div>
+
 {% endblock %}
 
 {% block extrajs %}
   <script>
     $(document).ready(function() {
-      var today = moment();
+      var today = $('#calendar').fullCalendar('getDate');
+
       $('#calendar').fullCalendar({
         header: {
           left:'prev,next today',
@@ -21,11 +39,20 @@
         events: [
           {
             title: 'Team meeting',
-            start: moment(),
-            end: moment().add(1, 'days')
+            start: today,
+            end: moment().add(2, 'days'),
+            allDay: true
           }
-        ]
+        ],
+        eventClick: function(calEvent, jsEvent, view) {
+          // alert('Event: ' + calEvent.title);
+          $('#infoModal').css('display', 'block');
+        }
       });
+
+      $('#modal-btn').on('click', function() {
+        $('#infoModal').css('display', 'none');
+      })
     });
   </script>
 {% endblock %}

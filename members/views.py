@@ -600,8 +600,8 @@ def confirm_booking(request, room, start, end, date):
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def calendar(request):
-    #get month and days of that month
-    #create table with 5 rows of 7 tds
+    # get all public events for that month
+    # format for the data we wish to display
 
     return render_to_response('members/calendar.html', {}, context_instance=RequestContext(request))
 
