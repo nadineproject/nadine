@@ -25,6 +25,7 @@ def room_img_upload_to(instance, filename):
 class RoomManager(models.Manager):
 
     def available(self, start, end, has_av=None, has_phone=None, floor=None, seats=None):
+
         rooms = self.all()
         if has_av != None:
             rooms = rooms.filter(has_av=has_av)
@@ -34,10 +35,12 @@ class RoomManager(models.Manager):
             rooms = rooms.filter(floor=floor)
         if seats != None:
             rooms = rooms.filter(seats__gte=seats)
+
         straddling = Q(event__start_ts__lte=start, event__end_ts__gt=start)
-        sandwich = Q(event__start_ts__gte=start, event__start_ts__lte=end)
+        sandwich = Q(event__start_ts__gte=start, event__start_ts__lt=end)
         overlap = Q(event__start_ts__lte=start, event__end_ts__gte=end)
         rooms = rooms.exclude(straddling| sandwich | overlap)
+
         return rooms
 
 class Room(models.Model):
@@ -102,10 +105,12 @@ class Room(models.Model):
                     num += 1
         return calendar
 
-    def get_calendar(self, room, events, start, end):
+    def get_calendar(self, start, end, target_date, end_date):
         calendar = self.get_raw_calendar()
         search_start = start.replace(':', '')
         search_end = end.replace(':', '')
+        events = self.event_set.filter(room=self, start_ts__gte=target_date, end_ts__lte=end_date)
+        print
 
         for event in events:
             start_wtz = timezone.make_naive(event.start_ts, timezone.get_current_timezone())

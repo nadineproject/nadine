@@ -12,6 +12,8 @@ from django.template import RequestContext, Template, Context
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.core import serializers
+from django.core.serializers.json import DjangoJSONEncoder
+
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404, HttpRequest
 from django.http import JsonResponse
@@ -23,6 +25,7 @@ from django.template.defaultfilters import slugify
 from django.contrib.sites.models import Site
 from django.contrib import messages
 from django.contrib.auth.tokens import default_token_generator
+
 
 from interlink.forms import MailingListSubscriptionForm
 from interlink.models import IncomingMail
@@ -529,8 +532,7 @@ def create_booking(request):
 
     # Get all the events for each room in that day
     for room in rooms:
-        room_events = room.event_set.filter(room=room, start_ts__gte=target_date, end_ts__lte=end_date)
-        room_dict[room] = Room().get_calendar(room, room_events, start, end)
+        room_dict[room] = room.get_calendar(start, end, target_date, end_date)
 
     if request.method == 'POST':
         room = request.POST.get('room')
@@ -562,8 +564,7 @@ def confirm_booking(request, room, start, end, date):
     end_date = target_date + timedelta(days=1)
 
     event_dict = {}
-    room_events = room.event_set.filter(room=room, start_ts__gte=target_date, end_ts__lte=end_date)
-    event_dict[room] = Room().get_calendar(room, room_events, start, end)
+    event_dict[room] = room.get_calendar(start, end, target_date, end_date)
 
     if request.method == 'POST':
         user = request.user
@@ -600,9 +601,14 @@ def confirm_booking(request, room, start, end, date):
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def calendar(request):
-    # get all public events for that month
+    #get all events that are marked as is_public
+    events = Event.objects.filter(is_public=True)
+
+    data = serializers.serialize('json', list(events), fields=('room', 'description', 'start_ts', 'end_ts', 'user'))
+
+    print data
     # format for the data we wish to display
 
-    return render_to_response('members/calendar.html', {}, context_instance=RequestContext(request))
+    return render_to_response('members/calendar.html', {'data': data }, context_instance=RequestContext(request))
 
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

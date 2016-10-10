@@ -25,6 +25,8 @@
   <script>
     $(document).ready(function() {
       var today = $('#calendar').fullCalendar('getDate');
+      var events = "{{ data }}";
+      console.log(events);
 
       $('#calendar').fullCalendar({
         header: {

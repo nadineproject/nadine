@@ -16,17 +16,46 @@ class RoomTestCase(TestCase):
         self.room1 = Room.objects.create(name="Room 1", has_phone=False, has_av=False, floor=1, seats=4, max_capacity=10, default_rate=20.00)
         self.room2 = Room.objects.create(name="Room 2", has_phone=True, has_av=True, floor=1, seats=2, max_capacity=4, default_rate=20.00)
 
-        start = timezone.now() - timedelta(hours=4)
-        end = timezone.now() - timedelta(hours=2)
+        start = timezone.now()
+        end = timezone.now() + timedelta(hours=3)
         self.event1 = Event.objects.create(user=self.user1, room=self.room1, start_ts=start, end_ts=end)
 
     def test_available_start(self):
-        start = timezone.now() - timedelta(hours=3)
-        end = timezone.now() - timedelta(hours=2)
+        start = timezone.now()
+        end = timezone.now() + timedelta(hours=2)
         rooms = Room.objects.available(start=start, end=end)
         self.assertTrue(len(rooms) > 0)
-        self.assertFalse(rooms[0] == self.room1)
         self.assertTrue(rooms[0] == self.room2)
+        self.assertFalse(rooms[0] == self.room1)
+
+    def test_available_straddling(self):
+        start = timezone.now()
+        end = timezone.now() + timedelta(hours=1)
+        rooms = Room.objects.available(start=start, end=end)
+        self.assertTrue(len(rooms) > 0)
+        self.assertTrue(len(rooms) == 1)
+        self.assertTrue(rooms[0] == self.room2)
+
+    def test_available_sandwich(self):
+        start = timezone.now() - timedelta(hours=1)
+        end =  timezone.now() + timedelta(minutes=30)
+        rooms = Room.objects.available(start=start, end=end)
+        self.assertTrue(len(rooms) == 1)
+        self.assertTrue(rooms[0] == self.room2)
+
+    def test_available_overlap(self):
+        start = timezone.now() + timedelta(hours=1)
+        end = timezone.now() + timedelta(hours=2)
+        rooms = Room.objects.available(start=start, end=end)
+        self.assertTrue(len(rooms) == 1)
+        self.assertFalse(rooms[0] == self.room1)
+
+    def test_available_early(self):
+        start = timezone.now() - timedelta(hours=2)
+        end = timezone.now() - timedelta(hours=1)
+        rooms = Room.objects.available(start=start, end=end)
+        self.assertTrue(len(rooms) == 2)
+        self.assertTrue(rooms[0] == self.room1)
 
     def test_available_floor(self):
         rooms = Room.objects.available(floor=1)
