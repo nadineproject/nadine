@@ -119,7 +119,7 @@ def email_add(request):
     email = request.POST.get("email")
     if email:
         e = EmailAddress(user=user, email=email)
-        e.save(Verify=True)
+        e.save(verify=True)
     if 'HTTP_REFERER' in request.META:
         return redirect(request.META['HTTP_REFERER'])
     else:

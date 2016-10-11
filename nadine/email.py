@@ -56,9 +56,11 @@ def send_manual(user, message):
         SlackAPI().invite_user(user)
     return True
 
+
 #####################################################################
 #                        Email Verification
 #####################################################################
+
 
 def send_verification(emailObj):
     """Send email verification link for this EmailAddress object.
@@ -75,11 +77,6 @@ def send_verification(emailObj):
     }
     context_dict['verify_link'] = emailObj.get_verify_link()
 
-    # if request:
-    #     context = RequestContext(request, context_dict)
-    # else:
-    #     context = Context(context_dict)
-
     subject = "Please Verify Your Email Address"
     text_template = get_template('email/verification_email.txt')
     text_msg = text_template.render(context=context_dict)
@@ -91,10 +88,15 @@ def send_verification(emailObj):
 #####################################################################
 #                        User Alerts
 #####################################################################
+#
+# These emails go out to users.
+#
+#####################################################################
+
 
 def send_introduction(user):
     site = Site.objects.get_current()
-    subject = "%s: Introduction to Nadine" % (site.name)
+    subject = "Introduction to Nadine"
     message = render_to_string('email/introduction.txt', context={'user': user, 'site': site})
     send_quietly(user.email, subject, message)
 
@@ -111,7 +113,7 @@ def subscribe_to_newsletter(user):
 def send_new_membership(user):
     site = Site.objects.get_current()
     membership = user.profile.last_membership()
-    subject = "%s: New %s Membership" % (site.name, membership.membership_plan.name)
+    subject = "New %s Membership" % membership.membership_plan.name
     message = render_to_string('email/new_membership.txt', context={'user': user, 'membership': membership, 'site': site})
     send(user.email, subject, message)
     announce_new_membership(user)
@@ -119,72 +121,73 @@ def send_new_membership(user):
 
 def send_first_day_checkin(user):
     site = Site.objects.get_current()
-    subject = "%s: How was your first day?" % (site.name)
+    subject = "How was your first day?"
     message = render_to_string('email/first_day.txt', context={'user': user, 'site': site})
     send(user.email, subject, message)
 
 
 def send_exit_survey(user):
     site = Site.objects.get_current()
-    subject = "%s: Exit Survey" % (site.name)
+    subject = "Exit Survey"
     message = render_to_string('email/exit_survey.txt', context={'user': user, 'site': site})
     send(user.email, subject, message)
 
 
 def send_member_survey(user):
     site = Site.objects.get_current()
-    subject = "%s: Coworking Survey" % (site.name)
+    subject = "Coworking Survey"
     message = render_to_string('email/member_survey.txt', context={'user': user, 'site': site})
     send(user.email, subject, message)
 
 
 def send_no_return_checkin(user):
     site = Site.objects.get_current()
-    subject = "%s: Checking In" % (site.name)
+    subject = "Checking In"
     message = render_to_string('email/no_return.txt', context={'user': user, 'site': site})
     send(user.email, subject, message)
 
 
 def send_invalid_billing(user):
     site = Site.objects.get_current()
-    subject = "%s: Billing Problem" % (site.name)
+    subject = "Billing Problem"
     message = render_to_string('email/invalid_billing.txt', context={'user': user, 'site': site})
     send(user.email, subject, message)
 
 
 def send_no_signin(user):
     site = Site.objects.get_current()
-    subject = "%s: Forget to sign in?" % (site.name)
+    subject = "Forget to sign in?"
     message = render_to_string('email/no_signin.txt', context={'user': user, 'site': site})
     send(user.email, subject, message)
 
 
 def send_no_device(user):
     site = Site.objects.get_current()
-    subject = "%s: Device Registration" % (site.name)
+    subject = "Device Registration"
     message = render_to_string('email/no_device.txt', context={'user': user, 'site': site})
     send(user.email, subject, message)
 
 
 def send_new_key(user):
     site = Site.objects.get_current()
-    subject = "%s: Key Holding Details" % (site.name)
+    subject = "Key Holding Details"
     message = render_to_string('email/new_key.txt', context={'user': user, 'site': site})
     send(user.email, subject, message)
 
 
 def send_user_notifications(user, target):
     site = Site.objects.get_current()
-    subject = "%s: %s is here!" % (site.name, target.get_full_name())
+    subject = "%s is here!" % target.get_full_name()
     message = render_to_string('email/user_notification.txt', context={'user': user, 'target': target, 'site': site})
     send(user.email, subject, message)
 
 
 def send_contact_request(user, target):
     site = Site.objects.get_current()
-    subject = "%s: %s wants to connect!" % (site.name, user.get_full_name())
+    subject = "%s wants to connect!" % user.get_full_name()
     message = render_to_string('email/contact_request.txt', context={'user': user, 'target': target, 'site': site})
     send(target.email, subject, message)
+
 
 def send_edit_profile(user):
     site = Site.objects.get_current()
@@ -192,8 +195,13 @@ def send_edit_profile(user):
     message = render_to_string('email/edit_profile.txt', context={'user': user, 'site': site})
     send(user.email, subject, message)
 
+
 #####################################################################
 #                        System Alerts
+#####################################################################
+#
+# These emails go out to the team.
+#
 #####################################################################
 
 
@@ -260,48 +268,93 @@ def announce_special_day(user, special_day):
     send_quietly(settings.TEAM_EMAIL_ADDRESS, subject, message)
 
 
-def manage_member_email(user):
-    subject = "Email Problem - %s" % (user.get_full_name())
-    c = Context({
-        'user': user,
-        'domain': Site.objects.get_current().domain,
-    })
-    text_content, html_content = mailgun.render_templates(c, "manage_member")
-    logger.debug("text_context: %s" % text_content)
-    logger.debug("html_content: %s" % html_content)
+# Unused and I'm not sure why this is here.
+# This was also implemented in mailgun.send_manage_member
+# def manage_member_email(user):
+#     subject = "Email Problem - %s" % (user.get_full_name())
+#     # Adjust the subject if we have a prefix
+#     if hasattr(settings, "EMAIL_SUBJECT_PREFIX"):
+#         subject = settings.EMAIL_SUBJECT_PREFIX.strip() + " " + subject
+#
+#     c = Context({
+#         'user': user,
+#         'domain': Site.objects.get_current().domain,
+#     })
+#     text_content, html_content = mailgun.render_templates(c, "manage_member")
+#     logger.debug("text_context: %s" % text_content)
+#     logger.debug("html_content: %s" % html_content)
+#
+#     mailgun_data = {"from": settings.EMAIL_ADDRESS,
+#                     #		"to": [settings.TEAM_EMAIL_ADDRESS, ],
+#                     "to": [settings.EMAIL_ADDRESS, ],
+#                     "subject": subject,
+#                     "text": text_content,
+#                     "html": html_content,
+#                     }
+#     mailgun.mailgun_send(mailgun_data)
 
-    mailgun_data = {"from": settings.EMAIL_ADDRESS,
-                    #		"to": [settings.TEAM_EMAIL_ADDRESS, ],
-                    "to": [settings.EMAIL_ADDRESS, ],
-                    "subject": subject,
-                    "text": text_content,
-                    "html": html_content,
-                    }
-    mailgun.mailgun_send(mailgun_data)
 
 #####################################################################
 #                        Utilities
 #####################################################################
 
 
+def get_templates(email_key):
+    text_template = None
+    html_template = None
+
+    template_override = EmailTemplate.objects.filter(key=email_key).first()
+    if template_override:
+        if template_override.text_body:
+            text_template = Template(template_override.text_body)
+        if t.html_body:
+            html_template = Template(template_override.html_body)
+    else:
+        try:
+            text_template = get_template("email/%s.txt" % email_key)
+            html_template = get_template("email/%s.html" % email_key)
+        except TemplateDoesNotExist:
+            logger.debug('There is no template for email key "%s"' % email_key)
+            logger.debug('Exiting quietly')
+
+    return (text_template, html_template)
+
+
+def render_templates(context, email_key):
+    text_content = None
+    html_content = None
+    text_template, html_template = get_templates(location, email_key)
+    if text_template:
+        text_content = text_template.render(context)
+    if html_template:
+        html_content = html_template.render(context)
+    return (text_content, html_content)
+
+
 def team_signature(user):
     site = Site.objects.get_current()
     return render_to_string('email/team_email_signature.txt', context={'user': user, 'site': site})
 
+
 def send(recipient, subject, text_message, html_message=None):
     send_email(recipient, subject, text_message, html_message=html_message, fail_silently=False)
+
 
 def send_quietly(recipient, subject, text_message, html_message=None):
     send_email(recipient, subject, text_message, html_message=html_message, fail_silently=True)
 
+
 def send_email(recipient, subject, text_message, html_message=None, fail_silently=False):
+    # Pull the user from the email address
+    user = User.objects.filter(email=recipient).first()
+
     # A little safety net when debugging
     if settings.DEBUG:
         recipient = settings.EMAIL_ADDRESS
 
     # Adjust the subject if we have a prefix
     if hasattr(settings, "EMAIL_SUBJECT_PREFIX"):
-        subject = settings.EMAIL_SUBJECT_PREFIX.strip() + " " + subject
+        subject = settings.EMAIL_SUBJECT_PREFIX.strip() + " " + subject.strip()
 
     note = None
     success = False
@@ -317,7 +370,6 @@ def send_email(recipient, subject, text_message, html_message=None, fail_silentl
             pass
         raise
     finally:
-        user = User.objects.filter(email=recipient).first()
         if user:
             try:
                 from nadine.models.core import SentEmailLog
@@ -325,7 +377,8 @@ def send_email(recipient, subject, text_message, html_message=None, fail_silentl
                 if note:
                     log.note = note
                 log.save()
-            except:
-                pass
+            except Exception as e:
+                logger.error(e)
+
 
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

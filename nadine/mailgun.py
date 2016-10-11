@@ -144,6 +144,10 @@ def clean_incoming(request):
 def send_manage_member(user, subject=None):
     if subject == None:
         subject = "Incomplete Tasks"
+    # Adjust the subject if we have a prefix
+    if hasattr(settings, "EMAIL_SUBJECT_PREFIX"):
+        subject = settings.EMAIL_SUBJECT_PREFIX.strip() + " " + subject.strip()
+
     subject = "%s - %s" % (subject, user.get_full_name())
     text_content, html_content = get_manage_member_content(user)
     mailgun_data = {"from": settings.EMAIL_ADDRESS,
