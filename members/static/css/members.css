@@ -635,10 +635,6 @@ table td {
   max-height: 100%;
 }
 
-.modal-body {
-  padding: 2px 16px;
-}
-
 .modal-content {
   position: relative;
   background-color: #fefefe;
@@ -646,6 +642,7 @@ table td {
 	margin-top: 10%;
   padding: 0;
   border: 1px solid #888;
+	border-radius: 3px;
 	height: 50%;
   width: 50%;
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
@@ -654,6 +651,106 @@ table td {
   animation-name: animatetop;
   animation-duration: 0.4s
 }
+
+.eModal-content {
+	position: relative;
+  background-color: #fefefe;
+  margin: auto;
+	margin-top: 5%;
+  padding: 0;
+  border: 1px solid #888;
+	border-radius: 4px;
+	height: 85%;
+  width: 50%;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+  -webkit-animation-name: animatetop;
+  -webkit-animation-duration: 0.4s;
+  animation-name: animatetop;
+  animation-duration: 0.4s;
+}
+
+.modal .modal-content {
+	padding:0;
+}
+
+.modal-content p {
+	margin: 0;
+}
+
+.modal-content .modal-body{
+	padding-top: 5%;
+	background-color: RGBA(229, 238, 215, .5);
+	height: 100%;
+	padding: 5%;
+}
+
+.modal-body tr {
+	margin: 4%;
+}
+
+.eModal-content .eModal-body {
+	padding-top: 5%;
+	background-color: RGBA(229, 238, 215, .5);
+	height: 100%;
+	padding: 5%;
+	font-size: 1.1em;
+}
+
+.eModal-body input, .modal-body span {
+	background: white;
+	border-bottom: none;
+}
+
+.modal-body span {
+	padding: 1% 10%;
+	width: 50%;
+}
+
+.eModal-body td, .modal-body td {
+	border: none;
+}
+
+.eModal-body #event-desc{
+	padding: 2% 0%;
+}
+
+.modal-content .modal-body p {
+	font-size: 1.2em;
+}
+
+.modal-btn {
+	margin-top: 5%;
+	margin-left: 35%;
+	background-color: RGBA(63, 146, 161, 1);
+}
+
+#event-btn-row {
+	margin-top: 5%;
+	padding-bottom: 3%;
+	border-bottom: 1px solid grey;
+}
+
+#event-btn {
+	margin-left: 30%;
+	background-color: RGBA(63, 146, 161, 1);
+	display: inline;
+}
+
+#cancel-event {
+	margin-left: 30px;
+	cursor: pointer;
+	background-color: RGBA(63, 146, 161, 0);
+}
+
+#goto-booking {
+	font-weight: bold;
+	font-size: 1.3em;
+}
+
+.fc-toolbar .fc-state-active, .fc-toolbar .ui-state-active {
+	z-index: 0;
+}
+
 /* Footer */
 
 footer.home-footer {

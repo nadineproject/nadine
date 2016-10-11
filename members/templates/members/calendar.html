@@ -2,29 +2,127 @@
 
 {% block content %}
   <div class='row'>
-    <div class='col s10' id='calendar'></div>
-    <button class='btn waves-effect col s1' id='make-event'>Add Event</button>
+    <div class='col s10 offset-s1' id='calendar'></div>
   </div>
-  <div id='infoModal' class='modal row'>
+  <div id='infoModal' class='modal'>
     <div class='modal-content'>
-      <p>
-        TITLE
-      </p>
       <div class='modal-body'>
-        <div>
-          ALL THE EVENT INFO!!!!
+        <h2 id='event-title'></h2>
+        <table>
+          <tr>
+            <td>
+              <strong>Start Time: </strong>
+            </td>
+            <td>
+              <span id='event-start'></span>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <strong>End Time: </strong>
+            </td>
+            <td>
+              <span id='event-end'></span>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <strong>Room: </strong>
+            </td>
+            <td>
+              <span id='event-room'></span>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <strong>Hosted By: </strong>
+            </td>
+            <td>
+              <span id='event-host'></span>
+            </td>
+          </tr>
+        </table>
+        <div class='row'>
+        <button class='btn waves-effect modal-btn'>Close</button>
         </div>
       </div>
-      <button class='btn waves-effect' id='modal-btn'>Close</button>
     </div>
   </div>
-
+  <div id='event-modal' class='modal'>
+    <div class='eModal-content'>
+      <div class='eModal-body'>
+        <h2>Add Event to Public Calendar</h2>
+        <p style='text-align:center;'>- These events will be viewable by all - </p>
+        <br />
+        <form action='#' method='POST'>
+          <table>
+            <tr>
+              <td>
+                <strong>Date:</strong>
+              </td>
+              <td>
+                <input type="date" name="date" class="datepicker col s6 offset-s2" id='create-date' >
+              </td>
+            </tr>
+          </table>
+          <table>
+            <tr>
+              <td>
+                <strong>Start Time:</strong>
+              </td>
+              <td>
+                <input class='col s9'  name='start' type='time' step=900 id='event-start'/>
+              </td>
+              <td>
+                <strong>End Time:</strong>
+              </td>
+              <td>
+                <input class='col s9' name='end' type='time' step=900 id='event-end'/>
+              </td>
+            </tr>
+          </table>
+          <table>
+            <tr class='row'>
+              <td>
+                <strong>Description of Event:</strong>
+              </td>
+              <td>
+                <input type='text' name='description' id='event-desc' style='padding-left:5%;' placeholder='Meditation'/></p>
+              </td>
+            </tr>
+          </table>
+          <div class='row' id='event-btn-row'>
+            <button class='btn wave-effect' id='event-btn'>Create Event</button>
+            <a class='modal-btn' id='cancel-event'>Cancel</a>
+          </div>
+          <div class='row'>
+            <p style='text-align:center;' id='goto-booking'>Need a room for your event? <a href="{% url 'member_create_booking' %}">Click here.</a></p>
+          </div>
+          {% csrf_token %}
+        </form>
+      </div>
+    </div>
+  </div>
 {% endblock %}
 
 {% block extrajs %}
   <script>
     $(document).ready(function() {
       var today = $('#calendar').fullCalendar('getDate');
+      var publicEvents = [];
+      var rooms = [{Pike: 'RGBA(71, 159, 198, 1)'}, {Olive: 'RGBA(249, 195, 50, 1)'}]
+
+      {% for item, host in data %}
+
+        var event = {
+          title: "{{ item.description }}",
+          start: moment.unix("{{ item.start_ts|date:'U' }}"),
+          end: moment.unix("{{ item.end_ts|date:'U' }}"),
+          room: "{{ item.room }}",
+          host: "{{ host.first_name }}" + " " + "{{ host.last_name }}"
+        }
+        publicEvents.push(event);
+      {% endfor %}
 
       $('#calendar').fullCalendar({
         header: {
@@ -36,22 +134,29 @@
         navLinks: true,
   			editable: true,
   			eventLimit: true,
-        events: [
-          {
-            title: 'Team meeting',
-            start: today,
-            end: moment().add(2, 'days'),
-            allDay: true
-          }
-        ],
+        events: publicEvents,
         eventClick: function(calEvent, jsEvent, view) {
-          // alert('Event: ' + calEvent.title);
+          var date = moment(calEvent.start).format("MM/DD/YYYY");
+          var startTime = moment(calEvent.start).format("HH:mm");
+          var endTime = moment(calEvent.end).format("HH:mm");
+
           $('#infoModal').css('display', 'block');
+          $('#event-title').text(calEvent.title);
+          $('#event-start').text(startTime);
+          $('#event-end').text(endTime);
+          $('#event-room').text(calEvent.room);
+          $('#event-host').text(calEvent.host);
+        },
+        dayClick: function(date) {
+          var date = date.format();
+          $('#create-date').val(date);
+          $('#event-modal').css('display', 'block');
         }
       });
 
-      $('#modal-btn').on('click', function() {
+      $('.modal-btn').on('click', function() {
         $('#infoModal').css('display', 'none');
+        $('#event-modal').css('display', 'none');
       })
     });
   </script>
