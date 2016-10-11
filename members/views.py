@@ -582,7 +582,6 @@ def confirm_booking(request, room, start, end, date):
         stillAv = Room.objects.available(start=start_ts, end=end_ts)
 
         if room in stillAv:
-            print room, stillAv
             try:
                 event.save()
 
@@ -601,13 +600,28 @@ def confirm_booking(request, room, start, end, date):
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def calendar(request):
-    #get all events that are marked as is_public
     events = Event.objects.filter(is_public=True)
+    data = []
 
-    data = serializers.serialize('json', list(events), fields=('room', 'description', 'start_ts', 'end_ts', 'user'))
+    for event in events:
+        host = get_object_or_404(User, id=event.user_id)
+        data.append((event, host))
 
-    print data
-    # format for the data we wish to display
+    if request.method == 'POST':
+        user = request.user
+        start = request.POST.get('start')
+        end = request.POST.get('end')
+        date = request.POST.get('date')
+        start_ts, end_ts = coerce_times(start, end, date)
+        description = request.POST.get('description', '')
+        charge = request.POST.get('charge', 0)
+        is_public = True
+
+        event = Event(user=user, start_ts=start_ts, end_ts=end_ts, description=description, charge=charge, is_public=is_public)
+
+        event.save()
+
+        return HttpResponseRedirect(reverse('member_calendar'))
 
     return render_to_response('members/calendar.html', {'data': data }, context_instance=RequestContext(request))
 
