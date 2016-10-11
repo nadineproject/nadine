@@ -1114,6 +1114,8 @@ post_save.connect(file_upload_callback, sender=FileUpload)
 
 
 # Not ready yet.  This was pulled in from modernomads. --JLS
+# Keys need to be updated to keys in nadine.email.py
+
 # class EmailTemplate(models.Model):
 #     ''' Template overrides for system generated emails '''
 #
