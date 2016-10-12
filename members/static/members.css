@@ -643,7 +643,7 @@ table td {
   padding: 0;
   border: 1px solid #888;
 	border-radius: 3px;
-	height: 50%;
+	height: 60%;
   width: 50%;
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
   -webkit-animation-name: animatetop;
@@ -686,6 +686,12 @@ table td {
 
 .modal-body tr {
 	margin: 4%;
+}
+
+#host-img {
+	height: 100px;
+	width: 100px;
+	border-radius: 100px;
 }
 
 .eModal-content .eModal-body {

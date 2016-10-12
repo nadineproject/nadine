@@ -33,15 +33,20 @@
               <span id='event-room'></span>
             </td>
           </tr>
-          <tr>
-            <td>
-              <strong>Hosted By: </strong>
-            </td>
-            <td>
-              <span id='event-host'></span>
-            </td>
-          </tr>
-        </table>
+          </table>
+          <table>
+            <tr>
+              <td>
+                <strong>Hosted By: </strong>
+              </td>
+              <td>
+                <span id='event-host'></span>
+              </td>
+              <td>
+                <img id='host-img' />
+              </td>
+            </tr>
+          </table>
         <div class='row'>
         <button class='btn waves-effect modal-btn'>Close</button>
         </div>
@@ -119,7 +124,8 @@
           start: moment.unix("{{ item.start_ts|date:'U' }}"),
           end: moment.unix("{{ item.end_ts|date:'U' }}"),
           room: "{{ item.room }}",
-          host: "{{ host.first_name }}" + " " + "{{ host.last_name }}"
+          host: "{{ host.first_name }}" + " " + "{{ host.last_name }}",
+          img: "{{ host.profile.photo }}"
         }
         publicEvents.push(event);
       {% endfor %}
@@ -146,6 +152,7 @@
           $('#event-end').text(endTime);
           $('#event-room').text(calEvent.room);
           $('#event-host').text(calEvent.host);
+          $('#host-img').attr('src', '../media/' + calEvent.img);
         },
         dayClick: function(date) {
           var date = date.format();
