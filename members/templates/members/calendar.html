@@ -148,13 +148,19 @@
           var startTime = moment(calEvent.start).format("HH:mm");
           var endTime = moment(calEvent.end).format("HH:mm");
 
+          if (calEvent.img) {
+            $('#host-img').show();
+            $('#host-img').attr('src', '../media/' + calEvent.img);
+          } else {
+            $('#host-img').hide();
+          }
+
           $('#infoModal').css('display', 'block');
           $('#event-title').text(calEvent.title);
           $('#event-start').text(startTime);
           $('#event-end').text(endTime);
           $('#event-room').text(calEvent.room);
           $('#event-host').text(calEvent.host);
-          $('#host-img').attr('src', '../media/' + calEvent.img);
         },
         dayClick: function(date) {
           var date = date.format();

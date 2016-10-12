@@ -170,6 +170,8 @@ p {
 textarea#id_bio {
 	background-color: white;
 	height: 100px;
+	width: 500px;
+	border: none;
 }
 
 .public_bool {
@@ -412,7 +414,7 @@ table th {
 
 table th:first-child {
 	text-align: left;
-	width: 15%;
+	/*width: 15%;*/
 }
 
 table td:first-child, table td:last-child {
@@ -605,21 +607,23 @@ table td {
 		margin-bottom: 5%;
 	}
 
-	#calendar {
-		max-width: 900px;
-		margin-top: 2%;
-	}
+/*calendar and making event styling*/
 
-	#make-event {
-		margin-top: 5%;
-		margin-left: 2%;
-		border-radius: 100px;
-		width: 90px;
-		height: 90px;
-		font-size: 1em;
-		line-height: 100%;
-		overflow: auto;
-	}
+#calendar {
+	max-width: 900px;
+	margin-top: 2%;
+}
+
+#make-event {
+	margin-top: 5%;
+	margin-left: 2%;
+	border-radius: 100px;
+	width: 90px;
+	height: 90px;
+	font-size: 1em;
+	line-height: 100%;
+	overflow: auto;
+}
 
 .modal {
   display: none;
@@ -681,7 +685,7 @@ table td {
 	padding-top: 5%;
 	background-color: RGBA(229, 238, 215, .5);
 	height: 100%;
-	padding: 5%;
+	padding: 3%;
 }
 
 .modal-body tr {
@@ -708,8 +712,11 @@ table td {
 }
 
 .modal-body span {
-	padding: 1% 10%;
-	width: 50%;
+	padding: 1% 15%;
+}
+
+.modal-body td {
+	font-size: 1.1em;
 }
 
 .eModal-body td, .modal-body td {
@@ -725,8 +732,8 @@ table td {
 }
 
 .modal-btn {
-	margin-top: 5%;
-	margin-left: 35%;
+	margin-top: 2%;
+	margin-left: 40%;
 	background-color: RGBA(63, 146, 161, 1);
 }
 
