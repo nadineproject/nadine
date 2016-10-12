@@ -342,13 +342,6 @@ class UserProfile(models.Model):
     zipcode = models.CharField(max_length=16, blank=True)
     bio = models.TextField(blank=True, null=True)
     public_profile = models.BooleanField(default=False)
-    url_personal = models.URLField(blank=True, null=True)
-    url_professional = models.URLField(blank=True, null=True)
-    url_facebook = models.URLField(blank=True, null=True)
-    url_twitter = models.URLField(blank=True, null=True)
-    url_linkedin = models.URLField(blank=True, null=True)
-    url_aboutme = models.URLField(blank=True, null=True)
-    url_github = models.URLField(blank=True, null=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default="U")
     howHeard = models.ForeignKey(HowHeard, blank=True, null=True)
     #referred_by = models.ForeignKey(User, verbose_name="Referred By", related_name="referral", blank=True, null=True)
@@ -361,6 +354,34 @@ class UserProfile(models.Model):
     photo = models.ImageField(upload_to=user_photo_path, blank=True, null=True)
     tags = TaggableManager(blank=True)
     valid_billing = models.NullBooleanField(blank=True, null=True)
+
+    def url_personal(self):
+        return self.user.url_set.filter(url_type__name="personal").first()
+
+    def url_professional(self):
+        return self.user.url_set.filter(url_type__name="professional").first()
+
+    def url_facebook(self):
+        return self.user.url_set.filter(url_type__name="facebook").first()
+
+    def url_twitter(self):
+        return self.user.url_set.filter(url_type__name="twitter").first()
+
+    def url_linkedin(self):
+        return self.user.url_set.filter(url_type__name="linkedin").first()
+
+    def url_github(self):
+        return self.user.url_set.filter(url_type__name="github").first()
+
+    def save_url(self, url_type, url_value):
+        if url_type and url_value:
+            url = self.user.url_set.filter(url_type__name=url_type).first()
+            if url:
+                url.url_value = url_value
+                url.save()
+            else:
+                t = URLType.objects.get(name=url_type)
+                URL.objects.create(user=self.user, url_type=t, url_value=url_value)
 
     def all_bills(self):
         """Returns all of the open bills, both for this user and any bills for other members which are marked to be paid by this member."""
@@ -830,6 +851,29 @@ def sync_primary_callback(sender, **kwargs):
         email_address.save(verify=False)
     email_address.set_primary()
 post_save.connect(sync_primary_callback, sender=User)
+
+
+class URLType(models.Model):
+    name = models.CharField(max_length=128, unique=True)
+
+    def __str__(self): return self.name
+
+    class Meta:
+        app_label = 'nadine'
+        ordering = ['name']
+
+
+class URL(models.Model):
+    user = models.ForeignKey(User)
+    url_type = models.ForeignKey(URLType)
+    url_value = models.URLField(blank=True, null=True)
+
+    def __str__(self):
+        return self.url_value
+
+    class Meta:
+        app_label = 'nadine'
+
 
 class EmergencyContact(models.Model):
     user = models.OneToOneField(User, blank=False)

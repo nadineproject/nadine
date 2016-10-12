@@ -111,7 +111,6 @@ class MemberEditForm(forms.Form):
     url_twitter = forms.URLField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
     url_linkedin = forms.URLField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
     url_github = forms.URLField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
-    url_aboutme = forms.URLField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
     gender = forms.ChoiceField(choices=GENDER_CHOICES, required=False)
     howHeard = forms.ModelChoiceField(label="How heard", queryset=HowHeard.objects.all(), required=False)
     industry = forms.ModelChoiceField(queryset=Industry.objects.all(), required=False)
@@ -150,13 +149,6 @@ class MemberEditForm(forms.Form):
         user.profile.city = self.cleaned_data['city']
         user.profile.state = self.cleaned_data['state']
         user.profile.zipcode = self.cleaned_data['zipcode']
-        user.profile.url_personal = self.cleaned_data['url_personal']
-        user.profile.url_professional = self.cleaned_data['url_professional']
-        user.profile.url_facebook = self.cleaned_data['url_facebook']
-        user.profile.url_twitter = self.cleaned_data['url_twitter']
-        user.profile.url_linkedin = self.cleaned_data['url_linkedin']
-        user.profile.url_github = self.cleaned_data['url_github']
-        user.profile.url_aboutme = self.cleaned_data['url_aboutme']
         user.profile.gender = self.cleaned_data['gender']
         user.profile.howHeard = self.cleaned_data['howHeard']
         user.profile.industry = self.cleaned_data['industry']
@@ -167,6 +159,14 @@ class MemberEditForm(forms.Form):
         if self.cleaned_data['photo']:
             user.profile.photo = self.cleaned_data['photo']
         user.profile.save()
+
+        # Save the URLs
+        user.profile.save_url("personal", self.cleaned_data['url_personal'])
+        user.profile.save_url("professional", self.cleaned_data['url_professional'])
+        user.profile.save_url("facebook", self.cleaned_data['url_facebook'])
+        user.profile.save_url("twitter", self.cleaned_data['url_twitter'])
+        user.profile.save_url("linkedin", self.cleaned_data['url_linkedin'])
+        user.profile.save_url("github", self.cleaned_data['url_github'])
 
         emergency_contact = user.get_emergency_contact()
         emergency_contact.name=self.cleaned_data['emergency_name']

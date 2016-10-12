@@ -52,7 +52,6 @@ def edit(request, username):
             'url_twitter': user.profile.url_twitter,
             'url_linkedin': user.profile.url_linkedin,
             'url_github': user.profile.url_github,
-            'url_aboutme': user.profile.url_aboutme,
             'gender': user.profile.gender,
             'howHeard': user.profile.howHeard,
             'industry': user.profile.industry,
