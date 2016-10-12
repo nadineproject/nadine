@@ -21,7 +21,7 @@
 	<script src="{% static 'js/jquery-ui-1.10.4.custom.min.js' %}"></script>
 	<script src="{% static 'js/fullcalendar/lib/moment.min.js' %}"></script>
 	<script src="{% static 'js/fullcalendar/fullcalendar.min.js' %}"></script>
-	<link rel="stylesheet" type="text/css" href= "{% static 'css/members.css'%}" />
+
 {% block scripts %}
 	<!-- Compiled and minified CSS -->
 	<link rel="stylesheet" href="{% static 'css/materialize.min.css' %}" />
@@ -32,6 +32,8 @@
 	<!-- Fonts are fun -->
 	<link hrf="{% static 'fonts/Roboto' %}" rel="stylesheet">
 {% endblock %}
+
+	<link rel="stylesheet" type="text/css" href= "{% static 'css/members.css'%}" />
 
 {% if not request.user.is_staff %}
 		<script>

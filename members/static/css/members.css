@@ -94,7 +94,7 @@ p {
 }
 
 .logo-img {
-	content: url(img/logo.png);
+	content: url(../img/logo.png);
 	position: absolute;
 	z-index: 2000;
 	top: 10%;
@@ -105,7 +105,7 @@ p {
 }
 
 .sec-logo {
-	content: url(img/logo-line.png);
+	content: url(../img/logo-line.png);
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -115,7 +115,7 @@ p {
 }
 
 #jumbo-img {
-	content: url(img/jumbo.png);
+	content: url(../img/jumbo.png);
 	width: 100%;
 	margin: 0;
 	padding: 0;
@@ -284,13 +284,13 @@ input#id_photo {
 }
 
 #chat_icon {
-	content: url(img/chat_icon.png);
+	content: url(../img/chat_icon.png);
 	height: 25%;
 	width: 25%;
 }
 
 #group_icon {
-	content: url(img/people_icon.png);
+	content: url(../img/people_icon.png);
 	height: 50%;
 	width: 50%;
 }
@@ -820,7 +820,7 @@ footer.sticky-footer {
 	height: 32px;
 	float: left;
 	margin-right: 10px;
-	background-image: url(img/facebook_32.png);
+	background-image: url(../img/facebook_32.png);
 	text-indent: -9999px;
 }
 
@@ -830,7 +830,7 @@ footer.sticky-footer {
 	height: 32px;
 	float: left;
 	margin-right: 10px;
-	background-image: url(img/twitter_32.png);
+	background-image: url(../img/twitter_32.png);
 	text-indent: -9999px;
 }
 
@@ -840,7 +840,7 @@ footer.sticky-footer {
 	height: 32px;
 	float: left;
 	margin-right: 10px;
-	background-image: url(img/yelp_32.png);
+	background-image: url(../img/yelp_32.png);
 	text-indent: -9999px;
 }
 
@@ -850,7 +850,7 @@ footer.sticky-footer {
 	height: 32px;
 	float: left;
 	margin-right: 10px;
-	background-image: url(img/instagram_32.png);
+	background-image: url(../img/instagram_32.png);
 	text-indent: -9999px;
 }
 
