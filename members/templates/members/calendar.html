@@ -10,7 +10,7 @@
         <h2 id='event-title'></h2>
         <div class='container'>
           <div class='row'>
-            <table class='col s8'>
+            <table class='col s8' id='event-info'>
               <tr>
                 <td>
                   <strong>Start Time: </strong>
@@ -44,7 +44,7 @@
                 </td>
               </tr>
             </table>
-            <div class='col s4'>
+            <div class='col s4' id='host'>
               <img id='host-img' />
             </div>
           </div>
@@ -58,7 +58,7 @@
   <div id='event-modal' class='modal'>
     <div class='eModal-content'>
       <div class='eModal-body'>
-        <h2>Add Event to Public Calendar</h2>
+        <h2 id='add-event-header'>Add Event to Public Calendar</h2>
         <p style='text-align:center;'>- These events will be viewable by all - </p>
         <br />
         <form action='#' method='POST'>
@@ -78,9 +78,9 @@
                 <strong>Start Time:</strong>
               </td>
               <td>
-                <input class='col s9'  name='start' type='time' step=900 id='event-start'/>
+                <input class='col s9'  name='start' type='time' step=900 id='event-start'style='margin-right: 5%;'/>
               </td>
-              <td>
+              <td id='end-td'>
                 <strong>End Time:</strong>
               </td>
               <td>
@@ -149,10 +149,10 @@
           var endTime = moment(calEvent.end).format("HH:mm");
 
           if (calEvent.img) {
-            $('#host-img').show();
+            $('#host').show();
             $('#host-img').attr('src', '../media/' + calEvent.img);
           } else {
-            $('#host-img').hide();
+            $('#host').hide();
           }
 
           $('#infoModal').css('display', 'block');
