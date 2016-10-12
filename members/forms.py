@@ -22,7 +22,6 @@ class EditProfileForm(forms.Form):
     username = forms.CharField(required=True, widget=forms.HiddenInput)
     first_name = forms.CharField(max_length=100, required=True)
     last_name = forms.CharField(max_length=100, required=True)
-    email = forms.EmailField(widget=forms.TextInput(attrs={'size': '50'}), required=True)
     address1 = forms.CharField(max_length=100, required=False)
     address2 = forms.CharField(max_length=100, required=False)
     city = forms.CharField(max_length=100, required=False)
@@ -60,7 +59,6 @@ class EditProfileForm(forms.Form):
         user = User.objects.get(username=self.cleaned_data['username'])
         user.first_name = self.cleaned_data['first_name']
         user.last_name = self.cleaned_data['last_name']
-        user.email = self.cleaned_data['email']
         user.save()
 
         # Profile data
