@@ -8,45 +8,47 @@
     <div class='modal-content'>
       <div class='modal-body'>
         <h2 id='event-title'></h2>
-        <table>
-          <tr>
-            <td>
-              <strong>Start Time: </strong>
-            </td>
-            <td>
-              <span id='event-start'></span>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>End Time: </strong>
-            </td>
-            <td>
-              <span id='event-end'></span>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>Room: </strong>
-            </td>
-            <td>
-              <span id='event-room'></span>
-            </td>
-          </tr>
-          </table>
-          <table>
-            <tr>
-              <td>
-                <strong>Hosted By: </strong>
-              </td>
-              <td>
-                <span id='event-host'></span>
-              </td>
-              <td>
-                <img id='host-img' />
-              </td>
-            </tr>
-          </table>
+        <div class='container'>
+          <div class='row'>
+            <table class='col s8'>
+              <tr>
+                <td>
+                  <strong>Start Time: </strong>
+                </td>
+                <td>
+                  <span id='event-start'></span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>End Time: </strong>
+                </td>
+                <td>
+                  <span id='event-end'></span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Room: </strong>
+                </td>
+                <td>
+                  <span id='event-room'></span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Hosted By: </strong>
+                </td>
+                <td>
+                  <span id='event-host'></span>
+                </td>
+              </tr>
+            </table>
+            <div class='col s4'>
+              <img id='host-img' />
+            </div>
+          </div>
+        </div>
         <div class='row'>
         <button class='btn waves-effect modal-btn'>Close</button>
         </div>
