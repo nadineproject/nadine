@@ -283,6 +283,12 @@ input#id_photo {
 	margin-bottom: 3%;
 }
 
+#email-table {
+	margin-left: 5%;
+	margin-right: 5%;
+	width: 90%;
+}
+
 #emails {
 	padding: 1% 10%;
 	margin-bottom: 2%;
@@ -359,6 +365,10 @@ select#id_state {
 	width: 85%;
 	font-size: .9em;
 	box-sizing: border-box;
+}
+
+#email-table input {
+	width:75%;
 }
 
 input#id_address1, input#id_address2 {
