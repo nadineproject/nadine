@@ -136,6 +136,24 @@ p {
 }
 
 /* Body */
+table th {
+	padding: 0.5em 0.5em 0.25em;
+}
+
+table th:first-child {
+	text-align: left;
+	/*width: 15%;*/
+}
+
+table td:first-child, table td:last-child {
+	text-align: left;
+}
+
+table td {
+	text-align: center;
+	padding: 0.5em;
+}
+
 
 #content a {
 	outline:none;
@@ -176,10 +194,6 @@ textarea#id_bio {
 
 .public_bool {
 	width: 25%;
-}
-
-select#id_public_profile.browser-default {
-	width: 45%;
 }
 
 #reg_box, #login_box {
@@ -261,7 +275,7 @@ input#id_photo {
 	padding: 2%;
 }
 
-#contact, #emergencyinfo, #emails {
+#contact, #emergencyinfo {
 	margin-left: 4%;
 	padding-left: 2%;
 	padding-right: 2%;
@@ -270,8 +284,8 @@ input#id_photo {
 }
 
 #emails {
-	margin-right: 5%;
-	margin-left: 5%;
+	padding: 1% 10%;
+	margin-bottom: 2%;
 }
 
 #websites {
@@ -290,9 +304,14 @@ input#id_photo {
 	font-size: 1em;
 }
 
+.pf-error {
+	padding: 0;
+}
+
 .cap-label {
 	text-align: left;
 	color: RGBA(57, 64, 64, 1);
+	text-transform: uppercase;
 }
 
 td.cap-label {
@@ -303,38 +322,51 @@ td.cap-label {
 
 td.pf-input {
 	padding-top: 0;
+	padding-bottom: 0;
+	height: 90%;
 }
 
 #email-btn {
 	width: 50%;
 }
 
-#pf-first, #pf-last {
-	text-align: left;
-}
-
 .pf-input input {
 	width: 200px;
 }
 
-input#id_zipcode, input#id_emergency_name, input#id_emergency_relationship {
+td#pf-public {
+	width: 30%;
+}
+
+select#id_public_profile.browser-default {
+	width: 30%;
+}
+
+input#id_zipcode, input#id_emergency_name, input#id_emergency_relationship, input#id_phone, input#id_phone2, input#id_emergency_email {
 	width: 70%;
 }
 
-select#id_state, input#id_city {
+input#id_city {
 	width: 85%;
 }
 
+#state-select{
+	vertical-align: text-top;
+	padding: 0;
+}
+
+select#id_state {
+	width: 85%;
+	font-size: .9em;
+	box-sizing: border-box;
+}
+
 input#id_address1, input#id_address2 {
-	width: 100%;
+	width: 90%;
 }
 
-input#id_url_professional, input#id_url_personal {
-	width: 300px;
-}
-
-input#id_url_twitter, input#id_url_facebook, input#id_url_github, input#id_url_linkedin {
-	width: 400px;
+input#id_url_twitter, input#id_url_facebook, input#id_url_github, input#id_url_linkedin,input#id_url_professional, input#id_url_personal {
+	width: 425px;
 }
 
 input#id_emergency_phone {
@@ -342,19 +374,7 @@ input#id_emergency_phone {
 }
 
 textarea#id_bio {
-	width: 600px;
-}
-
-#emails button {
-	border-radius: 2px;
-	background-color: RGBA(94, 138, 196, .7);
-	border-top: none;
-	border-left: none;
-	padding: 3% 9%;
-}
-
-#emails input {
-	width: 250px;
+	width: 100%;
 }
 
 .verify-email, #add-email {
@@ -362,7 +382,6 @@ textarea#id_bio {
 }
 
 #email-input {
-	margin: 2% 1%;
 	width: 50%;
 }
 
@@ -521,25 +540,6 @@ dd:after {
 dl dd:last-child:after {
 	content: "";
 }
-
-table th {
-	padding: 0.5em 0.5em 0.25em;
-}
-
-table th:first-child {
-	text-align: left;
-	/*width: 15%;*/
-}
-
-table td:first-child, table td:last-child {
-	text-align: left;
-}
-
-table td {
-	text-align: center;
-	padding: 0.5em;
-}
-
 /*booking_create styling*/
 	#booking-date {
 		text-align: center;
@@ -992,6 +992,8 @@ footer.sticky-footer {
 @media only screen and (max-width: 1100px) {
 
 	#profile_form {
+		margin-left: 0;
+		margin-right: 0;
 		min-width: 900px;
 	}
 

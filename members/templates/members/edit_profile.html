@@ -43,7 +43,7 @@
       </td>
     </tr>
   </table>
-  <table>
+  <table id='email-table'>
     {% for email in user.profile.all_emails %}
     <tr>
       <td class='pf-email'>
@@ -101,23 +101,31 @@
         <tr class="row-even">
           <td class='cap-label' id='pf-address'>Address 1</td>
           <td class='cap-label'>Address 2</td>
-          <td class='cap-label'>City</td>
-          <td class='cap-label'>State</td>
-          <td class='cap-label'>Zipcode</td>
         </tr>
         <tr class="row-odd">
           <td class='pf-input'>{{ profile_form.address1 }}</td>
           <td class='pf-input'>{{ profile_form.address2 }}</td>
+        </tr>
+        <tr>
+          <td class='pf-error'>{{ profile_form.address1.errors }}</td>
+          <td class='pf-error'>{{ profile_form.address2.errors }}</td>
+        </tr>
+      </table>
+      <table>
+        <tr>
+          <td class='cap-label'>City</td>
+          <td class='cap-label'>State</td>
+          <td class='cap-label'>Zipcode</td>
+        </tr>
+        <tr>
           <td class='pf-input'>{{ profile_form.city }}</td>
-          <td class='pf-input'>{{ profile_form.state }}</td>
+          <td id='state-select'>{{ profile_form.state }}</td>
           <td class='pf-input'>{{ profile_form.zipcode }}</td>
         </tr>
         <tr class="row-even">
-          <td>{{ profile_form.address1.errors }}</td>
-          <td>{{ profile_form.address2.errors }}</td>
-          <td>{{ profile_form.city.errors }}</td>
-          <td>{{ profile_form.state.errors }}</td>
-          <td>{{ profile_form.zipcode.errors }}</td>
+          <td class='pf-error'>{{ profile_form.city.errors }}</td>
+          <td class='pf-error'>{{ profile_form.state.errors }}</td>
+          <td class='pf-error'>{{ profile_form.zipcode.errors }}</td>
         </tr>
       </table>
       <table>
@@ -147,7 +155,7 @@
     <div id='websites'>
       <table>
         <tr class="row-even">
-          <td class='cap-label' id='pf-public' nowrap>Make Your profile Public?
+          <td id='pf-public' nowrap>Make Your profile Public?
             (<a onclick="$('#public_help').toggle();">?</a>)
           </td>
           <td>
@@ -185,7 +193,7 @@
           <td>{{ profile_form.url_personal }}</td>
         </tr>
         <tr>
-          <td width="200px">{{ profile_form.url_professional.errors }}</td>
+          <td>{{ profile_form.url_professional.errors }}</td>
           <td>{{ profile_form.url_personal.errors }}</td>
         </tr>
       </table>
