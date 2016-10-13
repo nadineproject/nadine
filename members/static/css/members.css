@@ -150,7 +150,7 @@ p {
 	text-align: center;
 }
 
-#profile_form, #booking_form {
+#booking_form {
 	background-color: RGBA(239, 238, 231, 1);
 	padding: 2%;
 	margin-left: 15%;
@@ -250,6 +250,120 @@ input#id_photo {
 	background: RGBA(63, 146, 161, 1);
 	margin-top: 2%;
 	margin-left: 35%;
+}
+
+/*Edit Profile Page*/
+#profile_form {
+	margin-left: 7%;
+	min-width: 900px;
+	overflow: visible;
+	background-color: RGBA(239, 238, 231, 1);
+	padding: 2%;
+}
+
+#contact, #emergencyinfo, #emails {
+	margin-left: 4%;
+	padding-left: 2%;
+	padding-right: 2%;
+	margin-right: 4%;
+	margin-bottom: 3%;
+}
+
+#emails {
+	margin-right: 5%;
+	margin-left: 5%;
+}
+
+#websites {
+	margin-left: 2%;
+	margin-right: 2%;
+	margin-bottom: 5%;
+}
+
+#otherinfo {
+	margin-left: 6%;
+	margin-right: 6%;
+	margin-bottom: 5%;
+}
+
+#contact input, #contact select, #websites input, #websites select, #emergencyinfo input, #otherinfo input, #otherinfo select, #pf-public, #emails input, #emails button {
+	font-size: 1em;
+}
+
+.cap-label {
+	text-align: left;
+	color: RGBA(57, 64, 64, 1);
+}
+
+td.cap-label {
+	border: none;
+	padding-bottom: 0;
+	font-size: .9em;
+}
+
+td.pf-input {
+	padding-top: 0;
+}
+
+#email-btn {
+	width: 50%;
+}
+
+#pf-first, #pf-last {
+	text-align: left;
+}
+
+.pf-input input {
+	width: 200px;
+}
+
+input#id_zipcode, input#id_emergency_name, input#id_emergency_relationship {
+	width: 70%;
+}
+
+select#id_state, input#id_city {
+	width: 85%;
+}
+
+input#id_address1, input#id_address2 {
+	width: 100%;
+}
+
+input#id_url_professional, input#id_url_personal {
+	width: 300px;
+}
+
+input#id_url_twitter, input#id_url_facebook, input#id_url_github, input#id_url_linkedin {
+	width: 400px;
+}
+
+input#id_emergency_phone {
+	width: 200px;
+}
+
+textarea#id_bio {
+	width: 600px;
+}
+
+#emails button {
+	border-radius: 2px;
+	background-color: RGBA(94, 138, 196, .7);
+	border-top: none;
+	border-left: none;
+	padding: 3% 9%;
+}
+
+#emails input {
+	width: 250px;
+}
+
+.verify-email, #add-email {
+	background: RGBA(63, 146, 161, 1);
+}
+
+#email-input {
+	margin: 2% 1%;
+	width: 50%;
 }
 
 #login-btn, #reg-btn {
@@ -423,7 +537,6 @@ table td:first-child, table td:last-child {
 
 table td {
 	text-align: center;
-	border-bottom: 1px solid #ccc;
 	padding: 0.5em;
 }
 
@@ -870,13 +983,16 @@ footer.sticky-footer {
 	 #home_cal {
 		 width: 200px;
 	 }
+
+	 #profile_form {
+		 margin-right: 1%;
+	 }
 }
 
 @media only screen and (max-width: 1100px) {
 
 	#profile_form {
-		width: 100%;
-		margin-left: 0;
+		min-width: 900px;
 	}
 
 	#profile_form input {
