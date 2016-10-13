@@ -143,19 +143,16 @@
         </tr>
         {% if ALLOW_PHOTO_UPLOAD %}
         <tr class="row-odd">
-          <td><strong>Upload Photo</strong></td>
+          <td id='pf-photo'><strong>Upload Photo</strong></td>
           <td>
             <input type='file' name='photo' style='background-color:RGBA(255, 255, 255, 0);'/>
           </td>
         </tr>
           {% endif %}
       </table>
-    </div>
-    <h2 style='text-align:left;'>Websites &amp; Other Profiles</h2>
-    <div id='websites'>
       <table>
         <tr class="row-even">
-          <td id='pf-public' nowrap>Make Your profile Public?
+          <td id='pf-public' nowrap><strong>Make Your profile Public?</strong>
             (<a onclick="$('#public_help').toggle();">?</a>)
           </td>
           <td>
@@ -172,6 +169,18 @@
             if you you make this profile public, it will also be visable to
             non-members.</p>
           </td>
+        </tr>
+      </table>
+    </div>
+    <h2 style='text-align:left;'>Websites &amp; Other Profiles</h2>
+    <div id='websites'>
+      <table>
+        <tr class="row-even">
+          <td id='pf-company' class='cap-label'><strong>Company Name</strong></td>
+        </tr>
+        <tr>
+          <td>{{ profile_form.company_name }}</td>
+          <tr>{{ profile_form.company_name.errors }}</tr>
         </tr>
       </table>
       <table>
@@ -226,18 +235,13 @@
     </div>
   <h2 style='text-align:left;'>Other Information</h2>
     <table id="otherinfo">
-      <tr class="row-even">
-        <td class='cap-label'><strong>Company Name</strong></td>
-        <td>{{ profile_form.company_name }}</td>
-        <td>{{ profile_form.company_name.errors }}</td>
-      </tr>
       <tr class="row-odd">
         <td class='cap-label'><strong>What industry are you in?</strong></td>
         <td>{{ profile_form.industry }}</td>
         <td>{{ profile_form.industry.errors }}</td>
       </tr>
       <tr class="row-even">
-        <td class='cap-label'><strong>Neighborhood:</strong>:</td>
+        <td class='cap-label'><strong>Neighborhood:</strong></td>
         <td>{{ profile_form.neighborhood }}</td>
         <td width="300px">{{ profile_form.neighborhood.errors }}</td>
       </tr>

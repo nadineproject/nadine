@@ -275,7 +275,7 @@ input#id_photo {
 	padding: 2%;
 }
 
-#contact, #emergencyinfo {
+#contact, #emergencyinfo, #websites {
 	margin-left: 4%;
 	padding-left: 2%;
 	padding-right: 2%;
@@ -292,12 +292,6 @@ input#id_photo {
 #emails {
 	padding: 1% 10%;
 	margin-bottom: 2%;
-}
-
-#websites {
-	margin-left: 2%;
-	margin-right: 2%;
-	margin-bottom: 5%;
 }
 
 #otherinfo {
@@ -340,8 +334,16 @@ td.pf-input {
 	width: 200px;
 }
 
-td#pf-public {
-	width: 30%;
+td#pf-public, td#pf-company {
+	width: 20%;
+}
+
+td#pf-photo {
+	width: 25%;
+}
+
+input#id_company_name {
+	width: 50%;
 }
 
 select#id_public_profile.browser-default {
