@@ -26,10 +26,10 @@
   		{% endfor %}
   	</div>
   {% endif %}
-  <h4>
+  <h3>
       Email Addresses
       (<a onclick="$('#email_help').toggle();">?</a>)
-  </h4>
+  </h3>
   <table id="emails">
     <tr id="email_help" class="help_text">
       <td colspan="2">
@@ -81,7 +81,7 @@
 
   <form enctype="multipart/form-data" action='.' method='POST'>
     {{ profile_form.username }}
-    <h2 style='text-align:left;'>Contact Information</h2>
+    <h3 style='text-align:left;'>Contact Information</h3>
     <div id='contact'>
       <table>
         <tr class="row-even">
@@ -150,6 +150,10 @@
         </tr>
           {% endif %}
       </table>
+    </div>
+
+    <h3 style='text-align:left;'>Profile Information</h3>
+    <div id='websites'>
       <table>
         <tr class="row-even">
           <td id='pf-public' nowrap><strong>Make Your profile Public?</strong>
@@ -166,21 +170,10 @@
           <td colspan=3>
             <strong>Public Profile </strong>
             <p>By default your profile is only viewable by active members.
-            if you you make this profile public, it will also be visable to
-            non-members.</p>
+            if you you make this profile public, your bio, links, and photo
+            will also be visable to non-members as well.  Contact information
+            is always kept private.</p>
           </td>
-        </tr>
-      </table>
-    </div>
-    <h2 style='text-align:left;'>Websites &amp; Other Profiles</h2>
-    <div id='websites'>
-      <table>
-        <tr class="row-even">
-          <td id='pf-company' class='cap-label'><strong>Company Name</strong></td>
-        </tr>
-        <tr>
-          <td>{{ profile_form.company_name }}</td>
-          <tr>{{ profile_form.company_name.errors }}</tr>
         </tr>
       </table>
       <table>
@@ -190,6 +183,15 @@
         <tr>
           <td id='pf_bio'>{{ profile_form.bio }}</td>
           <td>{{ profile_form.bio.errors }}</td>
+        </tr>
+      </table>
+      <table>
+        <tr class="row-even">
+          <td id='pf-company' class='cap-label'><strong>Company Name</strong></td>
+        </tr>
+        <tr>
+          <td>{{ profile_form.company_name }}</td>
+          <tr>{{ profile_form.company_name.errors }}</tr>
         </tr>
       </table>
       <table>
@@ -233,7 +235,8 @@
         </tr>
       </table>
     </div>
-  <h2 style='text-align:left;'>Other Information</h2>
+
+    <h3 style='text-align:left;'>Other Information</h3>
     <table id="otherinfo">
       <tr class="row-odd">
         <td class='cap-label'><strong>What industry are you in?</strong></td>
@@ -266,7 +269,8 @@
         <td width="300px">{{ profile_form.gender.errors }}</td>
       </tr>
     </table>
-    <h2 style='text-align:left;'>Emergency Contact Information</h2>
+
+    <h3 style='text-align:left;'>Emergency Contact Information</h3>
     <a name="emergency_contact"></a>
     <div id='emergencyinfo'>
       <table>
