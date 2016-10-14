@@ -495,7 +495,7 @@ textarea#id_bio {
 	display: inline-block;
 	vertical-align: top;
 	/* IE fix. */
-	*display: inline;
+	display: inline;
 	zoom: 1;
 }
 
