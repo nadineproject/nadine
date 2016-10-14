@@ -105,13 +105,15 @@ def detail(request, username):
 @staff_member_required
 def transactions(request, username):
     user = get_object_or_404(User, username=username)
-    return render_to_response('staff/member_transactions.html', {'user':user}, context_instance=RequestContext(request))
+    transactions = user.transaction_set.all()
+    return render_to_response('staff/member_transactions.html', {'user':user, 'transactions':transactions}, context_instance=RequestContext(request))
 
 
 @staff_member_required
 def bills(request, username):
     user = get_object_or_404(User, username=username)
-    return render_to_response('staff/member_bills.html', {'user':user}, context_instance=RequestContext(request))
+    bills = user.bill_set.all()
+    return render_to_response('staff/member_bills.html', {'user':user, 'bills':bills}, context_instance=RequestContext(request))
 
 
 # @staff_member_required
