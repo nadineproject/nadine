@@ -134,8 +134,8 @@
           <td class='cap-label'>Alternate Phone</td>
         </tr>
         <tr class="row-even">
-          <td>{{ profile_form.phone }}</td>
-          <td>{{ profile_form.phone2 }}</td>
+          <td class='pf-input'>{{ profile_form.phone }}</td>
+          <td class='pf-input'>{{ profile_form.phone2 }}</td>
         </tr>
         <tr>
           <td>{{ profile_form.phone.errors }}</td>
@@ -181,7 +181,7 @@
           <td class='cap-label'><strong>Bio</strong></td>
         </tr>
         <tr>
-          <td id='pf_bio'>{{ profile_form.bio }}</td>
+          <td class='pf-input' id='pf_bio'>{{ profile_form.bio }}</td>
           <td>{{ profile_form.bio.errors }}</td>
         </tr>
       </table>
@@ -190,8 +190,8 @@
           <td id='pf-company' class='cap-label'><strong>Company Name</strong></td>
         </tr>
         <tr>
-          <td>{{ profile_form.company_name }}</td>
-          <tr>{{ profile_form.company_name.errors }}</tr>
+          <td class='pf-input'>{{ profile_form.company_name }}</td>
+          <tr class='pf-input'>{{ profile_form.company_name.errors }}</tr>
         </tr>
       </table>
       <table>
@@ -200,8 +200,8 @@
           <td class='cap-label'><strong>Personal Website</strong></td>
         </tr>
         <tr>
-          <td>{{ profile_form.url_professional }}</td>
-          <td>{{ profile_form.url_personal }}</td>
+          <td class='pf-input'>{{ profile_form.url_professional }}</td>
+          <td class='pf-input'>{{ profile_form.url_personal }}</td>
         </tr>
         <tr>
           <td>{{ profile_form.url_professional.errors }}</td>
@@ -214,8 +214,8 @@
           <td class='cap-label'><strong>Facebook</strong></td>
         </tr>
         <tr class="row-odd">
-          <td>{{ profile_form.url_twitter }}</td>
-          <td>{{ profile_form.url_facebook }}</td>
+          <td class='pf-input'>{{ profile_form.url_twitter }}</td>
+          <td class='pf-input'>{{ profile_form.url_facebook }}</td>
         </tr>
         <tr class="row-even">
           <td>{{ profile_form.url_twitter.errors }}</td>
@@ -226,11 +226,11 @@
           <td class='cap-label'><strong>LinkedIn </strong></td>
         </tr>
         <tr>
-          <td>{{ profile_form.url_github }}</td>
-          <td>{{ profile_form.url_linkedin }}</td>
+          <td class='pf-input'>{{ profile_form.url_github }}</td>
+          <td class='pf-input'>{{ profile_form.url_linkedin }}</td>
         </tr>
         <tr>
-        <td>{{ profile_form.url_github.errors }}</td>
+          <td>{{ profile_form.url_github.errors }}</td>
           <td>{{ profile_form.url_linkedin.errors }}</td>
         </tr>
       </table>
@@ -279,8 +279,8 @@
           <td class='cap-label'>Relationship</td>
         </tr>
         <tr class="row-even">
-          <td>{{ profile_form.emergency_name }}</td>
-          <td>{{ profile_form.emergency_relationship }}</td>
+          <td class='pf-input'>{{ profile_form.emergency_name }}</td>
+          <td class='pf-input'>{{ profile_form.emergency_relationship }}</td>
         </tr>
         <tr>
           <td>{{ profile_form.emergency_name.errors }}</td>
@@ -291,8 +291,8 @@
           <td class='cap-label'>Phone</td>
         </tr>
         <tr class="row-even">
-          <td>{{ profile_form.emergency_email }}</td>
-          <td>{{ profile_form.emergency_phone }}</td>
+          <td class='pf-input'>{{ profile_form.emergency_email }}</td>
+          <td class='pf-input'>{{ profile_form.emergency_phone }}</td>
         </tr>
         <tr>
           <td>{{ profile_form.emergency_email.errors }}</td>
