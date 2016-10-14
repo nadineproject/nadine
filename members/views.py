@@ -623,6 +623,6 @@ def calendar(request):
 
         return HttpResponseRedirect(reverse('member_calendar'))
 
-    return render_to_response('members/calendar.html', {'data': data }, context_instance=RequestContext(request))
+    return render_to_response('members/calendar.html', {'data': data, 'GOOGLE_CALENDAR_KEY': settings.GOOGLE_CALENDAR_KEY, 'GOOGLE_API_KEY': settings.GOOGLE_API_KEY }, context_instance=RequestContext(request))
 
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
