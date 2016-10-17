@@ -29,6 +29,7 @@ nav #billing-tab { background: #FBD850; color: black; }
         <th nowrap>Customer #</th>
         <th>Company</th>
         <th style="width:80%;">Description</th>
+        <th>Last4</th>
         <th nowrap>Next Bill</th>
         <th>Amount</th>
         <th>Auto</th>
@@ -40,7 +41,13 @@ nav #billing-tab { background: #FBD850; color: black; }
             <td>{{ cust.Created | slice:":10"}}</td>
             <td><a href="https://secure.usaepay.com/console/billing_edit?id={{ cust.CustNum }}" target="new">{{ cust.CustNum }}</a></td>
             <td>{{ cust.BillingAddress.Company }}</td>
-                <td>{{ cust.Description }}</td>
+            <td>{{ cust.Description }}</td>
+            <td>
+              {% with cust.PaymentMethods|first|first as method %}
+                {{ method.CardNumber|slice:"12:" }}
+              {% endwith %}
+            </td>
+
             {% if cust.Enabled %}
                 <td>{{ cust.Next | slice:":10"}}</td>
                 <td>${{ cust.Amount|floatformat:2 }}</td>
