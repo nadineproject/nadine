@@ -79,7 +79,7 @@
 									<li><a>Login</a></li>
 								{% elif request.user.profile.is_active %}
 									<li><a href="{% url 'member_members' %}">Members</a></li>
-									<li><a href="{% url 'member_events' %}">Events</a></li>
+									<li><a href="{% url 'member_calendar' %}">Events</a></li>
 									<li><a href="{% url 'member_tag_cloud' %}">Tags</a></li>
 									<li><a href="{% url 'member_email_lists' %}">Mailing Lists</a></li>
 									<li><a class='slack-a' href="{% url 'member_slack' user.username %}">Slack</a></li>
