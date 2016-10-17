@@ -538,7 +538,7 @@ def create_booking(request):
         for block in calendar:
             id = block['mil_hour'] + block['minutes']
             if int(search_start) <= int(id) and int(id) <= int(search_end):
-                block['searched'] = 'true'
+                block['searched'] = True
 
     if request.method == 'POST':
         room = request.POST.get('room')
