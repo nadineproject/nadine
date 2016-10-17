@@ -526,13 +526,19 @@ def create_booking(request):
     room_dict = {}
     rooms = Room.objects.available(start=start_ts, end=end_ts, has_av=has_av, has_phone=has_phone, floor=floor, seats=seats)
 
-    #Make a target date to get all events for that date
-    target_date = start_ts.replace(hour=0, minute=0, second=0, microsecond=0)
-    end_date = target_date + timedelta(days=1)
-
     # Get all the events for each room in that day
+    target_date = start_ts.date()
     for room in rooms:
-        room_dict[room] = room.get_calendar(start, end, target_date, end_date)
+        calendar = room.get_calendar(target_date)
+        room_dict[room] = calendar
+
+        # Infuse calendar with search range
+        search_start = start.replace(':', '')
+        search_end = end.replace(':', '')
+        for block in calendar:
+            id = block['mil_hour'] + block['minutes']
+            if int(search_start) <= int(id) and int(id) <= int(search_end):
+                block['searched'] = 'true'
 
     if request.method == 'POST':
         room = request.POST.get('room')
