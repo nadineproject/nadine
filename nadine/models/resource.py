@@ -1,10 +1,12 @@
 import os, uuid
+from datetime import datetime, timedelta, date
 
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
 from django.db.models import Q
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 from PIL import Image
 import logging
@@ -24,7 +26,12 @@ def room_img_upload_to(instance, filename):
 
 class RoomManager(models.Manager):
 
-    def available(self, start, end, has_av=None, has_phone=None, floor=None, seats=None):
+    def available(self, start=None, end=None, has_av=None, has_phone=None, floor=None, seats=None):
+        # Default time is now, for one hour
+        if not start:
+            start = timezone.now()
+        if not end:
+            end = start + timedelta(hours=1)
 
         rooms = self.all()
         if has_av != None:
@@ -105,28 +112,30 @@ class Room(models.Model):
                     num += 1
         return calendar
 
-    def get_calendar(self, start, end, target_date, end_date):
+    def get_calendar(self, target_date=None):
+        if not target_date:
+            target_date = timezone.now().date()
+
+        # Start with the raw calendar
         calendar = self.get_raw_calendar()
-        search_start = start.replace(':', '')
-        search_end = end.replace(':', '')
-        events = self.event_set.filter(room=self, start_ts__gte=target_date, end_ts__lte=end_date)
-        print
 
+        # Extract the start and end times from our target date and the raw calendar
+        first_block = calendar[0]
+        last_block = calendar[len(calendar) - 1]
+        start = datetime(year=target_date.year, month=target_date.month, day=target_date.day, hour=int(first_block['mil_hour']), minute=int(first_block['minutes']))
+        end = datetime(year=target_date.year, month=target_date.month, day=target_date.day, hour=int(last_block['mil_hour']), minute=int(last_block['minutes']))
+        end = end + timedelta(minutes=15)
+
+        # Loop through the events for this day and mark which blocks are not available
+        # We use time integers in the form of HOURMIN (830, 1600, etc) for comparison
+        events = self.event_set.filter(room=self, start_ts__gte=start, end_ts__lte=end)
         for event in events:
-            start_wtz = timezone.make_naive(event.start_ts, timezone.get_current_timezone())
-            end_wtz = timezone.make_naive(event.end_ts, timezone.get_current_timezone())
-            starts = start_wtz.strftime('%H%M')
-            ends = end_wtz.strftime('%H%M')
+            start_int = int(timezone.localtime(event.start_ts).strftime('%H%M'))
+            end_int = int(timezone.localtime(event.end_ts).strftime('%H%M'))
             for block in calendar:
-                id = block['mil_hour'] + block['minutes']
-                if int(starts) <= int(id) and int(id) <= int(ends):
-                    block['status'] = 'reserved'
-                else:
-                    block['status'] = 'available'
-
-        for block in calendar:
-            id = block['mil_hour'] + block['minutes']
-            if int(search_start) <= int(id) and int(id) <= int(search_end):
-                block['status'] = 'searched'
+                block_int = int(block['mil_hour'] + block['minutes'])
+                #print ("%d, %d, %d" % (start_int, end_int, block_int))
+                if start_int <= block_int and block_int <= end_int:
+                    block['reserved'] = True
 
         return calendar

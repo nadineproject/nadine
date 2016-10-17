@@ -28,24 +28,13 @@ from django.views.decorators.csrf import csrf_protect
 
 from nadine.models.core import EmailAddress
 from nadine import email
-from arpwatch import arp
 
 logger = logging.getLogger(__name__)
 
 @login_required
 def index(request):
-    ip = None
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        ip = request.META.get('REMOTE_ADDR')
-    if ip:
-        arp.register_user_ip(request.user, ip)
-
     if request.user.is_staff:
         return HttpResponseRedirect(reverse('staff_todo'))
-
     return HttpResponseRedirect(reverse('member_home'))
 
 
@@ -74,20 +63,6 @@ def password_reset(request, is_admin_site=False, template_name='registration/pas
     else:
         form = password_reset_form()
     return render_to_response(template_name, {'form': form}, context_instance=RequestContext(request))
-
-# @csrf_protect
-# def email_manage(request, email_pk, action, next_url=None):
-#     email_address = get_object_or_404(EmailAddress, pk=email_pk)
-#     if email_address.is_verified():
-#         messages.error(request, "Email address was already verified.")
-#     else:
-#         email.send_verification(email_address, request=request)
-#         messages.success(request, "Email verification sent.")
-#
-#     if next_url:
-#         return redirect(next_url)
-#     else:
-#         return redirect(request.META['HTTP_REFERER'])
 
 
 @login_required

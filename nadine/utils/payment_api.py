@@ -315,30 +315,29 @@ class USAEPAY_SOAP_API(object):
         response = self.client.service.runCustomerTransaction(self.token, int(customer_number), params, command, paymentID)
         return response
 
+    # 1.4 way of doing things
+    def runTransactions4(self, customer_number, amount, description, invoice=None, comment=None, auth_only=False):
+        params = self.client.factory.create('CustomerTransactionRequest')
 
-        # 1.4 way of doing things
-        def runTransactions4(self, customer_number, amount, description, invoice=None, comment=None, auth_only=False):
-            params = self.client.factory.create('CustomerTransactionRequest')
+        if auth_only:
+            command = "AuthOnly"
+        else:
+            command = "Sale"
+        params.CustReceipt = True
+        params.MerchReceipt = True
+        params.Command = command
+        params.Details.Amount = float(amount)
+        params.Details.Description = description
+        if invoice:
+            params.Details.Invoice = invoice
+        if comment:
+            params.Details.Comments = comment
 
-            if auth_only:
-                command = "AuthOnly"
-            else:
-                command = "Sale"
-            params.CustReceipt = True
-            params.MerchReceipt = True
-            params.Command = command
-            params.Details.Amount = float(amount)
-            params.Details.Description = description
-            if invoice:
-                params.Details.Invoice = invoice
-            if comment:
-                params.Details.Comments = comment
-
-            paymentID = int(0) # sets it to use default
-            response = self.client.service.runCustomerTransaction(self.token, int(customer_number), paymentID, params)
-            if response.Error:
-                raise Exception(response.Error)
-            return response
+        paymentID = int(0) # sets it to use default
+        response = self.client.service.runCustomerTransaction(self.token, int(customer_number), paymentID, params)
+        if response.Error:
+            raise Exception(response.Error)
+        return response
 
     def voidTransaction(self, transaction_id):
         response = self.client.service.voidTransaction(self.token, transaction_id)

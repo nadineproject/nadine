@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, time, date, timedelta
 from collections import OrderedDict, namedtuple
 
@@ -6,12 +7,14 @@ from django.db.models import Q
 from django.contrib import admin
 from django.core import urlresolvers
 from django.contrib.auth.models import User
+from django.contrib.auth.signals import user_logged_in
 from django.db import connection
 from django.db.models import Min, Max
 from django.utils import timezone
 
 from nadine.models.core import Membership
 
+logger = logging.getLogger(__name__)
 
 class UserDevice(models.Model):
     user = models.ForeignKey(User, blank=True, null=True, unique=False)
@@ -38,6 +41,21 @@ class UserRemoteAddr(models.Model):
 
     def __unicode__(self):
         return '%s: %s = %s' % (self.logintime, self.user, self.ip_address)
+
+
+# Signal to create a new UserRemoreAddr when people login
+def register_user_ip(sender, user, request, **kwargs):
+    logtime = timezone.localtime(timezone.now())
+    ip = None
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    if ip:
+        ip_log = UserRemoteAddr.objects.create(logintime=logtime, user=user, ip_address=ip)
+    logger.info("register_user_ip: REMOTE_ADDR for %s = %s @ %s" % (user, ip, logtime))
+user_logged_in.connect(register_user_ip)
 
 
 class ArpLog_Manager(models.Manager):
