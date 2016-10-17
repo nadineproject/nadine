@@ -479,18 +479,29 @@ def register(request):
     page_message = None
     if request.method == 'POST':
         registration_form = NewUserForm(request.POST)
+        profile_form = EditProfileForm(request.POST, request.FILES)
         try:
             if registration_form.is_valid():
                 user = registration_form.save()
                 token = default_token_generator.make_token(user)
                 path = 'Ng-' + token + '/'
+
+                profile_form.username = user.username
+                profile_form.first_name = user.first_name
+                profile_form.last_name = user.last_name
+
+                    # if profile_form.is_valid():
+                profile_form.save()
                 return HttpResponseRedirect(reverse('password_reset')+ path)
+
         except Exception as e:
             page_message = str(e)
             logger.error(str(e))
     else:
         registration_form = NewUserForm()
-    return render_to_response('members/register.html', { 'registration_form': registration_form, 'page_message': page_message, 'settings': settings}, context_instance=RequestContext(request))
+        profile_form = EditProfileForm()
+
+    return render_to_response('members/register.html', { 'registration_form': registration_form, 'page_message': page_message, 'settings': settings, 'profile_form': profile_form}, context_instance=RequestContext(request))
 
 def coerce_times(start, end, date):
     start_dt = datetime.datetime.strptime(date + " " + start, "%Y-%m-%d %H:%M")

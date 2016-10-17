@@ -200,7 +200,7 @@ textarea#id_bio {
 	margin-top: 3%;
 }
 
-#login_form,  #registration_form {
+#login_form {
 	background-color: RGBA(232, 232, 232, 1);
 	margin-right: 0;
 	margin-top: 5%;
@@ -222,14 +222,6 @@ textarea#id_bio {
 }
 
 #login_reset {
-	padding-bottom: 5%;
-}
-
-#registration_form input {
-	width: 75%;
-}
-
-#registration_form {
 	padding-bottom: 5%;
 }
 
@@ -260,14 +252,18 @@ input#id_photo {
 	margin-right: 2%;
 }
 
-.sub-btn, #confirm-btn {
+.sub-btn, #confirm-btn, .reg-btn  {
 	background: RGBA(63, 146, 161, 1);
 	margin-top: 2%;
 	margin-left: 35%;
 }
 
+.reg-btn {
+	margin-left: 40%;
+}
+
 /*Edit Profile Page*/
-#profile_form {
+#profile_form, #registration_form {
 	margin-left: 15%;
 	min-width: 900px;
 	max-width: 1000px;
@@ -276,7 +272,7 @@ input#id_photo {
 	padding: 2%;
 }
 
-#profile_form h3 {
+#profile_form h3, #registration_form h3 {
 	font-size: 1.5em;
 	font-weight: bold;
 }
@@ -304,6 +300,12 @@ input#id_photo {
 	margin-left: 6%;
 	margin-right: 6%;
 	margin-bottom: 1%;
+}
+
+#registration {
+	margin-left: 6%;
+	margin-right: 6%;
+	padding: 2%;
 }
 
 #contact input, #contact select, #websites input, #websites select, #emergencyinfo input, #otherinfo input, #otherinfo select, #pf-public, #emails input, #emails button {
@@ -348,6 +350,10 @@ td#pf-photo {
 	width: 25%;
 }
 
+#registration_form input#id_first_name, #registration_form input#id_last_name {
+	width: 300px;
+}
+
 input#id_company_name {
 	width: 50%;
 }
@@ -362,6 +368,10 @@ input#id_zipcode, input#id_emergency_name, input#id_emergency_relationship, inpu
 
 input#id_city {
 	width: 85%;
+}
+
+#registration_form #id_email {
+	width: 400px;
 }
 
 #state-select{
@@ -384,7 +394,7 @@ input#id_address1, input#id_address2 {
 }
 
 input#id_url_twitter, input#id_url_facebook, input#id_url_github, input#id_url_linkedin,input#id_url_professional, input#id_url_personal {
-	width: 425px;
+	width: 400px;
 }
 
 input#id_emergency_phone {
@@ -403,7 +413,7 @@ textarea#id_bio {
 	width: 50%;
 }
 
-#login-btn, #reg-btn {
+#login-btn {
 	margin-left: 20%;
 	margin-right: 10%;
 	width: 35%;
@@ -1009,6 +1019,11 @@ footer.sticky-footer {
 
 @media only screen and (max-width: 1100px) {
 
+	#profile_form, #registration_form {
+		margin-left: 2%;
+		min-width: 900px;
+	}
+
 	#profile_form input {
 		margin-right: 1%;
 	}
@@ -1022,7 +1037,7 @@ footer.sticky-footer {
 
 @media only screen and (max-width: 1500px) {
 
-	#profile_form {
+	#profile_form, #registration_form {
 		margin-left: 7%;
 		min-width: 900px;
 	}

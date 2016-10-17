@@ -1,49 +1,244 @@
 {% extends "members/u_base.html" %}
+{% load email_tags %}
 
-{% block sub-title %} Register | {% endblock %}
+{% block sub-title %}Register Profile | {% endblock %}
 
 {% block style %}
-#content { font-size: 1em; border: none; }
-#content h1 { font-size: 1.8em; margin: 0; }
-#content table td { border-bottom: none;}
-#page-message { font-size: 1.5em; color: #933; margin: 20px 0px; }
-table td    {text-align: left;}
+    .help_text {
+        background:white;
+        padding: 1em;
+        display: none;
+    }
 {% endblock %}
 
 {% block content %}
 
-<div class='col s6 offset-s3' id='reg_box'>
-  {% if page_message %}
-    <p id="page_message">{{ page_message|safe }}</p>
-  {% endif %}
+<h3 style='text-align:center;'>Registration:</h3>
 
-  <div style="margin-left:2em;">
-    <form id='registration_form' name='registration_form' action='../member/register/' method='POST'>
-      <h1 style='margin-top:5%;margin-bottom:5%;' align='center'>Register</h1>
+<p align="center"><em>NOTE: Items in <strong>bold</strong> are viewable by all active members.</em></p>
+
+<div id="registration_form">
+
+  {% if messages %}
+  	<div class="messages">
+  		{% for message in messages %}
+  			<div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+  		{% endfor %}
+  	</div>
+  {% endif %}
+  <form enctype="multipart/form-data" action='.' method='POST'>
+    <h3>Register</h3>
+    <div id='registration'>
+      <table>
+        <tr class="row-even">
+          <td class='cap-label' id='pf-first'><strong>First Name</strong></td>
+          <td class='cap-label' id='pf-last'><strong>Last Name</strong></td>
+        </tr>
+        <tr class="row-odd">
+          <td class='pf-input'>{{ registration_form.first_name }}</td>
+          <td class='pf-input'>{{ registration_form.last_name }}</td>
+        </tr>
+        <tr>
+          <td>{{ registration_form.first_name.errors }}</td>
+          <td>{{ registration_form.last_name.errors }}</td>
+        </tr>
+      </table>
       <table>
         <tr>
-          <td>First Name:</td>
-          <td>{{ registration_form.first_name }}</td>
-          <td>{{ registration_form.first_name.errors }}</td>
-      </tr>
-      <tr class="row-odd">
-          <td>Last Name:</td>
-          <td>{{ registration_form.last_name }}</td>
-          <td>{{ registration_form.last_name.errors }}</td>
-      </tr>
-      <tr class="row-even">
-          <td>Email:</td>
-          <td>{{ registration_form.email }}</td>
+          <td class='cap-label'>Primary Email</td>
+        </tr>
+        <tr>
+          <td class='pf-input' id='reg-email'>{{ registration_form.email }}</td>
+        </tr>
+        <tr>
           <td>{{ registration_form.email.errors }}</td>
-      </tr>
-    </table>
-    <div class='row'>
-      <button class="btn waves-effect waves-light" id='reg-btn' type="submit" value="Register" />Register</button>
-      <input type="hidden" name="next" value="{{ next }}" />
+        </tr>
+      </table>
+    </div>
+    <h3 style='text-align:left;'>Contact Information</h3>
+    {{ profile_form.username }}
+    <div id='contact'>
+      <table>
+        <tr class="row-even">
+          <td class='cap-label' id='pf-address'>Address 1</td>
+          <td class='cap-label'>Address 2</td>
+        </tr>
+        <tr class="row-odd">
+          <td class='pf-input'>{{ profile_form.address1 }}</td>
+          <td class='pf-input'>{{ profile_form.address2 }}</td>
+        </tr>
+        <tr>
+          <td class='pf-error'>{{ profile_form.address1.errors }}</td>
+          <td class='pf-error'>{{ profile_form.address2.errors }}</td>
+        </tr>
+      </table>
+      <table>
+        <tr>
+          <td class='cap-label'>City</td>
+          <td class='cap-label'>State</td>
+          <td class='cap-label'>Zipcode</td>
+        </tr>
+        <tr>
+          <td class='pf-input'>{{ profile_form.city }}</td>
+          <td id='state-select'>{{ profile_form.state }}</td>
+          <td class='pf-input'>{{ profile_form.zipcode }}</td>
+        </tr>
+        <tr class="row-even">
+          <td class='pf-error'>{{ profile_form.city.errors }}</td>
+          <td class='pf-error'>{{ profile_form.state.errors }}</td>
+          <td class='pf-error'>{{ profile_form.zipcode.errors }}</td>
+        </tr>
+      </table>
+      <table>
+        <tr class="row-odd">
+          <td class='cap-label' id='pf-phone'>Primary Phone</td>
+          <td class='cap-label'>Alternate Phone</td>
+        </tr>
+        <tr class="row-even">
+          <td class='pf-input'>{{ profile_form.phone }}</td>
+          <td class='pf-input'>{{ profile_form.phone2 }}</td>
+        </tr>
+        <tr>
+          <td>{{ profile_form.phone.errors }}</td>
+          <td>{{ profile_form.phone2.errors }}</td>
+        </tr>
+        {% if ALLOW_PHOTO_UPLOAD %}
+        <tr class="row-odd">
+          <td id='pf-photo'><strong>Upload Photo</strong></td>
+          <td>
+            <input type='file' name='photo' style='background-color:RGBA(255, 255, 255, 0);'/>
+          </td>
+        </tr>
+          {% endif %}
+      </table>
     </div>
 
+    <h3 style='text-align:left;'>Profile Information</h3>
+    <div id='websites'>
+      <table>
+        <tr class="row-even">
+          <td id='pf-public' nowrap><strong>Make Your profile Public?</strong>
+            (<a onclick="$('#public_help').toggle();">?</a>)
+          </td>
+          <td>
+            {{ profile_form.public_profile }}
+          </td>
+          <td>
+            {{ profile_form.public_profile.errors }}
+          </td>
+        </tr>
+        <tr id=public_help class=help_text>
+          <td colspan=3>
+            <strong>Public Profile </strong>
+            <p>By default your profile is only viewable by active members.
+            if you you make this profile public, your bio, links, and photo
+            will also be visable to non-members as well.  Contact information
+            is always kept private.</p>
+          </td>
+        </tr>
+      </table>
+      <table>
+        <tr class='row odd'>
+          <td class='cap-label'><strong>Bio</strong></td>
+        </tr>
+        <tr>
+          <td class='pf-input' id='pf_bio'>{{ profile_form.bio }}</td>
+          <td>{{ profile_form.bio.errors }}</td>
+        </tr>
+      </table>
+      <table>
+        <tr class="row-even">
+          <td id='pf-company' class='cap-label'><strong>Company Name</strong></td>
+        </tr>
+        <tr>
+          <td class='pf-input'>{{ profile_form.company_name }}</td>
+          <tr class='pf-input'>{{ profile_form.company_name.errors }}</tr>
+        </tr>
+      </table>
+      <table>
+        <tr>
+          <td class='cap-label'><strong>Professional Website</strong></td>
+          <td class='cap-label'><strong>Personal Website</strong></td>
+        </tr>
+        <tr>
+          <td class='pf-input'>{{ profile_form.url_professional }}</td>
+          <td class='pf-input'>{{ profile_form.url_personal }}</td>
+        </tr>
+        <tr>
+          <td>{{ profile_form.url_professional.errors }}</td>
+          <td>{{ profile_form.url_personal.errors }}</td>
+        </tr>
+      </table>
+      <table>
+        <tr class="row-even">
+          <td class='cap-label'><strong>Twitter</strong></td>
+          <td class='cap-label'><strong>Facebook</strong></td>
+        </tr>
+        <tr class="row-odd">
+          <td class='pf-input'>{{ profile_form.url_twitter }}</td>
+          <td class='pf-input'>{{ profile_form.url_facebook }}</td>
+        </tr>
+        <tr class="row-even">
+          <td>{{ profile_form.url_twitter.errors }}</td>
+          <td>{{ profile_form.url_facebook.errors }}</td>
+        </tr>
+        <tr>
+          <td class='cap-label'><strong>Github</strong></td>
+          <td class='cap-label'><strong>LinkedIn </strong></td>
+        </tr>
+        <tr>
+          <td class='pf-input'>{{ profile_form.url_github }}</td>
+          <td class='pf-input'>{{ profile_form.url_linkedin }}</td>
+        </tr>
+        <tr>
+          <td>{{ profile_form.url_github.errors }}</td>
+          <td>{{ profile_form.url_linkedin.errors }}</td>
+        </tr>
+      </table>
+    </div>
+
+    <h3 style='text-align:left;'>Other Information</h3>
+    <table id="otherinfo">
+      <tr class="row-odd">
+        <td class='cap-label'><strong>What industry are you in?</strong></td>
+        <td>{{ profile_form.industry }}</td>
+        <td>{{ profile_form.industry.errors }}</td>
+      </tr>
+      <tr class="row-even">
+        <td class='cap-label'><strong>Neighborhood:</strong></td>
+        <td>{{ profile_form.neighborhood }}</td>
+        <td width="300px">{{ profile_form.neighborhood.errors }}</td>
+      </tr>
+      <tr class="row-even">
+        <td class='cap-label'>Do you have children?</td>
+        <td>{{ profile_form.has_kids }}</td>
+        <td>{{ profile_form.has_kids.errors }}</td>
+      </tr>
+      <tr class="row-odd">
+        <td class='cap-label'>Are you self employed?</td>
+        <td>{{ profile_form.self_employed }}</td>
+        <td>{{ profile_form.self_employed.errors }}</td>
+      </tr>
+      <tr class="row-even">
+        <td class='cap-label'>How did you hear about us?</td>
+        <td>{{ profile_form.howHeard }}</td>
+        <td>{{ profile_form.howHeard.errors }}</td>
+      </tr>
+      <tr class="row-odd">
+        <td class='cap-label'>Gender</td>
+        <td>{{ profile_form.gender }}</td>
+        <td width="300px">{{ profile_form.gender.errors }}</td>
+      </tr>
+    </table>
+
+    {{ profile_form.errors }}
+    {{ profile_form.non_field_errors }}
+
+    <button class="btn waves-effect waves-light reg-btn" type="submit" value="Register" />Register</button>
     {% csrf_token %}
-    </form>
-  </div>
+  </form>
 </div>
+
 {% endblock %}
+
+{% block extrajs %}{% endblock %}
