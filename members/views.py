@@ -514,13 +514,6 @@ def coerce_times(start, end, date):
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def create_booking(request):
-    calendar = Room().get_raw_calendar()
-    labels = []
-
-    for block in calendar:
-        label = block['hour'] + ":" + block['minutes']
-        labels.append(label)
-
     # Process URL variables
     has_av = request.GET.get('has_av', None)
     has_phone = request.GET.get('has_phone', None)
@@ -539,6 +532,7 @@ def create_booking(request):
 
     # Get all the events for each room in that day
     target_date = start_ts.date()
+
     for room in rooms:
         calendar = room.get_calendar(target_date)
         room_dict[room] = calendar
@@ -551,6 +545,7 @@ def create_booking(request):
             if int(search_start) <= int(id) and int(id) <= int(search_end):
                 block['searched'] = True
 
+
     if request.method == 'POST':
         room = request.POST.get('room')
         start = request.POST.get('start')
@@ -559,7 +554,7 @@ def create_booking(request):
 
         return HttpResponseRedirect(reverse('member_confirm_booking', kwargs={'room': room, 'start': start, 'end': end, 'date': date}))
 
-    return render_to_response('members/user_create_booking.html', {'rooms': rooms, 'labels':labels, 'start':start, 'end':end, 'date': date, 'has_av':has_av, 'floor': floor, 'has_phone': has_phone, 'room_dict': room_dict}, context_instance=RequestContext(request))
+    return render_to_response('members/booking_create.html', {'rooms': rooms, 'start':start, 'end':end, 'date': date, 'has_av':has_av, 'floor': floor, 'has_phone': has_phone, 'room_dict': room_dict}, context_instance=RequestContext(request))
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
@@ -567,21 +562,23 @@ def confirm_booking(request, room, start, end, date):
     user = request.user
     room = get_object_or_404(Room, name=room)
     page_message = None
-    booking_form = EventForm()
-    calendar = Room().get_raw_calendar()
-    labels = []
-
-    for block in calendar:
-        label = block['hour'] + ":" + block['minutes']
-        labels.append(label)
 
     start_ts, end_ts = coerce_times(start, end, date)
 
-    target_date = start_ts.replace(hour=0, minute=0, second=0, microsecond=0)
-    end_date = target_date + timedelta(days=1)
+    target_date = start_ts.date()
 
     event_dict = {}
-    event_dict[room] = room.get_calendar(start, end, target_date, end_date)
+    calendar = room.get_calendar(target_date)
+    event_dict[room] = calendar
+
+    # Infuse room calendar with search range
+    search_start = start.replace(':', '')
+    search_end = end.replace(':', '')
+
+    for block in calendar:
+        block_int = int(block['mil_hour'] + block['minutes'])
+        if int(search_start) <= block_int and block_int <= int(search_end):
+            block['searched'] = True
 
     if request.method == 'POST':
         user = request.user
@@ -612,7 +609,7 @@ def confirm_booking(request, room, start, end, date):
     else:
         booking_form = EventForm()
 
-    return render_to_response('members/user_confirm_booking.html', {'booking_form':booking_form, 'start':start, 'end':end, 'room': room, 'date': date, 'labels': labels, 'page_message': page_message, 'event_dict': event_dict}, context_instance=RequestContext(request))
+    return render_to_response('members/booking_confirm.html', {'booking_form':booking_form, 'start':start, 'end':end, 'room': room, 'date': date, 'page_message': page_message, 'event_dict': event_dict}, context_instance=RequestContext(request))
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
