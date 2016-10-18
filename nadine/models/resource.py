@@ -122,11 +122,13 @@ class Room(models.Model):
         # Extract the start and end times from our target date and the raw calendar
         first_block = calendar[0]
         last_block = calendar[len(calendar) - 1]
-        start = datetime(year=target_date.year, month=target_date.month, day=target_date.day, hour=int(first_block['mil_hour']), minute=int(first_block['minutes']))
-        end = datetime(year=target_date.year, month=target_date.month, day=target_date.day, hour=int(last_block['mil_hour']), minute=int(last_block['minutes']))
+        tz = timezone.get_current_timezone()
+        start = datetime(year=target_date.year, month=target_date.month, day=target_date.day, hour=int(first_block['mil_hour']), minute=int(first_block['minutes']), tzinfo=tz)
+        end = datetime(year=target_date.year, month=target_date.month, day=target_date.day, hour=int(last_block['mil_hour']), minute=int(last_block['minutes']), tzinfo=tz)
         end = end + timedelta(minutes=15)
+        #print("Start: %s, End: %s, TZ: %s" % (start, end, tz))
 
-        # Loop through the events for this day and mark which blocks are not available
+        # Loop through the events for this day and mark which blocks are reserved
         # We use time integers in the form of HOURMIN (830, 1600, etc) for comparison
         events = self.event_set.filter(room=self, start_ts__gte=start, end_ts__lte=end)
         for event in events:
@@ -136,6 +138,7 @@ class Room(models.Model):
                 block_int = int(block['mil_hour'] + block['minutes'])
                 #print ("%d, %d, %d" % (start_int, end_int, block_int))
                 if start_int <= block_int and block_int <= end_int:
+                    #print "Reserved!"
                     block['reserved'] = True
 
         return calendar

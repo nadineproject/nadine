@@ -18,8 +18,8 @@ class RoomTestCase(TestCase):
 
         # With these 2 events, Room1 is booked for the next 5 hours and Room2 is available.
 
-        # Event in Room1 starting now for the next 3 hours.
-        self.start1 = timezone.now()
+        # Event in Room1 starting today at 11AM for the 3 hours.
+        self.start1 = timezone.now().replace(hour=11, minute=0, tzinfo=timezone.get_current_timezone())
         self.end1 = self.start1 + timedelta(hours=3)
         self.event1 = Event.objects.create(user=self.user1, room=self.room1, start_ts=self.start1, end_ts=self.end1)
 
@@ -140,7 +140,6 @@ class RoomTestCase(TestCase):
 
     def test_get_calendar(self):
         calendar = self.room1.get_calendar()
-        print calendar
         reserved_count = 0
         for block in calendar:
             if 'reserved' in block and block['reserved']:
