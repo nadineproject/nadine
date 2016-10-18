@@ -38,16 +38,17 @@ class RoomTestCase(TestCase):
     def test_available_straddling(self):
         # Check for a room in 1 hour for 1 hour.
         # This event straddles Event1.
-        start = timezone.now() + timedelta(hours=1)
-        end = timezone.now() + timedelta(hours=1)
+        start = self.start1 + timedelta(hours=1)
+        end = start + timedelta(hours=1)
         # We should get only Room2.
         rooms = Room.objects.available(start=start, end=end)
         self.assertTrue(len(rooms) == 1)
         self.assertTrue(rooms[0] == self.room2)
 
     def test_available_sandwich(self):
-        start = timezone.now() - timedelta(hours=1)
-        end =  timezone.now() + timedelta(minutes=30)
+        #Check for room starting before saved event and ends after event start
+        start = self.start1 - timedelta(hours=1)
+        end =  self.start1 + timedelta(minutes=30)
         rooms = Room.objects.available(start=start, end=end)
         self.assertTrue(len(rooms) == 1)
         self.assertTrue(rooms[0] == self.room2)
@@ -61,8 +62,11 @@ class RoomTestCase(TestCase):
         self.assertFalse(self.room1 in rooms)
 
     def test_available_early(self):
-        start = timezone.now() - timedelta(hours=2)
-        end = timezone.now() - timedelta(hours=1)
+        #Check for room for search which starts and ends before any saved events
+        # start = self.start1 - timedelta(hours=2)
+        # end = start + timedelta(hours=1)
+        start = timezone.now() - timedelta(hours=3)
+        end = timezone.now() - timedelta(hours=2)
         rooms = Room.objects.available(start=start, end=end)
         self.assertTrue(len(rooms) == 2)
         self.assertTrue(self.room1 in rooms)
