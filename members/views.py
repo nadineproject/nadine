@@ -479,19 +479,43 @@ def register(request):
     page_message = None
     if request.method == 'POST':
         registration_form = NewUserForm(request.POST)
-        profile_form = EditProfileForm(request.POST, request.FILES)
+        profile_form = EditProfileForm(request.POST)
         try:
             if registration_form.is_valid():
                 user = registration_form.save()
                 token = default_token_generator.make_token(user)
                 path = 'Ng-' + token + '/'
 
-                profile_form.username = user.username
-                profile_form.first_name = user.first_name
-                profile_form.last_name = user.last_name
+                registration = get_object_or_404(UserProfile, user=user)
+                registration.address1 = request.POST.get('address1', None)
+                registration.phone =  request.POST.get('phone', None)
+                registration.phone2 = request.POST.get('phone2', None)
+                registration.address2 = request.POST.get('address2', None)
+                registration.city = request.POST.get('city', None)
+                registration.state = request.POST.get('state', None)
+                registration.zipcode = request.POST.get('zipcode', None)
+                registration.bio = request.POST.get('bio', None)
+                registration.gender = request.POST.get('gender', None)
+                # needs to be an instance of these three?
+                # registration.howHeard = request.POST.get('howHeard', None)
+                # registration.industry = request.POST.get('industry', None)
+                # registration.neighborhood = request.POST.get('neighborhood', None)
+                registration.has_kids = request.POST.get('has_kids', None)
+                registration.self_employed = request.POST.get('self_employed', None)
+                registration.company_name = request.POST.get('company_name', None)
+                registration.public_profile = request.POST.get('public_profile', False)
+                registration.photo = request.POST.get('photo', None)
 
-                    # if profile_form.is_valid():
-                profile_form.save()
+                registration.save()
+
+                if request.POST.get('password-create') == request.POST.get('password-confirm'):
+                    pwd = request.POST.get('password-create')
+                    u = User.objects.get(username=user.username)
+                    u.set_password(pwd)
+                    u.save()
+
+                    return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
+
                 return HttpResponseRedirect(reverse('password_reset')+ path)
 
         except Exception as e:

@@ -19,12 +19,13 @@
 
 <div id="registration_form">
 
-  {% if messages %}
-  	<div class="messages">
-  		{% for message in messages %}
-  			<div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
-  		{% endfor %}
-  	</div>
+  {% if page_message %}
+    <div>
+      <p style='color:red;text-align:center;'>
+        <strong> {{ page_message }} </strong>
+      </p>
+      <br />
+    </div>
   {% endif %}
   <form enctype="multipart/form-data" action='.' method='POST'>
     <h3>Register</h3>
@@ -53,6 +54,16 @@
         <tr>
           <td>{{ registration_form.email.errors }}</td>
         </tr>
+      </table>
+      <table>
+        <tr>
+          <td class='cap-label'><strong>Create Password</strong></td>
+          <td class='cap-label'><strong>Confirm Password</strong></td>
+        </tr>
+        <tr>
+          <td><input class='pwd-input pf-input' type='password' name='password-create' /></td>
+          <td><input class='pwd-input pf-input' type='password' name='password-confirm' /></td>
+       </tr>
       </table>
     </div>
     <h3 style='text-align:left;'>Contact Information</h3>
@@ -230,10 +241,6 @@
         <td width="300px">{{ profile_form.gender.errors }}</td>
       </tr>
     </table>
-
-    {{ profile_form.errors }}
-    {{ profile_form.non_field_errors }}
-
     <button class="btn waves-effect waves-light reg-btn" type="submit" value="Register" />Register</button>
     {% csrf_token %}
   </form>
