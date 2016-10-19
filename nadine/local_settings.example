@@ -14,15 +14,15 @@ ADMINS = (
 MANAGERS = ADMINS
 SERVER_EMAIL = 'nadine@officenomads.com'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        #'NAME': 'nadinedb',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        #'PASSWORD': 'password'
-    }
-}
+# Example Database Setup
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#        'NAME': 'nadinedb',
+#        'USER': 'postgres',
+#        'PASSWORD': 'password'
+#    }
+#}
 
 # CACHE_BACKEND = 'dummy:///'
 CACHE_BACKEND = 'locmem:///'
