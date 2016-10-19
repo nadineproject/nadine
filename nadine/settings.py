@@ -25,6 +25,8 @@ STATICFILES_FINDERS = (
 
 DEBUG = False
 
+SECRET_KEY = 'SET_YOUR_SECRET_KEY_IN_LOCAL_SETTINGS'
+
 # -- Message of the Day --
 # Displayed on the iPad after sign-in
 MOTD = "Enjoy your day at Office Nomads!"
