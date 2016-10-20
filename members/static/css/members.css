@@ -405,6 +405,11 @@ textarea#id_bio {
 	width: 50%;
 }
 
+#img-id {
+	height: 200px;
+	border-radius: 500px;
+}
+
 /*Registration form styling*/
 #registration input#id_first_name, #registration input#id_last_name {
 	width: 300px;

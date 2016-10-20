@@ -161,7 +161,10 @@
         <tr class="row-odd">
           <td id='pf-photo'><strong>Upload Photo</strong></td>
           <td>
-            <input type='file' name='photo' style='background-color:RGBA(255, 255, 255, 0);'/>
+            <input type='file' name='photo' style='background-color:RGBA(255, 255, 255, 0);' id="imgInp" />
+          </td>
+          <td>
+            <img id='img-id' src='' alt='profile photo' />
           </td>
         </tr>
           {% endif %}
@@ -324,4 +327,28 @@
 </div>
 {% endblock %}
 
-{% block extrajs %}{% endblock %}
+{% block extrajs %}
+<script>
+  $(document).ready(function(){
+    $('#img-id').hide();
+
+    function readURL(input) {
+      if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+            $('#img-id').attr('src', e.target.result);
+        }
+
+        reader.readAsDataURL(input.files[0]);
+
+        $('#img-id').show()
+      }
+    }
+
+    $("#imgInp").change(function(){
+      readURL(this);
+    });
+  });
+</script>
+{% endblock %}
