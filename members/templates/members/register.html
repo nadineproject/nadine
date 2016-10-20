@@ -60,4 +60,13 @@
     <div id='contact'>
 {% endblock %}
 
+{% block upload %}
+  <tr class="row-odd">
+    <td id='pf-photo'><strong>Upload Photo</strong></td>
+    <td>
+      <input type='file' name='photo' style='background-color:RGBA(255, 255, 255, 0);'/>
+    </td>
+  </tr>
+{% endblock %}
+
 {% block emergency_info %}{% endblock %}

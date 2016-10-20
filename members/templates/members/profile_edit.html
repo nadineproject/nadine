@@ -156,6 +156,7 @@
           <td>{{ profile_form.phone.errors }}</td>
           <td>{{ profile_form.phone2.errors }}</td>
         </tr>
+{% block upload %}
         {% if ALLOW_PHOTO_UPLOAD %}
         <tr class="row-odd">
           <td id='pf-photo'><strong>Upload Photo</strong></td>
@@ -164,6 +165,7 @@
           </td>
         </tr>
           {% endif %}
+{% endblock %}
       </table>
     </div>
 
