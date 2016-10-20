@@ -496,7 +496,7 @@ def register(request):
     page_message = None
     if request.method == 'POST':
         registration_form = NewUserForm(request.POST)
-        profile_form = EditProfileForm(request.POST)
+        profile_form = EditProfileForm(request.POST, request.FILES)
         try:
             if request.POST.get('password-create') == request.POST.get('password-confirm'):
                 if registration_form.is_valid():
@@ -520,7 +520,8 @@ def register(request):
                     registration.self_employed = request.POST.get('self_employed', None)
                     registration.company_name = request.POST.get('company_name', None)
                     registration.public_profile = request.POST.get('public_profile', False)
-                    registration.photo = request.POST.get('photo', None)
+                    registration.photo = request.FILES.get('photo', None)
+
                     registration.save()
 
                     pwd = request.POST.get('password-create')
@@ -538,7 +539,7 @@ def register(request):
         registration_form = NewUserForm()
         profile_form = EditProfileForm()
 
-    return render_to_response('members/register.html', { 'registration_form': registration_form, 'page_message': page_message, 'settings': settings, 'profile_form': profile_form}, context_instance=RequestContext(request))
+    return render_to_response('members/register.html', { 'registration_form': registration_form, 'page_message': page_message, 'ALLOW_PHOTO_UPLOAD': settings.ALLOW_PHOTO_UPLOAD, 'settings': settings, 'profile_form': profile_form}, context_instance=RequestContext(request))
 
 def coerce_times(start, end, date):
     start_dt = datetime.datetime.strptime(date + " " + start, "%Y-%m-%d %H:%M")
