@@ -277,7 +277,7 @@ input#id_photo {
 	font-weight: bold;
 }
 
-#contact, #emergencyinfo, #websites {
+#contact, #emergencyinfo, #websites, #passwords {
 	margin-left: 4%;
 	padding-left: 2%;
 	padding-right: 2%;
@@ -350,10 +350,6 @@ td#pf-photo {
 	width: 25%;
 }
 
-#registration_form input#id_first_name, #registration_form input#id_last_name {
-	width: 300px;
-}
-
 input#id_company_name {
 	width: 50%;
 }
@@ -362,16 +358,12 @@ select#id_public_profile.browser-default {
 	width: 30%;
 }
 
-input#id_zipcode, input#id_emergency_name, input#id_emergency_relationship, input#id_phone, input#id_phone2, input#id_emergency_email, input.pwd-input {
+input#id_zipcode, input#id_emergency_name, input#id_emergency_relationship, input#id_phone, input#id_phone2, input#id_emergency_email {
 	width: 70%;
 }
 
 input#id_city {
 	width: 85%;
-}
-
-#registration_form #id_email {
-	width: 400px;
 }
 
 #state-select{
@@ -411,6 +403,19 @@ textarea#id_bio {
 
 #email-input {
 	width: 50%;
+}
+
+/*Registration form styling*/
+#registration input#id_first_name, #registration input#id_last_name {
+	width: 300px;
+}
+
+#registration #id_email {
+	width: 400px;
+}
+
+#registration .pwd-input {
+	width: 300px;
 }
 
 #login-btn {

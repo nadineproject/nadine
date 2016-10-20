@@ -63,6 +63,12 @@ def is_manager(user):
         return user.profile.is_manager()
     return False
 
+def is_new_user(user):
+    if user.is_anonymous():
+        print 'New user!'
+        return True
+    return False
+
 
 @login_required
 def home(request):
@@ -229,6 +235,7 @@ def mail_message(request, id):
 
 @login_required
 def edit_profile(request, username):
+    page_message = None
     user = get_object_or_404(User, username=username)
     if not user == request.user:
         if not request.user.is_staff:
@@ -237,8 +244,17 @@ def edit_profile(request, username):
     if request.method == 'POST':
         profile_form = EditProfileForm(request.POST, request.FILES)
         if profile_form.is_valid():
-            profile_form.save()
-            return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
+            if request.POST.get('password-create') == request.POST.get('password-confirm'):
+                profile_form.save()
+
+                pwd = request.POST.get('password-create')
+                u = User.objects.get(username=user.username)
+                u.set_password(pwd)
+                u.save()
+
+                return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
+            else:
+                page_message = 'The entered passwords do not match. Please try again.'
     else:
         profile = user.profile
         emergency_contact = user.get_emergency_contact()
@@ -257,7 +273,7 @@ def edit_profile(request, username):
 
                                             })
 
-    return render_to_response('members/profile_edit.html', {'user': user, 'profile_form': profile_form, 'ALLOW_PHOTO_UPLOAD': settings.ALLOW_PHOTO_UPLOAD, 'settings': settings}, context_instance=RequestContext(request))
+    return render_to_response('members/profile_edit.html', {'user': user, 'profile_form': profile_form, 'ALLOW_PHOTO_UPLOAD': settings.ALLOW_PHOTO_UPLOAD, 'settings': settings, 'page_message': page_message}, context_instance=RequestContext(request))
 
 
 @login_required
@@ -475,49 +491,46 @@ def manage_member(request, username):
 
     return render_to_response('members/manage_member.html', {'user': user, 'page_content': html_content}, context_instance=RequestContext(request))
 
+@user_passes_test(is_new_user, login_url='member_home')
 def register(request):
     page_message = None
     if request.method == 'POST':
         registration_form = NewUserForm(request.POST)
         profile_form = EditProfileForm(request.POST)
         try:
-            if registration_form.is_valid():
-                user = registration_form.save()
-                token = default_token_generator.make_token(user)
-                path = 'Ng-' + token + '/'
+            if request.POST.get('password-create') == request.POST.get('password-confirm'):
+                if registration_form.is_valid():
+                    user = registration_form.save()
 
-                registration = get_object_or_404(UserProfile, user=user)
-                registration.address1 = request.POST.get('address1', None)
-                registration.phone =  request.POST.get('phone', None)
-                registration.phone2 = request.POST.get('phone2', None)
-                registration.address2 = request.POST.get('address2', None)
-                registration.city = request.POST.get('city', None)
-                registration.state = request.POST.get('state', None)
-                registration.zipcode = request.POST.get('zipcode', None)
-                registration.bio = request.POST.get('bio', None)
-                registration.gender = request.POST.get('gender', None)
-                # needs to be an instance of these three?
-                # registration.howHeard = request.POST.get('howHeard', None)
-                # registration.industry = request.POST.get('industry', None)
-                # registration.neighborhood = request.POST.get('neighborhood', None)
-                registration.has_kids = request.POST.get('has_kids', None)
-                registration.self_employed = request.POST.get('self_employed', None)
-                registration.company_name = request.POST.get('company_name', None)
-                registration.public_profile = request.POST.get('public_profile', False)
-                registration.photo = request.POST.get('photo', None)
+                    registration = get_object_or_404(UserProfile, user=user)
+                    registration.address1 = request.POST.get('address1', None)
+                    registration.phone =  request.POST.get('phone', None)
+                    registration.phone2 = request.POST.get('phone2', None)
+                    registration.address2 = request.POST.get('address2', None)
+                    registration.city = request.POST.get('city', None)
+                    registration.state = request.POST.get('state', None)
+                    registration.zipcode = request.POST.get('zipcode', None)
+                    registration.bio = request.POST.get('bio', None)
+                    registration.gender = request.POST.get('gender', None)
+                    # TODO needs to be an instance of these three?
+                    # registration.howHeard = request.POST.get('howHeard', None)
+                    # registration.industry = request.POST.get('industry', None)
+                    # registration.neighborhood = request.POST.get('neighborhood', None)
+                    registration.has_kids = request.POST.get('has_kids', None)
+                    registration.self_employed = request.POST.get('self_employed', None)
+                    registration.company_name = request.POST.get('company_name', None)
+                    registration.public_profile = request.POST.get('public_profile', False)
+                    registration.photo = request.POST.get('photo', None)
+                    registration.save()
 
-                registration.save()
-
-                if request.POST.get('password-create') == request.POST.get('password-confirm'):
                     pwd = request.POST.get('password-create')
                     u = User.objects.get(username=user.username)
                     u.set_password(pwd)
                     u.save()
 
                     return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
-
-                return HttpResponseRedirect(reverse('password_reset')+ path)
-
+            else:
+                page_message = 'The entered passwords do not match. Please try again.'
         except Exception as e:
             page_message = str(e)
             logger.error(str(e))
