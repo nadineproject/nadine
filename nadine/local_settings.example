@@ -29,7 +29,7 @@ CACHE_BACKEND = 'locmem:///'
 
 # Make this unique, and don't share it with anybody.
 # http://www.miniwebtool.com/django-secret-key-generator/
-SECRET_KEY = 'ZZZ'
+SECRET_KEY = ''
 
 GOOGLE_ANALYTICS_ID = 'YOUR-GOOGLE-CODE'
 
