@@ -34,6 +34,7 @@ class RoomManager(models.Manager):
             end = start + timedelta(hours=1)
 
         rooms = self.all()
+
         if has_av != None:
             rooms = rooms.filter(has_av=has_av)
         if has_phone != None:

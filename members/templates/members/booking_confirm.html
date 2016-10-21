@@ -36,13 +36,17 @@
       </table>
       <table class='booking-bar'>
         <thead>
-          {% for label in labels %}
-            {% if forloop.counter0|divisibleby:2 %}
-              <th class="rotate"><div><span>
-                {{ label }}
-              </div></span></th>
-            {% else %}
-              <th></th>
+          {% for block, times in event_dict.items %}
+            {% if room == block %}
+              {% for time in times %}
+                {% if forloop.counter0|divisibleby:2 %}
+                  <th class="rotate"><div><span>
+                    {{ time.hour }}:{{ time.minutes }}
+                  </div></span></th>
+                {% else %}
+                  <th></th>
+                {% endif %}
+              {% endfor %}
             {% endif %}
           {% endfor %}
         </thead>
@@ -51,8 +55,16 @@
             {% for block, times in event_dict.items %}
               {% if room == block %}
                 {% for time in times %}
-                  <td class="cal-box {{ time.status }}" id="hour-{{time.mil_hour}}{{time.minutes}}">
-                  </td>
+                  {% if time.reserved %}
+                    <td class="cal-box reserved" id="hour-{{time.mil_hour}}{{time.minutes}}">
+                    </td>
+                  {% elif time.searched %}
+                    <td class="cal-box searched" id="hour-{{time.mil_hour}}{{time.minutes}}">
+                    </td>
+                  {% else %}
+                    <td class="cal-box available" id="hour-{{time.mil_hour}}{{time.minutes}}">
+                    </td>
+                  {% endif %}
                 {% endfor %}
               {% endif %}
             {% endfor %}

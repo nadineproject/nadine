@@ -63,6 +63,12 @@ def is_manager(user):
         return user.profile.is_manager()
     return False
 
+def is_new_user(user):
+    if user.is_anonymous():
+        print 'New user!'
+        return True
+    return False
+
 
 @login_required
 def home(request):
@@ -229,6 +235,7 @@ def mail_message(request, id):
 
 @login_required
 def edit_profile(request, username):
+    page_message = None
     user = get_object_or_404(User, username=username)
     if not user == request.user:
         if not request.user.is_staff:
@@ -237,8 +244,17 @@ def edit_profile(request, username):
     if request.method == 'POST':
         profile_form = EditProfileForm(request.POST, request.FILES)
         if profile_form.is_valid():
-            profile_form.save()
-            return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
+            if request.POST.get('password-create') == request.POST.get('password-confirm'):
+                profile_form.save()
+
+                pwd = request.POST.get('password-create')
+                u = User.objects.get(username=user.username)
+                u.set_password(pwd)
+                u.save()
+
+                return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
+            else:
+                page_message = 'The entered passwords do not match. Please try again.'
     else:
         profile = user.profile
         emergency_contact = user.get_emergency_contact()
@@ -257,7 +273,7 @@ def edit_profile(request, username):
 
                                             })
 
-    return render_to_response('members/profile_edit.html', {'user': user, 'profile_form': profile_form, 'ALLOW_PHOTO_UPLOAD': settings.ALLOW_PHOTO_UPLOAD, 'settings': settings}, context_instance=RequestContext(request))
+    return render_to_response('members/profile_edit.html', {'user': user, 'profile_form': profile_form, 'ALLOW_PHOTO_UPLOAD': settings.ALLOW_PHOTO_UPLOAD, 'settings': settings, 'page_message': page_message}, context_instance=RequestContext(request))
 
 
 @login_required
@@ -475,22 +491,55 @@ def manage_member(request, username):
 
     return render_to_response('members/manage_member.html', {'user': user, 'page_content': html_content}, context_instance=RequestContext(request))
 
+@user_passes_test(is_new_user, login_url='member_home')
 def register(request):
     page_message = None
     if request.method == 'POST':
         registration_form = NewUserForm(request.POST)
+        profile_form = EditProfileForm(request.POST, request.FILES)
         try:
-            if registration_form.is_valid():
-                user = registration_form.save()
-                token = default_token_generator.make_token(user)
-                path = 'Ng-' + token + '/'
-                return HttpResponseRedirect(reverse('password_reset')+ path)
+            if request.POST.get('password-create') == request.POST.get('password-confirm'):
+                if registration_form.is_valid():
+                    user = registration_form.save()
+
+                    registration = get_object_or_404(UserProfile, user=user)
+                    registration.address1 = request.POST.get('address1', None)
+                    registration.phone =  request.POST.get('phone', None)
+                    registration.phone2 = request.POST.get('phone2', None)
+                    registration.address2 = request.POST.get('address2', None)
+                    registration.city = request.POST.get('city', None)
+                    registration.state = request.POST.get('state', None)
+                    registration.zipcode = request.POST.get('zipcode', None)
+                    registration.bio = request.POST.get('bio', None)
+                    registration.gender = request.POST.get('gender', None)
+                    # TODO needs to be an instance of these three?
+                    # registration.howHeard = request.POST.get('howHeard', None)
+                    # registration.industry = request.POST.get('industry', None)
+                    # registration.neighborhood = request.POST.get('neighborhood', None)
+                    registration.has_kids = request.POST.get('has_kids', None)
+                    registration.self_employed = request.POST.get('self_employed', None)
+                    registration.company_name = request.POST.get('company_name', None)
+                    registration.public_profile = request.POST.get('public_profile', False)
+                    registration.photo = request.FILES.get('photo', None)
+
+                    registration.save()
+
+                    pwd = request.POST.get('password-create')
+                    u = User.objects.get(username=user.username)
+                    u.set_password(pwd)
+                    u.save()
+
+                    return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
+            else:
+                page_message = 'The entered passwords do not match. Please try again.'
         except Exception as e:
             page_message = str(e)
             logger.error(str(e))
     else:
         registration_form = NewUserForm()
-    return render_to_response('members/register.html', { 'registration_form': registration_form, 'page_message': page_message, 'settings': settings}, context_instance=RequestContext(request))
+        profile_form = EditProfileForm()
+
+    return render_to_response('members/register.html', { 'registration_form': registration_form, 'page_message': page_message, 'ALLOW_PHOTO_UPLOAD': settings.ALLOW_PHOTO_UPLOAD, 'settings': settings, 'profile_form': profile_form}, context_instance=RequestContext(request))
 
 def coerce_times(start, end, date):
     start_dt = datetime.datetime.strptime(date + " " + start, "%Y-%m-%d %H:%M")
@@ -503,13 +552,6 @@ def coerce_times(start, end, date):
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def create_booking(request):
-    calendar = Room().get_raw_calendar()
-    labels = []
-
-    for block in calendar:
-        label = block['hour'] + ":" + block['minutes']
-        labels.append(label)
-
     # Process URL variables
     has_av = request.GET.get('has_av', None)
     has_phone = request.GET.get('has_phone', None)
@@ -528,6 +570,7 @@ def create_booking(request):
 
     # Get all the events for each room in that day
     target_date = start_ts.date()
+
     for room in rooms:
         calendar = room.get_calendar(target_date)
         room_dict[room] = calendar
@@ -540,6 +583,7 @@ def create_booking(request):
             if int(search_start) <= int(id) and int(id) <= int(search_end):
                 block['searched'] = True
 
+
     if request.method == 'POST':
         room = request.POST.get('room')
         start = request.POST.get('start')
@@ -548,7 +592,7 @@ def create_booking(request):
 
         return HttpResponseRedirect(reverse('member_confirm_booking', kwargs={'room': room, 'start': start, 'end': end, 'date': date}))
 
-    return render_to_response('members/user_create_booking.html', {'rooms': rooms, 'labels':labels, 'start':start, 'end':end, 'date': date, 'has_av':has_av, 'floor': floor, 'has_phone': has_phone, 'room_dict': room_dict}, context_instance=RequestContext(request))
+    return render_to_response('members/booking_create.html', {'rooms': rooms, 'start':start, 'end':end, 'date': date, 'has_av':has_av, 'floor': floor, 'has_phone': has_phone, 'room_dict': room_dict}, context_instance=RequestContext(request))
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
@@ -556,21 +600,23 @@ def confirm_booking(request, room, start, end, date):
     user = request.user
     room = get_object_or_404(Room, name=room)
     page_message = None
-    booking_form = EventForm()
-    calendar = Room().get_raw_calendar()
-    labels = []
-
-    for block in calendar:
-        label = block['hour'] + ":" + block['minutes']
-        labels.append(label)
 
     start_ts, end_ts = coerce_times(start, end, date)
 
-    target_date = start_ts.replace(hour=0, minute=0, second=0, microsecond=0)
-    end_date = target_date + timedelta(days=1)
+    target_date = start_ts.date()
 
     event_dict = {}
-    event_dict[room] = room.get_calendar(start, end, target_date, end_date)
+    calendar = room.get_calendar(target_date)
+    event_dict[room] = calendar
+
+    # Infuse room calendar with search range
+    search_start = start.replace(':', '')
+    search_end = end.replace(':', '')
+
+    for block in calendar:
+        block_int = int(block['mil_hour'] + block['minutes'])
+        if int(search_start) <= block_int and block_int <= int(search_end):
+            block['searched'] = True
 
     if request.method == 'POST':
         user = request.user
@@ -601,11 +647,12 @@ def confirm_booking(request, room, start, end, date):
     else:
         booking_form = EventForm()
 
-    return render_to_response('members/user_confirm_booking.html', {'booking_form':booking_form, 'start':start, 'end':end, 'room': room, 'date': date, 'labels': labels, 'page_message': page_message, 'event_dict': event_dict}, context_instance=RequestContext(request))
+    return render_to_response('members/booking_confirm.html', {'booking_form':booking_form, 'start':start, 'end':end, 'room': room, 'date': date, 'page_message': page_message, 'event_dict': event_dict}, context_instance=RequestContext(request))
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def calendar(request):
+    page_message = None
     events = Event.objects.filter(is_public=True)
     data = []
 
@@ -618,17 +665,37 @@ def calendar(request):
         start = request.POST.get('start')
         end = request.POST.get('end')
         date = request.POST.get('date')
+        start = start.split(" ")
+        end = end.split(" ")
+        if start[1] == 'PM':
+            mil_start = start[0].split(":")
+            hour = int(mil_start[0]) + 12
+            start = str(hour) + ':' + mil_start[1]
+        else:
+            start = start[0]
+
+        if end[1] == 'PM':
+            mil_end = end[0].split(":")
+            hour = int(mil_end[0]) + 12
+            end = str(hour) + ':' + mil_end[1]
+        else:
+            end = end[0]
+
         start_ts, end_ts = coerce_times(start, end, date)
-        description = request.POST.get('description', '')
-        charge = request.POST.get('charge', 0)
-        is_public = True
 
-        event = Event(user=user, start_ts=start_ts, end_ts=end_ts, description=description, charge=charge, is_public=is_public)
+        if start_ts < end_ts :
 
-        event.save()
+            description = request.POST.get('description', '')
+            charge = request.POST.get('charge', 0)
+            is_public = True
 
-        return HttpResponseRedirect(reverse('member_calendar'))
+            event = Event(user=user, start_ts=start_ts, end_ts=end_ts, description=description, charge=charge, is_public=is_public)
 
-    return render_to_response('members/calendar.html', {'data': data, 'GOOGLE_CALENDAR_ID': settings.GOOGLE_CALENDAR_ID, 'GOOGLE_API_KEY': settings.GOOGLE_API_KEY }, context_instance=RequestContext(request))
+            event.save()
+
+            return HttpResponseRedirect(reverse('member_calendar'))
+        else:
+            page_message = "Did not save your event. Double check that the event start is before the end time. Thank you."
+    return render_to_response('members/calendar.html', {'data': data, 'GOOGLE_CALENDAR_ID': settings.GOOGLE_CALENDAR_ID, 'GOOGLE_API_KEY': settings.GOOGLE_API_KEY, 'page_message': page_message }, context_instance=RequestContext(request))
 
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

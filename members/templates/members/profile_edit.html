@@ -12,19 +12,20 @@
 {% endblock %}
 
 {% block content %}
-
+{% block reg_edit %}
 <h3 style='text-align:center;'>Edit Your Profile:</h3>
 
 <p align="center"><em>NOTE: Items in <strong>bold</strong> are viewable by all active members.</em></p>
 
 <div id="profile_form">
 
-  {% if messages %}
-  	<div class="messages">
-  		{% for message in messages %}
-  			<div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
-  		{% endfor %}
-  	</div>
+  {% if page_message %}
+    <div>
+      <p style='color:red;text-align:center;'>
+        <strong> {{ page_message }} </strong>
+      </p>
+      <br />
+    </div>
   {% endif %}
   <h3>
       Email Addresses
@@ -80,6 +81,19 @@
   </table>
 
   <form enctype="multipart/form-data" action='.' method='POST'>
+    <h3>Change Password</h3>
+    <div style='text-align:left;' id='passwords'>
+      <table>
+        <tr>
+          <td class='cap-label'><strong>Create Password</strong></td>
+          <td class='cap-label'><strong>Confirm Password</strong></td>
+        </tr>
+        <tr>
+          <td><input class='pwd-input pf-input' type='password' name='password-create' /></td>
+          <td><input class='pwd-input pf-input' type='password' name='password-confirm' /></td>
+       </tr>
+      </table>
+    </div>
     {{ profile_form.username }}
     <h3 style='text-align:left;'>Contact Information</h3>
     <div id='contact'>
@@ -97,6 +111,7 @@
           <td>{{ profile_form.last_name.errors }}</td>
         </tr>
       </table>
+{% endblock %}
       <table>
         <tr class="row-even">
           <td class='cap-label' id='pf-address'>Address 1</td>
@@ -141,14 +156,19 @@
           <td>{{ profile_form.phone.errors }}</td>
           <td>{{ profile_form.phone2.errors }}</td>
         </tr>
+{% block upload %}
         {% if ALLOW_PHOTO_UPLOAD %}
         <tr class="row-odd">
           <td id='pf-photo'><strong>Upload Photo</strong></td>
           <td>
-            <input type='file' name='photo' style='background-color:RGBA(255, 255, 255, 0);'/>
+            <input type='file' name='photo' style='background-color:RGBA(255, 255, 255, 0);' id="imgInp" />
+          </td>
+          <td>
+            <img id='img-id' src='' alt='profile photo' />
           </td>
         </tr>
-          {% endif %}
+        {% endif %}
+{% endblock %}
       </table>
     </div>
 
@@ -269,7 +289,7 @@
         <td width="300px">{{ profile_form.gender.errors }}</td>
       </tr>
     </table>
-
+{% block emergency_info %}
     <h3 style='text-align:left;'>Emergency Contact Information</h3>
     <a name="emergency_contact"></a>
     <div id='emergencyinfo'>
@@ -299,11 +319,36 @@
           <td>{{ profile_form.emergency_phone.errors }}</td>
         </tr>
       </table>
-    </div><button class="btn waves-effect waves-light sub-btn" type="submit" value="Update Your Profile" />Update Your Profile</button>
+    </div>
+{% endblock %}
+    <button class="btn waves-effect waves-light sub-btn" type="submit" value="Update Your Profile" />Update Your Profile</button>
     {% csrf_token %}
   </form>
 </div>
-
 {% endblock %}
 
-{% block extrajs %}{% endblock %}
+{% block extrajs %}
+<script>
+  $(document).ready(function(){
+    $('#img-id').hide();
+
+    function readURL(input) {
+      if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+            $('#img-id').attr('src', e.target.result);
+        }
+
+        reader.readAsDataURL(input.files[0]);
+
+        $('#img-id').show()
+      }
+    }
+
+    $("#imgInp").change(function(){
+      readURL(this);
+    });
+  });
+</script>
+{% endblock %}

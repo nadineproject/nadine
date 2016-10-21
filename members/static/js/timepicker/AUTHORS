@@ -1,0 +1,17 @@
+/**
+ * jQuery Timepicker - v1.3.5 - 2016-07-10
+ * http://timepicker.co
+ *
+ * Enhances standard form input fields helping users to select (or type) times.
+ *
+ * Copyright (c) 2016 Willington Vega; Licensed MIT, GPL
+ */
+
+# Authors ordered by first contribution.
+
+Willington Vega <wvega@wvega.com>
+Brian Link <cpsubrian@gmail.com>
+Ian Enders <ian.enders@gmail.com>
+Jo Liss https://github.com/joliss
+Billy Bednar https://github.com/billybednar
+Conrad Frame https://github.com/sponrad

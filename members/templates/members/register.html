@@ -1,49 +1,75 @@
-{% extends "members/u_base.html" %}
+{% extends "members/profile_edit.html" %}
+{% load email_tags %}
 
-{% block sub-title %} Register | {% endblock %}
+{% block sub-title %}Register Profile | {% endblock %}
 
-{% block style %}
-#content { font-size: 1em; border: none; }
-#content h1 { font-size: 1.8em; margin: 0; }
-#content table td { border-bottom: none;}
-#page-message { font-size: 1.5em; color: #933; margin: 20px 0px; }
-table td    {text-align: left;}
-{% endblock %}
+{% block reg_edit %}
+<h3 style='text-align:center;'>Registration</h3>
 
-{% block content %}
+<p align="center"><em>NOTE: Items in <strong>bold</strong> are viewable by all active members.</em></p>
 
-<div class='col s6 offset-s3' id='reg_box'>
+<div id="profile_form">
   {% if page_message %}
-    <p id="page_message">{{ page_message|safe }}</p>
+    <div>
+      <p style='color:red;text-align:center;'>
+        <strong> {{ page_message }} </strong>
+      </p>
+      <br />
+    </div>
   {% endif %}
-
-  <div style="margin-left:2em;">
-    <form id='registration_form' name='registration_form' action='../member/register/' method='POST'>
-      <h1 style='margin-top:5%;margin-bottom:5%;' align='center'>Register</h1>
+  <form enctype="multipart/form-data" action='.' method='POST'>
+    <div id='registration'>
+      <table>
+        <tr class="row-even">
+          <td class='cap-label' id='pf-first'><strong>First Name</strong></td>
+          <td class='cap-label' id='pf-last'><strong>Last Name</strong></td>
+        </tr>
+        <tr class="row-odd">
+          <td class='pf-input'>{{ registration_form.first_name }}</td>
+          <td class='pf-input'>{{ registration_form.last_name }}</td>
+        </tr>
+        <tr>
+          <td>{{ registration_form.first_name.errors }}</td>
+          <td>{{ registration_form.last_name.errors }}</td>
+        </tr>
+      </table>
       <table>
         <tr>
-          <td>First Name:</td>
-          <td>{{ registration_form.first_name }}</td>
-          <td>{{ registration_form.first_name.errors }}</td>
-      </tr>
-      <tr class="row-odd">
-          <td>Last Name:</td>
-          <td>{{ registration_form.last_name }}</td>
-          <td>{{ registration_form.last_name.errors }}</td>
-      </tr>
-      <tr class="row-even">
-          <td>Email:</td>
-          <td>{{ registration_form.email }}</td>
+          <td class='cap-label'>Primary Email</td>
+        </tr>
+        <tr>
+          <td class='pf-input' id='reg-email'>{{ registration_form.email }}</td>
+        </tr>
+        <tr>
           <td>{{ registration_form.email.errors }}</td>
-      </tr>
-    </table>
-    <div class='row'>
-      <button class="btn waves-effect waves-light" id='reg-btn' type="submit" value="Register" />Register</button>
-      <input type="hidden" name="next" value="{{ next }}" />
+        </tr>
+      </table>
+      <table>
+        <tr>
+          <td class='cap-label'><strong>Create Password</strong></td>
+          <td class='cap-label'><strong>Confirm Password</strong></td>
+        </tr>
+        <tr>
+          <td><input class='pwd-input pf-input' type='password' name='password-create' /></td>
+          <td><input class='pwd-input pf-input' type='password' name='password-confirm' /></td>
+       </tr>
+      </table>
     </div>
-
-    {% csrf_token %}
-    </form>
-  </div>
-</div>
+    <h3 style='text-align:left;'>Contact Information</h3>
+    {{ profile_form.username }}
+    <div id='contact'>
 {% endblock %}
+
+{% block upload %}
+  <tr class="row-odd">
+    <td id='pf-photo'><strong>Upload Photo</strong></td>
+    <td>
+      <input type='file' name='photo' style='background-color:RGBA(255, 255, 255, 0);' id="imgInp" />
+    </td>
+    <td>
+      <img id='img-id' src='' alt='profile photo' />
+    </td>
+  </tr>
+{% endblock %}
+
+{% block emergency_info %}{% endblock %}
