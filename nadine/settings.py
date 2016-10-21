@@ -15,6 +15,10 @@ MEDIA_ROOT = path('../media/')
 BACKUP_ROOT = path('../backups/')
 BACKUP_COUNT = 30
 
+SITE_NAME = "Nadine"
+SITE_DOMAIN = "localhost"
+SITE_PROTO = "http"
+
 STATIC_URL = '/static/'
 STATICFILES_DIRS = ('themes/active/static', 'static', )
 STATICFILES_FINDERS = (
