@@ -8,7 +8,7 @@ Most of the action is in the staff application, where you'll find a member track
 
 * Python (Probably comes with your system otherwise it can be downloaded from their [website](https://www.python.org/downloads/).)
 * Virtualenv (install with `pip virtualenv`)
-* XCode if you are on Mac OS X 
+* XCode if you are on Mac OS X
 * Postgresql
 * Does not play nice with SQLite
 
@@ -16,33 +16,29 @@ Most of the action is in the staff application, where you'll find a member track
 
 Install the required systems
 
-	apt-get install postgresql postgresql-server-dev-all python-pip python-dev libffi-dev git
+	apt-get install postgresql postgresql-server-dev-all python-pip python-dev virtualenv libffi-dev git
 
-Install virtualenv using python pip to work on a sandbox
+Setup the database
 
-	pip install virtualenv
+	sudo su postgres -c "createuser -s $(whoami)"
+	createdb nadinedb
 
 Create a virtual environment for the python project
 
 	virtualenv nadine
 	cd nadine
 	source bin/activate
-	
-Dowload the nadine source code from github
+
+Download the nadine source code from github
 
 	git clone https://github.com/nadineproject/nadine.git
 	cd nadine
 
-Configure the local settings for your environment
+Run the setup script to configure the local settings for your environment
 
-	cp nadine/local_settings.example nadine/local_settings.py
-	vi nadine/local_settings.py
+	./manage.py setup
 
-Create a blank database and grant all permissions to whatever account/password combination you want to use.
-
-	psql -c "create database nadinedb"
-
-Install all the requirments 
+Install all the requirments
 
 	pip install -r requirements.txt
 
