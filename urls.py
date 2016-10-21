@@ -50,7 +50,7 @@ urlpatterns = [
     # Inbound Mailgun Emails
     url(r'^mailgun/staff$', mailgun.staff),
     url(r'^mailgun/team$', mailgun.team),
-    url(r'^mailgun/test80085$', mailgun.test80085),
+    url(r'^mailgun/test$', mailgun.test),
 
     # Discourse discussion group
     #url(r'^discourse/sso$', discourse.sso),
