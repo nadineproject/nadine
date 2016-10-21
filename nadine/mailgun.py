@@ -217,13 +217,11 @@ def team(request):
     # Send the message
     return mailgun_send(mailgun_data, attachments)
 
-# mailgun setup example
-# match_recipient("test80085@(?P<location>.*?).mail.embassynetwork.com")
-# forward("https://embassynetwork.com/locations/\g<location>/email/test80085")
-
-
 @csrf_exempt
-def test80085(request):
+def test(request):
+    print("Request: ")
+    print(request)
+
     try:
         mailgun_data, attachments = clean_incoming(request)
     except MailgunException as e:
@@ -232,4 +230,4 @@ def test80085(request):
 
     mailgun_data["to"] = ["test80085@%s" % settings.MAILGUN_DOMAIN, ]
     mailgun_data["bcc"] = ['jsayles@gmail.com']
-    return mailgun_send(mailgun_data, attachments)
+    #return mailgun_send(mailgun_data, attachments)

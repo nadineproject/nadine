@@ -8,7 +8,7 @@ Most of the action is in the staff application, where you'll find a member track
 
 * Python (Probably comes with your system otherwise it can be downloaded from their [website](https://www.python.org/downloads/).)
 * Virtualenv (install with `pip virtualenv`)
-* XCode if you are on Mac OS X 
+* XCode if you are on Mac OS X
 * Postgresql
 * Does not play nice with SQLite
 
@@ -16,38 +16,32 @@ Most of the action is in the staff application, where you'll find a member track
 
 Install the required systems
 
-	apt-get install postgresql postgresql-server-dev-all python-pip python-dev libffi-dev git
+	sudo apt-get update
+	sudo apt-get install postgresql postgresql-server-dev-all python-pip python-dev virtualenv libffi-dev git
 
-Install virtualenv using python pip to work on a sandbox
+Setup the database
 
-	pip install virtualenv
+	sudo su postgres -c "createuser -s $(whoami)"
+	createdb nadinedb
 
 Create a virtual environment for the python project
 
 	virtualenv nadine
 	cd nadine
 	source bin/activate
-	
-Dowload the nadine source code from github
+
+Download the nadine source code from github
 
 	git clone https://github.com/nadineproject/nadine.git
 	cd nadine
 
-Configure the local settings for your environment
-
-	cp nadine/local_settings.example nadine/local_settings.py
-	vi nadine/local_settings.py
-
-Create a blank database and grant all permissions to whatever account/password combination you want to use.
-
-	psql -c "create database nadinedb"
-
-Install all the requirments 
+Install all the requirments
 
 	pip install -r requirements.txt
 
-Run Django's migrate command and create a superuser.  
+Run these scripts to setup nadine, install the database, and create your admin user
 
+	./manage.py setup
 	./manage.py migrate
 	./manage.py createsuperuser
 
@@ -55,8 +49,6 @@ At this point you can run the server
 
 	./manage.py runserver
 	Visit your installation of Nadine at http://127.0.0.1:8000/
-
-You will need to edit the django_sites database in the admin site unless your site is at example.com.
 
 ### Running the scheduler
 
@@ -80,7 +72,7 @@ In the interest of shipping more quickly, we have made certain assumptions about
 
 ## License & Copyright
 
-Copyright 2010 Office Nomads LLC ([http://www.officenomads.com/](http://www.officenomads.com/)) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
+Copyright 2016 Office Nomads LLC ([http://www.officenomads.com/](http://www.officenomads.com/)) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
 
 You may obtain a copy of the License at [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
