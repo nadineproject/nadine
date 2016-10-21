@@ -915,6 +915,18 @@ dl dd:last-child:after {
 	z-index: 0;
 }
 
+div.ui-timepicker-container.ui-timepicker-standard {
+	z-index: 20 !important;
+}
+
+.ui-widget-content, .ui-widget.ui-widget-content {
+	border: none !important;
+}
+
+.ui-state-hover, .ui-widget-content .ui-state-hover {
+	border: none;
+}
+
 /* Footer */
 
 footer.home-footer {

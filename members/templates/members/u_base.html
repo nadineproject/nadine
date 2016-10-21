@@ -12,6 +12,7 @@
 	<link rel="stylesheet" href="{% static 'css/jquery-ui.min.css' %}"  />
 	<link rel="stylesheet" href="{% static 'js/jquery-custom.css' %}">
 	<link rel='stylesheet' href="{% static 'js/fullcalendar/fullcalendar.css' %}" />
+	<link rel = 'stylesheet' href="{% static 'css/jquery.timepicker.min.css' %}" />
 
 	<!--[if IE]>
 		<script src="{{ STATIC_URL }}html5.js"></script>
@@ -21,6 +22,7 @@
 	<script src="{% static 'js/fullcalendar/lib/moment.min.js' %}"></script>
 	<script src="{% static 'js/fullcalendar/fullcalendar.min.js' %}"></script>
 	<script src="{% static 'js/fullcalendar/gcal.js' %}"></script>
+	<script src="{% static 'js/timepicker/jquery.timepicker.min.js' %}"></script>
 
 {% block scripts %}
 	<!-- Compiled and minified CSS -->
@@ -28,7 +30,6 @@
 
 	<!-- Compiled and minified JavaScript -->
 	<script src="{% static 'js/materialize.min.js' %}"></script>
-
 	<!-- Fonts are fun -->
 	<link hrf="{% static 'fonts/Roboto' %}" rel="stylesheet">
 {% endblock %}

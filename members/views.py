@@ -652,6 +652,7 @@ def confirm_booking(request, room, start, end, date):
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def calendar(request):
+    page_message = None
     events = Event.objects.filter(is_public=True)
     data = []
 
@@ -664,17 +665,37 @@ def calendar(request):
         start = request.POST.get('start')
         end = request.POST.get('end')
         date = request.POST.get('date')
+        start = start.split(" ")
+        end = end.split(" ")
+        if start[1] == 'PM':
+            mil_start = start[0].split(":")
+            hour = int(mil_start[0]) + 12
+            start = str(hour) + ':' + mil_start[1]
+        else:
+            start = start[0]
+
+        if end[1] == 'PM':
+            mil_end = end[0].split(":")
+            hour = int(mil_end[0]) + 12
+            end = str(hour) + ':' + mil_end[1]
+        else:
+            end = end[0]
+
         start_ts, end_ts = coerce_times(start, end, date)
-        description = request.POST.get('description', '')
-        charge = request.POST.get('charge', 0)
-        is_public = True
 
-        event = Event(user=user, start_ts=start_ts, end_ts=end_ts, description=description, charge=charge, is_public=is_public)
+        if start_ts < end_ts :
 
-        event.save()
+            description = request.POST.get('description', '')
+            charge = request.POST.get('charge', 0)
+            is_public = True
 
-        return HttpResponseRedirect(reverse('member_calendar'))
+            event = Event(user=user, start_ts=start_ts, end_ts=end_ts, description=description, charge=charge, is_public=is_public)
 
-    return render_to_response('members/calendar.html', {'data': data, 'GOOGLE_CALENDAR_ID': settings.GOOGLE_CALENDAR_ID, 'GOOGLE_API_KEY': settings.GOOGLE_API_KEY }, context_instance=RequestContext(request))
+            event.save()
+
+            return HttpResponseRedirect(reverse('member_calendar'))
+        else:
+            page_message = "Did not save your event. Double check that the event start is before the end time. Thank you."
+    return render_to_response('members/calendar.html', {'data': data, 'GOOGLE_CALENDAR_ID': settings.GOOGLE_CALENDAR_ID, 'GOOGLE_API_KEY': settings.GOOGLE_API_KEY, 'page_message': page_message }, context_instance=RequestContext(request))
 
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
