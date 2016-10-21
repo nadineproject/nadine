@@ -16,7 +16,8 @@ Most of the action is in the staff application, where you'll find a member track
 
 Install the required systems
 
-	apt-get install postgresql postgresql-server-dev-all python-pip python-dev virtualenv libffi-dev git
+	sudo apt-get update
+	sudo apt-get install postgresql postgresql-server-dev-all python-pip python-dev virtualenv libffi-dev git
 
 Setup the database
 
