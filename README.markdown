@@ -35,16 +35,13 @@ Download the nadine source code from github
 	git clone https://github.com/nadineproject/nadine.git
 	cd nadine
 
-Run the setup script to configure the local settings for your environment
-
-	./manage.py setup
-
 Install all the requirments
 
 	pip install -r requirements.txt
 
-Run Django's migrate command and create a superuser.  
+Run these scripts to setup nadine, install the database, and your admin user
 
+	./manage.py setup
 	./manage.py migrate
 	./manage.py createsuperuser
 
