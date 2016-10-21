@@ -40,7 +40,7 @@ DISCOURSE_SSO_SECRET = 'paste_your_secret_here'
 # although not all variations may be possible on all operating systems.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = 'America/Los_Angeles'
+TIME_ZONE = 'UTC'
 USE_TZ = True
 
 # Language code for this installation. All choices can be found here:

@@ -6,6 +6,8 @@ import getpass
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand, CommandError
 
+from pytz import common_timezones
+
 EXAMPLE_FILE = "nadine/local_settings.example"
 SETTINGS_FILE = "nadine/local_settings.py"
 PROMPT = '> '
@@ -97,6 +99,20 @@ class Command(BaseCommand):
             secret_key = ''.join([random.SystemRandom().choice("{}{}".format(string.ascii_letters, string.digits)) for i in range(63)])
             local_settings.set('SECRET_KEY', secret_key)
 
+        # Timezone
+        print
+        print("### Timezone Setup ###")
+        tz = ''
+        while tz not in common_timezones:
+            print("What timezone should we use? (list)")
+            tz = raw_input(PROMPT).strip()
+            if not tz:
+                print ("Available Timezones:")
+                print(', '.join(common_timezones))
+                print
+        print("TIME_ZONE = '%s'" % tz)
+        local_settings.set('TIME_ZONE', tz)
+
         # Database Setup
         print
         print("### Database Setup ###")
@@ -139,7 +155,6 @@ class Command(BaseCommand):
         #admin_user.save()
         #print User.objects.count()
 
-        # Timezone
 
         # Mail Server Setup
 
