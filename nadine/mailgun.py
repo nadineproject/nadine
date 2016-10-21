@@ -231,3 +231,4 @@ def test(request):
     mailgun_data["to"] = ["test80085@%s" % settings.MAILGUN_DOMAIN, ]
     mailgun_data["bcc"] = ['jsayles@gmail.com']
     #return mailgun_send(mailgun_data, attachments)
+    return HttpResponse(status=200)
