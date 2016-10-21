@@ -39,7 +39,7 @@ Install all the requirments
 
 	pip install -r requirements.txt
 
-Run these scripts to setup nadine, install the database, and your admin user
+Run these scripts to setup nadine, install the database, and create your admin user
 
 	./manage.py setup
 	./manage.py migrate
@@ -49,8 +49,6 @@ At this point you can run the server
 
 	./manage.py runserver
 	Visit your installation of Nadine at http://127.0.0.1:8000/
-
-You will need to edit the django_sites database in the admin site unless your site is at example.com.
 
 ### Running the scheduler
 
@@ -74,7 +72,7 @@ In the interest of shipping more quickly, we have made certain assumptions about
 
 ## License & Copyright
 
-Copyright 2010 Office Nomads LLC ([http://www.officenomads.com/](http://www.officenomads.com/)) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
+Copyright 2016 Office Nomads LLC ([http://www.officenomads.com/](http://www.officenomads.com/)) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
 
 You may obtain a copy of the License at [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
