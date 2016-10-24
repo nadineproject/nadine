@@ -5,7 +5,7 @@ from collections import namedtuple
 
 from django.contrib.auth.models import User
 from django.utils import timezone
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.template import RequestContext
@@ -100,7 +100,7 @@ def stats(request):
             if number_dict.has_key(daily_log.payment):
                 number_dict[daily_log.payment] = number_dict[daily_log.payment] + 1
 
-    return render_to_response('staff/stats.html', {'daily_logs_by_month': daily_logs_by_month}, context_instance=RequestContext(request))
+    return render(request, 'staff/stats.html', {'daily_logs_by_month': daily_logs_by_month})
 
 
 @staff_member_required
@@ -109,7 +109,7 @@ def membership_history(request):
         try:
             start_date = datetime.datetime.strptime(request.POST.get('start_date'), "%m-%Y").date()
         except:
-            return render_to_response('staff/stats_membership_history.html', {'page_message': "Invalid Start Date!  Example: '01-2012'."}, context_instance=RequestContext(request))
+            return render(request, 'staff/stats_membership_history.html', {'page_message': "Invalid Start Date!  Example: '01-2012'."})
     else:
         start_date = timezone.now().date() - timedelta(days=365)
     start_month = date(year=start_date.year, month=start_date.month, day=1)
@@ -144,9 +144,9 @@ def membership_history(request):
                 current_year = month.year
             year_histories[-1].append(month)
 
-    return render_to_response('staff/stats_membership_history.html', {'history_types': sorted(month_histories[0].data.keys()),
-                                                                      'year_histories': year_histories, 'start_date': start_date, 'average_only': average_only
-                                                                      }, context_instance=RequestContext(request))
+    context = {'history_types': sorted(month_histories[0].data.keys()),
+        'year_histories': year_histories, 'start_date': start_date, 'average_only': average_only}
+    return render(request, 'staff/stats_membership_history.html', context)
 
 
 @staff_member_required
@@ -164,7 +164,7 @@ def history(request):
         stat['started'] = Membership.objects.filter(start_date__range=(stat['start_date'], stat['end_date'])).count()
         stat['ended'] = Membership.objects.filter(end_date__range=(stat['start_date'], stat['end_date'])).count()
     monthly_stats.reverse()
-    return render_to_response('staff/stats_history.html', {'monthly_stats': monthly_stats}, context_instance=RequestContext(request))
+    return render(request, 'staff/stats_history.html', {'monthly_stats': monthly_stats})
 
 
 @staff_member_required
@@ -174,7 +174,8 @@ def monthly(request):
     total_income = 0
     for membership in memberships:
         total_income = total_income + membership.monthly_rate
-    return render_to_response('staff/stats_monthly.html', {'memberships': memberships, 'total_income': total_income}, context_instance=RequestContext(request))
+    context = {'memberships': memberships, 'total_income': total_income}
+    return render(request, 'staff/stats_monthly.html', context)
 
 
 @staff_member_required
@@ -196,8 +197,8 @@ def neighborhood(request):
     stats_dict = {'member_count': total_count, 'specified_count': specified_count, 'unknown_count': total_count - specified_count,
                   'specified_perc': 100 * specified_count / total_count, 'unknown_perc': 100 * (total_count - specified_count) / total_count}
 
-    return render_to_response('staff/stats_neighborhood.html', {'neighborhoods': neighborhoods, 'stats': stats_dict,
-                                                                'active_only': active_only}, context_instance=RequestContext(request))
+    context = {'neighborhoods': neighborhoods, 'stats': stats_dict, 'active_only': active_only}
+    return render(request, 'staff/stats_neighborhood.html', context)
 
 
 @staff_member_required
@@ -230,7 +231,7 @@ def membership_days(request):
             avg_count = avg_count + 1
             avg_total = avg_total + total_days
     membership_days.sort(key=lambda x: x.total_days, reverse=True)
-    return render_to_response('staff/stats_membership_days.html', {'membership_days': membership_days, 'avg_days': avg_total / avg_count}, context_instance=RequestContext(request))
+    return render('staff/stats_membership_days.html', {'membership_days': membership_days, 'avg_days': avg_total / avg_count}, context_instance=RequestContext(request))
 
 
 @staff_member_required
@@ -253,7 +254,7 @@ def gender(request):
     counts = {'male': m, 'female': f, 'other': o, 'unknown': u, 'total': t}
     percentages = {'male': p(m, t), 'female': p(f, t), 'other': p(o, t), 'unknown': p(u, t)}
 
-    return render_to_response('staff/stats_gender.html', {'counts': counts, 'percentages': percentages, 'active_only': active_only}, context_instance=RequestContext(request))
+    return render('staff/stats_gender.html', {'counts': counts, 'percentages': percentages, 'active_only': active_only}, context_instance=RequestContext(request))
 
 
 @staff_member_required
@@ -280,7 +281,7 @@ def graph(request):
         title = "Membership Churn"
 
 
-    return render_to_response('staff/stats_graph.html', {'title':title, 'graph':graph,
+    return render('staff/stats_graph.html', {'title':title, 'graph':graph,
         'days': days, 'date_range_form': date_range_form, 'start': start, 'end': end,
         'min': min_v, 'max': max_v, 'avg': avg_v
     }, context_instance=RequestContext(request))
@@ -336,3 +337,6 @@ def graph_amv(days):
             member_min = day['value']
     member_avg = member_total / len(days)
     return (min_v, max_v, avg_v, days)
+
+
+# Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

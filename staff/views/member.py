@@ -3,7 +3,7 @@ from datetime import date, datetime, timedelta
 
 from django.contrib.auth.models import User
 from django.utils import timezone
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.template import RequestContext
@@ -66,7 +66,7 @@ def edit(request, username):
         }
         edit_form = MemberEditForm(initial=member_data)
 
-    return render_to_response('staff/member_edit.html', { 'user':user, 'edit_form': edit_form }, context_instance=RequestContext(request))
+    return render(request, 'staff/member_edit.html', { 'user':user, 'edit_form': edit_form })
 
 
 @staff_member_required
@@ -97,38 +97,24 @@ def detail(request, username):
     email_keys = email.valid_message_keys()
     email_keys.remove("all")
 
-    return render_to_response('staff/member_detail.html', {'user':user, 'emergency_contact': emergency_contact,
-        'memberships': memberships, 'email_logs': email_logs, 'email_keys': email_keys, 'settings': settings}, context_instance=RequestContext(request))
-
+    context = {'user':user, 'emergency_contact': emergency_contact,
+        'memberships': memberships, 'email_logs': email_logs,
+        'email_keys': email_keys, 'settings': settings}
+    return render(request, 'staff/member_detail.html', context)
 
 
 @staff_member_required
 def transactions(request, username):
     user = get_object_or_404(User, username=username)
     transactions = user.transaction_set.all()
-    return render_to_response('staff/member_transactions.html', {'user':user, 'transactions':transactions}, context_instance=RequestContext(request))
+    return render(request, 'staff/member_transactions.html', {'user':user, 'transactions':transactions})
 
 
 @staff_member_required
 def bills(request, username):
     user = get_object_or_404(User, username=username)
     bills = user.bill_set.all()
-    return render_to_response('staff/member_bills.html', {'user':user, 'bills':bills}, context_instance=RequestContext(request))
-
-
-# @staff_member_required
-# def signins(request, username):
-#     user = get_object_or_404(User, username=username)
-#     payment_types = ['Visit', 'Trial', 'Waive', 'Bill']
-#     return render_to_response('staff/member_signins.html', {'payment_types': payment_types, 'user':user}, context_instance=RequestContext(request))
-#
-#
-# @staff_member_required
-# def signins_json(request, username):
-#     user = get_object_or_404(User, username=username)
-#     response_data = {}
-#     response_data['coworkingdays'] = serializers.serialize('json', user.coworkingdays.all())
-#     return HttpResponse(json.dumps(response_data), content_type="application/json")
+    return render(request, 'staff/member_bills.html', {'user':user, 'bills':bills})
 
 
 @staff_member_required
@@ -151,7 +137,9 @@ def files(request, username):
 
     doc_types = FileUpload.DOC_TYPES
     files = FileUpload.objects.filter(user=user)
-    return render_to_response('staff/member_files.html', {'user':user, 'files': files, 'doc_types': doc_types}, context_instance=RequestContext(request))
+
+    context = {'user':user, 'files': files, 'doc_types': doc_types}
+    return render(request, 'staff/member_files.html', context)
 
 
 @staff_member_required
@@ -181,5 +169,10 @@ def membership(request, username):
         return HttpResponseRedirect(reverse('staff_membership', kwargs={'membership_id': last_membership.id}))
 
     plans = MembershipPlan.objects.filter(enabled=True).order_by('name')
-    return render_to_response('staff/membership.html', {'user':user, 'membership_plans': plans,
-                                                        'membership_form': membership_form, 'today': today.isoformat(), 'last': last.isoformat()}, context_instance=RequestContext(request))
+    context = {'user':user, 'membership_plans': plans,
+        'membership_form': membership_form, 'today': today.isoformat(),
+        'last': last.isoformat()}
+    return render(request, 'staff/membership.html', context)
+
+
+# Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
