@@ -15,6 +15,10 @@ MEDIA_ROOT = path('../media/')
 BACKUP_ROOT = path('../backups/')
 BACKUP_COUNT = 30
 
+SITE_NAME = "Nadine"
+SITE_DOMAIN = "localhost"
+SITE_PROTO = "http"
+
 STATIC_URL = '/static/'
 STATICFILES_DIRS = ('themes/active/static', 'static', )
 STATICFILES_FINDERS = (
@@ -40,7 +44,7 @@ DISCOURSE_SSO_SECRET = 'paste_your_secret_here'
 # although not all variations may be possible on all operating systems.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = 'America/Los_Angeles'
+TIME_ZONE = 'UTC'
 USE_TZ = True
 
 # Language code for this installation. All choices can be found here:
