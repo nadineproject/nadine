@@ -542,6 +542,23 @@ def register(request):
     return render_to_response('members/register.html', { 'registration_form': registration_form, 'page_message': page_message, 'ALLOW_PHOTO_UPLOAD': settings.ALLOW_PHOTO_UPLOAD, 'settings': settings, 'profile_form': profile_form}, context_instance=RequestContext(request))
 
 def coerce_times(start, end, date):
+    if len(start) > 5:
+        start = start.split(" ")
+        end = end.split(" ")
+        if start[1] == 'PM':
+            mil_start = start[0].split(":")
+            hour = int(mil_start[0]) + 12
+            start = str(hour) + ':' + mil_start[1]
+        else:
+            start = start[0]
+
+        if end[1] == 'PM':
+            mil_end = end[0].split(":")
+            hour = int(mil_end[0]) + 12
+            end = str(hour) + ':' + mil_end[1]
+        else:
+            end = end[0]
+
     start_dt = datetime.datetime.strptime(date + " " + start, "%Y-%m-%d %H:%M")
     start_ts = timezone.make_aware(start_dt, timezone.get_current_timezone())
     end_dt = datetime.datetime.strptime(date + " " + end, "%Y-%m-%d %H:%M")
@@ -665,21 +682,6 @@ def calendar(request):
         start = request.POST.get('start')
         end = request.POST.get('end')
         date = request.POST.get('date')
-        start = start.split(" ")
-        end = end.split(" ")
-        if start[1] == 'PM':
-            mil_start = start[0].split(":")
-            hour = int(mil_start[0]) + 12
-            start = str(hour) + ':' + mil_start[1]
-        else:
-            start = start[0]
-
-        if end[1] == 'PM':
-            mil_end = end[0].split(":")
-            hour = int(mil_end[0]) + 12
-            end = str(hour) + ':' + mil_end[1]
-        else:
-            end = end[0]
 
         start_ts, end_ts = coerce_times(start, end, date)
 
