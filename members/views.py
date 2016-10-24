@@ -248,9 +248,8 @@ def edit_profile(request, username):
                 profile_form.save()
 
                 pwd = request.POST.get('password-create')
-                u = User.objects.get(username=user.username)
-                u.set_password(pwd)
-                u.save()
+                user.set_password(pwd)
+                user.save()
 
                 return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
             else:
