@@ -70,7 +70,7 @@ class MemberTestCase(TestCase):
         # Member 5 does not have valid billing but is a guest of Member 1
         self.assertFalse(self.user5.profile.valid_billing)
         self.assertTrue(self.user5.profile.has_valid_billing())
-        self.assertEquals(self.user5.profile.is_guest(), self.user1)
+        self.assertEqual(self.user5.profile.is_guest(), self.user1)
 
     def test_tags(self):
         self.user1.profile.tags.add("coworking", "books", "beer")

@@ -90,57 +90,57 @@ class RoomTestCase(TestCase):
         # Look for rooms with AV starting tomorrow
         tomorrow = timezone.now() + timedelta(days=1)
         rooms = Room.objects.available(start=tomorrow, has_av=True)
-        self.assertEquals(len(rooms), 1)
-        self.assertEquals(self.room2, rooms[0])
+        self.assertEqual(len(rooms), 1)
+        self.assertEqual(self.room2, rooms[0])
         self.assertTrue(rooms[0].has_av)
         rooms = Room.objects.available(start=tomorrow, has_av=False)
-        self.assertEquals(len(rooms), 1)
-        self.assertEquals(self.room1, rooms[0])
+        self.assertEqual(len(rooms), 1)
+        self.assertEqual(self.room1, rooms[0])
         self.assertFalse(rooms[0].has_av)
 
     def test_available_phone(self):
         # Look for rooms with a phoen starting tomorrow
         tomorrow = timezone.now() + timedelta(days=1)
         rooms = Room.objects.available(start=tomorrow, has_phone=True)
-        self.assertEquals(len(rooms), 1)
-        self.assertEquals(self.room2, rooms[0])
+        self.assertEqual(len(rooms), 1)
+        self.assertEqual(self.room2, rooms[0])
         self.assertTrue(rooms[0].has_phone)
         rooms = Room.objects.available(start=tomorrow, has_phone=False)
-        self.assertEquals(len(rooms), 1)
-        self.assertEquals(self.room1, rooms[0])
+        self.assertEqual(len(rooms), 1)
+        self.assertEqual(self.room1, rooms[0])
         self.assertFalse(rooms[0].has_phone)
 
     def test_get_raw_calendar(self):
         settings.OPEN_TIME = "8:00"
         settings.CLOSE_TIME = "18:00"
         calendar1 = self.room1.get_raw_calendar()
-        self.assertEquals(len(calendar1), 40)
-        self.assertEquals(calendar1[0]['hour'], '8')
-        self.assertEquals(calendar1[0]['mil_hour'], '8')
-        self.assertEquals(calendar1[0]['minutes'], '00')
-        self.assertEquals(calendar1[1]['hour'], '8')
-        self.assertEquals(calendar1[1]['minutes'], '15')
-        self.assertEquals(calendar1[2]['hour'], '8')
-        self.assertEquals(calendar1[2]['minutes'], '30')
-        self.assertEquals(calendar1[3]['hour'], '8')
-        self.assertEquals(calendar1[3]['minutes'], '45')
-        self.assertEquals(calendar1[4]['hour'], '9')
-        self.assertEquals(calendar1[4]['minutes'], '00')
-        self.assertEquals(calendar1[39]['hour'], '5')
-        self.assertEquals(calendar1[39]['mil_hour'], '17')
-        self.assertEquals(calendar1[39]['minutes'], '45')
+        self.assertEqual(len(calendar1), 40)
+        self.assertEqual(calendar1[0]['hour'], '8')
+        self.assertEqual(calendar1[0]['mil_hour'], '8')
+        self.assertEqual(calendar1[0]['minutes'], '00')
+        self.assertEqual(calendar1[1]['hour'], '8')
+        self.assertEqual(calendar1[1]['minutes'], '15')
+        self.assertEqual(calendar1[2]['hour'], '8')
+        self.assertEqual(calendar1[2]['minutes'], '30')
+        self.assertEqual(calendar1[3]['hour'], '8')
+        self.assertEqual(calendar1[3]['minutes'], '45')
+        self.assertEqual(calendar1[4]['hour'], '9')
+        self.assertEqual(calendar1[4]['minutes'], '00')
+        self.assertEqual(calendar1[39]['hour'], '5')
+        self.assertEqual(calendar1[39]['mil_hour'], '17')
+        self.assertEqual(calendar1[39]['minutes'], '45')
 
     def test_get_raw_calendar2(self):
         settings.OPEN_TIME = "7:30"
         settings.CLOSE_TIME = "18:30"
         calendar1 = self.room1.get_raw_calendar()
-        self.assertEquals(len(calendar1), 44)
-        self.assertEquals(calendar1[0]['hour'], '7')
-        self.assertEquals(calendar1[0]['mil_hour'], '7')
-        self.assertEquals(calendar1[0]['minutes'], '30')
-        self.assertEquals(calendar1[43]['hour'], '6')
-        self.assertEquals(calendar1[43]['mil_hour'], '18')
-        self.assertEquals(calendar1[43]['minutes'], '15')
+        self.assertEqual(len(calendar1), 44)
+        self.assertEqual(calendar1[0]['hour'], '7')
+        self.assertEqual(calendar1[0]['mil_hour'], '7')
+        self.assertEqual(calendar1[0]['minutes'], '30')
+        self.assertEqual(calendar1[43]['hour'], '6')
+        self.assertEqual(calendar1[43]['mil_hour'], '18')
+        self.assertEqual(calendar1[43]['minutes'], '15')
 
     def test_get_calendar(self):
         calendar = self.room1.get_calendar()
@@ -148,4 +148,4 @@ class RoomTestCase(TestCase):
         for block in calendar:
             if 'reserved' in block and block['reserved']:
                 reserved_count = reserved_count + 1
-        self.assertEquals(reserved_count, 20)
+        self.assertEqual(reserved_count, 20)
