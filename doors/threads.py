@@ -3,7 +3,7 @@ import time
 import logging
 import threading
 
-from .core import Messages
+from core import Messages
 
 class Heartbeat(threading.Thread):
 
