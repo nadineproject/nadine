@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, date
 from django.conf import settings
 from django.template import RequestContext
 from django.template import Context, loader
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.http import Http404, HttpResponseServerError, HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.core.urlresolvers import reverse
@@ -35,12 +35,9 @@ def index(request):
         elif 'action' in request.POST and "Clear" in request.POST.get('action'):
             km.clear_logs(log_id=request.POST.get('log_id', None))
 
-    return render_to_response('keymaster/index.html',
-        {'keymasters': keymasters,
-         'twoMinutesAgo': twoMinutesAgo,
-         'event_logs': logs,
-        },
-        context_instance=RequestContext(request))
+    context = {'keymasters': keymasters, 'twoMinutesAgo': twoMinutesAgo,
+         'event_logs': logs}
+    return render(request, 'keymaster/index.html', context)
 
 
 @staff_member_required
@@ -62,7 +59,7 @@ def logs(request):
         limit = int(request.GET.get('limit'))
     logs = logs[:limit]
 
-    return render_to_response('keymaster/logs.html', {'event_logs':logs}, context_instance=RequestContext(request))
+    return render(request, 'keymaster/logs.html', {'event_logs':logs})
 
 
 @staff_member_required
@@ -80,14 +77,16 @@ def user_keys(request, username):
 
     if not 'view_all_logs' in request.GET:
         logs = logs[:10]
-    return render_to_response('keymaster/user_keys.html', {'user':user, 'keys':keys, 'logs':logs, 'potential_key':potential_key}, context_instance=RequestContext(request))
+
+    context = {'user':user, 'keys':keys, 'logs':logs, 'potential_key':potential_key}
+    return render(request, 'keymaster/user_keys.html', context)
 
 
 @staff_member_required
 def user_list(request):
     order_by = request.GET.get("order_by", "user__username")
     codes = DoorCode.objects.all().order_by(order_by)
-    return render_to_response('keymaster/user_list.html', {'codes':codes}, context_instance=RequestContext(request))
+    return render(request, 'keymaster/user_list.html', {'codes':codes})
 
 
 @staff_member_required
@@ -127,7 +126,8 @@ def add_key(request):
     # Pull a list of active members for our autocomplete
     active_members = User.helper.active_members()
 
-    return render_to_response('keymaster/add_key.html', {'username':username, 'code':code, 'door_code':door_code, 'active_members':active_members}, context_instance=RequestContext(request))
+    context = {'username':username, 'code':code, 'door_code':door_code, 'active_members':active_members}
+    return render(request, 'keymaster/add_key.html', context)
 
 
 @staff_member_required
@@ -146,9 +146,9 @@ def test_door(request):
     else:
         # Start with the basic framework
         xml_request = '<?xml version="1.0" encoding="UTF-8"?>\n<VertXMessage>\n\n</VertXMessage>'
-    return render_to_response('keymaster/test_door.html', { 'ip_address': ip_address,
-        'username': username, 'password':password, 'xml_request':xml_request, 'xml_response':xml_response
-    }, context_instance=RequestContext(request))
+    context = { 'ip_address': ip_address, 'username': username, 'password':password,
+        'xml_request':xml_request, 'xml_response':xml_response}
+    return render(request, 'keymaster/test_door.html', context)
 
 
 ######################################################################

@@ -5,7 +5,7 @@ import operator
 from datetime import date, datetime, timedelta
 
 from django.utils import timezone
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.admin.views.decorators import staff_member_required
@@ -52,10 +52,9 @@ def members(request, group=None):
     total_members = User.helper.active_members().count()
     group_list = MemberGroups.get_member_groups()
 
-    return render_to_response('staff/members.html', {'group': group, 'group_name': group_name, 'users': users,
-                                                     'member_count': member_count, 'group_list': group_list, 'total_members': total_members
-                                                     }, context_instance=RequestContext(request)
-                              )
+    context = {'group': group, 'group_name': group_name, 'users': users,
+        'member_count': member_count, 'group_list': group_list, 'total_members': total_members}
+    return render(request, 'staff/members.html', context)
 
 
 def member_bcc(request, group=None):
@@ -70,7 +69,8 @@ def member_bcc(request, group=None):
         group_name = "%s Members" % group
         users = User.helper.members_by_plan(group)
     group_list = MemberGroups.get_member_groups()
-    return render_to_response('staff/member_bcc.html', {'group': group, 'group_name': group_name, 'group_list': group_list, 'users': users}, context_instance=RequestContext(request))
+    context = {'group': group, 'group_name': group_name, 'group_list': group_list, 'users': users}
+    return render(request, 'staff/member_bcc.html', context)
 
 
 @staff_member_required
@@ -79,7 +79,8 @@ def export_users(request):
         users = User.helper.active_members()
     else:
         users = User.objects.all()
-    return render_to_response('staff/memberList.csv', {'member_list': users}, content_type="text/plain")
+    context = {'member_list': users}
+    return render(request, 'staff/memberList.csv', context)
 
 
 @staff_member_required
@@ -105,7 +106,8 @@ def security_deposits(request):
     for deposit in SecurityDeposit.objects.filter(returned_date=None).order_by('user__username'):
         deposits.append({'username': deposit.user.username, 'name': deposit.user.get_full_name(), 'deposit_id': deposit.id, 'amount': deposit.amount})
         total_deposits = total_deposits + deposit.amount
-    return render_to_response('staff/security_deposits.html', {'deposits': deposits, 'total_deposits': total_deposits}, context_instance=RequestContext(request))
+    context = {'deposits': deposits, 'total_deposits': total_deposits}
+    return response(request, 'staff/security_deposits.html', context)
 
 
 @staff_member_required
@@ -119,7 +121,8 @@ def member_search(request):
                 return HttpResponseRedirect(reverse('staff_user_detail', kwargs={'username': search_results[0].username}))
     else:
         member_search_form = MemberSearchForm()
-    return render_to_response('staff/member_search.html', {'member_search_form': member_search_form, 'search_results': search_results}, context_instance=RequestContext(request))
+    context = {'member_search_form': member_search_form, 'search_results': search_results}
+    return render(request, 'staff/member_search.html', context)
 
 
 @staff_member_required
@@ -136,7 +139,8 @@ def todo(request):
     not_signed_in = User.helper.not_signed_in_since(check_date)
     today = timezone.now().date()
 
-    return render_to_response('staff/todo.html', {'member_alerts': member_alerts, 'not_signed_in': not_signed_in, 'showall':showall, 'today':today}, context_instance=RequestContext(request))
+    context = {'member_alerts': member_alerts, 'not_signed_in': not_signed_in, 'showall':showall, 'today':today}
+    return render(request, 'staff/todo.html', context)
 
 
 @staff_member_required
@@ -168,8 +172,8 @@ def todo_detail(request, key):
     description = MemberAlert.getDescription(key)
     is_system_alert = MemberAlert.isSystemAlert(key)
 
-    return render_to_response('staff/todo_detail.html', {'key': key, 'description': description, 'alerts': alerts,
-            'is_system_alert': is_system_alert}, context_instance=RequestContext(request))
+    context = {'key': key, 'description': description, 'alerts': alerts, 'is_system_alert': is_system_alert}
+    return render(request, 'staff/todo_detail.html', context)
 
 
 @staff_member_required
@@ -192,8 +196,11 @@ def membership(request, membership_id):
 
     today = timezone.localtime(timezone.now()).date()
     last = membership.next_billing_date() - timedelta(days=1)
-    return render_to_response('staff/membership.html', {'user': membership.user, 'membership': membership, 'membership_plans': MembershipPlan.objects.all(),
-                                                        'membership_form': membership_form, 'today': today.isoformat(), 'last': last.isoformat()}, context_instance=RequestContext(request))
+
+    context = {'user': membership.user, 'membership': membership,
+        'membership_plans': MembershipPlan.objects.all(), 'membership_form': membership_form,
+        'today': today.isoformat(), 'last': last.isoformat()}
+    return render(request, 'staff/membership.html', context)
 
 
 @staff_member_required
@@ -205,7 +212,7 @@ def view_user_reports(request):
 
     report = user_reports.User_Report(form)
     users = report.get_users()
-    return render_to_response('staff/user_reports.html', {'users': users, 'form': form}, context_instance=RequestContext(request))
+    return render(request, 'staff/user_reports.html', {'users': users, 'form': form})
 
 
 @staff_member_required
@@ -217,10 +224,9 @@ def slack_users(request):
         if 'profile' in u and 'email' in u['profile'] and u['profile']['email']:
             slack_emails.append(u['profile']['email'])
     non_slack_users = User.helper.active_members().exclude(email__in=slack_emails)
-    return render_to_response('staff/slack_users.html', {'expired_users':expired_users,
-                                                         'slack_users':slack_users,
-                                                         'non_slack_users':non_slack_users,
-                                                         'slack_url':settings.SLACK_TEAM_URL}, context_instance=RequestContext(request))
+    context = {'expired_users':expired_users, 'slack_users':slack_users,
+         'non_slack_users':non_slack_users, 'slack_url':settings.SLACK_TEAM_URL}
+    return render(request, 'staff/slack_users.html', context)
 
 @staff_member_required
 def view_ip(request):
@@ -230,12 +236,13 @@ def view_ip(request):
         ip = x_forwarded_for.split(',')[0]
     else:
         ip = request.META.get('REMOTE_ADDR')
-    return render_to_response('staff/view_ip.html', {'ip': ip}, context_instance=RequestContext(request))
+    return render(request, 'staff/view_ip.html', {'ip': ip})
 
 
 @staff_member_required
 def view_config(request):
-    return render_to_response('staff/view_config.html', {}, context_instance=RequestContext(request))
+    return render(request, 'staff/view_config.html', {})
+
 
 @staff_member_required
 def create_event(request):
@@ -246,7 +253,7 @@ def create_event(request):
             return HttpResponseRedirect(reverse('staff_todo'))
     else:
         event_form = EventForm()
-    return render_to_response('staff/create_event.html', {'event_form': event_form}, context_instance=RequestContext(request))
+    return render(request, 'staff/create_event.html', {'event_form': event_form})
 
 
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

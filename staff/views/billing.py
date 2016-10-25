@@ -4,7 +4,7 @@ from collections import OrderedDict
 
 from django.contrib.auth.models import User
 from django.utils import timezone
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.template import RequestContext
@@ -29,13 +29,14 @@ def transactions(request):
     start, end = date_range_from_request(request)
     date_range_form = DateRangeForm({START_DATE_PARAM: start, END_DATE_PARAM: end})
     transactions = Transaction.objects.filter(transaction_date__range=(start, end)).order_by('-transaction_date')
-    return render_to_response('staff/transactions.html', {"transactions": transactions, 'date_range_form': date_range_form, 'page_message': page_message}, context_instance=RequestContext(request))
+    context = {"transactions": transactions, 'date_range_form': date_range_form, 'page_message': page_message}
+    return render(request, 'staff/transactions.html', context)
 
 
 @staff_member_required
 def transaction(request, id):
     transaction = get_object_or_404(Transaction, pk=id)
-    return render_to_response('staff/transaction.html', {"transaction": transaction}, context_instance=RequestContext(request))
+    return render(request, 'staff/transaction.html', {"transaction": transaction})
 
 
 def run_billing(request):
@@ -47,7 +48,8 @@ def run_billing(request):
             billing.run_billing()
             page_message = 'At your request, I have run <a href="%s">the bills</a>.' % (reverse('staff_bills', args=[], kwargs={}),)
     logs = BillingLog.objects.all()[:10]
-    return render_to_response('staff/run_billing.html', {'run_billing_form': run_billing_form, 'page_message': page_message, "billing_logs": logs}, context_instance=RequestContext(request))
+    context = {'run_billing_form': run_billing_form, 'page_message': page_message, "billing_logs": logs}
+    return render(request, 'staff/run_billing.html', context)
 
 
 @staff_member_required
@@ -83,9 +85,10 @@ def bills(request):
             bills[last_bill.bill_date] = []
         bills[last_bill.bill_date].append(u)
     ordered_bills = OrderedDict(sorted(bills.items(), key=lambda t: t[0]))
-
     invalids = User.helper.invalid_billing()
-    return render_to_response('staff/bills.html', {'bills': ordered_bills, 'page_message': page_message, 'invalid_members': invalids}, context_instance=RequestContext(request))
+
+    context = {'bills': ordered_bills, 'page_message': page_message, 'invalid_members': invalids}
+    return render(request, 'staff/bills.html', context)
 
 
 @staff_member_required
@@ -120,7 +123,9 @@ def bill_list(request):
     end_date = date(year=endeo.tm_year, month=endeo.tm_mon, day=endeo.tm_mday)
     bills = Bill.objects.filter(bill_date__range=(start_date, end_date), amount__gt=0).order_by('bill_date').reverse()
     total_amount = bills.aggregate(s=Sum('amount'))['s']
-    return render_to_response('staff/bill_list.html', {'bills': bills, 'total_amount': total_amount, 'date_range_form': date_range_form, 'start_date': start_date, 'end_date': end_date}, context_instance=RequestContext(request))
+    context = {'bills': bills, 'total_amount': total_amount,
+        'date_range_form': date_range_form, 'start_date': start_date, 'end_date': end_date}
+    return render(request, 'staff/bill_list.html', context)
 
 
 @staff_member_required
@@ -145,4 +150,5 @@ def toggle_billing_flag(request, username):
 @staff_member_required
 def bill(request, id):
     bill = get_object_or_404(Bill, pk=id)
-    return render_to_response('staff/bill.html', {"bill": bill, 'new_member_deposit': settings.NEW_MEMBER_DEPOSIT}, context_instance=RequestContext(request))
+    context = {"bill": bill, 'new_member_deposit': settings.NEW_MEMBER_DEPOSIT}
+    return render(request, 'staff/bill.html', context)

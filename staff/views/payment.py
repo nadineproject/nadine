@@ -2,7 +2,7 @@ from datetime import date, datetime, timedelta
 
 from django.contrib.auth.models import User
 from django.utils import timezone
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.template import RequestContext
@@ -48,8 +48,11 @@ def xero_user(request, username):
         invoices.reverse()
         repeating_invoices = xero_api.get_repeating_invoices(user)
         xero_contact_data = xero_api.get_contact(user)
-    return render_to_response('staff/xero.html', {'user': user, 'xero_contact': xero_contact, 'invoices': invoices, 'repeating_invoices':repeating_invoices,
-        'xero_contact_data': xero_contact_data, 'xero_contact_search': xero_contact_search}, context_instance=RequestContext(request))
+
+    context = {'user': user, 'xero_contact': xero_contact, 'invoices': invoices,
+        'repeating_invoices':repeating_invoices, 'xero_contact_data': xero_contact_data,
+        'xero_contact_search': xero_contact_search}
+    return render(request, 'staff/xero.html', context)
 
 
 @staff_member_required
@@ -103,7 +106,8 @@ def usaepay_user(request, username):
     except Exception as e:
         messages.add_message(request, messages.ERROR, e)
 
-    return render_to_response('staff/usaepay.html', {'user': user, 'history': history, 'settings':settings }, context_instance=RequestContext(request))
+    context = {'user': user, 'history': history, 'settings':settings }
+    return render('staff/usaepay.html', context)
 
 
 @staff_member_required
@@ -171,9 +175,11 @@ def usaepay_transactions(request, year, month, day):
     except Exception as e:
         messages.add_message(request, messages.ERROR, e)
 
-    return render_to_response('staff/charges.html', {'date': d, 'amex': amex, 'visamc': visamc, 'ach':ach, 'open_batch':open_batch,
-                                                      'other_transactions': other_transactions, 'settled_checks':settled_checks, 'totals':totals,
-                                                      'next_date': d + timedelta(days=1), 'previous_date': d - timedelta(days=1)}, context_instance=RequestContext(request))
+    context = {'date': d, 'amex': amex, 'visamc': visamc, 'ach':ach,
+        'open_batch':open_batch, 'other_transactions': other_transactions,
+        'settled_checks':settled_checks, 'totals':totals,
+        'next_date': d + timedelta(days=1), 'previous_date': d - timedelta(days=1)}
+    return render(request, 'staff/charges.html', context)
 
 
 @staff_member_required
@@ -187,7 +193,7 @@ def usaepay_members(request):
             for c in customers:
                 if c.Enabled:
                     members.append({'user': u, 'username': username, 'next': c.Next, 'customer_number': c.CustNum})
-    return render_to_response('staff/usaepay_members.html', {'members': members}, context_instance=RequestContext(request))
+    return render(request, 'staff/usaepay_members.html', {'members': members})
 
 
 @staff_member_required
@@ -206,5 +212,7 @@ def usaepay_void(request):
                 return HttpResponseRedirect(reverse('staff_charges_today'))
     except Exception as e:
         messages.add_message(request, messages.ERROR, e)
+    return render(request, 'staff/usaepay_void.html', {'transaction':transaction})
 
-    return render_to_response('staff/usaepay_void.html', {'transaction':transaction}, context_instance=RequestContext(request))
+
+# Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

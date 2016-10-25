@@ -17,7 +17,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404, HttpRequest
 from django.http import JsonResponse
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
@@ -85,7 +85,8 @@ def home(request):
     current_context = RequestContext(request)
     template = Template(template_text)
     rendered = template.render(current_context)
-    return render_to_response('members/home.html', {'title': title, 'page_body': rendered, 'other_topics': other_topics, 'settings': settings}, current_context)
+    context = {'title': title, 'page_body': rendered, 'other_topics': other_topics, 'settings': settings}
+    return render(request, 'members/home.html', context)
 
 @login_required
 def faq(request):
@@ -102,7 +103,10 @@ def faq(request):
     current_context = RequestContext(request)
     template = Template(template_text)
     rendered = template.render(current_context)
-    return render_to_response('members/faq.html', {'title': title, 'page_body': rendered, 'other_topics': other_topics, 'settings': settings}, current_context)
+
+    context = {'title': title, 'page_body': rendered,
+        'other_topics': other_topics, 'settings': settings}
+    return render(request, 'members/faq.html', context)
 
 @login_required
 def help_topic(request, slug):
@@ -113,7 +117,9 @@ def help_topic(request, slug):
     current_context = context_instance = RequestContext(request)
     template = Template(template_text)
     rendered = template.render(current_context)
-    return render_to_response('members/help_topic.html', {'title': title, 'page_body': rendered, 'other_topics': other_topics, 'settings': settings}, current_context)
+    context = {'title': title, 'page_body': rendered,
+        'other_topics': other_topics, 'settings': settings}
+    return render(request, 'members/help_topic.html', context)
 
 
 @login_required
@@ -136,19 +142,21 @@ def view_members(request):
     else:
         search_form = MemberSearchForm()
 
-    return render_to_response('members/view_members.html', {'settings': settings, 'active_members': active_members, 'here_today': here_today,
-                                                            'search_results': search_results, 'search_form': search_form, 'search_terms': search_terms, 'has_key': has_key, 'has_mail': has_mail},
-                              context_instance=RequestContext(request))
+    context = {'settings': settings, 'active_members': active_members,
+        'here_today': here_today, 'search_results': search_results,
+        'search_form': search_form, 'search_terms': search_terms,
+        'has_key': has_key, 'has_mail': has_mail}
+    return render(request, 'members/view_members.html', context)
 
 
 @login_required
 def chat(request):
     user = request.user
-    return render_to_response('members/chat.html', {'user': user}, context_instance=RequestContext(request))
+    return render(request, 'members/chat.html', {'user': user})
 
 
 def not_active(request):
-    return render_to_response('members/not_active.html', {'settings': settings}, context_instance=RequestContext(request))
+    return render(request, 'members/not_active.html', {'settings': settings})
 
 
 @login_required
@@ -160,7 +168,8 @@ def profile_redirect(request):
 def user(request, username):
     user = get_object_or_404(User, username=username)
     emergency_contact = user.get_emergency_contact()
-    return render_to_response('members/profile.html', {'user': user, 'emergency_contact': emergency_contact, 'settings': settings}, context_instance=RequestContext(request))
+    context = {'user': user, 'emergency_contact': emergency_contact, 'settings': settings}
+    return render(request, 'members/profile.html', context)
 
 
 @csrf_exempt
@@ -168,7 +177,8 @@ def user(request, username):
 def profile_membership(request, username):
     user = get_object_or_404(User, username=username)
     memberships = user.membership_set.all().reverse()
-    return render_to_response('members/profile_membership.html', {'user': user, 'memberships': memberships}, context_instance=RequestContext(request))
+    context = {'user': user, 'memberships': memberships}
+    return render(request, 'members/profile_membership.html', context)
 
 
 @csrf_exempt
@@ -199,7 +209,8 @@ def profile_activity(request, username):
         is_active = True
         allowance = active_membership.get_allowance()
     activity = user.profile.activity_this_month()
-    return render_to_response('members/profile_activity.html', {'user': user, 'is_active': is_active, 'activity':activity, 'allowance':allowance}, context_instance=RequestContext(request))
+    context = {'user': user, 'is_active': is_active, 'activity':activity, 'allowance':allowance}
+    return render(request, 'members/profile_activity.html', context)
 
 
 @csrf_exempt
@@ -210,8 +221,9 @@ def profile_billing(request, username):
     active_membership = user.profile.active_membership()
     bills = user.bill_set.filter(bill_date__gte=six_months_ago)
     payments = user.transaction_set.prefetch_related('bills').filter(transaction_date__gte=six_months_ago)
-    return render_to_response('members/profile_billing.html', {'user':user, 'active_membership':active_membership,
-        'bills':bills, 'payments':payments, 'settings':settings}, context_instance=RequestContext(request))
+    context = {'user':user, 'active_membership':active_membership,
+        'bills':bills, 'payments':payments, 'settings':settings}
+    return render(request, 'members/profile_billing.html', context)
 
 
 @login_required
@@ -223,14 +235,16 @@ def mail(request):
         if sub_form.is_valid():
             sub_form.save(user)
             return HttpResponseRedirect(reverse('member_email_lists'))
-    return render_to_response('members/mail.html', {'user': user, 'mailing_list_subscription_form': MailingListSubscriptionForm(), 'settings': settings}, context_instance=RequestContext(request))
+    context = {'user': user, 'mailing_list_subscription_form': MailingListSubscriptionForm(),
+        'settings': settings}
+    return render(request, 'members/mail.html', context)
 
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def mail_message(request, id):
     message = get_object_or_404(IncomingMail, id=id)
-    return render_to_response('members/mail_message.html', {'message': message, 'settings': settings}, context_instance=RequestContext(request))
+    return render(request, 'members/mail_message.html', {'message': message, 'settings': settings})
 
 
 @login_required
@@ -248,9 +262,8 @@ def edit_profile(request, username):
                 profile_form.save()
 
                 pwd = request.POST.get('password-create')
-                u = User.objects.get(username=user.username)
-                u.set_password(pwd)
-                u.save()
+                user.set_password(pwd)
+                user.save()
 
                 return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
             else:
@@ -273,7 +286,10 @@ def edit_profile(request, username):
 
                                             })
 
-    return render_to_response('members/profile_edit.html', {'user': user, 'profile_form': profile_form, 'ALLOW_PHOTO_UPLOAD': settings.ALLOW_PHOTO_UPLOAD, 'settings': settings, 'page_message': page_message}, context_instance=RequestContext(request))
+    context = {'user': user, 'profile_form': profile_form,
+        'ALLOW_PHOTO_UPLOAD': settings.ALLOW_PHOTO_UPLOAD, 'settings': settings,
+        'page_message': page_message}
+    return render(request, 'members/profile_edit.html', context)
 
 
 @login_required
@@ -291,7 +307,8 @@ def slack(request, username):
         except Exception as e:
             messages.add_message(request, messages.ERROR, "Failed to send invitation: %s" % e)
 
-    return render_to_response('members/slack.html', {'user': user, 'team_url':settings.SLACK_TEAM_URL, 'settings': settings}, context_instance=RequestContext(request))
+    context = {'user': user, 'team_url':settings.SLACK_TEAM_URL, 'settings': settings}
+    return render(request, 'members/slack.html', context)
 
 @csrf_exempt
 def slack_bots(request):
@@ -315,7 +332,9 @@ def receipt(request, username, id):
         if not request.user.is_staff:
             return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
     bills = transaction.bills.all()
-    return render_to_response('members/receipt.html', {'user': user, 'transaction': transaction, 'bills': bills, 'settings': settings}, context_instance=RequestContext(request))
+
+    context = {'user': user, 'transaction': transaction, 'bills': bills, 'settings': settings}
+    return render(request, 'members/receipt.html', context)
 
 
 @login_required
@@ -326,7 +345,7 @@ def tags(request):
         members = User.helper.members_with_tag(tag)
         if members.count() > 0:
             tags.append((tag, members))
-    return render_to_response('members/tags.html', {'tags': tags, 'settings': settings}, context_instance=RequestContext(request))
+    return render(request, 'members/tags.html', {'tags': tags})
 
 
 @login_required
@@ -337,14 +356,15 @@ def tag_cloud(request):
         member_count = User.helper.members_with_tag(tag).count()
         if member_count:
             tags.append((tag, member_count))
-    return render_to_response('members/tag_cloud.html', {'tags': tags, 'settings': settings}, context_instance=RequestContext(request))
+    return render(request, 'members/tag_cloud.html', {'tags': tags})
 
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def tag(request, tag):
     members = User.helper.members_with_tag(tag)
-    return render_to_response('members/tag.html', {'tag': tag, 'members': members, 'settings': settings}, context_instance=RequestContext(request))
+    context = {'tag': tag, 'members': members, 'settings': settings}
+    return render(request, 'members/tag.html', context)
 
 
 @login_required
@@ -367,7 +387,9 @@ def user_tags(request, username):
                 user.profile.tags.add(tag.lower())
 
     all_tags = UserProfile.tags.all()
-    return render_to_response('members/user_tags.html', {'user': user, 'user_tags': user_tags, 'all_tags': all_tags, 'error': error, 'settings': settings}, context_instance=RequestContext(request))
+    context = {'user': user, 'user_tags': user_tags, 'all_tags': all_tags,
+        'error': error, 'settings': settings}
+    return render(request, 'members/user_tags.html', context)
 
 
 @login_required
@@ -404,7 +426,10 @@ def user_devices(request, username):
     devices = arp.devices_by_user(user)
     ip = request.META['REMOTE_ADDR']
     this_device = arp.device_by_ip(ip)
-    return render_to_response('members/user_devices.html', {'user': user, 'devices': devices, 'this_device': this_device, 'ip': ip, 'error': error, 'settings': settings}, context_instance=RequestContext(request))
+
+    context = {'user': user, 'devices': devices, 'this_device': this_device,
+        'ip': ip, 'error': error, 'settings': settings}
+    return render(request, 'members/user_devices.html', context)
 
 
 @login_required
@@ -417,13 +442,14 @@ def connect(request, username):
     if action and action == "send_info":
         email.send_contact_request(user, target)
         message = "Email Sent"
-    return render_to_response('members/connect.html', {'target': target, 'user': user, 'page_message': message, 'settings': settings}, context_instance=RequestContext(request))
+    context = {'target': target, 'user': user, 'page_message': message, 'settings': settings}
+    return render(request, 'members/connect.html', context)
 
 
 @login_required
 def notifications(request):
     notifications = UserNotification.objects.filter(notify_user=request.user, sent_date__isnull=True)
-    return render_to_response('members/notifications.html', {'notifications': notifications}, context_instance=RequestContext(request))
+    return render(request, 'members/notifications.html', {'notifications': notifications})
 
 
 @login_required
@@ -455,7 +481,7 @@ def disable_billing(request, username):
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def events_google(request, location_slug=None):
-    return render_to_response('members/events_google.html', {'settings': settings}, context_instance=RequestContext(request))
+    return render(request, 'members/events_google.html', {'settings': settings})
 
 
 @login_required
@@ -489,7 +515,7 @@ def manage_member(request, username):
     # Render the email content in to a variable to make up the page content
     text_content, html_content = mailgun.get_manage_member_content(user)
 
-    return render_to_response('members/manage_member.html', {'user': user, 'page_content': html_content}, context_instance=RequestContext(request))
+    return render(request, 'members/manage_member.html', {'user': user, 'page_content': html_content})
 
 @user_passes_test(is_new_user, login_url='member_home')
 def register(request):
@@ -539,9 +565,29 @@ def register(request):
         registration_form = NewUserForm()
         profile_form = EditProfileForm()
 
-    return render_to_response('members/register.html', { 'registration_form': registration_form, 'page_message': page_message, 'ALLOW_PHOTO_UPLOAD': settings.ALLOW_PHOTO_UPLOAD, 'settings': settings, 'profile_form': profile_form}, context_instance=RequestContext(request))
+    context = {'registration_form': registration_form, 'page_message': page_message,
+        'ALLOW_PHOTO_UPLOAD': settings.ALLOW_PHOTO_UPLOAD,
+        'settings': settings, 'profile_form': profile_form}
+    return render(request, 'members/register.html', context)
 
 def coerce_times(start, end, date):
+    if len(start) > 5:
+        start = start.split(" ")
+        end = end.split(" ")
+        if start[1] == 'PM':
+            mil_start = start[0].split(":")
+            hour = int(mil_start[0]) + 12
+            start = str(hour) + ':' + mil_start[1]
+        else:
+            start = start[0]
+
+        if end[1] == 'PM':
+            mil_end = end[0].split(":")
+            hour = int(mil_end[0]) + 12
+            end = str(hour) + ':' + mil_end[1]
+        else:
+            end = end[0]
+
     start_dt = datetime.datetime.strptime(date + " " + start, "%Y-%m-%d %H:%M")
     start_ts = timezone.make_aware(start_dt, timezone.get_current_timezone())
     end_dt = datetime.datetime.strptime(date + " " + end, "%Y-%m-%d %H:%M")
@@ -592,7 +638,10 @@ def create_booking(request):
 
         return HttpResponseRedirect(reverse('member_confirm_booking', kwargs={'room': room, 'start': start, 'end': end, 'date': date}))
 
-    return render_to_response('members/booking_create.html', {'rooms': rooms, 'start':start, 'end':end, 'date': date, 'has_av':has_av, 'floor': floor, 'has_phone': has_phone, 'room_dict': room_dict}, context_instance=RequestContext(request))
+    context = {'rooms': rooms, 'start':start, 'end':end, 'date': date,
+        'has_av':has_av, 'floor': floor, 'has_phone': has_phone,
+        'room_dict': room_dict}
+    return render(request, 'members/booking_create.html', context)
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
@@ -647,7 +696,10 @@ def confirm_booking(request, room, start, end, date):
     else:
         booking_form = EventForm()
 
-    return render_to_response('members/booking_confirm.html', {'booking_form':booking_form, 'start':start, 'end':end, 'room': room, 'date': date, 'page_message': page_message, 'event_dict': event_dict}, context_instance=RequestContext(request))
+    context = {'booking_form':booking_form, 'start':start, 'end':end,
+        'room': room, 'date': date, 'page_message': page_message,
+        'event_dict': event_dict}
+    return render(request, 'members/booking_confirm.html', context)
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
@@ -665,21 +717,6 @@ def calendar(request):
         start = request.POST.get('start')
         end = request.POST.get('end')
         date = request.POST.get('date')
-        start = start.split(" ")
-        end = end.split(" ")
-        if start[1] == 'PM':
-            mil_start = start[0].split(":")
-            hour = int(mil_start[0]) + 12
-            start = str(hour) + ':' + mil_start[1]
-        else:
-            start = start[0]
-
-        if end[1] == 'PM':
-            mil_end = end[0].split(":")
-            hour = int(mil_end[0]) + 12
-            end = str(hour) + ':' + mil_end[1]
-        else:
-            end = end[0]
 
         start_ts, end_ts = coerce_times(start, end, date)
 
@@ -696,6 +733,10 @@ def calendar(request):
             return HttpResponseRedirect(reverse('member_calendar'))
         else:
             page_message = "Did not save your event. Double check that the event start is before the end time. Thank you."
-    return render_to_response('members/calendar.html', {'data': data, 'GOOGLE_CALENDAR_ID': settings.GOOGLE_CALENDAR_ID, 'GOOGLE_API_KEY': settings.GOOGLE_API_KEY, 'page_message': page_message }, context_instance=RequestContext(request))
+
+    context = {'data': data, 'GOOGLE_CALENDAR_ID': settings.GOOGLE_CALENDAR_ID,
+        'GOOGLE_API_KEY': settings.GOOGLE_API_KEY, 'page_message': page_message}
+    return render(request, 'members/calendar.html', context)
+
 
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
