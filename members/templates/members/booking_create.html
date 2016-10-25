@@ -15,8 +15,8 @@
       </tr>
       <tr>
         <td class='booking-td'><input type="date" name="date" class="datepicker" id='booking-date' ></td>
-        <td><input name='start' type='time' step=900 id='start-time'/></td>
-        <td><input name='end' type='time' step=900 id='end-time'/></td>
+        <td><input name='start' class='timepicker' step=900 id='start-time'/></td>
+        <td><input name='end' class='timepicker' step=900 id='end-time'/></td>
       </tr>
     </table>
     <div class='row' id='room-criteria'>
@@ -142,7 +142,19 @@
 {% block extrajs %}
   <script>
     $(document).ready(function() {
+      var amOrPm = ' AM';
+
       $('#booking-date').val('{{ date }}');
+
+      $('.timepicker').timepicker({
+        timeFormat: 'h:mm p',
+        interval: 30,
+        defaultTime: '8:00',
+        startTime: '7:00',
+        dynamic: false,
+        dropdown: true,
+        scrollbar: true
+      });
 
       var phone = '{{ has_phone }}';
       var av = '{{ has_av }}';
@@ -165,7 +177,7 @@
         format: 'yyyy-mm-dd'
       });
 
-      function changeTimes(hour, minutes) {
+      function changeTimes(hour, minutes, amOrPm) {
         if (minutes < 15) {
           minutes = "00";
         } else if (minutes < 30){
@@ -182,7 +194,8 @@
         if (hour > 23) {
             hour = 12;
         } else if (hour > 12) {
-            hour = hour;
+            hour = hour - 12;
+            amOrPm = ' PM'
         } else if (hour == 0) {
             hour = 12;
         }
@@ -191,7 +204,7 @@
           hour = '0' + hour;
         }
 
-        var time = hour + ':' + minutes
+        var time = hour + ':' + minutes + amOrPm;
 
         return time
       }
@@ -200,8 +213,9 @@
         var start = '{{ start }}';
         var hour = start.split(':')[0];
         var minutes = start.split(':')[1];
+        var amOrPm = start.split(' ')[1];
 
-        var time = changeTimes(hour, minutes);
+        var time = changeTimes(hour, minutes, amOrPm);
 
         $('#start-time').val(time);
       }
@@ -210,7 +224,6 @@
         var end = '{{ end }}';
         var hour = end.split(':')[0];
         var minutes = end.split(':')[1];
-
         var time = changeTimes(hour, minutes);
 
         $('#end-time').val(time)
