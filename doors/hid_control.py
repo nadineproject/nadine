@@ -1,10 +1,10 @@
 import logging
 import threading
-import ssl, urllib.request, urllib.parse, urllib.error, urllib.request, urllib.error, urllib.parse, base64
+import ssl, urllib, urllib2, base64
 from datetime import datetime
 from xml.etree import ElementTree
 
-from .core import CardHolder, DoorController, DoorEventTypes
+from core import CardHolder, DoorController, DoorEventTypes
 
 logger = logging.getLogger(__name__)
 
@@ -21,16 +21,16 @@ class HIDDoorController(DoorController):
     def __send_xml_str(self, xml_str):
         logger.debug("Sending: %s" % xml_str)
 
-        xml_data = urllib.parse.urlencode({'XML': xml_str})
-        request = urllib.request.Request(self.door_url(), xml_data)
+        xml_data = urllib.urlencode({'XML': xml_str})
+        request = urllib2.Request(self.door_url(), xml_data)
         base64string = base64.encodestring('%s:%s' % (self.door_user, self.door_pass)).replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
         context = ssl._create_unverified_context()
         context.set_ciphers('RC4-SHA')
 
-        self.lock.acquire(t)
+        self.lock.acquire()
         try:
-            result = urllib.request.urlopen(request, context=context)
+            result = urllib2.urlopen(request, context=context)
             return_code = result.getcode()
             return_xml = result.read()
             result.close()
