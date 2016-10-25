@@ -201,24 +201,23 @@ textarea#id_bio {
 }
 
 #login_form {
-	background-color: RGBA(232, 232, 232, 1);
+	background-color: RGBA(239, 238, 231, 1);
 	margin-right: 0;
 	margin-top: 5%;
 	border-radius: 2px;
 }
 
-#login_form {
-	box-shadow: 1px 1px 1px RGBA(174, 174, 174, 1);
-}
-
 #login_form h1, #registration_form h1 {
-	background-color: RGBA(63, 104, 140, .7);
+	color: white;
+	background-color: RGBA(77, 127, 149, 1);
 	padding: 2%;
-	border-radius: 2px;
+	border-top-right-radius: 2px;
+	border-top-left-radius: 2px;
 }
 
 #login_form th, #registration_form th {
 	padding-left: 10%;
+	padding-right: 0;
 }
 
 #login_reset {
@@ -233,6 +232,10 @@ textarea#id_bio {
 	padding-left: 2%;
 	background-color: white;
 	border-bottom: none;
+}
+
+#login_form input {
+	width: 90%;
 }
 
 #booking_form td {
@@ -250,6 +253,12 @@ input#id_photo {
 #login_form input{
 	padding-left: 2%;
 	margin-right: 2%;
+
+}
+
+#login-header {
+	margin-top: 5%;
+	margin-bottom: 5%;
 }
 
 .sub-btn, #confirm-btn, .reg-btn  {
@@ -437,7 +446,7 @@ textarea#id_bio {
 #loginonly-btn {
 	margin-left: 30%;
 	width: 40%;
-	background-color: RGBA(127, 175, 147, 1);
+	background-color: RGBA(63, 146, 161, 1);
 }
 
 #site-search-form input {
