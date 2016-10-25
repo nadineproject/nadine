@@ -12,7 +12,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.sites.models import Site
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 
 from nadine import email
@@ -36,12 +36,12 @@ def members(request):
     if list_members:
         sw = request.GET.get('startswith')
         members = User.helper.active_members().filter(first_name__startswith=sw).order_by('first_name')
-    return render_to_response('tablet/members.html', {'members': members, 'list_members': list_members}, context_instance=RequestContext(request))
+    return render(request, 'tablet/members.html', {'members': members, 'list_members': list_members})
 
 
 def here_today(request):
     users_today = User.helper.here_today()
-    return render_to_response('tablet/here_today.html', {'users_today': users_today}, context_instance=RequestContext(request))
+    return render(request, 'tablet/here_today.html', {'users_today': users_today})
 
 
 def visitors(request):
@@ -58,7 +58,7 @@ def visitors(request):
             #page_message = str(e)
     else:
         form = NewUserForm()
-    return render_to_response('tablet/visitors.html', {'new_user_form': form, 'page_message': page_message}, context_instance=RequestContext(request))
+    return render(request, 'tablet/visitors.html', {'new_user_form': form, 'page_message': page_message})
 
 
 def search(request):
@@ -69,14 +69,14 @@ def search(request):
             search_results = User.helper.search(member_search_form.cleaned_data['terms'])
     else:
         member_search_form = MemberSearchForm()
-    return render_to_response('tablet/search.html', {'member_search_form': member_search_form, 'search_results': search_results}, context_instance=RequestContext(request))
+    return render(request, 'tablet/search.html', {'member_search_form': member_search_form, 'search_results': search_results})
 
 
 def user_profile(request, username):
     user = get_object_or_404(User, username=username)
     membership = user.profile.active_membership()
     tags = user.profile.tags.order_by('name')
-    return render_to_response('tablet/user_profile.html', {'user': user, 'membership': membership, 'tags': tags}, context_instance=RequestContext(request))
+    return render(request, 'tablet/user_profile.html', {'user': user, 'membership': membership, 'tags': tags})
 
 
 def user_signin(request, username):
@@ -105,9 +105,10 @@ def user_signin(request, username):
     guest_days = CoworkingDay.objects.filter(user=user, paid_by__isnull=False).values("paid_by")
     previous_hosts = User.helper.active_members().filter(id__in=guest_days)
 
-    return render_to_response('tablet/user_signin.html', {'user': user, 'can_signin': can_signin,
-                                                          'membership': membership, 'previous_hosts':previous_hosts,
-                                                          'member_search_form': member_search_form, 'search_results': search_results}, context_instance=RequestContext(request))
+    context = {'user': user, 'can_signin': can_signin, 'membership': membership,
+        'previous_hosts':previous_hosts, 'member_search_form': member_search_form,
+        'search_results': search_results}
+    return render(request, 'tablet/user_signin.html', context)
 
 
 def post_create(request, username):
@@ -130,7 +131,7 @@ def post_create(request, username):
         if member_search_form.is_valid():
             search_results = User.helper.search(member_search_form.cleaned_data['terms'], active_only=True)
 
-    return render_to_response('tablet/post_create.html', {'user': user, 'search_results': search_results}, context_instance=RequestContext(request))
+    return render(request, 'tablet/post_create.html', {'user': user, 'search_results': search_results})
 
 
 def signin_user(request, username):
@@ -181,8 +182,9 @@ def welcome(request, username):
         else:
             usage_color = "green"
     motd = MOTD.objects.for_today()
-    return render_to_response('tablet/welcome.html', {'user': user, 'membership': membership,
-                                                      'motd': motd, 'usage_color': usage_color}, context_instance=RequestContext(request))
+    context = {'user': user, 'membership': membership, 'motd': motd,
+        'usage_color': usage_color}
+    return render(request, 'tablet/welcome.html', context)
 
 
 def document_list(request, username):
@@ -192,13 +194,14 @@ def document_list(request, username):
     signed_docs = {}
     for doc in FileUpload.objects.filter(user=user):
         signed_docs[doc.document_type] = doc
-    return render_to_response('tablet/document_list.html', {'user': user, 'signed_docs': signed_docs, 'document_types': doc_types}, context_instance=RequestContext(request))
+    context = {'user': user, 'signed_docs': signed_docs, 'document_types': doc_types}
+    return render(request, 'tablet/document_list.html', context)
 
 
 def document_view(request, username, doc_type):
     user = get_object_or_404(User, username=username)
     file_upload = get_object_or_404(FileUpload, user=user, document_type=doc_type)
-    # return render_to_response('tablet/documents_view.html', {'user':user, 'file_upload':file_upload}, context_instance=RequestContext(request))
+    # return render(request, 'tablet/documents_view.html', {'user':user, 'file_upload':file_upload})
     media_url = settings.MEDIA_URL + str(file_upload.file)
     return HttpResponseRedirect(media_url)
 
@@ -211,7 +214,7 @@ def signature_capture(request, username, doc_type):
         signature_file = form.save_signature()
         render_url = reverse('tablet_sig_render', kwargs={'username': user.username, 'doc_type': doc_type, 'signature_file': signature_file}) + "?save_file=True"
         return HttpResponseRedirect(render_url)
-    return render_to_response('tablet/signature_capture.html', {'user': user, 'form': form, 'today': today, 'doc_type': doc_type}, context_instance=RequestContext(request))
+    return render(request, 'tablet/signature_capture.html', {'user': user, 'form': form, 'today': today, 'doc_type': doc_type})
 
 
 def signature_render(request, username, doc_type, signature_file):
