@@ -6,49 +6,51 @@
 <div class='booking-box'>
   <h2>Book a Meeting Room</h2>
   <br />
-  <form action='#' method='GET'>
-    <div class='row'>
-      <p class='col s1 offset-s3'><strong>Date:</strong></p>
-      <input type="date" name="date" class="datepicker col s4" id='booking-date' >
-    </div>
-    <div class='row'>
-      <div class='row' id='time-row'>
-        <div class='col s4 offset-s2 row'>
-          <p class='col s4'><strong>Start Time:</strong></p>
-          <input class='col s6' name='start' type='time' step=900 id='start-time'/>
-        </div>
-        <div class='col s4 row'>
-          <p class='col s3'><strong>End Time:</strong></p>
-          <input class='col s6' name='end' type='time' step=900 id='end-time'/>
-        </div>
-      </div>
-    </div>
+  <form id='booking-reqs' action='#' method='GET'>
+    <table>
+      <tr>
+        <td class='booking-td' class='cap-label'><strong>Date</strong></td>
+        <td class='cap-label'><strong>Start Time</strong></td>
+        <td class='cap-label'><strong>End Time</strong></td>
+      </tr>
+      <tr>
+        <td class='booking-td'><input type="date" name="date" class="datepicker" id='booking-date' ></td>
+        <td><input name='start' type='time' step=900 id='start-time'/></td>
+        <td><input name='end' type='time' step=900 id='end-time'/></td>
+      </tr>
+    </table>
     <div class='row' id='room-criteria'>
-      <div class='col s2' id="av-box">
-        <input name='has_av' type="checkbox" id="av-btn" class='filled-in' />
-        <label for="av-btn">Has A/V</label>
-      </div>
-      <div class='col s2' id="phone-box">
-        <input name="has_phone" type="checkbox" id='phone-btn' class='filled-in' />
-        <label for="phone-btn">Has Phone</label>
-      </div>
-      <select class='browser-default input-field col s2' name='floor' id='floor'>
-        <option value="" disabled selected>On Floor:</option>
-        <option value="1">Floor 1</option>
-        <option value="2">Floor 2</option>
-        <option value="3">Floor 3</option>
-      </select>
-      <select class='browser-default input-field col s2 offset-s1' name='seats'>
-        <option value="" disabled selected>Seats:</option>
-        <option value="2">2 People</option>
-        <option value="4">4 People</option>
-        <option value="6">6 People</option>
-        <option value="10">10-20 People</option>
-        <option value="20">20+ People</option>
-      </select>
-      <div class='col s2 offset-s1' id='room-search'>
-        <button type='submit' value='Search' class='btn waves-effect'>Search</button>
-      </div>
+      <table>
+        <tr>
+          <td id="av-btn"><input name='has_av' type="checkbox" class='filled-in' />
+          <label for="av-btn">Has A/V</label></td>
+          <td id='phone-btn'>
+            <input name="has_phone" type="checkbox" class='filled-in' />
+            <label for="phone-btn">Has Phone</label>
+          </td>
+          <td id='floor-select'>
+            <select class='browser-default input-field' name='floor' id='floor'>
+              <option value="" disabled selected>On Floor:</option>
+              <option value="1">Floor 1</option>
+              <option value="2">Floor 2</option>
+              <option value="3">Floor 3</option>
+            </select>
+          </td>
+          <td id='seat-select'>
+            <select class='browser-default input-field' name='seats'>
+              <option value="" disabled selected>Seats:</option>
+              <option value="2">2 People</option>
+              <option value="4">4 People</option>
+              <option value="6">6 People</option>
+              <option value="10">10-20 People</option>
+              <option value="20">20+ People</option>
+            </select>
+          </td>
+          <td>
+            <button type='submit' value='Search' class='btn waves-effect book-btn '>Search</button>
+          </td>
+        </tr>
+      </table>
     </div>
   </form>
   {% if rooms %}
