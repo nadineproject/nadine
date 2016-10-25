@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 def members(request):
     members = None
-    list_members = request.GET.has_key("startswith")
+    list_members = "startswith" in request.GET
     if list_members:
         sw = request.GET.get('startswith')
         members = User.helper.active_members().filter(first_name__startswith=sw).order_by('first_name')
@@ -113,7 +113,7 @@ def user_signin(request, username):
 
 def post_create(request, username):
     user = get_object_or_404(User, username=username)
-    if request.POST.has_key("work_today"):
+    if "work_today" in request.POST:
         work_today = request.POST.get('work_today')
         if work_today == "Yes":
             # Send them over to the sign-in page.  This will trigger the Free Trial logic down the line.
