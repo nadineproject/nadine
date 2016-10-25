@@ -23,7 +23,7 @@ class UsaepayTestCase(SimpleTestCase):
         if not self._token:
             # Hash our pin
             random.seed(datetime.now())
-            seed = random.randint(0, sys.maxint)
+            seed = random.randint(0, sys.maxsize)
             pin_hash = hashlib.sha1("%s%s%s" % (key, seed, pin))
 
             client = self.get_client()
@@ -35,13 +35,13 @@ class UsaepayTestCase(SimpleTestCase):
         return self._token
 
     # TODO - Fix!  Not sure what is up but I assume it's a configuration problem -- JLS
-    # def test_soap(self):
-    #     key = settings.USA_EPAY_KEY
-    #     pin = settings.USA_EPAY_PIN
-    #
-    #     client = self.get_client()
-    #     token = self.get_token(key, pin)
-    #     username = "jacob"
-    #     cust_num = client.service.searchCustomerID(token, username);
-    #
-    #     self.assertTrue(cust_num != None)
+    def test_soap(self):
+        key = settings.USA_EPAY_KEY
+        pin = settings.USA_EPAY_PIN
+
+        client = self.get_client()
+        token = self.get_token(key, pin)
+        username = "jacob"
+        cust_num = client.service.searchCustomerID(token, username);
+
+        self.assertTrue(cust_num != None)

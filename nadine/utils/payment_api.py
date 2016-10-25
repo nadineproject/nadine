@@ -198,7 +198,7 @@ class USAEPAY_SOAP_API(object):
 
         # Hash our pin
         random.seed(datetime.now())
-        seed = random.randint(0, sys.maxint)
+        seed = random.randint(0, sys.maxsize)
         pin_hash = hashlib.sha1("%s%s%s" % (key, seed, pin))
 
         self.token = self.client.factory.create('ueSecurityToken')
