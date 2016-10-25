@@ -150,7 +150,7 @@ table td:first-child, table td:last-child {
 }
 
 table td {
-	text-align: center;
+	/*text-align: center;*/
 	padding: 0.5em;
 }
 
@@ -229,7 +229,7 @@ textarea#id_bio {
 	border: none;
 }
 
-#profile_form input, #registration_form input, #login_form input, #booking_form input {
+#profile_form input, #registration_form input, #login_form input, #booking_form input, .booking-box input {
 	padding-left: 2%;
 	background-color: white;
 	border-bottom: none;
@@ -256,6 +256,10 @@ input#id_photo {
 	background: RGBA(63, 146, 161, 1);
 	margin-top: 2%;
 	margin-left: 35%;
+}
+
+#confirm-btn {
+	margin-left: 40%;
 }
 
 .reg-btn {
@@ -579,16 +583,61 @@ dl dd:last-child:after {
 	content: "";
 }
 /*booking_create styling*/
-	#booking-date {
-		text-align: center;
+	#booking-reqs {
+		padding-left: 4%;
+		border-bottom: 1px solid grey;
+		margin-bottom: 4%;
+	}
+
+	#booking-date, #start-time, #end-time {
+		width: 75%;
+	}
+
+	.book-btn {
+		background: RGBA(63, 146, 161, 1);
+	}
+
+	#booking-reqs select.browser-default {
+		background: white;
+		border-radius: 1px;
+		margin-top: 0;
+	}
+
+	[type="checkbox"].filled-in:not(:checked)+label:after {
+		background-color: white;
+	}
+
+	[type="checkbox"]+label {
+		color: black;
+		height: 43.5px;
+
+	}
+
+	td.booking-td {
+		width: 30%;
+	}
+
+	#av-btn, #phone-btn {
+		vertical-align: bottom;
+		padding: 0;
+		width: 15%;
+	}
+
+	#av-btn {
+		padding-left: 1%;
 	}
 
 	#time-row {
 		text-align: center;
 	}
 
-	#av-box, #phone-box {
-		padding-top: 2%;
+	#floor-select, #seat-select {
+		vertical-align: text-top;
+		margin-top: 0;
+	}
+
+	select#floor {
+		min-width: 150px;
 	}
 
 	#room-search {
@@ -596,8 +645,8 @@ dl dd:last-child:after {
 	}
 
 	#room-criteria {
-		padding-bottom: 3%;
-		border-bottom: 1px solid grey;
+		padding-top: 2%;
+		padding-bottom: 5%;
 	}
 
 	.book-room {
@@ -606,6 +655,10 @@ dl dd:last-child:after {
 
 	.book-btn, .room-show {
 		background-color: RGBA(82, 144, 159, 1);
+	}
+
+	.book-btn {
+		margin-left: 15%;
 	}
 
 	.cal-table, .booking-bar {

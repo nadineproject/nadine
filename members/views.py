@@ -573,17 +573,23 @@ def register(request):
 def coerce_times(start, end, date):
     if len(start) > 5:
         start = start.split(" ")
-        end = end.split(" ")
         if start[1] == 'PM':
             mil_start = start[0].split(":")
-            hour = int(mil_start[0]) + 12
+            if int(mil_start[0]) < 12:
+                hour = int(mil_start[0]) + 12
+            else:
+                hour = mil_start[0]
             start = str(hour) + ':' + mil_start[1]
         else:
             start = start[0]
-
+    if len(end) > 5:
+        end = end.split(" ")
         if end[1] == 'PM':
             mil_end = end[0].split(":")
-            hour = int(mil_end[0]) + 12
+            if int(mil_end[0]) < 12:
+                hour = int(mil_end[0]) + 12
+            else :
+                hour = mil_end[0]
             end = str(hour) + ':' + mil_end[1]
         else:
             end = end[0]
@@ -593,7 +599,7 @@ def coerce_times(start, end, date):
     end_dt = datetime.datetime.strptime(date + " " + end, "%Y-%m-%d %H:%M")
     end_ts = timezone.make_aware(end_dt, timezone.get_current_timezone())
 
-    return start_ts, end_ts
+    return start_ts, end_ts, start, end
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
@@ -608,7 +614,8 @@ def create_booking(request):
     end = request.GET.get('end', str(datetime.datetime.now().hour + 2) + ':' + str(datetime.datetime.now().minute))
 
     # Turn our date, start, and end strings into timestamps
-    start_ts, end_ts = coerce_times(start, end, date)
+    start_ts, end_ts, start, end = coerce_times(start, end, date)
+
 
     #Make auto date for start and end if not otherwise given
     room_dict = {}
@@ -624,11 +631,11 @@ def create_booking(request):
         # Infuse calendar with search range
         search_start = start.replace(':', '')
         search_end = end.replace(':', '')
+
         for block in calendar:
             id = block['mil_hour'] + block['minutes']
             if int(search_start) <= int(id) and int(id) <= int(search_end):
                 block['searched'] = True
-
 
     if request.method == 'POST':
         room = request.POST.get('room')
@@ -650,7 +657,7 @@ def confirm_booking(request, room, start, end, date):
     room = get_object_or_404(Room, name=room)
     page_message = None
 
-    start_ts, end_ts = coerce_times(start, end, date)
+    start_ts, end_ts, start, end = coerce_times(start, end, date)
 
     target_date = start_ts.date()
 
