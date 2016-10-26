@@ -50,6 +50,8 @@ p {
 	left: 0;
 }
 
+
+
 #main-nav a {
 	text-transform: uppercase;
 }
@@ -57,6 +59,7 @@ p {
 #home-nav {
 	background-color: RGBA(35, 98, 126, .8);
 	margin: 0;
+	border-top: none;
 }
 
 #header_container {
@@ -90,7 +93,8 @@ p {
 	width: 100%;
 	z-index: 2;
 	box-sizing: padding-box;
-	background-color: RGBA(35, 98, 126, .8);
+	border-bottom: none;
+	background-color: RGBA(77, 127, 149, 1);
 }
 
 .menu-img {
@@ -673,8 +677,13 @@ dl dd:last-child:after {
 		margin-top: 5%;
 	}
 
-	.book-btn, .room-show {
+	.book-btn, .room-show, .room-close {
 		background-color: RGBA(82, 144, 159, 1);
+	}
+
+	.room-show, .room-close {
+		font-size: .7em;
+		padding: 0% 5%;
 	}
 
 	.book-btn {
@@ -810,14 +819,18 @@ dl dd:last-child:after {
 
 	.slider {
 		overflow-y: hidden;
-		max-height: 500px; /* approximate max height */
+		max-height: 300px; /* approximate max height */
 		transition-property: all;
 		transition-duration: .7s;
 		transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+		background-color: white;
+		padding-top: 1%;
+		border-radius: 2px;
 	}
 
 	.slider.closed {
 		max-height: 0;
+		padding-top: 0;
 	}
 
 	div#time-range {
@@ -1065,6 +1078,7 @@ footer.sticky-footer {
 	margin-right: 10px;
 	background-image: url(../img/facebook_32.png);
 	text-indent: -9999px;
+	border-radius: 4px;
 }
 
 #tw {
@@ -1075,6 +1089,7 @@ footer.sticky-footer {
 	margin-right: 10px;
 	background-image: url(../img/twitter_32.png);
 	text-indent: -9999px;
+	border-radius: 4px;
 }
 
 #ye {
@@ -1095,6 +1110,19 @@ footer.sticky-footer {
 	margin-right: 10px;
 	background-image: url(../img/instagram_32.png);
 	text-indent: -9999px;
+}
+
+@media only screen and (max-width: 700px) {
+	footer.main-footer {
+		background: RGBA(61, 61, 61, .9);
+		clear: both;
+		width: 100%;
+		padding: 10px;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		position: absolute;
+	}
 }
 
 @media only screen and (max-width: 990px) {
@@ -1119,15 +1147,25 @@ footer.sticky-footer {
 	 .lightbg {
 		 margin-top: 8%;
 	 }
+
+	 .modal-content {
+		 height: 40%;
+		 width: 60%;
+	 }
+
+	 .eModal-content {
+		 margin-top: 10%;
+		 height: 100%;
+	 }
 }
 
 @media only screen and (max-width: 1100px) {
 	.row .col.offset-s1 {
-		margin-left: 4%;
+		margin-left: 0;
 	}
 
 	.row .col.s10 {
-		width: 95%;
+		width: 100%;
 	}
 
 	#profile_form, #registration_form {
@@ -1152,6 +1190,10 @@ footer.sticky-footer {
 
 	.btn {
 		font-size: .7em;
+	}
+
+	.eModal-content {
+		margin-top: 10%;
 	}
 }
 
