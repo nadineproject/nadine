@@ -57,7 +57,7 @@ p {
 }
 
 #home-nav {
-	background-color: RGBA(35, 98, 126, .8);
+	background-color: RGBA(77, 127, 149, 1);
 	margin: 0;
 	border-top: none;
 }
@@ -98,7 +98,7 @@ p {
 }
 
 .menu-img {
-	content: url(../fonts/ic_menu_white_24dp/web/ic_menu_white_24dp_2x.png)
+	content: url(../img/ic_menu_white_24dp/web/ic_menu_white_24dp_2x.png)
 }
 
 .side-nav {
@@ -1160,7 +1160,7 @@ footer.sticky-footer {
 }
 
 @media only screen and (max-width: 1100px) {
-	.row .col.offset-s1 {
+	.row .col.offset-s1.s10 {
 		margin-left: 0;
 	}
 
