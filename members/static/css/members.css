@@ -93,6 +93,18 @@ p {
 	background-color: RGBA(35, 98, 126, .8);
 }
 
+.menu-img {
+	content: url(../fonts/ic_menu_white_24dp/web/ic_menu_white_24dp_2x.png)
+}
+
+.side-nav {
+	background-color: RGBA(80, 80, 80, 1);
+}
+
+#sidenav-overlay {
+	background-color: RGBA(80, 80, 80, .6);
+}
+
 .logo-img {
 	content: url(../img/logo.png);
 	position: absolute;
@@ -420,7 +432,6 @@ textarea#id_bio {
 
 #img-id {
 	height: 200px;
-	border-radius: 500px;
 }
 
 /*Registration form styling*/
@@ -1099,9 +1110,25 @@ footer.sticky-footer {
 	 #profile_form {
 		 margin-right: 1%;
 	 }
+
+	 img.sec-logo {
+		 max-height: 60px;
+		 max-width: 60px;
+	 }
+
+	 .lightbg {
+		 margin-top: 8%;
+	 }
 }
 
 @media only screen and (max-width: 1100px) {
+	.row .col.offset-s1 {
+		margin-left: 4%;
+	}
+
+	.row .col.s10 {
+		width: 95%;
+	}
 
 	#profile_form, #registration_form {
 		margin-left: 2%;
@@ -1116,6 +1143,15 @@ footer.sticky-footer {
 		width: 100%;
 		min-width: 700px;
 		margin-left: 0;
+	}
+
+	img.logo-img {
+		height: 80%;
+		width: 27%;
+	}
+
+	.btn {
+		font-size: .7em;
 	}
 }
 

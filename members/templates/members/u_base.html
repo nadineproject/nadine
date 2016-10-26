@@ -64,12 +64,13 @@
 						<nav class='row' id='main-nav'>
 							<div class='nav-wrapper'>
 								<div id='logo'>
-									<a href="{% url 'site_index' %}" id="home">
+									<a href="{% url 'site_index' %}" class='brand-logo' id="home">
 										<img class='sec-logo' />
 									</a>
 								</div>
+								<a href='#' data-activates="mobile-demo" class="button-collapse"><img class='menu-img' /></a>
+							<ul id="nav-mobile" class="right hide-on-med-and-down">
 					{% endblock %}
-							<ul id="nav-mobile" class="right">
 								<li><a href="{% url 'member_profile_redirect' %}">Profile</a></li>
 								{% if not request.user.is_authenticated %}
 									<li><a>Members</a></li>
@@ -94,6 +95,33 @@
 									<li><a href="{% url 'logout' %}">Logout</a></li>
 								{% endif %}
 				      </ul>
+							{% block side-nav %}
+							<ul class="side-nav" id="mobile-demo">
+								<li><a href="{% url 'member_profile_redirect' %}">Profile</a></li>
+								{% if not request.user.is_authenticated %}
+									<li><a>Members</a></li>
+									<li><a>Events</a></li>
+									<li><a>Tags</a></li>
+									<li><a>Mailing Lists</a></li>
+									<li><a>Slack</a></li>
+									<li><a>Login</a></li>
+								{% elif request.user.profile.is_active %}
+									<li><a href="{% url 'member_members' %}">Members</a></li>
+									<li><a href="{% url 'member_calendar' %}">Events</a></li>
+									<li><a href="{% url 'member_tag_cloud' %}">Tags</a></li>
+									<li><a href="{% url 'member_email_lists' %}">Mailing Lists</a></li>
+									<li><a class='slack-a' href="{% url 'member_slack' user.username %}">Slack</a></li>
+									<li><a href="{% url 'logout' %}">Logout</a></li>
+								{% else %}
+									<li><a href="{% url 'member_not_active' %}">Members</a></li>
+									<li><a href="{% url 'member_not_active' %}">Events</a></li>
+									<li><a href="{% url 'member_not_active' %}">Tags</a></li>
+									<li><a href="{% url 'member_not_active' %}">Mailing Lists</a></li>
+									<li><a href="{% url 'member_not_active' %}">Slack</a></li>
+									<li><a href="{% url 'logout' %}">Logout</a></li>
+								{% endif %}
+							</ul>
+							{% endblock %}
 				    </div>
 				  </nav>
 					{% block lower_nav %}{% endblock %}
@@ -145,6 +173,17 @@
 		{% endblock %}
 
 	{% block extrajs %}
+		<script>
+		$(document).ready(function(){
+			(function($){
+				$(function(){
+
+					$('.button-collapse').sideNav();
+
+				});
+			})(jQuery);
+		});
+		</script>
 	{% endblock %}
 </body>
 </html>
