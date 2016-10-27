@@ -10,6 +10,7 @@ from nadine.models.core import UserProfile, HowHeard, Industry, Neighborhood, GE
 from localflavor.us.us_states import US_STATES
 from localflavor.ca.ca_provinces import PROVINCE_CHOICES
 
+from nadine.models.resource import Room
 
 def get_state_choices():
     if settings.COUNTRY == 'US':
@@ -98,3 +99,31 @@ class EditProfileForm(forms.Form):
         emergency_contact.save()
 
         return user.profile
+
+
+class EventForm(forms.Form):
+    user = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), queryset=User.objects.order_by('first_name'))
+    room = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), queryset=Room.objects.all(), required=False)
+    start_time = forms.DateTimeField(widget=forms.DateTimeInput(attrs={'placeholder':'e.g. 12/28/16 14:30'}, format='%m/%d/%Y %H:%M'), required=True)
+    end_time = forms.DateTimeField(widget=forms.DateTimeInput(attrs={'placeholder':'e.g. 12/28/16 16:30'}, format='%m/%d/%Y %H:%M:%S'), required=True)
+    description = forms.CharField(max_length=100, required=False)
+    charge = forms.DecimalField(decimal_places=2, max_digits=9, required=True)
+    publicly_viewable = forms.ChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), choices=((True, 'Yes'), (False, 'No')), required=False)
+
+    def save(self):
+        if not self.is_valid():
+            raise Exception('The form must be valid in order to save')
+
+        user = self.cleaned_data['user']
+        room = self.cleaned_data['room']
+        start_ts = self.cleaned_data['start_time']
+        end_ts = self.cleaned_data['end_time']
+        description = self.cleaned_data['description']
+        charge = self.cleaned_data['charge']
+        is_public = self.cleaned_data['publicly_viewable']
+
+        event = Event(user=user, room=room, start_ts=start_ts, end_ts=end_ts, description=description, charge=charge, is_public=is_public)
+
+        event.save()
+
+        return event
