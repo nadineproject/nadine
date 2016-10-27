@@ -60,7 +60,7 @@ class KeymasterTestCase(TestCase):
         new_log_count = GatekeeperLog.objects.filter(keymaster=keymaster).count()
         self.assertTrue(new_log_count == log_count + 1)
         new_log = GatekeeperLog.objects.filter(keymaster=keymaster).reverse().first()
-        self.assertEquals(new_log.message, msg)
+        self.assertEqual(new_log.message, msg)
 
 
 class GatekeeperTestCase(TestCase):

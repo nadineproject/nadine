@@ -187,7 +187,7 @@ class MailingList(models.Model):
             elif bod.get_content_type().startswith('text/html') and not html_body:
                 html_body = bod.get_payload(decode=True)
                 html_body = html_body.decode(bod.get_content_charset('ascii'))
-            elif bod.has_key('Content-Disposition') and bod['Content-Disposition'].startswith('attachment; filename="'):
+            elif 'Content-Disposition' in bod and bod['Content-Disposition'].startswith('attachment; filename="'):
                 file_names.append(bod['Content-Disposition'][len('attachment; filename="'):-1])
         return (body, html_body, file_names)
 

@@ -45,7 +45,7 @@ class User_Report:
     def __init__(self, form):
         self.report = form.data['report']
         self.order_by = form.data['order_by']
-        self.active_only = form.data.has_key('active_only')
+        self.active_only = 'active_only' in form.data
         self.start_date = form.data['start_date']
         self.end_date = form.data['end_date']
         if not self.end_date:

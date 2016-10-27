@@ -97,7 +97,7 @@ def stats(request):
             number_dict[daily_log.payment] = 1
         else:
             number_dict['total'] = number_dict['total'] + 1
-            if number_dict.has_key(daily_log.payment):
+            if daily_log.payment in number_dict:
                 number_dict[daily_log.payment] = number_dict[daily_log.payment] + 1
 
     return render(request, 'staff/stats.html', {'daily_logs_by_month': daily_logs_by_month})

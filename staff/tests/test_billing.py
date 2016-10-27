@@ -114,13 +114,13 @@ class BillingTestCase(TestCase):
                 self.assertTrue(member5.last_bill().bill_date.month == day.month and member5.last_bill().bill_date.day == day.day)
                 self.assertEqual(member5.last_bill().membership, Membership.objects.get(user=self.user5, membership_plan=self.pt15Plan.id))
                 #TODOself.assertEqual(member5.last_bill().dropins.count(), 15)
-                self.assertEquals(member5.last_bill().amount, 0)
+                self.assertEqual(member5.last_bill().amount, 0)
             if day.day == 17:
                 # User 5's Basic membership
                 self.assertTrue(member5.last_bill() != None)
                 self.assertEqual(member5.last_bill().membership, Membership.objects.get(user=self.user5, membership_plan=self.basicPlan.id))
                 self.assertEqual(member5.last_bill().dropins.count(), 0)
-                self.assertEquals(member5.last_bill().amount, self.basicPlan.monthly_rate)
+                self.assertEqual(member5.last_bill().amount, self.basicPlan.monthly_rate)
             if day.day == 20:
                 # User 3's PT-15 membership
                 self.assertTrue(member3.last_bill() != None)
@@ -136,12 +136,12 @@ class BillingTestCase(TestCase):
                 self.assertEqual(member7.is_guest(), self.user6)
                 self.assertTrue(member7.last_bill() != None)
                 self.assertEqual(member7.last_bill().dropins.count(), 0)
-                self.assertEquals(member7.last_bill().amount, 0)
+                self.assertEqual(member7.last_bill().amount, 0)
                 self.assertTrue(member6.last_bill() != None)
                 self.assertEqual(member6.last_bill().dropins.count(), 0)
                 self.assertEqual(member6.last_bill().guest_dropins.count(), 15)
                 # $75 base rate + 10 overage days @ $20 = $275
-                self.assertEquals(member6.last_bill().amount, 275)
+                self.assertEqual(member6.last_bill().amount, 275)
 
     def test_last_membership_and_anniversary_day(self):
         # User 1 = Resident since 6/26/2008
