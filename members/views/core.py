@@ -1,10 +1,4 @@
-import string
-import traceback
-import time
 from datetime import date, datetime, timedelta
-from operator import itemgetter, attrgetter
-from calendar import Calendar, HTMLCalendar
-from collections import defaultdict
 
 from django.conf import settings
 from django.contrib import messages
@@ -20,8 +14,8 @@ from django.template import Template, Context, RequestContext
 from nadine import email
 from nadine.models.core import UserProfile, Membership
 from nadine.models.usage import CoworkingDay
-from nadine.models.resource import Room
-from nadine.models.payment import Transaction
+#from nadine.models.resource import Room
+#from nadine.models.payment import Transaction
 from nadine.models.alerts import MemberAlert
 from staff.forms import MemberSearchForm, NewUserForm
 from members.forms import EditProfileForm
