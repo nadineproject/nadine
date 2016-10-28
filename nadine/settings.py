@@ -249,36 +249,40 @@ LOGGING = {
             'class': 'django.utils.log.AdminEmailHandler',
             'include_html': True,
             'formatter': 'verbose',
-        }
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
     },
     'loggers': {
         'django': {
-            'handlers': ['file'],
+            'handlers': ['file', 'console'],
             'level': 'INFO',
             'propagate': True,
         },
-        'django.request': {
-            'handlers': ['file', 'mail_admins'],
+        'nadine': {
+            'handlers': ['console'],
             'level': 'INFO',
-            'propagate': True,
         },
         'staff': {
-            'handlers': ['file'],
+            'handlers': ['console'],
             'level': 'INFO',
         },
-        'arpwatch': {
-            'handlers': ['file'],
-            'level': 'INFO',
-        },
+        # 'arpwatch': {
+        #     'handlers': ['file'],
+        #     'level': 'INFO',
+        # },
     },
 }
 
 # Import the local and theme SETTINGS files
 if os.path.isfile('nadine/local_settings.py'):
-    print("Loading local settings file...")
+    #print("Loading local settings file...")
     from nadine.local_settings import *
 if os.path.isfile('themes/active/theme_settings.py'):
-    print("Loading theme settings file...")
+    #print("Loading theme settings file...")
     import imp
     sys.path.append('themes/active')
     theme_settings = imp.load_source('themes.active.theme_settings', 'themes/active/theme_settings.py')
