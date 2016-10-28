@@ -110,7 +110,7 @@ def security_deposits(request):
         deposits.append({'username': deposit.user.username, 'name': deposit.user.get_full_name(), 'deposit_id': deposit.id, 'amount': deposit.amount})
         total_deposits = total_deposits + deposit.amount
     context = {'deposits': deposits, 'total_deposits': total_deposits}
-    return response(request, 'staff/security_deposits.html', context)
+    return render(request, 'staff/security_deposits.html', context)
 
 
 @staff_member_required
@@ -248,7 +248,7 @@ def view_config(request):
 
 
 @staff_member_required
-# TODO - evaluate 
+# TODO - evaluate
 def create_event(request):
     if request.method == 'POST':
         event_form = EventForm(request.POST)
