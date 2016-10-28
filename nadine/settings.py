@@ -18,6 +18,7 @@ BACKUP_COUNT = 30
 SITE_NAME = "Nadine"
 SITE_DOMAIN = "localhost"
 SITE_PROTO = "http"
+SITE_ID = 1
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = ('themes/active/static', 'static', )
@@ -35,9 +36,6 @@ SECRET_KEY = 'SET_YOUR_SECRET_KEY_IN_LOCAL_SETTINGS'
 # Displayed on the iPad after sign-in
 MOTD = "Enjoy your day at Office Nomads!"
 MOTD_TIMEOUT = 5000
-
-DISCOURSE_BASE_URL = 'http://your-discourse-site.com'
-DISCOURSE_SSO_SECRET = 'paste_your_secret_here'
 
 # Local time zone for this installation. Choices can be found here:
 # http://www.postgresql.org/docs/8.1/static/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE
@@ -72,8 +70,6 @@ LOGIN_URL = '/login/'
 # The interface for the front desk tablet.  Values are 'WEB' or "iOS"
 #TABLET = "iOS"
 TABLET = "WEB"
-
-SITE_ID = 1
 
 # Auth Backends
 AUTHENTICATION_BACKENDS = (
