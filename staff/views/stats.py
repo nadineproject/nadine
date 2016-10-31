@@ -281,10 +281,10 @@ def graph(request):
         title = "Membership Churn"
 
 
-    return render('staff/stats_graph.html', {'title':title, 'graph':graph,
+    context = {'title':title, 'graph':graph,
         'days': days, 'date_range_form': date_range_form, 'start': start, 'end': end,
-        'min': min_v, 'max': max_v, 'avg': avg_v
-    }, context_instance=RequestContext(request))
+        'min': min_v, 'max': max_v, 'avg': avg_v}
+    return render(request, 'staff/stats_graph.html', context)
 
 
 def graph_members(days):
