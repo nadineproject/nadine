@@ -107,7 +107,7 @@ def usaepay_user(request, username):
         messages.add_message(request, messages.ERROR, e)
 
     context = {'user': user, 'history': history, 'settings':settings }
-    return render('staff/usaepay.html', context)
+    return render(request, 'staff/usaepay.html', context)
 
 
 @staff_member_required
