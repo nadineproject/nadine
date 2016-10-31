@@ -44,7 +44,7 @@ p {
 /* Header */
 
 #main-nav {
-	background-color: RGBA(140, 164, 179, 1);
+	background-color: RGBA(77, 127, 149, 1);
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -451,6 +451,37 @@ textarea#id_bio {
 
 #img-id {
 	height: 200px;
+}
+
+.tags {
+	margin-top: 5%;
+	margin-left: 10%;
+	margin-right: 10%;
+}
+
+.tag-table {
+	margin-left: 20%;
+	margin-right: 20%;
+}
+
+.tag-chip {
+	color: white;
+	font-size: 1.2em;
+	font-weight: lighter;
+}
+
+.chip {
+	color: white;
+	background-color: RGBA(140, 164, 179, 1);
+}
+
+#tag {
+	width: 30%;
+}
+
+.tag-btn {
+	margin-left: 10%;
+	background-color: RGBA(63, 146, 161, 1);
 }
 
 /*Registration form styling*/

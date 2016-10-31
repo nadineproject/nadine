@@ -181,15 +181,14 @@
 				});
 			})(jQuery);
 
-			$(window).resize(function(e) {
-				if($('.main').width() < 990) {
-					$('footer').attr('class', 'sticky-footer');
-				} else {
-					if($('footer').hasClass('sticky-footer')) {
-						$('footer').attr('page-footer main-footer');
-					}
+			if($('.main').height() < 699) {
+				console.log('tiny!');
+				$('footer').attr('class', 'sticky-footer');
+			} else {
+				if($('footer').hasClass('sticky-footer')) {
+					$('footer').attr('page-footer main-footer');
 				}
-			})
+			}
 		});
 		</script>
 	{% endblock %}

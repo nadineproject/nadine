@@ -21,25 +21,35 @@
 
 {% block content %}
 	<h2>Profile Tags for: {{ user }}</h2>
-	<ul>
-		{% for t in user_tags %}
-			<li>
-				<a href="{% url 'member_tag' t %}">{{ t }}</a>
-				(<a href="{% url 'member_remove_tag' user.username t %}" style="color: red;">x</a>)
-			</li>
-		{% endfor %}
-	</ul>
+	<div class='tags'>
+		<ul>
+			{% for t in user_tags %}
+				<li class='chip'>
+					<a class="tag-chip" href="{% url 'member_tag' t %}">{{ t }}</a>
+					 (<a href="{% url 'member_remove_tag' user.username t %}" style="color: RGBA(199, 121, 102, 1);"> X </a>)
+				</li>
+			{% endfor %}
+		</ul>
 
-	<div class="ui-widget">
-	<form action="." method="POST">
-		<input id="tag" name="tag">
-		<input type="submit" value="Add">
-		{% csrf_token %}
-	</form>
+		<div class="ui-widget">
+		<form action="." method="POST">
+			<table class='tag-table'>
+				<tr>
+					<td id='tag'>
+						<input name="tag" placeholder="e.g. Biking">
+					</td>
+					<td>
+						<input class='btn tag-btn' type="submit" value="Add">
+					</td>
+				</tr>
+			</table>
+			{% csrf_token %}
+		</form>
+		</div>
+
+		{% if error %}
+			<div style="color:red;"><strong>Error:</strong> {{ error }}</div>
+		{% endif %}
 	</div>
-
-	{% if error %}
-		<div style="color:red;"><strong>Error:</strong> {{ error }}</div>
-	{% endif %}
 
 {% endblock %}
