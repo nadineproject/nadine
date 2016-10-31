@@ -14,10 +14,14 @@ class Command(BaseCommand):
     args = "[backup_file_path]"
     requires_system_checks = False
 
-    def handle(self, *labels, **options):
-        if not labels or len(labels) != 1:
-            raise CommandError('Enter one argument, the path to the backup tar file.')
-        manager = BackupManager()
-        manager.restore_backup(labels[0])
+    def add_arguments(self, parser):
+        # Positional arguments
+        parser.add_argument('backup_file', nargs='+', type=str)
 
-# Copyright 2010 Trevor F. Smith (http://trevor.smith.name/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+    def handle(self, *labels, **options):
+        backup_file = options['backup_file'][0]
+        manager = BackupManager()
+        manager.restore_backup(backup_file)
+
+
+# Copyright 2016 Trevor F. Smith (http://trevor.smith.name/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

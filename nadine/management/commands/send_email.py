@@ -11,8 +11,11 @@ from django.core.management.base import BaseCommand, CommandError
 
 class Command(BaseCommand):
     help = "Sends system emails to given user."
-    args = "[username] [message]"
     requires_system_checks = False
+
+    def add_arguments(self, parser):
+        parser.add_argument('username', type=str)
+        parser.add_argument('message', type=str)
 
     def print_keys(self):
         print("Valid Message Keys: ")
@@ -20,22 +23,18 @@ class Command(BaseCommand):
             print("   " + key)
 
     def handle(self, *labels, **options):
-        if not labels or len(labels) != 2:
-            self.print_keys()
-            raise CommandError('Enter a username and message key')
-
         # Make sure we have a valid user
         user = None
         try:
-            user = User.objects.get(username=labels[0])
+            user = User.objects.get(username=options['username'])
         except:
-            raise CommandError("Invalid username '%s'" % labels[0])
+            raise CommandError("Invalid username '%s'" % options['username'])
 
-        message = labels[1].lower()
-        print("Sending %s..." % message)
+        message = options['message'].lower()
         if not email.send_manual(user, message):
             self.print_keys()
-            raise CommandError("Invalid message key '%s'" % labels[1])
+            raise CommandError("Invalid message key '%s'" % options['message'])
+        print("Sending %s..." % message)
 
         print("Email address: %s" % user.email)
 
