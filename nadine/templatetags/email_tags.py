@@ -13,11 +13,11 @@ register = template.Library()
 
 @register.simple_tag
 def email_verified(email):
-    if isinstance(email, unicode):
-        if not email:
-            return None
+    if not email:
+        return None
+    if not isinstance(email, EmailAddress):
+        # Got a string so we should pull the object from the database
         email = EmailAddress.objects.get(email=email)
-
     if email.is_verified():
         return ""
 

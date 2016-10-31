@@ -48,7 +48,6 @@ def is_manager(user):
 
 def is_new_user(user):
     if user.is_anonymous():
-        print 'New user!'
         return True
     return False
 

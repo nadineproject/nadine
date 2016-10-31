@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import os
 import uuid
 import pprint
@@ -244,7 +246,6 @@ class UserQueryHelper():
     def missing_key_agreement(self):
         active_agmts = FileUpload.objects.filter(document_type=FileUpload.KEY_AGMT, user__in=self.active_members()).distinct()
         users_with_agmts = active_agmts.values('user')
-        print users_with_agmts
         return self.members_with_keys().exclude(id__in=users_with_agmts).order_by('first_name')
 
     def missing_photo(self):

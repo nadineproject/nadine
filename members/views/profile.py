@@ -58,7 +58,6 @@ def user_activity_json(request, username):
     #response_data['activity_this_month'] = serializers.serialize('json', activity_this_month)
     response_data['usage_this_month'] = len(activity_this_month)
     #response_data['coworkingdays'] = serializers.serialize('json', user.coworkingday_set.all())
-    print response_data
     return JsonResponse(response_data)
 
 

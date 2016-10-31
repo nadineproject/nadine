@@ -164,7 +164,7 @@ class Command(BaseCommand):
         admin_user = User.objects.create_superuser(admin_username, admin_email, admin_password)
         admin_user.first_name = admin_first_name
         admin_user.last_name = admin_last_name
-        print admin_username
+        #print(admin_username)
         admin_user.save()
 
     # Mail Server Setup

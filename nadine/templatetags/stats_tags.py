@@ -31,5 +31,5 @@ def month_history_datum(parser, token):
     try:
         tag_name = token.split_contents()
     except ValueError:
-        raise template.TemplateSyntaxError, "%r tag requires no arguments" % token.contents.split()[0]
+        raise template.TemplateSyntaxError("%r tag requires no arguments" % token.contents.split()[0])
     return LoopCommaNode()

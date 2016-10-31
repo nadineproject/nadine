@@ -10,7 +10,7 @@ import django_localflavor_us.models
 
 class Migration(migrations.Migration):
 
-    replaces = [(b'nadine', '0001_initial'), (b'nadine', '0002_auto_20150210_1136'), (b'nadine', '0003_memberalert'), (b'nadine', '0004_auto_20150330_1157'), (b'nadine', '0005_auto_20150421_0930')]
+    replaces = [('nadine', '0001_initial'), ('nadine', '0002_auto_20150210_1136'), ('nadine', '0003_memberalert'), ('nadine', '0004_auto_20150330_1157'), ('nadine', '0005_auto_20150421_0930')]
 
     dependencies = [
         ('taggit', '0001_initial'),
@@ -49,9 +49,9 @@ class Migration(migrations.Migration):
             name='DailyLog',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('visit_date', models.DateField(verbose_name=b'Date')),
-                ('payment', models.CharField(max_length=5, verbose_name=b'Payment', choices=[(b'Bill', b'Billable'), (b'Trial', b'Free Trial'), (b'Waved', b'Payment Waved')])),
-                ('note', models.CharField(max_length=128, verbose_name=b'Note', blank=b'True')),
+                ('visit_date', models.DateField(verbose_name='Date')),
+                ('payment', models.CharField(max_length=5, verbose_name='Payment', choices=[('Bill', 'Billable'), ('Trial', 'Free Trial'), ('Waved', 'Payment Waved')])),
+                ('note', models.CharField(max_length=128, verbose_name='Note', blank='True')),
                 ('created', models.DateTimeField(auto_now_add=True)),
             ],
             options={
@@ -67,7 +67,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=64)),
                 ('content_type', models.CharField(max_length=64)),
                 ('file', models.FileField(upload_to=nadine.models.user_file_upload_path)),
-                ('document_type', models.CharField(default=None, max_length=200, null=True, blank=True, choices=[(b'Member_Information', b'Member Information'), (b'Member_Agreement', b'Membership Agreement'), (b'Key_Agreement', b'Key Holder Agreement'), (b'Event_Host_Agreement', b'Event Host Agreement')])),
+                ('document_type', models.CharField(default=None, max_length=200, null=True, blank=True, choices=[('Member_Information', 'Member Information'), ('Member_Agreement', 'Membership Agreement'), ('Key_Agreement', 'Key Holder Agreement'), ('Event_Host_Agreement', 'Event Host Agreement')])),
                 ('uploaded_by', models.ForeignKey(related_name='uploaded_by', to=settings.AUTH_USER_MODEL)),
                 ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],
@@ -98,9 +98,9 @@ class Migration(migrations.Migration):
             name='Member',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('email2', models.EmailField(max_length=75, null=True, verbose_name=b'Alternate Email', blank=True)),
+                ('email2', models.EmailField(max_length=75, null=True, verbose_name='Alternate Email', blank=True)),
                 ('phone', django_localflavor_us.models.PhoneNumberField(max_length=20, null=True, blank=True)),
-                ('phone2', django_localflavor_us.models.PhoneNumberField(max_length=20, null=True, verbose_name=b'Alternate Phone', blank=True)),
+                ('phone2', django_localflavor_us.models.PhoneNumberField(max_length=20, null=True, verbose_name='Alternate Phone', blank=True)),
                 ('address1', models.CharField(max_length=128, blank=True)),
                 ('address2', models.CharField(max_length=128, blank=True)),
                 ('city', models.CharField(max_length=128, blank=True)),
@@ -113,7 +113,7 @@ class Migration(migrations.Migration):
                 ('url_linkedin', models.URLField(null=True, blank=True)),
                 ('url_aboutme', models.URLField(null=True, blank=True)),
                 ('url_github', models.URLField(null=True, blank=True)),
-                ('gender', models.CharField(default=b'U', max_length=1, choices=[(b'U', b'Unknown'), (b'M', b'Male'), (b'F', b'Female'), (b'O', b'Other')])),
+                ('gender', models.CharField(default='U', max_length=1, choices=[('U', 'Unknown'), ('M', 'Male'), ('F', 'Female'), ('O', 'Other')])),
                 ('has_kids', models.NullBooleanField()),
                 ('self_employed', models.NullBooleanField()),
                 ('company_name', models.CharField(max_length=128, null=True, blank=True)),
@@ -225,10 +225,10 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('transaction_date', models.DateTimeField(auto_now_add=True)),
-                ('status', models.CharField(default=b'open', max_length=10, choices=[(b'open', b'Open'), (b'closed', b'Closed')])),
+                ('status', models.CharField(default='open', max_length=10, choices=[('open', 'Open'), ('closed', 'Closed')])),
                 ('amount', models.DecimalField(max_digits=7, decimal_places=2)),
                 ('note', models.TextField(null=True, blank=True)),
-                ('bills', models.ManyToManyField(related_name='transactions', to=b'nadine.Bill')),
+                ('bills', models.ManyToManyField(related_name='transactions', to='nadine.Bill')),
                 ('member', models.ForeignKey(to='nadine.Member')),
             ],
             options={
@@ -258,22 +258,22 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='dailylog',
             name='guest_of',
-            field=models.ForeignKey(related_name='guest_of', verbose_name=b'Guest Of', blank=True, to='nadine.Member', null=True),
+            field=models.ForeignKey(related_name='guest_of', verbose_name='Guest Of', blank=True, to='nadine.Member', null=True),
         ),
         migrations.AddField(
             model_name='dailylog',
             name='member',
-            field=models.ForeignKey(related_name='daily_logs', verbose_name=b'Member', to='nadine.Member', unique_for_date=b'visit_date'),
+            field=models.ForeignKey(related_name='daily_logs', verbose_name='Member', to='nadine.Member', unique_for_date='visit_date'),
         ),
         migrations.AddField(
             model_name='bill',
             name='dropins',
-            field=models.ManyToManyField(related_name='bills', null=True, to=b'nadine.DailyLog', blank=True),
+            field=models.ManyToManyField(related_name='bills', null=True, to='nadine.DailyLog', blank=True),
         ),
         migrations.AddField(
             model_name='bill',
             name='guest_dropins',
-            field=models.ManyToManyField(related_name='guest_bills', null=True, to=b'nadine.DailyLog', blank=True),
+            field=models.ManyToManyField(related_name='guest_bills', null=True, to='nadine.DailyLog', blank=True),
         ),
         migrations.AddField(
             model_name='bill',
@@ -293,7 +293,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='dailylog',
             name='payment',
-            field=models.CharField(max_length=5, verbose_name=b'Payment', choices=[(b'Bill', b'Billable'), (b'Trial', b'Free Trial'), (b'Waive', b'Payment Waived')]),
+            field=models.CharField(max_length=5, verbose_name='Payment', choices=[('Bill', 'Billable'), ('Trial', 'Free Trial'), ('Waive', 'Payment Waived')]),
         ),
         migrations.CreateModel(
             name='MemberAlert',
@@ -312,7 +312,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='member',
             name='email2',
-            field=models.EmailField(max_length=254, null=True, verbose_name=b'Alternate Email', blank=True),
+            field=models.EmailField(max_length=254, null=True, verbose_name='Alternate Email', blank=True),
         ),
         migrations.AlterField(
             model_name='member',
@@ -327,11 +327,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='bill',
             name='dropins',
-            field=models.ManyToManyField(related_name='bills', to=b'nadine.DailyLog'),
+            field=models.ManyToManyField(related_name='bills', to='nadine.DailyLog'),
         ),
         migrations.AlterField(
             model_name='bill',
             name='guest_dropins',
-            field=models.ManyToManyField(related_name='guest_bills', to=b'nadine.DailyLog'),
+            field=models.ManyToManyField(related_name='guest_bills', to='nadine.DailyLog'),
         ),
     ]
