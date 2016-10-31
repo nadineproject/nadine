@@ -50,8 +50,6 @@ p {
 	left: 0;
 }
 
-
-
 #main-nav a {
 	text-transform: uppercase;
 }
@@ -343,6 +341,7 @@ input#id_photo {
 
 .pf-error {
 	padding: 0;
+	color: red;
 }
 
 .cap-label {
@@ -376,7 +375,7 @@ td#pf-public, td#pf-company {
 }
 
 td#pf-photo {
-	width: 25%;
+	width: 20%;
 }
 
 input#id_company_name {
@@ -387,8 +386,16 @@ select#id_public_profile.browser-default {
 	width: 30%;
 }
 
-input#id_zipcode, input#id_emergency_name, input#id_emergency_relationship, input#id_phone, input#id_phone2, input#id_emergency_email {
+input#id_zipcode, input#id_emergency_name, input#id_emergency_relationship, input#id_emergency_email {
 	width: 70%;
+}
+
+input#id_phone, input#id_phone2 {
+	width: 70%;
+}
+
+#passInput-error {
+	width: 50%;;
 }
 
 input#id_city {

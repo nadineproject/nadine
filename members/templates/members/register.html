@@ -29,8 +29,8 @@
           <td class='pf-input'>{{ registration_form.last_name }}</td>
         </tr>
         <tr>
-          <td>{{ registration_form.first_name.errors }}</td>
-          <td>{{ registration_form.last_name.errors }}</td>
+          <td class='pf-error'>{{ registration_form.first_name.errors }}</td>
+          <td class='pf-error'>{{ registration_form.last_name.errors }}</td>
         </tr>
       </table>
       <table>
@@ -41,7 +41,7 @@
           <td class='pf-input' id='reg-email'>{{ registration_form.email }}</td>
         </tr>
         <tr>
-          <td>{{ registration_form.email.errors }}</td>
+          <td class='pf-error'>{{ registration_form.email.errors }}</td>
         </tr>
       </table>
       <table>
@@ -49,9 +49,9 @@
           <td class='cap-label'><strong>Create Password</strong></td>
           <td class='cap-label'><strong>Confirm Password</strong></td>
         </tr>
-        <tr>
-          <td><input class='pwd-input pf-input' type='password' name='password-create' /></td>
-          <td><input class='pwd-input pf-input' type='password' name='password-confirm' /></td>
+        <tr id='password-row'>
+          <td><input class='pwd-input pf-input' type='password' name='password-create' id='password-create' minlength=8/></td>
+          <td><input class='pwd-input pf-input' type='password' name='password-confirm' id='password-confirm' minlength=8/></td>
        </tr>
       </table>
     </div>
@@ -61,15 +61,17 @@
 {% endblock %}
 
 {% block upload %}
-  <tr class="row-odd">
-    <td id='pf-photo'><strong>Upload Photo</strong></td>
-    <td>
-      <input type='file' name='photo' style='background-color:RGBA(255, 255, 255, 0);' id="imgInp" />
-    </td>
-    <td>
-      <img id='img-id' src='' alt='profile photo' />
-    </td>
-  </tr>
+  <table>
+    <tr class="row-odd">
+      <td id='pf-photo'><strong>Upload Photo</strong></td>
+      <td>
+        <input type='file' name='photo' style='background-color:RGBA(255, 255, 255, 0);' id="imgInp" />
+      </td>
+      <td>
+        <img id='img-id' src='' alt='profile photo' />
+      </td>
+    </tr>
+  </table>
 {% endblock %}
 
 {% block emergency_info %}{% endblock %}
