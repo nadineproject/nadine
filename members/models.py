@@ -31,17 +31,17 @@ class MOTDManager(models.Manager):
 
 class MOTD(models.Model):
     objects = MOTDManager()
-    
+
     start_ts = models.DateTimeField(null=False, blank=False)
     end_ts = models.DateTimeField(null=False, blank=False)
     message = models.TextField(null=False, blank=False)
     delay_ms = models.SmallIntegerField(null=False, blank=False, default=5000)
-    
+
     def clean(self):
         if MOTD.objects.filter(start_ts__lte=self.start_ts, end_ts__gte=self.end_ts).count() != 0:
             raise ValidationError("MOTD exists for this date range")
 
-    def __unicode__(self):
+    def __str__(self):
         return self.message
 
 

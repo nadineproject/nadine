@@ -296,7 +296,7 @@ class MemberAlert(models.Model):
     def is_system_alert(self):
         return self.key in MemberAlert.SYSTEM_ALERTS
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s - %s: %s' % (self.key, self.user, self.is_resolved())
 
     class Meta:

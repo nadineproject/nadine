@@ -762,7 +762,7 @@ class EmailAddress(models.Model):
     remote_host = models.CharField(max_length=255, null=True, blank=True)
     is_primary = models.BooleanField(default=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.email
 
     def is_verified(self):
@@ -884,7 +884,7 @@ class EmergencyContact(models.Model):
     email = models.EmailField(blank=True, null=True)
     last_updated = models.DateTimeField(auto_now_add=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s - %s' % (self.user.username, self.name)
 
 def emergency_callback_save_callback(sender, **kwargs):
@@ -901,7 +901,7 @@ class XeroContact(models.Model):
     xero_id = models.CharField(max_length=64)
     last_sync = models.DateTimeField(null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s - %s' % (self.user.username, self.xero_id)
 
 
@@ -1145,7 +1145,7 @@ class FileUpload(models.Model):
             return False
         return self.content_type.startswith("text")
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s - %s: %s' % (self.uploadTS.date(), self.user, self.name)
 
     objects = FileUploadManager()

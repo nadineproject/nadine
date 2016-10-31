@@ -63,7 +63,7 @@ class Event(models.Model):
     paid_by = models.ForeignKey(User, blank=True, null=True, related_name="guest_event")
     is_public = models.BooleanField(default=False)
 
-    def __unicode__(self):
+    def __str__(self):
         if self.description:
             return self.description
         if self.is_public:

@@ -31,7 +31,7 @@ class BillingLog(models.Model):
         ordering = ['-started']
         get_latest_by = 'started'
 
-    def __unicode__(self):
+    def __str__(self):
         return 'BillingLog %s: %s' % (self.started, self.successful)
 
     def ended_date(self):
@@ -60,7 +60,7 @@ class Bill(models.Model):
         ordering = ['-bill_date']
         get_latest_by = 'bill_date'
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Bill %s [%s]: %s - $%s' % (self.id, self.bill_date, self.user, self.amount)
 
     def get_admin_url(self):
@@ -82,7 +82,7 @@ class Transaction(models.Model):
         app_label = 'nadine'
         ordering = ['-transaction_date']
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s: %s' % (self.user.get_full_name(), self.amount)
 
     def get_admin_url(self):

@@ -314,7 +314,7 @@ class IncomingMail(models.Model):
     @property
     def inspect_url(self): return 'https://%s%s' % (Site.objects.get_current().domain, reverse('interlink_inspect', kwargs={'id': self.id}))
 
-    def __unicode__(self): return '%s: %s' % (self.origin_address, self.subject)
+    def __str__(self): return '%s: %s' % (self.origin_address, self.subject)
 
 
 class OutgoingMailManager(models.Manager):

@@ -15,7 +15,6 @@ class Command(BaseCommand):
     requires_system_checks = False
 
     def add_arguments(self, parser):
-        # Positional arguments
         parser.add_argument('backup_file', nargs='+', type=str)
 
     def handle(self, *labels, **options):

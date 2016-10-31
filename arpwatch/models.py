@@ -22,9 +22,9 @@ class UserDevice(models.Model):
     mac_address = models.CharField(max_length=17, blank=False, null=False, unique=True, db_index=True)
     ignore = models.BooleanField(default=False)
 
-    def __unicode__(self):
+    def __str__(self):
         if self.user:
-            return self.user.__unicode__()
+            return self.user.__str__()
         if self.device_name:
             return self.device_name
         return self.mac_address
@@ -39,7 +39,7 @@ class UserRemoteAddr(models.Model):
         ordering = ['-logintime']
         get_latest_by = 'logintime'
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s: %s = %s' % (self.logintime, self.user, self.ip_address)
 
 
@@ -116,7 +116,7 @@ class ArpLog(models.Model):
         ordering = ['-runtime']
         get_latest_by = 'runtime'
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s: %s = %s' % (self.runtime, self.ip_address, self.device.mac_address)
 
 
@@ -125,7 +125,7 @@ class ImportLog(models.Model):
     file_name = models.CharField(max_length=32, blank=False, null=False, db_index=True)
     success = models.BooleanField(default=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s: %s = %s' % (self.created, self.file_name, self.success)
 
 # Copyright 2011 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

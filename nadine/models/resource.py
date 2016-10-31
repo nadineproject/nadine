@@ -68,7 +68,7 @@ class Room(models.Model):
 
     objects = RoomManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_events(self, start, end):
