@@ -426,7 +426,7 @@
         if ($('#hour-' + end).hasClass('reserved')) {
           $('#cal-error').html('<tr><td>Your requested booking overlaps with another reservation.</td></tr>');
         } else {
-          toggleStatus(end);
+          toggleStatus(id);
           $('#end-time').val(newEnd);
         }
       });

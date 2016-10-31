@@ -141,6 +141,12 @@
         scrollbar: true
       });
 
+      $('.datepicker').pickadate({
+        selectMonths: true,
+        selectYears: 1,
+        format: 'yyyy-mm-dd'
+      });
+
       var today = $('#calendar').fullCalendar('getDate');
       var publicEvents = [];
       var rooms = [{Pike: 'RGBA(71, 159, 198, 1)'}, {Olive: 'RGBA(249, 195, 50, 1)'}]
