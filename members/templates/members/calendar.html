@@ -131,6 +131,12 @@
 {% block extrajs %}
   <script>
     $(document).ready(function() {
+      (function($){
+				$(function(){
+					$('.button-collapse').sideNav();
+				});
+			})(jQuery);
+
       $('.timepicker').timepicker({
         timeFormat: 'h:mm p',
         interval: 30,

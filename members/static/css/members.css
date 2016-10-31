@@ -101,6 +101,14 @@ p {
 
 .side-nav {
 	background-color: RGBA(80, 80, 80, 1);
+	padding-top: 5%;
+	padding-left: 3%;
+	width: 50%;
+}
+
+.side-nav li a {
+	font-size: 3em;
+	padding-top: 20%;
 }
 
 #sidenav-overlay {
