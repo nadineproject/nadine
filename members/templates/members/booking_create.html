@@ -142,6 +142,13 @@
 {% block extrajs %}
   <script>
     $(document).ready(function() {
+      $(document).ready(function() {
+        (function($){
+  				$(function(){
+  					$('.button-collapse').sideNav();
+  				});
+  			})(jQuery);
+
       var amOrPm = ' AM';
 
       $('#booking-date').val('{{ date }}');

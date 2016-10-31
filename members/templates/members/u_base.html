@@ -129,7 +129,7 @@
 			</div>
 		{% block main_body %}
 			<div>
-				<div class='row'>
+				<div class='row main'>
 					<div class="lightbg col s10 offset-s1">
 						<div id="content">{% block content %}{% endblock %}</div>
 					</div>
@@ -177,11 +177,19 @@
 		$(document).ready(function(){
 			(function($){
 				$(function(){
-
 					$('.button-collapse').sideNav();
-
 				});
 			})(jQuery);
+
+			$(window).resize(function(e) {
+				if($('.main').width() < 990) {
+					$('footer').attr('class', 'sticky-footer');
+				} else {
+					if($('footer').hasClass('sticky-footer')) {
+						$('footer').attr('page-footer main-footer');
+					}
+				}
+			})
 		});
 		</script>
 	{% endblock %}

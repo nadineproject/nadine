@@ -131,6 +131,12 @@
 {% block extrajs %}
   <script>
     $(document).ready(function() {
+      (function($){
+				$(function(){
+					$('.button-collapse').sideNav();
+				});
+			})(jQuery);
+
       $('.timepicker').timepicker({
         timeFormat: 'h:mm p',
         interval: 30,
@@ -164,12 +170,15 @@
 
       {% endfor %}
 
-      $('#calendar').fullCalendar({
+      var $fc = $("#calendar").fullCalendar(options);
+
+      var options = {
         header: {
           left:'prev,next today',
           center: 'title',
           right: 'month,basicWeek,basicDay'
         },
+        defaultView: 'agendaDay',
         defaultDate: moment(),
         navLinks: true,
   			editable: true,
@@ -199,7 +208,33 @@
           $('#create-date').val(date);
           $('#event-modal').css('display', 'block');
         }
+      }
+
+      function recreateFC(screenWidth) {
+        if (screenWidth < 700) {
+          options.header = {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'month,basicWeek,basicDay'
+          };
+          options.defaultView = 'agendaDay';
+        } else {
+          options.header = {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'month,basicWeek,basicDay'
+          };
+          options.defaultView = 'month';
+        }
+        $fc.fullCalendar('destroy');
+        $fc.fullCalendar(options);
+      }
+
+      $(window).resize(function () {
+        recreateFC($(window).width());
       });
+
+      recreateFC($(window).width());
 
       $('.modal-btn').on('click', function() {
         $('#infoModal').css('display', 'none');

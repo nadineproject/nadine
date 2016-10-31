@@ -275,8 +275,24 @@
             // $('#billing_tab').on("click", function(e) {
                 // e.preventDefault();
                 url = "{% url 'member_profile_billing' user.username %}"
-                draw_tab(url, "#tabs-5")
+                draw_tab(url, "#tabs-5");
             // });
+
+            (function($){
+      				$(function(){
+      					$('.button-collapse').sideNav();
+      				});
+      			})(jQuery);
+
+
+            // TODO finish responsive footer by testing on a device
+    				if($('.main').width() < 990) {
+              $('footer').attr('class', 'sticky-footer');
+    				} else {
+    					if($('footer').hasClass('sticky-footer')) {
+                $('footer').attr('page-footer main-footer');
+    					}
+    				}
         });
     </script>
 {% endblock %}
