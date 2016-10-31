@@ -137,7 +137,7 @@ def confirm_booking(request, room, start, end, date):
         start = request.POST.get('start')
         end = request.POST.get('end')
         date = request.POST.get('date')
-        start_ts, end_ts = coerce_times(start, end, date)
+        start_ts, end_ts, start, end = coerce_times(start, end, date)
         description = request.POST.get('description', '')
         charge = request.POST.get('charge', 0)
         is_public = request.POST.get('is_public', False)
