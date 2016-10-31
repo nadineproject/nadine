@@ -4,6 +4,7 @@ from celery import shared_task
 from datetime import datetime, timedelta
 
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 from nadine.models.core import Membership
 from nadine.models.usage import CoworkingDay
