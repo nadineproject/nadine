@@ -135,7 +135,8 @@ class MailingList(models.Model):
         """Returns a tuple of email address strings, one for each subscribed address"""
         return tuple([sub.email for sub in self.subscribers.all()])
 
-    def __unicode__(self): return '%s' % self.name
+    def __str__(self):
+        return '%s' % self.name
 
     def create_incoming(self, message, commit=True):
         "Parses an email message and creates an IncomingMail from it."
