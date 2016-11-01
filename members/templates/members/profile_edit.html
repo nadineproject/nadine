@@ -332,12 +332,11 @@
 {% block extrajs %}
 <script>
   $(document).ready(function(){
-    $(document).ready(function() {
       (function($){
-				$(function(){
-					$('.button-collapse').sideNav();
-				});
-			})(jQuery);
+        $(function(){
+          $('.button-collapse').sideNav();
+        });
+      })(jQuery);
 
     $('#img-id').hide();
 
@@ -363,7 +362,7 @@
       e.preventDefault();
 
       $('.password-error').remove();
-    })
+    });
 
     $('#password-confirm').on('focusout', function() {
       var drtyPass = $('#password-confirm').val();
