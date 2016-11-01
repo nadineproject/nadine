@@ -14,7 +14,7 @@ from django.conf import settings
 
 from monthdelta import MonthDelta, monthmod
 
-from staff.forms import MemberEditForm, MembershipForm
+from nadine.forms import MemberEditForm, MembershipForm
 from nadine.models import Membership, MemberNote, MembershipPlan, SentEmailLog, FileUpload, SpecialDay
 from nadine import email
 

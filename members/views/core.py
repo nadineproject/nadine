@@ -17,8 +17,7 @@ from nadine.models.usage import CoworkingDay
 #from nadine.models.resource import Room
 #from nadine.models.payment import Transaction
 from nadine.models.alerts import MemberAlert
-from staff.forms import MemberSearchForm, NewUserForm
-from members.forms import EditProfileForm
+from nadine.forms import MemberSearchForm, NewUserForm, EditProfileForm
 from members.models import HelpText
 
 

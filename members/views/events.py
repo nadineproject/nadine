@@ -15,8 +15,8 @@ from django.utils import timezone
 from nadine.models.core import UserProfile, Membership
 from nadine.models.usage import CoworkingDay, Event
 from nadine.models.resource import Room
+from nadine.forms import EventForm
 
-from members.forms import EventForm
 from members.views.core import is_active_member
 
 

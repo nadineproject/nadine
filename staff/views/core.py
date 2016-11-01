@@ -23,12 +23,9 @@ from django.conf import settings
 from nadine.models.core import Membership, MembershipPlan, MemberGroups, SecurityDeposit
 from nadine.models.alerts import MemberAlert
 from nadine.utils.slack_api import SlackAPI
+from nadine.forms import MemberSearchForm, MembershipForm, EventForm
 
 from staff import user_reports
-from staff.forms import MemberSearchForm, MembershipForm
-
-# TODO - Is this needed here?
-from members.forms import EventForm
 
 from arpwatch import arp
 from arpwatch.models import ArpLog
