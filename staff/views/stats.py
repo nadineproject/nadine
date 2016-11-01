@@ -16,9 +16,9 @@ from django.conf import settings
 
 from nadine.models.core import Membership, MembershipPlan, Neighborhood
 from nadine.models.usage import CoworkingDay
+from nadine.forms import DateRangeForm
 
 from staff.views.activity import date_range_from_request, START_DATE_PARAM, END_DATE_PARAM
-from staff.forms import DateRangeForm
 
 ################################################################################
 # Helper Methods

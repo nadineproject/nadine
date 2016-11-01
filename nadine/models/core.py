@@ -408,7 +408,7 @@ class UserProfile(models.Model):
         return xero_api.get_open_invoices(self.user)
 
     def pay_bills_form(self):
-        from staff.forms import PayBillsForm
+        from nadine.forms import PayBillsForm
         return PayBillsForm(initial={'username': self.user.username, 'amount': self.open_bills_amount})
 
     def last_bill(self):

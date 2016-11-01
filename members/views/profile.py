@@ -17,9 +17,9 @@ from nadine.models.core import UserProfile, Membership, FileUpload
 from nadine.models.usage import CoworkingDay
 from nadine.models.payment import Transaction
 from nadine.models.alerts import MemberAlert
+from nadine.forms import EditProfileForm
 from arpwatch import arp
 from arpwatch.models import ArpLog, UserDevice
-from members.forms import EditProfileForm
 from members.views.core import is_active_member
 
 

@@ -16,7 +16,7 @@ from django.conf import settings
 
 from doors.keymaster.models import DoorEvent
 from arpwatch.models import ArpLog
-from staff.forms import CoworkingDayForm, DateRangeForm
+from nadine.forms import CoworkingDayForm, DateRangeForm
 from nadine.models import CoworkingDay, Membership
 
 START_DATE_PARAM = 'start'
