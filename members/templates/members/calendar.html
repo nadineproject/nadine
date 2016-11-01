@@ -164,8 +164,14 @@
           end: moment.unix("{{ item.end_ts|date:'U' }}"),
           room: "{{ item.room }}",
           host: "{{ host.first_name }}" + " " + "{{ host.last_name }}",
-          img: "{{ host.profile.photo }}"
+          img: "{{ host.profile.photo }}",
         }
+        if (event.room == ) {
+          event.color = 'RGBA(71, 159, 198, 1)';
+        } else {
+          event.color = 'RGBA(249, 195, 50, 1)'
+        }
+
         publicEvents.push(event);
 
       {% endfor %}
