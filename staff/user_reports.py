@@ -33,7 +33,7 @@ class UserReportForm(forms.Form):
     years = (2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016)
     report = forms.ChoiceField(choices=REPORT_KEYS, required=True)
     order_by = forms.ChoiceField(choices=REPORT_FIELDS, required=True)
-    active_only = forms.BooleanField(initial=True)
+    active_only = forms.BooleanField(initial=True, required=False)
     #start_date = forms.DateField(required=True, widget=SelectDateWidget(years=years))
     #end_date = forms.DateField(required=True, widget=SelectDateWidget(years=years))
     start_date = forms.DateField(required=True)
