@@ -141,6 +141,10 @@ def confirm_booking(request, room, start, end, date):
         description = request.POST.get('description', '')
         charge = request.POST.get('charge', 0)
         is_public = request.POST.get('is_public', False)
+        if is_public == 'True':
+            is_public = True
+        else:
+            is_public = False
         event = Event(user=user, room=room, start_ts=start_ts, end_ts=end_ts, description=description, charge=charge, is_public=is_public)
 
         stillAv = Room.objects.available(start=start_ts, end=end_ts)
