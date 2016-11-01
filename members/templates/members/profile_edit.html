@@ -66,7 +66,7 @@
     </tr>
     {% endfor %}
 
-    <form action="{% url 'email_add' %}" method="POST">
+    <form action="{% url 'email_add' %}" method="POST" autocomplete="off">
       <input type="hidden" name="username" value="{{ user.username }}" />
       <tr>
         <td class='pf-email'>
@@ -80,7 +80,7 @@
     </form>
   </table>
 
-  <form enctype="multipart/form-data" action='.' method='POST'>
+  <form enctype="multipart/form-data" action='.' method='POST' autocomplete="off">
     <h3>Change Password</h3>
     <div style='text-align:left;' id='passwords'>
       <table>
