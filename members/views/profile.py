@@ -101,13 +101,21 @@ def edit_profile(request, username):
         profile_form = EditProfileForm(request.POST, request.FILES)
         if profile_form.is_valid():
             if request.POST.get('password-create') == request.POST.get('password-confirm'):
-                profile_form.save()
-
                 pwd = request.POST.get('password-create')
-                user.set_password(pwd)
-                user.save()
 
-                return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
+                if len(pwd.strip()) > 0:
+                    if pwd.strip() == pwd and len(pwd) > 7:
+                        profile_form.save()
+                        user.set_password(pwd)
+                        user.save()
+
+                        return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
+                    else:
+                        page_message = 'Your password must be at least 8 characters long.'
+                else:
+                    profile_form.save()
+
+                    return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
             else:
                 page_message = 'The entered passwords do not match. Please try again.'
     else:
