@@ -201,8 +201,7 @@ def calendar(request):
         else:
             page_message = "Did not save your event. Double check that the event start is before the end time. Thank you."
 
-    context = {'data': data, 'GOOGLE_CALENDAR_ID': settings.GOOGLE_CALENDAR_ID,
-        'GOOGLE_API_KEY': settings.GOOGLE_API_KEY, 'page_message': page_message}
+    context = {'data': data, 'GOOGLE_CALENDAR_ID': settings.GOOGLE_CALENDAR_ID,'GOOGLE_API_KEY': settings.GOOGLE_API_KEY, 'page_message': page_message, 'CALENDAR_DICT': settings.CALENDAR_DICT}
     return render(request, 'members/calendar.html', context)
 
 
