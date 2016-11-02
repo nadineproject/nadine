@@ -208,7 +208,7 @@ ALLOW_ONLINE_REGISTRATION = False
 # Allows or does not allow for users to upload their own profile photo on the edit profile page.
 ALLOW_PHOTO_UPLOAD = False
 
-# List of possible public calendar designations and the color for display
+# List of possible public calendar designations and the color for display. Color can in any color format (name, RGBA, Hex, etc)
 CALENDAR_DICT = {}
 
 # The uncommented country below allows for either the US states or Canadian provinces to be options for member profiles.

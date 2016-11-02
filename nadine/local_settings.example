@@ -46,7 +46,7 @@ TEAM_MEMBERSHIP_PLAN = "ON Team"
 SECRET_KEY = ''
 
 # List of possible public calendar designations and the color for display
-CALENDAR_DICT = {'Public':'red', 'Member Only':'blue'}
+CALENDAR_DICT = {'Public':'red', 'Member Only': 'RGBA(71, 159, 198, 1)' }
 
 # Google Settngs
 GOOGLE_ANALYTICS_ID = "YOUR-GOOGLE-CODE"
