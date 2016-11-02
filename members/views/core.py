@@ -46,8 +46,11 @@ def is_manager(user):
 
 
 def is_new_user(user):
-    if user.is_anonymous():
-        return True
+    # also check for staff and if settings allow registration
+    if user.is_anonymous() or user.profile.is_manager():
+        if settings.ALLOW_ONLINE_REGISTRATION == True:
+            return True
+
     return False
 
 
