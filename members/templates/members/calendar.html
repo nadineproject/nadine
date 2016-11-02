@@ -155,7 +155,6 @@
 
       var today = $('#calendar').fullCalendar('getDate');
       var publicEvents = [];
-      var rooms = [{Pike: 'RGBA(71, 159, 198, 1)'}, {Olive: 'RGBA(249, 195, 50, 1)'}]
 
       {% for item, host in data %}
         var event = {
@@ -166,11 +165,12 @@
           host: "{{ host.first_name }}" + " " + "{{ host.last_name }}",
           img: "{{ host.profile.photo }}",
         }
-        if (event.room == ) {
-          event.color = 'RGBA(71, 159, 198, 1)';
-        } else {
-          event.color = 'RGBA(249, 195, 50, 1)'
-        }
+
+        {% for category, color in CALENDAR_DICT.items %}
+          if (event.room == '{{category}}') {
+            event.color = '{{color}}';
+          }
+        {% endfor %}
 
         publicEvents.push(event);
 
