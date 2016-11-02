@@ -66,11 +66,11 @@ function gotoEmailReset(emailAddress){
         <a href="{% url 'staff_activity_user' user.username %}">activity</a> |
         <a href="{% url 'doors_keys' user.username %}">keys</a> |
         <a href="{% url 'staff_user_files' user.username %}">files</a> |
-        <a href="{% url 'member_profile' user.username %}">profile</a> |
         <a href="{% url 'staff_user_payment' user.username %}">usaepay</a> |
         <a href="{% url 'staff_xero' user.username %}">xero</a> |
         <a href="{% url 'admin:auth_user_change' user.id %}">admin</a> |
-        <a href="{% url 'staff_user_edit' user.username %}">edit details</a> |
+        <a href="{% url 'member_profile' user.username %}">view profile</a> |
+        <a href="{% url 'member_edit_profile' user.username %}">edit profile</a> |
         {% if user.profile.is_active %}
             <a href="{% url 'staff_membership' user.profile.last_membership.id %}">update membership</a>
         {% else %}

@@ -85,8 +85,8 @@
     <div style='text-align:left;' id='passwords'>
       <table>
         <tr>
-          <td class='cap-label'><strong>Create Password</strong></td>
-          <td class='cap-label'><strong>Confirm Password</strong></td>
+          <td class='cap-label'>Password</td>
+          <td class='cap-label'>Confirm Password</td>
         </tr>
         <tr id='password-row'>
           <td><input class='pwd-input pf-input' type='password' name='password-create' id='password-create' minlength=8/></td>
@@ -98,11 +98,11 @@
     <h3 style='text-align:left;'>Contact Information</h3>
     <div id='contact'>
       <table>
-        <tr class="row-even">
+        <tr>
           <td class='cap-label' id='pf-first'><strong>First Name</strong></td>
           <td class='cap-label' id='pf-last'><strong>Last Name</strong></td>
         </tr>
-        <tr class="row-odd">
+        <tr>
           <td class='pf-input'>{{ profile_form.first_name }}</td>
           <td class='pf-input'>{{ profile_form.last_name }}</td>
         </tr>
@@ -113,11 +113,11 @@
       </table>
 {% endblock %}
       <table>
-        <tr class="row-even">
+        <tr>
           <td class='cap-label' id='pf-address'>Address 1</td>
           <td class='cap-label'>Address 2</td>
         </tr>
-        <tr class="row-odd">
+        <tr>
           <td class='pf-input'>{{ profile_form.address1 }}</td>
           <td class='pf-input'>{{ profile_form.address2 }}</td>
         </tr>
@@ -137,18 +137,18 @@
           <td id='state-select'>{{ profile_form.state }}</td>
           <td class='pf-input'>{{ profile_form.zipcode }}</td>
         </tr>
-        <tr class="row-even">
+        <tr>
           <td class='pf-error'>{{ profile_form.city.errors }}</td>
           <td class='pf-error'>{{ profile_form.state.errors }}</td>
           <td class='pf-error'>{{ profile_form.zipcode.errors }}</td>
         </tr>
       </table>
       <table>
-        <tr class="row-odd">
+        <tr>
           <td class='cap-label' id='pf-phone'>Primary Phone</td>
           <td class='cap-label'>Alternate Phone</td>
         </tr>
-        <tr class="row-even">
+        <tr>
           <td class='pf-input'>{{ profile_form.phone }}</td>
           <td class='pf-input'>{{ profile_form.phone2 }}</td>
         </tr>
@@ -157,28 +157,13 @@
           <td class='pf-error'>{{ profile_form.phone2.errors }}</td>
         </tr>
       </table>
-{% block upload %}
-        {% if ALLOW_PHOTO_UPLOAD %}
-        <table>
-          <tr class="row-odd">
-            <td id='pf-photo'><strong>Upload Photo</strong></td>
-            <td>
-              <input type='file' name='photo' style='background-color:RGBA(255, 255, 255, 0);' id="imgInp" />
-            </td>
-            <td>
-              <img id='img-id' src='' alt='profile photo' />
-            </td>
-          </tr>
-        </table>
-        {% endif %}
-{% endblock %}
     </div>
 
     <h3 style='text-align:left;'>Profile Information</h3>
     <div id='websites'>
       <table>
-        <tr class="row-even">
-          <td id='pf-public' nowrap><strong>Make Your profile Public?</strong>
+        <tr>
+          <td id='pf-public' nowrap>Make Your profile Public?
             (<a onclick="$('#public_help').toggle();">?</a>)
           </td>
           <td>
@@ -192,14 +177,29 @@
           <td colspan=3>
             <strong>Public Profile </strong>
             <p>By default your profile is only viewable by active members.
-            if you you make this profile public, your bio, links, and photo
+            if you you make this profile public, your bio, photo, and links
             will also be visable to non-members as well.  Contact information
             is always kept private.</p>
           </td>
         </tr>
       </table>
+      {% block upload %}
+          {% if ALLOW_PHOTO_UPLOAD %}
+            <table>
+              <tr>
+                <td class='cap-label'><strong>Photo</strong></td>
+                <td>
+                  <input type='file' name='photo' style='background-color:RGBA(255, 255, 255, 0);' id="imgInp" />
+                </td>
+                <td>
+                  <img id='img-id' src='' alt='profile photo' />
+                </td>
+              </tr>
+            </table>
+          {% endif %}
+      {% endblock %}
       <table>
-        <tr class='row odd'>
+        <tr>
           <td class='cap-label'><strong>Bio</strong></td>
         </tr>
         <tr>
@@ -208,7 +208,7 @@
         </tr>
       </table>
       <table>
-        <tr class="row-even">
+        <tr>
           <td id='pf-company' class='cap-label'><strong>Company Name</strong></td>
         </tr>
         <tr>
@@ -231,15 +231,15 @@
         </tr>
       </table>
       <table>
-        <tr class="row-even">
+        <tr>
           <td class='cap-label'><strong>Twitter</strong></td>
           <td class='cap-label'><strong>Facebook</strong></td>
         </tr>
-        <tr class="row-odd">
+        <tr>
           <td class='pf-input'>{{ profile_form.url_twitter }}</td>
           <td class='pf-input'>{{ profile_form.url_facebook }}</td>
         </tr>
-        <tr class="row-even">
+        <tr>
           <td>{{ profile_form.url_twitter.errors }}</td>
           <td>{{ profile_form.url_facebook.errors }}</td>
         </tr>
@@ -260,32 +260,49 @@
 
     <h3 style='text-align:left;'>Other Information</h3>
     <table id="otherinfo">
-      <tr class="row-odd">
+      <tr>
+        <td class='cap-label'>How did you hear about us?</td>
+        <td>{{ profile_form.howHeard }}</td>
+        <td>
+          {{ profile_form.howHeard.errors }}
+          {% if request.user.is_staff %}
+            [ <a href="{% url 'admin:nadine_howheard_add' %}" target="new">add</a> ]
+          {% endif %}
+        </td  >
+      </tr>
+      <tr>
         <td class='cap-label'><strong>What industry are you in?</strong></td>
         <td>{{ profile_form.industry }}</td>
-        <td>{{ profile_form.industry.errors }}</td>
+        <td>
+          {% if request.user.is_staff %}
+            [ <a href="{% url 'admin:nadine_industry_add' %}" target="new">add</a> ]
+          {% endif %}
+          {{ profile_form.industry.errors }}
+        </td>
       </tr>
-      <tr class="row-even">
+      <tr>
         <td class='cap-label'><strong>Neighborhood:</strong></td>
         <td>{{ profile_form.neighborhood }}</td>
-        <td width="300px">{{ profile_form.neighborhood.errors }}</td>
+        <td width="300px">
+          {{ profile_form.neighborhood.errors }}
+          {% if request.user.is_staff %}
+            [ <a href="{% url 'admin:nadine_neighborhood_add' %}" target="new">add</a> ]
+          {% endif %}
+        </td>
       </tr>
-      <tr class="row-even">
+      <tr>
         <td class='cap-label'>Do you have children?</td>
         <td>{{ profile_form.has_kids }}</td>
         <td>{{ profile_form.has_kids.errors }}</td>
       </tr>
-      <tr class="row-odd">
+      <tr>
         <td class='cap-label'>Are you self employed?</td>
         <td>{{ profile_form.self_employed }}</td>
         <td>{{ profile_form.self_employed.errors }}</td>
       </tr>
-      <tr class="row-even">
-        <td class='cap-label'>How did you hear about us?</td>
-        <td>{{ profile_form.howHeard }}</td>
-        <td>{{ profile_form.howHeard.errors }}</td>
+
       </tr>
-      <tr class="row-odd">
+      <tr>
         <td class='cap-label'>Gender</td>
         <td>{{ profile_form.gender }}</td>
         <td width="300px">{{ profile_form.gender.errors }}</td>
@@ -296,11 +313,11 @@
     <a name="emergency_contact"></a>
     <div id='emergencyinfo'>
       <table>
-        <tr class="row-even">
+        <tr>
           <td class='cap-label'>Name</td>
           <td class='cap-label'>Relationship</td>
         </tr>
-        <tr class="row-even">
+        <tr>
           <td class='pf-input'>{{ profile_form.emergency_name }}</td>
           <td class='pf-input'>{{ profile_form.emergency_relationship }}</td>
         </tr>
@@ -308,11 +325,11 @@
           <td>{{ profile_form.emergency_name.errors }}</td>
           <td>{{ profile_form.emergency_relationship.errors }}</td>
         </tr>
-        <tr class="row-even">
+        <tr>
           <td class='cap-label'>Email</td>
           <td class='cap-label'>Phone</td>
         </tr>
-        <tr class="row-even">
+        <tr>
           <td class='pf-input'>{{ profile_form.emergency_email }}</td>
           <td class='pf-input'>{{ profile_form.emergency_phone }}</td>
         </tr>

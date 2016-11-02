@@ -312,7 +312,7 @@ input#id_photo {
 	font-weight: bold;
 }
 
-#contact, #emergencyinfo, #websites, #passwords {
+#contact, #photo, #emergencyinfo, #websites, #passwords {
 	margin-left: 4%;
 	padding-left: 2%;
 	padding-right: 2%;
