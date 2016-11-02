@@ -136,9 +136,12 @@ def edit_profile(request, username):
 
                                             })
 
+    ALLOW_PHOTO_UPLOAD = settings.ALLOW_PHOTO_UPLOAD
+    if request.user.is_staff:
+        ALLOW_PHOTO_UPLOAD = True
+
     context = {'user': user, 'profile_form': profile_form,
-        'ALLOW_PHOTO_UPLOAD': settings.ALLOW_PHOTO_UPLOAD, 'settings': settings,
-        'page_message': page_message}
+        'ALLOW_PHOTO_UPLOAD': ALLOW_PHOTO_UPLOAD, 'page_message': page_message}
     return render(request, 'members/profile_edit.html', context)
 
 
