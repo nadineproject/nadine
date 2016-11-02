@@ -45,6 +45,9 @@ TEAM_MEMBERSHIP_PLAN = "ON Team"
 # http://www.miniwebtool.com/django-secret-key-generator/
 SECRET_KEY = ''
 
+# List of possible public calendar designations and the color for display
+CALENDAR_DICT = {'Public':'red', 'Member Only':'blue'}
+
 # Google Settngs
 GOOGLE_ANALYTICS_ID = "YOUR-GOOGLE-CODE"
 GOOGLE_CALENDAR_ID = "YOUR-GOOGLE-CALENDAR-ID"
