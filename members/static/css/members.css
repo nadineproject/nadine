@@ -649,6 +649,16 @@ dl dd:last-child:after {
 	content: "";
 }
 /*booking_create styling*/
+	#thumbnail-box {
+		padding-top: 4%;
+		height: 130px;
+	}
+
+	.room-thumbnail {
+		max-height: 70px;
+		max-width: 70px;
+	}
+
 	#booking-reqs {
 		padding-left: 4%;
 		border-bottom: 1px solid grey;
@@ -725,6 +735,7 @@ dl dd:last-child:after {
 
 	.room-show, .room-close {
 		font-size: .7em;
+		min-width: 70px;
 		padding: 0% 5%;
 	}
 

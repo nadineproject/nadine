@@ -56,12 +56,24 @@
   {% if rooms %}
     {% for room in rooms %}
       <div class='row'>
+        {% if room.image %}
+          <div class='col s1'>
+            <h5>{{ room.name }}</h5>
+            <p>Floor {{room.floor}}</p>
+            <button class='btn room-show' id='{{ room.id }}'>More Info</button>
+            <button class='btn room-close'>Hide Info</button>
+          </div>
+          <div class='col s1' id='thumbnail-box'>
+            <img class='room-thumbnail' src="{{ room.image.url }}"/>
+          </div>
+        {% else %}
         <div class='col s2'>
           <h5>{{ room.name }}</h5>
           <p>Floor {{room.floor}}</p>
           <button class='btn room-show' id='{{ room.id }}'>More Info</button>
           <button class='btn room-close'>Hide Info</button>
         </div>
+        {% endif %}
         <div class='col s8 cal-div' style='height:110px;'>
           <table class='cal-table'>
             <thead>
@@ -117,7 +129,7 @@
         <div class='col s8 offset s1'>
           <div class='row' style='margin-bottom:0;'>
             <h4 class='col s10'>{{ room.name }}</h4>
-            <button class='btn col s1 offset-s1 room-close'>X</p>
+            <button class='btn col s1 room-close'>X</p>
           </div>
           <ul>
             <li>Seats: {{ room.seats }}</li>
