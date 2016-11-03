@@ -22,8 +22,8 @@ class EmailForm(forms.ModelForm):
             raise Exception("No mailgun post passed. Unbound form not supported.")
 
         mailgun_data = {self.field_map.get(k, k): v for k, v in mailgun_post.items()}
-        print mailgun_data
-        message_headers = mailgun_data['message-headers']
+        #print mailgun_data
+        message_headers = mailgun_data['message_headers']
         message_header_keys = [item[0] for item in message_headers]
 
         # A List-Id header will only be present if it has been added manually in
