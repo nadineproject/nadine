@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
-import django.dispatch
+from django.dispatch import Signal, receiver
 
-email_received = django.dispatch.Signal(providing_args=["instance","attachments"])
+email_received = Signal(providing_args=["instance","attachments"])
+
+@receiver(email_received)
+def my_callback(sender, **kwargs):
+    print("Email Received")
+    print(kwargs)
