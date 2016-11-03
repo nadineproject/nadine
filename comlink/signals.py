@@ -4,9 +4,11 @@ from django.dispatch import Signal, receiver
 email_received = Signal(providing_args=["instance", "attachments"])
 
 def staff_email(email, attachments):
+    print("Staff")
     pass
 
 def team_email(email, attachments):
+    print("Team")
     pass
 
 routes = [
