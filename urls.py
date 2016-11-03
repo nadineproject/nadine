@@ -47,6 +47,9 @@ urlpatterns = [
     # API URLs
     #url(r'^api/', include(API.urls)),
 
+    # Comlink URLS
+    url('^comlink/', include('comlink.urls')),
+
     # Inbound Mailgun Emails
     url(r'^mailgun/staff$', mailgun.staff),
     url(r'^mailgun/team$', mailgun.team),
