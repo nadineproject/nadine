@@ -47,7 +47,6 @@ class Incoming(View):
                 return HttpResponseBadRequest("Invalid signature")
 
         form = self.get_form()(request.POST)
-
         email = form.save()
 
         attachments = []

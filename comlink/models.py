@@ -16,19 +16,15 @@ logger = logging.getLogger(__name__)
 class EmailBaseModel(models.Model):
     sender = models.EmailField(_("sender"), max_length=255)
     from_str = models.CharField(_("from"), max_length=255)
-
     recipient = models.CharField(_("recipient"), max_length=255)
-
     subject = models.CharField(_("subject"), max_length=255, blank=True)
     body_plain = models.TextField(_("body plain"), blank=True)
     body_html = models.TextField(_("body html"), blank=True)
     stripped_text = models.TextField(_("stripped text"), blank=True)
     stripped_html = models.TextField(_("stripped html"), blank=True)
     stripped_signature = models.TextField(_("stripped signature"), blank=True)
-    message_headers = models.TextField(_("message headers"), blank=True,
-                                       help_text=_("Stored in JSON."))
-    content_id_map = models.TextField(_("Content-ID map"), blank=True,
-                                      help_text=_("Dictionary mapping Content-ID (CID) values to corresponding attachments. Stored in JSON."))
+    message_headers = models.TextField(_("message headers"), blank=True, help_text=_("Stored in JSON."))
+    content_id_map = models.TextField(_("Content-ID map"), blank=True, help_text=_("Dictionary mapping Content-ID (CID) values to corresponding attachments. Stored in JSON."))
     received = models.DateTimeField(_("received"), auto_now_add=True)
 
     class Meta:
@@ -74,6 +70,10 @@ class EmailBaseModel(models.Model):
         if self._cids is None:
             self._load_cids()
         return self._cids
+
+    @property
+    def cc(self):
+        return self.headers.get('Cc', None)
 
     def __unicode__(self):
         return _("Message from {from_str}: {subject_trunc}").format(
