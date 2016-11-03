@@ -75,6 +75,33 @@ class EmailBaseModel(models.Model):
     def cc(self):
         return self.headers.get('Cc', None)
 
+    @property
+    def mailgun_data(self, stripped=True, footer=True):
+        if stripped:
+            body_plain = self.stripped_text
+            body_html = self.stripped_html
+        else:
+            body_plain = self.body_plain
+            body_html = self.body_html
+
+        if footer:
+            # Add in a footer
+            text_footer = "\n\n-------------------------------------------\n*~*~*~* Sent through Nadine *~*~*~* "
+            body_plain = body_plain + text_footer
+            if body_html:
+                html_footer = "<br><br>-------------------------------------------<br>*~*~*~* Sent through Nadine *~*~*~* "
+                body_html = body_html + html_footer
+
+        # Build and return our data
+        mailgun_data = {"from": self.from_str,
+                        "to": [self.recipient, ],
+                        "cc": self.cc
+                        "subject": self.subject,
+                        "text": body_plain,
+                        "html": body_html,
+                        }
+        return mailgun_data
+
     def __unicode__(self):
         return _("Message from {from_str}: {subject_trunc}").format(
             from_str=self.from_str,
