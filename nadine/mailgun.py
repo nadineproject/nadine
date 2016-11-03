@@ -65,6 +65,19 @@ def mailgun_send(mailgun_data, files_dict=None):
         mailgun_data["bcc"] = list(set(bcc_list))
         logger.debug("bcc: %s" % mailgun_data["bcc"])
 
+    # Clean up our cc list too
+    if "cc" in mailgun_data:
+        cc_list = mailgun_data["cc"]
+        if from_address in cc_list:
+            cc_list.remove(from_address)
+        if to_address in cc_list:
+            cc_list.remove(to_address)
+        for cc in cc_list:
+            if cc in bcc_list:
+                cc_list.remove(cc)
+        mailgun_data["cc"] = list(set(cc_list))
+        logger.debug("cc: %s" % mailgun_data["cc"])
+
     # Attach some headers: LIST-ID, REPLY-TO, Precedence...
     # Reply-To: list email apparently has some religious debates
     # (http://www.gnu.org/software/mailman/mailman-admin/node11.html)
