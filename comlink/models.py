@@ -75,8 +75,7 @@ class EmailBaseModel(models.Model):
     def cc(self):
         return self.headers.get('Cc', None)
 
-    @property
-    def mailgun_data(self, stripped=True, footer=True):
+    def get_mailgun_data(self, stripped=True, footer=True):
         if stripped:
             body_plain = self.stripped_text
             body_html = self.stripped_html
@@ -102,7 +101,7 @@ class EmailBaseModel(models.Model):
                         }
         return mailgun_data
 
-    def __unicode__(self):
+    def __str__(self):
         return _("Message from {from_str}: {subject_trunc}").format(
             from_str=self.from_str,
             subject_trunc=self.subject[:20])
@@ -123,7 +122,7 @@ class Attachment(models.Model):
         verbose_name = _("attachment")
         verbose_name_plural = _("attachments")
 
-    def __unicode__(self):
+    def __str__(self):
         if self.file:
             return self.file.name
-        return unicode(_("(no file)"))
+        return "(no file)"
