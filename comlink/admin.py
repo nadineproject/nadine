@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
-from mailgun_incoming.models import IncomingEmail, Attachment
+from comlink.models import IncomingEmail, Attachment
 
 class AttachmentInline(admin.TabularInline):
     model = Attachment

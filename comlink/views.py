@@ -9,10 +9,10 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.base import View
-from mailgun_incoming.forms import EmailForm
-from mailgun_incoming.models import Attachment, IncomingEmail
-from mailgun_incoming.signals import email_received
-from mailgun_incoming.exceptions import RejectedMailException
+from comlink.forms import EmailForm
+from comlink.models import Attachment, IncomingEmail
+from comlink.signals import email_received
+from comlink.exceptions import RejectedMailException
 
 logger = logging.getLogger(__name__)
 

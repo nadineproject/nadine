@@ -55,6 +55,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='attachment',
             name='email',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='mailgun_incoming.IncomingEmail', verbose_name='email'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='comlink.IncomingEmail', verbose_name='email'),
         ),
     ]

@@ -1,5 +1,5 @@
-from mailgun_incoming.forms import *
-from mailgun_incoming.models import *
+from comlink.forms import *
+from comlink.models import *
 from django.forms.models import modelform_factory
 from django.test import RequestFactory
 from django.test import TestCase
