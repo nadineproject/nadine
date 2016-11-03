@@ -3,6 +3,16 @@ from django.dispatch import Signal, receiver
 
 email_received = Signal(providing_args=["instance", "attachments"])
 
+class forward(object):
+
+    def __init__(self, email, attachments):
+        self.f = f
+
+    def __call__(self):
+        print "Entering", self.f.__name__
+        self.f()
+        print "Exited", self.f.__name__
+
 def staff_email(email, attachments):
     print("Staff")
     pass
@@ -20,7 +30,7 @@ routes = [
 def router(sender, **kwargs):
     incoming_email = kwargs['instance']
     attachments = kwargs['attachments']
-    for r, m in routes:
+    for r, f in routes:
         if incoming_email.recipient == r:
-            return m(incoming_email, attachments)
+            return f(incoming_email, attachments)
     raise RejectedMailException("No route found!")

@@ -36,6 +36,7 @@ class Incoming(View):
         return super(Incoming, self).dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
+        print(request.POST)
 
         if self.verify:
             verified = self.verify_signature(request.POST.get('token', ''),
