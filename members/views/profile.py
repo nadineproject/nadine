@@ -18,6 +18,7 @@ from nadine.models.usage import CoworkingDay
 from nadine.models.payment import Transaction
 from nadine.models.alerts import MemberAlert
 from nadine.forms import EditProfileForm
+from nadine.utils import network
 from arpwatch import arp
 from arpwatch.models import ArpLog, UserDevice
 from members.views.core import is_active_member
@@ -184,7 +185,7 @@ def user_devices(request, username):
         device.save()
 
     devices = arp.devices_by_user(user)
-    ip = request.META['REMOTE_ADDR']
+    ip = network.get_addr(request)
     this_device = arp.device_by_ip(ip)
 
     context = {'user': user, 'devices': devices, 'this_device': this_device,
