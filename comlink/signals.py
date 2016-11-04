@@ -25,9 +25,23 @@ def staff_email(email, attachments):
     # Send the message
     return mailgun.mailgun_send(mailgun_data, attachments)
 
+
 def team_email(email, attachments):
-    print("Team")
-    pass
+    mailgun_data = email.get_mailgun_data(stripped=True, footer=True)
+
+    # Goes out to all managers
+    bcc_list = list(User.helper.managers(include_future=True).values_list('email', flat=True))
+    mailgun_data["bcc"] = bcc_list
+
+    # Hard code the recipient to be this address
+    to_list = ["team@%s" % settings.MAILGUN_DOMAIN, ]
+    for to in mailgun_data["to"]:
+        if not to in bcc_list:
+            to_list.append(to)
+    mailgun_data["to"] = to_list
+
+    # Send the message
+    return mailgun_send(mailgun_data, attachments)
 
 routes = [
     ('staff@test.officenomads.com', staff_email),

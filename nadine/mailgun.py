@@ -78,6 +78,13 @@ def mailgun_send(mailgun_data, files_dict=None):
         mailgun_data["cc"] = list(set(cc_list))
         logger.debug("cc: %s" % mailgun_data["cc"])
 
+    # Lastly clean up our to list
+    to_list = mailgun_data["to"]
+    for to in mailgun_data["to"]:
+        if not to in bcc_list and not to in cc_list:
+            to_list.append(to)
+    mailgun_data["to"] = to_list
+
     # Attach some headers: LIST-ID, REPLY-TO, Precedence...
     # Reply-To: list email apparently has some religious debates
     # (http://www.gnu.org/software/mailman/mailman-admin/node11.html)
