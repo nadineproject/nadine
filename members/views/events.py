@@ -52,6 +52,10 @@ def coerce_times(start, end, date):
                 hour = mil_start[0]
             start_hour, start_minutes = quarter_hours(hour, mil_start[1])
             start = str(hour) + ':' + mil_start[1]
+        else:
+            mil_start = start[0].split(":")
+            start_hour, start_minutes = quarter_hours(mil_start[0], mil_start[1])
+            start = str(start_hour) + ':' + start_minutes
     else:
         mil_start = start.split(":")
         start_hour, start_minutes = quarter_hours(mil_start[0], mil_start[1])
@@ -65,6 +69,10 @@ def coerce_times(start, end, date):
             else :
                 hour = mil_end[0]
             end_hour, end_minutes = quarter_hours(hour, mil_end[1])
+            end = str(end_hour) + ':' + end_minutes
+        else:
+            mil_end = end[0].split(":")
+            end_hour, end_minutes = quarter_hours(mil_end[0], mil_end[1])
             end = str(end_hour) + ':' + end_minutes
     else:
         mil_end = end.split(":")
@@ -205,7 +213,7 @@ def calendar(request):
         end = request.POST.get('end')
         date = request.POST.get('date')
 
-        start_ts, end_ts = coerce_times(start, end, date)
+        start_ts, end_ts, start, end = coerce_times(start, end, date)
 
         if start_ts < end_ts :
 
