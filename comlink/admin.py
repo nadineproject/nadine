@@ -7,7 +7,7 @@ class AttachmentInline(admin.TabularInline):
     extra = 0
 
 class EmailAdmin(admin.ModelAdmin):
-    list_display = ('received', 'subject', 'received')
+    list_display = ('received', 'sender', 'recipient', 'subject')
     inlines = [AttachmentInline]
     readonly_fields = ('received',)
 
