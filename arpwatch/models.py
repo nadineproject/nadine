@@ -23,6 +23,11 @@ class UserDevice(models.Model):
     mac_address = models.CharField(max_length=17, blank=False, null=False, unique=True, db_index=True)
     ignore = models.BooleanField(default=False)
 
+    @property
+    def last_seen(self):
+        last_log = self.arplog_set.order_by('-runtime').first()
+        return last_log.runtime
+
     def __str__(self):
         if self.user:
             return self.user.__str__()

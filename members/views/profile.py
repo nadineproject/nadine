@@ -166,9 +166,8 @@ def receipt(request, username, id):
 @login_required
 def user_devices(request, username):
     user = get_object_or_404(User, username=username)
-    if not user == request.user:
-        if not request.user.is_staff:
-            return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
+    if not user == request.user and not request.user.is_staff:
+        return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
 
     error = None
     if request.method == 'POST':
@@ -184,7 +183,7 @@ def user_devices(request, username):
         device.device_name = device_name
         device.save()
 
-    devices = arp.devices_by_user(user)
+    devices = user.userdevice_set.all()
     ip = network.get_addr(request)
     this_device = arp.device_by_ip(ip)
 

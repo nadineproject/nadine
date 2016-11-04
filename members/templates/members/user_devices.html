@@ -4,22 +4,22 @@
 {% endblock %}
 
 {% block content %}
-	<h2>Registered Devices</h2>	
+	<h2>Registered Devices</h2>
 	<p>
 		Please register your device with Nadine.
 	</p>
 	<p>
 		In order to help us manage our systems
-		we ask that you register your device (<i>computer, phone, tablet</i>) 
-		with us using the form below. This help us understand use of the space and our network, and enables handy-dandy tools 
-		like the Here Today page. 
+		we ask that you register your device (<i>computer, phone, tablet</i>)
+		with us using the form below. This help us understand use of the space and our network, and enables handy-dandy tools
+		like the Here Today page.
 		Please note that we only track the presence of each device, not what is being accessed.
 	</p>
 
 	{% if not this_device %}
 		<h3>Device Unknown</h3>
 		<p>
-			We are having a hard time identifying your device.  For this to work, you must be in the office and not connected to a VPN.  
+			We are having a hard time identifying your device.  For this to work, you must be in the office and not connected to a VPN.
 			You can not do this from home.  It can also take a few minutes the first time you connect to the network.  If you are having
 			trouble we can always help you at the front desk.
 		</p>
@@ -36,7 +36,7 @@
 			<input type="hidden" name="device_id", value="{{ this_device.id }}">
  			<tr>
 				<td>{{ this_device.mac_address}}</td>
-				<td><input name="device_name" value="{{ this_device.device_name }}" size=64 placeholder="computer, phone, tablet"></td>
+				<td><input name="device_name" value="{{ this_device.device_name|default:'' }}" size=64 placeholder="computer, phone, tablet"></td>
 				<td><input name="action" type="submit" value="Register"></td>
 				<td></td>
 			</tr>
@@ -44,7 +44,7 @@
 			</form>
 		</table>
 	{% endif %}
-	
+
 	{% if devices %}
 		<h3>Your Device List</h3>
 		<table>
@@ -58,8 +58,14 @@
 				<form action="." method="POST">
 				<input type="hidden" name="device_id", value="{{ d.id }}">
 	 			<tr class="{% cycle 'row-even' 'row-odd' %}" {% if d == this_device %} style="font-weight:bold;" {% endif %}>
-					<td>{{ d.mac_address}}</td>
-					<td><input name="device_name" value="{{ d.device_name }}" size=64></td>
+					<td>
+						{% if request.user.is_staff %}
+							<a href="{% url 'admin:arpwatch_userdevice_change' d.id %}" target="new">{{ d.mac_address }}</a>
+						{% else %}
+							{{ d.mac_address }}
+						{% endif %}
+					</td>
+					<td><input name="device_name" value="{{ d.device_name|default:'' }}" size=64></td>
 					<td><input name="action" type="submit" value="Update"></td>
 					<td>
 						{% if d == this_device %} ( Current ) {% endif %}
@@ -70,11 +76,11 @@
 			{% endfor %}
 		</table>
 	{% endif %}
-	
+
 	{% if error %}
 		<div style="color:red;"><strong>Error:</strong> {{ error }}</div>
 	{% endif %}
-	
+
 	<p style="float:right; margin-top:0; margin-bottom:1em; font-style:italic">Current IP Address: {{ ip }}</p>
-	
+
 {% endblock %}

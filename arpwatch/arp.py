@@ -33,7 +33,7 @@ def device_by_ip(ip):
 
 
 def devices_by_user(user):
-    return UserDevice.objects.filter(user=user).order_by('mac_address')
+    return UserDevice.objects.filter(user=user)
 
 
 def map_ip_to_mac(hours):
