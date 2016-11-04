@@ -53,6 +53,7 @@ def clean_mailgun_data(mailgun_data):
     logger.debug("from: %s, to: %s, subject: %s" % (from_address, to_address, subject))
 
     # Clean up our bcc list
+    bcc_list = None
     if "bcc" in mailgun_data:
         bcc_list = mailgun_data["bcc"]
         if from_address in bcc_list:
@@ -63,6 +64,7 @@ def clean_mailgun_data(mailgun_data):
         logger.debug("bcc: %s" % mailgun_data["bcc"])
 
     # Clean up our cc list too
+    cc_list = None
     if "cc" in mailgun_data:
         cc_list = mailgun_data["cc"]
         if from_address in cc_list:
@@ -77,13 +79,16 @@ def clean_mailgun_data(mailgun_data):
         logger.debug("cc: %s" % mailgun_data["cc"])
 
     # Lastly clean up our to list
-    # to_list = mailgun_data["to"]
-    # for to in to_list:
-    #     if cc_list and to not in cc_list:
-    #         to_list.append(to)
-    #         if not bcc_list or to not in bcc_list:
-    #             to_list.append(to)
-    # mailgun_data["to"] = to_list
+    to_list = mailgun_data["to"]
+    if len(to_list) > 1:
+        if from_address in to_list:
+            to_list.remove(from_address)
+        for to in to_list[1:]:
+            if cc_list and to in cc_list:
+                to_list.remove(to)
+            if bcc_list and to in bcc_list:
+                to_list.remove(to)
+    mailgun_data["to"] = to_list
 
 
 def inject_list_id(mailgun_data):
