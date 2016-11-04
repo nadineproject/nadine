@@ -46,12 +46,18 @@ class Incoming(View):
                 logger.debug("Signature verification failed.")
                 return HttpResponseBadRequest("Invalid signature")
 
-        form = self.get_form()(request.POST)
-        email = form.save()
+        try:
+            form = self.get_form()(request.POST)
+            email = form.save()
+        except Exception as e:
+            # TODO make this smarter
+            # This could be that we have a List-Id and skip saving
+            # this could be because of a database error
+            logger.info("Could not save email.  Skipping")
+            return
 
         attachments = []
         if form.cleaned_data.get('attachment-count', False):
-
             # reverse mapping in content_ids dict
             content_ids = dict(
                 (attnr, cid) for cid, attnr in
@@ -63,7 +69,6 @@ class Incoming(View):
                     file=file,
                     content_id=content_ids.get('attachment-{0!s}'.format(i), ''))
                 attachment.save()
-
                 attachments.append(attachment)
                 i = i + 1
 
