@@ -91,7 +91,7 @@ def clean_mailgun_data(mailgun_data):
     mailgun_data["to"] = to_list
 
 
-def inject_list_id(mailgun_data):
+def inject_list_headers(mailgun_data):
     # Attach some headers: LIST-ID, REPLY-TO, Precedence...
     # Reply-To: list email apparently has some religious debates
     # (http://www.gnu.org/software/mailman/mailman-admin/node11.html)
@@ -107,7 +107,7 @@ def mailgun_send(mailgun_data, files_dict=None, clean_first=True, inject_list_id
         clean_mailgun_data(mailgun_data)
 
     if inject_list_id:
-        inject_list_id(mailgun_data)
+        inject_list_headers(mailgun_data)
 
     # Make sure nothing goes out if the system is in debug mode
     if settings.DEBUG:
