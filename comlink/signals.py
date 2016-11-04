@@ -3,7 +3,7 @@ from django.dispatch import Signal, receiver
 from django.contrib.auth.models import User
 from django.conf import settings
 
-from nadine import mailgun
+from nadine.utils import mailgun
 
 email_received = Signal(providing_args=["instance", "attachments"])
 

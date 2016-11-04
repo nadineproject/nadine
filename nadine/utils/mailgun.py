@@ -43,10 +43,7 @@ def render_templates(context, email_key):
     return (text_content, html_content)
 
 
-def mailgun_send(mailgun_data, files_dict=None):
-    # logger.debug("Mailgun send: %s" % mailgun_data)
-    #logger.debug("Mailgun files: %s" % files_dict)
-
+def clean_mailgun_data(mailgun_data):
     # Make sure we have what we need
     from_name, from_address = email.utils.parseaddr(mailgun_data["from"])
     to_name, to_address = email.utils.parseaddr(mailgun_data["to"][0])
@@ -72,32 +69,41 @@ def mailgun_send(mailgun_data, files_dict=None):
             cc_list.remove(from_address)
         if to_address in cc_list:
             cc_list.remove(to_address)
-        for cc in cc_list:
-            if cc in bcc_list:
-                cc_list.remove(cc)
+        if bcc_list:
+            for cc in cc_list:
+                if cc in bcc_list:
+                    cc_list.remove(cc)
         mailgun_data["cc"] = list(set(cc_list))
         logger.debug("cc: %s" % mailgun_data["cc"])
 
     # Lastly clean up our to list
-    to_list = mailgun_data["to"]
-    for to in mailgun_data["to"]:
-        if not to in bcc_list and not to in cc_list:
-            to_list.append(to)
-    mailgun_data["to"] = to_list
+    # to_list = mailgun_data["to"]
+    # for to in to_list:
+    #     if cc_list and to not in cc_list:
+    #         to_list.append(to)
+    #         if not bcc_list or to not in bcc_list:
+    #             to_list.append(to)
+    # mailgun_data["to"] = to_list
 
+
+def inject_list_id(mailgun_data):
     # Attach some headers: LIST-ID, REPLY-TO, Precedence...
     # Reply-To: list email apparently has some religious debates
     # (http://www.gnu.org/software/mailman/mailman-admin/node11.html)
     # Precedence: list - helps some out of office auto responders know not to send their auto-replies.
+    to_name, to_address = email.utils.parseaddr(mailgun_data["to"][0])
     mailgun_data["h:List-Id"] = to_address
     mailgun_data["h:Reply-To"] = to_address
     mailgun_data["h:Precedence"] = "list"
 
-    # Fire in the hole!
-    return mailgun_send_raw(mailgun_data, files_dict)
 
+def mailgun_send(mailgun_data, files_dict=None, clean_first=True, inject_list_id=True):
+    if clean_first:
+        clean_mailgun_data(mailgun_data)
 
-def mailgun_send_raw(mailgun_data, files_dict=None):
+    if inject_list_id:
+        inject_list_id(mailgun_data)
+
     # Make sure nothing goes out if the system is in debug mode
     if settings.DEBUG:
         if not hasattr(settings, 'MAILGUN_DEBUG') or settings.MAILGUN_DEBUG:
@@ -176,7 +182,7 @@ def send_manage_member(user, subject=None):
                     "text": text_content,
                     "html": html_content,
                     }
-    return mailgun_send_raw(mailgun_data)
+    return mailgun_send(mailgun_data)
 
 
 def get_manage_member_content(user):
