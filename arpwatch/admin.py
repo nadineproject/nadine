@@ -15,6 +15,8 @@ admin.site.register(ArpLog, ArpLogAdmin)
 class UserDeviceAdmin(admin.ModelAdmin):
     list_display = ('mac_address', 'user', 'device_name', 'ignore')
     search_fields = ('mac_address', 'user__username')
+    readonly_fields = ('last_seen', )
+    raw_id_fields = ('user', )
 admin.site.register(UserDevice, UserDeviceAdmin)
 
 
