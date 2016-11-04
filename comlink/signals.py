@@ -10,13 +10,13 @@ email_received = Signal(providing_args=["instance", "attachments"])
 def staff_email(email, attachments):
     mailgun_data = email.get_mailgun_data(stripped=True, footer=True)
     mailgun_data["bcc"] = list(User.objects.filter(is_staff=True, is_active=True).values_list('email', flat=True))
-    mailgun_data["to"] = mailgun_data["to"].insert(0, "staff@%s" % settings.MAILGUN_DOMAIN)
+    #mailgun_data["to"] = mailgun_data["to"].insert(0, "staff@%s" % settings.MAILGUN_DOMAIN)
     return mailgun.mailgun_send(mailgun_data, attachments)
 
 def team_email(email, attachments):
     mailgun_data = email.get_mailgun_data(stripped=True, footer=True)
     mailgun_data["bcc"] = list(User.helper.managers(include_future=True).values_list('email', flat=True))
-    mailgun_data["to"] = mailgun_data["to"].insert(0, "team@%s" % settings.MAILGUN_DOMAIN)
+    #mailgun_data["to"] = mailgun_data["to"].insert(0, "team@%s" % settings.MAILGUN_DOMAIN)
     return mailgun_send(mailgun_data, attachments)
 
 routes = [
