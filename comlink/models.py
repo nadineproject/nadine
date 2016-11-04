@@ -94,7 +94,7 @@ class EmailBaseModel(models.Model):
         # Build and return our data
         mailgun_data = {"from": self.from_str,
                         "to": [self.recipient, ],
-                        "cc": self.cc,
+                        "cc": [self.cc, ], 
                         "subject": self.subject,
                         "text": body_plain,
                         "html": body_html,

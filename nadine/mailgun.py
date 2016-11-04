@@ -67,7 +67,7 @@ def mailgun_send(mailgun_data, files_dict=None):
 
     # Clean up our cc list too
     if "cc" in mailgun_data:
-        cc_list = list(mailgun_data["cc"])
+        cc_list = mailgun_data["cc"]
         if from_address in cc_list:
             cc_list.remove(from_address)
         if to_address in cc_list:
