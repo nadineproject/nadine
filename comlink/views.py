@@ -36,8 +36,6 @@ class Incoming(View):
         return super(Incoming, self).dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        print(request.POST)
-
         if self.verify:
             verified = self.verify_signature(request.POST.get('token', ''),
                                              request.POST.get('timestamp', ''),
@@ -54,7 +52,7 @@ class Incoming(View):
             # This could be that we have a List-Id and skip saving
             # this could be because of a database error
             logger.info("Could not save email.  Skipping")
-            return
+            return HttpResponse("OK")
 
         attachments = []
         if form.cleaned_data.get('attachment-count', False):

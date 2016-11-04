@@ -44,7 +44,7 @@ def render_templates(context, email_key):
 
 
 def mailgun_send(mailgun_data, files_dict=None):
-    logger.debug("Mailgun send: %s" % mailgun_data)
+    # logger.debug("Mailgun send: %s" % mailgun_data)
     #logger.debug("Mailgun files: %s" % files_dict)
 
     # Make sure we have what we need
