@@ -42,6 +42,10 @@ admin.site.register(BillingLog, BillingLogAdmin)
 class CoworkingDayAdmin(StyledAdmin):
     list_display = ('visit_date', 'user', 'paid_by', 'created_ts')
     search_fields = ('user__first_name', 'user__last_name', 'paid_by__first_name', 'paid_by__last_name')
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "paid_by":
+            kwargs["queryset"] = User.helper.active_members()
+        return super(CoworkingDayAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 admin.site.register(CoworkingDay, CoworkingDayAdmin)
 
 

@@ -13,6 +13,7 @@ from django.db.models import Min, Max
 from django.utils import timezone
 
 from nadine.models.core import Membership
+from nadine.utils import network
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +22,11 @@ class UserDevice(models.Model):
     device_name = models.CharField(max_length=32, blank=True, null=True)
     mac_address = models.CharField(max_length=17, blank=False, null=False, unique=True, db_index=True)
     ignore = models.BooleanField(default=False)
+
+    @property
+    def last_seen(self):
+        last_log = self.arplog_set.order_by('-runtime').first()
+        return last_log.runtime
 
     def __str__(self):
         if self.user:
@@ -46,15 +52,10 @@ class UserRemoteAddr(models.Model):
 # Signal to create a new UserRemoreAddr when people login
 def register_user_ip(sender, user, request, **kwargs):
     logtime = timezone.localtime(timezone.now())
-    ip = None
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        ip = request.META.get('REMOTE_ADDR')
+    ip = network.get_addr(request)
     if ip:
         ip_log = UserRemoteAddr.objects.create(logintime=logtime, user=user, ip_address=ip)
-    logger.info("register_user_ip: REMOTE_ADDR for %s = %s @ %s" % (user, ip, logtime))
+    logger.info("register_user_ip: Address for %s = %s @ %s" % (user, ip, logtime))
 user_logged_in.connect(register_user_ip)
 
 

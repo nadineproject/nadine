@@ -22,8 +22,9 @@ from django.conf import settings
 
 from nadine.models.core import Membership, MembershipPlan, MemberGroups, SecurityDeposit
 from nadine.models.alerts import MemberAlert
-from nadine.utils.slack_api import SlackAPI
 from nadine.forms import MemberSearchForm, MembershipForm, EventForm
+from nadine.utils.slack_api import SlackAPI
+from nadine.utils import network
 
 from staff import user_reports
 
@@ -228,14 +229,10 @@ def slack_users(request):
          'non_slack_users':non_slack_users, 'slack_url':settings.SLACK_TEAM_URL}
     return render(request, 'staff/slack_users.html', context)
 
+
 @staff_member_required
 def view_ip(request):
-    ip = None
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        ip = request.META.get('REMOTE_ADDR')
+    ip = network.get_addr(request)
     return render(request, 'staff/view_ip.html', {'ip': ip})
 
 

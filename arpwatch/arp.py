@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 def register_user_ip(user, ip):
     logtime = timezone.localtime(timezone.now())
-    logger.info("register_user_ip: REMOTE_ADDR for %s = %s @ %s" % (user, ip, logtime))
+    logger.info("register_user_ip: Address for %s = %s @ %s" % (user, ip, logtime))
     ip_log = UserRemoteAddr.objects.create(logintime=logtime, user=user, ip_address=ip)
 
 
@@ -33,7 +33,7 @@ def device_by_ip(ip):
 
 
 def devices_by_user(user):
-    return UserDevice.objects.filter(user=user).order_by('mac_address')
+    return UserDevice.objects.filter(user=user)
 
 
 def map_ip_to_mac(hours):

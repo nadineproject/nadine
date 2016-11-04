@@ -17,6 +17,7 @@ from django.contrib.auth.models import User
 
 from doors.keymaster.models import Keymaster, Door, DoorCode, DoorEvent
 from doors.core import EncryptedConnection, Messages, DoorEventTypes
+from nadine.utils import network
 from nadine import email
 
 logger = logging.getLogger(__name__)
@@ -156,19 +157,10 @@ def test_door(request):
 ######################################################################
 
 
-def get_client_ip(request):
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        ip = request.META.get('REMOTE_ADDR')
-    return ip
-
-
 @csrf_exempt
 def keymaster(request):
     try:
-        ip = get_client_ip(request)
+        ip = network.get_addr(request)
         keymaster = Keymaster.objects.by_ip(ip)
         if not keymaster:
             raise Exception("No Keymaster for incoming IP (%s)" % ip)
