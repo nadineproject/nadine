@@ -15,7 +15,7 @@ def staff_email(email, attachments):
     # for a in attachments:
     #     files.append(('attachment', open(a.file.path)))
     # return mailgun.mailgun_send(mailgun_data, files)
-    return mailgun.mailgun_send(mailgun_data, files)
+    return mailgun.mailgun_send(mailgun_data, attachments)
 
 def team_email(email, attachments):
     mailgun_data = email.get_mailgun_data(stripped=True, footer=True)
