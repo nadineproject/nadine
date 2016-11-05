@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from django import forms
 
+from comlink.exceptions import DroppedMailException
+
 class EmailForm(forms.ModelForm):
 
     field_map = {
@@ -22,18 +24,17 @@ class EmailForm(forms.ModelForm):
             raise Exception("No mailgun post passed. Unbound form not supported.")
 
         mailgun_data = {self.field_map.get(k, k): v for k, v in mailgun_post.items()}
-        #print mailgun_data
         message_headers = mailgun_data['message_headers']
         message_header_keys = [item[0] for item in message_headers]
 
         # A List-Id header will only be present if it has been added manually in
         # this function, ie, if we have already processed this message.
         if mailgun_post.get('List-Id') or 'List-Id' in message_header_keys:
-            raise Exception("List-Id header was found!")
+            raise DroppedMailException("List-Id header was found!")
 
         # If 'Auto-Submitted' in message_headers or message_headers['Auto-Submitted'] != 'no':
         if 'Auto-Submitted' in message_header_keys:
-            raise Exception("Message appears to be auto-submitted")
+            raise DroppedMailException("Message appears to be auto-submitted")
 
         kwargs['data'] = mailgun_data
         super(EmailForm, self).__init__(*args, **kwargs)

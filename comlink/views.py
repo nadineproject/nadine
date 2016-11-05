@@ -12,7 +12,7 @@ from django.views.generic.base import View
 from comlink.forms import EmailForm
 from comlink.models import Attachment, IncomingEmail
 from comlink.signals import email_received
-from comlink.exceptions import RejectedMailException
+from comlink.exceptions import RejectedMailException, DroppedMailException
 
 logger = logging.getLogger(__name__)
 
@@ -47,12 +47,15 @@ class Incoming(View):
         try:
             form = self.get_form()(request.POST)
             email = form.save()
-        except Exception as e:
-            # TODO make this smarter
-            # This could be that we have a List-Id and skip saving
-            # this could be because of a database error
-            logger.info("Could not save email.  Skipping")
+        except DroppedMailException:
+            # This is because we got a ListID or something. It's OK.
             return HttpResponse("OK")
+
+        # Try to link the sender to a user
+        user = User.helper.by_email(email.sender)
+        if user:
+            email.user = user
+            email.save()
 
         attachments = []
         if form.cleaned_data.get('attachment-count', False):
