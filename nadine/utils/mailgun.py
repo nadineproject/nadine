@@ -102,7 +102,7 @@ def inject_list_headers(mailgun_data):
     mailgun_data["h:Precedence"] = "list"
 
 
-def mailgun_send(mailgun_data, files_dict=None, clean_first=True, inject_list_id=True):
+def mailgun_send(mailgun_data, files=None, clean_first=True, inject_list_id=True):
     if clean_first:
         clean_mailgun_data(mailgun_data)
 
@@ -119,7 +119,7 @@ def mailgun_send(mailgun_data, files_dict=None, clean_first=True, inject_list_id
     resp = requests.post("https://api.mailgun.net/v2/%s/messages" % settings.MAILGUN_DOMAIN,
                          auth=("api", settings.MAILGUN_API_KEY),
                          data=mailgun_data,
-                         files=files_dict
+                         files=files
                          )
     logger.debug("Mailgun response: %s" % resp.text)
     return HttpResponse(status=200)

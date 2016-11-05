@@ -11,7 +11,10 @@ def staff_email(email, attachments):
     mailgun_data = email.get_mailgun_data(stripped=True, footer=True)
     mailgun_data["bcc"] = list(User.objects.filter(is_staff=True, is_active=True).values_list('email', flat=True))
     #mailgun_data["to"] = mailgun_data["to"].insert(0, "staff@%s" % settings.MAILGUN_DOMAIN)
-    return mailgun.mailgun_send(mailgun_data, attachments)
+    files = []
+    for a in attachments:
+        files.append(('inline', open(a.file))
+    return mailgun.mailgun_send(mailgun_data, files)
 
 def team_email(email, attachments):
     mailgun_data = email.get_mailgun_data(stripped=True, footer=True)
