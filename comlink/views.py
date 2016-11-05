@@ -72,8 +72,7 @@ class Incoming(View):
 
         # See if any attached signal handlers throw an error
         try:
-            # self.handle_email(email, attachments=attachments)
-            self.handle_email(email, attachments=request.FILES)
+            self.handle_email(email, attachments=attachments)
             return HttpResponse("OK")
         except RejectedMailException, e:
             return HttpResponse("Email not accepted", status=406)
