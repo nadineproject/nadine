@@ -9,6 +9,7 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.base import View
+from django.contrib.auth.models import User
 from comlink.forms import EmailForm
 from comlink.models import Attachment, IncomingEmail
 from comlink.signals import email_received
