@@ -10,9 +10,6 @@ from django.utils import timezone
 from localflavor.us.us_states import US_STATES
 from localflavor.ca.ca_provinces import PROVINCE_CHOICES
 
-#from taggit.forms import *
-
-#from nadine.models import *
 from nadine import email
 from nadine.models.core import UserProfile, HowHeard, Industry, Neighborhood, GENDER_CHOICES, Membership, MembershipPlan
 from nadine.models.usage import PAYMENT_CHOICES, CoworkingDay
