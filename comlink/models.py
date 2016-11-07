@@ -138,7 +138,7 @@ class SimpleMailingList(models.Model):
 
     def get_subscriber_list(self):
         emails = []
-        for u in self.subscribers:
+        for u in self.subscribers.all():
             emails.append(u.email)
         return emails
 
