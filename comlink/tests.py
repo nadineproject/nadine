@@ -24,9 +24,6 @@ testpostdata = {
 class SimpleTest(TestCase):
 
     def test_saving_inbound_email(self):
-        """
-        
-        """
         request = request_factory.post('/', data=testpostdata)
         formk = modelform_factory(IncomingEmail, form=EmailForm, exclude=[])
         form = formk(request.POST)
@@ -34,9 +31,3 @@ class SimpleTest(TestCase):
 
         for k, v in form.field_map.items():
             assert getattr(email, v) == testpostdata[k]
-
-
-
-
-
-
