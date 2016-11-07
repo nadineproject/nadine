@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from django.utils import timezone
 from django.contrib.auth.models import User
 
-from nadine.models.core import Membership
+from nadine.models.core import Membership, SpecialDay
 from nadine.models.usage import CoworkingDay
 from nadine.models.payment import BillingLog
 from members.models import UserNotification
