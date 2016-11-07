@@ -38,7 +38,7 @@ urlpatterns = [
     url(r'^bill/(?P<username>[^/]+)/$', member.bills, name='staff_user_bills'),
     url(r'^membership/(?P<username>[^/]+)/$', member.membership, name='staff_user_membership'),
     url(r'^files/(?P<username>[^/]+)/$', member.files, name='staff_user_files'),
-    url(r'^edit/(?P<username>[^/]+)/$', member.edit, name='staff_user_edit'),
+    # url(r'^edit/(?P<username>[^/]+)/$', member.edit, name='staff_user_edit'),
 
     url(r'^stats/$', stats.stats, name='staff_stats'),
     url(r'^stats/history/$', stats.history, name='staff_stats_history'),
