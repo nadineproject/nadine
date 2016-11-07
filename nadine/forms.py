@@ -10,9 +10,6 @@ from django.utils import timezone
 from localflavor.us.us_states import US_STATES
 from localflavor.ca.ca_provinces import PROVINCE_CHOICES
 
-#from taggit.forms import *
-
-#from nadine.models import *
 from nadine import email
 from nadine.models.core import UserProfile, HowHeard, Industry, Neighborhood, GENDER_CHOICES, Membership, MembershipPlan
 from nadine.models.usage import PAYMENT_CHOICES, CoworkingDay
@@ -216,89 +213,92 @@ class EventForm(forms.Form):
         return event
 
 
-class MemberEditForm(forms.Form):
-    username = forms.CharField(widget=forms.TextInput(attrs={'readonly':'readonly'}))
-    first_name = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}))
-    last_name = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}))
-    email = forms.EmailField(widget=forms.TextInput(attrs={'size': '50'}))
-    email2 = forms.EmailField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
-    phone = forms.CharField(widget=forms.TextInput(attrs={'size': '16'}), required=False)
-    phone2 = forms.CharField(widget=forms.TextInput(attrs={'size': '16'}), required=False)
-    address1 = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
-    address2 = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
-    city = forms.CharField(widget=forms.TextInput(attrs={'size': '20'}), required=False)
-    state = forms.CharField(widget=forms.TextInput(attrs={'size': '5'}), required=False)
-    zipcode = forms.CharField(widget=forms.TextInput(attrs={'size': '10'}), required=False)
-    company_name = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
-    url_personal = forms.URLField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
-    url_professional = forms.URLField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
-    url_facebook = forms.URLField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
-    url_twitter = forms.URLField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
-    url_linkedin = forms.URLField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
-    url_github = forms.URLField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
-    gender = forms.ChoiceField(choices=GENDER_CHOICES, required=False)
-    howHeard = forms.ModelChoiceField(label="How heard", queryset=HowHeard.objects.all(), required=False)
-    industry = forms.ModelChoiceField(queryset=Industry.objects.all(), required=False)
-    neighborhood = forms.ModelChoiceField(queryset=Neighborhood.objects.all(), required=False)
-    has_kids = forms.NullBooleanField(required=False)
-    self_employed = forms.NullBooleanField(required=False)
-    photo = forms.ImageField(required=False)
+# Deprecated in favor of member_profile_edit
+# TODO - remove
+# class MemberEditForm(forms.Form):
+#     username = forms.CharField(widget=forms.TextInput(attrs={'readonly':'readonly'}))
+#     first_name = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}))
+#     last_name = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}))
+#     email = forms.EmailField(widget=forms.TextInput(attrs={'size': '50'}))
+#     email2 = forms.EmailField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
+#     phone = forms.CharField(widget=forms.TextInput(attrs={'size': '16'}), required=False)
+#     phone2 = forms.CharField(widget=forms.TextInput(attrs={'size': '16'}), required=False)
+#     address1 = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
+#     address2 = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
+#     city = forms.CharField(widget=forms.TextInput(attrs={'size': '20'}), required=False)
+#     state = forms.CharField(widget=forms.TextInput(attrs={'size': '5'}), required=False)
+#     zipcode = forms.CharField(widget=forms.TextInput(attrs={'size': '10'}), required=False)
+#     company_name = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
+#     url_personal = forms.URLField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
+#     url_professional = forms.URLField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
+#     url_facebook = forms.URLField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
+#     url_twitter = forms.URLField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
+#     url_linkedin = forms.URLField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
+#     url_github = forms.URLField(widget=forms.TextInput(attrs={'size': '50'}), required=False)
+#     gender = forms.ChoiceField(choices=GENDER_CHOICES, required=False)
+#     howHeard = forms.ModelChoiceField(label="How heard", queryset=HowHeard.objects.all(), required=False)
+#     industry = forms.ModelChoiceField(queryset=Industry.objects.all(), required=False)
+#     neighborhood = forms.ModelChoiceField(queryset=Neighborhood.objects.all(), required=False)
+#     has_kids = forms.NullBooleanField(required=False)
+#     self_employed = forms.NullBooleanField(required=False)
+#     photo = forms.ImageField(required=False)
+#
+#     emergency_name = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}), label="Emergency Contact", required=False)
+#     emergency_relationship = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}), label="Relationship", required=False)
+#     emergency_phone = forms.CharField(widget=forms.TextInput(attrs={'size': '16'}), label="Phone", required=False)
+#     emergency_email = forms.EmailField(widget=forms.TextInput(attrs={'size': '50'}), label="E-mail", required=False)
+#
+#     def save(self):
+#         "Creates the User and Profile records with the field data and returns the user"
+#         if not self.is_valid():
+#             raise Exception('The form must be valid in order to save')
+#
+#         user = User.objects.get(username=self.cleaned_data['username'])
+#         user.first_name=self.cleaned_data['first_name']
+#         user.last_name=self.cleaned_data['last_name']
+#         user.email=self.cleaned_data['email']
+#         user.save()
+#
+#         # Alternate Emails
+#         email2 = self.cleaned_data['email2']
+#         if email2 and not email2 in user.profile.all_emails():
+#             e2 = EmailAddress(user=user, email=email2)
+#             e2.save()
+#
+#         # Save profile fields
+#         user.profile.phone = self.cleaned_data['phone']
+#         user.profile.phone2 = self.cleaned_data['phone2']
+#         user.profile.address1 = self.cleaned_data['address1']
+#         user.profile.address2 = self.cleaned_data['address2']
+#         user.profile.city = self.cleaned_data['city']
+#         user.profile.state = self.cleaned_data['state']
+#         user.profile.zipcode = self.cleaned_data['zipcode']
+#         user.profile.gender = self.cleaned_data['gender']
+#         user.profile.howHeard = self.cleaned_data['howHeard']
+#         user.profile.industry = self.cleaned_data['industry']
+#         user.profile.neighborhood = self.cleaned_data['neighborhood']
+#         user.profile.has_kids = self.cleaned_data['has_kids']
+#         user.profile.self_emplyed = self.cleaned_data['self_employed']
+#         user.profile.company_name = self.cleaned_data['company_name']
+#         if self.cleaned_data['photo']:
+#             user.profile.photo = self.cleaned_data['photo']
+#         user.profile.save()
+#
+#         # Save the URLs
+#         user.profile.save_url("personal", self.cleaned_data['url_personal'])
+#         user.profile.save_url("professional", self.cleaned_data['url_professional'])
+#         user.profile.save_url("facebook", self.cleaned_data['url_facebook'])
+#         user.profile.save_url("twitter", self.cleaned_data['url_twitter'])
+#         user.profile.save_url("linkedin", self.cleaned_data['url_linkedin'])
+#         user.profile.save_url("github", self.cleaned_data['url_github'])
+#
+#         emergency_contact = user.get_emergency_contact()
+#         emergency_contact.name=self.cleaned_data['emergency_name']
+#         emergency_contact.relationship=self.cleaned_data['emergency_relationship']
+#         emergency_contact.phone=self.cleaned_data['emergency_phone']
+#         emergency_contact.email=self.cleaned_data['emergency_email']
+#         emergency_contact.save()
 
-    emergency_name = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}), label="Emergency Contact", required=False)
-    emergency_relationship = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}), label="Relationship", required=False)
-    emergency_phone = forms.CharField(widget=forms.TextInput(attrs={'size': '16'}), label="Phone", required=False)
-    emergency_email = forms.EmailField(widget=forms.TextInput(attrs={'size': '50'}), label="E-mail", required=False)
-
-    def save(self):
-        "Creates the User and Profile records with the field data and returns the user"
-        if not self.is_valid():
-            raise Exception('The form must be valid in order to save')
-
-        user = User.objects.get(username=self.cleaned_data['username'])
-        user.first_name=self.cleaned_data['first_name']
-        user.last_name=self.cleaned_data['last_name']
-        user.email=self.cleaned_data['email']
-        user.save()
-
-        # Alternate Emails
-        email2 = self.cleaned_data['email2']
-        if email2 and not email2 in user.profile.all_emails():
-            e2 = EmailAddress(user=user, email=email2)
-            e2.save()
-
-        # Save profile fields
-        user.profile.phone = self.cleaned_data['phone']
-        user.profile.phone2 = self.cleaned_data['phone2']
-        user.profile.address1 = self.cleaned_data['address1']
-        user.profile.address2 = self.cleaned_data['address2']
-        user.profile.city = self.cleaned_data['city']
-        user.profile.state = self.cleaned_data['state']
-        user.profile.zipcode = self.cleaned_data['zipcode']
-        user.profile.gender = self.cleaned_data['gender']
-        user.profile.howHeard = self.cleaned_data['howHeard']
-        user.profile.industry = self.cleaned_data['industry']
-        user.profile.neighborhood = self.cleaned_data['neighborhood']
-        user.profile.has_kids = self.cleaned_data['has_kids']
-        user.profile.self_emplyed = self.cleaned_data['self_employed']
-        user.profile.company_name = self.cleaned_data['company_name']
-        if self.cleaned_data['photo']:
-            user.profile.photo = self.cleaned_data['photo']
-        user.profile.save()
-
-        # Save the URLs
-        user.profile.save_url("personal", self.cleaned_data['url_personal'])
-        user.profile.save_url("professional", self.cleaned_data['url_professional'])
-        user.profile.save_url("facebook", self.cleaned_data['url_facebook'])
-        user.profile.save_url("twitter", self.cleaned_data['url_twitter'])
-        user.profile.save_url("linkedin", self.cleaned_data['url_linkedin'])
-        user.profile.save_url("github", self.cleaned_data['url_github'])
-
-        emergency_contact = user.get_emergency_contact()
-        emergency_contact.name=self.cleaned_data['emergency_name']
-        emergency_contact.relationship=self.cleaned_data['emergency_relationship']
-        emergency_contact.phone=self.cleaned_data['emergency_phone']
-        emergency_contact.email=self.cleaned_data['emergency_email']
-        emergency_contact.save()
 
 class CoworkingDayForm(forms.Form):
     username = forms.CharField(widget=forms.TextInput(attrs={'readonly':'readonly'}))
