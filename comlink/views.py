@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-import hashlib
 import hmac
+import hashlib
 import logging
 
 from django.conf import settings
@@ -10,6 +10,10 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.base import View
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.shortcuts import render, get_object_or_404
+from django.utils import timezone
+
 from comlink.forms import EmailForm
 from comlink.models import Attachment, IncomingEmail
 from comlink.signals import email_received
@@ -21,6 +25,26 @@ API_KEY = getattr(settings, "MAILGUN_API_KEY", "")
 
 VERIFY_SIGNATURE = getattr(settings, "MAILGUN_VERIFY_INCOMING", not settings.DEBUG)
 
+
+##########################################################################
+# User Interface Views
+##########################################################################
+
+@login_required
+def home(request):
+    recent_messages = IncomingEmail.objects.all().order_by("-received")[:10]
+    context = {'recent_messages':recent_messages}
+    return render(request, 'comlink/home.html', context)
+
+@login_required
+def view_mail(request, id):
+    message = get_object_or_404(IncomingEmail, id=id)
+    context = {'message':message}
+    return render(request, 'comlink/mail.html', context)
+
+##########################################################################
+# Incoming Mail Views
+##########################################################################
 
 class Incoming(View):
     email_model = IncomingEmail

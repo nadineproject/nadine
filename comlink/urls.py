@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import url, include
-from comlink.views import Incoming
+
+from comlink import views
 
 urlpatterns = [
-    url('^incoming/$', Incoming.as_view(), name='comlink_incoming'),
+    url(r'^$', views.home, name="comlink_home"),
+    url(r'^mail/(?P<id>\d+)/$', views.view_mail, name='comlink_mail'),
+
+    url(r'^incoming/$', views.Incoming.as_view(), name='comlink_incoming'),
 ]

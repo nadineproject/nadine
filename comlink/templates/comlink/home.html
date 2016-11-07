@@ -1,0 +1,21 @@
+{% extends "comlink/base.html" %}
+
+{% block sub-title %} | Home {% endblock %}
+
+{% block content %}
+<h2>Recent Messages</h2>
+<table>
+  <tr>
+    <th>Received</th>
+    <th>From</th>
+    <th>Subject</th>
+  </tr>
+{% for m in recent_messages %}
+    <tr>
+      <td>{{ m.received }}</td>
+      <td>{{ m.sender }}</td>
+      <td><a href="{% url 'comlink_mail' m.id %}">{{ m.subject }}</a></td>
+    </tr>
+{% endfor %}
+</table>
+{% endblock %}
