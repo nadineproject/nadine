@@ -2,10 +2,12 @@
 import json
 import logging
 
-from django.conf import settings
 from django.db import models
+from django.conf import settings
+from django.contrib.auth.models import User
 from django.utils.datastructures import MultiValueDict
 from django.utils.translation import ugettext as _
+
 from email.Utils import parseaddr
 
 UPLOAD_TO = getattr(settings, "MAILGUN_UPLOAD_TO", "attachments/")
@@ -94,7 +96,7 @@ class EmailBaseModel(models.Model):
         # Build and return our data
         mailgun_data = {"from": self.from_str,
                         "to": [self.recipient, ],
-                        "cc": [self.cc, ], 
+                        "cc": [self.cc, ],
                         "subject": self.subject,
                         "text": body_plain,
                         "html": body_html,
@@ -126,3 +128,19 @@ class Attachment(models.Model):
         if self.file:
             return self.file.name
         return "(no file)"
+
+
+class SimpleMailingList(models.Model):
+    name = models.CharField(max_length=128)
+    address = models.EmailField(unique=True)
+    subscribers = models.ManyToManyField(User, blank=True, related_name='simple_mailing_lists')
+    access_ts = models.DateTimeField(auto_now=True)
+
+    def get_subscriber_list(self):
+        emails = []
+        for u in self.subscribers:
+            emails.append(u.email)
+        return emails
+
+
+# Copyright 2016 The Nadine Project (http://nadineproject.org/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
