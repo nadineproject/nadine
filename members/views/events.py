@@ -26,6 +26,21 @@ def events_google(request, location_slug=None):
     return render(request, 'members/events_google.html', {'settings': settings})
 
 
+def quarter_hours(hour, minutes):
+    if int(minutes) < 15:
+        minutes = '00'
+    elif int(minutes) < 30:
+        minutes = '15'
+    elif int(minutes) < 45:
+        minutes = '30'
+    elif int(minutes) < 59:
+        minutes = '45'
+    else:
+        minutes = '00'
+        hour = int(mil_start[1] + 1)
+
+    return hour, minutes
+
 def coerce_times(start, end, date):
     if len(start) > 5:
         start = start.split(" ")
@@ -35,9 +50,16 @@ def coerce_times(start, end, date):
                 hour = int(mil_start[0]) + 12
             else:
                 hour = mil_start[0]
+            start_hour, start_minutes = quarter_hours(hour, mil_start[1])
             start = str(hour) + ':' + mil_start[1]
         else:
-            start = start[0]
+            mil_start = start[0].split(":")
+            start_hour, start_minutes = quarter_hours(mil_start[0], mil_start[1])
+            start = str(start_hour) + ':' + start_minutes
+    else:
+        mil_start = start.split(":")
+        start_hour, start_minutes = quarter_hours(mil_start[0], mil_start[1])
+        start = str(start_hour) + ':' + start_minutes
     if len(end) > 5:
         end = end.split(" ")
         if end[1] == 'PM':
@@ -46,9 +68,16 @@ def coerce_times(start, end, date):
                 hour = int(mil_end[0]) + 12
             else :
                 hour = mil_end[0]
-            end = str(hour) + ':' + mil_end[1]
+            end_hour, end_minutes = quarter_hours(hour, mil_end[1])
+            end = str(end_hour) + ':' + end_minutes
         else:
-            end = end[0]
+            mil_end = end[0].split(":")
+            end_hour, end_minutes = quarter_hours(mil_end[0], mil_end[1])
+            end = str(end_hour) + ':' + end_minutes
+    else:
+        mil_end = end.split(":")
+        end_hour, end_minutes = quarter_hours(mil_end[0], mil_end[1])
+        end = str(end_hour) + ':' + end_minutes
 
     start_dt = datetime.strptime(date + " " + start, "%Y-%m-%d %H:%M")
     start_ts = timezone.make_aware(start_dt, timezone.get_current_timezone())
@@ -71,7 +100,6 @@ def create_booking(request):
 
     # Turn our date, start, and end strings into timestamps
     start_ts, end_ts, start, end = coerce_times(start, end, date)
-
 
     #Make auto date for start and end if not otherwise given
     room_dict = {}
@@ -185,7 +213,7 @@ def calendar(request):
         end = request.POST.get('end')
         date = request.POST.get('date')
 
-        start_ts, end_ts = coerce_times(start, end, date)
+        start_ts, end_ts, start, end = coerce_times(start, end, date)
 
         if start_ts < end_ts :
 
