@@ -1,8 +1,8 @@
 //This test.js currently logs in the user and redirects to user index page
 
-var url = 'http://127.0.0.1:8000/';
+var url = 'http://127.0.0.1:8000';
 
-var page = new WebPage(), testindex = 0, loadInProgress = false, links = [], brokenLinks = [];
+var page = new WebPage(), testindex = 0, loadInProgress = false, links, brokenLinks = [];
 
 page.onConsoleMessage = function(msg) {
   console.log(msg);
@@ -20,7 +20,7 @@ page.onLoadFinished = function() {
 
 var steps = [
   function() {
-    page.open(url + 'login');
+    page.open(url + '/login');
   },
   function() {
     page.evaluate(function() {
@@ -50,37 +50,28 @@ var steps = [
     });
   },
   function() {
-    page.open(url + 'member/profile/alexandra');
+    page.open(url + '/member/profile/alexandra');
   },
   function() {
-    page.evaluate(function(links) {
-      links = document.getElementsByTagName('a');
-      console.log(links.length);
+    links = page.evaluate(function(links) {
+       var as = document.getElementsByTagName('a');
+       var hrefs = [];
+       for (var k = 0; k < as.length; k++ ){
+         hrefs.push(as[k].getAttribute('href'));
+       }
+       return hrefs;
     }, links);
-    // page.open();
-
-    // // page.render('done.png');
-    // page.evaluate(function() {
-    //   links = document.getElementsByTagName('a');
-    //   console.log(links.length);
-    //
-    //   for (var j = 0; j < links.length; j++) {
-    //
-    //     // if(go(arrs[j])) {
-    //     //   console.log('Link ' + links[j] + ' is working!');
-    //     // } else {
-    //     //   brokenLinks.push(links[j]);
-    //     // }
-    //   }
-    //   if (brokenLinks.length > 0) {
-    //     console.log(brokenLinks);
-    //   }
-    // });
   },
   function() {
-    page.evaluate(function(links) {
-      console.log(links.length);
-    }, links);
+    for(var j = 0; j < (links.length - 5); j++) {
+      //TODO fix async issue with this to test links.
+      page = new WebPage();
+      page.open(url + links[3], function() {
+        page.render('img/page' + j + '.png');
+      })
+    }
+  },
+  function() {
     page.render('done.png');
   }
 ];
