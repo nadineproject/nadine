@@ -2,7 +2,7 @@
 
 var url = 'http://127.0.0.1:8000/';
 
-var page = new WebPage(), testindex = 0, loadInProgress = false;
+var page = new WebPage(), testindex = 0, loadInProgress = false, links = [], brokenLinks = [];
 
 page.onConsoleMessage = function(msg) {
   console.log(msg);
@@ -44,15 +44,49 @@ var steps = [
     });
   },
   function() {
-    page.render('done.png');
+    // page.render('done.png');
     page.evaluate(function() {
-      console.log(document.querySelectorAll('html')[0].outerHTML);
+      console.log('Done login.');
     });
+  },
+  function() {
+    page.open(url + 'member/profile/alexandra');
+  },
+  function() {
+    page.evaluate(function(links) {
+      links = document.getElementsByTagName('a');
+      console.log(links.length);
+    }, links);
+    // page.open();
+
+    // // page.render('done.png');
+    // page.evaluate(function() {
+    //   links = document.getElementsByTagName('a');
+    //   console.log(links.length);
+    //
+    //   for (var j = 0; j < links.length; j++) {
+    //
+    //     // if(go(arrs[j])) {
+    //     //   console.log('Link ' + links[j] + ' is working!');
+    //     // } else {
+    //     //   brokenLinks.push(links[j]);
+    //     // }
+    //   }
+    //   if (brokenLinks.length > 0) {
+    //     console.log(brokenLinks);
+    //   }
+    // });
+  },
+  function() {
+    page.evaluate(function(links) {
+      console.log(links.length);
+    }, links);
+    page.render('done.png');
   }
 ];
 
 
-interval = setInterval(function() {
+interval = setInterval(function(links) {
   if (!loadInProgress && typeof steps[testindex] == "function") {
     console.log("step " + (testindex + 1));
     steps[testindex]();
