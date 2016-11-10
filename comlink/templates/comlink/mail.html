@@ -20,4 +20,9 @@
   <pre><code style="font-family:'Roboto', sans-serif">{{ message.body_plain }}</pre></code>
 </div>
 
+<h4>Headers</h4>
+{% for header, value in headers.items %}
+	<p>{{ header }}: {{ value }}</p>
+{% endfor %}
+
 {% endblock %}

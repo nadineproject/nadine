@@ -18,6 +18,7 @@ from comlink.forms import EmailForm
 from comlink.models import Attachment, IncomingEmail
 from comlink.signals import email_received
 from comlink.exceptions import RejectedMailException, DroppedMailException
+from comlink import jwzthreading
 
 logger = logging.getLogger(__name__)
 
@@ -32,14 +33,16 @@ VERIFY_SIGNATURE = getattr(settings, "MAILGUN_VERIFY_INCOMING", not settings.DEB
 
 @login_required
 def home(request):
-    recent_messages = IncomingEmail.objects.all().order_by("-received")[:10]
-    context = {'recent_messages':recent_messages}
+    messages = IncomingEmail.objects.all().order_by("-received")
+    threads = jwzthreading.thread(messages)
+    context = {'messages':messages, 'threads':threads}
     return render(request, 'comlink/home.html', context)
 
 @login_required
 def view_mail(request, id):
     message = get_object_or_404(IncomingEmail, id=id)
-    context = {'message':message}
+    headers = message.headers
+    context = {'message':message, 'headers':headers}
     return render(request, 'comlink/mail.html', context)
 
 ##########################################################################

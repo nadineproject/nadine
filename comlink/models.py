@@ -46,8 +46,7 @@ class EmailBaseModel(models.Model):
             for key, val in header_list:
                 self._headers.appendlist(key, val)
         except:
-            logger.exception(
-                "Error parsing JSON data containing message headers")
+            logger.exception("Error parsing JSON data containing message headers")
 
     @property
     def headers(self):
@@ -74,8 +73,20 @@ class EmailBaseModel(models.Model):
         return self._cids
 
     @property
+    def message_id(self):
+        return self.headers.get('Message-Id', None)
+
+    @property
     def cc(self):
         return self.headers.get('Cc', None)
+
+    @property
+    def references(self):
+        return self.headers.get('References', None)
+
+    @property
+    def in_reply_to(self):
+        return self.headers.get('In-Reply-To', None)
 
     def get_mailgun_data(self, stripped=True, footer=True):
         if stripped:
