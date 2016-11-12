@@ -1,8 +1,11 @@
 from __future__ import unicode_literals
 
 import logging
+import traceback
+from datetime import datetime, timedelta, date
 
 from django.db import models
+from django.db.models import Q
 from django.core import urlresolvers
 from django.conf import settings
 from django.utils import timezone
@@ -17,20 +20,29 @@ class Organization(models.Model):
     name = models.CharField(max_length=128)
     lead = models.ForeignKey(User, null=True, blank=True)
 
+    def members(self, on_date=None):
+        if not on_date:
+            on_date = timezone.now().date()
+        future = Q(end_date__isnull=True)
+        unending = Q(end_date__gte=on_date)
+        active = self.organizationmember_set.filter(start_date__lte=on_date).filter(future | unending)
+        return User.objects.filter(id__in=active.values('user'))
+
     def is_member(self, user, on_date=None):
         if not on_date:
             on_date = timezone.now().date()
-        for m in OrganizationMember.objects.filter(organization=self, user=user):
+        for m in self.organizationmember_set.filter(user=user):
             if m.is_active(on_date):
                 return True
         return False
 
-    def add_member(self, user, start_date=None):
+    def add_member(self, user, start_date=None, end_date=None):
         if not start_date:
             start_date = timezone.now().date()
         if self.is_member(user, start_date):
             raise Exception("User already a member")
-        return OrganizationMember.objcts.create(organization=self, user=user, start_date=start_date)
+        return OrganizationMember.objects.create(organization=self, user=user,
+            start_date=start_date, end_date=end_date)
 
     def __str__(self):
         return self.name
