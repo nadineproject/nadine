@@ -386,10 +386,6 @@ td#pf-photo {
 	width: 20%;
 }
 
-input#id_company_name {
-	width: 50%;
-}
-
 select#id_public_profile.browser-default {
 	width: 30%;
 }

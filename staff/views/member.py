@@ -19,58 +19,6 @@ from nadine.models import Membership, MemberNote, MembershipPlan, SentEmailLog, 
 from nadine import email
 
 
-# Deprecated in favor of member_profile_edit
-# TODO - remove
-# @staff_member_required
-# def edit(request, username):
-#     user = get_object_or_404(User, username=username)
-#
-#     if request.method == 'POST':
-#         edit_form = MemberEditForm(request.POST, request.FILES)
-#         if edit_form.is_valid():
-#             try:
-#                 edit_form.save()
-#                 messages.add_message(request, messages.INFO, "Member Updated")
-#                 return HttpResponseRedirect(reverse('staff_user_detail', args=[], kwargs={'username': username}))
-#             except Exception as e:
-#                 messages.add_message(request, messages.ERROR, e)
-#     else:
-#         emergency_contact = user.get_emergency_contact()
-#         member_data={'username': username,
-#             'first_name': user.first_name,
-#             'last_name': user.last_name,
-#             'email': user.email,
-#             'phone': user.profile.phone,
-#             'phone2': user.profile.phone2,
-#             'address1': user.profile.address1,
-#             'address2': user.profile.address2,
-#             'city': user.profile.city,
-#             'state': user.profile.state,
-#             'zipcode': user.profile.zipcode,
-#             'company_name': user.profile.company_name,
-#             'url_personal': user.profile.url_personal,
-#             'url_professional': user.profile.url_professional,
-#             'url_facebook': user.profile.url_facebook,
-#             'url_twitter': user.profile.url_twitter,
-#             'url_linkedin': user.profile.url_linkedin,
-#             'url_github': user.profile.url_github,
-#             'gender': user.profile.gender,
-#             'howHeard': user.profile.howHeard,
-#             'industry': user.profile.industry,
-#             'neighborhood': user.profile.neighborhood,
-#             'has_kids': user.profile.has_kids,
-#             'self_employed': user.profile.self_employed,
-#             'photo': user.profile.photo,
-#             'emergency_name': emergency_contact.name,
-#             'emergency_relationship': emergency_contact.relationship,
-#             'emergency_phone': emergency_contact.phone,
-#             'emergency_email': emergency_contact.email,
-#         }
-#         edit_form = MemberEditForm(initial=member_data)
-#
-#     return render(request, 'staff/member_edit.html', { 'user':user, 'edit_form': edit_form })
-
-
 @staff_member_required
 def detail(request, username):
     user = get_object_or_404(User, username=username)

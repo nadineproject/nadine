@@ -67,6 +67,13 @@ def forward(apps, schema_editor):
                 m.end_date = ended
                 m.save()
 
+def reverse(apps, schema_editor):
+    User = apps.get_model(settings.AUTH_USER_MODEL)
+    Organization = apps.get_model("nadine", "Organization")
+    for u in User.objects.all():
+        if u.profile.organization:
+            u.profile.company_name = u.profile.organization.name
+
 
 class Migration(migrations.Migration):
 
@@ -109,5 +116,9 @@ class Migration(migrations.Migration):
                 ('organization', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='nadine.Organization')),
             ],
         ),
-        migrations.RunPython(forward, migrations.RunPython.noop),
-    ]
+        migrations.RunPython(forward, reverse),
+        migrations.RemoveField(
+            model_name='userprofile',
+            name='company_name',
+        ),
+]

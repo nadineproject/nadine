@@ -350,29 +350,40 @@ class UserProfile(models.Model):
     neighborhood = models.ForeignKey(Neighborhood, blank=True, null=True)
     has_kids = models.NullBooleanField(blank=True, null=True)
     self_employed = models.NullBooleanField(blank=True, null=True)
-    company_name = models.CharField(max_length=128, blank=True, null=True)
     last_modified = models.DateField(auto_now=True, editable=False)
     photo = models.ImageField(upload_to=user_photo_path, blank=True, null=True)
     tags = TaggableManager(blank=True)
     valid_billing = models.NullBooleanField(blank=True, null=True)
 
+    @property
     def url_personal(self):
         return self.user.url_set.filter(url_type__name="personal").first()
 
+    @property
     def url_professional(self):
         return self.user.url_set.filter(url_type__name="professional").first()
 
+    @property
     def url_facebook(self):
         return self.user.url_set.filter(url_type__name="facebook").first()
 
+    @property
     def url_twitter(self):
         return self.user.url_set.filter(url_type__name="twitter").first()
 
+    @property
     def url_linkedin(self):
         return self.user.url_set.filter(url_type__name="linkedin").first()
 
+    @property
     def url_github(self):
         return self.user.url_set.filter(url_type__name="github").first()
+
+    @property
+    def organization(self):
+        print(self.user.organizationmember_set.all())
+        # TODO - this should be filtered by active memberships
+        return self.user.organizationmember_set.first()
 
     def save_url(self, url_type, url_value):
         if url_type and url_value:
