@@ -40,6 +40,7 @@ from nadine.utils.payment_api import PaymentAPI
 from nadine.utils.slack_api import SlackAPI
 from nadine.models.usage import CoworkingDay
 from nadine.models.payment import Bill
+from nadine.models.organization import Organization
 from nadine import email
 
 from doors.keymaster.models import DoorEvent
@@ -379,11 +380,13 @@ class UserProfile(models.Model):
     def url_github(self):
         return self.user.url_set.filter(url_type__name="github").first()
 
-    @property
-    def organization(self):
-        print(self.user.organizationmember_set.all())
-        # TODO - this should be filtered by active memberships
-        return self.user.organizationmember_set.first()
+    def active_organizations(self, on_date=None):
+        if not on_date:
+            on_date = timezone.now().date()
+        future = Q(end_date__isnull=True)
+        unending = Q(end_date__gte=on_date)
+        active = self.user.organizationmember_set.filter(start_date__lte=on_date).filter(future | unending)
+        return Organization.objects.filter(id__in=active.values('organization'))
 
     def save_url(self, url_type, url_value):
         if url_type and url_value:

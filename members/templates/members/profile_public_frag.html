@@ -9,12 +9,12 @@
         <td>{{ user.profile.first_visit }}</td>
    </tr>
 
-    {% if user.profile.organization %}
+    {% for org in user.profile.active_organizations %}
         <tr>
             <td>Organization</td>
-            <td>{{ user.profile.organization }}</td>
+            <td>{{ org }}</td>
         </tr>
-    {% endif %}
+    {% endfor %}
 
     {% for url in user.url_set.all %}
         <tr>
