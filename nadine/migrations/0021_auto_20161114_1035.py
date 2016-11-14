@@ -38,4 +38,9 @@ class Migration(migrations.Migration):
             name='admin',
             field=models.BooleanField(default=False),
         ),
+        migrations.AddField(
+            model_name='organizationnote',
+            name='private',
+            field=models.BooleanField(default=True),
+        ),
     ]

@@ -106,6 +106,7 @@ class OrganizationNote(models.Model):
     created_ts = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name="+")
     organization = models.ForeignKey(Organization)
+    private = models.BooleanField(default=True)
     note = models.TextField()
 
     def __str__(self):
