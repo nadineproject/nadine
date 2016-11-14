@@ -88,8 +88,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_ts', models.DateTimeField(auto_now_add=True)),
-                ('name', models.CharField(max_length=128)),
                 ('created_by', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL)),
+                ('name', models.CharField(max_length=128)),
                 ('lead', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
             options={
@@ -111,9 +111,9 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_ts', models.DateTimeField(auto_now_add=True)),
-                ('note', models.TextField()),
                 ('created_by', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL)),
                 ('organization', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='nadine.Organization')),
+                ('note', models.TextField()),
             ],
         ),
         migrations.RunPython(forward, reverse),

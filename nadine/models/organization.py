@@ -14,11 +14,20 @@ from django.contrib.auth.models import User
 logger = logging.getLogger(__name__)
 
 
+def org_photo_path(instance, filename):
+    ext = filename.split('.')[-1]
+    return "org_photos/%s.%s" % (instance.name, ext.lower())
+
+
 class Organization(models.Model):
     created_ts = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name="+")
     name = models.CharField(max_length=128)
     lead = models.ForeignKey(User, null=True, blank=True)
+    bio = models.TextField(blank=True, null=True)
+    photo = models.ImageField(upload_to=org_photo_path, blank=True, null=True)
+    public_profile = models.BooleanField(default=False)
+    locked = models.BooleanField(default=False)
 
     def members(self, on_date=None):
         if not on_date:
@@ -58,6 +67,7 @@ class OrganizationMember(models.Model):
     user = models.ForeignKey(User)
     start_date = models.DateField()
     end_date = models.DateField(null=True, blank=True)
+    admin = models.BooleanField(default=False)
 
     def is_active(self, on_date=None):
         if not on_date:
