@@ -14,6 +14,7 @@ def is_active(org_member, on_date=None):
         return False
     return org_member.end_date == None or org_member.end_date >= on_date
 
+
 def add_member(member_model, org, user, start_date=None):
     if not start_date:
         start_date = timezone.now().date()
@@ -22,17 +23,11 @@ def add_member(member_model, org, user, start_date=None):
             raise Exception("User already a member")
     return member_model.objects.create(organization=org, user=user, start_date=start_date)
 
+
 def forward(apps, schema_editor):
     User = apps.get_model(settings.AUTH_USER_MODEL)
     Organization = apps.get_model("nadine", "Organization")
     OrganizationMember = apps.get_model("nadine", "OrganizationMember")
-
-    # Organizations will be marked as created by the first user
-    # in the system.
-    first_user = User.objects.first()
-    if not first_user:
-        # No users indicates no data and we can move on.
-        return
 
     for user in User.objects.all():
         if user.profile.company_name:
@@ -40,7 +35,7 @@ def forward(apps, schema_editor):
 
             # We'll mark the creation of this organization and
             # the user's joining of the organization on the date
-            # the user was created.
+            # this user was created.
             created = user.date_joined
 
             # We'll consider they have left the organization if
@@ -56,7 +51,7 @@ def forward(apps, schema_editor):
                 # The lead of the organization is the first user we find
                 # that has this company_name.
                 org = Organization.objects.create(name=company_name,
-                    created_by=first_user,
+                    created_by=user,
                     lead=user)
                 org.created_ts = user.date_joined
                 org.save()
@@ -67,12 +62,14 @@ def forward(apps, schema_editor):
                 m.end_date = ended
                 m.save()
 
+
 def reverse(apps, schema_editor):
     User = apps.get_model(settings.AUTH_USER_MODEL)
     Organization = apps.get_model("nadine", "Organization")
     for u in User.objects.all():
-        if u.profile.organization:
-            u.profile.company_name = u.profile.organization.name
+        m = u.organizationmember_set.first()
+        if m:
+            u.profile.company_name = m.organization.name
 
 
 class Migration(migrations.Migration):
