@@ -26,13 +26,24 @@ class StyledAdmin(admin.ModelAdmin):
 
 class OrgMemberInline(admin.TabularInline):
     model = OrganizationMember
+    raw_id_fields = ('user', )
     extra = 1
 class OrgNoteInline(admin.TabularInline):
     model = OrganizationNote
+    readonly_fields = ('created_by', 'created_ts', )
     extra = 1
 class OrganizationAdmin(StyledAdmin):
     inlines = [OrgMemberInline, OrgNoteInline]
-    readonly_fields = ('created_by', 'created_ts')
+    search_fields = ('name', )
+    readonly_fields = ('created_by', 'created_ts', )
+    raw_id_fields = ('lead', )
+    def save_formset(self, request, form, formset, change):
+        instances = formset.save(commit=False)
+        for obj in formset.deleted_objects:
+            obj.delete()
+        for instance in instances:
+            instance.created_by = request.user
+            instance.save()
 admin.site.register(Organization, OrganizationAdmin)
 
 
