@@ -101,6 +101,10 @@ class Organization(models.Model):
     def __unicode__(self):
         return self.name
 
+    @property
+    def admin_url(self):
+        return urlresolvers.reverse('admin:nadine_organization_change', args=[self.id])
+
     class Meta:
         app_label = 'nadine'
         ordering = ['name']

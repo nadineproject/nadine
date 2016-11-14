@@ -7,27 +7,7 @@
 {% endblock %}
 
 {% block content %}
-<h2>{{ organization.name}}</h2>
-
-<dl>[
-	{% if organizaiton.locked %}
-		<dd>locked</dd>
-	{% else %}
-		<dd>unlocked</dd>
-	{% endif %}
-
-	{% if request.user.is_staff %}
-		<dd><a href="{{ organization.admin_url }}">admin</a></dd>
-	{% endif %}
-
-	{% if can_edit %}
-		<dd><a href="{% url 'member_edit_org' organization.id %}">edit</a></dd>
-	{% endif %}
-]</dl>
-
-{% if organization.photo %}
-	 <a href="{{ organization.photo.url }}"><img src="{{ organization.photo.url|fit_image:"170x170" }}"></a>
-{% endif %}
+<h2>Edit {{ organization.name}}</h2>
 
 {% if organization.bio %}
 	<h3>Bio</h3>

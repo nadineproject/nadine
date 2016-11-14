@@ -29,6 +29,7 @@ urlpatterns = [
     # Organization
     url(r'^organizations/$', organization.list_organizations, name='member_list_orgs'),
     url(r'^organization/(?P<id>\d+)/$', organization.view_organization, name='member_view_org'),
+    url(r'^organization/edit/(?P<id>\d+)/$', organization.edit_organization, name='member_edit_org'),
 
     # Tags
     url(r'^tag_list/$', tags.tags, name='member_tags'),
