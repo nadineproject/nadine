@@ -1,31 +1,31 @@
 <div id="profile">
 <table>
     <tr>
-        <td>Membership:</td>
+        <td><strong>Membership:</strong></td>
         <td>{{ user.profile.membership_type }}</td>
     </tr>
     <tr>
-        <td>Member Since:</td>
+        <td><strong>Member Since:</strong></td>
         <td>{{ user.profile.first_visit }}</td>
    </tr>
 
     {% if user.profile.company_name %}
         <tr>
-            <td>Company Name</td>
+            <td><strong>Company Name:</strong></td>
             <td>{{ user.profile.company_name }}</td>
         </tr>
     {% endif %}
 
     {% for url in user.url_set.all %}
         <tr>
-            <td>{{ url.url_type | title }} URL:</td>
+            <td><strong>{{ url.url_type | title }} URL:</strong></td>
             <td><a target="_self" href="{{ url }}">{{ url }}</a></td>
         </tr>
     {% endfor %}
 
     {% if user.profile.neighborhood %}
         <tr>
-            <td>Neighborhood:</td>
+            <td><strong>Neighborhood:</strong></td>
             <td>{{ user.profile.neighborhood }}</td>
         </tr>
     {% endif %}

@@ -8,291 +8,296 @@
 {% endblock %}
 
 {% block content %}
-      {% if user.profile.photo %}
-      <div class="member-photo">
-         <a href="{{ user.profile.photo.url }}"><img src="{{ user.profile.photo.url|fit_image:"170x170" }}"></a>
-      </div>
-      {% endif %}
-
-<h2>{{ user.get_full_name }}</h2>
-
-{% if user.username == request.user.username or request.user.profile.is_manager %}
-    <dl>
-        <dt>Quicklinks:</dt>
-        {% if request.user.profile.is_manager %}
-        <dd><a href="{% url 'member_manage' user.username %}">manage member</a></dd>
-        {% endif %}
-        {% if user.username == request.user.username or request.user.is_staff %}
-        <dd><a href="{% url 'member_edit_profile' user.username %}">edit profile</a></dd>
-        <dd><a href="{% url 'member_user_tags' user.username %}">edit tags</a></dd>
-        <dd><a href="{% url 'member_user_devices' user.username %}">register device</a></dd>
-        {% endif %}
-    </dl>
-{% endif %}
-
-<dl>
-    <dt>Profile Tags:</dt>
+<div class='left-profile col s4'>
+  {% if user.profile.photo %}
+  <div class="member-photo" id='prof-img'>
+     <a href="{{ user.profile.photo.url }}"><img id='mem-photo' src="{{ user.profile.photo.url|fit_image:"170x170" }}"></a>
+  </div>
+  {% endif %}
+  <dl>
     {% if user.profile.tags.all %}
+      {% if user.username == request.user.username %}
+        <div id='tags_tab'></div>
+      {% else %}
         {% for tag in user.profile.tags.all %}
-            <dd><a href="{% url 'member_tag' tag %}">{{ tag }}</a></dd>
+            <li class='chip'><a class='tag-chip' href="{% url 'member_tag' tag %}">{{ tag }}</a></li>
         {% endfor %}
+      {% endif %}
     {% else %}
-        <dd><i>No tags</i></dd>
+        <li><i>No tags</i></li>
     {% endif %}
-</dl>
+  </dl>
+</div>
 
-{% if user.username != request.user.username %}
+<div class='right-profile col s8'>
+  <div class='basic-info'>
+    <div class='row'>
+      <h2 class='col s9' id='prof-name'>{{ user.get_full_name }}</h2>
+      {% if user.username == request.user.username or request.user.is_staff %}
+        <a class='col s1' href="{% url 'member_edit_profile' user.username %}" style='margin-top:3%;'><img id='edit' alt='edit-icon'/></a>
+      {% endif %}
+      {% if request.user.profile.is_manager %}
+      <a class='col s1' href="{% url 'member_manage' user.username %}" style='margin-top:3%;'><img id='manage' alt='manage-icon' /></a>
+      {% endif %}
+    </div>
+    {% if user.profile.bio %}
+      <dl>
+        <dt>Bio:</dt>
+        <dd>{{ user.profile.bio }}</dd>
+      </dl>
+    {% endif %}
+    <div id="tabs-0">
+      {% include "members/profile_public_frag.html" %}
+    </div>
+    {% if user.username != request.user.username %}
     <dl>
         <dt>Contact:</dt>
         <dd><a href="{% url 'member_connect' user %}">Connect with this member</a></dd>
     </dl>
-{% endif %}
+    {% endif %}
+  </div>
 
-{% if user.profile.bio %}
-  <dl>
-    <dt>Bio:</dt>
-    <dd>{{ user.profile.bio }}</dd>
-  </dl>
-{% endif %}
-
-{% if messages %}
-	<div class="messages">
-		{% for message in messages %}
-			<div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
-		{% endfor %}
-	</div>
-{% endif %}
-
-{% if user.username == request.user.username or request.user.is_staff %}
-    <div class="clearfix"></div>
-
-    <div id="tabs">
-      {% block mem_tabs %}
-        <ul class='tabs prof-tabs'>
-            <li class="tab col s2"><a href="#tabs-0">Member Profile</a></li>
-            <li class="tab col s2"><a href="#tabs-1">Private Details</a></li>
-            <li class="tab col s2"><a href="#tabs-2">Documents</a></li>
-            <li class="tab col s2"><a id="membership_tab" href="#tabs-3">Membership</a></li>
-            <li class="tab col s2"><a id="activity_tab" href="#tabs-4">Activity</a></li>
-            <li class="tab col s2"><a id="billing_tab" href="#tabs-5">Billing</a></li>
-        </ul>
-      {% endblock %}
-    <div id="tabs-0">
-        <h3>Member Profile</h3>
-        {% include "members/profile_public_frag.html" %}
-    </div>
-
-    <div id="tabs-1">
-        <h3>
-            Private Details
-            (<a target="_self" href="{% url 'member_edit_profile' user.username %}">edit</a>)
-        </h3>
-        <table>
-            <!-- Username -->
-            <!-- <tr>
-                <td>Username:</td>
-                <td>{{ user.username }}</td>
-            </tr> -->
-            <tr>
-                <td>Primary Email:</td>
-                <td>{{ user.email }} {% email_verified user.email %}</td>
-            </tr>
-            {% for email in user.profile.non_primary_emails %}
-              <tr>
-                  <td>Alternate Email:</td>
-                  <td>
-                      {{ email }} {% email_verified email %}
-                  </td>
-              </tr>
-            {% endfor %}
-
-            <!-- Status -->
-            <tr>
-                <td>Membership Rate:</td>
-                <td>{{ user.profile.membership_type }}{% if user.profile.is_active %} at ${{ user.profile.last_membership.monthly_rate }}/month{% endif %}</td>
-            </tr>
-
-            <!-- Anniversary Date -->
-            {% if user.profile.is_active %}
-            <tr>
-                <td>Anniversary date:</td>
-                <td>{{ user.profile.last_membership.start_date|date:"M d, Y" }}</td>
-            </tr>
-            {% endif %}
-
-            <!-- Address1 -->
-            {% if user.profile.address1 %}
-              <tr>
-                 <td>Address 1:</td>
-                 <td>{{ user.profile.address1 }}</td>
-              </tr>
-            {% endif %}
-            <!-- Address2 -->
-            {% if user.profile.address2 %}
-              <tr>
-                 <td>Address 2:</td>
-                 <td>{{ user.profile.address2 }}</td>
-              </tr>
-            {% endif %}
-            <!-- City -->
-            {% if user.profile.city %}
-              <tr>
-                 <td>City:</td>
-                 <td>{{ user.profile.city }}, {{ user.profile.state }} {{ user.profile.zipcode }}</td>
-              </tr>
-            {% endif %}
-
-            <!-- Phone -->
-            {% if user.profile.phone %}
-              <tr>
-                 <td>Phone:</td>
-                 <td>{{ user.profile.phone }}</td>
-              </tr>
-            {% endif %}
-
-            <!-- Phone2 -->
-            {% if user.profile.phone2 %}
-              <tr>
-                 <td>Alternate Phone:</td>
-                 <td>{{ user.profile.phone2 }}</td>
-              </tr>
-            {% endif %}
-
-            <!-- How Heard -->
-            {% if user.profile.howHeard %}
-              <tr>
-                 <td>How Heard:</td>
-                 <td>{{ user.profile.howHeard }}</td>
-              </tr>
-            {% endif %}
-
-            <!-- Gender -->
-            {% if user.profile.gender %}
-              <tr>
-                 <td>Gender:</td>
-                 <td>{{ user.profile.gender }}</td>
-              </tr>
-            {% endif %}
-        </table>
-
-        <h3>
-            Emergency Contact
-            (<a target="_self" href="{% url 'member_edit_profile' user.username %}#emergency_contact">edit</a>)
-        </h3>
-        {% if not emergency_contact.name %}
-            <p style="font-style: italic; color:red; padding-left: 2em;">No Emergency Contact Information</p>
-        {% else %}
+  {% if user.username == request.user.username or request.user.is_staff %}
+  <div class="clearfix"></div>
+  {% block mem_tabs %}
+    <ul class='collapsible prof-tabs' data-collapsible="expandable">
+        <li>
+          <div class='collapsible-header'>Your Details</div>
+          <!-- <a href="#tabs-0">Member Profile</a> -->
+          <div class='collapsible-body' id='tabs-1'>
+            <div class='row'>
+              <h3 class='col s9' style='margin-bottom:0;margin-top:2%;'>Private Details</h3>
+              <a class='col s1' href="{% url 'member_edit_profile' user.username %}"><img id='edit' alt='edit-icon' style='height:20px;'/></a>
+            </div>
             <table>
                 <tr>
-                    <td>Name</td>
-                    <td>{{ emergency_contact.name }}</td>
+                    <td>Primary Email:</td>
+                    <td>{{ user.email }} {% email_verified user.email %}</td>
                 </tr>
+                {% for email in user.profile.non_primary_emails %}
+                  <tr>
+                      <td>Alternate Email:</td>
+                      <td>
+                          {{ email }} {% email_verified email %}
+                      </td>
+                  </tr>
+                {% endfor %}
+
+                <!-- Status -->
                 <tr>
-                    <td>Relationship</td>
-                    <td>{{ emergency_contact.relationship }}</td>
+                    <td>Membership Rate:</td>
+                    <td>{{ user.profile.membership_type }}{% if user.profile.is_active %} at ${{ user.profile.last_membership.monthly_rate }}/month{% endif %}</td>
                 </tr>
+
+                <!-- Anniversary Date -->
+                {% if user.profile.is_active %}
                 <tr>
-                    <td>Phone</td>
-                    <td>{{ emergency_contact.phone }}</td>
+                    <td>Anniversary date:</td>
+                    <td>{{ user.profile.last_membership.start_date|date:"M d, Y" }}</td>
                 </tr>
-                <tr>
-                    <td>E-mail</td>
-                    <td>{{ emergency_contact.email }}</td>
-                </tr>
+                {% endif %}
+
+                <!-- Address1 -->
+                {% if user.profile.address1 %}
+                  <tr>
+                     <td>Address 1:</td>
+                     <td>{{ user.profile.address1 }}</td>
+                  </tr>
+                {% endif %}
+                <!-- Address2 -->
+                {% if user.profile.address2 %}
+                  <tr>
+                     <td>Address 2:</td>
+                     <td>{{ user.profile.address2 }}</td>
+                  </tr>
+                {% endif %}
+                <!-- City -->
+                {% if user.profile.city %}
+                  <tr>
+                     <td>City:</td>
+                     <td>{{ user.profile.city }}, {{ user.profile.state }} {{ user.profile.zipcode }}</td>
+                  </tr>
+                {% endif %}
+
+                <!-- Phone -->
+                {% if user.profile.phone %}
+                  <tr>
+                     <td>Phone:</td>
+                     <td>{{ user.profile.phone }}</td>
+                  </tr>
+                {% endif %}
+
+                <!-- Phone2 -->
+                {% if user.profile.phone2 %}
+                  <tr>
+                     <td>Alternate Phone:</td>
+                     <td>{{ user.profile.phone2 }}</td>
+                  </tr>
+                {% endif %}
+
+                <!-- How Heard -->
+                {% if user.profile.howHeard %}
+                  <tr>
+                     <td>How Heard:</td>
+                     <td>{{ user.profile.howHeard }}</td>
+                  </tr>
+                {% endif %}
+
+                <!-- Gender -->
+                {% if user.profile.gender %}
+                  <tr>
+                     <td>Gender:</td>
+                     <td>{{ user.profile.gender }}</td>
+                  </tr>
+                {% endif %}
             </table>
-        {% endif %}
 
+            <h3>
+                Emergency Contact
+                (<a target="_self" href="{% url 'member_edit_profile' user.username %}#emergency_contact">edit</a>)
+            </h3>
+            {% if not emergency_contact.name %}
+                <p style="font-style: italic; color:red; padding-left: 2em;">No Emergency Contact Information</p>
+            {% else %}
+                <table>
+                    <tr>
+                        <td>Name</td>
+                        <td>{{ emergency_contact.name }}</td>
+                    </tr>
+                    <tr>
+                        <td>Relationship</td>
+                        <td>{{ emergency_contact.relationship }}</td>
+                    </tr>
+                    <tr>
+                        <td>Phone</td>
+                        <td>{{ emergency_contact.phone }}</td>
+                    </tr>
+                    <tr>
+                        <td>E-mail</td>
+                        <td>{{ emergency_contact.email }}</td>
+                    </tr>
+                </table>
+            {% endif %}
 
-    </div>
-
-    <div id="tabs-2">
-        {% if user.profile.has_file_uploads %}
-            <h3>Private Documents</h3>
-            <table>
-            {% for f in user.profile.file_uploads %}
-                <tr>
-                    <td>{{ f.uploadTS }}</td>
-                    <!--<td>{{ f.document_type }}</td>-->
-                    <td>
-                        <a target="_self" href="{% url 'member_files' 'inline' f.user f.name     %}">{{ f.name }}</a>
-                    </td>
-                <tr>
-            {% endfor %}
-            </table>
-        {% endif %}
-    </div>
-
-    <div id="tabs-3">
-        <h3>Membership History</h3>
-        Loading membership information...
-    </div>
-
-    <div id="tabs-4">
-        <h3>View Activity</h3>
-        Loading activity information...
-    </div>
-
-
-    <div id="tabs-5">
-        <h3>Billing Profile</h3>
-        Loading billing information...
-    </div>
+          </div>
+        </li>
+        <li>
+          <div class='collapsible-header'>Documents</div>
+          <div class='collapsible-body' id='tabs-2'>
+            {% if user.profile.has_file_uploads %}
+                <table>
+                {% for f in user.profile.file_uploads %}
+                    <tr>
+                        <td>{{ f.uploadTS }}</td>
+                        <!--<td>{{ f.document_type }}</td>-->
+                        <td>
+                            <a target="_self" href="{% url 'member_files' 'inline' f.user f.name     %}">{{ f.name }}</a>
+                        </td>
+                    <tr>
+                {% endfor %}
+                </table>
+            {% endif %}
+          </div>
+        </li>
+        <li>
+          <div class='collapsible-header' id='membership_tab'>Membership History</div>
+          <div class='collapsible-body' id='tabs-3'>
+            <p>Loading membership information...</p>
+          </div>
+        </li>
+        <li>
+          <div class='collapsible-header' id='activity_tab'>Activity</div>
+          <div class='collapsible-body' id='tabs-4'>
+            <p>Loading activity information...</p>
+          </div>
+        </li>
+        <li>
+          <div class='collapsible-header' id='billing_tab'>Billing History</div>
+          <div class='collapsible-body' id='tabs-5'>
+            <p>Loading billing information...</p>
+          </div>
+        </li>
+        <li>
+          <div class='collapsible-header' id='device_tab'>Register Devices</div>
+          <div class='collapsible-body' id='tabs-6'>
+            <p>Loading device information...</p>
+          </div>
+        </li>
+    </ul>
+  {% endblock %}
+  {% else %}
+    {% block mem-tabs %}{% endblock %}
+  {% endif %}
 </div>
 
-<!-- Not the signed in user or STAFF so just show profile -->
-{% else %}
-    <div class="clearfix"></div>
-    <h2>Member Profile</h2>
-    {% include "members/profile_public_frag.html" %}
+{% if messages %}
+<div class="messages">
+{% for message in messages %}
+  <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+{% endfor %}
+</div>
 {% endif %}
+
+<div id="tabs"></div>
 
 {%block sub-extrajs %}
     <script>
-        $(function () {
-            jQuery('#tabs').tabs();
-        });
+        function post_tab(url, div_id) {
+          $.post(url, {}, function(content) {
+              div = $(div_id);
+              div.html(content);
+          });
+        }
 
-        function draw_tab(url, div_id) {
-            $.post(url, {}, function(content) {
-                div = $(div_id);
-                div.html(content);
-            });
+        function get_tab(url, div_id) {
+          $.get(url, {}, function(content) {
+            div = $(div_id);
+            div.html(content);
+          });
         }
 
         $(document).ready(function() {
-            $('#membership_tab').on("click", function(e) {
-                e.preventDefault();
-                url = "{% url 'member_profile_membership' user.username %}"
-                draw_tab(url, "#tabs-3")
-            });
+          $('body').css('background-color', 'RGBA(230, 230, 230, 1)');
 
-            $('#activity_tab').on("click", function(e) {
-                e.preventDefault();
-                url = "{% url 'member_profile_activity' user.username %}"
-                draw_tab(url, "#tabs-4")
-            });
+          $('.collapsible').collapsible();
 
-            // $('#billing_tab').on("click", function(e) {
-                // e.preventDefault();
-                url = "{% url 'member_profile_billing' user.username %}"
-                draw_tab(url, "#tabs-5");
-            // });
+          $('#membership_tab').on("click", function(e) {
+              e.preventDefault();
+              url = "{% url 'member_profile_membership' user.username %}"
+              post_tab(url, "#tabs-3")
+          });
 
-            (function($){
-      				$(function(){
-      					$('.button-collapse').sideNav();
-      				});
-      			})(jQuery);
+          $('#activity_tab').on("click", function(e) {
+              e.preventDefault();
+              url = "{% url 'member_profile_activity' user.username %}"
+              post_tab(url, "#tabs-4")
+          });
 
+          // $('#billing_tab').on("click", function(e) {
+              // e.preventDefault();
+              url = "{% url 'member_profile_billing' user.username %}"
+              post_tab(url, "#tabs-5");
+          // });
 
-            // TODO finish responsive footer by testing on a device
-    				if($('.main').width() < 990) {
-              $('footer').attr('class', 'sticky-footer');
-    				} else {
-    					if($('footer').hasClass('sticky-footer')) {
-                $('footer').attr('page-footer main-footer');
-    					}
-    				}
+          $('#device_tab').on('click', function(e) {
+            e.preventDefault();
+            url = "{% url 'member_user_devices' user.username %}"
+            get_tab(url, "#tabs-6");
+          });
+
+          url = "{% url 'member_user_tags' user.username %}"
+          get_tab(url, '#tags_tab')
+
+    			$('.button-collapse').sideNav();
+
+          // TODO finish responsive footer by testing on a device
+  				if($('.main').width() < 990) {
+            $('footer').attr('class', 'sticky-footer');
+  				} else {
+  					if($('footer').hasClass('sticky-footer')) {
+              $('footer').attr('page-footer main-footer');
+  					}
+  				}
         });
     </script>
 {% endblock %}

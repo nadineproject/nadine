@@ -171,6 +171,7 @@ def user_devices(request, username):
 
     error = None
     if request.method == 'POST':
+
         device_id = request.POST.get('device_id')
         device = UserDevice.objects.get(id=device_id)
 
@@ -182,6 +183,7 @@ def user_devices(request, username):
         device_name = device_name.strip()[:32]
         device.device_name = device_name
         device.save()
+        return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
 
     devices = user.userdevice_set.all()
     ip = network.get_addr(request)

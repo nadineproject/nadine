@@ -191,8 +191,8 @@
                 <td>
                   <input type='file' name='photo' style='background-color:RGBA(255, 255, 255, 0);' id="imgInp" />
                 </td>
-                <td>
-                  <img id='img-id' src='' alt='profile photo' style='max-height:250px;height:200px'/>
+                <td id='img-preview'>
+                  <img class="resize-image" id='img-id' src="" alt="profile photo" />
                 </td>
               </tr>
             </table>
@@ -355,24 +355,25 @@
         });
       })(jQuery);
 
-    $('#img-id').hide();
+    // $('#img-preview').hide();
 
     function readURL(input) {
       if (input.files && input.files[0]) {
         var reader = new FileReader();
 
         reader.onload = function (e) {
-            $('#img-id').attr('src', e.target.result);
+          $('#img-id').attr('src', e.target.result);
         }
 
         reader.readAsDataURL(input.files[0]);
 
-        $('#img-id').show()
+        // $('#img-preview').show()
       }
     }
 
     $("#imgInp").change(function(){
-      readURL(this);
+      var input = this;
+      readURL(input);
     });
 
     $('#password-create').on('focus', function(e) {

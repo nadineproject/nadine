@@ -176,6 +176,9 @@ table td {
 	padding: 0.5em;
 }
 
+.prof-page {
+	background-color: white;
+}
 
 #content a {
 	outline:none;
@@ -456,7 +459,6 @@ textarea#id_bio {
 }
 
 .tag-table {
-	margin-left: 20%;
 	margin-right: 20%;
 }
 
@@ -471,12 +473,7 @@ textarea#id_bio {
 	background-color: RGBA(140, 164, 179, 1);
 }
 
-#tag {
-	width: 30%;
-}
-
 .tag-btn {
-	margin-left: 10%;
 	background-color: RGBA(63, 146, 161, 1);
 }
 
@@ -630,6 +627,78 @@ textarea#id_bio {
 	margin: 0px 1em 1em 0px;
 }
 
+/*#mem-photo {
+	height: 350px;
+}*/
+
+h2#prof-name {
+	text-align: left;
+	font-size: 2.4em;
+}
+
+#img-preview {
+	display: block;
+  overflow: hidden;
+  height: 200px;
+  width: 200px;
+}
+
+#img-preview img, #prof-img img {
+	display: block;
+  min-width: 100%;
+  min-height: 100%;
+	max-width: 100%;
+  -ms-interpolation-mode: bicubic;
+}
+
+#edit {
+	content: url(../img/ic_mode_edit_black_24dp_2x.png);
+	height: 25px;
+}
+
+#manage {
+	content: url(../img/ic_build_black_24dp_2x.png);
+	height: 25px;
+}
+
+#prof-img {
+	margin-left: 5%;
+	display: block;
+  overflow: hidden;
+  height: 300px;
+  width: 300px;
+}
+
+.basic-info, .left-profile {
+	background-color: white;
+	margin-bottom: 2%;
+	padding: 2%;
+	box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
+}
+
+.right-profile, .left-profile {
+	margin-top: 2%;
+}
+
+.collapsible-header {
+	font-weight: bold;
+}
+
+.collapsible-body {
+	background-color: RGBA(254, 254, 254, 1);
+	padding: 2%;
+}
+
+.collapsible-body h3 {
+	font-size: 1.3em;
+	margin-top: 0;
+	padding-top: 2%;
+}
+
+#tabs-6 p {
+	padding: 1%;
+}
+
 dt, dd {
 	display: inline-block;
 	margin: 0.25em;
@@ -640,7 +709,6 @@ dt {
 }
 
 dd:after {
-	content:"|";
 	margin-left: 0.5em;
 	font-size: 1.2em;
 }
@@ -669,7 +737,7 @@ dl dd:last-child:after {
 		width: 75%;
 	}
 
-	.book-btn {
+	.book-btn, .device-btn {
 		background: RGBA(63, 146, 161, 1);
 	}
 
