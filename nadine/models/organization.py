@@ -16,10 +16,6 @@ from django.contrib.auth.models import User
 logger = logging.getLogger(__name__)
 
 
-def org_photo_path(instance, filename):
-    ext = filename.split('.')[-1]
-    return "org_photos/%s.%s" % (instance.name, ext.lower())
-
 class OrganizationManager(models.Manager):
 
     def active_organizations(self, on_date=None):
@@ -35,6 +31,11 @@ class OrganizationManager(models.Manager):
                 orgs[o.name] = o
         sorted_orgs = OrderedDict(sorted(orgs.items(), key=lambda t: t[0]))
         return sorted_orgs.values()
+
+
+def org_photo_path(instance, filename):
+    ext = filename.split('.')[-1]
+    return "org_photos/%s.%s" % (instance.name, ext.lower())
 
 
 class Organization(models.Model):
