@@ -462,15 +462,9 @@ textarea#id_bio {
 	margin-right: 20%;
 }
 
-.tag-chip {
-	color: white;
-	font-size: 1.2em;
-	font-weight: lighter;
-}
-
-.chip {
-	color: white;
-	background-color: RGBA(140, 164, 179, 1);
+.tag-chip, .chip {
+	color: RGBA(92, 92, 92, 1);
+	background-color: RGBA(228, 228, 228, 1);
 }
 
 .tag-btn {
@@ -627,9 +621,9 @@ textarea#id_bio {
 	margin: 0px 1em 1em 0px;
 }
 
-/*#mem-photo {
-	height: 350px;
-}*/
+img#mem-photo {
+	margin-top: 10%;
+}
 
 h2#prof-name {
 	text-align: left;
@@ -652,21 +646,22 @@ h2#prof-name {
 }
 
 #edit {
-	content: url(../img/ic_mode_edit_black_24dp_2x.png);
+	content: url(../img/noun_687044_cc.png);
 	height: 25px;
 }
 
 #manage {
-	content: url(../img/ic_build_black_24dp_2x.png);
-	height: 25px;
+	content: url(../img/noun_683434_cc.png);
+	height: 30px;
 }
 
 #prof-img {
-	margin-left: 5%;
+	margin-left: 10%;
 	display: block;
   overflow: hidden;
   height: 300px;
   width: 300px;
+	margin-bottom: 10%;
 }
 
 .basic-info, .left-profile {
@@ -678,6 +673,15 @@ h2#prof-name {
 
 .right-profile, .left-profile {
 	margin-top: 2%;
+}
+
+.left-profile {
+	min-width: 375px;
+	max-width: 400px;
+}
+
+.right-profile {
+	min-width: 700px;
 }
 
 .collapsible-header {

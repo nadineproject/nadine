@@ -11,7 +11,7 @@
 <div class='left-profile col s4'>
   {% if user.profile.photo %}
   <div class="member-photo" id='prof-img'>
-     <a href="{{ user.profile.photo.url }}"><img id='mem-photo' src="{{ user.profile.photo.url|fit_image:"170x170" }}"></a>
+     <a href="{{ user.profile.photo.url }}"><img id='mem-photo' src="{{ user.profile.photo.url }}"></a>
   </div>
   {% endif %}
   <dl>
@@ -19,8 +19,9 @@
       {% if user.username == request.user.username %}
         <div id='tags_tab'></div>
       {% else %}
+        <h3>Tags</h3>
         {% for tag in user.profile.tags.all %}
-            <li class='chip'><a class='tag-chip' href="{% url 'member_tag' tag %}">{{ tag }}</a></li>
+            <li class='chips'><a class='tag-chip' href="{% url 'member_tag' tag %}">{{ tag }}</a></li>
         {% endfor %}
       {% endif %}
     {% else %}
@@ -42,7 +43,7 @@
     </div>
     {% if user.profile.bio %}
       <dl>
-        <dt>Bio:</dt>
+        <dt style='margin-left:1%;'>Bio:</dt>
         <dd>{{ user.profile.bio }}</dd>
       </dl>
     {% endif %}
@@ -202,7 +203,17 @@
         <li>
           <div class='collapsible-header' id='membership_tab'>Membership History</div>
           <div class='collapsible-body' id='tabs-3'>
-            <p>Loading membership information...</p>
+            <div class="preloader-wrapper big active">
+              <div class="spinner-layer spinner-blue-only">
+                <div class="circle-clipper left">
+                  <div class="circle"></div>
+                </div><div class="gap-patch">
+                  <div class="circle"></div>
+                </div><div class="circle-clipper right">
+                  <div class="circle"></div>
+                </div>
+              </div>
+            </div>
           </div>
         </li>
         <li>
@@ -220,7 +231,17 @@
         <li>
           <div class='collapsible-header' id='device_tab'>Register Devices</div>
           <div class='collapsible-body' id='tabs-6'>
-            <p>Loading device information...</p>
+            <div class="preloader-wrapper big active">
+              <div class="spinner-layer spinner-blue-only">
+                <div class="circle-clipper left">
+                  <div class="circle"></div>
+                </div><div class="gap-patch">
+                  <div class="circle"></div>
+                </div><div class="circle-clipper right">
+                  <div class="circle"></div>
+                </div>
+              </div>
+            </div>
           </div>
         </li>
     </ul>
@@ -257,9 +278,11 @@
         }
 
         $(document).ready(function() {
-          $('body').css('background-color', 'RGBA(230, 230, 230, 1)');
+          $('body').css('background-color', 'RGBA(239, 238, 231, 1)');
+          $('.content').css('min-width:900px;')
 
           $('.collapsible').collapsible();
+          $('.chips').material_chip();
 
           $('#membership_tab').on("click", function(e) {
               e.preventDefault();
