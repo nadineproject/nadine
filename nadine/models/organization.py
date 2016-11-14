@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import logging
 import traceback
 from datetime import datetime, timedelta, date
+from collections import OrderedDict
 
 from django.db import models
 from django.db.models import Q
@@ -11,12 +12,29 @@ from django.conf import settings
 from django.utils import timezone
 from django.contrib.auth.models import User
 
+
 logger = logging.getLogger(__name__)
 
 
 def org_photo_path(instance, filename):
     ext = filename.split('.')[-1]
     return "org_photos/%s.%s" % (instance.name, ext.lower())
+
+class OrganizationManager(models.Manager):
+
+    def active_organizations(self, on_date=None):
+        """ Organizations of all active members """
+        # TODO - This whole method will be rewritten when
+        # we change up how memberships are handled --JLS
+        if not on_date:
+            on_date = timezone.now().date()
+        orgs = {}
+        from nadine.models.core import Membership
+        for m in Membership.objects.active_memberships(on_date):
+            for o in m.user.profile.active_organizations():
+                orgs[o.name] = o
+        sorted_orgs = OrderedDict(sorted(orgs.items(), key=lambda t: t[0]))
+        return sorted_orgs.values()
 
 
 class Organization(models.Model):
@@ -28,6 +46,8 @@ class Organization(models.Model):
     photo = models.ImageField(upload_to=org_photo_path, blank=True, null=True)
     public_profile = models.BooleanField(default=False)
     locked = models.BooleanField(default=False)
+
+    objects = OrganizationManager()
 
     def members(self, on_date=None):
         if not on_date:

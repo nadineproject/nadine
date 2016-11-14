@@ -27,7 +27,8 @@ urlpatterns = [
     url(r'^file/(?P<disposition>[^/]+)/(?P<username>[^/]+)/(?P<file_name>[^/]+)$', profile.file_view, name='member_files'),
 
     # Organization
-    url(r'^org/(?P<id>\d+)/$', organization.view_organization, name='member_view_org'),
+    url(r'^organizations/$', organization.list_organizations, name='member_list_orgs'),
+    url(r'^organization/(?P<id>\d+)/$', organization.view_organization, name='member_view_org'),
 
     # Tags
     url(r'^tag_list/$', tags.tags, name='member_tags'),

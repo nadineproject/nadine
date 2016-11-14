@@ -17,6 +17,13 @@ from members.views.core import is_active_member
 
 
 @login_required
+def list_organizations(request):
+    orgs = Organization.objects.active_organizations()
+    context = {'organizations': orgs}
+    return render(request, 'members/org_list.html', context)
+
+
+@login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def view_organization(request, id):
     org = get_object_or_404(Organization, id=id)
