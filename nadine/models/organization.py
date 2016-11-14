@@ -37,13 +37,20 @@ class Organization(models.Model):
         active = self.organizationmember_set.filter(start_date__lte=on_date).filter(future | unending)
         return User.objects.filter(id__in=active.values('user'))
 
-    def has_member(self, user, on_date=None):
+    def active_membership(self, user, on_date=None):
+        """ Return the active org membership for this user """
         if not on_date:
             on_date = timezone.now().date()
         for m in self.organizationmember_set.filter(user=user):
             if m.is_active(on_date):
-                return True
-        return False
+                return m
+        return None
+
+    def has_member(self, user, on_date=None):
+        if not on_date:
+            on_date = timezone.now().date()
+        m = self.active_membership(user, on_date)
+        return m is not None
 
     def add_member(self, user, start_date=None, end_date=None):
         if not start_date:
@@ -52,6 +59,20 @@ class Organization(models.Model):
             raise Exception("User already a member")
         return OrganizationMember.objects.create(organization=self, user=user,
             start_date=start_date, end_date=end_date)
+
+    def can_edit(self, user):
+        m = self.active_membership(user)
+        if not m:
+            return False
+        return not self.locked or self.lead == user or m.admin
+
+    def lock(self):
+        self.locked = True
+        self.save()
+
+    def set_lead(self, user):
+        self.lead = user
+        self.save()
 
     def __unicode__(self):
         return self.name
@@ -75,6 +96,10 @@ class OrganizationMember(models.Model):
         if self.start_date > on_date:
             return False
         return self.end_date == None or self.end_date >= on_date
+
+    def set_admin(self, is_admin):
+        self.admin = is_admin
+        self.save()
 
 
 class OrganizationNote(models.Model):
