@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from django.shortcuts import redirect
 
-from members.views import core, profile, tags, connect, events
+from members.views import core, profile, organization, tags, connect, events
 
 urlpatterns = [
     # Core
@@ -25,6 +25,9 @@ urlpatterns = [
     url(r'^receipt/(?P<username>[^/]+)/(?P<id>\d+)/$', profile.receipt, name='member_receipt'),
     url(r'^disable_billing/(?P<username>[^/]+)$', profile.disable_billing, name='member_disable_billing'),
     url(r'^file/(?P<disposition>[^/]+)/(?P<username>[^/]+)/(?P<file_name>[^/]+)$', profile.file_view, name='member_files'),
+
+    # Organization
+    url(r'^org/(?P<id>\d+)/$', organization.view_organization, name='member_view_org'),
 
     # Tags
     url(r'^tag_list/$', tags.tags, name='member_tags'),

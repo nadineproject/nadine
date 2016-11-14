@@ -66,6 +66,9 @@ class Organization(models.Model):
             return False
         return not self.locked or self.lead == user or m.admin
 
+    def notes(self, private=False):
+        return self.organizationnote_set.filter(private=private)
+
     def lock(self):
         self.locked = True
         self.save()
@@ -100,6 +103,9 @@ class OrganizationMember(models.Model):
     def set_admin(self, is_admin):
         self.admin = is_admin
         self.save()
+
+    def __unicode__(self):
+        return "%s member of %s" % (self.user, self.organization)
 
 
 class OrganizationNote(models.Model):

@@ -1,0 +1,33 @@
+{% extends "members/u_base.html" %}
+{% load imagetags %}
+
+{% block sub-title %}Organization | {% endblock %}
+
+{% block style %}
+{% endblock %}
+
+{% block content %}
+<h2>{{ organization.name}}</h2>
+
+{% if organization.photo %}
+	 <a href="{{ organization.photo.url }}"><img src="{{ organization.photo.url|fit_image:"170x170" }}"></a>
+{% endif %}
+
+<h3>Bio</h3>
+<p style="margin:2em;">{{ organization.bio }} </p>
+
+<h3>Members</h3>
+<ul>
+	{% for u in organization.members %}
+		<li>{{ u }}</li>
+	{% endfor %}
+</ul>
+
+<h3>Notes</h3>
+<ul>
+	{% for n in organization.notes %}
+		<li>{{ n.created_ts }} {{ n.created_by }}: {{ n.note }}</li>
+	{% endfor %}
+</ul>
+
+{% endblock %}
