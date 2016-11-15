@@ -35,10 +35,10 @@
     <div class='row'>
       <h2 class='col s9' id='prof-name'>{{ user.get_full_name }}</h2>
       {% if user.username == request.user.username or request.user.is_staff %}
-        <a class='col s1' href="{% url 'member_edit_profile' user.username %}" style='margin-top:3%;'><img id='edit' alt='edit-icon'/></a>
+        <a class='col s1 tooltipped' data-position="bottom" data-tooltip="Edit Profile" href="{% url 'member_edit_profile' user.username %}" style='margin-top:3%;'><img id='edit' alt='edit-icon'/></a>
       {% endif %}
       {% if request.user.profile.is_manager %}
-      <a class='col s1' href="{% url 'member_manage' user.username %}" style='margin-top:3%;'><img id='manage' alt='manage-icon' /></a>
+      <a class='col s1 tooltipped' data-position="bottom" data-tooltip="Manage Member" href="{% url 'member_manage' user.username %}" style='margin-top:3%;'><img id='manage' alt='manage-icon' /></a>
       {% endif %}
     </div>
     {% if user.profile.bio %}
@@ -279,8 +279,7 @@
 
         $(document).ready(function() {
           $('body').css('background-color', 'RGBA(239, 238, 231, 1)');
-          $('.content').css('min-width:900px;')
-
+          $('.tooltipped').tooltip({delay: 50});
           $('.collapsible').collapsible();
           $('.chips').material_chip();
 
@@ -296,17 +295,12 @@
               post_tab(url, "#tabs-4")
           });
 
-          // $('#billing_tab').on("click", function(e) {
-              // e.preventDefault();
-              url = "{% url 'member_profile_billing' user.username %}"
-              post_tab(url, "#tabs-5");
-          // });
+          url = "{% url 'member_profile_billing' user.username %}"
+          post_tab(url, "#tabs-5");
 
-          $('#device_tab').on('click', function(e) {
-            e.preventDefault();
-            url = "{% url 'member_user_devices' user.username %}"
-            get_tab(url, "#tabs-6");
-          });
+          url = "{% url 'member_user_devices' user.username %}"
+          get_tab(url, "#tabs-6");
+
 
           url = "{% url 'member_user_tags' user.username %}"
           get_tab(url, '#tags_tab')

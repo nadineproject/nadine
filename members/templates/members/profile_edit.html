@@ -157,10 +157,6 @@
           <td class='pf-error'>{{ profile_form.phone2.errors }}</td>
         </tr>
       </table>
-    </div>
-
-    <h3 style='text-align:left;'>Profile Information</h3>
-    <div id='websites'>
       <table>
         <tr>
           <td id='pf-public' nowrap>Make Your profile Public?
@@ -183,6 +179,9 @@
           </td>
         </tr>
       </table>
+    </div>
+    <h3 style='text-align:left;'>Profile Information</h3>
+    <div id='websites'>
       {% block upload %}
           {% if ALLOW_PHOTO_UPLOAD %}
             <table>
@@ -205,15 +204,6 @@
         <tr>
           <td class='pf-input' id='pf_bio'>{{ profile_form.bio }}</td>
           <td>{{ profile_form.bio.errors }}</td>
-        </tr>
-      </table>
-      <table>
-        <tr>
-          <td id='pf-company' class='cap-label'><strong>Company Name</strong></td>
-        </tr>
-        <tr>
-          <td class='pf-input'>{{ profile_form.company_name }}</td>
-          <tr class='pf-input'>{{ profile_form.company_name.errors }}</tr>
         </tr>
       </table>
       <table>
@@ -349,13 +339,9 @@
 {% block extrajs %}
 <script>
   $(document).ready(function(){
-      (function($){
-        $(function(){
-          $('.button-collapse').sideNav();
-        });
-      })(jQuery);
+    $('.button-collapse').sideNav();
 
-    // $('#img-preview').hide();
+    $('#img-preview').hide();
 
     function readURL(input) {
       if (input.files && input.files[0]) {
@@ -367,7 +353,7 @@
 
         reader.readAsDataURL(input.files[0]);
 
-        // $('#img-preview').show()
+        $('#img-preview').show()
       }
     }
 

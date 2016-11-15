@@ -1322,10 +1322,34 @@ footer.sticky-footer {
 	}
 }
 
+@media only screen and (max-width: 1300px) {
+	#prof-img {
+		width: 200px;
+		height: 200px;
+	}
+
+	.right-profile {
+		min-width: 600px;
+	}
+}
+
+@media only screen and (max-width: 1390px) {
+	#prof-img {
+		width: 250px;
+		height: 250px;
+		margin-left: 10%;
+	}
+
+	.left-profile {
+		min-width: 250px;
+	}
+}
+
 @media only screen and (max-width: 1500px) {
 
 	#profile_form, #registration_form {
 		margin-left: 7%;
 		min-width: 900px;
 	}
+
 }
