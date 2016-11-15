@@ -336,6 +336,15 @@
             $('#picModal').css('display', 'block');
           });
 
+          $('.collapsible-header').click(function(e) {
+            e.preventDefault();
+            var target = $(this).next().attr('id');
+            var divID = '#' + target;
+            $('html, body').animate({
+                scrollTop: e.screenY
+            }, 1000);
+          })
+
           // TODO finish responsive footer by testing on a device
   				if($('.main').width() < 990) {
             $('footer').attr('class', 'sticky-footer');

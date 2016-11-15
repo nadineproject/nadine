@@ -32,8 +32,8 @@
 
     {% if user.profile.has_kids %}
         <tr>
-            <td>Has Kids?</td>
-            <td>{{ user.profile.has_kids }}</td>
+            <td><strong>Has Kids?</strong></td>
+            <td>{{ user.profile.has_kids|yesno:"Yes,No" }}</td>
         </tr>
     {% endif %}
 </table>
