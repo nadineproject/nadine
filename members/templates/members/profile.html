@@ -10,16 +10,22 @@
 {% block content %}
 <div class='left-profile col s4'>
   {% if user.profile.photo %}
-  <div class="member-photo" id='prof-img'>
-     <a href="{{ user.profile.photo.url }}"><img id='mem-photo' src="{{ user.profile.photo.url }}"></a>
+  <div class='profile-img-box'>
+    <div class="member-photo" id='prof-img'>
+       <a href="{{ user.profile.photo.url }}"><img id='mem-photo' src="{{ user.profile.photo.url }}"></a>
+    </div>
+    <div id='edit-img'>
+      <img id="img-edit" alt='edit image' />
+      <h3>Edit Photo</h3>
+    </div>
+    {% endif %}
   </div>
-  {% endif %}
   <dl>
     {% if user.profile.tags.all %}
+      <p><strong>Tags</strong></p>
       {% if user.username == request.user.username %}
         <div id='tags_tab'></div>
       {% else %}
-        <h3>Tags</h3>
         {% for tag in user.profile.tags.all %}
             <li class='chips'><a class='tag-chip' href="{% url 'member_tag' tag %}">{{ tag }}</a></li>
         {% endfor %}
@@ -306,6 +312,18 @@
           get_tab(url, '#tags_tab')
 
     			$('.button-collapse').sideNav();
+
+          $('.profile-img-box').hover(function() {
+            $('#mem-photo').css('opacity', '0.5');
+            $('#edit-img').css('color', 'RGBA(0, 0, 0, 1)');
+            $('#img-edit').css('display', 'inline-block');
+          });
+          // 
+          // $('.profile-img-box').mouseout(function() {
+          //   $('#mem-photo').css('opacity', '1');
+          //   $('#edit-img').css('color', 'RGBA(0, 0, 0, 0)');
+          //   $('#img-edit').css('display', 'none');
+          // });
 
           // TODO finish responsive footer by testing on a device
   				if($('.main').width() < 990) {

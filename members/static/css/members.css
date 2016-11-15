@@ -619,10 +619,30 @@ textarea#id_bio {
 .member-photo {
 	float: left;
 	margin: 0px 1em 1em 0px;
+	position: absolute;
 }
 
 img#mem-photo {
 	margin-top: 10%;
+}
+
+#img-edit {
+	content: url(../img/ic_camera_alt_black_24dp_2x.png);
+	display: none;
+}
+
+#edit-img {
+	color: RGBA(0, 0, 0, 0);
+	position: relative;
+	top: 0;
+	left: 0;
+	text-align: center;
+	padding-top: 20%;
+	padding-left: 10%;
+}
+
+#edit-img h3 {
+	font-size: 1.7em;
 }
 
 h2#prof-name {
@@ -655,8 +675,8 @@ h2#prof-name {
 	height: 30px;
 }
 
-#prof-img {
-	margin-left: 10%;
+#prof-img, #edit-img {
+	margin-left: 2%;
 	display: block;
   overflow: hidden;
   height: 300px;
@@ -1323,7 +1343,7 @@ footer.sticky-footer {
 }
 
 @media only screen and (max-width: 1300px) {
-	#prof-img {
+	#prof-img, #edit-img {
 		width: 200px;
 		height: 200px;
 	}
@@ -1334,10 +1354,10 @@ footer.sticky-footer {
 }
 
 @media only screen and (max-width: 1390px) {
-	#prof-img {
+	#prof-img, #edit-img {
 		width: 250px;
 		height: 250px;
-		margin-left: 10%;
+		margin-left: 1%;
 	}
 
 	.left-profile {
