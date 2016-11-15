@@ -33,7 +33,10 @@ def profile_redirect(request):
 def user(request, username):
     user = get_object_or_404(User, username=username)
     emergency_contact = user.get_emergency_contact()
-    context = {'user': user, 'emergency_contact': emergency_contact, 'settings': settings}
+    ALLOW_PHOTO_UPLOAD = settings.ALLOW_PHOTO_UPLOAD
+    if request.user.is_staff:
+        ALLOW_PHOTO_UPLOAD = True
+    context = {'user': user, 'emergency_contact': emergency_contact, 'settings': settings, 'ALLOW_PHOTO_UPLOAD': ALLOW_PHOTO_UPLOAD}
     return render(request, 'members/profile.html', context)
 
 
