@@ -1,6 +1,7 @@
 {% extends "members/u_base.html" %}
 {% load imagetags %}
 {% load email_tags %}
+{% load static %}
 
 {% block sub-title %}{{ user.get_full_name }} | {% endblock %}
 
@@ -22,14 +23,29 @@
       </div>
       {% else %}
       <div class="member-photo" id='prof-img'>
-         <a href="{{ user.profile.photo.url }}"><img id='mem-photo' src="{{ user.profile.photo.url }}"></a>
+         <a href="{{ user.profile.photo.url }}"><img id='blank-photo' src="{{ user.profile.photo.url }}"></a>
       </div>
       {% endif %}
     {% else %}
-      <!-- TODO insert default image if no profile pic -->
+      {% if ALLOW_PHOTO_UPLOAD %}
+        <div class='profile-img-box'>
+          <div class="editable-photo" id='prof-img'>
+            <img id='mem-photo' src="{% static 'img/noun_160064_cc.png' %}"/>
+          </div>
+          <div id='edit-img'>
+            <img id="img-edit" alt='edit image' />
+            <h3>Edit Photo</h3>
+          </div>
+        </div>
+      {% else %}
+        <div class='member-photo'>
+          <img id='mem-photo' />
+        </div>
+      {% endif %}
     {% endif %}
   <div>
     {% if user.profile.tags.all %}
+      <p style='text-align:center;'> - <strong>Tags</strong> - </p>
       {% if user.username == request.user.username %}
         <div id='tags_tab'></div>
       {% else %}
@@ -38,7 +54,6 @@
         {% endfor %}
       {% endif %}
     {% else %}
-        <li><i>No tags</i></li>
     {% endif %}
   </div>
 </div>

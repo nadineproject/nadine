@@ -131,7 +131,7 @@ def edit_profile(request, username):
                                                 'company_name': profile.company_name, 'url_personal': profile.url_personal(), 'url_professional': profile.url_professional(),
                                                 'url_facebook': profile.url_facebook(), 'url_twitter': profile.url_twitter(),
                                                 'url_linkedin': profile.url_linkedin(), 'url_github': profile.url_github(),
-                                                'bio': profile.bio, 'photo': profile.photo,
+                                                'bio': profile.bio,
                                                 'public_profile': profile.public_profile,
                                                 'gender': profile.gender, 'howHeard': profile.howHeard, 'industry': profile.industry, 'neighborhood': profile.neighborhood,
                                                 'has_kids': profile.has_kids, 'self_employed': profile.self_employed,
@@ -139,12 +139,7 @@ def edit_profile(request, username):
                                                 'emergency_phone': emergency_contact.phone, 'emergency_email': emergency_contact.email,
                                             })
 
-    ALLOW_PHOTO_UPLOAD = settings.ALLOW_PHOTO_UPLOAD
-    if request.user.is_staff:
-        ALLOW_PHOTO_UPLOAD = True
-
-    context = {'user': user, 'profile_form': profile_form,
-        'ALLOW_PHOTO_UPLOAD': ALLOW_PHOTO_UPLOAD, 'page_message': page_message}
+    context = {'user': user, 'profile_form': profile_form, 'page_message': page_message}
     return render(request, 'members/profile_edit.html', context)
 
 
@@ -230,6 +225,7 @@ def edit_pic(request, username):
         profile_form = EditProfileForm(request.POST, request.FILES)
         profile = get_object_or_404(UserProfile, user=user)
         profile.photo = request.FILES.get('photo', None)
+        
         profile.save()
 
         return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))

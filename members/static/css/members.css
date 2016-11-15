@@ -667,14 +667,14 @@ h2#prof-name {
 	font-size: 2.4em;
 }
 
-#img-preview {
+#img-preview, #upload-preview {
 	display: block;
   overflow: hidden;
   height: 200px;
   width: 200px;
 }
 
-#img-preview img, #prof-img img {
+#img-preview img, #prof-img img, #upload-preview img {
 	display: block;
   min-width: 100%;
   min-height: 100%;
@@ -702,15 +702,28 @@ h2#prof-name {
 }
 
 .pic-upload {
-	height: 300px;
+	height: 200px;
+	padding-top: 100px;
+	width: 180px;
 }
 
 .picModal-content h4 {
 	text-align: center;
+	padding-top: 2%;
+}
+
+#upload-preview {
+	margin-left: 5%;
+}
+
+#blank-photo {
+	background-color: RGBA(143, 143, 139, 1);
+	content: url(../img/ic_face_white_48dp_2X.png);
 }
 
 .pic-btn {
 	background-color: RGBA(63, 146, 161, 1);
+	margin-left: 40%;
 }
 
 .basic-info, .left-profile {
@@ -1068,7 +1081,9 @@ dl dd:last-child:after {
 }
 
 .picModal-content {
-	height: 75%;
+	height: 55%;
+	width: 40%;
+	min-width: 600px;
 }
 
 .eModal-content {

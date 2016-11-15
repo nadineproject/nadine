@@ -1,12 +1,18 @@
+{% load static %}
+
 <form enctype="multipart/form-data" action="{% url 'member_edit_pic' user.username %}" method="POST">
   <table>
     <tr>
       <td><input class='pic-upload' type='file' name='photo' style='background-color:RGBA(255, 255, 255, 0);' id="imgInp" /></td>
-      <td id='img-preview'>
-        <img class="resize-image" id='img-id' src="" alt="profile photo" />
+      <td id='upload-preview'>
+        {% if user.profile.photo %}
+          <img class='resize-image' id='img-id' src="{{ user.profile.photo.url }}" />
+        {% else %}
+          <img class="resize-image" id='img-id' src="{% static 'img/noun_160064_cc.png' %}" alt=" "/>
+        {% endif %}
       </td>
     </tr>
-    <tr>
+    <tr class='btn-row'>
       <td><button type='submit' class='btn pic-btn'>Update</button></td>
       <td>
         <a class='modal-btn' id='cancel-event'>Cancel</a>
@@ -18,26 +24,26 @@
 
 <script>
   $(document).ready(function() {
-    $('#img-preview').hide();
-
     $('.modal-btn').on('click', function() {
       $('#picModal').css('display', 'none');
     });
+
+    $('.pic-btn').attr('disabled', 'disabled');
 
     function readURL(input) {
       if (input.files && input.files[0]) {
         var reader = new FileReader();
 
-        reader.onload = function (e) {
+        reader.onload = function(e) {
           $('#img-id').attr('src', e.target.result);
         }
         reader.readAsDataURL(input.files[0]);
-
-        $('#img-preview').show()
       }
     }
 
     $("#imgInp").change(function(){
+      $('.pic-btn').attr('disabled', false);
+
       var input = this;
       readURL(input);
     });

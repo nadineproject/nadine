@@ -182,21 +182,6 @@
     </div>
     <h3 style='text-align:left;'>Profile Information</h3>
     <div id='websites'>
-      {% block upload %}
-          {% if ALLOW_PHOTO_UPLOAD %}
-            <table>
-              <tr>
-                <td class='cap-label'><strong>Photo</strong></td>
-                <td>
-                  <input type='file' name='photo' style='background-color:RGBA(255, 255, 255, 0);' id="imgInp" />
-                </td>
-                <td id='img-preview'>
-                  <img class="resize-image" id='img-id' src="" alt="profile photo" />
-                </td>
-              </tr>
-            </table>
-          {% endif %}
-      {% endblock %}
       <table>
         <tr>
           <td class='cap-label'><strong>Bio</strong></td>
