@@ -9,10 +9,12 @@
 {% block content %}
 <h2>Edit {{ organization.name}}</h2>
 
-{% if organization.bio %}
-	<h3>Bio</h3>
-	<p style="margin:2em;">{{ organization.bio }} </p>
-{% endif %}
+<h3>Details</h3>
+<form method="POST" action=".">
+	{{ form.as_ul }}
+	<input type="submit"/>
+	{% csrf_token %}
+</form>
 
 <h3>Members</h3>
 <ul>

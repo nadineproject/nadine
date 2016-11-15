@@ -2,6 +2,7 @@ import logging
 import datetime
 
 from django import forms
+from django.forms import modelformset_factory
 from django.contrib.auth.models import User
 from django.utils.html import strip_tags
 from django.conf import settings
@@ -14,6 +15,7 @@ from nadine import email
 from nadine.models.core import UserProfile, HowHeard, Industry, Neighborhood, GENDER_CHOICES, Membership, MembershipPlan
 from nadine.models.usage import PAYMENT_CHOICES, CoworkingDay
 from nadine.models.resource import Room
+from nadine.models.organization import Organization
 from nadine.utils.payment_api import PaymentAPI
 
 logger = logging.getLogger(__name__)
@@ -22,6 +24,44 @@ logger = logging.getLogger(__name__)
 class DateRangeForm(forms.Form):
     start = forms.DateField()
     end = forms.DateField()
+
+
+class OrganizationForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        instance = None
+        if 'instance' in kwargs:
+            instance = kwargs['instance']
+            del kwargs['instance']
+        super(OrganizationForm, self).__init__(*args, **kwargs)
+        if instance:
+            self.instance = instance
+            self.initial['org_id'] = instance.id
+            self.initial['name'] = instance.name
+            self.initial['bio'] = instance.bio
+            self.initial['photo'] = instance.photo
+            self.initial['public_profile'] = instance.public_profile
+            self.initial['locked'] = instance.locked
+
+    org_id = forms.IntegerField(required=True, widget=forms.HiddenInput)
+    name = forms.CharField(max_length=128, label="Organization Name", required=True, widget=forms.TextInput(attrs={'autocapitalize': "words"}))
+    bio = forms.CharField(widget=forms.Textarea, max_length=512, required=False)
+    photo = forms.FileField(required=False)
+    public_profile = forms.BooleanField()
+    locked = forms.BooleanField()
+
+    def save(self):
+        org_id = self.cleaned_data['org_id']
+        org = Organization.objects.get(id=org_id)
+        org.name = self.cleaned_data['name']
+        org.bio = self.cleaned_data['bio']
+        org.save()
+
+
+# class OrganizationForm(forms.ModelForm):
+#     class Meta:
+#         model = Organization
+#         fields = ['name', 'bio', 'photo', 'public_profile', 'locked']
+#         #exclude = ['created_by', 'created_ts']
 
 
 class PayBillsForm(forms.Form):

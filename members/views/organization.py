@@ -10,7 +10,7 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidde
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 
-#from nadine.models.core import UserProfile, Membership
+from nadine.forms import OrganizationForm
 from nadine.models.organization import Organization, OrganizationMember
 
 from members.views.core import is_active_member
@@ -36,9 +36,17 @@ def view_organization(request, id):
 @user_passes_test(is_active_member, login_url='member_not_active')
 def edit_organization(request, id):
     org = get_object_or_404(Organization, id=id)
-    if not org.can_edit(request.user) and not request.user.is_staff:
+    if not (request.user.is_staff or org.can_edit(request.user)):
         return HttpResponseForbidden("Forbidden")
-    context = {'organization': org}
+
+    if request.method == "POST":
+        form = OrganizationForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+    else:
+        form = OrganizationForm(instance=org)
+
+    context = {'organization': org, 'form':form}
     return render(request, 'members/org_edit.html', context)
 
 

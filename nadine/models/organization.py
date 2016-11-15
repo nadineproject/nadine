@@ -41,7 +41,7 @@ def org_photo_path(instance, filename):
 class Organization(models.Model):
     created_ts = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name="+")
-    name = models.CharField(max_length=128)
+    name = models.CharField(max_length=128, unique=True)
     lead = models.ForeignKey(User, null=True, blank=True)
     bio = models.TextField(blank=True, null=True)
     photo = models.ImageField(upload_to=org_photo_path, blank=True, null=True)
