@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^receipt/(?P<username>[^/]+)/(?P<id>\d+)/$', profile.receipt, name='member_receipt'),
     url(r'^disable_billing/(?P<username>[^/]+)$', profile.disable_billing, name='member_disable_billing'),
     url(r'^file/(?P<disposition>[^/]+)/(?P<username>[^/]+)/(?P<file_name>[^/]+)$', profile.file_view, name='member_files'),
+    url(r'^edit_pic/(?P<username>[^/]+)/$', profile.edit_pic, name='member_edit_pic'),
 
     # Tags
     url(r'^tag_list/$', tags.tags, name='member_tags'),

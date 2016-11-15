@@ -616,10 +616,15 @@ textarea#id_bio {
 	text-decoration: none;
 }
 
-.member-photo {
+.editable-photo {
 	float: left;
 	margin: 0px 1em 1em 0px;
 	position: absolute;
+}
+
+.member-photo {
+	float: left;
+	margin: 0px 1em 1em 0px;
 }
 
 img#mem-photo {
@@ -629,6 +634,18 @@ img#mem-photo {
 #img-edit {
 	content: url(../img/ic_camera_alt_black_24dp_2x.png);
 	display: none;
+}
+
+.profile-img-box:hover #mem-photo {
+	opacity: 0.5;
+}
+
+.profile-img-box:hover #edit-img {
+	color: RGBA(0, 0, 0, 1);
+}
+
+.profile-img-box:hover #img-edit {
+	display: block;
 }
 
 #edit-img {
@@ -682,6 +699,18 @@ h2#prof-name {
   height: 300px;
   width: 300px;
 	margin-bottom: 10%;
+}
+
+.pic-upload {
+	height: 300px;
+}
+
+.picModal-content h4 {
+	text-align: center;
+}
+
+.pic-btn {
+	background-color: RGBA(63, 146, 161, 1);
 }
 
 .basic-info, .left-profile {
@@ -1021,7 +1050,7 @@ dl dd:last-child:after {
   max-height: 100%;
 }
 
-.modal-content {
+.modal-content, .picModal-content {
   position: relative;
   background-color: #fefefe;
   margin: auto;
@@ -1036,6 +1065,10 @@ dl dd:last-child:after {
   -webkit-animation-duration: 0.4s;
   animation-name: animatetop;
   animation-duration: 0.4s
+}
+
+.picModal-content {
+	height: 75%;
 }
 
 .eModal-content {

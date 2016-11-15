@@ -1,0 +1,45 @@
+<form enctype="multipart/form-data" action="{% url 'member_edit_pic' user.username %}" method="POST">
+  <table>
+    <tr>
+      <td><input class='pic-upload' type='file' name='photo' style='background-color:RGBA(255, 255, 255, 0);' id="imgInp" /></td>
+      <td id='img-preview'>
+        <img class="resize-image" id='img-id' src="" alt="profile photo" />
+      </td>
+    </tr>
+    <tr>
+      <td><button type='submit' class='btn pic-btn'>Update</button></td>
+      <td>
+        <a class='modal-btn' id='cancel-event'>Cancel</a>
+      </td>
+    </tr>
+    {% csrf_token %}
+  </table>
+</form>
+
+<script>
+  $(document).ready(function() {
+    $('#img-preview').hide();
+
+    $('.modal-btn').on('click', function() {
+      $('#picModal').css('display', 'none');
+    });
+
+    function readURL(input) {
+      if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+          $('#img-id').attr('src', e.target.result);
+        }
+        reader.readAsDataURL(input.files[0]);
+
+        $('#img-preview').show()
+      }
+    }
+
+    $("#imgInp").change(function(){
+      var input = this;
+      readURL(input);
+    });
+  });
+</script>

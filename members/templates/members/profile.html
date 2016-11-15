@@ -10,19 +10,26 @@
 {% block content %}
 <div class='left-profile col s4'>
   {% if user.profile.photo %}
-  <div class='profile-img-box'>
-    <div class="member-photo" id='prof-img'>
-       <a href="{{ user.profile.photo.url }}"><img id='mem-photo' src="{{ user.profile.photo.url }}"></a>
-    </div>
-    <div id='edit-img'>
-      <img id="img-edit" alt='edit image' />
-      <h3>Edit Photo</h3>
-    </div>
+    {% if ALLOW_PHOTO_UPLOAD %}
+      <div class='profile-img-box'>
+        <div class="editable-photo" id='prof-img'>
+           <a href="{{ user.profile.photo.url }}"><img id='mem-photo' src="{{ user.profile.photo.url }}"></a>
+        </div>
+        <div id='edit-img'>
+          <img id="img-edit" alt='edit image' />
+          <h3>Edit Photo</h3>
+        </div>
+      </div>
+      {% else %}
+      <div class="member-photo" id='prof-img'>
+         <a href="{{ user.profile.photo.url }}"><img id='mem-photo' src="{{ user.profile.photo.url }}"></a>
+      </div>
+      {% endif %}
+    {% else %}
+      <!-- TODO insert default image if no profile pic -->
     {% endif %}
-  </div>
-  <dl>
+  <div>
     {% if user.profile.tags.all %}
-      <p><strong>Tags</strong></p>
       {% if user.username == request.user.username %}
         <div id='tags_tab'></div>
       {% else %}
@@ -33,7 +40,17 @@
     {% else %}
         <li><i>No tags</i></li>
     {% endif %}
-  </dl>
+  </div>
+</div>
+
+<div id='picModal' class='modal'>
+  <div class='picModal-content'>
+    <div class='picModal-body'>
+      <h4>Edit Profile Picture</h4>
+      <div class='container' id='pic-modal'>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class='right-profile col s8'>
@@ -237,17 +254,7 @@
         <li>
           <div class='collapsible-header' id='device_tab'>Register Devices</div>
           <div class='collapsible-body' id='tabs-6'>
-            <div class="preloader-wrapper big active">
-              <div class="spinner-layer spinner-blue-only">
-                <div class="circle-clipper left">
-                  <div class="circle"></div>
-                </div><div class="gap-patch">
-                  <div class="circle"></div>
-                </div><div class="circle-clipper right">
-                  <div class="circle"></div>
-                </div>
-              </div>
-            </div>
+            <p>Loading billing information...</p>
           </div>
         </li>
     </ul>
@@ -288,6 +295,7 @@
           $('.tooltipped').tooltip({delay: 50});
           $('.collapsible').collapsible();
           $('.chips').material_chip();
+          $('.button-collapse').sideNav();
 
           $('#membership_tab').on("click", function(e) {
               e.preventDefault();
@@ -301,29 +309,17 @@
               post_tab(url, "#tabs-4")
           });
 
-          url = "{% url 'member_profile_billing' user.username %}"
-          post_tab(url, "#tabs-5");
+          post_tab("{% url 'member_profile_billing' user.username %}", "#tabs-5");
 
-          url = "{% url 'member_user_devices' user.username %}"
-          get_tab(url, "#tabs-6");
+          get_tab("{% url 'member_user_devices' user.username %}", "#tabs-6");
 
+          get_tab("{% url 'member_user_tags' user.username %}", '#tags_tab');
 
-          url = "{% url 'member_user_tags' user.username %}"
-          get_tab(url, '#tags_tab')
-
-    			$('.button-collapse').sideNav();
-
-          $('.profile-img-box').hover(function() {
-            $('#mem-photo').css('opacity', '0.5');
-            $('#edit-img').css('color', 'RGBA(0, 0, 0, 1)');
-            $('#img-edit').css('display', 'inline-block');
+    			$('#edit-img').on('click', function(e) {
+            e.preventDefault();
+            get_tab("{% url 'member_edit_pic' user.username %}", '#pic-modal');
+            $('#picModal').css('display', 'block');
           });
-          // 
-          // $('.profile-img-box').mouseout(function() {
-          //   $('#mem-photo').css('opacity', '1');
-          //   $('#edit-img').css('color', 'RGBA(0, 0, 0, 0)');
-          //   $('#img-edit').css('display', 'none');
-          // });
 
           // TODO finish responsive footer by testing on a device
   				if($('.main').width() < 990) {
