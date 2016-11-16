@@ -28,32 +28,32 @@ class DateRangeForm(forms.Form):
 
 class OrganizationForm(forms.Form):
     def __init__(self, *args, **kwargs):
-        instance = None
         if 'instance' in kwargs:
-            instance = kwargs['instance']
+            self.instance = kwargs['instance']
+            self.initial['org_id'] = self.instance.id
+            self.initial['name'] = self.instance.name
+            self.initial['bio'] = self.instance.bio
+            self.initial['photo'] = self.instance.photo
+            self.initial['public'] = self.instance.public
+            #self.initial['locked'] = self.instance.locked
             del kwargs['instance']
         super(OrganizationForm, self).__init__(*args, **kwargs)
-        if instance:
-            self.instance = instance
-            self.initial['org_id'] = instance.id
-            self.initial['name'] = instance.name
-            self.initial['bio'] = instance.bio
-            self.initial['photo'] = instance.photo
-            self.initial['public_profile'] = instance.public_profile
-            self.initial['locked'] = instance.locked
 
     org_id = forms.IntegerField(required=True, widget=forms.HiddenInput)
     name = forms.CharField(max_length=128, label="Organization Name", required=True, widget=forms.TextInput(attrs={'autocapitalize': "words"}))
     bio = forms.CharField(widget=forms.Textarea, max_length=512, required=False)
     photo = forms.FileField(required=False)
-    public_profile = forms.BooleanField()
-    locked = forms.BooleanField()
+    public = forms.BooleanField()
+    #locked = forms.BooleanField()
 
     def save(self):
         org_id = self.cleaned_data['org_id']
         org = Organization.objects.get(id=org_id)
         org.name = self.cleaned_data['name']
         org.bio = self.cleaned_data['bio']
+        org.photo = self.cleaned_data['photo']
+        org.bio = self.cleaned_data['public']
+        #org.bio = self.cleaned_data['locked']
         org.save()
 
 

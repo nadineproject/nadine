@@ -45,7 +45,7 @@ class Organization(models.Model):
     lead = models.ForeignKey(User, null=True, blank=True)
     bio = models.TextField(blank=True, null=True)
     photo = models.ImageField(upload_to=org_photo_path, blank=True, null=True)
-    public_profile = models.BooleanField(default=False)
+    public = models.BooleanField(default=False)
     locked = models.BooleanField(default=False)
 
     objects = OrganizationManager()
