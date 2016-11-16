@@ -39,7 +39,6 @@
         }
       }
     }
-
     get_orientation($('.img-id'));
 
     $('.pic-btn').attr('disabled', 'disabled');
@@ -49,7 +48,6 @@
         var reader = new FileReader();
 
         reader.onload = function(e) {
-          // console.log(e.target.result);
           $('.img-id').attr('src', e.target.result);
           get_orientation($('.img-id'));
         }
