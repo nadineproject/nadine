@@ -13,7 +13,7 @@
   {% if user.profile.photo %}
     {% if ALLOW_PHOTO_UPLOAD %}
       <div class='profile-img-box'>
-        <div class="editable-photo" id='prof-img'>
+        <div class='editable-photo prof-img'>
            <a href="{{ user.profile.photo.url }}"><img id='mem-photo' src="{{ user.profile.photo.url }}"></a>
         </div>
         <div id='edit-img'>
@@ -22,14 +22,14 @@
         </div>
       </div>
       {% else %}
-      <div class="member-photo" id='prof-img'>
+      <div class='member-photo prof-img'>
          <a href="{{ user.profile.photo.url }}"><img id='blank-photo' src="{{ user.profile.photo.url }}"></a>
       </div>
       {% endif %}
     {% else %}
       {% if ALLOW_PHOTO_UPLOAD %}
         <div class='profile-img-box'>
-          <div class="editable-photo" id='prof-img'>
+          <div class='editable-photo prof-img'>
             <img id='mem-photo' src="{% static 'img/noun_160064_cc.png' %}"/>
           </div>
           <div id='edit-img'>
@@ -43,7 +43,7 @@
         </div>
       {% endif %}
     {% endif %}
-  <div>
+  <div class='tags-box'>
     {% if user.profile.tags.all %}
       <p style='text-align:center;'> - <strong>Tags</strong> - </p>
       {% if user.username == request.user.username %}
@@ -305,12 +305,21 @@
           });
         }
 
+        function get_orientation(img) {
+          if (img.width() < img.height()) {
+            $('#mem-photo').attr('class', 'portrait');
+          }
+        }
+
         $(document).ready(function() {
           $('body').css('background-color', 'RGBA(239, 238, 231, 1)');
           $('.tooltipped').tooltip({delay: 50});
           $('.collapsible').collapsible();
           $('.chips').material_chip();
           $('.button-collapse').sideNav();
+
+          var img = $('#mem-photo');
+          get_orientation(img);
 
           $('#membership_tab').on("click", function(e) {
               e.preventDefault();

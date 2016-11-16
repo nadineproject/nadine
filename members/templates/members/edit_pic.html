@@ -3,12 +3,14 @@
 <form enctype="multipart/form-data" action="{% url 'member_edit_pic' user.username %}" method="POST">
   <table>
     <tr>
-      <td><input class='pic-upload' type='file' name='photo' style='background-color:RGBA(255, 255, 255, 0);' id="imgInp" /></td>
+      <td class='upload-input'>
+        <input class='pic-upload' type='file' name='photo' style='background-color:RGBA(255, 255, 255, 0);' id="imgInp" />
+      </td>
       <td id='upload-preview'>
         {% if user.profile.photo %}
-          <img class='resize-image' id='img-id' src="{{ user.profile.photo.url }}" />
+          <img class='img-id' src="{{ user.profile.photo.url }}" />
         {% else %}
-          <img class="resize-image" id='img-id' src="{% static 'img/noun_160064_cc.png' %}" alt=" "/>
+          <img class='img-id' src="{% static 'img/noun_160064_cc.png' %}" alt=" "/>
         {% endif %}
       </td>
     </tr>
@@ -28,14 +30,23 @@
       $('#picModal').css('display', 'none');
     });
 
+    function get_orientation(img) {
+      if (img.width() < img.height()) {
+        $('#mem-photo').attr('class', 'portrait');
+      }
+    }
+
     $('.pic-btn').attr('disabled', 'disabled');
+
+    var img = $('#mem-photo');
+    get_orientation(img);
 
     function readURL(input) {
       if (input.files && input.files[0]) {
         var reader = new FileReader();
 
         reader.onload = function(e) {
-          $('#img-id').attr('src', e.target.result);
+          $('.img-id').attr('src', e.target.result);
         }
         reader.readAsDataURL(input.files[0]);
       }

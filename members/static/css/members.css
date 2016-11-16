@@ -616,6 +616,10 @@ textarea#id_bio {
 	text-decoration: none;
 }
 
+.tags-box {
+	margin-top: 20%;
+}
+
 .editable-photo {
 	float: left;
 	margin: 0px 1em 1em 0px;
@@ -674,12 +678,51 @@ h2#prof-name {
   width: 200px;
 }
 
+
+#prof-img, #edit-img {
+	margin-left: 2%;
+	display: block;
+  overflow: hidden;
+  height: 300px;
+  width: 300px;
+	margin-bottom: 10%;
+}
+
 #img-preview img, #prof-img img, #upload-preview img {
 	display: block;
   min-width: 100%;
   min-height: 100%;
 	max-width: 100%;
   -ms-interpolation-mode: bicubic;
+}
+
+.prof-img, .upload-input {
+  /*position: relative;*/
+  width: 300px;
+  height: 300px;
+  overflow: hidden;
+	margin: 2%;
+}
+
+.upload-input {
+	width: 200px;
+	height: 200px;
+}
+
+.prof-img img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: 100%;
+  width: auto;
+  -webkit-transform: translate(-50%,-50%);
+      -ms-transform: translate(-50%,-50%);
+          transform: translate(-50%,-50%);
+}
+
+.prof-img img.portrait {
+  width: 100%;
+  height: auto;
 }
 
 #edit {
@@ -690,15 +733,6 @@ h2#prof-name {
 #manage {
 	content: url(../img/noun_683434_cc.png);
 	height: 30px;
-}
-
-#prof-img, #edit-img {
-	margin-left: 2%;
-	display: block;
-  overflow: hidden;
-  height: 300px;
-  width: 300px;
-	margin-bottom: 10%;
 }
 
 .pic-upload {
@@ -1391,7 +1425,7 @@ footer.sticky-footer {
 }
 
 @media only screen and (max-width: 1300px) {
-	#prof-img, #edit-img {
+	.prof-img, #edit-img {
 		width: 200px;
 		height: 200px;
 	}
@@ -1402,7 +1436,7 @@ footer.sticky-footer {
 }
 
 @media only screen and (max-width: 1390px) {
-	#prof-img, #edit-img {
+	.prof-img, #edit-img {
 		width: 250px;
 		height: 250px;
 		margin-left: 1%;
