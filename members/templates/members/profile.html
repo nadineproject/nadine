@@ -71,7 +71,7 @@
 <div class='right-profile col s8'>
   <div class='basic-info'>
     <div class='row'>
-      <h2 class='col s9' id='prof-name'>{{ user.get_full_name }}</h2>
+      <h2 class='col s9 oswald' id='prof-name'>{{ user.get_full_name }}</h2>
       {% if user.username == request.user.username or request.user.is_staff %}
         <a class='col s1 tooltipped' data-position="bottom" data-tooltip="Edit Profile" href="{% url 'member_edit_profile' user.username %}" style='margin-top:3%;'><img id='edit' alt='edit-icon'/></a>
       {% endif %}

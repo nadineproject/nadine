@@ -44,7 +44,7 @@ p {
 /* Header */
 
 #main-nav {
-	background-color: RGBA(77, 127, 149, 1);
+	background-color: RGBA(66, 98, 113, 1);
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -52,10 +52,11 @@ p {
 
 #main-nav a {
 	text-transform: uppercase;
+	font-family: 'Oswald', sans-serif;
 }
 
 #home-nav {
-	background-color: RGBA(77, 127, 149, 1);
+	background-color: RGBA(66, 98, 113, 1);
 	margin: 0;
 	border-top: none;
 }
@@ -75,7 +76,7 @@ p {
 	color: white;
 	padding-right: 20px;
 	margin-right: 0;
-	letter-spacing: .6px;
+	letter-spacing: 1px;
 	font-weight: lighter;
 }
 
@@ -92,7 +93,7 @@ p {
 	z-index: 2;
 	box-sizing: padding-box;
 	border-bottom: none;
-	background-color: RGBA(77, 127, 149, 1);
+	background-color: RGBA(66, 98, 113, 1);
 }
 
 .menu-img {
@@ -234,7 +235,7 @@ textarea#id_bio {
 
 #login_form h1, #registration_form h1 {
 	color: white;
-	background-color: RGBA(77, 127, 149, 1);
+	background-color: RGBA(66, 98, 113, 1);
 	padding: 2%;
 	border-top-right-radius: 2px;
 	border-top-left-radius: 2px;
@@ -287,7 +288,7 @@ input#id_photo {
 }
 
 .sub-btn, #confirm-btn, .reg-btn  {
-	background: RGBA(63, 146, 161, 1);
+	background: RGBA(79, 134, 135, 1);
 	margin-top: 2%;
 	margin-left: 35%;
 }
@@ -468,7 +469,7 @@ textarea#id_bio {
 }
 
 .tag-btn {
-	background-color: RGBA(63, 146, 161, 1);
+	background-color: RGBA(79, 134, 135, 1);
 }
 
 /*Registration form styling*/
@@ -488,13 +489,13 @@ textarea#id_bio {
 	margin-left: 20%;
 	margin-right: 10%;
 	width: 35%;
-	background-color: RGBA(127, 175, 147, 1);
+	background-color: RGBA(79, 134, 135, 1);
 }
 
 #loginonly-btn {
 	margin-left: 30%;
 	width: 40%;
-	background-color: RGBA(63, 146, 161, 1);
+	background-color: RGBA(79, 134, 135, 1);
 }
 
 #site-search-form input {
@@ -502,7 +503,7 @@ textarea#id_bio {
 }
 
 #site-search-form input.search-btn {
-	background: RGBA(63, 146, 161, 1);
+	background: RGBA(79, 134, 135, 1);
 	width: 30%;
 	padding: 0;
 	margin-left: 5%;
@@ -635,6 +636,15 @@ textarea#id_bio {
 .user-card a.photo .user-img.portrait {
 	width: 100%;
   height: auto;
+}
+
+.oswald {
+	font-family: 'Oswald', sans-serif;
+	color: RGBA(79, 134, 135, 1);
+}
+
+.frag {
+	text-spacing: 1px;
 }
 
 .tags-box {
@@ -790,7 +800,7 @@ h2#prof-name {
 }
 
 .pic-btn {
-	background-color: RGBA(63, 146, 161, 1);
+	background-color: RGBA(79, 134, 135, 1);
 	margin-left: 40%;
 }
 
@@ -820,7 +830,8 @@ h2#prof-name {
 
 .collapsible-body {
 	background-color: RGBA(254, 254, 254, 1);
-	padding: 2%;
+	padding: 5%;
+
 }
 
 .collapsible-body h3 {
@@ -872,7 +883,7 @@ dl dd:last-child:after {
 	}
 
 	.book-btn, .device-btn {
-		background: RGBA(63, 146, 161, 1);
+		background: RGBA(79, 134, 135, 1);
 	}
 
 	#booking-reqs select.browser-default {
@@ -932,7 +943,7 @@ dl dd:last-child:after {
 	}
 
 	.book-btn, .room-show, .room-close {
-		background-color: RGBA(82, 144, 159, 1);
+		background-color: RGBA(79, 134, 135, 1);
 	}
 
 	.room-show, .room-close {
@@ -1232,7 +1243,7 @@ dl dd:last-child:after {
 .modal-btn {
 	margin-top: 2%;
 	margin-left: 40%;
-	background-color: RGBA(63, 146, 161, 1);
+	background-color: RGBA(79, 134, 135, 1);
 }
 
 #event-btn-row {
