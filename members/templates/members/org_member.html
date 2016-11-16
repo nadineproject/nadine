@@ -7,10 +7,19 @@
 {% endblock %}
 
 {% block content %}
-<h2>Edit {{ organization.name}}</h2>
+<h2>{{ action|title }} {{ organization.name}} Member</h2>
 
-<h3>Details</h3>
 <form method="POST" action="." enctype="multipart/form-data">
+	<input type="hidden" name="action" value="save"/>
+	<li>
+		<label for="id_username">User:</label>
+		{% if member %}
+			{{ member.user.get_full_name }}
+		{% else %}
+			<input id="id_username" name="username"/>
+		{% endif %}
+	</li>
+
 	{{ form.as_ul }}
 	<input type="submit" value="Save"/>
 	<input type="button" value="Cancel" onclick="location.href='{% url 'member_org_view' organization.id %}'"/>
