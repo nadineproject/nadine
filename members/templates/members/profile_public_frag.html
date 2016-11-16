@@ -1,11 +1,11 @@
 <div id="profile">
 <table>
     <tr>
-        <td>Membership:</td>
+        <td><strong>Membership:</strong></td>
         <td>{{ user.profile.membership_type }}</td>
     </tr>
     <tr>
-        <td>Member Since:</td>
+        <td><strong>Member Since:</strong></td>
         <td>{{ user.profile.first_visit }}</td>
    </tr>
 
@@ -18,22 +18,22 @@
 
     {% for url in user.url_set.all %}
         <tr>
-            <td>{{ url.url_type | title }} URL:</td>
+            <td><strong>{{ url.url_type | title }} URL:</strong></td>
             <td><a target="_self" href="{{ url }}">{{ url }}</a></td>
         </tr>
     {% endfor %}
 
     {% if user.profile.neighborhood %}
         <tr>
-            <td>Neighborhood:</td>
+            <td><strong>Neighborhood:</strong></td>
             <td>{{ user.profile.neighborhood }}</td>
         </tr>
     {% endif %}
 
     {% if user.profile.has_kids %}
         <tr>
-            <td>Has Kids?</td>
-            <td>{{ user.profile.has_kids }}</td>
+            <td><strong>Has Kids?</strong></td>
+            <td>{{ user.profile.has_kids|yesno:"Yes,No" }}</td>
         </tr>
     {% endif %}
 </table>

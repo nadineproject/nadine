@@ -1,26 +1,4 @@
-{% extends "members/u_base.html" %}
-
-{%block sub-head %}
 	<!-- TODO need to find out what's in these that's not in our custom stuff already loaded at the top -->
-	<link rel="stylesheet" href="http://code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" type="text/css" media="all" />
-	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.4/jquery-ui.min.js" type="text/javascript"></script>
-	<script>
-		$(function() {
-			var availableTags = [
-				{% for t in all_tags %}
-					"{{ t }}",
-				{% endfor %}
-			];
-			$( "#tag" ).autocomplete({
-				source: availableTags
-			});
-			$("#tag").focus();
-		});
-		</script>
-{% endblock %}
-
-{% block content %}
-	<h2>Profile Tags for: {{ user }}</h2>
 	<div class='tags'>
 		<ul>
 			{% for t in user_tags %}
@@ -30,21 +8,20 @@
 				</li>
 			{% endfor %}
 		</ul>
-
 		<div class="ui-widget">
-		<form action="." method="POST">
-			<table class='tag-table'>
-				<tr>
-					<td id='tag'>
-						<input name="tag" placeholder="e.g. Biking">
-					</td>
-					<td>
-						<input class='btn tag-btn' type="submit" value="Add">
-					</td>
-				</tr>
-			</table>
-			{% csrf_token %}
-		</form>
+			<form action="{% url 'member_user_tags' user.username %}" method="POST">
+				<table class='tag-table'>
+					<tr>
+						<td id='tag'>
+							<input name="tag" placeholder="e.g. Biking">
+						</td>
+						<td>
+							<input class='btn tag-btn' type="submit" value="Add">
+						</td>
+					</tr>
+				</table>
+				{% csrf_token %}
+			</form>
 		</div>
 
 		{% if error %}
@@ -52,4 +29,16 @@
 		{% endif %}
 	</div>
 
-{% endblock %}
+	<script>
+		(function() {
+			var availableTags = [
+				{% for t in all_tags %}
+					"{{ t }}",
+				{% endfor %}
+			];
+			$( "#tag" ).autocomplete({
+				source: availableTags
+			});
+			$("#tag").focus();
+		})();
+	</script>
