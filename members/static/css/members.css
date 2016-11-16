@@ -31,6 +31,10 @@ p {
 	 line-height: 1.6;
 }
 
+.btn {
+	background-color: RGBA(79, 134, 135, 1);
+}
+
 .ir { display: block; text-indent: -999em; overflow: hidden; background-repeat: no-repeat; }
 .hidden { display: none; visibility: hidden; }
 .visuallyhidden { position: absolute !important;
@@ -155,7 +159,7 @@ p {
 #content h2 {
 	display: block;
 	text-align: center;
-	font-size: 1.875em;
+	/*font-size: 1.875em;*/
 }
 
 /* Body */
@@ -697,6 +701,10 @@ img#mem-photo {
 h2#prof-name {
 	text-align: left;
 	font-size: 2.4em;
+}
+
+.bold-blue {
+	color: RGBA(66, 98, 113, 1);
 }
 
 #img-preview, #upload-preview {
@@ -1264,6 +1272,12 @@ dl dd:last-child:after {
 #goto-booking {
 	font-weight: bold;
 	font-size: 1.3em;
+}
+
+.fc-center h2 {
+	font-size: 1.875em;
+	font-family: 'Oswald', sans-serif;
+	color: RGBA(79, 134, 135, 1);
 }
 
 .fc-toolbar .fc-state-active, .fc-toolbar .ui-state-active {
