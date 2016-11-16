@@ -191,7 +191,6 @@ def register(request):
                     # registration.neighborhood = request.POST.get('neighborhood', None)
                     registration.has_kids = request.POST.get('has_kids', None)
                     registration.self_employed = request.POST.get('self_employed', None)
-                    registration.company_name = request.POST.get('company_name', None)
                     registration.public_profile = request.POST.get('public_profile', False)
                     registration.photo = request.FILES.get('photo', None)
 

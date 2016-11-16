@@ -37,13 +37,13 @@ class Command(BaseCommand):
 
     def load_settings_file(self):
         # Test to see if SETTINGS_FILE exists and prompt to load it or remove it
+        filename = EXAMPLE_FILE
         if os.path.isfile(SETTINGS_FILE):
             print ("File '%s' exists!" % SETTINGS_FILE)
             print ("Do you want to load the existing file? (Y, n)")
             load = raw_input(PROMPT).strip().lower()
             if load == "n":
                 print("Current settings in '%s' will be lost!" % SETTINGS_FILE)
-                filename = EXAMPLE_FILE
             else:
                 filename = SETTINGS_FILE
         self.local_settings = LocalSettings(filename)

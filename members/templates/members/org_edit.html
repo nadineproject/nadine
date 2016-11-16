@@ -1,0 +1,33 @@
+{% extends "members/u_base.html" %}
+{% load imagetags %}
+
+{% block sub-title %}Organization | {% endblock %}
+
+{% block style %}
+{% endblock %}
+
+{% block content %}
+<h2>Edit {{ organization.name}}</h2>
+
+<h3>Details</h3>
+<form method="POST" action="." enctype="multipart/form-data">
+	{{ form.as_ul }}
+	<input type="submit"/>
+	{% csrf_token %}
+</form>
+
+<h3>Members</h3>
+<ul>
+	{% for u in organization.members %}
+		<li>{{ u }}</li>
+	{% endfor %}
+</ul>
+
+<h3>Notes</h3>
+<ul>
+	{% for n in organization.notes %}
+		<li>{{ n.created_ts }} {{ n.created_by }}: {{ n.note }}</li>
+	{% endfor %}
+</ul>
+
+{% endblock %}

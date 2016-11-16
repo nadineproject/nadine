@@ -254,7 +254,9 @@ def gender(request):
     counts = {'male': m, 'female': f, 'other': o, 'unknown': u, 'total': t}
     percentages = {'male': p(m, t), 'female': p(f, t), 'other': p(o, t), 'unknown': p(u, t)}
 
-    return render('staff/stats_gender.html', {'counts': counts, 'percentages': percentages, 'active_only': active_only}, context_instance=RequestContext(request))
+    context = {'counts': counts, 'percentages': percentages,
+        'active_only': active_only}
+    return render(request, 'staff/stats_gender.html', context)
 
 
 @staff_member_required

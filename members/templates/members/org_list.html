@@ -1,0 +1,27 @@
+{% extends "members/u_base.html" %}
+{% load imagetags %}
+
+{% block sub-title %}Organization | {% endblock %}
+
+{% block style %}
+{% endblock %}
+
+{% block content %}
+<h2>Organizations at {{ site.name }}</h2>
+
+<ul>
+	{% for org in organizations %}
+	<li>
+		<a href="{% url 'member_view_org' org.id %}">{{ org.name }}</a>
+		<ul>
+			{% for u in org.members %}
+				<li>
+					<a href="{% url 'member_profile' u.username %}">{{ u.get_full_name }}</a>
+				</li>
+			{% endfor %}
+		</ul>
+	</li>
+	{% endfor %}
+</ul>
+
+{% endblock %}

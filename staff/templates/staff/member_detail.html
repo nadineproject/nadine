@@ -121,13 +121,13 @@ function gotoEmailReset(emailAddress){
             <td>{{ user.profile.last_visit }}</td>
         </tr>
 
-        <!-- Company Name -->
-        {% if user.profile.company_name %}
+        <!-- organizations -->
+        {% for o in user.profile.active_organizations %}
             <tr>
-                <td>Company Name</td>
-                <td>{{ user.profile.company_name }}</td>
+                <td>Organization</td>
+                <td>{{ o }}</td>
             </tr>
-        {% endif %}
+        {% endfor %}
 
         <!-- Website -->
         {% if user.profile.url_personal %}

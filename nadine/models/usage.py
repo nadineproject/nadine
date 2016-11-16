@@ -8,6 +8,8 @@ from django.contrib.auth.models import User
 from django.core import urlresolvers
 from django.db.models.signals import post_save
 
+# from nadine.models.resource import Resource
+
 import logging
 
 logger = logging.getLogger(__name__)
@@ -69,3 +71,25 @@ class Event(models.Model):
         if self.is_public:
             return "Public Event (%s)" % self.user.get_full_name()
         return "Private Event (%s)" % self.user.get_full_name()
+
+
+# class IndividualMembership(models.Model):
+#     created_ts = models.DateTimeField(auto_now_add=True)
+#     created_by = models.ForeignKey(User, related_name="+")
+#     user = models.ForeignKey(User, related_name="membership")
+#     allowances = models.ManyToManyField('ResourceAllowance')
+#
+#
+# class ResourceAllowance(models.Model):
+#     created_ts = models.DateTimeField(auto_now_add=True)
+#     created_by = models.ForeignKey(User, related_name="+")
+#     resource = models.ForeignKey(Resource, null=True)
+#     allowance = models.IntegerField(default=0)
+#     start_date = models.DateField(db_index=True)
+#     end_date = models.DateField(blank=True, null=True, db_index=True)
+#     monthly_rate = models.DecimalField(decimal_places=2, max_digits=9)
+#     bill_day = models.SmallIntegerField(default=0)
+#     paid_by = models.ForeignKey(User, null=True, blank=True)
+
+
+# Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
