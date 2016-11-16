@@ -114,6 +114,7 @@ class OrganizationMember(models.Model):
     """ A record of a user being part of an organization """
     organization = models.ForeignKey(Organization)
     user = models.ForeignKey(User)
+    title = models.CharField(max_length=128, null=True, blank=True)
     start_date = models.DateField()
     end_date = models.DateField(null=True, blank=True)
     admin = models.BooleanField(default=False)

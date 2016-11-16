@@ -13,6 +13,11 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.AlterField(
+            model_name='organization',
+            name='name',
+            field=models.CharField(max_length=128, unique=True),
+        ),
         migrations.AddField(
             model_name='organization',
             name='bio',
@@ -37,6 +42,11 @@ class Migration(migrations.Migration):
             model_name='organizationmember',
             name='admin',
             field=models.BooleanField(default=False),
+        ),
+        migrations.AddField(
+            model_name='organizationmember',
+            name='title',
+            field=models.CharField(blank=True, max_length=128, null=True),
         ),
         migrations.AddField(
             model_name='organizationnote',
