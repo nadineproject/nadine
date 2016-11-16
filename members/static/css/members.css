@@ -184,9 +184,9 @@ table td {
 	outline:none;
 }
 
-#content img {
+/*#content img {
 	margin: 10px auto;
-}
+}*/
 
 #welcome-p {
 	font-size: 1.2em;
@@ -600,20 +600,41 @@ textarea#id_bio {
 	margin: 10px;
 	text-align: center;
 	display: inline-block;
+	padding-top: 2%;
 }
 
 .user-card a {
-	padding: 10px 0;
+	padding: 10px 10px;
 	display: block;
 	background:#FFFFFF;
 }
 
 .user-card a.photo {
-	height: 180px;
 	background-color: #FFF;
 	font-size: 120px;
 	color: #DDD;
 	text-decoration: none;
+	overflow:hidden;
+	height: 150px;
+	width: 150px;
+	position: relative;
+	margin-left: 10%;
+}
+
+.user-card a.photo .user-img {
+	position: absolute;
+  left: 50%;
+  top: 50%;
+  height: 100%;
+  width: auto;
+  -webkit-transform: translate(-50%,-50%);
+      -ms-transform: translate(-50%,-50%);
+          transform: translate(-50%,-50%);
+}
+
+.user-card a.photo .user-img.portrait {
+	width: 100%;
+  height: auto;
 }
 
 .tags-box {
@@ -707,6 +728,7 @@ h2#prof-name {
 .upload-input {
 	width: 200px;
 	height: 200px;
+	overflow: hidden;
 }
 
 #upload-preview img {
