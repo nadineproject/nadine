@@ -99,7 +99,7 @@
   {% if user.username == request.user.username or request.user.is_staff %}
   <div class="clearfix"></div>
   {% block mem_tabs %}
-    <ul class='collapsible prof-tabs' data-collapsible="expandable">
+    <ul class='collapsible prof-tabs' data-collapsible="accordion">
         <li>
           <div class='collapsible-header'>Your Details</div>
           <!-- <a href="#tabs-0">Member Profile</a> -->
@@ -351,7 +351,7 @@
             var divID = '#' + target;
             $('html, body').animate({
                 scrollTop: e.screenY
-            }, 1000);
+            }, 2000);
           })
 
           // TODO finish responsive footer by testing on a device
