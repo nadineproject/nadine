@@ -676,8 +676,8 @@ h2#prof-name {
   overflow: hidden;
   height: 200px;
   width: 200px;
+	position: relative;
 }
-
 
 #prof-img, #edit-img {
 	margin-left: 2%;
@@ -688,7 +688,7 @@ h2#prof-name {
 	margin-bottom: 10%;
 }
 
-#img-preview img, #prof-img img, #upload-preview img {
+#img-preview img, #prof-img img {
 	display: block;
   min-width: 100%;
   min-height: 100%;
@@ -709,6 +709,18 @@ h2#prof-name {
 	height: 200px;
 }
 
+#upload-preview img {
+	display: block;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	height: 100%;
+  width: auto;
+  -webkit-transform: translate(-50%,-50%);
+      -ms-transform: translate(-50%,-50%);
+          transform: translate(-50%,-50%);
+}
+
 .prof-img img {
   position: absolute;
   left: 50%;
@@ -720,7 +732,7 @@ h2#prof-name {
           transform: translate(-50%,-50%);
 }
 
-.prof-img img.portrait {
+.prof-img img.portrait, #upload-preview img.portrait {
   width: 100%;
   height: auto;
 }

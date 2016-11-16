@@ -32,21 +32,26 @@
 
     function get_orientation(img) {
       if (img.width() < img.height()) {
-        $('#mem-photo').attr('class', 'portrait');
+        $('.img-id').addClass('portrait');
+      } else {
+        if ($('.img-id').hasClass('portrait')) {
+          $('.img-id').removeClass('portrait');
+        }
       }
     }
 
-    $('.pic-btn').attr('disabled', 'disabled');
+    get_orientation($('.img-id'));
 
-    var img = $('#mem-photo');
-    get_orientation(img);
+    $('.pic-btn').attr('disabled', 'disabled');
 
     function readURL(input) {
       if (input.files && input.files[0]) {
         var reader = new FileReader();
 
         reader.onload = function(e) {
+          // console.log(e.target.result);
           $('.img-id').attr('src', e.target.result);
+          get_orientation($('.img-id'));
         }
         reader.readAsDataURL(input.files[0]);
       }
@@ -54,7 +59,6 @@
 
     $("#imgInp").change(function(){
       $('.pic-btn').attr('disabled', false);
-
       var input = this;
       readURL(input);
     });
