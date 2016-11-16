@@ -187,7 +187,7 @@ class EditProfileForm(forms.Form):
     city = forms.CharField(max_length=100, required=False)
     state = forms.ChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), choices=get_state_choices, required=False)
     zipcode = forms.CharField(max_length=16, required=False)
-    photo = forms.FileField(required=False)
+    # photo = forms.FileField(required=False)
     phone = forms.CharField(max_length=20, required=False)
     phone2 = forms.CharField(max_length=20, required=False)
     url_personal = forms.URLField(required=False)

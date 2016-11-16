@@ -52,7 +52,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 		<h1>{{ bill_date }}</h1>
 		<ul id="bill-list">
 		{% for u in users %}
-			<li style="color:{% valid_billing_color u %};"><span style="color:black">
+			<li style="color:{% valid_billing_color u.profile %};"><span style="color:black">
 				<form class="pay-bill-form" action="." method="post">
 					<div>
 					<a class="bill-detail-toggle" id="bill-details-toggle-{{u.id}}" href="." onclick="toggleBillDetails('{{u.id}}'); return false;">[+]</a>&nbsp;

@@ -64,22 +64,32 @@ def user_tags(request, username):
                     break
             else:
                 user.profile.tags.add(tag.lower())
+        return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
 
     all_tags = UserProfile.tags.all()
     context = {'user': user, 'user_tags': user_tags, 'all_tags': all_tags,
         'error': error, 'settings': settings}
     return render(request, 'members/user_tags.html', context)
 
+#TODO remove user_tags.html
+# @login_required
+# def delete_tag(request, username, tag):
+#     user = get_object_or_404(User, username=username)
+#     if not user == request.user:
+#         if not request.user.is_staff:
+#             # If not this user and not staff, send this person back to their profile
+#             return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
+#     user.profile.tags.remove(tag)
+#     return HttpResponseRedirect(reverse('member_user_tags', kwargs={'username': username}))
 
 @login_required
-def delete_tag(request, username, tag):
+def delete_tag_in_profile(request, username, tag):
     user = get_object_or_404(User, username=username)
     if not user == request.user:
         if not request.user.is_staff:
             # If not this user and not staff, send this person back to their profile
             return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
     user.profile.tags.remove(tag)
-    return HttpResponseRedirect(reverse('member_user_tags', kwargs={'username': username}))
-
+    return HttpResponseRedirect(reverse('member_profile', kwargs={'username': username}))
 
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

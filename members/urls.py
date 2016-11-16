@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^receipt/(?P<username>[^/]+)/(?P<id>\d+)/$', profile.receipt, name='member_receipt'),
     url(r'^disable_billing/(?P<username>[^/]+)$', profile.disable_billing, name='member_disable_billing'),
     url(r'^file/(?P<disposition>[^/]+)/(?P<username>[^/]+)/(?P<file_name>[^/]+)$', profile.file_view, name='member_files'),
+    url(r'^edit_pic/(?P<username>[^/]+)/$', profile.edit_pic, name='member_edit_pic'),
 
     # Organization
     url(r'^organizations/$', organization.org_list, name='member_org_list'),
@@ -37,7 +38,7 @@ urlpatterns = [
     url(r'^tag_cloud/$', tags.tag_cloud, name='member_tag_cloud'),
     url(r'^tag/(?P<tag>[^/]+)/$', tags.tag, name='member_tag'),
     url(r'^user_tags/(?P<username>[^/]+)/$', tags.user_tags, name='member_user_tags'),
-    url(r'^del_tag/(?P<username>[^/]+)/(?P<tag>[^/]+)/$', tags.delete_tag, name='member_remove_tag'),
+    url(r'^del_tag/(?P<username>[^/]+)/(?P<tag>[^/]+)/$', tags.delete_tag_in_profile, name='member_remove_tag'),
 
     # Connect
     url(r'^connect/(?P<username>[^/]+)/$', connect.connect, name='member_connect'),
