@@ -52,7 +52,10 @@ class OrganizationForm(forms.Form):
         org = Organization.objects.get(id=org_id)
         org.name = self.cleaned_data['name']
         org.bio = self.cleaned_data['bio']
-        org.photo = self.cleaned_data['photo']
+        if 'photo' in self.cleaned_data:
+            # Delete the old one before we save the new one
+            org.photo.delete()
+            org.photo = self.cleaned_data['photo']
         print self.cleaned_data['photo']
         if 'public' in self.cleaned_data:
             org.public = self.cleaned_data['public']
@@ -204,7 +207,9 @@ class EditProfileForm(forms.Form):
         user.profile.has_kids = self.cleaned_data['has_kids']
         user.profile.self_emplyed = self.cleaned_data['self_employed']
         user.profile.public_profile = self.cleaned_data['public_profile']
-        if self.cleaned_data['photo']:
+        if 'photo' in self.cleaned_data:
+            # Delete the old one before we save the new one
+            user.profile.photo.delete()
             user.profile.photo = self.cleaned_data['photo']
         user.profile.save()
 
