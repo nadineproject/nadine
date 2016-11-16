@@ -30,21 +30,22 @@ class OrganizationForm(forms.Form):
     def __init__(self, *args, **kwargs):
         if 'instance' in kwargs:
             self.instance = kwargs['instance']
+            del kwargs['instance']
+        super(OrganizationForm, self).__init__(*args, **kwargs)
+        if hasattr(self, 'instance'):
             self.initial['org_id'] = self.instance.id
             self.initial['name'] = self.instance.name
             self.initial['bio'] = self.instance.bio
             self.initial['photo'] = self.instance.photo
             self.initial['public'] = self.instance.public
             #self.initial['locked'] = self.instance.locked
-            del kwargs['instance']
-        super(OrganizationForm, self).__init__(*args, **kwargs)
 
     org_id = forms.IntegerField(required=True, widget=forms.HiddenInput)
     name = forms.CharField(max_length=128, label="Organization Name", required=True, widget=forms.TextInput(attrs={'autocapitalize': "words"}))
     bio = forms.CharField(widget=forms.Textarea, max_length=512, required=False)
     photo = forms.FileField(required=False)
-    public = forms.BooleanField()
-    #locked = forms.BooleanField()
+    public = forms.BooleanField(required=False)
+    #locked = forms.BooleanField(required=False)
 
     def save(self):
         org_id = self.cleaned_data['org_id']
@@ -52,8 +53,11 @@ class OrganizationForm(forms.Form):
         org.name = self.cleaned_data['name']
         org.bio = self.cleaned_data['bio']
         org.photo = self.cleaned_data['photo']
-        org.bio = self.cleaned_data['public']
-        #org.bio = self.cleaned_data['locked']
+        print self.cleaned_data['photo']
+        if 'public' in self.cleaned_data:
+            org.public = self.cleaned_data['public']
+        if 'locked' in self.cleaned_data:
+            org.locked = self.cleaned_data['locked']
         org.save()
 
 

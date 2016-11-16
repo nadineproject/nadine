@@ -41,8 +41,12 @@ def edit_organization(request, id):
 
     if request.method == "POST":
         form = OrganizationForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
+        try:
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect(reverse('member_view_org', kwargs={'id': org.id}))
+        except Exception as e:
+            messages.add_message(request, messages.ERROR, "Could not update organization: %s" % str(e))
     else:
         form = OrganizationForm(instance=org)
 
