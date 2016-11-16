@@ -10,14 +10,14 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidde
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 
-from nadine.forms import OrganizationForm
+from nadine.forms import OrganizationForm, OrganizationMemberForm
 from nadine.models.organization import Organization, OrganizationMember
 
 from members.views.core import is_active_member
 
 
 @login_required
-def list_organizations(request):
+def org_list(request):
     orgs = Organization.objects.active_organizations()
     context = {'organizations': orgs}
     return render(request, 'members/org_list.html', context)
@@ -25,17 +25,28 @@ def list_organizations(request):
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
-def view_organization(request, id):
-    org = get_object_or_404(Organization, id=id)
+def org_view(request, org_id):
+    org = get_object_or_404(Organization, id=org_id)
     can_edit = org.can_edit(request.user) or request.user.is_staff
-    context = {'organization': org, 'can_edit':can_edit}
-    return render(request, 'members/organization.html', context)
+
+    # Individual forms for each of the organization members
+    # org_forms = []
+    # for m in org.organizationmember_set.all().order_by('start_date'):
+    #     form = OrganizationMemberForm(instance=m)
+    #     org_forms.append((m, form))
+    members = org.organizationmember_set.all().order_by('start_date')
+
+    context = {'organization': org, 'can_edit':can_edit,
+        # 'org_forms':org_forms,
+        'members':members,
+    }
+    return render(request, 'members/org_view.html', context)
 
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
-def edit_organization(request, id):
-    org = get_object_or_404(Organization, id=id)
+def org_edit(request, org_id):
+    org = get_object_or_404(Organization, id=org_id)
     if not (request.user.is_staff or org.can_edit(request.user)):
         return HttpResponseForbidden("Forbidden")
 
@@ -44,14 +55,51 @@ def edit_organization(request, id):
         try:
             if form.is_valid():
                 form.save()
-                return HttpResponseRedirect(reverse('member_view_org', kwargs={'id': org.id}))
+                return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
         except Exception as e:
-            messages.add_message(request, messages.ERROR, "Could not update organization: %s" % str(e))
+            messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
     else:
         form = OrganizationForm(instance=org)
 
     context = {'organization': org, 'form':form}
     return render(request, 'members/org_edit.html', context)
 
+
+@login_required
+@user_passes_test(is_active_member, login_url='member_not_active')
+def org_member(request, org_id):
+    org = get_object_or_404(Organization, id=org_id)
+    if not (request.user.is_staff or org.can_edit(request.user)):
+        return HttpResponseForbidden("Forbidden")
+
+    # We require a POST and we require an action
+    if not request.method == "POST" or 'action' not in request.POST:
+        return HttpResponseForbidden("Forbidden")
+    action = request.POST['action']
+
+    org_member = None
+    if 'member_id' in request.POST:
+        member_id = request.POST['member_id']
+        org_member = org.organizationmember_set.get(id=member_id)
+
+    form = OrganizationMemberForm()
+    if 'edit' == action:
+        try:
+            form = OrganizationMemberForm(instance=org_member)
+        except Exception as e:
+            messages.add_message(request, messages.ERROR, "Could not get member: %s" % str(e))
+    if 'save' == action:
+        form = OrganizationMemberForm(request.POST, request.FILES)
+        try:
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
+        except Exception as e:
+            messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
+
+    context = {'organization': org, 'member':org_member,
+        'form':form, 'action':action
+    }
+    return render(request, 'members/org_member.html', context)
 
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

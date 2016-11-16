@@ -12,14 +12,14 @@
 <ul>
 	{% for org in organizations %}
 	<li>
-		<a href="{% url 'member_view_org' org.id %}">{{ org.name }}</a>
-		<ul>
+		<a href="{% url 'member_org_view' org.id %}">{{ org.name }}</a>
+		<!-- <ul>
 			{% for u in org.members %}
 				<li>
 					<a href="{% url 'member_profile' u.username %}">{{ u.get_full_name }}</a>
 				</li>
 			{% endfor %}
-		</ul>
+		</ul> -->
 	</li>
 	{% endfor %}
 </ul>

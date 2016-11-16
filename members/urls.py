@@ -27,9 +27,10 @@ urlpatterns = [
     url(r'^file/(?P<disposition>[^/]+)/(?P<username>[^/]+)/(?P<file_name>[^/]+)$', profile.file_view, name='member_files'),
 
     # Organization
-    url(r'^organizations/$', organization.list_organizations, name='member_list_orgs'),
-    url(r'^organization/(?P<id>\d+)/$', organization.view_organization, name='member_view_org'),
-    url(r'^organization/edit/(?P<id>\d+)/$', organization.edit_organization, name='member_edit_org'),
+    url(r'^organizations/$', organization.org_list, name='member_org_list'),
+    url(r'^organization/(?P<org_id>\d+)/$', organization.org_view, name='member_org_view'),
+    url(r'^organization/(?P<org_id>\d+)/edit/$', organization.org_edit, name='member_org_edit'),
+    url(r'^organization/(?P<org_id>\d+)/member/$', organization.org_member, name='member_org_member'),
 
     # Tags
     url(r'^tag_list/$', tags.tags, name='member_tags'),

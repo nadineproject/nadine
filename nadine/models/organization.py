@@ -51,15 +51,18 @@ class Organization(models.Model):
     objects = OrganizationManager()
 
     def members(self, on_date=None):
+        active = self.active_memberships(on_date)
+        return User.objects.filter(id__in=active.values('user'))
+
+    def active_memberships(self, on_date=None):
         if not on_date:
             on_date = timezone.now().date()
         future = Q(end_date__isnull=True)
         unending = Q(end_date__gte=on_date)
-        active = self.organizationmember_set.filter(start_date__lte=on_date).filter(future | unending)
-        return User.objects.filter(id__in=active.values('user'))
+        return self.organizationmember_set.filter(start_date__lte=on_date).filter(future | unending)
 
     def active_membership(self, user, on_date=None):
-        """ Return the active org membership for this user """
+        """ Active org membership for this user """
         if not on_date:
             on_date = timezone.now().date()
         for m in self.organizationmember_set.filter(user=user):
@@ -129,6 +132,14 @@ class OrganizationMember(models.Model):
     def set_admin(self, is_admin):
         self.admin = is_admin
         self.save()
+
+    @property
+    def is_lead(self):
+        return self.user == self.organization.lead
+
+    @property
+    def is_admin(self):
+        return self.admin or self.is_lead
 
     def __unicode__(self):
         return "%s member of %s" % (self.user, self.organization)

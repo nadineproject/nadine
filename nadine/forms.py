@@ -15,7 +15,7 @@ from nadine import email
 from nadine.models.core import UserProfile, HowHeard, Industry, Neighborhood, GENDER_CHOICES, Membership, MembershipPlan
 from nadine.models.usage import PAYMENT_CHOICES, CoworkingDay
 from nadine.models.resource import Room
-from nadine.models.organization import Organization
+from nadine.models.organization import Organization, OrganizationMember
 from nadine.utils.payment_api import PaymentAPI
 
 logger = logging.getLogger(__name__)
@@ -64,11 +64,39 @@ class OrganizationForm(forms.Form):
         org.save()
 
 
-# class OrganizationForm(forms.ModelForm):
-#     class Meta:
-#         model = Organization
-#         fields = ['name', 'bio', 'photo', 'public_profile', 'locked']
-#         #exclude = ['created_by', 'created_ts']
+class OrganizationMemberForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        if 'instance' in kwargs:
+            self.instance = kwargs['instance']
+            del kwargs['instance']
+        super(OrganizationMemberForm, self).__init__(*args, **kwargs)
+        if hasattr(self, 'instance'):
+            self.initial['member_id'] = self.instance.id
+            self.initial['org_id'] = self.instance.organization.id
+            self.initial['username'] = self.instance.user.username
+            self.initial['title'] = self.instance.title
+            self.initial['start_date'] = self.instance.start_date
+            self.initial['end_date'] = self.instance.end_date
+
+    member_id = forms.IntegerField(required=True, widget=forms.HiddenInput)
+    org_id = forms.IntegerField(required=True, widget=forms.HiddenInput)
+    username = forms.CharField(required=True, widget=forms.HiddenInput)
+    title = forms.CharField(max_length=128, required=False, widget=forms.TextInput(attrs={'autocapitalize': "words"}))
+    start_date = forms.DateField(widget=forms.DateInput(attrs={'placeholder':'e.g. 12/28/16'}, format='%m/%d/%Y'), required=True)
+    end_date = forms.DateField(widget=forms.DateInput(attrs={'placeholder':'e.g. 12/28/16'}, format='%m/%d/%Y'), required=False)
+
+    def save(self):
+        if 'member_id' in self.cleaned_data:
+            member_id = self.cleaned_data['member_id']
+            member = OrganizationMember.objects.get(id=member_id)
+        else:
+            org = Organization.objects.get(id=self.cleaned_data['org_id'])
+            user = User.objects.get(username=self.cleaned_data['username'])
+            member = OrganizationMember(organization=org, user=user)
+        member.title = self.cleaned_data['title']
+        member.start_date = self.cleaned_data['start_date']
+        member.end_date = self.cleaned_data['end_date']
+        member.save()
 
 
 class PayBillsForm(forms.Form):
