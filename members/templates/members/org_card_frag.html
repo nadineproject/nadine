@@ -1,0 +1,18 @@
+{% load imagetags %}
+{% load list_tags %}
+
+<div class='org-card'>
+  {% if org.photo %}
+    <a class='photo' href="{% url 'member_org_view' org.id %}">
+      <img class='org-img' src='{{ org.photo.url }}'  />
+    </a>
+  {% else %}
+    <a class='photo' id='star-img' href="{% url 'member_org_view' org.id %}">&#9733;</a>
+  {% endif %}
+    <a class='org-name' href="{% url 'member_org_view' org.id %}">{{ org.name }}</a>
+  <p class='org-bio'>
+    {% if org.bio %}
+      {{org.bio}}
+    {% endif %}
+  </p>
+</div>

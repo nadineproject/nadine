@@ -595,6 +595,54 @@ textarea#id_bio {
 	overflow: auto;
 }
 
+.org-card {
+	width: 210px;
+	/*min-height: 300px;*/
+	border: solid 3px #EEE;
+	margin: 10px;
+	text-align: center;
+	display: inline-block;
+	padding: 1%;
+	box-sizing: content-box;
+	/*overflow: hidden;*/
+}
+
+.org-card a {
+	padding: 10px 10px;
+	display: block;
+	background:#FFFFFF;
+}
+
+.org-card a.photo {
+	background-color: #FFF;
+	font-size: 80px;
+	color: #DDD;
+	text-decoration: none;
+	overflow:hidden;
+	height: 120px;
+	width: 120px;
+	position: relative;
+	margin-left: 20%;
+	box-sizing: border-box;
+}
+
+.org-name {
+	padding-top: 1%;
+	display: block;
+	min-height: 40px;
+	font-size: 1.1em;
+	/*font-family: 'Oswald', sans-serif;*/
+	font-weight: bold;
+}
+
+.org-bio {
+	min-height: 60px;
+	overflow: hidden;
+	font-size: .8em;
+	font-style: italic;
+	display: block;
+}
+
 .user-card {
 	width: 190px;
 	border: solid 3px #EEE;

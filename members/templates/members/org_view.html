@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block content %}
-<h2>{{ organization.name }}</h2>
+<h3 class='oswald'>{{ organization.name }}</h3>
 
 <dl>[
 	<dd><a href="{% url 'member_org_list' %}">view all</a></dd>
@@ -32,11 +32,11 @@
 {% endif %}
 
 {% if organization.bio %}
-	<h3>Bio</h3>
+	<h3 class='oswald'>Bio</h3>
 	<p style="margin:2em;">{{ organization.bio }} </p>
 {% endif %}
 
-<h3>Organization Members</h3>
+<h4 class='oswald' style='color:black;'>Organization Members</h4>
 <table>
 	<tr>
 		<th>Member</th>
@@ -63,7 +63,7 @@
 				<td>{{ m.is_admin }}</td>
 				<td>{{ m.is_active }}</td>
 				<td>
-					<input type="submit" value="Edit"/>
+					<input class='btn' type="submit" value="Edit"/>
 				</td>
 			</tr>
 		</form>
@@ -74,13 +74,13 @@
 		<tr>
 			<td colspan="7"></td>
 			<td>
-				<input type="submit" value="Add"/>
+				<input class='btn' type="submit" value="Add"/>
 			</td>
 		</tr>
 	</form>
 </table>
 
-<h3>Notes</h3>
+<h4 class='oswald' style='color:black;'>Notes</h4>
 <ul>
 	{% for n in organization.notes %}
 		<li>{{ n.created_ts }} {{ n.created_by }}: {{ n.note }}</li>

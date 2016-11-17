@@ -7,21 +7,12 @@
 {% endblock %}
 
 {% block content %}
-<h2>Organizations at {{ site.name }}</h2>
+<h3 class='oswald' style='text-align:center;'>Organizations at {{ site.name }}</h3>
 
-<ul>
+<div style="margin:auto; width:100%; text-align:center;">
 	{% for org in organizations %}
-	<li>
-		<a href="{% url 'member_org_view' org.id %}">{{ org.name }}</a>
-		<!-- <ul>
-			{% for u in org.members %}
-				<li>
-					<a href="{% url 'member_profile' u.username %}">{{ u.get_full_name }}</a>
-				</li>
-			{% endfor %}
-		</ul> -->
-	</li>
+		{% include 'members/org_card_frag.html' %}
 	{% endfor %}
-</ul>
+</div>
 
 {% endblock %}
