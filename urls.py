@@ -5,16 +5,19 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
-
+from django.views.generic.base import RedirectView
 from django.contrib.auth.views import login, logout_then_login, password_reset_done, password_reset_confirm, password_reset_complete
 
 import views
 
 admin.autodiscover()
 
+favicon_view = RedirectView.as_view(url='/static/img/favicon.ico', permanent=True)
+
 urlpatterns = [
     url(r'^robots\.txt$', lambda r: HttpResponse("User-agent: *\nDisallow: /", content_type="text/plain")),
     url(r'^cache\.manifest$', lambda r: HttpResponse(get_manifest(), content_type="text/plain")),
+    url(r'^favicon\.ico$', favicon_view),
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^staff/', include('staff.urls')),
