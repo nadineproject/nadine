@@ -1,17 +1,10 @@
 {% extends "members/u_base.html" %}
 
 {% block content %}
-{% if page_message %}
-  <div>
-    <p style='color:red;text-align:center;'>
-      <strong> {{ page_message }} </strong>
-    </p>
-    <br />
-  </div>
-{% endif %}
   <div class='row'>
     <div class='col s10 offset-s1' id='calendar'></div>
   </div>
+
   <div id='infoModal' class='modal'>
     <div class='modal-content'>
       <div class='modal-body'>
@@ -63,20 +56,13 @@
       </div>
     </div>
   </div>
+
   <div id='event-modal' class='modal'>
     <div class='eModal-content'>
       <div class='eModal-body'>
         <h2 id='add-event-header'>Add Event to Public Calendar</h2>
         <p style='text-align:center;'>- These events will be viewable by all - </p>
         <br />
-        {% if page_message %}
-          <div>
-            <p style='color:red;text-align:center;'>
-              <strong> {{ page_message }} </strong>
-            </p>
-            <br />
-          </div>
-        {% endif %}
         <form action='#' method='POST'>
           <table>
             <tr>
@@ -126,6 +112,12 @@
       </div>
     </div>
   </div>
+
+  {% if feed_url %}
+  <div>
+    <a href="{{ feed_url }}">Calendar Feed</a>
+  </div>
+  {% endif %}
 {% endblock %}
 
 {% block extrajs %}
