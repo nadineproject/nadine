@@ -1,38 +1,38 @@
 <div id="profile">
 <table>
     <tr>
-        <td><strong>Membership:</strong></td>
+        <td class='bold-blue'><strong>Membership:</strong></td>
         <td>{{ user.profile.membership_type }}</td>
     </tr>
     <tr>
-        <td><strong>Member Since:</strong></td>
+        <td class='bold-blue'><strong>Member Since:</strong></td>
         <td>{{ user.profile.first_visit }}</td>
    </tr>
 
     {% for org in user.profile.active_organizations %}
         <tr>
-            <td>Organization</td>
+            <td class='bold-blue'>Organization</td>
             <td>{{ org }}</td>
         </tr>
     {% endfor %}
 
     {% for url in user.url_set.all %}
         <tr>
-            <td><strong>{{ url.url_type | title }} URL:</strong></td>
+            <td class='bold-blue'><strong>{{ url.url_type | title }} URL:</strong></td>
             <td><a target="_self" href="{{ url }}">{{ url }}</a></td>
         </tr>
     {% endfor %}
 
     {% if user.profile.neighborhood %}
         <tr>
-            <td><strong>Neighborhood:</strong></td>
+            <td class='bold-blue'><strong>Neighborhood:</strong></td>
             <td>{{ user.profile.neighborhood }}</td>
         </tr>
     {% endif %}
 
     {% if user.profile.has_kids %}
         <tr>
-            <td><strong>Has Kids?</strong></td>
+            <td class='bold-blue'><strong>Has Kids?</strong></td>
             <td>{{ user.profile.has_kids|yesno:"Yes,No" }}</td>
         </tr>
     {% endif %}
