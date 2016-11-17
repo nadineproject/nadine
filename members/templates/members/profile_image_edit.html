@@ -1,0 +1,79 @@
+{% extends "members/u_base.html" %}
+{% load static %}
+
+{% block sub-head %}
+	<!-- image cropping -->
+	<link  href="{% static 'css/cropper.min.css' %}" rel="stylesheet">
+	<script src="{% static 'js/cropper.min.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<h3 style='text-align:center;'>Edit Your Profile Image:</h3>
+
+<form id="profile_image_form" action="{% url 'member_edit_photo' user.username %}" method="POST" enctype="multipart/form-data">
+  {{ form.username }}
+  {{ form.cropped_image_data }}
+
+  <div id="form-errors">
+    {{ form.photo.errors|safe }}
+  </div>
+
+  <div id="img-cropper-wrapper">
+    {{ form.photo }}
+  </div>
+
+  <div id="image-preview-wrapper">
+    {% if user.profile.photo %}
+      <img class='user-img' id="image-preview" src="{{ user.profile.photo.url }}">
+    {% else %}
+      <img id="image-preview" src="{% static 'img/noun_160064_cc.png' %}">
+    {% endif %}
+  </div>
+
+  <input type="submit" value="Save"/>
+  {% csrf_token %}
+</form>
+{% endblock %}
+
+{% block extrajs %}
+<script>
+  function showCropper() {
+    $("#image-preview").cropper({
+      aspectRatio: 1/1,
+      zoomable: false,
+      rotatable: false,
+      scalable: false,
+      guides: false,
+      dragCrop: false,
+    });
+    // set the dimensions of the wrapper to be the same as the image
+  }
+
+  function showImage(input) {
+    if (input.files && input.files[0]) {
+      var reader = new FileReader();
+
+      reader.onload = function (e) {
+        $('#image-preview').fadeOut(300, function() {
+          $(this).attr('src',e.target.result);
+        }).fadeIn(800, showCropper);
+      }
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  $("#id_photo").change(function() {
+    $("#image-preview").cropper('destroy');
+    if ($("#id_photo").val()) {
+      console.log('found image. previewing.');
+      showImage(this);
+    }
+  });
+
+  $("#profile_image_form").submit(function(){
+    // add the cropped image data to the form, then submit.
+    $("#id_cropped_image_data").val($("#image-preview").cropper('getCroppedCanvas').toDataURL().match(/data:image\/(png|jpeg);base64,(.*)$/)[2])
+    return true;
+  })
+</script>
+{% endblock %}
