@@ -26,6 +26,7 @@ urlpatterns = [
     url(r'^disable_billing/(?P<username>[^/]+)$', profile.disable_billing, name='member_disable_billing'),
     url(r'^file/(?P<disposition>[^/]+)/(?P<username>[^/]+)/(?P<file_name>[^/]+)$', profile.file_view, name='member_files'),
     url(r'^edit_pic/(?P<username>[^/]+)/$', profile.edit_pic, name='member_edit_pic'),
+    url(r'^edit_photo/(?P<username>[^/]+)/$', profile.edit_photo, name='member_edit_photo'),
 
     # Organization
     url(r'^organizations/$', organization.org_list, name='member_org_list'),

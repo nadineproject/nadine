@@ -171,11 +171,27 @@ class NewUserForm(forms.Form):
             'last_name': forms.TextInput(attrs={'autocapitalize': 'on', 'autocorrect': 'off'}),
         }
 
+
 def get_state_choices():
     if settings.COUNTRY == 'US':
         return US_STATES
     elif settings.COUNTRY == 'CA':
         return PROVINCE_CHOICES
+
+
+class ProfileImageForm(forms.Form):
+    username = forms.CharField(required=True, widget=forms.HiddenInput)
+    photo = forms.FileField(required=False)
+    cropped_image_data = forms.CharField(widget=forms.HiddenInput())
+
+
+    def save(self):
+        print "fuck"
+        user = User.objects.get(username=self.cleaned_data['username'])
+        # Delete the old photo before we save a new one
+        user.profile.photo.delete()
+        user.profile.photo = self.cleaned_data['photo']
+        user.profile.save()
 
 
 class EditProfileForm(forms.Form):
@@ -187,7 +203,6 @@ class EditProfileForm(forms.Form):
     city = forms.CharField(max_length=100, required=False)
     state = forms.ChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), choices=get_state_choices, required=False)
     zipcode = forms.CharField(max_length=16, required=False)
-    # photo = forms.FileField(required=False)
     phone = forms.CharField(max_length=20, required=False)
     phone2 = forms.CharField(max_length=20, required=False)
     url_personal = forms.URLField(required=False)
@@ -235,10 +250,6 @@ class EditProfileForm(forms.Form):
         user.profile.has_kids = self.cleaned_data['has_kids']
         user.profile.self_emplyed = self.cleaned_data['self_employed']
         user.profile.public_profile = self.cleaned_data['public_profile']
-        if 'photo' in self.cleaned_data:
-            # Delete the old one before we save the new one
-            user.profile.photo.delete()
-            user.profile.photo = self.cleaned_data['photo']
         user.profile.save()
 
         # Save the URLs
