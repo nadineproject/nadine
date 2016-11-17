@@ -50,7 +50,7 @@
         <div id='tags_tab'></div>
       {% else %}
         {% for tag in user.profile.tags.all %}
-            <li class='chips'><a class='tag-chip' href="{% url 'member_tag' tag %}">{{ tag }}</a></li>
+          <li class='chip'><a class='tag-chip' href="{% url 'member_tag' tag %}">{{ tag }}</a></li>
         {% endfor %}
       {% endif %}
     {% else %}
