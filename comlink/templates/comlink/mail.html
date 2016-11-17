@@ -1,0 +1,28 @@
+{% extends "comlink/base.html" %}
+
+{% block sub-title %} | View Message {% endblock %}
+
+{% block content %}
+<h2>View Message</h2>
+
+<h3>{{ message.subject}}</h3>
+<div style="margin-left:2em;">
+  <p><strong>Received:</strong> <i>{{ message.received}}</i></p>
+  <p>
+      <strong>From:</strong>
+      {% if message.sender %}
+          <a href="{% url 'member_profile' message.user.username %}">{{ message.user }}</a>
+      {% else %}
+          {{ message.from_str }}
+      {% endif %}
+  </p>
+  <p><strong>Body:</strong></p>
+  <pre><code style="font-family:'Roboto', sans-serif">{{ message.body_plain }}</pre></code>
+</div>
+
+<h4>Headers</h4>
+{% for header, value in headers.items %}
+	<p>{{ header }}: {{ value }}</p>
+{% endfor %}
+
+{% endblock %}

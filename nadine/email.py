@@ -12,8 +12,8 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
 
+from nadine.utils import mailgun
 from nadine.utils.slack_api import SlackAPI
-from nadine import mailgun
 
 logger = logging.getLogger(__name__)
 
