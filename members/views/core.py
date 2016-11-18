@@ -66,28 +66,14 @@ def not_active(request):
 
 @login_required
 def home(request):
-    title = "Home"
-    template_text = "Welcome to {{ site.name }}"
-    other_topics = {}
-    for topic in HelpText.objects.all():
-        if topic.slug == 'home':
-            title = topic.title
-            template_text = topic.template
-        else:
-            other_topics[topic.title] = topic
-
-    current_context = RequestContext(request)
-    template = Template(template_text)
-    rendered = template.render(current_context)
-    context = {'title': title, 'page_body': rendered, 'other_topics': other_topics, 'settings': settings}
+    context = {}
     return render(request, 'members/home.html', context)
 
 
-# TODO - evaluate.  Too similar to home
 @login_required
 def faq(request):
     title = "faq"
-    template_text = "Frequently Asked Questions"
+    template_text = "Frequently Asked Questions "
     other_topics = {}
     for topic in HelpText.objects.all():
         if topic.slug == 'faq':
