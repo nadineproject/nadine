@@ -197,5 +197,5 @@ def users_for_day_query(day=None):
     start = timezone.make_aware(start, timezone.get_current_timezone())
     end = start + timedelta(days=1)
     logger.info("users_for_day from '%s' to '%s'" % (start, end))
-    arp_query = ArpLog.objects.filter(runtime__range=(start, end))
+    arp_query = ArpLog.objects.filter(runtime__range=(start, end), device__ignore=False)
     return User.objects.filter(id__in=arp_query.values('device__user'))
