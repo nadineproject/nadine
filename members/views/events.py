@@ -199,7 +199,6 @@ def confirm_booking(request, room, start, end, date):
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def calendar(request):
-    page_message = None
     events = Event.objects.filter(is_public=True)
     data = []
 
@@ -214,23 +213,26 @@ def calendar(request):
         date = request.POST.get('date')
 
         start_ts, end_ts, start, end = coerce_times(start, end, date)
-
         if start_ts < end_ts :
-
             description = request.POST.get('description', '')
             charge = request.POST.get('charge', 0)
             is_public = True
 
             event = Event(user=user, start_ts=start_ts, end_ts=end_ts, description=description, charge=charge, is_public=is_public)
-
             event.save()
 
             return HttpResponseRedirect(reverse('member_calendar'))
         else:
-            page_message = "Did not save your event. Double check that the event start is before the end time. Thank you."
+            messages.add_message(request, messages.ERROR, "Did not save your event. Double check that the event start is before the end time. Thank you.")
 
-    context = {'data': data, 'GOOGLE_CALENDAR_ID': settings.GOOGLE_CALENDAR_ID,'GOOGLE_API_KEY': settings.GOOGLE_API_KEY, 'page_message': page_message, 'CALENDAR_DICT': settings.CALENDAR_DICT}
-    return render(request, 'members/calendar.html', context)
+    template = 'members/calendar.html'
+    context = {'data': data, 'CALENDAR_DICT': settings.CALENDAR_DICT}
+    if hasattr(settings, 'GOOGLE_CALENDAR_ID'):
+        context['feed_url'] = "https://calendar.google.com/calendar/ical/%s/public/basic.ics" % settings.GOOGLE_CALENDAR_ID
+        context['GOOGLE_CALENDAR_ID'] = settings.GOOGLE_CALENDAR_ID
+        context['GOOGLE_API_KEY'] = settings.GOOGLE_API_KEY
+        template = 'members/calendar_google.html'
+    return render(request, template, context)
 
 
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

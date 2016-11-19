@@ -139,6 +139,7 @@ INSTALLED_APPS = (
     'nadine',
     'staff',
     'members',
+    'comlink',
     'interlink',
     'arpwatch',
     'tablet',
@@ -186,7 +187,16 @@ USA_EPAY_PIN = "YOUR_USAEPAY_PIN"
 # Used for adding billing profiles
 USA_EPAY_WEB_KEY = "YOUR_USAEPAY_KEY"
 
+# Comlink Settings
+MAILGUN_UPLOAD_TO = "attachments/"
+MAILGUN_VERIFY_INCOMING = True
 
+# Mailgun Settings
+MAILGUN_API_KEY = "YOUR-MAILGUN-API-KEY"
+MAILGUN_DOMAIN = "YOUR-MAILGUN-DOMAIN"
+MAILGUN_DEBUG = False
+
+# Celery Settings
 CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'

@@ -1,0 +1,15 @@
+{% extends "members/calendar.html" %}
+
+{% block extrajs %}
+  <script>
+  $(document).ready(function() {
+    $('#calendar').fullCalendar({
+      googleCalendarApiKey: '{{ GOOGLE_API_KEY }}',
+      events: {
+        googleCalendarId: '{{ GOOGLE_CALENDAR_ID }}',
+        className: 'gcal-event'
+      }
+    });
+  });
+  </script>
+{% endblock %}

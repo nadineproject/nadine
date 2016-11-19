@@ -12,7 +12,7 @@ from localflavor.us.us_states import US_STATES
 from localflavor.ca.ca_provinces import PROVINCE_CHOICES
 
 from nadine import email
-from nadine.models.core import UserProfile, HowHeard, Industry, Neighborhood, GENDER_CHOICES, Membership, MembershipPlan
+from nadine.models.core import UserProfile, HowHeard, Industry, Neighborhood, GENDER_CHOICES, Membership, MembershipPlan, MemberNote
 from nadine.models.usage import PAYMENT_CHOICES, CoworkingDay
 from nadine.models.resource import Room
 from nadine.models.organization import Organization, OrganizationMember

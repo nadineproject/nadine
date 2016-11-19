@@ -16,7 +16,7 @@ from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 
 from nadine import email
-from nadine import mailgun
+from nadine.utils import mailgun
 from nadine.models.core import FileUpload
 from nadine.models.usage import CoworkingDay
 from nadine.models.payment import Bill
