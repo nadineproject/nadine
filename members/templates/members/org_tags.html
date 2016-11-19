@@ -3,7 +3,7 @@
     {% for t in org_tags %}
       <li class='chip'>
         {{ t }}
-         (<a href="{% url 'member_org_remove_tag' org.id t %}" style="color: RGBA(199, 121, 102, 1);"> X </a>)
+         (<a href="{% url 'member_org_remove_tag' organization.id t %}" style="color: RGBA(199, 121, 102, 1);"> X </a>)
       </li>
     {% endfor %}
   </ul>

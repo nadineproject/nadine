@@ -1,3 +1,5 @@
+import string
+
 from datetime import date, datetime, timedelta
 
 from django.conf import settings
@@ -131,6 +133,7 @@ def org_tags(request, org_id):
         return HttpResponseForbidden("Forbidden")
 
     org_tags = org.tags.all()
+    print org_tags
     if request.method == 'POST':
         tag = request.POST.get('tag')
         if tag:
@@ -142,10 +145,10 @@ def org_tags(request, org_id):
                 org.tags.add(tag.lower())
         return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
 
-    all_tags = Organizations.tags.all()
+    all_tags = Organization.tags.all()
     context = {'organization': org, 'org_tags': org_tags, 'all_tags': all_tags,
         'error': error, 'settings': settings}
-    return render(request, 'members/user_tags.html', context)
+    return render(request, 'members/org_tags.html', context)
 
 @login_required
 def org_remove_tag(request, org_id, tag):
