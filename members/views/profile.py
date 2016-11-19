@@ -243,19 +243,23 @@ def edit_pic(request, username):
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def edit_photo(request, username):
+    page_message = None
     user=get_object_or_404(User, username=username)
     if not user == request.user and not request.user.is_staff:
         return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
 
     if request.method == 'POST':
         form = ProfileImageForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
+        try:
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
+        except Exception as e:
+            page_message = str(e)
     else:
         form = ProfileImageForm()
 
-    context = {'user': user, 'form':form}
+    context = {'user': user, 'page_message': page_message}
     return render(request, 'members/profile_image_edit.html', context)
 
 

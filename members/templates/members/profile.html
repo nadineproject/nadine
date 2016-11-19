@@ -54,6 +54,10 @@
         {% endfor %}
       {% endif %}
     {% else %}
+      {% if user.username == request.user.username %}
+        <div id='tags_tab'></div>
+      {% else %}
+      {% endif %}
     {% endif %}
   </div>
 </div>

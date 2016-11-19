@@ -1,0 +1,43 @@
+<div class='tags'>
+  <ul>
+    {% for t in org_tags %}
+      <li class='chip'>
+        {{ t }}
+         (<a href="{% url 'member_org_remove_tag' org.id t %}" style="color: RGBA(199, 121, 102, 1);"> X </a>)
+      </li>
+    {% endfor %}
+  </ul>
+  <div class="ui-widget">
+    <form action="{% url 'member_org_tags' organization.id %}" method="POST">
+      <table class='tag-table'>
+        <tr>
+          <td id='tag'>
+            <input name="tag" placeholder="e.g. Accounting">
+          </td>
+          <td>
+            <input class='btn tag-btn' type="submit" value="Add">
+          </td>
+        </tr>
+      </table>
+      {% csrf_token %}
+    </form>
+  </div>
+
+  {% if error %}
+    <div style="color:red;"><strong>Error:</strong> {{ error }}</div>
+  {% endif %}
+</div>
+
+<script>
+  (function() {
+    var availableTags = [
+      {% for t in all_tags %}
+        "{{ t }}",
+      {% endfor %}
+    ];
+    $( "#tag" ).autocomplete({
+      source: availableTags
+    });
+    $("#tag").focus();
+  })();
+</script>

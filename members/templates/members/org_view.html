@@ -4,87 +4,192 @@
 {% block sub-title %}Organization | {{ organization.name }} | {% endblock %}
 
 {% block style %}
+	body {
+		background-color: RGBA(239, 238, 231, 1);
+	}
 {% endblock %}
 
 {% block content %}
-<h3 class='oswald'>{{ organization.name }}</h3>
+<div class='left-profile col s3'>
+	<div class='photo-div'>
+		{% if organization.photo %}
+			{% if request.user.is_staff or can_edit %}
+				<div class='profile-img-box'>
+					<div class='editable-photo org-img'>
+						<a href="{{ organization.photo.url }}"><img class='org-photo' id='mem-photo' src="{{ organization.photo.url }}"></a>
+					</div>
+					<div id='org-img-edit'>
+						<img id="img-edit" alt='edit image' />
+	          <h5>Edit Photo</h5>
+					</div>
+				</div>
+			{% else %}
+				<a href="{{ organization.photo.url }}"><img class='org-photo' id='mem-photo' src="{{ organization.photo.url }}"></a>
+			{% endif %}
+		{% else %}
+			{% if request.user.is_staff or can_edit %}
+			<div class='profile-img-box'>
+				<div class='editable-photo prof-img'>
+					<a class='org-photo' id='star-img'>&#9733;</a>
+				</div>
+				<div id='edit-img'>
+					<img id="img-edit" alt='edit image' />
+					<h3>Edit Photo</h3>
+				</div>
+			</div>
+			{% else %}
+			<a class='org-photo' id='star-img'>&#9733;</a>
+			{% endif %}
+		{% endif %}
+	</div>
+	<div class='tags-box'>
+		{% if organization.tags.all %}
+			<p style='text-align:center;'> - <strong>Tags</strong> - </p>
+			{% if request.user.is_staff or can_edit %}
+				<div id='tags_tab'></div>
+			{% else %}
+				{% for tag in organization.tags.all %}
+					<li class='chip'>{{ tag }}</li>
+				{% endfor %}
+			{% endif %}
+		{% else %}
+			{% if request.user.is_staff or can_edit %}
+				<p style='text-align:center;'> - <strong>Tags</strong> - </p>
+				<div id='tags_tab'></div>
+			{% else %}
+			{% endif %}
+		{% endif %}
+	</div>
+</div>
 
-<dl>[
-	<dd><a href="{% url 'member_org_list' %}">view all</a></dd>
+<div id='picModal' class='modal'>
+  <div class='picModal-content'>
+    <div class='picModal-body'>
+      <h4>Edit Organization Picture</h4>
+      <div class='container' id='pic-modal'>
+      </div>
+    </div>
+  </div>
+</div>
 
-	{% if organizaiton.locked %}
-		<dd>locked</dd>
-	{% else %}
-		<dd>unlocked</dd>
-	{% endif %}
+<div class='right-profile col s9'>
+	<div class='org-info'>
+		<h3 class='oswald col s9'>{{ organization.name }}</h3>
+		<div class='col s3'>
+		{% if can_edit %}
+			<a class='col s4 tooltipped' data-position="bottom" data-tooltip="Edit Details" href="{% url 'member_org_edit' organization.id %}"><img id='edit' alt='edit icon' style='height:30px;'/></a>
+		{% endif %}
+			{% if organizaiton.locked %}
+				<div class='col s4 tooltipped' data-position="bottom" data-tooltip='Locked'>
+					<img id='locked' alt='locked icon'/>
+				</div>
+			{% else %}
+				<div class='col s4 tooltipped' data-position="bottom" data-tooltip='Unlocked'>
+					<img id='unlocked' alt='unlocked icon'/>
+				</div>
+			{% endif %}
+			{% if request.user.is_staff %}
+				<a class='col s4 tooltipped' data-position="bottom" data-tooltip='Admin' href="{{ organization.admin_url }}"><img id='manage' alt='admin icon'/></a>
+			{% endif %}
+		</div>
+		{% if organization.bio %}
+			<div class='col s12'>
+				<h5 class='oswald' style='color:black;'>Bio</h5>
+				<p style="margin:2em;">{{ organization.bio }} </p>
+			</div>
+		{% endif %}
 
-	{% if request.user.is_staff %}
-		<dd><a href="{{ organization.admin_url }}">admin</a></dd>
-	{% endif %}
-
-	{% if can_edit %}
-		<dd><a href="{% url 'member_org_edit' organization.id %}">edit details</a></dd>
-	{% endif %}
-]</dl>
-
-{% if organization.photo %}
-	 <a href="{{ organization.photo.url }}"><img src="{{ organization.photo.url|fit_image:"170x170" }}"></a>
-{% endif %}
-
-{% if organization.bio %}
-	<h3 class='oswald'>Bio</h3>
-	<p style="margin:2em;">{{ organization.bio }} </p>
-{% endif %}
-
-<h4 class='oswald' style='color:black;'>Organization Members</h4>
-<table>
-	<tr>
-		<th>Member</th>
-		<th>Title</th>
-		<th>From</th>
-		<th>To</th>
-		<th>Lead</th>
-		<th>Admin</th>
-		<th>Active</th>
-		<th>Action</th>
-	</tr>
-	{% for m in members %}
-		<form id="org_mem_{{m.id}}" action="{% url 'member_org_member' organization.id %}" method="POST">
-			<input type="hidden" name="member_id" value="{{ m.id }}"/>
-			<input type="hidden" name="action" value="edit"/>
-			{% csrf_token %}
-
+		<h5 class='oswald org-members col s12' >Organization Members</h5>
+		<table>
 			<tr>
-				<td>{{ m.user.get_full_name }}</td>
-				<td>{{ m.title|default:"" }}</td>
-				<td>{{ m.start_date }}</td>
-				<td>{{ m.end_date|default:"" }}</td>
-				<td>{{ m.is_lead }}</td>
-				<td>{{ m.is_admin }}</td>
-				<td>{{ m.is_active }}</td>
-				<td>
-					<input class='btn' type="submit" value="Edit"/>
-				</td>
+				<th>Member</th>
+				<th>Title</th>
+				<th>From</th>
+				<th>To</th>
+				<th>Lead</th>
+				<th>Admin</th>
+				<th>Active</th>
+				<th>Action</th>
 			</tr>
-		</form>
-	{% endfor %}
-	<form id="org_mem_add" action="{% url 'member_org_member' organization.id %}" method="POST">
-		<input type="hidden" name="action" value="add"/>
-		{% csrf_token %}
-		<tr>
-			<td colspan="7"></td>
-			<td>
-				<input class='btn' type="submit" value="Add"/>
-			</td>
-		</tr>
-	</form>
-</table>
+			{% for m in members %}
+				<form id="org_mem_{{m.id}}" action="{% url 'member_org_member' organization.id %}" method="POST">
+					<input type="hidden" name="member_id" value="{{ m.id }}"/>
+					<input type="hidden" name="action" value="edit"/>
+					{% csrf_token %}
 
-<h4 class='oswald' style='color:black;'>Notes</h4>
-<ul>
-	{% for n in organization.notes %}
-		<li>{{ n.created_ts }} {{ n.created_by }}: {{ n.note }}</li>
-	{% endfor %}
-</ul>
+					<tr>
+						<td>{{ m.user.get_full_name }}</td>
+						<td>{{ m.title|default:"" }}</td>
+						<td>{{ m.start_date }}</td>
+						<td>{{ m.end_date|default:"" }}</td>
+						<td>{{ m.is_lead|yesno:"Yes,No" }}</td>
+						<td>{{ m.is_admin|yesno:"Yes,No" }}</td>
+						<td>{{ m.is_active|yesno:"Yes,No" }}</td>
+						<td>
+							<input class='btn' type="submit" value="Edit"/>
+						</td>
+					</tr>
+				</form>
+			{% endfor %}
+			<form id="org_mem_add" action="{% url 'member_org_member' organization.id %}" method="POST">
+				<input type="hidden" name="action" value="add"/>
+				{% csrf_token %}
+				<tr>
+					<td colspan="7"></td>
+					<td>
+						<input class='btn' type="submit" value="Add"/>
+					</td>
+				</tr>
+			</form>
+		</table>
+
+		{% if organization.notes %}
+			<h5 class='oswald' style='color:black;'>Notes</h5>
+			<ul>
+				{% for n in organization.notes %}
+					<li>{{ n.created_ts }} {{ n.created_by }}: {{ n.note }}</li>
+				{% endfor %}
+			</ul>
+		{% endif %}
+	</div>
+</div>
+
+{% block sub-extrajs %}
+<script>
+	function get_tab(url, div_id) {
+		$.get(url, {}, function(content) {
+			div = $(div_id);
+			div.html(content);
+		});
+	}
+
+	$(document).ready(function() {
+		var imgWidth = $('.org-photo').width();
+		var imgHeight = $('.org-photo').height();
+
+		var heightDiff = ((250 - imgHeight)/5) + '%';
+		var widthDiff = ((250-imgWidth)/4) + '%';
+
+		$('.org-photo').css('margin-left', widthDiff);
+		$('.org-photo').css('margin-top', heightDiff);
+
+		$('#org-img-edit').on('click', function(e) {
+			e.preventDefault();
+			get_tab("{% url 'member_org_edit_photo' organization.id %}", '#pic-modal');
+			$('#picModal').css('display', 'block');
+		});
+
+		get_tab("{% url 'member_org_tags' organization.id %}", "#tags_tab");
+
+		if($(document).height() < 990) {
+			$('footer').attr('class', 'sticky-footer');
+		} else {
+			if($('footer').hasClass('sticky-footer')) {
+				$('footer').attr('page-footer main-footer');
+			}
+		}
+	});
+</script>
+{% endblock %}
 
 {% endblock %}

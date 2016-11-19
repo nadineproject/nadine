@@ -71,7 +71,6 @@ def user_tags(request, username):
         'error': error, 'settings': settings}
     return render(request, 'members/user_tags.html', context)
 
-#TODO remove user_tags.html
 # @login_required
 # def delete_tag(request, username, tag):
 #     user = get_object_or_404(User, username=username)

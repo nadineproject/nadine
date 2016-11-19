@@ -4,7 +4,7 @@
 <div class='org-card'>
   {% if org.photo %}
     <a class='photo' href="{% url 'member_org_view' org.id %}">
-      <img class='org-img' src='{{ org.photo.url }}'  />
+      <img class='org-icon' src='{{ org.photo.url }}'  />
     </a>
   {% else %}
     <a class='photo' id='star-img' href="{% url 'member_org_view' org.id %}">&#9733;</a>
