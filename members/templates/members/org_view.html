@@ -109,14 +109,15 @@
 				<th>Lead</th>
 				<th>Admin</th>
 				<th>Active</th>
-				<th>Action</th>
+				{% if request.user.is_staff or can_edit %}
+					<th>Action</th>
+				{% endif %}
 			</tr>
 			{% for m in members %}
 				<form id="org_mem_{{m.id}}" action="{% url 'member_org_member' organization.id %}" method="POST">
 					<input type="hidden" name="member_id" value="{{ m.id }}"/>
 					<input type="hidden" name="action" value="edit"/>
 					{% csrf_token %}
-
 					<tr>
 						<td>{{ m.user.get_full_name }}</td>
 						<td>{{ m.title|default:"" }}</td>
@@ -125,22 +126,26 @@
 						<td>{{ m.is_lead|yesno:"Yes,No" }}</td>
 						<td>{{ m.is_admin|yesno:"Yes,No" }}</td>
 						<td>{{ m.is_active|yesno:"Yes,No" }}</td>
-						<td>
-							<input class='btn' type="submit" value="Edit"/>
-						</td>
+						{% if request.user.is_staff or can_edit %}
+							<td>
+								<input class='btn' type="submit" value="Edit"/>
+							</td>
+						{% endif %}
 					</tr>
 				</form>
 			{% endfor %}
-			<form id="org_mem_add" action="{% url 'member_org_member' organization.id %}" method="POST">
-				<input type="hidden" name="action" value="add"/>
-				{% csrf_token %}
-				<tr>
-					<td colspan="7"></td>
-					<td>
-						<input class='btn' type="submit" value="Add"/>
-					</td>
-				</tr>
-			</form>
+			{% if request.user.is_staff or can_edit %}
+				<form id="org_mem_add" action="{% url 'member_org_member' organization.id %}" method="POST">
+					<input type="hidden" name="action" value="add"/>
+					{% csrf_token %}
+					<tr>
+						<td colspan="7"></td>
+						<td>
+							<input class='btn' type="submit" value="Add"/>
+						</td>
+					</tr>
+				</form>
+			{% endif %}
 		</table>
 
 		{% if organization.notes %}

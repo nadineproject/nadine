@@ -738,16 +738,6 @@ h5.org-members {
 	margin-left: 3%;
 }
 
-.editable-photo {
-	float: left;
-	margin: 0px 1em 1em 0px;
-	position: absolute;
-}
-
-.member-photo {
-	float: left;
-	margin: 0px 1em 1em 0px;
-}
 
 img#mem-photo {
 	margin-top: 10%;
@@ -794,6 +784,12 @@ h2#prof-name {
 	color: RGBA(66, 98, 113, 1);
 }
 
+.editable-photo {
+	float: left;
+	margin: 0px 1em 1em 0px;
+	position: absolute;
+}
+
 #img-preview, #upload-preview {
 	display: block;
   overflow: hidden;
@@ -825,6 +821,12 @@ h2#prof-name {
   height: 300px;
   overflow: hidden;
 	margin: 2%;
+}
+
+.member-photo {
+	float: left;
+	position: relative;
+	margin: 10%;
 }
 
 .org-img {
@@ -927,7 +929,7 @@ h2#prof-name {
 
 #blank-photo {
 	background-color: RGBA(143, 143, 139, 1);
-	content: url(../img/ic_face_white_48dp_2X.png);
+	content: url(../img/blank_person.png);
 }
 
 .pic-btn {

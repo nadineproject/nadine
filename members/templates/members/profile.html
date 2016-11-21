@@ -22,15 +22,15 @@
         </div>
       </div>
       {% else %}
-      <div class='member-photo prof-img'>
-         <a href="{{ user.profile.photo.url }}"><img id='blank-photo' src="{{ user.profile.photo.url }}"></a>
+      <div class='prof-img member-photo'>
+         <a href="{{ user.profile.photo.url }}"><img id='mem-photo' src="{{ user.profile.photo.url }}"></a>
       </div>
       {% endif %}
     {% else %}
       {% if ALLOW_PHOTO_UPLOAD %}
         <div class='profile-img-box'>
           <div class='editable-photo prof-img'>
-            <img id='mem-photo' src="{% static 'img/noun_160064_cc.png' %}"/>
+            <img id='mem-photo' src="{% static 'img/blank_person.png' %}"/>
           </div>
           <div id='edit-img'>
             <img id="img-edit" alt='edit image' />
@@ -43,7 +43,7 @@
         </div>
       {% endif %}
     {% endif %}
-  <div class='tags-box'>
+  <div class='tags-box col s12' style='margin-top:5%;'>
     {% if user.profile.tags.all %}
       <p style='text-align:center;'> - <strong>Tags</strong> - </p>
       {% if user.username == request.user.username %}
