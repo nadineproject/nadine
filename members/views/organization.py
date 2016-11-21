@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404, HttpRequest
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404, HttpRequest, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 
@@ -150,6 +150,7 @@ def org_tags(request, org_id):
         'error': error, 'settings': settings}
     return render(request, 'members/org_tags.html', context)
 
+
 @login_required
 def org_remove_tag(request, org_id, tag):
     org = get_object_or_404(Organization, id=org_id)
@@ -157,5 +158,27 @@ def org_remove_tag(request, org_id, tag):
         return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
     org.tags.remove(tag)
     return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
+
+
+@csrf_exempt
+@login_required
+def org_search_json(request):
+    response_data = {}
+    response_data['search_results'] = []
+    q = request.GET.get('q', '').strip()
+    search_results = None
+    if len(q) >= 3:
+        search_results = Organization.objects.filter(name__icontains=q)
+    elif len(q) > 0:
+        search_results = Organization.objects.filter(name__istartswith=q)
+    if search_results:
+        for o in search_results.order_by('name'):
+            org = {'name': o.name,
+                'lead': o.lead.get_full_name(),
+                'locked': o.locked,
+            }
+            response_data['search_results'].append(org)
+    return JsonResponse(response_data)
+
 
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

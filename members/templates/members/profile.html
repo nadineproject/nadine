@@ -265,14 +265,20 @@
           </div>
         </li>
         <li>
-          <div class='collapsible-header' id='billing_tab'>Billing History</div>
+          <div class='collapsible-header' id='orgs_tab'>Organizations</div>
           <div class='collapsible-body' id='tabs-5'>
+            <p>Loading activity information...</p>
+          </div>
+        </li>
+        <li>
+          <div class='collapsible-header' id='billing_tab'>Billing History</div>
+          <div class='collapsible-body' id='tabs-6'>
             <p>Loading billing information...</p>
           </div>
         </li>
         <li>
           <div class='collapsible-header' id='device_tab'>Register Devices</div>
-          <div class='collapsible-body' id='tabs-6'>
+          <div class='collapsible-body' id='tabs-7'>
             <p>Loading billing information...</p>
           </div>
         </li>
@@ -328,18 +334,20 @@
           $('#membership_tab').on("click", function(e) {
               e.preventDefault();
               url = "{% url 'member_profile_membership' user.username %}"
-              post_tab(url, "#tabs-3")
+              get_tab(url, "#tabs-3")
           });
 
           $('#activity_tab').on("click", function(e) {
               e.preventDefault();
               url = "{% url 'member_profile_activity' user.username %}"
-              post_tab(url, "#tabs-4")
+              get_tab(url, "#tabs-4")
           });
 
-          post_tab("{% url 'member_profile_billing' user.username %}", "#tabs-5");
+          get_tab("{% url 'member_profile_orgs' user.username %}", "#tabs-5");
 
-          get_tab("{% url 'member_user_devices' user.username %}", "#tabs-6");
+          get_tab("{% url 'member_profile_billing' user.username %}", "#tabs-6");
+
+          get_tab("{% url 'member_user_devices' user.username %}", "#tabs-7");
 
           get_tab("{% url 'member_user_tags' user.username %}", '#tags_tab');
 

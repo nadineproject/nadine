@@ -17,6 +17,7 @@ from nadine.models.core import UserProfile, Membership, FileUpload
 from nadine.models.usage import CoworkingDay
 from nadine.models.payment import Transaction
 from nadine.models.alerts import MemberAlert
+from nadine.models.organization import Organization, OrganizationMember
 from nadine.forms import EditProfileForm, ProfileImageForm
 from nadine.utils import network
 from arpwatch import arp
@@ -40,13 +41,27 @@ def user(request, username):
     return render(request, 'members/profile.html', context)
 
 
-@csrf_exempt
 @login_required
 def profile_membership(request, username):
     user = get_object_or_404(User, username=username)
     memberships = user.membership_set.all().reverse()
     context = {'user': user, 'memberships': memberships}
     return render(request, 'members/profile_membership.html', context)
+
+
+@login_required
+def profile_orgs(request, username):
+    user = get_object_or_404(User, username=username)
+    org_memberships = user.profile.active_organization_memberships()
+
+    search = None
+    search_terms = request.POST.get('search_terms', '').strip()
+    if len(search_terms) >= 3:
+        search = Organization.objects.filter(name__icontains=search_terms)
+
+    context = {'user': user, 'org_memberships': org_memberships, 'search':search }
+    return render(request, 'members/profile_orgs.html', context)
+
 
 
 @csrf_exempt
@@ -65,7 +80,6 @@ def user_activity_json(request, username):
     return JsonResponse(response_data)
 
 
-@csrf_exempt
 @login_required
 def profile_activity(request, username):
     user = get_object_or_404(User.objects.select_related('profile'), username=username)
@@ -79,8 +93,6 @@ def profile_activity(request, username):
     context = {'user': user, 'is_active': is_active, 'activity':activity, 'allowance':allowance}
     return render(request, 'members/profile_activity.html', context)
 
-
-@csrf_exempt
 @login_required
 def profile_billing(request, username):
     user = get_object_or_404(User.objects.prefetch_related('transaction_set', 'bill_set'), username=username)

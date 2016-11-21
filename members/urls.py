@@ -17,6 +17,7 @@ urlpatterns = [
     url(r'^profile/$', profile.profile_redirect, name='member_profile_redirect'),
     url(r'^profile/(?P<username>[^/]+)/$', profile.user, name='member_profile'),
     url(r'^profile/(?P<username>[^/]+)/memberships/$', profile.profile_membership, name='member_profile_membership'),
+    url(r'^profile/(?P<username>[^/]+)/organizations/$', profile.profile_orgs, name='member_profile_orgs'),
     url(r'^profile/(?P<username>[^/]+)/activity/$', profile.profile_activity, name='member_profile_activity'),
     url(r'^profile/(?P<username>[^/]+)/billing/$', profile.profile_billing, name='member_profile_billing'),
     url(r'^activity/(?P<username>[^/]+)/json/$', profile.user_activity_json, name='member_activity_json'),
@@ -36,6 +37,7 @@ urlpatterns = [
     url(r'^edit_photo/organization/(?P<org_id>\d+)/$', organization.org_edit_photo, name='member_org_edit_photo'),
     url(r'^organization/(?P<org_id>\d+)/tags/$', organization.org_tags, name='member_org_tags'),
     url(r'^del_tag/(?P<org_id>\d+)/(?P<tag>[^/]+)/$', organization.org_remove_tag, name='member_org_remove_tag'),
+    url(r'^organization/search/json$', organization.org_search_json, name='org_search_json'),
 
     # Tags
     url(r'^tag_list/$', tags.tags, name='member_tags'),

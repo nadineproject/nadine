@@ -380,12 +380,15 @@ class UserProfile(models.Model):
     def url_github(self):
         return self.user.url_set.filter(url_type__name="github").first()
 
-    def active_organizations(self, on_date=None):
+    def active_organization_memberships(self, on_date=None):
         if not on_date:
             on_date = timezone.now().date()
         future = Q(end_date__isnull=True)
         unending = Q(end_date__gte=on_date)
-        active = self.user.organizationmember_set.filter(start_date__lte=on_date).filter(future | unending)
+        return self.user.organizationmember_set.filter(start_date__lte=on_date).filter(future | unending)
+
+    def active_organizations(self, on_date=None):
+        active = self.active_organization_memberships(on_date)
         return Organization.objects.filter(id__in=active.values('organization'))
 
     def save_url(self, url_type, url_value):

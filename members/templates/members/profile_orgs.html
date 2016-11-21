@@ -1,0 +1,82 @@
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+$( document ).ready( function() {
+  $( "#searchSubmit" ).click( function() {
+    q = $( "#q" ).val();
+    $( "#results" ).load( "{% url 'org_search_json' %}?q=" + q );
+  });
+});
+</script>
+
+
+
+<h3>Current Organizations</h3>
+{% if org_memberships %}
+<table>
+  <thead>
+    <tr>
+      <th>Organization</th>
+      <th align="center">Start Date</th>
+      <th align="left">End Date</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for m in org_memberships %}
+      <tr class="{% cycle 'row-even' 'row-odd' %}">
+         <td>{{ m.organization.name }}</td>
+         <td align="center">{{ m.start_date|date:"M d, Y" }}</td>
+         <td align="left">{% if m.end_date %}{{ m.end_date|date:"M d, Y" }}{% endif %}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+    No Organiations
+{% endif %}
+
+
+<div>
+  <h3>Add Organization</h3>
+  <input id="q" type="text"/>
+  <input id="searchSubmit" type="submit" value="Search"/>
+
+  <div id="results"></div>
+</div>
+
+<!--
+{% if search %}
+  <h3>Search Results</h3>
+  <table>
+  {% for org in search %}
+    <tr>
+      <td>{{ org.name }}</td>
+      <td>
+        {% if org.locked %}
+          <button onclick="$('#org_extra_{{ org.id }}').toggle();">Locked</button>
+        {% else %}
+          <form id="org_join_form_{{ org.id }}" action="." method="POST">
+            <input type="hidden" name="org_id" value="{{ org.id }}"/>
+            <input type="submit" value="Join"/>
+            {% csrf_token %}
+          </form>
+        {% endif %}
+      </td>
+    </tr>
+    <tr id="org_extra_{{ org.id }}" style="display: none;">
+      <td colspan="2">
+        DUDE!
+      </td>
+    </tr>
+  {% endfor %}
+</table>
+{% else %}
+  <h3>Add Organization</h3>
+  <form id="org_search_form" action="." method="POST">
+    <input name="search_terms"/>
+    <input type="submit" value="Find Organization"/>
+    {% csrf_token %}
+  </form>
+{% endif %}
+-->
