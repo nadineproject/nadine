@@ -626,6 +626,11 @@ textarea#id_bio {
 	box-sizing: border-box;
 }
 
+.org-card a.photo img {
+	max-height: 150px;
+	max-width: 150px;
+}
+
 .org-name {
 	padding-top: 1%;
 	display: block;
@@ -648,6 +653,14 @@ textarea#id_bio {
 .photo-div {
 	height: 250px;
 	width: 250px;
+}
+
+#org-img-edit h5 {
+	margin-left: 25%;
+}
+
+#org-img-edit #img-edit {
+	margin-left: 50%;
 }
 
 .org-photo, .no-photo {
@@ -730,7 +743,7 @@ h5.org-members {
 }
 
 .tags-box {
-	margin-top: 20%;
+	margin-top: 5%;
 	margin-bottom: 10%;
 }
 
@@ -833,7 +846,7 @@ h2#prof-name {
 	width: 200px;
   height: 200px;
   overflow: hidden;
-	margin-left: 2%;
+	margin: 3%;
 }
 
 #org-img-edit {
@@ -925,6 +938,10 @@ h2#prof-name {
 
 #upload-preview {
 	margin-left: 5%;
+}
+
+.img-id {
+	max-width: 250px;
 }
 
 #blank-photo {
