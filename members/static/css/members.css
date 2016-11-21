@@ -696,7 +696,7 @@ h5.org-members {
 	margin: 10px;
 	text-align: center;
 	display: inline-block;
-	padding-top: 2%;
+	/*padding-top: 2%;*/
 }
 
 .user-card a {
@@ -715,6 +715,11 @@ h5.org-members {
 	width: 150px;
 	position: relative;
 	margin-left: 10%;
+	margin-top: 10%;
+}
+
+a.photo.star-img  {
+	padding: 0;
 }
 
 .user-card a.photo .user-img {
