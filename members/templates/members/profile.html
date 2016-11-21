@@ -310,7 +310,7 @@
         }
 
         function get_orientation(img) {
-          if (img.width() < img.height()) {
+          if ((img.width() < img.height()) && img.width() > 1) {
             $('#mem-photo').attr('class', 'portrait');
           }
         }
