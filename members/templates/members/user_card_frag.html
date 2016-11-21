@@ -7,7 +7,7 @@
          <img class='user-img' src="{{ user.profile.photo.url }}" />
        </a>
     {% else %}
-       <a class="photo" href="{% url 'member_profile' user.username %}">&#9733;</a>
+       <a class="photo star-img" href="{% url 'member_profile' user.username %}">&#9733;</a>
     {% endif %}
     <a href="{% url 'member_profile' user.username %}">{{ user.get_full_name }}</a>
 </div>

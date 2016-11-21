@@ -316,7 +316,7 @@
         }
 
         function get_orientation(img) {
-          if (img.width() < img.height()) {
+          if ((img.width() < img.height()) && img.width() > 1) {
             $('#mem-photo').attr('class', 'portrait');
           }
         }
@@ -367,7 +367,7 @@
           })
 
           // TODO finish responsive footer by testing on a device
-  				if($('.main').width() < 990) {
+  				if($('.main').height() < 990) {
             $('footer').attr('class', 'sticky-footer');
   				} else {
   					if($('footer').hasClass('sticky-footer')) {

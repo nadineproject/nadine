@@ -42,7 +42,7 @@
 			{% endif %}
 		{% endif %}
 	</div>
-	<div class='tags-box'>
+	<div class='tags-box' style="margin-top:10%;">
 		{% if organization.tags.all %}
 			<p style='text-align:center;'> - <strong>Tags</strong> - </p>
 			{% if request.user.is_staff or can_edit %}
@@ -168,21 +168,21 @@
 		});
 	}
 
+	function get_orientation(img) {
+		if ((img.width() < img.height()) && img.width() > 1) {
+			$('#mem-photo').attr('class', 'portrait');
+		}
+	}
+
 	$(document).ready(function() {
-		var imgWidth = $('.org-photo').width();
-		var imgHeight = $('.org-photo').height();
-
-		var heightDiff = ((250 - imgHeight)/5) + '%';
-		var widthDiff = ((250-imgWidth)/4) + '%';
-
-		$('.org-photo').css('margin-left', widthDiff);
-		$('.org-photo').css('margin-top', heightDiff);
-
 		$('#org-img-edit').on('click', function(e) {
 			e.preventDefault();
 			get_tab("{% url 'member_org_edit_photo' organization.id %}", '#pic-modal');
 			$('#picModal').css('display', 'block');
 		});
+
+		var img = $('#mem-photo');
+		get_orientation(img);
 
 		get_tab("{% url 'member_org_tags' organization.id %}", "#tags_tab");
 
