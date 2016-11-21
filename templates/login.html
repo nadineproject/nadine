@@ -2,12 +2,12 @@
 
 {% block sub-title %}Login | {% endblock %}
 
-{% block style %}
+<!-- {% block style %}
 #content { font-size: 1em; border: none; }
 #content h1 { font-size: 1.8em; margin: 0; }
-#content table td { border-bottom: none;}
+#content table td { border-bottom: none;} -->
 <!-- #content table th { width: 40%; } -->
-{% endblock %}
+<!-- {% endblock %} -->
 
 {% block content %}
 
@@ -20,7 +20,7 @@
 			<div style="margin-left:2em;">
 
 			<form id='login_form'  method="POST" action=".">
-				<h1 id='login_header' align='center'>Login</h1>
+				<h1 class='oswald' id='login_header' align='center'>Login</h1>
 				<table>
 					<tr>
 						<th>Email</th>
@@ -81,12 +81,12 @@
 	{% else %}
 	<div class='col s6 offset-s3' id='login_box'>
 		{% if form.errors %}
-		<p>Your username and password didn't match. Please try again.</p>
+			<p>Your username and password didn't match. Please try again.</p>
 		{% endif %}
 		<div style="margin-left:2em;">
 
 		<form id='login_form'  method="post" action=".">
-			<h1 id='login_header' style='margin-top:5%;margin-bottom:5%;' align='center'>Login</h1>
+			<h1 class='oswald' id='login_header' style='margin-top:5%;margin-bottom:5%;' align='center'>Login</h1>
 			<table>
 				<tr>
 					<th class='cap-label'>Email</th>
@@ -121,7 +121,7 @@
 	<script>
 		// $(document).ready(function() {
 			$('#reg_box').hide();
-
+			// $('#login_box').show();
 
 			$('#reg_link').on('click', function(e) {
 				e.preventDefault();

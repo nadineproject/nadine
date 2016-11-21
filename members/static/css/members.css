@@ -1451,6 +1451,16 @@ div.ui-timepicker-container.ui-timepicker-standard {
 	border: none;
 }
 
+.letter {
+	text-align: justify;
+	text-justify: inter-word;
+	margin-top: 5%;
+}
+
+.letter p {
+	font-size: 1.3em;
+}
+
 /* Footer */
 
 footer.home-footer {
