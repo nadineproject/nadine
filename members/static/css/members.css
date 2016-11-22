@@ -156,14 +156,13 @@ p {
 	margin: 0;
 }
 
-#dropdown1 a {
+#dropdown1 a, #dropdown2 a {
 	color: RGBA(79, 134, 135, 1);
 }
 
 #content h2 {
 	display: block;
 	text-align: center;
-	/*font-size: 1.875em;*/
 }
 
 /* Body */
@@ -173,7 +172,6 @@ table th {
 
 table th:first-child {
 	text-align: left;
-	/*width: 15%;*/
 }
 
 table td:first-child, table td:last-child {
@@ -181,7 +179,6 @@ table td:first-child, table td:last-child {
 }
 
 table td {
-	/*text-align: center;*/
 	padding: 0.5em;
 }
 
@@ -192,10 +189,6 @@ table td {
 #content a {
 	outline:none;
 }
-
-/*#content img {
-	margin: 10px auto;
-}*/
 
 #welcome-p {
 	font-size: 1.2em;

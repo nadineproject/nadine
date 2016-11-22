@@ -91,7 +91,11 @@
 											<li><a href="{% url 'member_tag_cloud' %}">Tags</a></li>
 										</ul>
 									</li>
-									<li><a href="{% url 'member_org_list' %}">Organizations</a></li>
+									<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown2' href="{% url 'member_org_list' %}">Organizations</a>
+										<ul id='dropdown2' class='dropdown-content'>
+											<li><a href="{% url 'member_org_list' %}">Organizations</a></li>
+											<li><a href="{% url 'member_org_list' %}">Tags</a></li>
+										</ul></li>
 									<li><a href="{% url 'member_calendar' %}">Events</a></li>
 									<li><a href="{% url 'member_email_lists' %}">Mailing Lists</a></li>
 									<li><a class='slack-a' href="{% url 'member_slack' user.username %}">Slack</a></li>
