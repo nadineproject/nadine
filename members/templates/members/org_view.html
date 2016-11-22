@@ -92,6 +92,11 @@
 				<a class='col s4 tooltipped' data-position="bottom" data-tooltip='Admin' href="{{ organization.admin_url }}"><img id='manage' alt='admin icon'/></a>
 			{% endif %}
 		</div>
+		<div class='col s12'>
+			<p style="margin:2em;">
+				{{ organization.blurb}}
+			</p>
+		</div>
 		{% if organization.bio %}
 			<div class='col s12'>
 				<h5 class='oswald' style='color:black;'>Bio</h5>

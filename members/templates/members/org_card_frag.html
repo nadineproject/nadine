@@ -11,8 +11,8 @@
   {% endif %}
     <a class='org-name' href="{% url 'member_org_view' org.id %}">{{ org.name }}</a>
   <p class='org-bio'>
-    {% if org.bio %}
-      {{org.bio}}
+    {% if org.blurb %}
+      {{org.blurb}}
     {% endif %}
   </p>
 </div>
