@@ -76,22 +76,30 @@
 								<li><a href="{% url 'member_profile_redirect' %}">Profile</a></li>
 								{% if not request.user.is_authenticated %}
 									<li><a>Members</a></li>
+									<li><a>Organizations</a></li>
 									<li><a>Events</a></li>
 									<li><a>Tags</a></li>
 									<li><a>Mailing Lists</a></li>
 									<li><a>Slack</a></li>
 									<li><a>Login</a></li>
 								{% elif request.user.profile.is_active %}
-									<li><a href="{% url 'member_members' %}">Members</a></li>
+									<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown1' href="{% url 'member_members' %}">Members</a>
+										<ul id='dropdown1' class='dropdown-content'>
+											<li><a href="{% url 'member_members' %}">Active Members</a></li>
+											<!-- <li><a href="{% url 'member_members' %}">Here Today</a></li>
+											<li><a href="{% url 'member_members' %}">Search</a></li> -->
+											<li><a href="{% url 'member_tag_cloud' %}">Tags</a></li>
+										</ul>
+									</li>
+									<li><a href="{% url 'member_org_list' %}">Organizations</a></li>
 									<li><a href="{% url 'member_calendar' %}">Events</a></li>
-									<li><a href="{% url 'member_tag_cloud' %}">Tags</a></li>
 									<li><a href="{% url 'member_email_lists' %}">Mailing Lists</a></li>
 									<li><a class='slack-a' href="{% url 'member_slack' user.username %}">Slack</a></li>
 									<li><a href="{% url 'logout' %}">Logout</a></li>
 								{% else %}
 									<li><a href="{% url 'member_not_active' %}">Members</a></li>
+									<li><a href="{% url 'member_not_active' %}">Organizations</a></li>
 									<li><a href="{% url 'member_not_active' %}">Events</a></li>
-									<li><a href="{% url 'member_not_active' %}">Tags</a></li>
 									<li><a href="{% url 'member_not_active' %}">Mailing Lists</a></li>
 									<li><a href="{% url 'member_not_active' %}">Slack</a></li>
 									<li><a href="{% url 'logout' %}">Logout</a></li>
@@ -102,13 +110,14 @@
 								<li><a href="{% url 'member_profile_redirect' %}">Profile</a></li>
 								{% if not request.user.is_authenticated %}
 									<li><a>Members</a></li>
+									<li><a>Organizations</a></li>
 									<li><a>Events</a></li>
-									<li><a>Tags</a></li>
 									<li><a>Mailing Lists</a></li>
 									<li><a>Slack</a></li>
 									<li><a>Login</a></li>
 								{% elif request.user.profile.is_active %}
 									<li><a href="{% url 'member_members' %}">Members</a></li>
+									<li><a href="{% url 'member_org_list' %}">Organizations</a></li>
 									<li><a href="{% url 'member_calendar' %}">Events</a></li>
 									<li><a href="{% url 'member_tag_cloud' %}">Tags</a></li>
 									<li><a href="{% url 'member_email_lists' %}">Mailing Lists</a></li>
@@ -116,6 +125,7 @@
 									<li><a href="{% url 'logout' %}">Logout</a></li>
 								{% else %}
 									<li><a href="{% url 'member_not_active' %}">Members</a></li>
+									<li><a href="{% url 'member_not_active' %}">Organizations</a></li>
 									<li><a href="{% url 'member_not_active' %}">Events</a></li>
 									<li><a href="{% url 'member_not_active' %}">Tags</a></li>
 									<li><a href="{% url 'member_not_active' %}">Mailing Lists</a></li>
@@ -186,11 +196,8 @@
 	{% block extrajs %}
 		<script>
 		$(document).ready(function(){
-			(function($){
-				$(function(){
-					$('.button-collapse').sideNav();
-				});
-			})(jQuery);
+			$('.button-collapse').sideNav();
+			$('.dropdown-button').dropdown();
 
 			if($('.main').height() < 699) {
 				$('footer').attr('class', 'sticky-footer');

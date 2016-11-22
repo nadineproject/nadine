@@ -156,6 +156,10 @@ p {
 	margin: 0;
 }
 
+#dropdown1 a {
+	color: RGBA(79, 134, 135, 1);
+}
+
 #content h2 {
 	display: block;
 	text-align: center;
@@ -851,7 +855,7 @@ h2#prof-name {
 	width: 200px;
   height: 200px;
   overflow: hidden;
-	margin: 3%;
+	margin-left: 3%;
 }
 
 #org-img-edit {
