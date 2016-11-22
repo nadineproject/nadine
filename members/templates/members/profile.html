@@ -1,6 +1,5 @@
 {% extends "members/u_base.html" %}
 {% load imagetags %}
-{% load email_tags %}
 {% load static %}
 
 {% block sub-title %}{{ user.get_full_name }} | {% endblock %}
@@ -89,8 +88,8 @@
         <dd>{{ user.profile.bio }}</dd>
       </dl>
     {% endif %}
-    <div id="tabs-0">
-      {% include "members/profile_public_frag.html" %}
+    <div id="public_tab">
+      {% include "members/profile_public.html" %}
     </div>
     {% if user.username != request.user.username %}
     <dl>
@@ -105,181 +104,44 @@
   {% block mem_tabs %}
     <ul class='collapsible prof-tabs' data-collapsible="accordion">
         <li>
-          <div class='collapsible-header'>Your Details</div>
-          <!-- <a href="#tabs-0">Member Profile</a> -->
-          <div class='collapsible-body' id='tabs-1'>
-            <div class='row'>
-              <h3 class='col s9' style='margin-bottom:0;margin-top:2%;'>Private Details</h3>
-              <a class='col s1' href="{% url 'member_edit_profile' user.username %}"><img id='edit' alt='edit-icon' style='height:20px;'/></a>
-            </div>
-            <table>
-                <tr>
-                    <td>Primary Email:</td>
-                    <td>{{ user.email }} {% email_verified user.email %}</td>
-                </tr>
-                {% for email in user.profile.non_primary_emails %}
-                  <tr>
-                      <td>Alternate Email:</td>
-                      <td>
-                          {{ email }} {% email_verified email %}
-                      </td>
-                  </tr>
-                {% endfor %}
-
-                <!-- Status -->
-                <tr>
-                    <td>Membership Rate:</td>
-                    <td>{{ user.profile.membership_type }}{% if user.profile.is_active %} at ${{ user.profile.last_membership.monthly_rate }}/month{% endif %}</td>
-                </tr>
-
-                <!-- Anniversary Date -->
-                {% if user.profile.is_active %}
-                <tr>
-                    <td>Anniversary date:</td>
-                    <td>{{ user.profile.last_membership.start_date|date:"M d, Y" }}</td>
-                </tr>
-                {% endif %}
-
-                <!-- Address1 -->
-                {% if user.profile.address1 %}
-                  <tr>
-                     <td>Address 1:</td>
-                     <td>{{ user.profile.address1 }}</td>
-                  </tr>
-                {% endif %}
-                <!-- Address2 -->
-                {% if user.profile.address2 %}
-                  <tr>
-                     <td>Address 2:</td>
-                     <td>{{ user.profile.address2 }}</td>
-                  </tr>
-                {% endif %}
-                <!-- City -->
-                {% if user.profile.city %}
-                  <tr>
-                     <td>City:</td>
-                     <td>{{ user.profile.city }}, {{ user.profile.state }} {{ user.profile.zipcode }}</td>
-                  </tr>
-                {% endif %}
-
-                <!-- Phone -->
-                {% if user.profile.phone %}
-                  <tr>
-                     <td>Phone:</td>
-                     <td>{{ user.profile.phone }}</td>
-                  </tr>
-                {% endif %}
-
-                <!-- Phone2 -->
-                {% if user.profile.phone2 %}
-                  <tr>
-                     <td>Alternate Phone:</td>
-                     <td>{{ user.profile.phone2 }}</td>
-                  </tr>
-                {% endif %}
-
-                <!-- How Heard -->
-                {% if user.profile.howHeard %}
-                  <tr>
-                     <td>How Heard:</td>
-                     <td>{{ user.profile.howHeard }}</td>
-                  </tr>
-                {% endif %}
-
-                <!-- Gender -->
-                {% if user.profile.gender %}
-                  <tr>
-                     <td>Gender:</td>
-                     <td>{{ user.profile.gender }}</td>
-                  </tr>
-                {% endif %}
-            </table>
-
-            <h3>
-                Emergency Contact
-                (<a target="_self" href="{% url 'member_edit_profile' user.username %}#emergency_contact">edit</a>)
-            </h3>
-            {% if not emergency_contact.name %}
-                <p style="font-style: italic; color:red; padding-left: 2em;">No Emergency Contact Information</p>
-            {% else %}
-                <table>
-                    <tr>
-                        <td>Name</td>
-                        <td>{{ emergency_contact.name }}</td>
-                    </tr>
-                    <tr>
-                        <td>Relationship</td>
-                        <td>{{ emergency_contact.relationship }}</td>
-                    </tr>
-                    <tr>
-                        <td>Phone</td>
-                        <td>{{ emergency_contact.phone }}</td>
-                    </tr>
-                    <tr>
-                        <td>E-mail</td>
-                        <td>{{ emergency_contact.email }}</td>
-                    </tr>
-                </table>
-            {% endif %}
-
-          </div>
-        </li>
-        <li>
-          <div class='collapsible-header'>Documents</div>
-          <div class='collapsible-body' id='tabs-2'>
-            {% if user.profile.has_file_uploads %}
-                <table>
-                {% for f in user.profile.file_uploads %}
-                    <tr>
-                        <td>{{ f.uploadTS }}</td>
-                        <!--<td>{{ f.document_type }}</td>-->
-                        <td>
-                            <a target="_self" href="{% url 'member_files' 'inline' f.user f.name     %}">{{ f.name }}</a>
-                        </td>
-                    <tr>
-                {% endfor %}
-                </table>
-            {% endif %}
+          <div class='collapsible-header' id="private_tab">Your Details</div>
+          <div class='collapsible-body' id='private_target'>
+            {% include "members/profile_private.html" %}
           </div>
         </li>
         <li>
           <div class='collapsible-header' id='membership_tab'>Membership History</div>
-          <div class='collapsible-body' id='tabs-3'>
-            <div class="preloader-wrapper big active">
-              <div class="spinner-layer spinner-blue-only">
-                <div class="circle-clipper left">
-                  <div class="circle"></div>
-                </div><div class="gap-patch">
-                  <div class="circle"></div>
-                </div><div class="circle-clipper right">
-                  <div class="circle"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </li>
-        <li>
-          <div class='collapsible-header' id='activity_tab'>Activity</div>
-          <div class='collapsible-body' id='tabs-4'>
-            <p>Loading activity information...</p>
+          <div class='collapsible-body' id='membership_target'>
+            {% include "members/spinner.html" %}
           </div>
         </li>
         <li>
           <div class='collapsible-header' id='orgs_tab'>Organizations</div>
-          <div class='collapsible-body' id='tabs-5'>
-            <p>Loading activity information...</p>
+          <div class='collapsible-body' id='orgs_target'>
+            {% include "members/spinner.html" %}
+          </div>
+        </li>        <li>
+          <div class='collapsible-header' id='activity_tab'>Activity</div>
+          <div class='collapsible-body' id='activity_target'>
+            {% include "members/spinner.html" %}
           </div>
         </li>
         <li>
           <div class='collapsible-header' id='billing_tab'>Billing History</div>
-          <div class='collapsible-body' id='tabs-6'>
-            <p>Loading billing information...</p>
+          <div class='collapsible-body' id='billing_target'>
+            {% include "members/spinner.html" %}
           </div>
         </li>
         <li>
-          <div class='collapsible-header' id='device_tab'>Register Devices</div>
-          <div class='collapsible-body' id='tabs-7'>
-            <p>Loading billing information...</p>
+          <div class='collapsible-header' id='documents_tab'>Documents</div>
+          <div class='collapsible-body' id='documents_target'>
+            {% include "members/profile_documents.html" %}
+          </div>
+        </li>
+        <li>
+          <div class='collapsible-header' id='devices_tab'>Devices</div>
+          <div class='collapsible-body' id='devices_target'>
+            {% include "members/spinner.html" %}
           </div>
         </li>
     </ul>
@@ -289,29 +151,22 @@
   {% endif %}
 </div>
 
-{% if messages %}
-<div class="messages">
-{% for message in messages %}
-  <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
-{% endfor %}
-</div>
-{% endif %}
-
 <div id="tabs"></div>
 
 {%block sub-extrajs %}
     <script>
-        function post_tab(url, div_id) {
-          $.post(url, {}, function(content) {
-              div = $(div_id);
-              div.html(content);
-          });
-        }
-
-        function get_tab(url, div_id) {
+        function load_tab(div_id, url) {
           $.get(url, {}, function(content) {
             div = $(div_id);
             div.html(content);
+            console.log("div_id: " + div_id);
+          });
+        }
+
+        function onclick_tab(tab, url) {
+          $(tab + "_tab").on("click", function(e) {
+              e.preventDefault();
+              load_tab(tab + "_target", url);
           });
         }
 
@@ -331,25 +186,13 @@
           var img = $('#mem-photo');
           get_orientation(img);
 
-          $('#membership_tab').on("click", function(e) {
-              e.preventDefault();
-              url = "{% url 'member_profile_membership' user.username %}"
-              get_tab(url, "#tabs-3")
-          });
+          onclick_tab("#membership", "{% url 'member_profile_membership' user.username %}");
+          onclick_tab("#activity", "{% url 'member_profile_activity' user.username %}");
+          onclick_tab("#orgs", "{% url 'member_profile_orgs' user.username %}");
+          onclick_tab("#billing", "{% url 'member_profile_billing' user.username %}");
+          onclick_tab("#devices", "{% url 'member_profile_devices' user.username %}");
 
-          $('#activity_tab').on("click", function(e) {
-              e.preventDefault();
-              url = "{% url 'member_profile_activity' user.username %}"
-              get_tab(url, "#tabs-4")
-          });
-
-          get_tab("{% url 'member_profile_orgs' user.username %}", "#tabs-5");
-
-          get_tab("{% url 'member_profile_billing' user.username %}", "#tabs-6");
-
-          get_tab("{% url 'member_user_devices' user.username %}", "#tabs-7");
-
-          get_tab("{% url 'member_user_tags' user.username %}", '#tags_tab');
+          // load_tab("#tags_tab", "{% url 'member_user_tags' user.username %}");
 
     			$('#edit-img').on('click', function(e) {
             e.preventDefault();
@@ -363,7 +206,7 @@
             var divID = '#' + target;
             $('html, body').animate({
                 scrollTop: e.screenY
-            }, 2000);
+            }, 1000);
           })
 
           // TODO finish responsive footer by testing on a device

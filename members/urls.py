@@ -16,18 +16,20 @@ urlpatterns = [
     # Profile
     url(r'^profile/$', profile.profile_redirect, name='member_profile_redirect'),
     url(r'^profile/(?P<username>[^/]+)/$', profile.user, name='member_profile'),
+    url(r'^profile/(?P<username>[^/]+)/private/$', profile.profile_private, name='member_profile_private'),
     url(r'^profile/(?P<username>[^/]+)/memberships/$', profile.profile_membership, name='member_profile_membership'),
     url(r'^profile/(?P<username>[^/]+)/organizations/$', profile.profile_orgs, name='member_profile_orgs'),
+    url(r'^profile/(?P<username>[^/]+)/documents/$', profile.profile_documents, name='member_profile_documents'),
     url(r'^profile/(?P<username>[^/]+)/activity/$', profile.profile_activity, name='member_profile_activity'),
     url(r'^profile/(?P<username>[^/]+)/billing/$', profile.profile_billing, name='member_profile_billing'),
-    url(r'^activity/(?P<username>[^/]+)/json/$', profile.user_activity_json, name='member_activity_json'),
-    url(r'^devices/(?P<username>[^/]+)/$', profile.user_devices, name='member_user_devices'),
+    url(r'^profile/(?P<username>[^/]+)/devices/$', profile.user_devices, name='member_profile_devices'),
     url(r'^edit/(?P<username>[^/]+)/$', profile.edit_profile, name='member_edit_profile'),
     url(r'^receipt/(?P<username>[^/]+)/(?P<id>\d+)/$', profile.receipt, name='member_receipt'),
     url(r'^disable_billing/(?P<username>[^/]+)$', profile.disable_billing, name='member_disable_billing'),
     url(r'^file/(?P<disposition>[^/]+)/(?P<username>[^/]+)/(?P<file_name>[^/]+)$', profile.file_view, name='member_files'),
     url(r'^edit_pic/(?P<username>[^/]+)/$', profile.edit_pic, name='member_edit_pic'),
     url(r'^edit_photo/(?P<username>[^/]+)/$', profile.edit_photo, name='member_edit_photo'),
+    url(r'^activity/(?P<username>[^/]+)/json/$', profile.user_activity_json, name='member_activity_json'),
 
     # Organization
     url(r'^organizations/$', organization.org_list, name='member_org_list'),
