@@ -42,11 +42,25 @@ def user(request, username):
 
 
 @login_required
+def profile_private(request, username):
+    user = get_object_or_404(User, username=username)
+    context = {'user': user}
+    return render(request, 'members/profile_private.html', context)
+
+
+@login_required
 def profile_membership(request, username):
     user = get_object_or_404(User, username=username)
     memberships = user.membership_set.all().reverse()
     context = {'user': user, 'memberships': memberships}
     return render(request, 'members/profile_membership.html', context)
+
+
+@login_required
+def profile_documents(request, username):
+    user = get_object_or_404(User, username=username)
+    context = {'user': user}
+    return render(request, 'members/profile_documents.html', context)
 
 
 @login_required
@@ -63,8 +77,6 @@ def profile_orgs(request, username):
     return render(request, 'members/profile_orgs.html', context)
 
 
-
-@csrf_exempt
 @login_required
 def user_activity_json(request, username):
     user = get_object_or_404(User.objects.select_related('profile'), username=username)
@@ -180,7 +192,6 @@ def user_devices(request, username):
 
     error = None
     if request.method == 'POST':
-
         device_id = request.POST.get('device_id')
         device = UserDevice.objects.get(id=device_id)
 
@@ -200,7 +211,7 @@ def user_devices(request, username):
 
     context = {'user': user, 'devices': devices, 'this_device': this_device,
         'ip': ip, 'error': error, 'settings': settings}
-    return render(request, 'members/user_devices.html', context)
+    return render(request, 'members/profile_devices.html', context)
 
 
 @login_required
