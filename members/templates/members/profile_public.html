@@ -1,4 +1,12 @@
 <div id="profile">
+
+{% if user.profile.bio %}
+  <dl>
+    <dt class='bold-blue' style='margin-left:1%;'>Bio:</dt>
+    <dd>{{ user.profile.bio }}</dd>
+  </dl>
+{% endif %}
+
 <table>
     <tr>
         <td class='bold-blue'><strong>Membership:</strong></td>

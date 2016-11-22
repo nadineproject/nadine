@@ -42,23 +42,12 @@
         </div>
       {% endif %}
     {% endif %}
+
   <div class='tags-box col s12' style='margin-top:5%;'>
-    {% if user.profile.tags.all %}
-      <p style='text-align:center;'> - <strong>Tags</strong> - </p>
-      {% if user.username == request.user.username %}
-        <div id='tags_tab'></div>
-      {% else %}
-        {% for tag in user.profile.tags.all %}
-          <li class='chip'><a class='tag-chip' href="{% url 'member_tag' tag %}">{{ tag }}</a></li>
-        {% endfor %}
-      {% endif %}
-    {% else %}
-      {% if user.username == request.user.username %}
-        <div id='tags_tab'></div>
-      {% else %}
-      {% endif %}
-    {% endif %}
+    <p style='text-align:center;'> - <strong>Tags</strong> - </p>
+    {% include "members/profile_tags.html" %}
   </div>
+
 </div>
 
 <div id='picModal' class='modal'>
@@ -75,22 +64,18 @@
   <div class='basic-info'>
     <div class='row'>
       <h2 class='col s9 oswald' id='prof-name'>{{ user.get_full_name }}</h2>
-      {% if user.username == request.user.username or request.user.is_staff %}
+      {% if can_edit %}
         <a class='col s1 tooltipped' data-position="bottom" data-tooltip="Edit Profile" href="{% url 'member_edit_profile' user.username %}" style='margin-top:3%;'><img id='edit' alt='edit-icon'/></a>
       {% endif %}
       {% if request.user.profile.is_manager %}
       <a class='col s1 tooltipped' data-position="bottom" data-tooltip="Manage Member" href="{% url 'member_manage' user.username %}" style='margin-top:3%;'><img id='manage' alt='manage-icon' /></a>
       {% endif %}
     </div>
-    {% if user.profile.bio %}
-      <dl>
-        <dt class='bold-blue' style='margin-left:1%;'>Bio:</dt>
-        <dd>{{ user.profile.bio }}</dd>
-      </dl>
-    {% endif %}
+
     <div id="public_tab">
       {% include "members/profile_public.html" %}
     </div>
+
     {% if user.username != request.user.username %}
     <dl>
         <dt>Contact:</dt>
@@ -99,10 +84,11 @@
     {% endif %}
   </div>
 
-  {% if user.username == request.user.username or request.user.is_staff %}
   <div class="clearfix"></div>
+
   {% block mem_tabs %}
-    <ul class='collapsible prof-tabs' data-collapsible="accordion">
+    {% if can_edit %}
+      <ul class='collapsible prof-tabs' data-collapsible="accordion">
         <li>
           <div class='collapsible-header' id="private_tab">Your Details</div>
           <div class='collapsible-body' id='private_target'>
@@ -120,7 +106,8 @@
           <div class='collapsible-body' id='orgs_target'>
             {% include "members/spinner.html" %}
           </div>
-        </li>        <li>
+        </li>
+        <li>
           <div class='collapsible-header' id='activity_tab'>Activity</div>
           <div class='collapsible-body' id='activity_target'>
             {% include "members/spinner.html" %}
@@ -144,14 +131,11 @@
             {% include "members/spinner.html" %}
           </div>
         </li>
-    </ul>
+      </ul>
+    {% endif %}
   {% endblock %}
-  {% else %}
-    {% block mem-tabs %}{% endblock %}
-  {% endif %}
-</div>
 
-<div id="tabs"></div>
+</div>
 
 {%block sub-extrajs %}
     <script>
@@ -191,8 +175,6 @@
           onclick_tab("#orgs", "{% url 'member_profile_orgs' user.username %}");
           onclick_tab("#billing", "{% url 'member_profile_billing' user.username %}");
           onclick_tab("#devices", "{% url 'member_profile_devices' user.username %}");
-
-          // load_tab("#tags_tab", "{% url 'member_user_tags' user.username %}");
 
     			$('#edit-img').on('click', function(e) {
             e.preventDefault();

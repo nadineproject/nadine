@@ -1,15 +1,18 @@
-	<!-- TODO need to find out what's in these that's not in our custom stuff already loaded at the top -->
 	<div class='tags'>
 		<ul>
-			{% for t in user_tags %}
+			{% for t in user.profile.tags.all %}
 				<li class='chip'>
 					<a class="tag-chip" href="{% url 'member_tag' t %}">{{ t }}</a>
-					 (<a href="{% url 'member_remove_tag' user.username t %}" style="color: RGBA(199, 121, 102, 1);"> X </a>)
+					{% if can_edit %}
+						(<a href="{% url 'member_remove_tag' user.username t %}" style="color: RGBA(199, 121, 102, 1);"> X </a>)
+					{% endif %}
 				</li>
 			{% endfor %}
 		</ul>
+
+		{% if can_edit %}
 		<div class="ui-widget">
-			<form action="{% url 'member_user_tags' user.username %}" method="POST">
+			<form action="{% url 'member_add_tag' user.username %}" method="POST">
 				<table class='tag-table'>
 					<tr>
 						<td id='tag'>
@@ -23,6 +26,7 @@
 				{% csrf_token %}
 			</form>
 		</div>
+		{% endif %}
 
 		{% if error %}
 			<div style="color:red;"><strong>Error:</strong> {{ error }}</div>
