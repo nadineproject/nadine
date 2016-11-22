@@ -8,9 +8,9 @@
       </td>
       <td id='upload-preview'>
         {% if organization.photo %}
-          <div class='org-img'>
-            <img class='img-id' src="{{ organization.photo.url }}" />
-          </div>
+        <div class='org-img'>
+          <img class='img-id' src="{{ organization.photo.url }}" />
+        </div>
         {% else %}
           <img class='img-id' src="{% static 'img/blank_person.png' %}" alt=" "/>
         {% endif %}

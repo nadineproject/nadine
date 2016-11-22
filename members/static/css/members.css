@@ -682,7 +682,7 @@ textarea#id_bio {
 }
 
 .org-edit {
-	content: url(../img/ic_camera_alt_black_24dp_2x.png);
+	content: url(../img/camera.png);
 }
 
 h5.org-members {
@@ -690,6 +690,44 @@ h5.org-members {
 	color: black;
 	margin-bottom: 2%;
 }
+
+/*Org edit page*/
+.org-form {
+	background: RGBA(239, 238, 231, 1);
+	padding: 2%;
+	width: 80%;
+	margin-left: 10%;
+}
+
+.org-form .org-label {
+	width: 30%;
+	font-weight: bold;
+}
+
+.org-form #id_name, .org-form #id_bio {
+	background-color: white;
+	width: 70%;
+	border: none;
+	padding: 1%;
+}
+
+.org-form #public_help p {
+	width: 70%;
+	text-align: center;
+	margin-left: 10%;
+}
+
+.org-btn {
+	margin-left: 37%;
+	margin-right: 5%;
+	margin-top: 2%;
+}
+
+.org-form .cancel-btn {
+	margin-top: 2%;
+}
+
+
 
 .user-card {
 	width: 190px;
@@ -889,13 +927,22 @@ h2#prof-name {
           transform: translate(-50%,-50%);
 }
 
-.prof-img img, .org-img img {
+.prof-img img {
   position: absolute;
   left: 50%;
   top: 50%;
   height: 100%;
   width: auto;
   -webkit-transform: translate(-50%,-50%);
+      -ms-transform: translate(-50%,-50%);
+          transform: translate(-50%,-50%);
+}
+
+.org-img img {
+	position: absolute;
+  left: 50%;
+  top: 50%;
+	-webkit-transform: translate(-50%,-50%);
       -ms-transform: translate(-50%,-50%);
           transform: translate(-50%,-50%);
 }

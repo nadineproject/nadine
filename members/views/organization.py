@@ -54,6 +54,12 @@ def org_edit(request, org_id):
 
     if request.method == "POST":
         form = OrganizationForm(request.POST, request.FILES)
+        public = request.POST.get('public', False)
+        if public == 'True':
+            form.public = True
+        else:
+            form.public = False
+
         try:
             if form.is_valid():
                 form.save()
@@ -63,7 +69,7 @@ def org_edit(request, org_id):
     else:
         form = OrganizationForm(instance=org)
 
-    context = {'organization': org, 'form':form}
+    context = {'organization': org, 'form':form,}
     return render(request, 'members/org_edit.html', context)
 
 
