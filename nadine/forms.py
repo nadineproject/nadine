@@ -35,6 +35,7 @@ class OrganizationForm(forms.Form):
         if hasattr(self, 'instance'):
             self.initial['org_id'] = self.instance.id
             self.initial['name'] = self.instance.name
+            self.initial['blurb'] = self.instance.blurb
             self.initial['bio'] = self.instance.bio
             self.initial['photo'] = self.instance.photo
             self.initial['public'] = self.instance.public
@@ -42,17 +43,20 @@ class OrganizationForm(forms.Form):
 
     org_id = forms.IntegerField(required=True, widget=forms.HiddenInput)
     name = forms.CharField(max_length=128, label="Organization Name", required=True, widget=forms.TextInput(attrs={'autocapitalize': "words"}))
+    blurb = forms.CharField(widget=forms.Textarea, max_length=112, required=False)
     bio = forms.CharField(widget=forms.Textarea, max_length=512, required=False)
     photo = forms.FileField(required=False)
     public = forms.BooleanField(required=False)
     #locked = forms.BooleanField(required=False)
 
     def save(self):
+        print self.cleaned_data['photo']
         org_id = self.cleaned_data['org_id']
         org = Organization.objects.get(id=org_id)
         org.name = self.cleaned_data['name']
+        org.blurb = self.cleaned_data['blurb']
         org.bio = self.cleaned_data['bio']
-        if 'photo' in self.cleaned_data:
+        if self.cleaned_data['photo']:
             # Delete the old one before we save the new one
             org.photo.delete()
             org.photo = self.cleaned_data['photo']

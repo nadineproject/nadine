@@ -32,9 +32,9 @@
 				<div class='editable-photo prof-img'>
 					<a class='org-photo' id='star-img'>&#9733;</a>
 				</div>
-				<div id='edit-img'>
+				<div id='org-img-edit'>
 					<img id="img-edit" alt='edit image' />
-					<h3>Edit Photo</h3>
+					<h5>Edit Photo</h5>
 				</div>
 			</div>
 			{% else %}
@@ -91,6 +91,11 @@
 			{% if request.user.is_staff %}
 				<a class='col s4 tooltipped' data-position="bottom" data-tooltip='Admin' href="{{ organization.admin_url }}"><img id='manage' alt='admin icon'/></a>
 			{% endif %}
+		</div>
+		<div class='col s12'>
+			<p style="margin:2em;">
+				{{ organization.blurb}}
+			</p>
 		</div>
 		{% if organization.bio %}
 			<div class='col s12'>

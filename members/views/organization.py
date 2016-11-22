@@ -54,16 +54,23 @@ def org_edit(request, org_id):
 
     if request.method == "POST":
         form = OrganizationForm(request.POST, request.FILES)
+        public = request.POST.get('public', False)
+        if public == 'True':
+            form.public = True
+        else:
+            form.public = False
         try:
             if form.is_valid():
                 form.save()
                 return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
+            else:
+                print form
         except Exception as e:
             messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
     else:
         form = OrganizationForm(instance=org)
 
-    context = {'organization': org, 'form':form}
+    context = {'organization': org, 'form':form,}
     return render(request, 'members/org_edit.html', context)
 
 
@@ -133,7 +140,6 @@ def org_tags(request, org_id):
         return HttpResponseForbidden("Forbidden")
 
     org_tags = org.tags.all()
-    print org_tags
     if request.method == 'POST':
         tag = request.POST.get('tag')
         if tag:
