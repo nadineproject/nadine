@@ -704,7 +704,7 @@ h5.org-members {
 	font-weight: bold;
 }
 
-.org-form #id_name, .org-form #id_bio {
+.org-form #id_name, .org-form #id_bio, .org-form #id_blurb {
 	background-color: white;
 	width: 70%;
 	border: none;

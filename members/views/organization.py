@@ -59,11 +59,12 @@ def org_edit(request, org_id):
             form.public = True
         else:
             form.public = False
-
         try:
             if form.is_valid():
                 form.save()
                 return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
+            else:
+                print form
         except Exception as e:
             messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
     else:
@@ -139,7 +140,6 @@ def org_tags(request, org_id):
         return HttpResponseForbidden("Forbidden")
 
     org_tags = org.tags.all()
-    print org_tags
     if request.method == 'POST':
         tag = request.POST.get('tag')
         if tag:

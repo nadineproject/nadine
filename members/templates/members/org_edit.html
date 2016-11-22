@@ -9,6 +9,7 @@
 {% block content %}
 <h3 class='oswald' style='text-align: center;'>Edit {{ organization.name}}</h3>
 <form class='org-form' method="POST" action="." enctype="multipart/form-data">
+	{{ form.org_id }}
 	<table>
 		<tr>
 			<td class='org-label'>
@@ -25,12 +26,27 @@
 		</tr>
 		<tr>
 			<td class='org-label'>
-				Organization Short Blurb
+				Organization Blurb
+				(<a onclick="$('#blurb_help').toggle();">?</a>)
 			</td>
 			<td>
 				{{ form.blurb }}
 			</td>
 		</tr>
+		<tr>
+			<td class='pf-error'>
+				{{ form.blurb.errors }}
+			</td>
+		</tr>
+	</table>
+	<table>
+		<tr id='blurb_help' class='help_text' style='display:none;' >
+			<td>
+				<p>This is a short organization description which will be visible on your organization's card on the main organzation page. The maximum length of the blurb is 112 characters.</p>
+			</td>
+		</tr>
+	</table>
+	<table>
 		<tr>
 			<td class='org-label'>
 				Organization Bio
@@ -93,14 +109,13 @@
 {% block extrajs %}
 <script>
 	$(document).ready(function() {
-		$('#id_bio').on('focusout', function(){
-			var blurb = $('#blurb').val();
+		$('#id_blurb').on('focusout', function(){
+			var blurb = $('#id_blurb').val();
 
 			if(blurb.length > 112) {
 				$('#id_blurb').css('border', 'red solid 1px');
 			} else {
 				$('#id_blurb').css('border', 'none');
-				$('#bio-error').remove();
 			}
 		})
 	});
