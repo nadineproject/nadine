@@ -69,8 +69,6 @@ def add_tag(request, username):
     user = get_object_or_404(User, username=username)
     if not user == request.user and not request.user.is_staff:
         return HttpResponseForbidden
-    if not 'tag' in request.POST:
-        return Http404()
 
     tag = request.POST.get("tag", "").strip().lower()
     if tag.isalnum() or ' ' in tag:
