@@ -679,22 +679,21 @@ textarea#id_bio {
 	overflow: hidden;
 }
 
-
 /*Organization view*/
 .photo-div {
 	height: 250px;
 	width: 250px;
 }
 
-#org-img-edit {
+.org-img-edit {
 	margin-top: 15%;
 }
 
-#org-img-edit h5 {
+.org-img-edit h5 {
 	margin-left: 25%;
 }
 
-#org-img-edit #img-edit {
+.org-img-edit #img-edit {
 	margin-left: 50%;
 }
 
@@ -848,7 +847,7 @@ img#mem-photo {
 	opacity: 0.5;
 }
 
-#change-opacity:hover .edit-img, #change-opacity:hover #org-img-edit {
+#change-opacity:hover .edit-img, #change-opacity:hover .org-img-edit {
 	color: RGBA(0, 0, 0, 1);
 }
 
@@ -931,7 +930,7 @@ h2#prof-name {
 	margin-left: 3%;
 }
 
-#org-img-edit {
+.org-img-edit {
 	color: RGBA(0, 0, 0, 0);
 	position: relative;
 	top: 0;
