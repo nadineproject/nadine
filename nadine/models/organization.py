@@ -25,21 +25,16 @@ class OrganizationManager(models.Manager):
         # we change up how memberships are handled --JLS
         if not on_date:
             on_date = timezone.now().date()
-        orgs = {}
+        org_ids = []
         from nadine.models.core import Membership
         for m in Membership.objects.active_memberships(on_date):
             for o in m.user.profile.active_organizations():
-                orgs[o.name] = o
-        sorted_orgs = OrderedDict(sorted(orgs.items(), key=lambda t: t[0]))
-        return sorted_orgs.values()
-    #
-    # def active_orgs(self):
-    #     active_orgs = Q(id__in=Organization.objects.active_organizations())
-    #     return self.active_orgs.order_by('name')
+                org_ids.append(o.id)
+        return Organization.objects.filter(id__in=org_ids)
 
     def organizations_with_tag(self, tag):
-        org_query = Organization.objects.filter(id__in=self.active_organizations())
-        return org_query.filter(organization__tags__in=[tag])
+        return self.active_organizations().filter(tags__name__in=[tag])
+
 
 def org_photo_path(instance, filename):
     ext = filename.split('.')[-1]
@@ -170,7 +165,6 @@ class OrganizationNote(models.Model):
 
     class Meta:
         app_label = 'nadine'
-
 
 
 # class OrganizationMembership(models.Model):
