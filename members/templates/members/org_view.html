@@ -12,35 +12,21 @@
 {% block content %}
 <div class='left-profile col s3'>
 	<div class='photo-div'>
-		{% if organization.photo %}
-			{% if request.user.is_staff or can_edit %}
-				<div class='profile-img-box'>
-					<div class='editable-photo org-img'>
-						<a href="{{ organization.photo.url }}"><img class='org-photo' id='mem-photo' src="{{ organization.photo.url }}"></a>
-					</div>
-					<div id='org-img-edit'>
-						<img id="img-edit" alt='edit image' />
-	          <h5>Edit Photo</h5>
-					</div>
-				</div>
-			{% else %}
-				<a href="{{ organization.photo.url }}"><img class='org-photo' id='mem-photo' src="{{ organization.photo.url }}"></a>
-			{% endif %}
-		{% else %}
-			{% if request.user.is_staff or can_edit %}
-			<div class='profile-img-box'>
-				<div class='editable-photo prof-img'>
+		<div class='profile-img-box'>
+			<div class='editable-photo org-img'>
+				{% if organization.photo %}
+					<a href="{{ organization.photo.url }}"><img class='org-photo' id='mem-photo' src="{{ organization.photo.url }}"></a>
+				{% else %}
 					<a class='org-photo' id='star-img'>&#9733;</a>
-				</div>
-				<div id='org-img-edit'>
-					<img id="img-edit" alt='edit image' />
-					<h5>Edit Photo</h5>
-				</div>
+				{% endif %}
 			</div>
-			{% else %}
-			<a class='org-photo' id='star-img'>&#9733;</a>
+			{% if can_edit %}
+			<div id='org-img-edit'>
+				<img id="img-edit" alt='edit image' />
+        <h5>Edit Photo</h5>
+			</div>
 			{% endif %}
-		{% endif %}
+		</div>
 	</div>
 	<div class='tags-box' style="margin-top:10%;">
 		<p style='text-align:center;'> - <strong>Tags</strong> - </p>
@@ -174,8 +160,6 @@
 
 		var img = $('#mem-photo');
 		get_orientation(img);
-
-		// get_tab("{% url 'member_org_tags' organization.id %}", "#tags_tab");
 
 		if($(document).height() < 990) {
 			$('footer').attr('class', 'sticky-footer');
