@@ -49,18 +49,20 @@ def tag(request, tag):
 
 @login_required
 def user_tags_json(request):
+    user_query = UserProfile.tags.all()
+    if 'term' in request.GET:
+        user_query = user_query.filter(name__istartswith=request.GET['term'])
     tags = []
-    for tag in UserProfile.tags.all().order_by('name'):
-        tags.append(tag.name)
-    response_data = {'user_tags': tags}
-    return JsonResponse(response_data)
+    for tag in user_query.order_by('name'):
+        tags.append({'id': tag.id, 'value': tag.name})
+    return JsonResponse(tags, safe=False)
 
 
 @login_required
 def org_tags_json(request):
     tags = []
     for tag in Organization.tags.all().order_by('name'):
-        tags.append(tag.name)
+        tags.append({'id': tag.id, 'value': tag.name})
     response_data = {'org_tags': tags}
     return JsonResponse(response_data)
 
@@ -74,8 +76,7 @@ def add_tag(request, username):
         return Http404()
 
     tag = request.POST.get('tag').strip().lower()
-    print("Tag: '%s'" % tag)
-    if tag.isalnum():
+    if tag.isalnum() or ' ' in tag:
         user.profile.tags.add(tag)
     else:
         messages.add_message(request, messages.ERROR, "Tags can't contain punctuation.")

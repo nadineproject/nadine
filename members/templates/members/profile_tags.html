@@ -15,33 +15,38 @@
 			<form action="{% url 'member_add_tag' user.username %}" method="POST">
 				<table class='tag-table'>
 					<tr>
-						<td id='tag'>
-							<input name="tag" placeholder="e.g. Biking">
+						<td id="tag">
+							<input id="tag_input" name="tag" placeholder="e.g. Biking"/>
 						</td>
 						<td>
-							<input class='btn tag-btn' type="submit" value="Add">
+							<input class='btn tag-btn' type="submit" value="Add"/>
 						</td>
 					</tr>
 				</table>
 				{% csrf_token %}
 			</form>
+			<div id="results">
+			</div>
 		</div>
-		{% endif %}
-
-		{% if error %}
-			<div style="color:red;"><strong>Error:</strong> {{ error }}</div>
 		{% endif %}
 	</div>
 
 	<script>
 		(function() {
-			var availableTags = [
-				{% for t in all_tags %}
-					"{{ t }}",
-				{% endfor %}
-			];
-			$( "#tag" ).autocomplete({
-				source: availableTags
+			$( "#tag_input" ).autocomplete({
+				source: "{% url 'user_tags_json' %}",
+				minLength: 2,
+				// position: {my: "right top", at: "right bottom"}
+				appendTo: "#results",
+				open: function() {
+	        var position = $("#results").position(),
+            left = position.left, top = position.top;
+            $("#results > ul").css({left: left + 20 + "px",
+                                top: top + 4 + "px" });
+          }
+				// select: function( event, ui ) {
+				// 	console.log(ui)
+				// }
 			});
 			$("#tag").focus();
 		})();
