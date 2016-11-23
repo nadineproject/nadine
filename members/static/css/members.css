@@ -294,6 +294,10 @@ input#id_photo {
 	margin-left: 35%;
 }
 
+.billing-btn {
+	font-size: .8em;
+}
+
 #confirm-btn {
 	margin-left: 40%;
 }
