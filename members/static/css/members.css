@@ -126,13 +126,13 @@ p {
 
 .side-nav {
 	background-color: RGBA(80, 80, 80, 1);
-	padding-top: 5%;
+	padding-top: 2%;
 	padding-left: 3%;
 	width: 50%;
 }
 
 .side-nav li a {
-	font-size: 3em;
+	font-size: 1.5em;
 	padding-top: 20%;
 }
 
@@ -387,6 +387,10 @@ input#id_photo {
 	text-transform: uppercase;
 }
 
+.viewable {
+	color: RGBA(79, 134, 135, 1);
+}
+
 td.cap-label {
 	border: none;
 	padding-bottom: 0;
@@ -618,13 +622,15 @@ textarea#id_bio {
 
 .org-card {
 	width: 210px;
-	min-height: 310px;
+	max-height: 315px;
 	border: solid 3px #EEE;
 	margin: 10px;
 	text-align: center;
 	display: inline-block;
 	padding: 1%;
 	box-sizing: content-box;
+	float: left;
+	overflow: hidden;
 }
 
 /*.org-card a {
@@ -675,22 +681,21 @@ textarea#id_bio {
 	overflow: hidden;
 }
 
-
 /*Organization view*/
 .photo-div {
 	height: 250px;
 	width: 250px;
 }
 
-#org-img-edit {
+.org-img-edit {
 	margin-top: 15%;
 }
 
-#org-img-edit h5 {
+.org-img-edit h5 {
 	margin-left: 25%;
 }
 
-#org-img-edit #img-edit {
+.org-img-edit #img-edit {
 	margin-left: 50%;
 }
 
@@ -748,7 +753,9 @@ h5.org-members {
 .org-form #public_help p {
 	width: 70%;
 	text-align: center;
-	margin-left: 10%;
+	margin-left: 1%;
+	background-color: white;
+	padding: 1%;
 }
 
 .org-btn {
@@ -838,11 +845,11 @@ img#mem-photo {
 	margin-left: 40%;
 }
 
-.profile-img-box:hover #mem-photo {
+#change-opacity:hover #mem-photo {
 	opacity: 0.5;
 }
 
-.profile-img-box:hover .edit-img, .profile-img-box:hover #org-img-edit {
+#change-opacity:hover .edit-img, #change-opacity:hover .org-img-edit {
 	color: RGBA(0, 0, 0, 1);
 }
 
@@ -925,7 +932,7 @@ h2#prof-name {
 	margin-left: 3%;
 }
 
-#org-img-edit {
+.org-img-edit {
 	color: RGBA(0, 0, 0, 0);
 	position: relative;
 	top: 0;

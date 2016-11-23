@@ -222,7 +222,7 @@ class EditProfileForm(forms.Form):
     bio = forms.CharField(widget=forms.Textarea, max_length=512, required=False)
     has_kids = forms.NullBooleanField(widget=forms.NullBooleanSelect(attrs={'class':'browser-default'}), required=False)
     self_employed = forms.NullBooleanField(widget=forms.NullBooleanSelect(attrs={'class':'browser-default'}), required=False)
-    public_profile = forms.ChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), choices=((True, 'Yes'), (False, 'No')), required=True)
+    public_profile = forms.ChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), choices=((False, 'Active Members Only'), (True, 'Public')), required=True)
 
     emergency_name = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}), label="Name", required=False)
     emergency_relationship = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}), label="Relationship", required=False)

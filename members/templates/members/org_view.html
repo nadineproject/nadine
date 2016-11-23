@@ -11,9 +11,8 @@
 
 {% block content %}
 <div class='left-profile col s3'>
-
 	<div class='photo-div'>
-		<div class='profile-img-box'>
+		<div class='profile-img-box' id='change-opacity'>
 			<div class='editable-photo org-img'>
 				{% if organization.photo %}
 					<a href="{{ organization.photo.url }}"><img class='org-photo' id='mem-photo' src="{{ organization.photo.url }}"></a>
@@ -22,7 +21,7 @@
 				{% endif %}
 			</div>
 			{% if can_edit %}
-			<div id='org-img-edit'>
+			<div class='org-img-edit' id='pic_tab'>
 				<img id="img-edit" alt='edit image' />
         <h5>Edit Photo</h5>
 			</div>
@@ -41,7 +40,7 @@
   <div class='picModal-content'>
     <div class='picModal-body'>
       <h4>Edit Organization Picture</h4>
-      <div class='container' id='pic-modal'>
+      <div class='container' id='pic_target'>
       </div>
     </div>
   </div>
@@ -142,18 +141,33 @@
 
 {% block sub-extrajs %}
 <script>
-	function get_orientation(img) {
-		if ((img.width() < img.height()) && img.width() > 1) {
-			$('#mem-photo').attr('class', 'portrait');
+		function get_orientation(img) {
+			if ((img.width() < img.height()) && img.width() > 1) {
+				$('#mem-photo').attr('class', 'portrait');
+			}
 		}
-	}
+
+		function load_tab(div_id, url) {
+			$.get(url, {}, function(content) {
+				div = $(div_id);
+				div.html(content);
+			});
+		}
+
+		function onclick_tab(tab, url) {
+			$(tab + "_tab").on("click", function(e) {
+					e.preventDefault();
+					load_tab(tab + "_target", url);
+			});
+		}
 
 	$(document).ready(function() {
-		$('#org-img-edit').on('click', function(e) {
+		$('.org-img-edit').on('click', function(e) {
 			e.preventDefault();
-			get_tab("{% url 'member_org_edit_photo' organization.id %}", '#pic-modal');
 			$('#picModal').css('display', 'block');
 		});
+
+		onclick_tab("#pic", "{% url 'member_org_edit_photo' organization.id %}");
 
 		var img = $('#mem-photo');
 		get_orientation(img);
