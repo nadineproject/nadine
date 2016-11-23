@@ -1,16 +1,6 @@
-
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-
-<script type="text/javascript">
-$( document ).ready( function() {
-  $( "#searchSubmit" ).click( function() {
-    q = $( "#q" ).val();
-    $( "#results" ).load( "{% url 'org_search_json' %}?q=" + q );
-  });
-});
-</script>
-
-
+{% comment %}
+  Note:  The jquery on this page will not work if loaded outside the profile page.
+{% endcomment %}
 
 <h3>Current Organizations</h3>
 {% if org_memberships %}
@@ -36,14 +26,23 @@ $( document ).ready( function() {
     No Organiations
 {% endif %}
 
-
-<div>
+<div class="ui-widget">
   <h3>Add Organization</h3>
-  <input id="q" type="text"/>
-  <input id="searchSubmit" type="submit" value="Search"/>
-
-  <div id="results"></div>
+  <form action="." method="POST">
+    {% csrf_token %}
+    <input id="org_input" type="text"/>
+    <input id="add_org" type="submit" value="Add"/>
+  </for>
 </div>
+
+<script>
+  (function() {
+    $( "#org_input" ).autocomplete({
+      source: "{% url 'org_search_json' %}",
+      minLength: 2,
+    });
+  })();
+</script>
 
 <!--
 {% if search %}
@@ -66,7 +65,6 @@ $( document ).ready( function() {
     </tr>
     <tr id="org_extra_{{ org.id }}" style="display: none;">
       <td colspan="2">
-        DUDE!
       </td>
     </tr>
   {% endfor %}
