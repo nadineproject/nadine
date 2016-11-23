@@ -1,5 +1,6 @@
 from datetime import date, datetime, timedelta
 
+from django.db.models import Q
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
@@ -11,6 +12,7 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidde
 from nadine.models.core import UserProfile
 from nadine.models.organization import Organization, OrganizationMember
 
+from members.views.core import is_active_member
 
 ######################################################################
 # Helper Functions
@@ -39,6 +41,7 @@ def filter_query(query, term):
 # TODO - These should be class views. --JLS
 
 @login_required
+@user_passes_test(is_active_member, login_url='/404.html')
 def user_tags(request):
     term = request.GET.get('term', '').strip()
     query = UserProfile.tags.all()
@@ -48,6 +51,7 @@ def user_tags(request):
 
 
 @login_required
+@user_passes_test(is_active_member, login_url='/404.html')
 def org_tags(request):
     term = request.GET.get('term', '').strip()
     query = Organization.tags.all()
@@ -57,11 +61,29 @@ def org_tags(request):
 
 
 @login_required
+@user_passes_test(is_active_member, login_url='/404.html')
 def org_search(request):
     term = request.GET.get('term', '').strip()
     query = Organization.objects.all()
     query = filter_query(query, term)
     items = query_to_item_list(query)
+    return JsonResponse(items, safe=False)
+
+
+@login_required
+@user_passes_test(is_active_member, login_url='/404.html')
+def user_search(request):
+    term = request.GET.get('term', '').strip()
+    query = User.objects.all()
+    if len(term) >= 3:
+        first = Q(first_name__icontains=term)
+        last = Q(last_name__icontains=term)
+        query = query.filter(first | last)
+    elif len(term) > 0:
+        query = query.filter(first_name__istartswith=term)
+    items = []
+    for i in query.order_by('first_name'):
+        items.append({'id': i.id, 'label': i.get_full_name(), 'value': i.username,})
     return JsonResponse(items, safe=False)
 
 

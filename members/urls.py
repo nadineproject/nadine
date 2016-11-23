@@ -66,6 +66,7 @@ urlpatterns = [
     url(r'^calendar/$', events.calendar, name='member_calendar'),
 
     # JSON
+    url(r'^json/user_search/$', json.user_search, name='json_user_search'),
     url(r'^json/user_tags/$', json.user_tags, name='json_user_tags'),
     url(r'^json/org_tags/$', json.org_tags, name='json_org_tags'),
     url(r'^json/org_search/$', json.org_search, name='json_org_search'),
