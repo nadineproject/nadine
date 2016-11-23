@@ -1,32 +1,38 @@
 <div class='tags'>
   <ul>
-    {% for t in org_tags %}
+    {% for t in organization.tags.all %}
       <li class='chip'>
         {{ t }}
+        {% if can_edit %}
          (<a href="{% url 'member_org_remove_tag' organization.id t %}" style="color: RGBA(199, 121, 102, 1);"> X </a>)
+         {% endif %}
       </li>
     {% endfor %}
   </ul>
-  <div class="ui-widget">
-    <form action="{% url 'member_org_tags' organization.id %}" method="POST">
-      <table class='tag-table'>
-        <tr>
-          <td id='tag'>
-            <input name="tag" placeholder="e.g. web">
-          </td>
-          <td>
-            <input class='btn tag-btn' type="submit" value="Add">
-          </td>
-        </tr>
-      </table>
-      {% csrf_token %}
-    </form>
-  </div>
+  {% if can_edit %}
+    <div class="ui-widget">
+      <form action="{% url 'member_org_tags' organization.id %}" method="POST">
+        <table class='tag-table'>
+          <tr>
+            <td id='tag'>
+              <input name="tag" placeholder="e.g. web">
+            </td>
+            <td>
+              <input class='btn tag-btn' type="submit" value="Add">
+            </td>
+          </tr>
+        </table>
+        {% csrf_token %}
+      </form>
+    </div>
 
-  {% if error %}
-    <div style="color:red;"><strong>Error:</strong> {{ error }}</div>
+    {% if error %}
+      <div style="color:red;"><strong>Error:</strong> {{ error }}</div>
+    {% endif %}
+
   {% endif %}
 </div>
+
 
 <script>
   (function() {

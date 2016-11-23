@@ -44,21 +44,7 @@
 	</div>
 	<div class='tags-box' style="margin-top:10%;">
 		<p style='text-align:center;'> - <strong>Tags</strong> - </p>
-		{% if organization.tags.all %}
-			{% if can_edit %}
-				<div id='tags_tab'></div>
-			{% else %}
-				{% for tag in organization.tags.all %}
-					<li class='chip'>{{ tag }}</li>
-				{% endfor %}
-			{% endif %}
-		{% else %}
-			{% if request.user.is_staff or can_edit %}
-				<p style='text-align:center;'> - <strong>Tags</strong> - </p>
-				<div id='tags_tab'></div>
-			{% else %}
-			{% endif %}
-		{% endif %}
+		{% include "members/org_tags.html" %}
 	</div>
 </div>
 
@@ -189,7 +175,7 @@
 		var img = $('#mem-photo');
 		get_orientation(img);
 
-		get_tab("{% url 'member_org_tags' organization.id %}", "#tags_tab");
+		// get_tab("{% url 'member_org_tags' organization.id %}", "#tags_tab");
 
 		if($(document).height() < 990) {
 			$('footer').attr('class', 'sticky-footer');
