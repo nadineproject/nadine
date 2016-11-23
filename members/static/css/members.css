@@ -126,13 +126,13 @@ p {
 
 .side-nav {
 	background-color: RGBA(80, 80, 80, 1);
-	padding-top: 5%;
+	padding-top: 2%;
 	padding-left: 3%;
 	width: 50%;
 }
 
 .side-nav li a {
-	font-size: 3em;
+	font-size: 1.5em;
 	padding-top: 20%;
 }
 
@@ -622,13 +622,15 @@ textarea#id_bio {
 
 .org-card {
 	width: 210px;
-	min-height: 310px;
+	max-height: 315px;
 	border: solid 3px #EEE;
 	margin: 10px;
 	text-align: center;
 	display: inline-block;
 	padding: 1%;
 	box-sizing: content-box;
+	float: left;
+	overflow: hidden;
 }
 
 /*.org-card a {
