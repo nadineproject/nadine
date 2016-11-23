@@ -1,0 +1,67 @@
+from datetime import date, datetime, timedelta
+
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404, HttpRequest, JsonResponse
+
+from nadine.models.core import UserProfile
+from nadine.models.organization import Organization, OrganizationMember
+
+
+######################################################################
+# Helper Functions
+######################################################################
+
+
+def query_to_item_list(query):
+    items = []
+    for i in query.order_by('name'):
+        items.append({'id': i.id, 'value': i.name,})
+    return items
+
+
+def filter_query(query, term):
+    if len(term) >= 3:
+        query = query.filter(name__icontains=term)
+    elif len(term) > 0:
+        query = query.filter(name__istartswith=term)
+    return query
+
+
+######################################################################
+# Views
+######################################################################
+
+
+@login_required
+def user_tags(request):
+    term = request.GET.get('term', '').strip()
+    query = UserProfile.tags.all()
+    query = filter_query(query, term)
+    items = query_to_item_list(query)
+    return JsonResponse(items, safe=False)
+
+
+@login_required
+def org_tags(request):
+    term = request.GET.get('term', '').strip()
+    query = Organization.tags.all()
+    query = filter_query(query, term)
+    items = query_to_item_list(query)
+    return JsonResponse(items, safe=False)
+
+
+@login_required
+def org_search(request):
+    term = request.GET.get('term', '').strip()
+    query = Organization.objects.all()
+    query = filter_query(query, term)
+    items = query_to_item_list(query)
+    return JsonResponse(items, safe=False)
+
+
+# Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

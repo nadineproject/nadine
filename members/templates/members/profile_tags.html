@@ -36,7 +36,7 @@
 <script>
 	(function() {
 		$( "#tag_input" ).autocomplete({
-			source: "{% url 'user_tags_json' %}",
+			source: "{% url 'json_user_tags' %}",
 			minLength: 2,
 		});
 		$("#tag").focus();

@@ -15,7 +15,9 @@
   <tbody>
     {% for m in org_memberships %}
       <tr class="{% cycle 'row-even' 'row-odd' %}">
-         <td>{{ m.organization.name }}</td>
+         <td>
+           <a href="{% url 'member_org_view' m.organization.id %}">{{ m.organization.name }}</a>
+         </td>
          <td align="center">{{ m.start_date|date:"M d, Y" }}</td>
          <td align="left">{% if m.end_date %}{{ m.end_date|date:"M d, Y" }}{% endif %}</td>
       </tr>
@@ -38,7 +40,7 @@
 <script>
   (function() {
     $( "#org_input" ).autocomplete({
-      source: "{% url 'org_search_json' %}",
+      source: "{% url 'json_org_search' %}",
       minLength: 2,
     });
   })();

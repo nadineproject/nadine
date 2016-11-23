@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from django.shortcuts import redirect
 
-from members.views import core, profile, organization, tags, connect, events
+from members.views import core, profile, organization, tags, connect, events, json
 
 urlpatterns = [
     # Core
@@ -39,7 +39,6 @@ urlpatterns = [
     url(r'^edit_photo/organization/(?P<org_id>\d+)/$', organization.org_edit_photo, name='member_org_edit_photo'),
     url(r'^organization/(?P<org_id>\d+)/tags/$', organization.org_tags, name='member_org_tags'),
     url(r'^del_tag/(?P<org_id>\d+)/(?P<tag>[^/]+)/$', organization.org_remove_tag, name='member_org_remove_tag'),
-    url(r'^organization/search/json$', organization.org_search_json, name='org_search_json'),
 
     # Tags
     url(r'^tag_list/$', tags.tags, name='member_tags'),
@@ -47,10 +46,7 @@ urlpatterns = [
     url(r'^tag/(?P<tag>[^/]+)/$', tags.tag, name='member_tag'),
     url(r'^tag/remove/(?P<username>[^/]+)/(?P<tag>[^/]+)/$', tags.remove_tag, name='member_remove_tag'),
     url(r'^tag/add/(?P<username>[^/]+)/$', tags.add_tag, name='member_add_tag'),
-    url(r'^tags/user/json$', tags.user_tags_json, name='user_tags_json'),
-    url(r'^tags/org/json$', tags.org_tags_json, name='org_tags_json'),
     url(r'^org_tag_cloud/$', tags.org_tag_cloud, name='member_org_tag_cloud'),
-
 
     # Connect
     url(r'^connect/(?P<username>[^/]+)/$', connect.connect, name='member_connect'),
@@ -68,6 +64,11 @@ urlpatterns = [
     url(r'^booking/create/$', events.create_booking, name='member_create_booking'),
     url(r'^booking/confirm/(?P<room>[^/]+)/(?P<start>[^/]+)/(?P<end>[^/]+)/(?P<date>[^/]+)$', events.confirm_booking, name='member_confirm_booking'),
     url(r'^calendar/$', events.calendar, name='member_calendar'),
+
+    # JSON
+    url(r'^json/user_tags/$', json.user_tags, name='json_user_tags'),
+    url(r'^json/org_tags/$', json.org_tags, name='json_org_tags'),
+    url(r'^json/org_search/$', json.org_search, name='json_org_search'),
 ]
 
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

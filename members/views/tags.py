@@ -49,40 +49,13 @@ def org_tag_cloud(request):
         tags.append((tag, org_count))
     return render(request, 'members/tag_cloud.html', {'tags': tags})
 
+
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def tag(request, tag):
     members = User.helper.members_with_tag(tag)
     context = {'tag': tag, 'members': members, 'settings': settings}
     return render(request, 'members/tag.html', context)
-
-
-@login_required
-def user_tags_json(request):
-    items = []
-    term = request.GET.get('term', '').strip()
-    query = UserProfile.tags.all()
-    if len(term) >= 3:
-        query = query.filter(name__icontains=term)
-    elif len(term) > 0:
-        query = query.filter(name__istartswith=term)
-    for i in query.order_by('name'):
-        items.append({'id': i.id, 'value': i.name,})
-    return JsonResponse(items, safe=False)
-
-
-@login_required
-def org_tags_json(request):
-    items = []
-    term = request.GET.get('term', '').strip()
-    query = Organization.tags.all()
-    if len(term) >= 3:
-        query = query.filter(name__icontains=term)
-    elif len(term) > 0:
-        query = query.filter(name__istartswith=term)
-    for i in query.order_by('name'):
-        items.append({'id': i.id, 'value': i.name,})
-    return JsonResponse(items, safe=False)
 
 
 @login_required
