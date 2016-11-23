@@ -1,7 +1,6 @@
-
-{% load static  %}
-<script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
-<script src="{% static 'js/jquery-ui.min.js' %}"></script>
+{% comment %}
+  Note:  The jquery on this page will not work if loaded outside the profile page.
+{% endcomment %}
 
 <h3>Current Organizations</h3>
 {% if org_memberships %}
@@ -66,7 +65,6 @@
     </tr>
     <tr id="org_extra_{{ org.id }}" style="display: none;">
       <td colspan="2">
-        DUDE!
       </td>
     </tr>
   {% endfor %}
