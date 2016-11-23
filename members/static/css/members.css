@@ -35,15 +35,39 @@ p {
 	background-color: RGBA(79, 134, 135, 1);
 }
 
-.ir { display: block; text-indent: -999em; overflow: hidden; background-repeat: no-repeat; }
-.hidden { display: none; visibility: hidden; }
-.visuallyhidden { position: absolute !important;
+.ir {
+	display: block;
+	text-indent: -999em;
+	overflow: hidden;
+	background-repeat: no-repeat;
+}
+
+.hidden {
+	display: none;
+	visibility: hidden;
+}
+
+.visuallyhidden {
+	position: absolute !important;
 	clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
 	clip: rect(1px, 1px, 1px, 1px);
 }
-.invisible { visibility: hidden; }
-.clearfix:after  { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
-.clearfix { zoom: 1; }
+
+.invisible {
+	visibility: hidden;
+}
+
+.clearfix:after  {
+	content: ".";
+	display: block;
+	height: 0;
+	clear: both;
+	visibility: hidden;
+}
+
+.clearfix {
+	zoom: 1;
+}
 
 /* Header */
 
@@ -82,10 +106,6 @@ p {
 	margin-right: 0;
 	letter-spacing: 1px;
 	font-weight: lighter;
-}
-
-#home-nav a.slack-a {
-	color: RGBA(78, 62, 132, 1);
 }
 
 #jumbotron {
@@ -598,21 +618,21 @@ textarea#id_bio {
 
 .org-card {
 	width: 210px;
-	/*min-height: 300px;*/
+	min-height: 310px;
 	border: solid 3px #EEE;
 	margin: 10px;
 	text-align: center;
 	display: inline-block;
 	padding: 1%;
 	box-sizing: content-box;
-	/*overflow: hidden;*/
 }
 
-.org-card a {
+/*.org-card a {
 	padding: 10px 10px;
 	display: block;
 	background:#FFFFFF;
-}
+	overflow: hidden;
+}*/
 
 .org-card a.photo {
 	background-color: #FFF;
@@ -624,12 +644,15 @@ textarea#id_bio {
 	width: 150px;
 	position: relative;
 	margin-left: 15%;
-	box-sizing: border-box;
+	/*box-sizing: border-box;*/
 }
 
 .org-card a.photo img {
 	max-height: 150px;
 	max-width: 150px;
+	overflow: hidden;
+	padding: 0;
+
 }
 
 .org-name {
@@ -640,6 +663,7 @@ textarea#id_bio {
 	/*font-family: 'Oswald', sans-serif;*/
 	font-weight: bold;
 	color: black;
+	overflow: hidden;
 }
 
 .org-bio {
@@ -647,8 +671,10 @@ textarea#id_bio {
 	overflow: hidden;
 	font-size: .8em;
 	font-style: italic;
-	display: block;
+	/*display: block;*/
+	overflow: hidden;
 }
+
 
 /*Organization view*/
 .photo-div {
@@ -735,8 +761,6 @@ h5.org-members {
 	margin-top: 2%;
 }
 
-
-
 .user-card {
 	width: 190px;
 	border: solid 3px #EEE;
@@ -746,7 +770,7 @@ h5.org-members {
 	/*padding-top: 2%;*/
 }
 
-.user-card a {
+.user-card a, .org-card a {
 	padding: 10px 10px;
 	display: block;
 	background:#FFFFFF;
