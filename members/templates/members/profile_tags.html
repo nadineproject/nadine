@@ -6,7 +6,7 @@
 	<ul>
 		{% for t in user.profile.tags.all %}
 			<li class='chip'>
-				<a class="tag-chip" href="{% url 'member_tag' t %}">{{ t }}</a>
+				<a class="tag-chip" href="{% url 'member_tag_view' 'members' t %}">{{ t }}</a>
 				{% if can_edit %}
 					(<a href="{% url 'member_remove_tag' user.username t %}" style="color: RGBA(199, 121, 102, 1);"> X </a>)
 				{% endif %}

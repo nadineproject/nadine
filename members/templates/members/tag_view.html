@@ -1,0 +1,31 @@
+{% extends "members/u_base.html" %}
+
+{% block content %}
+	<h2>{{ type | title }} Tagged with: {{ tag }}</h2>
+
+	{% if members %}
+		<ul>
+		{% for u in members %}
+			<dl>
+				<dt><a href="{% url 'member_profile' u.username %}">{{ u.get_full_name }}</a>:</td<>
+				{% for t in u.profile.tags.all %}
+					<dd><a href="{% url 'member_tag_view' type t %}">{{ t }}</a></dd>
+				{% endfor %}
+			</dl>
+		{% endfor %}
+		</ul>
+	{% endif %}
+
+	{% if organizations %}
+		<ul>
+		{% for o in organizations %}
+			<dl>
+				<dt><a href="{% url 'member_org_view' o.id %}">{{ o.name }}</a>:</td<>
+				{% for t in o.tags.all %}
+					<dd><a href="{% url 'member_tag_view' type t %}">{{ t }}</a></dd>
+				{% endfor %}
+			</dl>
+		{% endfor %}
+		</ul>
+	{% endif %}
+{% endblock %}

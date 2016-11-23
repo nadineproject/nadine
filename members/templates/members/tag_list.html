@@ -1,0 +1,22 @@
+{% extends "members/u_base.html" %}
+
+{% block content %}
+	<div style="float: right;">[ <a href="{% url 'member_tag_cloud' type %}">Tag Cloud</a> ]</div>
+	<h2>All {{ type | title }} Tags</h2>
+	<ul>
+	{% for tag, items, count in tags %}
+		<dl>
+		<dt><a href="{% url 'member_tag_view' type tag %}">{{ tag }}</a>:</dt>
+			{% for i in items %}
+				<dd>
+					{% if type == 'organizations' %}
+						<a href="{% url 'member_org_view' i.id %}">{{ i.name }}</a>
+					{% else %}
+						<a href="{% url 'member_profile' i.username %}">{{ i.get_full_name }}</a>
+					{% endif %}
+				</dd>
+		{% endfor %}
+		</dl>
+	{% endfor %}
+	<ul>
+{% endblock %}

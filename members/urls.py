@@ -37,16 +37,16 @@ urlpatterns = [
     url(r'^organization/(?P<org_id>\d+)/edit/$', organization.org_edit, name='member_org_edit'),
     url(r'^organization/(?P<org_id>\d+)/member/$', organization.org_member, name='member_org_member'),
     url(r'^edit_photo/organization/(?P<org_id>\d+)/$', organization.org_edit_photo, name='member_org_edit_photo'),
-    url(r'^organization/(?P<org_id>\d+)/tags/$', organization.add_tag, name='member_org_add_tag'),
-    url(r'^del_tag/(?P<org_id>\d+)/(?P<tag>[^/]+)/$', organization.remove_tag, name='member_org_remove_tag'),
 
     # Tags
-    url(r'^tag_list/$', tags.tags, name='member_tags'),
-    url(r'^tag_cloud/$', tags.tag_cloud, name='member_tag_cloud'),
-    url(r'^tag/(?P<tag>[^/]+)/$', tags.tag, name='member_tag'),
+    url(r'^tag/(?P<type>[^/]+)/(?P<tag>[^/]+)/$', tags.tag_view, name='member_tag_view'),
+    url(r'^tag_list/(?P<type>[^/]+)/$', tags.tag_list, name='member_tag_list'),
+    url(r'^tag_cloud/(?P<type>[^/]+)/$', tags.tag_cloud, name='member_tag_cloud'),
     url(r'^tag/remove/(?P<username>[^/]+)/(?P<tag>[^/]+)/$', tags.remove_tag, name='member_remove_tag'),
     url(r'^tag/add/(?P<username>[^/]+)/$', tags.add_tag, name='member_add_tag'),
-    url(r'^org_tag_cloud/$', tags.org_tag_cloud, name='member_org_tag_cloud'),
+    # TODO
+    url(r'^organization/(?P<org_id>\d+)/tags/$', organization.add_tag, name='member_org_add_tag'),
+    url(r'^del_tag/(?P<org_id>\d+)/(?P<tag>[^/]+)/$', organization.remove_tag, name='member_org_remove_tag'),
 
     # Connect
     url(r'^connect/(?P<username>[^/]+)/$', connect.connect, name='member_connect'),

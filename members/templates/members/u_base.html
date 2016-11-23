@@ -78,7 +78,6 @@
 									<li><a>Members</a></li>
 									<li><a>Organizations</a></li>
 									<li><a>Events</a></li>
-									<li><a>Tags</a></li>
 									<li><a>Mailing Lists</a></li>
 									<li><a>Slack</a></li>
 									<li><a>FAQ</a></li>
@@ -87,10 +86,15 @@
 									<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown1' href="{% url 'member_members' %}">Members</a>
 										<ul id='dropdown1' class='dropdown-content'>
 											<li><a href="{% url 'member_members' %}">Active Members</a></li>
-											<li><a href="{% url 'member_tag_cloud' %}">Member Tags</a></li>
+											<li><a href="{% url 'member_tag_cloud' 'members' %}">Tags</a></li>
 										</ul>
 									</li>
-									<li><a href="{% url 'member_org_list' %}">Organizations</a>
+									<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown2' href="{% url 'member_org_list' %}">Organizations</a>
+										<ul id='dropdown2' class='dropdown-content'>
+											<li><a href="{% url 'member_org_list' %}">Active Organizations</a></li>
+											<li><a href="{% url 'member_tag_cloud' 'organizations' %}">Tags</a></li>
+										</ul>
+									</li>
 									<li><a href="{% url 'member_calendar' %}">Events</a></li>
 									<li><a href="{% url 'member_email_lists' %}">Mailing Lists</a></li>
 									<li><a class='slack-a' href="{% url 'member_slack' user.username %}">Slack</a></li>
@@ -121,7 +125,6 @@
 									<li><a href="{% url 'member_members' %}">Members</a></li>
 									<li><a href="{% url 'member_org_list' %}">Organizations</a></li>
 									<li><a href="{% url 'member_calendar' %}">Events</a></li>
-									<li><a href="{% url 'member_tag_cloud' %}">Tags</a></li>
 									<li><a href="{% url 'member_email_lists' %}">Mailing Lists</a></li>
 									<li><a class='slack-a' href="{% url 'member_slack' user.username %}">Slack</a></li>
 									<li><a href="{% url 'member_faq' %}">FAQ</a></li>

@@ -141,7 +141,7 @@ def add_tag(request, org_id):
         return HttpResponseForbidden("Forbidden")
 
     tag = request.POST.get("tag", "").strip().lower()
-    if tag.isalnum() or ' ' in tag:
+    if tag.isalnum() or ' ' in tag or '-' in tag:
         org.tags.add(tag)
     else:
         messages.add_message(request, messages.ERROR, "Tags can't contain punctuation.")

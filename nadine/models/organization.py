@@ -32,7 +32,7 @@ class OrganizationManager(models.Manager):
                 org_ids.append(o.id)
         return Organization.objects.filter(id__in=org_ids)
 
-    def organizations_with_tag(self, tag):
+    def with_tag(self, tag):
         return self.active_organizations().filter(tags__name__in=[tag])
 
 

@@ -6,24 +6,21 @@
 <script type="text/javascript" src="{% static 'jqcloud/jqcloud-1.0.4.min.js' %}"></script>
 <script type="text/javascript">
 var word_list = [
-{ text: "web development", weight: 5, link: "{% url 'member_tag' 'web development' %}" },
-{% for tag, count in tags %}
-	{% if tag.name != "web development" %}
+{% for tag, items, count in tags %}
 	{
 		text: "{{ tag.name }}",
 		weight: {{ count }},
-		link: "{% url 'member_tag' tag %}"
+		link: "{% url 'member_tag_view' type tag %}"
 	},
-	{% endif %}
 {% endfor %}
 ];
   $(function() {
-    $("#my_favorite_latin_words").jQCloud(word_list, {shape: "rectangular", encodeURI:false});
+    $("#tag-cloud").jQCloud(word_list, {shape: "rectangular", encodeURI:false});
   });
 </script>
 {% endblock %}
 
 {% block content %}
-	<div style="float: right;">[ <a href="{% url 'member_tags' %}">Tag List</a> ]</div>
-	<div id="my_favorite_latin_words" style="margin-left: 5%; font-size: 100%; width: 920px; height: 680px;"></div>
+	<div style="float: right;">[ <a href="{% url 'member_tag_list' type %}">Tag List</a> ]</div>
+	<div id="tag-cloud" style="margin-left: 5%; font-size: 100%; width: 920px; height: 680px;"></div>
 {% endblock %}

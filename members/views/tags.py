@@ -17,45 +17,50 @@ from nadine.models.organization import Organization
 from members.views.core import is_active_member
 
 
-@login_required
-@user_passes_test(is_active_member, login_url='member_not_active')
-def tags(request):
+def get_tag_data(type):
     tags = []
-    for tag in UserProfile.tags.all().order_by('name'):
-        members = User.helper.members_with_tag(tag)
-        if members.count() > 0:
-            tags.append((tag, members))
-    return render(request, 'members/tags.html', {'tags': tags})
+    if type == "members":
+        for tag in UserProfile.tags.all().order_by('name'):
+            items = User.helper.members_with_tag(tag)
+            count = items.count()
+            if count: tags.append((tag, items, count))
+    elif type == "organizations":
+        for tag in Organization.tags.all().order_by('name'):
+            items = Organization.objects.with_tag(tag)
+            count = items.count()
+            if count: tags.append((tag, items, count))
+    else:
+        raise Exception("Invalid type '%s'" % type)
+    return tags
 
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
-def tag_cloud(request):
-    tags = []
-    for tag in UserProfile.tags.all().order_by('name'):
-        member_count = User.helper.members_with_tag(tag).count()
-        if member_count:
-            tags.append((tag, member_count))
-    return render(request, 'members/tag_cloud.html', {'tags': tags})
-
-@login_required
-@user_passes_test(is_active_member, login_url='member_not_active')
-def org_tag_cloud(request):
-    tags=[]
-    # org_count = 1
-    for tag in Organization.tags.all().order_by('name'):
-        org_count = Organization.objects.organizations_with_tag(tag).count()
-        print org_count
-        tags.append((tag, org_count))
-    return render(request, 'members/tag_cloud.html', {'tags': tags})
+def tag_list(request, type):
+    tags = get_tag_data(type)
+    context = {'type':type, 'tags': tags}
+    return render(request, 'members/tag_list.html', context)
 
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
-def tag(request, tag):
-    members = User.helper.members_with_tag(tag)
-    context = {'tag': tag, 'members': members, 'settings': settings}
-    return render(request, 'members/tag.html', context)
+def tag_cloud(request, type):
+    tags = get_tag_data(type)
+    context = {'type':type, 'tags': tags}
+    return render(request, 'members/tag_cloud.html', context)
+
+
+@login_required
+@user_passes_test(is_active_member, login_url='member_not_active')
+def tag_view(request, type, tag):
+    context = {'type':type, 'tag': tag}
+    if type == "members":
+        context['members'] = User.helper.members_with_tag(tag)
+    elif type == "organizations":
+        context['organizations'] = Organization.objects.with_tag(tag)
+    else:
+        return Http404()
+    return render(request, 'members/tag_view.html', context)
 
 
 @login_required
