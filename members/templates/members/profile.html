@@ -9,40 +9,23 @@
 
 {% block content %}
 <div class='left-profile col s4'>
-  {% if user.profile.photo %}
-    {% if ALLOW_PHOTO_UPLOAD %}
-      <div class='profile-img-box'>
-        <div class='editable-photo prof-img'>
-           <a href="{{ user.profile.photo.url }}"><img id='mem-photo' src="{{ user.profile.photo.url }}"></a>
-        </div>
-        <div id='edit-img'>
-          <img id="img-edit" alt='edit image' />
-          <h3>Edit Photo</h3>
-        </div>
+  <div class='profile-img-box'>
+    <div class='editable-photo prof-img'>
+      {% if user.profile.photo %}
+        <a href="{{ user.profile.photo.url }}"><img id='mem-photo' src="{{ user.profile.photo.url }}"></a>
+       {% else %}
+        <img id='mem-photo' src="{% static 'img/blank_person.png' %}"/>
+       {% endif %}
+    </div>
+    {% if ALLOW_PHOTO_UPLOAD and can_edit %}
+      <div class='edit-img' id='pic_tab'>
+        <img id="img-edit" alt='edit image' />
+        <h3>Edit Photo</h3>
       </div>
-      {% else %}
-      <div class='prof-img member-photo'>
-         <a href="{{ user.profile.photo.url }}"><img id='mem-photo' src="{{ user.profile.photo.url }}"></a>
-      </div>
-      {% endif %}
     {% else %}
-      {% if ALLOW_PHOTO_UPLOAD %}
-        <div class='profile-img-box'>
-          <div class='editable-photo prof-img'>
-            <img id='mem-photo' src="{% static 'img/blank_person.png' %}"/>
-          </div>
-          <div id='edit-img'>
-            <img id="img-edit" alt='edit image' />
-            <h3>Edit Photo</h3>
-          </div>
-        </div>
-      {% else %}
-        <div class='member-photo'>
-          <img id='mem-photo' />
-        </div>
-      {% endif %}
+    <div class='locked-img'></div>
     {% endif %}
-
+  </div>
   <div class='tags-box col s12' style='margin-top:5%;'>
     <p style='text-align:center;'> - <strong>Tags</strong> - </p>
     {% include "members/profile_tags.html" %}
@@ -54,7 +37,7 @@
   <div class='picModal-content'>
     <div class='picModal-body'>
       <h4>Edit Profile Picture</h4>
-      <div class='container' id='pic-modal'>
+      <div class='container' id='pic_target'>
       </div>
     </div>
   </div>
@@ -143,7 +126,6 @@
           $.get(url, {}, function(content) {
             div = $(div_id);
             div.html(content);
-            console.log("div_id: " + div_id);
           });
         }
 
@@ -175,10 +157,10 @@
           onclick_tab("#orgs", "{% url 'member_profile_orgs' user.username %}");
           onclick_tab("#billing", "{% url 'member_profile_billing' user.username %}");
           onclick_tab("#devices", "{% url 'member_profile_devices' user.username %}");
+          onclick_tab("#pic", "{% url 'member_edit_pic' user.username %}")
 
-    			$('#edit-img').on('click', function(e) {
+    			$('.edit-img').on('click', function(e) {
             e.preventDefault();
-            get_tab("{% url 'member_edit_pic' user.username %}", '#pic-modal');
             $('#picModal').css('display', 'block');
           });
 

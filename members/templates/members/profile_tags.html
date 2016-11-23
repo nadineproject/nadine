@@ -36,18 +36,12 @@
 			$( "#tag_input" ).autocomplete({
 				source: "{% url 'user_tags_json' %}",
 				minLength: 2,
-				// position: {my: "right top", at: "right bottom"}
-				appendTo: "#results",
-				open: function() {
-	        var position = $("#results").position(),
-            left = position.left, top = position.top;
-            $("#results > ul").css({left: left + 20 + "px",
-                                top: top + 4 + "px" });
-          }
-				// select: function( event, ui ) {
-				// 	console.log(ui)
-				// }
-			});
+				// open: function() {
+	      //   var position = $("#results").position(),
+        //     left = position.left, top = position.top;
+				// 		alert('did');
+        //   }
+				});
 			$("#tag").focus();
 		})();
 	</script>

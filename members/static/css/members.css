@@ -810,7 +810,7 @@ img#mem-photo {
 	opacity: 0.5;
 }
 
-.profile-img-box:hover #edit-img, .profile-img-box:hover #org-img-edit {
+.profile-img-box:hover .edit-img, .profile-img-box:hover #org-img-edit {
 	color: RGBA(0, 0, 0, 1);
 }
 
@@ -818,7 +818,7 @@ img#mem-photo {
 	display: block;
 }
 
-#edit-img {
+.edit-img, .locked-img {
 	color: RGBA(0, 0, 0, 0);
 	position: relative;
 	top: 0;
@@ -828,7 +828,7 @@ img#mem-photo {
 	padding-left: 10%;
 }
 
-#edit-img h3 {
+.edit-img h3 {
 	font-size: 1.7em;
 }
 
@@ -855,7 +855,7 @@ h2#prof-name {
 	position: relative;
 }
 
-#prof-img, #edit-img {
+#prof-img, .edit-img, .locked-img {
 	margin-left: 2%;
 	display: block;
   overflow: hidden;
@@ -1694,7 +1694,7 @@ footer.sticky-footer {
 }
 
 @media only screen and (max-width: 1300px) {
-	.prof-img, #edit-img {
+	.prof-img, .edit-img, .locked-img {
 		width: 200px;
 		height: 200px;
 	}
@@ -1705,10 +1705,10 @@ footer.sticky-footer {
 }
 
 @media only screen and (max-width: 1390px) {
-	.prof-img, #edit-img {
+	.prof-img, .edit-img, .locked-img {
 		width: 250px;
 		height: 250px;
-		margin-left: 1%;
+		margin-left: 3%;
 	}
 
 	.org-img {
