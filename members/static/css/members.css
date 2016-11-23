@@ -656,6 +656,10 @@ textarea#id_bio {
 	width: 250px;
 }
 
+#org-img-edit {
+	margin-top: 15%;
+}
+
 #org-img-edit h5 {
 	margin-left: 25%;
 }
