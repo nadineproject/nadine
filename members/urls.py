@@ -15,7 +15,7 @@ urlpatterns = [
 
     # Profile
     url(r'^profile/$', profile.profile_redirect, name='member_profile_redirect'),
-    url(r'^profile/(?P<username>[^/]+)/$', profile.user, name='member_profile'),
+    url(r'^profile/(?P<username>[^/]+)/$', profile.profile, name='member_profile'),
     url(r'^profile/(?P<username>[^/]+)/private/$', profile.profile_private, name='member_profile_private'),
     url(r'^profile/(?P<username>[^/]+)/memberships/$', profile.profile_membership, name='member_profile_membership'),
     url(r'^profile/(?P<username>[^/]+)/organizations/$', profile.profile_orgs, name='member_profile_orgs'),
@@ -45,9 +45,12 @@ urlpatterns = [
     url(r'^tag_list/$', tags.tags, name='member_tags'),
     url(r'^tag_cloud/$', tags.tag_cloud, name='member_tag_cloud'),
     url(r'^tag/(?P<tag>[^/]+)/$', tags.tag, name='member_tag'),
-    url(r'^user_tags/(?P<username>[^/]+)/$', tags.user_tags, name='member_user_tags'),
-    url(r'^del_tag/(?P<username>[^/]+)/(?P<tag>[^/]+)/$', tags.delete_tag_in_profile, name='member_remove_tag'),
+    url(r'^tag/remove/(?P<username>[^/]+)/(?P<tag>[^/]+)/$', tags.remove_tag, name='member_remove_tag'),
+    url(r'^tag/add/(?P<username>[^/]+)/$', tags.add_tag, name='member_add_tag'),
+    url(r'^tags/user/json$', tags.user_tags_json, name='user_tags_json'),
+    url(r'^tags/org/json$', tags.org_tags_json, name='org_tags_json'),
     url(r'^org_tag_cloud/$', tags.org_tag_cloud, name='member_org_tag_cloud'),
+
 
     # Connect
     url(r'^connect/(?P<username>[^/]+)/$', connect.connect, name='member_connect'),

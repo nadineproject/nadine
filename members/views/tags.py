@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404, HttpRequest
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404, HttpRequest, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 
@@ -57,48 +57,47 @@ def tag(request, tag):
 
 
 @login_required
-def user_tags(request, username):
-    user = get_object_or_404(User, username=username)
-    if not user == request.user:
-        if not request.user.is_staff:
-            return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
-    user_tags = user.profile.tags.all()
+def user_tags_json(request):
+    tags = []
+    for tag in UserProfile.tags.all().order_by('name'):
+        tags.append(tag.name)
+    response_data = {'user_tags': tags}
+    return JsonResponse(response_data)
 
-    error = None
-    if request.method == 'POST':
-        tag = request.POST.get('tag')
-        if tag:
-            for p in string.punctuation:
-                if p in tag:
-                    error = "Tags can't contain punctuation."
-                    break
-            else:
-                user.profile.tags.add(tag.lower())
-        return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
-
-    all_tags = UserProfile.tags.all()
-    context = {'user': user, 'user_tags': user_tags, 'all_tags': all_tags,
-        'error': error, 'settings': settings}
-    return render(request, 'members/user_tags.html', context)
-
-# @login_required
-# def delete_tag(request, username, tag):
-#     user = get_object_or_404(User, username=username)
-#     if not user == request.user:
-#         if not request.user.is_staff:
-#             # If not this user and not staff, send this person back to their profile
-#             return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
-#     user.profile.tags.remove(tag)
-#     return HttpResponseRedirect(reverse('member_user_tags', kwargs={'username': username}))
 
 @login_required
-def delete_tag_in_profile(request, username, tag):
+def org_tags_json(request):
+    tags = []
+    for tag in Organization.tags.all().order_by('name'):
+        tags.append(tag.name)
+    response_data = {'org_tags': tags}
+    return JsonResponse(response_data)
+
+
+@login_required
+def add_tag(request, username):
     user = get_object_or_404(User, username=username)
-    if not user == request.user:
-        if not request.user.is_staff:
-            # If not this user and not staff, send this person back to their profile
-            return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
+    if not user == request.user and not request.user.is_staff:
+        return HttpResponseForbidden
+    if not 'tag' in request.POST:
+        return Http404()
+
+    tag = request.POST.get('tag').strip().lower()
+    print("Tag: '%s'" % tag)
+    if tag.isalnum():
+        user.profile.tags.add(tag)
+    else:
+        messages.add_message(request, messages.ERROR, "Tags can't contain punctuation.")
+    return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
+
+
+@login_required
+def remove_tag(request, username, tag):
+    user = get_object_or_404(User, username=username)
+    if not user == request.user and not request.user.is_staff:
+        return HttpResponseForbidden
     user.profile.tags.remove(tag)
     return HttpResponseRedirect(reverse('member_profile', kwargs={'username': username}))
+
 
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
