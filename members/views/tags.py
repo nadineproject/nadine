@@ -72,11 +72,16 @@ def user_tags_json(request):
 
 @login_required
 def org_tags_json(request):
-    tags = []
-    for tag in Organization.tags.all().order_by('name'):
-        tags.append({'id': tag.id, 'value': tag.name})
-    response_data = {'org_tags': tags}
-    return JsonResponse(response_data)
+    items = []
+    term = request.GET.get('term', '').strip()
+    query = Organization.tags.all()
+    if len(term) >= 3:
+        query = query.filter(name__icontains=term)
+    elif len(term) > 0:
+        query = query.filter(name__istartswith=term)
+    for i in query.order_by('name'):
+        items.append({'id': i.id, 'value': i.name,})
+    return JsonResponse(items, safe=False)
 
 
 @login_required
