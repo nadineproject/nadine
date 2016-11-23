@@ -748,7 +748,9 @@ h5.org-members {
 .org-form #public_help p {
 	width: 70%;
 	text-align: center;
-	margin-left: 10%;
+	margin-left: 1%;
+	background-color: white;
+	padding: 1%;
 }
 
 .org-btn {
