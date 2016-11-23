@@ -44,7 +44,8 @@ def org_tag_cloud(request):
     tags=[]
     # org_count = 1
     for tag in Organization.tags.all().order_by('name'):
-        org_count = Organization.helper.organizations_with_tag(tag).count()
+        org_count = Organization.objects.organizations_with_tag(tag).count()
+        print org_count
         tags.append((tag, org_count))
     return render(request, 'members/tag_cloud.html', {'tags': tags})
 

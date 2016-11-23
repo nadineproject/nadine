@@ -294,6 +294,10 @@ input#id_photo {
 	margin-left: 35%;
 }
 
+.billing-btn {
+	font-size: .8em;
+}
+
 #confirm-btn {
 	margin-left: 40%;
 }
@@ -650,6 +654,10 @@ textarea#id_bio {
 .photo-div {
 	height: 250px;
 	width: 250px;
+}
+
+#org-img-edit {
+	margin-top: 15%;
 }
 
 #org-img-edit h5 {
