@@ -81,6 +81,7 @@
 									<li><a>Tags</a></li>
 									<li><a>Mailing Lists</a></li>
 									<li><a>Slack</a></li>
+									<li><a>FAQ</a></li>
 									<li><a>Login</a></li>
 								{% elif request.user.profile.is_active %}
 									<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown1' href="{% url 'member_members' %}">Members</a>
@@ -93,6 +94,7 @@
 									<li><a href="{% url 'member_calendar' %}">Events</a></li>
 									<li><a href="{% url 'member_email_lists' %}">Mailing Lists</a></li>
 									<li><a class='slack-a' href="{% url 'member_slack' user.username %}">Slack</a></li>
+									<li><a href="{% url 'member_faq' %}">FAQ</a></li>
 									<li><a href="{% url 'logout' %}">Logout</a></li>
 								{% else %}
 									<li><a href="{% url 'member_not_active' %}">Members</a></li>
@@ -100,6 +102,7 @@
 									<li><a href="{% url 'member_not_active' %}">Events</a></li>
 									<li><a href="{% url 'member_not_active' %}">Mailing Lists</a></li>
 									<li><a href="{% url 'member_not_active' %}">Slack</a></li>
+									<li><a href="{% url 'member_not_active' %}">FAQ</a></li>
 									<li><a href="{% url 'logout' %}">Logout</a></li>
 								{% endif %}
 				      </ul>
@@ -112,6 +115,7 @@
 									<li><a>Events</a></li>
 									<li><a>Mailing Lists</a></li>
 									<li><a>Slack</a></li>
+									<li><a>FAQ</a></li>
 									<li><a>Login</a></li>
 								{% elif request.user.profile.is_active %}
 									<li><a href="{% url 'member_members' %}">Members</a></li>
@@ -120,6 +124,7 @@
 									<li><a href="{% url 'member_tag_cloud' %}">Tags</a></li>
 									<li><a href="{% url 'member_email_lists' %}">Mailing Lists</a></li>
 									<li><a class='slack-a' href="{% url 'member_slack' user.username %}">Slack</a></li>
+									<li><a href="{% url 'member_faq' %}">FAQ</a></li>
 									<li><a href="{% url 'logout' %}">Logout</a></li>
 								{% else %}
 									<li><a href="{% url 'member_not_active' %}">Members</a></li>
@@ -128,6 +133,7 @@
 									<li><a href="{% url 'member_not_active' %}">Tags</a></li>
 									<li><a href="{% url 'member_not_active' %}">Mailing Lists</a></li>
 									<li><a href="{% url 'member_not_active' %}">Slack</a></li>
+									<li><a href="{% url 'member_not_active' %}">FAQ</a></li>
 									<li><a href="{% url 'logout' %}">Logout</a></li>
 								{% endif %}
 							</ul>
