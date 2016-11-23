@@ -11,6 +11,7 @@
 
 {% block content %}
 <div class='left-profile col s3'>
+
 	<div class='photo-div'>
 		<div class='profile-img-box'>
 			<div class='editable-photo org-img'>
@@ -28,10 +29,12 @@
 			{% endif %}
 		</div>
 	</div>
+
 	<div class='tags-box' style="margin-top:10%;">
 		<p style='text-align:center;'> - <strong>Tags</strong> - </p>
 		{% include "members/org_tags.html" %}
 	</div>
+
 </div>
 
 <div id='picModal' class='modal'>
@@ -48,9 +51,9 @@
 	<div class='org-info'>
 		<h3 class='oswald col s9' style='margin-bottom:1%;'>{{ organization.name }}</h3>
 		<div class='col s3'>
-		{% if can_edit %}
-			<a class='col s4 tooltipped' data-position="bottom" data-tooltip="Edit Details" href="{% url 'member_org_edit' organization.id %}"><img id='edit' alt='edit icon' style='height:30px;'/></a>
-		{% endif %}
+			{% if can_edit %}
+				<a class='col s4 tooltipped' data-position="bottom" data-tooltip="Edit Details" href="{% url 'member_org_edit' organization.id %}"><img id='edit' alt='edit icon' style='height:30px;'/></a>
+			{% endif %}
 			{% if organizaiton.locked %}
 				<div class='col s4 tooltipped' data-position="bottom" data-tooltip='Locked'>
 					<img id='locked' alt='locked icon'/>
@@ -66,7 +69,7 @@
 		</div>
 		<div class='col s12'>
 			<p style="font-style:italic;">
-				{{ organization.blurb}}
+				{{ organization.blurb|default:"" }}
 			</p>
 		</div>
 		{% if organization.bio %}
@@ -76,7 +79,7 @@
 			</div>
 		{% endif %}
 
-		<h5 class='oswald org-members col s12' >Organization Members</h5>
+		<h5 class='oswald org-members col s12'>Organization Members</h5>
 		<table>
 			<tr>
 				<th>Member</th>
@@ -111,7 +114,7 @@
 					</tr>
 				</form>
 			{% endfor %}
-			{% if request.user.is_staff or can_edit %}
+			{% if can_edit %}
 				<form id="org_mem_add" action="{% url 'member_org_member' organization.id %}" method="POST">
 					<input type="hidden" name="action" value="add"/>
 					{% csrf_token %}
@@ -125,26 +128,20 @@
 			{% endif %}
 		</table>
 
-		{% if organization.notes %}
+		<!-- {% if organization.notes %}
 			<h5 class='oswald' style='color:black;'>Notes</h5>
 			<ul>
 				{% for n in organization.notes %}
 					<li>{{ n.created_ts }} {{ n.created_by }}: {{ n.note }}</li>
 				{% endfor %}
 			</ul>
-		{% endif %}
+		{% endif %} -->
+
 	</div>
 </div>
 
 {% block sub-extrajs %}
 <script>
-	function get_tab(url, div_id) {
-		$.get(url, {}, function(content) {
-			div = $(div_id);
-			div.html(content);
-		});
-	}
-
 	function get_orientation(img) {
 		if ((img.width() < img.height()) && img.width() > 1) {
 			$('#mem-photo').attr('class', 'portrait');

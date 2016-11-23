@@ -49,6 +49,7 @@ def org_tag_cloud(request):
         tags.append((tag, org_count))
     return render(request, 'members/tag_cloud.html', {'tags': tags})
 
+
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def tag(request, tag):
@@ -58,29 +59,7 @@ def tag(request, tag):
 
 
 @login_required
-def user_tags_json(request):
-    items = []
-    term = request.GET.get('term', '').strip()
-    query = UserProfile.tags.all()
-    if len(term) >= 3:
-        query = query.filter(name__icontains=term)
-    elif len(term) > 0:
-        query = query.filter(name__istartswith=term)
-    for i in query.order_by('name'):
-        items.append({'id': i.id, 'value': i.name,})
-    return JsonResponse(items, safe=False)
-
-
-@login_required
-def org_tags_json(request):
-    tags = []
-    for tag in Organization.tags.all().order_by('name'):
-        tags.append({'id': tag.id, 'value': tag.name})
-    response_data = {'org_tags': tags}
-    return JsonResponse(response_data)
-
-
-@login_required
+@user_passes_test(is_active_member, login_url='member_not_active')
 def add_tag(request, username):
     user = get_object_or_404(User, username=username)
     if not user == request.user and not request.user.is_staff:
@@ -88,7 +67,7 @@ def add_tag(request, username):
     if not 'tag' in request.POST:
         return Http404()
 
-    tag = request.POST.get('tag').strip().lower()
+    tag = request.POST.get("tag", "").strip().lower()
     if tag.isalnum() or ' ' in tag:
         user.profile.tags.add(tag)
     else:
@@ -97,6 +76,7 @@ def add_tag(request, username):
 
 
 @login_required
+@user_passes_test(is_active_member, login_url='member_not_active')
 def remove_tag(request, username, tag):
     user = get_object_or_404(User, username=username)
     if not user == request.user and not request.user.is_staff:
