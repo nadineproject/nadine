@@ -47,6 +47,7 @@ urlpatterns = [
     url(r'^tag/(?P<tag>[^/]+)/$', tags.tag, name='member_tag'),
     url(r'^user_tags/(?P<username>[^/]+)/$', tags.user_tags, name='member_user_tags'),
     url(r'^del_tag/(?P<username>[^/]+)/(?P<tag>[^/]+)/$', tags.delete_tag_in_profile, name='member_remove_tag'),
+    url(r'^org_tag_cloud/$', tags.org_tag_cloud, name='member_org_tag_cloud'),
 
     # Connect
     url(r'^connect/(?P<username>[^/]+)/$', connect.connect, name='member_connect'),

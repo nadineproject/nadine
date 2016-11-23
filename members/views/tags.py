@@ -12,6 +12,7 @@ from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 
 from nadine.models.core import UserProfile
+from nadine.models.organization import Organization
 
 from members.views.core import is_active_member
 
@@ -37,6 +38,15 @@ def tag_cloud(request):
             tags.append((tag, member_count))
     return render(request, 'members/tag_cloud.html', {'tags': tags})
 
+@login_required
+@user_passes_test(is_active_member, login_url='member_not_active')
+def org_tag_cloud(request):
+    tags=[]
+    # org_count = 1
+    for tag in Organization.tags.all().order_by('name'):
+        org_count = Organization.helper.organizations_with_tag(tag).count()
+        tags.append((tag, org_count))
+    return render(request, 'members/tag_cloud.html', {'tags': tags})
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')

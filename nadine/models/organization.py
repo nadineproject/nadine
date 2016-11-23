@@ -33,7 +33,6 @@ class OrganizationManager(models.Manager):
         sorted_orgs = OrderedDict(sorted(orgs.items(), key=lambda t: t[0]))
         return sorted_orgs.values()
 
-
 def org_photo_path(instance, filename):
     ext = filename.split('.')[-1]
     return "org_photos/%s.%s" % (instance.name, ext.lower())
@@ -114,6 +113,16 @@ class Organization(models.Model):
     class Meta:
         app_label = 'nadine'
         ordering = ['name']
+
+class OrganizationQueryHelper():
+    def active_orgs(self):
+        active_orgs = Q(id__in=Organization.objects.active_organizations())
+        return self.active_orgs().order_by('name')
+
+    def organizations_with_tag(self, tag):
+        return self.active_orgs().filter(organization__tags__name__in=[tag])
+
+Organization.helper = OrganizationQueryHelper()
 
 
 class OrganizationMember(models.Model):
