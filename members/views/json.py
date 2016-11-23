@@ -36,6 +36,7 @@ def filter_query(query, term):
 # Views
 ######################################################################
 
+# TODO - These should be class views. --JLS
 
 @login_required
 def user_tags(request):

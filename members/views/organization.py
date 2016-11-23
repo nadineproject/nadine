@@ -19,6 +19,7 @@ from members.views.core import is_active_member
 
 
 @login_required
+@user_passes_test(is_active_member, login_url='member_not_active')
 def org_list(request):
     orgs = Organization.objects.active_organizations()
     context = {'organizations': orgs}
@@ -131,40 +132,30 @@ def org_edit_photo(request, org_id):
     context = { 'organization': org }
     return render(request, 'members/org_edit_photo.html', context)
 
+
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
-def org_tags(request, org_id):
-    error = None
+def add_tag(request, org_id):
     org = get_object_or_404(Organization, id=org_id)
     if not (request.user.is_staff or org.can_edit(request.user)):
         return HttpResponseForbidden("Forbidden")
 
-    org_tags = org.tags.all()
-    if request.method == 'POST':
-        tag = request.POST.get('tag')
-        if tag:
-            for p in string.punctuation:
-                if p in tag:
-                    error = "Tags can't contain punctuation."
-                    break
-            else:
-                org.tags.add(tag.lower())
-        return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
-
-    all_tags = Organization.tags.all()
-    context = {'organization': org, 'org_tags': org_tags, 'all_tags': all_tags,
-        'error': error, 'settings': settings}
-    return render(request, 'members/org_tags.html', context)
+    tag = request.POST.get("tag", "").strip().lower()
+    if tag.isalnum() or ' ' in tag:
+        org.tags.add(tag)
+    else:
+        messages.add_message(request, messages.ERROR, "Tags can't contain punctuation.")
+    return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
 
 
 @login_required
-def org_remove_tag(request, org_id, tag):
+@user_passes_test(is_active_member, login_url='member_not_active')
+def remove_tag(request, org_id, tag):
     org = get_object_or_404(Organization, id=org_id)
     if not (request.user.is_staff or org.can_edit(request.user)):
         return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
     org.tags.remove(tag)
     return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
-
 
 
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

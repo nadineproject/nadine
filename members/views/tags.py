@@ -59,6 +59,7 @@ def tag(request, tag):
 
 
 @login_required
+@user_passes_test(is_active_member, login_url='member_not_active')
 def add_tag(request, username):
     user = get_object_or_404(User, username=username)
     if not user == request.user and not request.user.is_staff:
@@ -66,7 +67,7 @@ def add_tag(request, username):
     if not 'tag' in request.POST:
         return Http404()
 
-    tag = request.POST.get('tag').strip().lower()
+    tag = request.POST.get("tag", "").strip().lower()
     if tag.isalnum() or ' ' in tag:
         user.profile.tags.add(tag)
     else:
@@ -75,6 +76,7 @@ def add_tag(request, username):
 
 
 @login_required
+@user_passes_test(is_active_member, login_url='member_not_active')
 def remove_tag(request, username, tag):
     user = get_object_or_404(User, username=username)
     if not user == request.user and not request.user.is_staff:

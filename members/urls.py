@@ -37,8 +37,8 @@ urlpatterns = [
     url(r'^organization/(?P<org_id>\d+)/edit/$', organization.org_edit, name='member_org_edit'),
     url(r'^organization/(?P<org_id>\d+)/member/$', organization.org_member, name='member_org_member'),
     url(r'^edit_photo/organization/(?P<org_id>\d+)/$', organization.org_edit_photo, name='member_org_edit_photo'),
-    url(r'^organization/(?P<org_id>\d+)/tags/$', organization.org_tags, name='member_org_tags'),
-    url(r'^del_tag/(?P<org_id>\d+)/(?P<tag>[^/]+)/$', organization.org_remove_tag, name='member_org_remove_tag'),
+    url(r'^organization/(?P<org_id>\d+)/tags/$', organization.add_tag, name='member_org_add_tag'),
+    url(r'^del_tag/(?P<org_id>\d+)/(?P<tag>[^/]+)/$', organization.remove_tag, name='member_org_remove_tag'),
 
     # Tags
     url(r'^tag_list/$', tags.tags, name='member_tags'),

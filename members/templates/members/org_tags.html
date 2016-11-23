@@ -9,13 +9,14 @@
       </li>
     {% endfor %}
   </ul>
+
   {% if can_edit %}
     <div class="ui-widget">
-      <form action="{% url 'member_org_tags' organization.id %}" method="POST">
+      <form action="{% url 'member_org_add_tag' organization.id %}" method="POST">
         <table class='tag-table'>
           <tr>
-            <td id='tag'>
-              <input name="tag" placeholder="e.g. web">
+            <td>
+              <input id="tag_input" name="tag" placeholder="e.g. non-profit">
             </td>
             <td>
               <input class='btn tag-btn' type="submit" value="Add">
@@ -25,25 +26,15 @@
         {% csrf_token %}
       </form>
     </div>
-
-    {% if error %}
-      <div style="color:red;"><strong>Error:</strong> {{ error }}</div>
-    {% endif %}
-
   {% endif %}
 </div>
 
-
 <script>
-  (function() {
-    var availableTags = [
-      {% for t in all_tags %}
-        "{{ t }}",
-      {% endfor %}
-    ];
-    $( "#tag" ).autocomplete({
-      source: availableTags
-    });
-    $("#tag").focus();
-  })();
+	(function() {
+		$( "#tag_input" ).autocomplete({
+			source: "{% url 'json_org_tags' %}",
+			minLength: 2,
+		});
+		$("#tag").focus();
+	})();
 </script>
