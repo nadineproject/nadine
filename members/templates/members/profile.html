@@ -9,7 +9,11 @@
 
 {% block content %}
 <div class='left-profile col s4'>
-  <div class='profile-img-box'>
+  {% if ALLOW_PHOTO_UPLOAD and can_edit %}
+    <div class='profile-img-box' id='change-opacity'>
+  {% else %}
+    <div class='profile-img-box'>
+  {% endif %}
     <div class='editable-photo prof-img'>
       {% if user.profile.photo %}
         <a href="{{ user.profile.photo.url }}"><img id='mem-photo' src="{{ user.profile.photo.url }}"></a>
@@ -23,7 +27,7 @@
         <h3>Edit Photo</h3>
       </div>
     {% else %}
-    <div class='locked-img'></div>
+      <div class='locked-img'></div>
     {% endif %}
   </div>
   <div class='tags-box col s12' style='margin-top:5%;'>
@@ -163,6 +167,12 @@
             e.preventDefault();
             $('#picModal').css('display', 'block');
           });
+
+          $('.locked-img').on('click', function(e) {
+            e.preventDefault();
+            url = $('.prof-img a').attr('href');
+            window.open(url);
+          })
 
           $('.collapsible-header').click(function(e) {
             e.preventDefault();

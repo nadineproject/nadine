@@ -387,6 +387,10 @@ input#id_photo {
 	text-transform: uppercase;
 }
 
+.viewable {
+	color: RGBA(79, 134, 135, 1);
+}
+
 td.cap-label {
 	border: none;
 	padding-bottom: 0;
@@ -840,11 +844,11 @@ img#mem-photo {
 	margin-left: 40%;
 }
 
-.profile-img-box:hover #mem-photo {
+#change-opacity:hover #mem-photo {
 	opacity: 0.5;
 }
 
-.profile-img-box:hover .edit-img, .profile-img-box:hover #org-img-edit {
+#change-opacity:hover .edit-img, #change-opacity:hover #org-img-edit {
 	color: RGBA(0, 0, 0, 1);
 }
 

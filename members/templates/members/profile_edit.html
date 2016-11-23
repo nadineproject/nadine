@@ -15,7 +15,7 @@
 {% block reg_edit %}
 <h3 class='oswald' style='text-align:center;'>Edit Your Profile</h3>
 
-<p align="center"><em>NOTE: Items in <strong>bold</strong> are viewable by all active members.</em></p>
+<p align="center"><em>NOTE: Items in <strong style='color:RGBA(79, 134, 135, 1);'>green bold</strong> are viewable by all active members.</em></p>
 
 <div id="profile_form">
 
@@ -99,8 +99,8 @@
     <div id='contact'>
       <table>
         <tr>
-          <td class='cap-label' id='pf-first'><strong>First Name</strong></td>
-          <td class='cap-label' id='pf-last'><strong>Last Name</strong></td>
+          <td class='cap-label viewable' id='pf-first'><strong>First Name</strong></td>
+          <td class='cap-label viewable' id='pf-last'><strong>Last Name</strong></td>
         </tr>
         <tr>
           <td class='pf-input'>{{ profile_form.first_name }}</td>
@@ -184,7 +184,7 @@
     <div id='websites'>
       <table>
         <tr>
-          <td class='cap-label'><strong>Bio</strong></td>
+          <td class='cap-label viewable'><strong>Bio</strong></td>
         </tr>
         <tr>
           <td class='pf-input' id='pf_bio'>{{ profile_form.bio }}</td>
@@ -193,8 +193,8 @@
       </table>
       <table>
         <tr>
-          <td class='cap-label'><strong>Professional Website</strong></td>
-          <td class='cap-label'><strong>Personal Website</strong></td>
+          <td class='cap-label viewable'><strong>Professional Website</strong></td>
+          <td class='cap-label viewable'><strong>Personal Website</strong></td>
         </tr>
         <tr>
           <td class='pf-input'>{{ profile_form.url_professional }}</td>
@@ -207,8 +207,8 @@
       </table>
       <table>
         <tr>
-          <td class='cap-label'><strong>Twitter</strong></td>
-          <td class='cap-label'><strong>Facebook</strong></td>
+          <td class='cap-label viewable'><strong>Twitter</strong></td>
+          <td class='cap-label viewable'><strong>Facebook</strong></td>
         </tr>
         <tr>
           <td class='pf-input'>{{ profile_form.url_twitter }}</td>
@@ -219,8 +219,8 @@
           <td>{{ profile_form.url_facebook.errors }}</td>
         </tr>
         <tr>
-          <td class='cap-label'><strong>Github</strong></td>
-          <td class='cap-label'><strong>LinkedIn </strong></td>
+          <td class='cap-label viewable'><strong>Github</strong></td>
+          <td class='cap-label viewable'><strong>LinkedIn </strong></td>
         </tr>
         <tr>
           <td class='pf-input'>{{ profile_form.url_github }}</td>
@@ -246,7 +246,7 @@
         </td  >
       </tr>
       <tr>
-        <td class='cap-label'><strong>What industry are you in?</strong></td>
+        <td class='cap-label viewable'><strong>What industry are you in?</strong></td>
         <td>{{ profile_form.industry }}</td>
         <td>
           {% if request.user.is_staff %}
@@ -256,7 +256,7 @@
         </td>
       </tr>
       <tr>
-        <td class='cap-label'><strong>Neighborhood:</strong></td>
+        <td class='cap-label viewable'><strong>Neighborhood:</strong></td>
         <td>{{ profile_form.neighborhood }}</td>
         <td width="300px">
           {{ profile_form.neighborhood.errors }}
