@@ -25,8 +25,6 @@
 				</table>
 				{% csrf_token %}
 			</form>
-			<div id="results">
-			</div>
 		</div>
 		{% endif %}
 	</div>
@@ -36,12 +34,7 @@
 			$( "#tag_input" ).autocomplete({
 				source: "{% url 'user_tags_json' %}",
 				minLength: 2,
-				// open: function() {
-	      //   var position = $("#results").position(),
-        //     left = position.left, top = position.top;
-				// 		alert('did');
-        //   }
-				});
+			});
 			$("#tag").focus();
 		})();
 	</script>

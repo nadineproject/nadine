@@ -58,13 +58,16 @@ def tag(request, tag):
 
 @login_required
 def user_tags_json(request):
-    user_query = UserProfile.tags.all()
-    if 'term' in request.GET:
-        user_query = user_query.filter(name__istartswith=request.GET['term'])
-    tags = []
-    for tag in user_query.order_by('name'):
-        tags.append({'id': tag.id, 'value': tag.name})
-    return JsonResponse(tags, safe=False)
+    items = []
+    term = request.GET.get('term', '').strip()
+    query = UserProfile.tags.all()
+    if len(term) >= 3:
+        query = query.filter(name__icontains=term)
+    elif len(term) > 0:
+        query = query.filter(name__istartswith=term)
+    for i in query.order_by('name'):
+        items.append({'id': i.id, 'value': i.name,})
+    return JsonResponse(items, safe=False)
 
 
 @login_required
