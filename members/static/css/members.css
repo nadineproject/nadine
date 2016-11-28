@@ -682,7 +682,7 @@ textarea#id_bio {
 	font-size: .8em;
 	font-style: italic;
 	/*display: block;*/
-	overflow: hidden;
+	white-space: normal;
 }
 
 /*Organization view*/
