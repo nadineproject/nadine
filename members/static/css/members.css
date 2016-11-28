@@ -1559,6 +1559,12 @@ div.ui-timepicker-container.ui-timepicker-standard {
 	font-size: 1.3em;
 }
 
+/*Tav_View*/
+.tag-view td {
+	padding-bottom: 2%;
+}
+
+
 /* Footer */
 
 footer.home-footer {
