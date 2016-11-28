@@ -620,6 +620,10 @@ textarea#id_bio {
 	overflow: auto;
 }
 
+.org-group {
+	white-space: nowrap;
+}
+
 .org-card {
 	width: 210px;
 	max-height: 315px;
@@ -629,7 +633,7 @@ textarea#id_bio {
 	display: inline-block;
 	padding: 1%;
 	box-sizing: content-box;
-	float: left;
+	float:left;
 	overflow: hidden;
 }
 

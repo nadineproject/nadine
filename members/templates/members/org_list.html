@@ -9,7 +9,7 @@
 {% block content %}
 <h3 class='oswald' style='text-align:center;'>Organizations at {{ site.name }}</h3>
 
-<div style="margin:auto; width:100%; text-align:center;">
+<div style="width:100%; text-align:center;" class='org-group'>
 	{% for org in organizations %}
 		{% include 'members/org_card_frag.html' %}
 	{% endfor %}
