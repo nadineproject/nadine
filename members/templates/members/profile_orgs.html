@@ -25,21 +25,21 @@
   </tbody>
 </table>
 {% else %}
-    No Organiations
+    No Organizations
 {% endif %}
 
 <div class="ui-widget">
   <h3>Add Organization</h3>
   <form action="." method="POST">
     {% csrf_token %}
-    <input id="org_input" type="text"/>
-    <input id="add_org" type="submit" value="Add"/>
-  </for>
+    <input id="org_input" name="org" type='text' />
+    <input class='btn' id="add_org" type="submit" value="Add" />
+  </form>
 </div>
 
 <script>
   (function() {
-    $( "#org_input" ).autocomplete({
+    $("#org_input").autocomplete({
       source: "{% url 'json_org_search' %}",
       minLength: 2,
     });

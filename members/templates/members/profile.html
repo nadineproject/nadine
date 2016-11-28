@@ -91,7 +91,7 @@
         <li>
           <div class='collapsible-header' id='orgs_tab'>Organizations</div>
           <div class='collapsible-body' id='orgs_target'>
-            {% include "members/spinner.html" %}
+            {% include "members/profile_orgs.html" %}
           </div>
         </li>
         <li>
@@ -158,7 +158,6 @@
 
           onclick_tab("#membership", "{% url 'member_profile_membership' user.username %}");
           onclick_tab("#activity", "{% url 'member_profile_activity' user.username %}");
-          onclick_tab("#orgs", "{% url 'member_profile_orgs' user.username %}");
           onclick_tab("#billing", "{% url 'member_profile_billing' user.username %}");
           onclick_tab("#devices", "{% url 'member_profile_devices' user.username %}");
           onclick_tab("#pic", "{% url 'member_edit_pic' user.username %}")
