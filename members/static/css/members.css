@@ -743,7 +743,7 @@ h5.org-members {
 	font-weight: bold;
 }
 
-.org-form #id_name, .org-form #id_bio, .org-form #id_blurb {
+.org-form #id_name, .org-form #id_bio, .org-form #id_blurb, .org-form #id_title, .org-form #id_start_date, .org-form #id_end_date, .org-form #id_username, .org-form #member-name input {
 	background-color: white;
 	width: 70%;
 	border: none;
@@ -755,6 +755,13 @@ h5.org-members {
 	text-align: center;
 	margin-left: 1%;
 	background-color: white;
+	padding: 1%;
+}
+
+.org-form .org-input {
+	background-color: white;
+	width: 70%;
+	border: none;
 	padding: 1%;
 }
 

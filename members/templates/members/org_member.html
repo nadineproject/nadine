@@ -7,22 +7,65 @@
 {% endblock %}
 
 {% block content %}
-<h2>{{ action|title }} {{ organization.name}} Member</h2>
+<h3 class='oswald' style='text-align: center;'>{{ action|title }} {{ organization.name}} Member</h3>
 
-<form method="POST" action="." enctype="multipart/form-data">
+<form class='org-form' method="POST" action="." enctype="multipart/form-data">
 	<input type="hidden" name="action" value="save"/>
-	<li>
-		<label for="id_username">User:</label>
-		{% if member %}
-			{{ member.user.get_full_name }}
-		{% else %}
-			<input id="id_username" name="username"/>
-		{% endif %}
-	</li>
-
-	{{ form.as_ul }}
-	<input class='btn' type="submit" value="Save"/>
-	<input class='btn' type="button" value="Cancel" onclick="location.href='{% url 'member_org_view' organization.id %}'"/>
+	{{ form.member_id }}
+	{{ form.org_id }}
+	{{ form.username }}
+	<table>
+		<tr>
+			<td class='org-label'>
+				User
+			</td>
+			<td id='member-name'>
+				{% if member %}
+					<input type='text' readonly value='{{ member.user.get_full_name }} ' />
+				{% else %}
+					<input id="id_username" name="username"/>
+				{% endif %}
+			</td>
+			<td class='pf-error'>
+				{{ form.username.errors }}
+			</td>
+		</tr>
+		<tr>
+			<td class='org-label'>
+				Title
+			</td>
+			<td>
+				{{ form.title }}
+			</td>
+			<td class='pf-error'>
+				{{ form.title.errors }}
+			</td>
+		</tr>
+		<tr>
+			<td class='org-label'>
+				Start Date
+			</td>
+			<td>
+				{{ form.start_date }}
+			</td>
+			<td class='pf-error'>
+				{{ form.start_date.error }}
+			</td>
+		</tr>
+		<tr>
+			<td class='org-label'>
+				End Date
+			</td>
+			<td>
+				{{ form.end_date }}
+			</td>
+			<td class='pf-error'>
+				{{ form.end_date.errors }}
+			</td>
+		</tr>
+	</table>
+	<input class='btn org-btn' type="submit" value="Save"/>
+	<input class='btn cancel-btn' type="button" value="Cancel" onclick="location.href='{% url 'member_org_view' organization.id %}'"/>
 	{% csrf_token %}
 </form>
 

@@ -50,9 +50,6 @@
 	<div class='org-info'>
 		<h3 class='oswald col s9' style='margin-bottom:1%;'>{{ organization.name }}</h3>
 		<div class='col s3'>
-			{% if can_edit %}
-				<a class='col s4 tooltipped' data-position="bottom" data-tooltip="Edit Details" href="{% url 'member_org_edit' organization.id %}"><img id='edit' alt='edit icon' style='height:30px;'/></a>
-			{% endif %}
 			{% if organizaiton.locked %}
 				<div class='col s4 tooltipped' data-position="bottom" data-tooltip='Locked'>
 					<img id='locked' alt='locked icon'/>
@@ -61,6 +58,9 @@
 				<div class='col s4 tooltipped' data-position="bottom" data-tooltip='Unlocked'>
 					<img id='unlocked' alt='unlocked icon'/>
 				</div>
+			{% endif %}
+			{% if can_edit %}
+				<a class='col s4 tooltipped' data-position="bottom" data-tooltip="Edit Details" href="{% url 'member_org_edit' organization.id %}"><img id='edit' alt='edit icon' style='height:30px;'/></a>
 			{% endif %}
 			{% if request.user.is_staff %}
 				<a class='col s4 tooltipped' data-position="bottom" data-tooltip='Admin' href="{{ organization.admin_url }}"><img id='manage' alt='admin icon'/></a>
