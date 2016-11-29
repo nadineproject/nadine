@@ -30,10 +30,11 @@
 
 <div class="ui-widget">
   <h3>Add Organization</h3>
-  <form action="." method="POST">
+  <form action="{% url 'member_profile_orgs' user.username %}" method="POST">
     {% csrf_token %}
     <input id="org_input" name="org" type='text' />
-    <input class='btn' id="add_org" type="submit" value="Add" />
+    <input type='hidden' name='action' value='add' />
+    <input class='btn' id="add_org" type='submit' value="Add" />
   </form>
 </div>
 

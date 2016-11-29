@@ -83,9 +83,9 @@ def org_member(request, org_id):
         return HttpResponseForbidden("Forbidden")
 
     # We require a POST and we require an action
-    if not request.method == "POST" or 'action' not in request.POST:
-        return HttpResponseForbidden("Forbidden")
-    action = request.POST['action']
+    # if not request.method == "POST" or 'action' not in request.POST:
+    #     return HttpResponseForbidden("Forbidden")
+    action = request.POST.get('action', 'add')
 
     org_member = None
     if 'member_id' in request.POST:

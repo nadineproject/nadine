@@ -80,6 +80,13 @@ def profile_orgs(request, username):
     if len(search_terms) >= 3:
         search = Organization.objects.filter(name__icontains=search_terms)
 
+    if request.method == 'POST':
+        org = request.POST.get('org')
+        organization = get_object_or_404(Organization, name=org)
+        action = 'add'
+
+        return HttpResponseRedirect( reverse('member_org_member', kwargs={ 'org_id':organization.id }))
+
     context = {'user': user, 'org_memberships': org_memberships, 'search':search }
     return render(request, 'members/profile_orgs.html', context)
 
