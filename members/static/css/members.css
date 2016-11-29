@@ -747,7 +747,7 @@ h5.org-members {
 	font-weight: bold;
 }
 
-.org-form #id_name, .org-form #id_bio, .org-form #id_blurb, .org-form #id_title, .org-form #id_start_date, .org-form #id_end_date, .org-form #id_username {
+.org-form #id_name, .org-form #id_bio, .org-form #id_blurb, .org-form #id_title, .org-form #id_start_date, .org-form #id_end_date, .org-form #id_username, .org-form #end_date, .org-form #start_date {
 	background-color: white;
 	width: 70%;
 	border: none;
