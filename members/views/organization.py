@@ -98,12 +98,29 @@ def org_member(request, org_id):
             form = OrganizationMemberForm(instance=org_member)
         except Exception as e:
             messages.add_message(request, messages.ERROR, "Could not get member: %s" % str(e))
+    if 'add' == action:
+        try:
+            form = OrganizationMemberForm()
+        except Exception as e:
+            messages.add_message(request, messages.ERROR, "Could not get member: %s" % str(e))
     if 'save' == action:
         form = OrganizationMemberForm(request.POST, request.FILES)
         try:
-            if form.is_valid():
-                form.save()
-                return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
+            if 'full_name' in request.POST:
+                member = get_object_or_404(User, id=member_id)
+                user = member.username
+            else:
+                user = request.POST.get('username')
+                member = get_object_or_404(User, username=user)
+            form.member_id = member.id
+            form.username = user
+            form.title = request.POST.get('title')
+            form.start_date = request.POST.get('start_date')
+            form.end_date = request.POST.get('end_date', None)
+            # if form.is_valid():
+            print form
+            form.save()
+            return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
         except Exception as e:
             messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
 
