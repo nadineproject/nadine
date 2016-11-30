@@ -74,7 +74,7 @@ nav #activity-tab { background: #FBD850; color: black; }
 		</tr>
 	{% for log in arp_logs reversed %}
 	<tr class="{% cycle 'row-even' 'row-odd' %}">
-		<td nowrap>{{ log.start|date:"M d, Y h:m A" }}</td>
+		<td nowrap>{{ log.start|date:"M d, Y h:i A" }}</td>
 		<td>{{ log.end|date:"h:m A" }}</td>
 		<td>{{ log.diff }}</td>
 		<td></td>
@@ -94,7 +94,7 @@ nav #activity-tab { background: #FBD850; color: black; }
 		</tr>
 	{% for log in door_logs reversed %}
 	<tr class="{% cycle 'row-even' 'row-odd' %}">
-		<td nowrap>{{ log.timestamp|date:"M d, Y h:m A" }}</td>
+		<td nowrap>{{ log.timestamp|date:"M d, Y h:i A" }}</td>
 		<td>{{ log.door }}</td>
 		<td>{{ log.event_description }}</td>
 		<td></td>
