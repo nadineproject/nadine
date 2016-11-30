@@ -34,7 +34,7 @@ def profile_redirect(request):
 def profile(request, username):
     user = get_object_or_404(User, username=username)
     emergency_contact = user.get_emergency_contact()
-
+    org_memberships = user.profile.active_organization_memberships()
     can_edit = request.user == user or request.user.is_staff
 
     ALLOW_PHOTO_UPLOAD = settings.ALLOW_PHOTO_UPLOAD
@@ -43,7 +43,7 @@ def profile(request, username):
 
     context = {'user': user, 'emergency_contact': emergency_contact,
         'settings': settings, 'ALLOW_PHOTO_UPLOAD': ALLOW_PHOTO_UPLOAD,
-        'can_edit': can_edit,
+        'can_edit': can_edit, 'org_memberships': org_memberships
     }
     return render(request, 'members/profile.html', context)
 
@@ -59,7 +59,8 @@ def profile_private(request, username):
 def profile_membership(request, username):
     user = get_object_or_404(User, username=username)
     memberships = user.membership_set.all().reverse()
-    context = {'user': user, 'memberships': memberships}
+
+    context = {'user': user, 'memberships': memberships }
     return render(request, 'members/profile_membership.html', context)
 
 
@@ -68,27 +69,6 @@ def profile_documents(request, username):
     user = get_object_or_404(User, username=username)
     context = {'user': user}
     return render(request, 'members/profile_documents.html', context)
-
-
-@login_required
-def profile_orgs(request, username):
-    user = get_object_or_404(User, username=username)
-    org_memberships = user.profile.active_organization_memberships()
-
-    search = None
-    search_terms = request.POST.get('search_terms', '').strip()
-    if len(search_terms) >= 3:
-        search = Organization.objects.filter(name__icontains=search_terms)
-
-    if request.method == 'POST':
-        org = request.POST.get('org')
-        organization = get_object_or_404(Organization, name=org)
-        action = 'add'
-
-        return HttpResponseRedirect( reverse('member_org_member', kwargs={ 'org_id':organization.id }))
-
-    context = {'user': user, 'org_memberships': org_memberships, 'search':search }
-    return render(request, 'members/profile_orgs.html', context)
 
 
 @login_required

@@ -30,7 +30,7 @@
 
 <div class="ui-widget">
   <h3>Add Organization</h3>
-  <form action="{% url 'member_profile_orgs' user.username %}" method="POST">
+  <form id='org-add-form' action="{% url 'member_org_member' 433 %}" method="POST">
     {% csrf_token %}
     <input id="org_input" name="org" type='text' />
     <input type='hidden' name='action' value='add' />
@@ -39,12 +39,17 @@
 </div>
 
 <script>
-$(document).ready(function() {
+(function() {
   $("#org_input").autocomplete({
-        source: "{% url 'json_org_search' %}",
-        minLength: 2,
-      });
-});   
+    source: "{% url 'json_org_search' %}",
+    minLength: 2,
+    select: function(e, ui) {
+      var tmp = ui.item.id;
+      var url_mask = "{% url 'member_org_member' 433 %}".replace(/433/, tmp.toString());
+      $('#org-add-form').attr('action', url_mask);
+    }
+  });
+})();
 </script>
 
 <!--

@@ -79,7 +79,13 @@
 		$('.username_input').autocomplete({
 			source: "{% url 'json_user_search' %}",
 			minLength: 2,
-		});
+		})
+
+		// $('.datepicker').pickadate({
+		// 	selectMonths: true,
+		// 	selectYears: 6,
+		// 	format: 'yyyy-mm-dd'
+		// });
 	})();
 </script>
 {% endblock %}

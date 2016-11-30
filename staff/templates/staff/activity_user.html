@@ -91,10 +91,11 @@ nav #activity-tab { background: #FBD850; color: black; }
 			<th>Door</th>
 			<th>Description</th>
 			<th></th>
+			
 		</tr>
 	{% for log in door_logs reversed %}
 	<tr class="{% cycle 'row-even' 'row-odd' %}">
-		<td nowrap>{{ log.timestamp|date:"M d, Y h:m A" }}</td>
+		<td nowrap>{{ log.timestamp|date:"M d, Y h:f A" }}</td>
 		<td>{{ log.door }}</td>
 		<td>{{ log.event_description }}</td>
 		<td></td>

@@ -91,7 +91,7 @@
         <li>
           <div class='collapsible-header' id='orgs_tab'>Organizations</div>
           <div class='collapsible-body' id='orgs_target'>
-            {% include "members/spinner.html" %}
+            {% include "members/profile_orgs.html" %}
           </div>
         </li>
         <li>
@@ -156,7 +156,7 @@
           var img = $('#mem-photo');
           get_orientation(img);
 
-          load_tab('#orgs_target', "{% url 'member_profile_orgs' user.username %}")
+          // load_tab('#orgs_target', "{% url 'member_profile_orgs' user.username %}")
 
           onclick_tab("#membership", "{% url 'member_profile_membership' user.username %}");
           onclick_tab("#activity", "{% url 'member_profile_activity' user.username %}");
