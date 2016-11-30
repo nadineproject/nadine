@@ -154,7 +154,7 @@ nav #billing-tab { background: #FBD850; color: black; }
                         <input name="comment" size="30" value="Thank you!"/>
                     </td>
                     <td>
-                        <input name="amount" size="5" value="{{ customer.Amount|floatformat:2 }}" />
+                        <input name="amount" size="5" />
                     </td>
                     <td>
                         <input type="submit" value="Run Charges">
@@ -184,7 +184,7 @@ nav #billing-tab { background: #FBD850; color: black; }
                         <input name="enabled" type="checkbox" {% if customer.Enabled %} CHECKED {% endif %} />
                     </td>
                     <td>
-                        <input id="next_date_{{ customer.CustNum }}" name="next_date" size="10" value="{{ customer.Next|slice:":10" }}"/>
+                        <input id="next_date_{{ customer.CustNum }}" name="next_date" size="10"/>
                     </td>
                     <td>
                         <input name="description" size="60" value="{{ customer.Description }}"/>
@@ -193,7 +193,7 @@ nav #billing-tab { background: #FBD850; color: black; }
                         <input name="comment" size="30" value="{{ customer.ReceiptNote }}"/>
                     </td>
                     <td>
-                        <input name="amount" size="5" value="{{ customer.Amount|floatformat:2 }}" />
+                        <input name="amount" size="5" />
                     </td>
                     <td>
                         <input type="submit" value="Save Changes">
