@@ -754,10 +754,18 @@ h5.org-members {
 	padding: 1%;
 }
 
-.org-form #public_help p {
+.org-form #id_blurb {
+	padding-bottom: 10%;
+}
+
+.org-form #id_bio {
+ 	height: 90%;
+}
+
+.org-form #public_help p, .org-form #blurb_help p {
 	width: 70%;
 	text-align: center;
-	margin-left: 1%;
+	margin-left: 10%;
 	background-color: white;
 	padding: 1%;
 }

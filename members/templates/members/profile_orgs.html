@@ -39,12 +39,12 @@
 </div>
 
 <script>
-  (function() {
-    $("#org_input").autocomplete({
-      source: "{% url 'json_org_search' %}",
-      minLength: 2,
-    });
-  })();
+$(document).ready(function() {
+  $("#org_input").autocomplete({
+        source: "{% url 'json_org_search' %}",
+        minLength: 2,
+      });
+});   
 </script>
 
 <!--
