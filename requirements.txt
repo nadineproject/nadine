@@ -11,8 +11,8 @@ django-taggit-templatetags2==1.5.3
 mailchimp==2.0.9
 MonthDelta==1.0b0
 pytz==2016.7
-requests==2.11.1
-cryptography==1.5.3
+requests==2.12.3
+cryptography==1.6
 suds-jurko==0.6
 gunicorn
 

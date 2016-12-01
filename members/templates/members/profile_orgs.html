@@ -53,38 +53,3 @@
   });
 })();
 </script>
-
-<!--
-{% if search %}
-  <h3>Search Results</h3>
-  <table>
-  {% for org in search %}
-    <tr>
-      <td>{{ org.name }}</td>
-      <td>
-        {% if org.locked %}
-          <button onclick="$('#org_extra_{{ org.id }}').toggle();">Locked</button>
-        {% else %}
-          <form id="org_join_form_{{ org.id }}" action="." method="POST">
-            <input type="hidden" name="org_id" value="{{ org.id }}"/>
-            <input type="submit" value="Join"/>
-            {% csrf_token %}
-          </form>
-        {% endif %}
-      </td>
-    </tr>
-    <tr id="org_extra_{{ org.id }}" style="display: none;">
-      <td colspan="2">
-      </td>
-    </tr>
-  {% endfor %}
-</table>
-{% else %}
-  <h3>Add Organization</h3>
-  <form id="org_search_form" action="." method="POST">
-    <input name="search_terms"/>
-    <input type="submit" value="Find Organization"/>
-    {% csrf_token %}
-  </form>
-{% endif %}
--->

@@ -50,8 +50,8 @@ class Organization(models.Model):
     bio = models.TextField(blank=True, null=True)
     photo = models.ImageField(upload_to=org_photo_path, blank=True, null=True)
     public = models.BooleanField(default=False)
-    tags = TaggableManager(blank=True)
     locked = models.BooleanField(default=False)
+    tags = TaggableManager(blank=True)
 
     objects = OrganizationManager()
 
