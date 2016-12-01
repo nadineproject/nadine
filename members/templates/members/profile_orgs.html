@@ -30,11 +30,11 @@
 
 <div class="ui-widget">
   <h3>Add Organization</h3>
-  <form id='org-add-form' action="{% url 'member_org_member' 433 %}" method="POST">
+  <form id='org-add-form' action="{% url 'member_org_add' %}" method="POST">
     {% csrf_token %}
     <input id="org_input" name="org" type='text' />
     <input type='hidden' name='action' value='add' />
-    <input type='hidden' name='add_member' value='{{ user }}' />
+    <input type='hidden' name='add_member' value='{{ user.username }}' />
     <input class='btn' id="add_org" type='submit' value="Add" />
   </form>
 </div>
@@ -45,9 +45,9 @@
     source: "{% url 'json_org_search' %}",
     minLength: 2,
     select: function(e, ui) {
-      var tmp = ui.item.id;
-      var url_mask = "{% url 'member_org_member' 433 %}".replace(/433/, tmp.toString());
-      $('#org-add-form').attr('action', url_mask);
+      var org_id = ui.item.id;
+      var url = "{% url 'member_org_member' 0 %}".replace(/0/, org_id.toString());
+      $('#org-add-form').attr('action', url);
     }
   });
 })();

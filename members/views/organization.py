@@ -48,6 +48,26 @@ def org_view(request, org_id):
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
+def org_add(request):
+    if not 'org' in request.POST and 'add_member' in request.POST:
+        return HttpResponseForbidden("Forbidden")
+
+    user = get_object_or_404(User, username=request.POST['add_member'])
+
+    org_name = request.POST.get('org', '').strip()
+    existing_org = Organization.objects.filter(name__iexact=org_name).first()
+    if existing_org:
+        return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': existing_org.id}))
+        # messages.add_message(request, messages.ERROR, "Organization '%s' already exists!" % org_name)
+        # return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
+
+    org = Organization.objects.create(name=org_name, lead=user, created_by=request.user)
+    OrganizationMember.objects.create(organization=org, user=user, start_date=timezone.now(), admin=True)
+    return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
+
+
+@login_required
+@user_passes_test(is_active_member, login_url='member_not_active')
 def org_edit(request, org_id):
     org = get_object_or_404(Organization, id=org_id)
     if not (request.user.is_staff or org.can_edit(request.user)):
