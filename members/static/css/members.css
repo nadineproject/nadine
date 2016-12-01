@@ -1169,7 +1169,6 @@ img.org-photo#mem-photo {
 .collapsible-body {
 	background-color: RGBA(254, 254, 254, 1);
 	padding: 5%;
-
 }
 
 .collapsible-body h3 {
@@ -1178,8 +1177,16 @@ img.org-photo#mem-photo {
 	padding-top: 2%;
 }
 
-#tabs-6 p {
-	padding: 1%;
+#device-header  {
+	margin-top: 4%;
+}
+
+.collapsible-body p {
+	padding: .3em;
+}
+
+.current-orgs {
+	margin-bottom: 5%;
 }
 
 dt, dd {

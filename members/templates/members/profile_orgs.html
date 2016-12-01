@@ -2,9 +2,9 @@
   Note:  The jquery on this page will not work if loaded outside the profile page.
 {% endcomment %}
 
-<h3>Current Organizations</h3>
+<h3 class='oswald'>Current Organizations</h3>
 {% if org_memberships %}
-<table>
+<table class='current-orgs'>
   <thead>
     <tr>
       <th>Organization</th>
@@ -29,10 +29,10 @@
 {% endif %}
 
 <div class="ui-widget">
-  <h3>Add Organization</h3>
+  <h3 class='oswald'>Add Organization</h3>
   <form id='org-add-form' action="{% url 'member_org_add' %}" method="POST">
     {% csrf_token %}
-    <input id="org_input" name="org" type='text' />
+    <input id="org_input" name="org" type='text' style='width:50%; margin-right:5%;' placeholder='Acme Corp'/>
     <input type='hidden' name='action' value='add' />
     <input type='hidden' name='add_member' value='{{ user.username }}' />
     <input class='btn' id="add_org" type='submit' value="Add" />
