@@ -1026,6 +1026,11 @@ h2#prof-name {
 	height: 30px;
 }
 
+#admin {
+	content: url(../img/admin.png);
+	height: 30px;
+}
+
 #locked {
 	content: url(../img/locked.png);
 	height: 30px;

@@ -63,7 +63,7 @@
 				<a class='col s4 tooltipped' data-position="bottom" data-tooltip="Edit Details" href="{% url 'member_org_edit' organization.id %}"><img id='edit' alt='edit icon' style='height:30px;'/></a>
 			{% endif %}
 			{% if request.user.is_staff %}
-				<a class='col s4 tooltipped' data-position="bottom" data-tooltip='Admin' href="{{ organization.admin_url }}"><img id='manage' alt='admin icon'/></a>
+				<a class='col s4 tooltipped' data-position="bottom" data-tooltip='Admin' href="{{ organization.admin_url }}"><img id='admin' alt='admin icon'/></a>
 			{% endif %}
 		</div>
 		<div class='col s12'>

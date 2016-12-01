@@ -94,7 +94,9 @@ def org_member(request, org_id):
         org_member = org.organizationmember_set.get(id=member_id)
 
     if 'add_member' in request.POST:
-        new_member = request.POST['add_member']
+        add_member = request.POST['add_member']
+        new_member = get_object_or_404(User, username=add_member)
+
 
     form = OrganizationMemberForm()
     if 'edit' == action:
@@ -114,8 +116,9 @@ def org_member(request, org_id):
                 member = get_object_or_404(User, id=member_id)
                 user = member.username
             else:
-                user = request.POST.get('username')
-                member = get_object_or_404(User, username=user)
+                new_id = request.POST['new_id']
+                member = get_object_or_404(User, id=new_id)
+                user = member.username
             form.member_id = member.id
             form.username = user
             form.title = request.POST.get('title')
