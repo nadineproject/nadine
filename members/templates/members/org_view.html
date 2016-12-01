@@ -79,28 +79,34 @@
 			<tr>
 				<th>Member</th>
 				<th>Title</th>
-				<th>From</th>
-				<th>To</th>
-				<th>Lead</th>
-				<th>Admin</th>
-				<th>Active</th>
+				<th>When</th>
 				{% if request.user.is_staff or can_edit %}
 					<th>Action</th>
 				{% endif %}
 			</tr>
 			{% for m in members %}
+				{% if show_all or m.is_active %}
 				<form id="org_mem_{{m.id}}" action="{% url 'member_org_member' organization.id %}" method="POST">
 					<input type="hidden" name="member_id" value="{{ m.id }}"/>
 					<input type="hidden" name="action" value="edit"/>
 					{% csrf_token %}
 					<tr>
-						<td>{{ m.user.get_full_name }}</td>
+						<td>
+							{% if m.is_admin %}<strong>{% endif %}
+								{{ m.user.get_full_name }}
+							{% if m.is_admin %}</strong>{% endif %}
+							{% if m.is_lead %}
+								(<em>Lead</em>)
+							{% endif %}
+							{% if not m.is_active %}
+								(<em>Inactive</em>)
+							{% endif %}
+						</td>
 						<td>{{ m.title|default:"" }}</td>
-						<td>{{ m.start_date }}</td>
-						<td>{{ m.end_date|default:"" }}</td>
-						<td>{{ m.is_lead|yesno:"Yes,No" }}</td>
-						<td>{{ m.is_admin|yesno:"Yes,No" }}</td>
-						<td>{{ m.is_active|yesno:"Yes,No" }}</td>
+						<td>
+							{{ m.start_date }}
+							- {{ m.end_date|default:"current" }}
+						</td>
 						{% if request.user.is_staff or can_edit %}
 							<td>
 								<input class='btn' type="submit" value="Edit"/>
@@ -108,13 +114,14 @@
 						{% endif %}
 					</tr>
 				</form>
+				{% endif %}
 			{% endfor %}
 			{% if can_edit %}
 				<form id="org_mem_add" action="{% url 'member_org_member' organization.id %}" method="POST">
 					<input type="hidden" name="action" value="add"/>
 					{% csrf_token %}
 					<tr>
-						<td colspan="7"></td>
+						<td colspan="3"></td>
 						<td>
 							<input class='btn' type="submit" value="Add"/>
 						</td>
@@ -122,6 +129,12 @@
 				</form>
 			{% endif %}
 		</table>
+
+		[ {% if not show_all %}
+			<a href="?show_all">Show inactive members</a>
+		{% else %}
+			<a href="?">Hide inactive members</a>
+		{% endif %} ]
 
 		<!-- {% if organization.notes %}
 			<h5 class='oswald' style='color:black;'>Notes</h5>

@@ -32,16 +32,12 @@ def org_view(request, org_id):
     org = get_object_or_404(Organization, id=org_id)
     can_edit = org.can_edit(request.user) or request.user.is_staff
 
-    # Individual forms for each of the organization members
-    # org_forms = []
-    # for m in org.organizationmember_set.all().order_by('start_date'):
-    #     form = OrganizationMemberForm(instance=m)
-    #     org_forms.append((m, form))
     members = org.organizationmember_set.all().order_by('start_date')
 
-    context = {'organization': org, 'can_edit':can_edit,
-        # 'org_forms':org_forms,
-        'members':members,
+    context = {'organization': org,
+        'can_edit':can_edit,
+        'members': members,
+        'show_all': 'show_all' in request.GET,
     }
     return render(request, 'members/org_view.html', context)
 
@@ -76,7 +72,7 @@ def org_edit(request, org_id):
     if request.method == "POST":
         form = OrganizationForm(request.POST, request.FILES)
         public = request.POST.get('public', False)
-        
+
         if public == 'True':
             form.public = True
         else:
