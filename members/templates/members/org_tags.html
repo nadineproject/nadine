@@ -34,6 +34,7 @@
 		$( "#tag_input" ).autocomplete({
 			source: "{% url 'json_org_tags' %}",
 			minLength: 2,
+			autoFocus: true,
 		});
 		$("#tag").focus();
 
