@@ -81,6 +81,7 @@ class OrganizationMemberForm(forms.Form):
             self.initial['title'] = self.instance.title
             self.initial['start_date'] = self.instance.start_date
             self.initial['end_date'] = self.instance.end_date
+            self.initial['admin'] = self.instance.admin
 
     member_id = forms.IntegerField(required=True, widget=forms.HiddenInput)
     org_id = forms.IntegerField(required=True, widget=forms.HiddenInput)
@@ -88,6 +89,7 @@ class OrganizationMemberForm(forms.Form):
     title = forms.CharField(max_length=128, required=False, widget=forms.TextInput(attrs={'autocapitalize': "words"}))
     start_date = forms.DateField(widget=forms.DateInput(attrs={'placeholder':'e.g. 12/28/16', 'class':'datepicker'}, format='%m/%d/%Y'), required=True)
     end_date = forms.DateField(widget=forms.DateInput(attrs={'placeholder':'e.g. 12/28/16', 'class':'datepicker'}, format='%m/%d/%Y'), required=False)
+    admin = forms.BooleanField(required=False)
 
     def save(self):
         if 'member_id' in self.cleaned_data:
@@ -100,6 +102,8 @@ class OrganizationMemberForm(forms.Form):
         member.title = self.cleaned_data['title']
         member.start_date = self.cleaned_data['start_date']
         member.end_date = self.cleaned_data['end_date']
+        if 'admin' in self.cleaned_data:
+            member.admin = self.cleaned_data['admin']
         member.save()
 
 
