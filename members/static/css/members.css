@@ -1142,19 +1142,19 @@ img.org-photo#mem-photo {
 	height: 40px;
 }
 
-.basic-info, .left-profile, .org-info {
+.basic-info, .left-profile, .org-info, .org-left-profile {
 	background-color: white;
 	margin-bottom: 2%;
 	padding: 2%;
 	box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
 }
 
-.right-profile, .left-profile {
+.right-profile, .left-profile, .org-left-profile {
 	margin-top: 2%;
 }
 
 .left-profile {
-	/*min-width: 375px;*/
+	min-width: 320px !important;
 	max-width: 400px;
 }
 
