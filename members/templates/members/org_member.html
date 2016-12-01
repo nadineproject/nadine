@@ -24,6 +24,8 @@
 			<td>
 				{% if member %}
 					<input name='full_name' readonly style='background-color:white; border:none; padding:1%; width:70%;' value='{{ member.user.get_full_name }}' />
+				{% elif new_member %}
+					<input name='username' readonly style='background-color:white; border:none; padding:1%; width:70%;' value='{{ new_member }}' />
 				{% else %}
 					<input class='username_input' id="id_username" name="username"/>
 				{% endif %}

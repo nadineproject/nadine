@@ -88,9 +88,13 @@ def org_member(request, org_id):
     action = request.POST['action']
 
     org_member = None
+    new_member = None
     if 'member_id' in request.POST:
         member_id = request.POST['member_id']
         org_member = org.organizationmember_set.get(id=member_id)
+
+    if 'add_member' in request.POST:
+        new_member = request.POST['add_member']
 
     form = OrganizationMemberForm()
     if 'edit' == action:
@@ -124,7 +128,7 @@ def org_member(request, org_id):
             messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
 
     context = {'organization': org, 'member':org_member,
-        'form':form, 'action':action
+        'form':form, 'action':action, 'new_member':new_member
     }
     return render(request, 'members/org_member.html', context)
 

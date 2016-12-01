@@ -34,6 +34,7 @@
     {% csrf_token %}
     <input id="org_input" name="org" type='text' />
     <input type='hidden' name='action' value='add' />
+    <input type='hidden' name='add_member' value='{{ user }}' />
     <input class='btn' id="add_org" type='submit' value="Add" />
   </form>
 </div>
