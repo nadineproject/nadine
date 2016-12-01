@@ -17,12 +17,18 @@
         <td>{{ user.profile.first_visit }}</td>
    </tr>
 
-    {% for org in user.profile.active_organizations %}
-        <tr>
-            <td class='bold-blue'><strong>Organization</strong></td>
-            <td>{{ org }}</td>
-        </tr>
-    {% endfor %}
+    {% if org_memberships %}
+      <tr>
+        <td class='bold-blue'><strong>Organization(s):</strong></td>
+        <td>
+          {% for org in org_memberships %}
+            <li style='display:inline-block; padding-right: 2%;'>
+              <a href="{% url 'member_org_view' org.organization.id %}">{{ org.organization.name }}</a>
+            </li>
+          {% endfor %}
+        </td>
+      </tr>
+    {% endif %}
 
     {% if user.profile.neighborhood %}
         <tr>
