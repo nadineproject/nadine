@@ -139,7 +139,6 @@ def org_member(request, org_id):
             form.title = request.POST.get('title')
             form.start_date = request.POST.get('start_date')
             form.end_date = request.POST.get('end_date')
-            print form
             form.save()
             return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
         except Exception as e:
