@@ -54,10 +54,6 @@
 				<div class='col s4 tooltipped' data-position="bottom" data-tooltip='Locked'>
 					<img id='locked' alt='locked icon'/>
 				</div>
-			{% else %}
-				<div class='col s4 tooltipped' data-position="bottom" data-tooltip='Unlocked'>
-					<img id='unlocked' alt='unlocked icon'/>
-				</div>
 			{% endif %}
 			{% if can_edit %}
 				<a class='col s4 tooltipped' data-position="bottom" data-tooltip="Edit Details" href="{% url 'member_org_edit' organization.id %}"><img id='edit' alt='edit icon' style='height:30px;'/></a>

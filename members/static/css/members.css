@@ -1076,6 +1076,11 @@ h2#prof-name {
 	height: 40px;
 }
 
+#Blog {
+	content: url(../img/blog.png);
+	height: 40px;
+}
+
 .profile-links {
 	margin-top: 5%;
 	margin-left: 1%;
