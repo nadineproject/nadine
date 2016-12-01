@@ -245,7 +245,7 @@ def edit_pic(request, username):
 
         profile.save()
 
-        return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
+        return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
     else:
         profile_form = EditProfileForm()
 
