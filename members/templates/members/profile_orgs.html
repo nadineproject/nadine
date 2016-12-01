@@ -44,6 +44,7 @@
   $("#org_input").autocomplete({
     source: "{% url 'json_org_search' %}",
     minLength: 2,
+    autoFocus: true,
     select: function(e, ui) {
       var org_id = ui.item.id;
       var url = "{% url 'member_org_member' 0 %}".replace(/0/, org_id.toString());
