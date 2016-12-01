@@ -19,7 +19,7 @@
 
     {% if org_memberships %}
       <tr>
-        <td class='bold-blue'><strong>Organization(s):</strong></td>
+        <td class='bold-blue'><strong>Organization{{ org_memberships|pluralize }}:</strong></td>
         <td>
           {% for org in org_memberships %}
             <li style='display:inline-block; padding-right: 2%;'>
