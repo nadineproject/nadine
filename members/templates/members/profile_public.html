@@ -19,15 +19,8 @@
 
     {% for org in user.profile.active_organizations %}
         <tr>
-            <td class='bold-blue'>Organization</td>
+            <td class='bold-blue'><strong>Organization</strong></td>
             <td>{{ org }}</td>
-        </tr>
-    {% endfor %}
-
-    {% for url in user.url_set.all %}
-        <tr>
-            <td class='bold-blue'><strong>{{ url.url_type | title }} URL:</strong></td>
-            <td><a target="_self" href="{{ url }}">{{ url }}</a></td>
         </tr>
     {% endfor %}
 
@@ -45,4 +38,13 @@
         </tr>
     {% endif %}
 </table>
+
+<div class='profile-links'>
+  {% for url in user.url_set.all %}
+    <li class='bold-blue url-links'>
+      <a target="_self" href="{{ url }}"><img id='{{ url.url_type | title}}' /></a>
+    </li>
+  {% endfor %}
+</div>
+
 </div>

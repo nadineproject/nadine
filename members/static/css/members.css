@@ -1036,6 +1036,52 @@ h2#prof-name {
 	height: 30px;
 }
 
+#Facebook {
+	content: url(../img/Facebook.png);
+	height: 40px;
+}
+
+#Twitter {
+	content: url(../img/Twitter.png);
+	height: 40px;
+}
+
+#Instagram {
+	content: url(../img/Instagram.png);
+	height: 40px;
+}
+
+#Linkedin {
+	content: url(../img/Linkedin.png);
+	height: 40px;
+}
+
+#Github {
+	content: url(../img/Github.png);
+	height: 40px;
+}
+
+#Personal {
+	content: url(../img/Personal.png);
+	height: 40px;
+}
+
+#Professional {
+	content: url(../img/Professional.png);
+	height: 40px;
+}
+
+.profile-links {
+	margin-top: 5%;
+	margin-left: 1%;
+	margin-bottom: 2%;
+}
+
+.url-links {
+	display: inline-block;
+	padding-right: 5%;
+}
+
 .pic-upload {
 	height: 200px;
 	padding-top: 100px;
