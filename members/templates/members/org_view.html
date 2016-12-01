@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block content %}
-<div class='left-profile col s3'>
+<div class='org-left-profile col s3'>
 	<div class='photo-div'>
 		<div class='profile-img-box' id='change-opacity'>
 			<div class='editable-photo org-img'>
@@ -53,10 +53,6 @@
 			{% if organizaiton.locked %}
 				<div class='col s4 tooltipped' data-position="bottom" data-tooltip='Locked'>
 					<img id='locked' alt='locked icon'/>
-				</div>
-			{% else %}
-				<div class='col s4 tooltipped' data-position="bottom" data-tooltip='Unlocked'>
-					<img id='unlocked' alt='unlocked icon'/>
 				</div>
 			{% endif %}
 			{% if can_edit %}
