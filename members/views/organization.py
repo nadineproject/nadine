@@ -76,6 +76,7 @@ def org_edit(request, org_id):
     if request.method == "POST":
         form = OrganizationForm(request.POST, request.FILES)
         public = request.POST.get('public', False)
+        
         if public == 'True':
             form.public = True
         else:
