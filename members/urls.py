@@ -33,6 +33,7 @@ urlpatterns = [
 
     # Organization
     url(r'^organizations/$', organization.org_list, name='member_org_list'),
+    url(r'^organizations/add/$', organization.org_add, name='member_org_add'),
     url(r'^organization/(?P<org_id>\d+)/$', organization.org_view, name='member_org_view'),
     url(r'^organization/(?P<org_id>\d+)/edit/$', organization.org_edit, name='member_org_edit'),
     url(r'^organization/(?P<org_id>\d+)/member/$', organization.org_member, name='member_org_member'),
