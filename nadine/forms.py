@@ -86,8 +86,8 @@ class OrganizationMemberForm(forms.Form):
     org_id = forms.IntegerField(required=True, widget=forms.HiddenInput)
     username = forms.CharField(required=True, widget=forms.HiddenInput)
     title = forms.CharField(max_length=128, required=False, widget=forms.TextInput(attrs={'autocapitalize': "words"}))
-    start_date = forms.DateField(widget=forms.DateInput(attrs={'placeholder':'e.g. 12/28/16'}, format='%m/%d/%Y'), required=True)
-    end_date = forms.DateField(widget=forms.DateInput(attrs={'placeholder':'e.g. 12/28/16'}, format='%m/%d/%Y'), required=False)
+    start_date = forms.DateField(widget=forms.DateInput(attrs={'placeholder':'e.g. 12/28/16', 'class':'datepicker'}, format='%m/%d/%Y'), required=True)
+    end_date = forms.DateField(widget=forms.DateInput(attrs={'placeholder':'e.g. 12/28/16', 'class':'datepicker'}, format='%m/%d/%Y'), required=False)
 
     def save(self):
         if 'member_id' in self.cleaned_data:

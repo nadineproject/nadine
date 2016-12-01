@@ -80,6 +80,8 @@
 {% block extrajs %}
 <script>
 	(function() {
+		var start = '{{ form.start_date.value }}';
+		console.log(start);
 		$('.username_input').autocomplete({
 			source: "{% url 'json_user_search' %}",
 			minLength: 2,
@@ -91,6 +93,7 @@
 			}
 		})
 
+		$('.datepicker').datepicker()
 		// $('.datepicker').pickadate({
 		// 	selectMonths: true,
 		// 	selectYears: 6,
