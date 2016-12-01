@@ -43,11 +43,10 @@ urlpatterns = [
     url(r'^tag/(?P<type>[^/]+)/(?P<tag>[^/]+)/$', tags.tag_view, name='member_tag_view'),
     url(r'^tag_list/(?P<type>[^/]+)/$', tags.tag_list, name='member_tag_list'),
     url(r'^tag_cloud/(?P<type>[^/]+)/$', tags.tag_cloud, name='member_tag_cloud'),
-    url(r'^tag/remove/(?P<username>[^/]+)/(?P<tag>[^/]+)/$', tags.remove_tag, name='member_remove_tag'),
-    url(r'^tag/add/(?P<username>[^/]+)/$', tags.add_tag, name='member_add_tag'),
-    # TODO
-    url(r'^organization/(?P<org_id>\d+)/tags/$', organization.add_tag, name='member_org_add_tag'),
-    url(r'^del_tag/(?P<org_id>\d+)/(?P<tag>[^/]+)/$', organization.remove_tag, name='member_org_remove_tag'),
+    url(r'^tag/add/user/(?P<username>[^/]+)/$', tags.add_tag, name='member_add_tag'),
+    url(r'^tag/remove/user/(?P<username>[^/]+)/(?P<tag>[^/]+)/$', tags.remove_tag, name='member_remove_tag'),
+    url(r'^tag/add/org/(?P<org_id>\d+)/$', tags.add_org_tag, name='member_org_add_tag'),
+    url(r'^tag/remove/org/(?P<org_id>\d+)/(?P<tag>[^/]+)/$', tags.remove_org_tag, name='member_org_remove_tag'),
 
     # Connect
     url(r'^connect/(?P<username>[^/]+)/$', connect.connect, name='member_connect'),
