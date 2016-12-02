@@ -232,7 +232,7 @@ def membership_days(request):
             avg_total = avg_total + total_days
     membership_days.sort(key=lambda x: x.total_days, reverse=True)
     context = {'membership_days': membership_days, 'avg_days': avg_total / avg_count}
-    return render(response, 'staff/stats_membership_days.html', context)
+    return render(request, 'staff/stats_membership_days.html', context)
 
 
 @staff_member_required
