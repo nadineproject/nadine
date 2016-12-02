@@ -79,16 +79,20 @@
 				(<a onclick="$('#public_help').toggle();">?</a>)
 			</td>
 			<td>
-				<select class='browser-default input-field col s4'name='public' id='id_public'>
-					<option value="" disabled selected></option>
-					<option value="False" selected="true">Active Members Only</option>
-					<option value="True">Open to the Public</option>
+				<select class='browser-default input-field col s4' name='public' id='id_public'>
+					{% if organization.public %}
+						<option value="False">Active Members Only</option>
+						<option value="True" selected="true">Open to the Public</option>
+					{% else %}
+						<option value="False" selected="true">Active Members Only</option>
+						<option value="True">Open to the Public</option>
+					{% endif %}
 				</select>
 			</td>
 		</tr>
 		<tr>
 			<td class='pf-error'>
-				{{form.public.errors}}
+				{{ form.public.errors }}
 			</td>
 		</tr>
 	</table>
@@ -109,6 +113,7 @@
 {% block extrajs %}
 <script>
 	$(document).ready(function() {
+		console.log('{{ organization.name }}');
 		$('#id_blurb').on('focusout', function(){
 			var blurb = $('#id_blurb').val();
 

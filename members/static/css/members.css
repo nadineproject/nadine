@@ -419,7 +419,7 @@ td#pf-photo {
 	width: 20%;
 }
 
-select#id_public_profile.browser-default {
+select#id_public_profile.browser-default, select#id_public.browser-default {
 	width: 30%;
 }
 

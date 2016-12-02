@@ -50,7 +50,6 @@ class OrganizationForm(forms.Form):
     #locked = forms.BooleanField(required=False)
 
     def save(self):
-        print self.cleaned_data['photo']
         org_id = self.cleaned_data['org_id']
         org = Organization.objects.get(id=org_id)
         org.name = self.cleaned_data['name']
@@ -60,7 +59,6 @@ class OrganizationForm(forms.Form):
             # Delete the old one before we save the new one
             org.photo.delete()
             org.photo = self.cleaned_data['photo']
-        print self.cleaned_data['photo']
         if 'public' in self.cleaned_data:
             org.public = self.cleaned_data['public']
         if 'locked' in self.cleaned_data:
@@ -226,7 +224,7 @@ class EditProfileForm(forms.Form):
     bio = forms.CharField(widget=forms.Textarea, max_length=512, required=False)
     has_kids = forms.NullBooleanField(widget=forms.NullBooleanSelect(attrs={'class':'browser-default'}), required=False)
     self_employed = forms.NullBooleanField(widget=forms.NullBooleanSelect(attrs={'class':'browser-default'}), required=False)
-    public_profile = forms.ChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), choices=((False, 'Active Members Only'), (True, 'Public')), required=True)
+    public_profile = forms.BooleanField(required=False)
 
     emergency_name = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}), label="Name", required=False)
     emergency_relationship = forms.CharField(widget=forms.TextInput(attrs={'size': '50'}), label="Relationship", required=False)

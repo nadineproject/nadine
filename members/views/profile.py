@@ -121,12 +121,15 @@ def edit_profile(request, username):
 
     if request.method == 'POST':
         profile_form = EditProfileForm(request.POST)
+        profile_form.public_profile = request.POST['public_profile']
+
         if profile_form.is_valid():
             if request.POST.get('password-create') == request.POST.get('password-confirm'):
                 pwd = request.POST.get('password-create')
 
                 if len(pwd.strip()) > 0:
                     if pwd.strip() == pwd and len(pwd) > 7:
+
                         profile_form.save()
                         user.set_password(pwd)
                         user.save()
