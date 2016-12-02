@@ -206,11 +206,11 @@ def membership_days(request):
     MembershipDays = namedtuple('MembershipDays', 'user, membership_count, total_days, daily_logs, max_days, current')
     membership_days = []
     users = User.objects.all()
-    memberships = Membership.objects.select_related('profile', 'profile__user').all()
+    memberships = Membership.objects.select_related('user', 'user__profile').all()
     avg_count = 0
     avg_total = 0
     for user in users:
-        user_memberships = [m for m in memberships if m.member.user == user]
+        user_memberships = [m for m in memberships if m.user == user]
         membership_count = len(user_memberships)
         total_days = 0
         max_days = 0
