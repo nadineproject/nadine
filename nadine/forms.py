@@ -83,22 +83,44 @@ class OrganizationMemberForm(forms.Form):
             self.initial['end_date'] = self.instance.end_date
             self.initial['admin'] = self.instance.admin
 
-    member_id = forms.IntegerField(required=True, widget=forms.HiddenInput)
     org_id = forms.IntegerField(required=True, widget=forms.HiddenInput)
-    username = forms.CharField(required=True, widget=forms.HiddenInput)
+    member_id = forms.IntegerField(required=False, widget=forms.HiddenInput)
+    username = forms.CharField(required=False, widget=forms.HiddenInput)
     title = forms.CharField(max_length=128, required=False, widget=forms.TextInput(attrs={'autocapitalize': "words"}))
     start_date = forms.DateField(widget=forms.DateInput(attrs={'placeholder':'e.g. 12/28/16', 'class':'datepicker'}, format='%m/%d/%Y'), required=True)
     end_date = forms.DateField(widget=forms.DateInput(attrs={'placeholder':'e.g. 12/28/16', 'class':'datepicker'}, format='%m/%d/%Y'), required=False)
     admin = forms.BooleanField(required=False)
 
-    def save(self):
-        if 'member_id' in self.cleaned_data:
-            member_id = self.cleaned_data['member_id']
-            member = OrganizationMember.objects.get(id=member_id)
+    def is_valid(self):
+        # run the parent validation first
+        super_valid = super(OrganizationMemberForm, self).is_valid()
+        has_member_id = 'member_id' in self.cleaned_data and self.cleaned_data['member_id']
+        has_username = 'username' in self.cleaned_data and self.cleaned_data['username']
+        if not (has_member_id or has_username):
+            self.add_error('username', 'No user data provided')
+        return super_valid and (has_member_id or has_username)
+
+    def clean_member(self):
+        self.member = None
+        self.organization = Organization.objects.get(id=self.cleaned_data['org_id'])
+
+        # Populate our member from either member_id (edit) or username (add)
+        member_id = self.cleaned_data['member_id']
+        username=self.cleaned_data['username']
+        if member_id:
+            self.member = OrganizationMember.objects.get(id=member_id)
+        elif username:
+            user = User.objects.get(username=username)
+            self.member = OrganizationMember(organization=self.organization, user=user)
         else:
-            org = Organization.objects.get(id=self.cleaned_data['org_id'])
-            user = User.objects.get(username=self.cleaned_data['username'])
-            member = OrganizationMember(organization=org, user=user)
+            raise Exception("Form must contain member_id or username!")
+
+        return self.member
+
+    def save(self):
+        if not self.is_valid():
+            raise Exception('The form must be valid in order to save')
+        member = self.clean_member()
         member.title = self.cleaned_data['title']
         member.start_date = self.cleaned_data['start_date']
         member.end_date = self.cleaned_data['end_date']

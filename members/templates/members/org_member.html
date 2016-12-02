@@ -12,11 +12,11 @@
 <form class='org-form' method="POST" action="." enctype="multipart/form-data">
 	<input type="hidden" name="action" value="save"/>
 	<input type='hidden' name='org_id' value="{{ organization.id }}">
-	<input type='hidden' id='new_id' name='new_id' value='{{ new_member.id }}' />
-	<input type='hidden' id='new_username' name='username' value='{{ new_member.username }}' />
 	{% if member %}
 		<input type='hidden' id='member_id' name='member_id' value='{{ member.id }}'  />
-		<input type='hidden' name='username' value='{{ member.user }}' />
+	{% endif %}
+	{% if username %}
+		<input type='hidden' id='username' name='username' value='{{ username }}' />
 	{% endif %}
 	<table>
 		<tr>
@@ -24,10 +24,8 @@
 				User
 			</td>
 			<td>
-				{% if member %}
-					<input name='full_name' readonly style='background-color:white; border:none; padding:1%; width:70%;' value='{{ member.user.get_full_name }}' />
-				{% elif new_member %}
-					<input name='new_member' readonly style='background-color:white; border:none; padding:1%; width:70%;' value='{{ new_member.get_full_name }}' />
+				{% if full_name %}
+					<input name='full_name' readonly style='background-color:white; border:none; padding:1%; width:70%;' value='{{ full_name }}' />
 				{% else %}
 					<input class='username_input' id="id_username" name="name"/>
 				{% endif %}
@@ -85,11 +83,12 @@
 		$('.username_input').autocomplete({
 			source: "{% url 'json_user_search' %}",
 			minLength: 2,
+			autoFocus: true,
 			select: function(e, ui) {
 				e.preventDefault();
 				$('.username_input').val(ui.item.label);
-				$('#new_username').val(ui.item.value);
-				$('#new_id').val(ui.item.id);
+				$('#username').val(ui.item.value);
+				// $('#new_id').val(ui.item.id);
 			}
 		})
 

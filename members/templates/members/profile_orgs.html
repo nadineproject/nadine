@@ -34,7 +34,7 @@
     {% csrf_token %}
     <input id="org_input" name="org" type='text' style='width:50%; margin-right:5%;' placeholder='Acme Corp'/>
     <input type='hidden' name='action' value='add' />
-    <input type='hidden' name='add_member' value='{{ user.username }}' />
+    <input type='hidden' name='username' value='{{ user.username }}' />
     <input class='btn' id="add_org" type='submit' value="Add" />
   </form>
 </div>

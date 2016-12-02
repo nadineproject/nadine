@@ -45,10 +45,10 @@ def org_view(request, org_id):
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def org_add(request):
-    if not 'org' in request.POST and 'add_member' in request.POST:
+    if not 'org' in request.POST and 'username' in request.POST:
         return HttpResponseForbidden("Forbidden")
 
-    user = get_object_or_404(User, username=request.POST['add_member'])
+    user = get_object_or_404(User, username=request.POST['username'])
 
     org_name = request.POST.get('org', '').strip()
     existing_org = Organization.objects.filter(name__iexact=org_name).first()
@@ -94,58 +94,45 @@ def org_edit(request, org_id):
 @user_passes_test(is_active_member, login_url='member_not_active')
 def org_member(request, org_id):
     org = get_object_or_404(Organization, id=org_id)
-    if not (request.user.is_staff or org.can_edit(request.user)):
-        return HttpResponseForbidden("Forbidden")
+    if not (not org.locked or request.user.is_staff or org.can_edit(request.user)):
+        messages.add_message(request, messages.ERROR, "You do not have permission to add yourself to this organization")
+        return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.username}))
 
     # We require a POST and we require an action
     if not request.method == "POST" or 'action' not in request.POST:
         return HttpResponseForbidden("Forbidden")
     action = request.POST['action']
 
+    full_name = None
     org_member = None
-    new_member = None
-    if 'member_id' in request.POST:
-        member_id = request.POST['member_id']
+    new_user = None
+    new_username = request.POST.get('username', None)
+    if new_username:
+        new_user = User.objects.get(username=new_username)
+        full_name = new_user.get_full_name()
+        # print("user: %s" % full_name)
+    member_id = request.POST.get('member_id', None)
+    if member_id:
         org_member = org.organizationmember_set.get(id=member_id)
+        full_name = org_member.user.get_full_name()
+        # print("member: %s" % full_name)
 
-    if 'add_member' in request.POST:
-        add_member = request.POST['add_member']
-        new_member = get_object_or_404(User, username=add_member)
-
-
-    form = OrganizationMemberForm()
-    if 'edit' == action:
-        try:
+    try:
+        # form = OrganizationMemberForm()
+        if 'edit' == action:
             form = OrganizationMemberForm(instance=org_member)
-        except Exception as e:
-            messages.add_message(request, messages.ERROR, "Could not get member: %s" % str(e))
-    if 'add' == action:
-        try:
-            form = OrganizationMemberForm()
-        except Exception as e:
-            messages.add_message(request, messages.ERROR, "Could not get member: %s" % str(e))
-    if 'save' == action:
-        form = OrganizationMemberForm(request.POST, request.FILES)
-        try:
-            if 'full_name' in request.POST:
-                member = get_object_or_404(User, id=member_id)
-                user = member.username
-            else:
-                new_id = request.POST['new_id']
-                member = get_object_or_404(User, id=new_id)
-                user = member.username
-            form.member_id = member.id
-            form.username = user
-            form.title = request.POST.get('title')
-            form.start_date = request.POST.get('start_date')
-            form.end_date = request.POST.get('end_date')
-            form.save()
-            return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
-        except Exception as e:
-            messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
+        if 'add' == action:
+            form = OrganizationMemberForm(initial={'username':new_username})
+        if 'save' == action:
+            form = OrganizationMemberForm(request.POST, request.FILES)
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
+    except Exception as e:
+        messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
 
     context = {'organization': org, 'member':org_member,
-        'form':form, 'action':action, 'new_member':new_member
+        'full_name':full_name, 'username':new_username, 'form':form, 'action':action,
     }
     return render(request, 'members/org_member.html', context)
 
