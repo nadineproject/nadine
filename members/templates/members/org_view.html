@@ -130,11 +130,13 @@
 			{% endif %}
 		</table>
 
-		[ {% if not show_all %}
-			<a href="?show_all">Show inactive members</a>
-		{% else %}
-			<a href="?">Hide inactive members</a>
-		{% endif %} ]
+		{% if counts.inactive > 0 %}
+			[ {% if not show_all %}
+				<a href="?show_all">Show ({{ counts.inactive }}) inactive member{{ counts.inactive|pluralize }}</a>
+			{% else %}
+				<a href="?">Hide inactive members</a>
+			{% endif %} ]
+		{% endif %}
 
 		<!-- {% if organization.notes %}
 			<h5 class='oswald' style='color:black;'>Notes</h5>
