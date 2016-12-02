@@ -124,12 +124,17 @@ def org_member(request, org_id):
         if 'edit' == action:
             form = OrganizationMemberForm(instance=org_member)
         if 'add' == action:
-            form = OrganizationMemberForm(initial={'username':new_username})
+            initial_data={ 'username':new_username,
+                'start_date': timezone.now()
+            }
+            form = OrganizationMemberForm(initial=initial_data)
         if 'save' == action:
             form = OrganizationMemberForm(request.POST, request.FILES)
             if form.is_valid():
                 form.save()
                 return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
+            else:
+                print form
     except Exception as e:
         messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
 
