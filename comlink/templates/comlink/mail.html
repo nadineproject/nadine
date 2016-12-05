@@ -10,7 +10,7 @@
   <p><strong>Received:</strong> <i>{{ message.received}}</i></p>
   <p>
       <strong>From:</strong>
-      {% if message.sender %}
+      {% if message.user %}
           <a href="{% url 'member_profile' message.user.username %}">{{ message.user }}</a>
       {% else %}
           {{ message.from_str }}
