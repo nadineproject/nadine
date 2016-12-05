@@ -678,7 +678,7 @@ textarea#id_bio {
 	overflow: hidden;
 }
 
-.org-bio {
+.org-blurb {
 	min-height: 60px;
 	overflow: scroll;
 	font-size: .8em;
