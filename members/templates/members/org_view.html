@@ -105,8 +105,8 @@
 						</td>
 						<td>{{ m.title|default:"" }}</td>
 						<td>
-							{{ m.start_date }}
-							- {{ m.end_date|default:"current" }}
+							{{ m.start_date|date:"M Y" }}
+							- {{ m.end_date|date:"M Y"|default:"current" }}
 						</td>
 						{% if request.user.is_staff or can_edit %}
 							<td>
@@ -131,11 +131,13 @@
 			{% endif %}
 		</table>
 
-		[ {% if not show_all %}
-			<a href="?show_all">Show inactive members</a>
-		{% else %}
-			<a href="?">Hide inactive members</a>
-		{% endif %} ]
+		{% if counts.inactive > 0 %}
+			[ {% if not show_all %}
+				<a href="?show_all">Show ({{ counts.inactive }}) inactive member{{ counts.inactive|pluralize }}</a>
+			{% else %}
+				<a href="?">Hide inactive members</a>
+			{% endif %} ]
+		{% endif %}
 
 		<!-- {% if organization.notes %}
 			<h5 class='oswald' style='color:black;'>Notes</h5>

@@ -2,8 +2,9 @@ Django>=1.10,<1.11
 Pillow==3.4.2
 psycopg2==2.6.2
 #celery==4.0.0
-celery==3.1.24
-django-celery==3.1.17
+celery>=3.1.24,<4.0
+#django-celery==3.1.17
+git+https://github.com/celery/django-celery#egg=master
 django-localflavor==1.3
 django-localflavor-us==1.1
 django-taggit==0.21.3

@@ -11,23 +11,21 @@
 
 <form class='org-form' method="POST" action="." enctype="multipart/form-data">
 	<input type="hidden" name="action" value="save"/>
-	<input type='hidden' name='org_id' value="{{ organization.id }}">
+	<input type="hidden" name="org_id" value="{{ organization.id }}">
 	{% if member %}
-		<input type='hidden' id='member_id' name='member_id' value='{{ member.id }}'  />
+		<input type="hidden" id="member_id" name="member_id" value="{{ member.id }}"  />
 	{% endif %}
-	{% if username %}
-		<input type='hidden' id='username' name='username' value='{{ username }}' />
-	{% endif %}
+	<input type="hidden" id="username" name="username" value="{{ username|default:'' }}" />
 	<table>
 		<tr>
-			<td class='org-label'>
+			<td class="org-label">
 				User
 			</td>
 			<td>
 				{% if full_name %}
-					<input name='full_name' readonly style='background-color:white; border:none; padding:1%; width:70%;' value='{{ full_name }}' />
+					<input name="full_name" readonly style="background-color:white; border:none; padding:1%; width:70%;" value="{{ full_name }}" />
 				{% else %}
-					<input class='username_input' id="id_username" name="name"/>
+					<input class="username_input" id="id_username" name="name"/>
 				{% endif %}
 			</td>
 			<td class='pf-error'>
@@ -53,7 +51,7 @@
 				{{ form.start_date }}
 			</td>
 			<td class='pf-error'>
-				{{ form.start_date.error }}
+				{{ form.start_date.errors }}
 			</td>
 		</tr>
 		<tr>

@@ -18,7 +18,6 @@
 <p align="center"><em>NOTE: Items in <strong style='color:RGBA(79, 134, 135, 1);'>green bold</strong> are viewable by all active members.</em></p>
 
 <div id="profile_form">
-
   {% if page_message %}
     <div>
       <p style='color:red;text-align:center;'>
@@ -27,6 +26,7 @@
       <br />
     </div>
   {% endif %}
+
   <h3>
       Email Addresses
       (<a onclick="$('#email_help').toggle();">?</a>)
@@ -94,6 +94,7 @@
        </tr>
       </table>
     </div>
+
     {{ profile_form.username }}
     <h3 style='text-align:left;'>Contact Information</h3>
     <div id='contact'>
@@ -111,7 +112,8 @@
           <td class='pf-error'>{{ profile_form.last_name.errors }}</td>
         </tr>
       </table>
-{% endblock %}
+{% endblock %} <!-- reg_edit -->
+
       <table>
         <tr>
           <td class='cap-label' id='pf-address'>Address 1</td>
@@ -157,39 +159,40 @@
           <td class='pf-error'>{{ profile_form.phone2.errors }}</td>
         </tr>
       </table>
+    </div>
+
+    <h3 style='text-align:left;'>Profile Information</h3>
+    <div id='websites'>
       <table>
         <tr>
-          <td id='pf-public' nowrap>Who can see your profile?
+          <td id='pf-public' nowrap>
+            Visibility
             (<a onclick="$('#public_help').toggle();">?</a>)
           </td>
           <td>
-    				<select class='browser-default input-field col s4' name='public_profile' id='id_public_profile'>
-    					{% if user.profile.public_profile %}
-      					<option value="False">Active Members Only</option>
-      					<option value="True" selected="true">Open to the Public</option>
-    					{% else %}
-      					<option value="False" selected="true">Active Members Only</option>
-      					<option value="True">Open to the Public</option>
-    					{% endif %}
-    				</select>
-    			</td>
+            <select class='browser-default input-field col s4' name='public_profile' id='id_public_profile'>
+              <option value="False" {% if not user.profile.public_profile %} selected="true" {% endif %}>
+                Active Members Only
+              </option>
+              <option value="True" {% if user.profile.public_profile %} selected="true" {% endif %}>
+                Open to the Public
+              </option>
+            </select>
+          </td>
           <td>
             {{ profile_form.public_profile.errors }}
           </td>
         </tr>
         <tr id='public_help' class='help_text'>
           <td colspan=3>
-            <strong>Public Profile</strong>
+            <strong>Profile Visibility</strong>
             <p>By default your profile is only viewable by active members.
             If you you make this profile public, your bio, photo, and links
-            will also be visable to non-members as well. Contact information
+            will be visable to non-members as well. Contact information
             is always kept private.</p>
           </td>
         </tr>
       </table>
-    </div>
-    <h3 style='text-align:left;'>Profile Information</h3>
-    <div id='websites'>
       <table>
         <tr>
           <td class='cap-label viewable'><strong>Bio</strong></td>
@@ -239,9 +242,8 @@
           <td>{{ profile_form.url_linkedin.errors }}</td>
         </tr>
       </table>
-    </div>
+      </div>
 
-    <h3 style='text-align:left;'>Other Information</h3>
     <table id="otherinfo">
       <tr>
         <td class='cap-label'>How did you hear about us?</td>
@@ -291,6 +293,7 @@
         <td width="300px">{{ profile_form.gender.errors }}</td>
       </tr>
     </table>
+
 {% block emergency_info %}
     <h3 style='text-align:left;'>Emergency Contact Information</h3>
     <a name="emergency_contact"></a>

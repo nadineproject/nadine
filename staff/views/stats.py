@@ -206,11 +206,11 @@ def membership_days(request):
     MembershipDays = namedtuple('MembershipDays', 'user, membership_count, total_days, daily_logs, max_days, current')
     membership_days = []
     users = User.objects.all()
-    memberships = Membership.objects.select_related('profile', 'profile__user').all()
+    memberships = Membership.objects.select_related('user', 'user__profile').all()
     avg_count = 0
     avg_total = 0
     for user in users:
-        user_memberships = [m for m in memberships if m.member.user == user]
+        user_memberships = [m for m in memberships if m.user == user]
         membership_count = len(user_memberships)
         total_days = 0
         max_days = 0
@@ -231,7 +231,8 @@ def membership_days(request):
             avg_count = avg_count + 1
             avg_total = avg_total + total_days
     membership_days.sort(key=lambda x: x.total_days, reverse=True)
-    return render('staff/stats_membership_days.html', {'membership_days': membership_days, 'avg_days': avg_total / avg_count}, context_instance=RequestContext(request))
+    context = {'membership_days': membership_days, 'avg_days': avg_total / avg_count}
+    return render(request, 'staff/stats_membership_days.html', context)
 
 
 @staff_member_required

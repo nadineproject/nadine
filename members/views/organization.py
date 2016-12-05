@@ -33,10 +33,17 @@ def org_view(request, org_id):
     can_edit = org.can_edit(request.user) or request.user.is_staff
 
     members = org.organizationmember_set.all().order_by('start_date')
+    counts = { 'total': members.count(), 'active': 0, 'inactive': 0 }
+    for m in members:
+        if m.is_active():
+            counts['active'] = counts['active'] + 1
+        else:
+            counts['inactive'] = counts['inactive'] + 1
 
     context = {'organization': org,
         'can_edit':can_edit,
         'members': members,
+        'counts': counts,
         'show_all': 'show_all' in request.GET,
     }
     return render(request, 'members/org_view.html', context)
@@ -117,17 +124,22 @@ def org_member(request, org_id):
         if 'edit' == action:
             form = OrganizationMemberForm(instance=org_member)
         if 'add' == action:
-            form = OrganizationMemberForm(initial={'username':new_username})
+            initial_data={ 'username':new_username,
+                'start_date': timezone.now()
+            }
+            form = OrganizationMemberForm(initial=initial_data)
         if 'save' == action:
             form = OrganizationMemberForm(request.POST, request.FILES)
             if form.is_valid():
                 form.save()
                 return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
+            else:
+                print form
     except Exception as e:
         messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
 
-    context = {'organization': org, 'member':org_member,
-        'full_name':full_name, 'username':new_username, 'form':form, 'action':action,
+    context = {'organization': org, 'member':org_member, 'username':new_username,
+        'full_name':full_name, 'form':form, 'action':action,
     }
     return render(request, 'members/org_member.html', context)
 
