@@ -1,20 +1,25 @@
 # -*- coding: utf-8 -*-
+import logging
+
 from django.dispatch import Signal, receiver
 from django.contrib.auth.models import User
 from django.conf import settings
 
 from nadine.utils import mailgun
-
 from comlink.models import SimpleMailingList
 
+logger = logging.getLogger(__name__)
 
 email_received = Signal(providing_args=["instance", "attachments"])
+
 
 @receiver(email_received)
 def router(sender, **kwargs):
     # Pull our email object and convert it to the mailgun_data we need`
     email = kwargs['instance']
     mailgun_data = email.get_mailgun_data(stripped=True, footer=True)
+    logger.debug("In Router: ")
+    logger.debug(mailgun_data)
 
     # Pull our attachments and convert it to the list of files we need
     attachments = kwargs['attachments']
@@ -31,6 +36,8 @@ def router(sender, **kwargs):
         bcc_list = list(User.objects.filter(is_staff=True, is_active=True).values_list('email', flat=True))
     elif email.recipient == 'team@test.officenomads.com':
         bcc_list = list(User.helper.managers(include_future=True).values_list('email', flat=True))
+    logger.debug("BCC List:")
+    logger.debug(bcc_list)
 
     if bcc_list:
         # Pass this message along

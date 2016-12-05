@@ -64,6 +64,8 @@ class Incoming(View):
         return super(Incoming, self).dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
+        logger.info("Incoming email")
+        logger.debug("POST: %s" % request.POST)
         if self.verify:
             verified = self.verify_signature(request.POST.get('token', ''),
                                              request.POST.get('timestamp', ''),
@@ -106,9 +108,11 @@ class Incoming(View):
             self.handle_email(email, attachments=attachments)
             return HttpResponse("OK")
         except RejectedMailException, e:
+            logger.debug("Email was rejected: %s" % str(e))
             return HttpResponse("Email not accepted", status=406)
 
     def handle_email(self, email, attachments=None):
+        logger.debug("handle_email: email='%s'" % email)
         email_received.send(
             sender=self.email_model, instance=email, attachments=attachments or [])
 
