@@ -678,6 +678,10 @@ textarea#id_bio {
 	overflow: hidden;
 }
 
+a.name-a {
+	padding: 1%;
+}
+
 .org-blurb {
 	min-height: 60px;
 	overflow: scroll;
