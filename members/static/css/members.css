@@ -1110,8 +1110,6 @@ img.org-photo#mem-photo {
 }
 
 .pic-upload {
-	height: 200px;
-	padding-top: 100px;
 	width: 180px;
 }
 
@@ -1509,6 +1507,7 @@ dl dd:last-child:after {
 	height: 55%;
 	width: 40%;
 	min-width: 600px;
+	min-height: 380px;
 }
 
 .eModal-content {
