@@ -28,13 +28,14 @@ def router(sender, **kwargs):
         files.append(('attachment', open(a.file.path)))
 
     # Build out the BCC depending on who the recipient is
+    # TODO - remove hardcoded emails!
     bcc_list = None
     mailing_list = SimpleMailingList.objects.filter(address=email.recipient).first()
     if mailing_list:
         bcc_list = mailing_list.get_subscriber_list()
-    elif email.recipient == 'staff@test.officenomads.com':
+    elif email.recipient == 'staff@officenomads.com':
         bcc_list = list(User.objects.filter(is_staff=True, is_active=True).values_list('email', flat=True))
-    elif email.recipient == 'team@test.officenomads.com':
+    elif email.recipient == 'team@officenomads.com':
         bcc_list = list(User.helper.managers(include_future=True).values_list('email', flat=True))
     logger.debug("BCC List:")
     logger.debug(bcc_list)
