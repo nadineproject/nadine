@@ -9,8 +9,10 @@
   {% else %}
     <a class='photo' id='star-img' href="{% url 'member_org_view' org.id %}">&#9733;</a>
   {% endif %}
-    <a class='org-name' href="{% url 'member_org_view' org.id %}">{{ org.name }}</a>
-  <p class='org-bio'>
+    <a href="{% url 'member_org_view' org.id %}"><p class='org-name'>
+      {{ org.name }}
+    </p></a>
+  <p class='org-blurb'>
     {% if org.blurb %}
       {{org.blurb}}
     {% endif %}

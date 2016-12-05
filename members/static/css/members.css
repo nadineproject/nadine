@@ -632,7 +632,7 @@ textarea#id_bio {
 
 .org-card {
 	width: 210px;
-	max-height: 315px;
+	height: 315px;
 	border: solid 3px #EEE;
 	margin: 10px;
 	text-align: center;
@@ -643,12 +643,11 @@ textarea#id_bio {
 	overflow: hidden;
 }
 
-/*.org-card a {
+.org-card a {
 	padding: 10px 10px;
 	display: block;
 	background:#FFFFFF;
-	overflow: hidden;
-}*/
+}
 
 .org-card a.photo {
 	background-color: #FFF;
@@ -656,27 +655,24 @@ textarea#id_bio {
 	color: #DDD;
 	text-decoration: none;
 	overflow:hidden;
-	height: 150px;
-	width: 150px;
+	height: 130px;
+	width: 130px;
 	position: relative;
-	margin-left: 15%;
-	/*box-sizing: border-box;*/
+	margin-left: 10%;
 }
 
 .org-card a.photo img {
-	max-height: 150px;
-	max-width: 150px;
+	max-height: 130px;
+	max-width: 130px;
 	overflow: hidden;
 	padding: 0;
-
 }
 
 .org-name {
-	padding-top: 1%;
-	display: block;
-	min-height: 40px;
 	font-size: 1.1em;
-	/*font-family: 'Oswald', sans-serif;*/
+	text-align: center;
+	line-height: normal;
+	white-space: normal;
 	font-weight: bold;
 	color: black;
 	overflow: hidden;
@@ -684,10 +680,9 @@ textarea#id_bio {
 
 .org-bio {
 	min-height: 60px;
-	overflow: hidden;
+	overflow: scroll;
 	font-size: .8em;
 	font-style: italic;
-	/*display: block;*/
 	white-space: normal;
 }
 
@@ -762,6 +757,7 @@ h5.org-members {
 
 .org-form #id_blurb {
 	padding-bottom: 10%;
+	height: 100px;
 }
 
 .org-form #id_bio {
@@ -802,7 +798,7 @@ h5.org-members {
 	/*padding-top: 2%;*/
 }
 
-.user-card a, .org-card a {
+.user-card a{
 	padding: 10px 10px;
 	display: block;
 	background:#FFFFFF;
