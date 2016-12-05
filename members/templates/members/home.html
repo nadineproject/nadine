@@ -6,9 +6,9 @@
 
 {% block top_nav %}
 	<div id='jumbotron'>
-		<img id='jumbo-img' />
+		<img id='jumbo-img'/>
 		<div id='logo'>
-			<a href="#"><img class='logo-img' /></a>
+			<a href="#"><img class='logo-img' src='{% static "img/logo.png" %}'/></a>
 		</div>
 	</div>
 	<nav class='row' id='home-nav'>
@@ -31,7 +31,7 @@
 		<div class="row">
 			<div class="card col s3 offset-s1">
 				<div class="card-content white-text">
-					<img id='chat_icon' />
+					<img id='chat_icon' src="{% static 'img/chat_icon.png' %}"/>
 					<p>Printing, billing, or general questions about the space?</p>
 				</div>
 				<div class="card-action">
@@ -40,7 +40,7 @@
 			</div>
 			<div class="card col s2 offset-s1">
 				<div class="card-content white-text">
-					<img id='group_icon' />
+					<img id='group_icon' src="{% static 'img/people_icon.png' %}"/>
 					<p>See who is here & learn people's names</p>
 				</div>
 				<div class="card-action">

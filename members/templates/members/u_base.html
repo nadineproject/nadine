@@ -66,10 +66,10 @@
 							<div class='nav-wrapper'>
 								<div id='logo'>
 									<a href="{% url 'site_index' %}" class='brand-logo' id="home">
-										<img class='sec-logo' />
+										<img class='sec-logo' src="{% static 'img/logo-line.png' %}"/>
 									</a>
 								</div>
-								<a href='#' data-activates="mobile-demo" class="button-collapse"><img class='menu-img' /></a>
+								<a href='#' data-activates="mobile-demo" class="button-collapse"><img class='menu-img' src="{% static 'img/ic_menu_white_24dp/web/ic_menu_white_24dp_2x.png' %}"/></a>
 							<ul id="nav-mobile" class="right hide-on-med-and-down">
 					{% endblock %}
 								<li><a href="{% url 'member_profile_redirect' %}">Profile</a></li>
@@ -205,7 +205,7 @@
 			$('.button-collapse').sideNav();
 			$('.dropdown-button').dropdown();
 
-			if($('.main').height() < 699) {
+			if($('.main').height() < 900) {
 				$('footer').attr('class', 'sticky-footer');
 			} else {
 				if($('footer').hasClass('sticky-footer')) {

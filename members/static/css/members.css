@@ -120,10 +120,6 @@ p {
 	background-color: RGBA(66, 98, 113, 1);
 }
 
-.menu-img {
-	content: url(../img/ic_menu_white_24dp/web/ic_menu_white_24dp_2x.png)
-}
-
 .side-nav {
 	background-color: RGBA(80, 80, 80, 1);
 	padding-top: 2%;
@@ -141,7 +137,7 @@ p {
 }
 
 .logo-img {
-	content: url(../img/logo.png);
+	/*content: url(../img/logo.png);*/
 	position: absolute;
 	z-index: 2000;
 	top: 10%;
@@ -152,7 +148,7 @@ p {
 }
 
 .sec-logo {
-	content: url(../img/logo-line.png);
+	/*content: url(../img/logo-line.png);*/
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -161,7 +157,17 @@ p {
 	z-index: 2000;
 }
 
+
 #jumbo-img {
+	content: url(../img/jumbo.png);
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+#jumbo-img:after {
+	/*for firefox*/
 	content: url(../img/jumbo.png);
 	width: 100%;
 	margin: 0;
@@ -544,13 +550,13 @@ textarea#id_bio {
 }
 
 #chat_icon {
-	content: url(../img/chat_icon.png);
+	/*content: url(../img/chat_icon.png);*/
 	height: 25%;
 	width: 25%;
 }
 
 #group_icon {
-	content: url(../img/people_icon.png);
+	/*content: url(../img/people_icon.png);*/
 	height: 50%;
 	width: 50%;
 }
@@ -725,7 +731,7 @@ textarea#id_bio {
 }
 
 .org-edit {
-	content: url(../img/camera.png);
+	/*content: url(../img/camera.png);*/
 }
 
 h5.org-members {
@@ -859,7 +865,7 @@ img#mem-photo {
 }
 
 #img-edit {
-	content: url(../img/camera.png);
+	/*content: url(../img/camera.png);*/
 	display: none;
 	margin-left: 40%;
 }
@@ -1027,7 +1033,6 @@ img.org-photo#mem-photo {
 }
 
 #edit {
-	content: url(../img/edit.png);
 	height: 25px;
 }
 
@@ -1038,61 +1043,57 @@ img.org-photo#mem-photo {
 }
 
 #manage {
-	content: url(../img/manage.png);
 	height: 30px;
 }
 
 #admin {
-	content: url(../img/admin.png);
 	height: 30px;
 }
 
 #locked {
-	content: url(../img/locked.png);
 	height: 30px;
 }
 
 #unlocked {
-	content: url(../img/unlocked.png);
 	height: 30px;
 }
 
-#Facebook {
+#Facebook, #Facebook:after {
 	content: url(../img/Facebook.png);
 	height: 40px;
 }
 
-#Twitter {
+#Twitter, #Twitter:after {
 	content: url(../img/Twitter.png);
 	height: 40px;
 }
 
-#Instagram {
+#Instagram, #Instagram:after {
 	content: url(../img/Instagram.png);
 	height: 40px;
 }
 
-#Linkedin {
+#Linkedin, #Linkedin:after {
 	content: url(../img/Linkedin.png);
 	height: 40px;
 }
 
-#Github {
+#Github, #Github:after {
 	content: url(../img/Github.png);
 	height: 40px;
 }
 
-#Personal {
+#Personal, #Personal:after {
 	content: url(../img/Personal.png);
 	height: 40px;
 }
 
-#Professional {
+#Professional, #Professional:after {
 	content: url(../img/Professional.png);
 	height: 40px;
 }
 
-#Blog {
+#Blog, #Blog:after {
 	content: url(../img/blog.png);
 	height: 40px;
 }

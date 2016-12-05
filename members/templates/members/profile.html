@@ -23,7 +23,7 @@
     </div>
     {% if ALLOW_PHOTO_UPLOAD and can_edit %}
       <div class='edit-img' id='pic_tab'>
-        <img id="img-edit" alt='edit image' />
+        <img id="img-edit" alt='edit image' src="{% static 'img/camera.png' %}"/>
         <h3>Edit Photo</h3>
       </div>
     {% else %}
@@ -52,10 +52,10 @@
     <div class='row'>
       <h2 class='col s9 oswald' id='prof-name'>{{ user.get_full_name }}</h2>
       {% if can_edit %}
-        <a class='col s1 tooltipped' data-position="bottom" data-tooltip="Edit Profile" href="{% url 'member_edit_profile' user.username %}" style='margin-top:3%;'><img id='edit' alt='edit-icon'/></a>
+        <a class='col s1 tooltipped' data-position="bottom" data-tooltip="Edit Profile" href="{% url 'member_edit_profile' user.username %}" style='margin-top:3%;'><img id='edit' src="{% static 'img/edit.png' %}" alt='edit-icon'/></a>
       {% endif %}
       {% if request.user.profile.is_manager %}
-      <a class='col s1 tooltipped' data-position="bottom" data-tooltip="Manage Member" href="{% url 'member_manage' user.username %}" style='margin-top:3%;'><img id='manage' alt='manage-icon' /></a>
+        <a class='col s1 tooltipped' data-position="bottom" data-tooltip="Manage Member" href="{% url 'member_manage' user.username %}" style='margin-top:3%;'><img id='manage' alt='manage-icon' src="{% static 'img/manage.png' %}" /></a>
       {% endif %}
     </div>
 

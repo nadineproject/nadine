@@ -1,5 +1,6 @@
 {% extends "members/u_base.html" %}
 {% load imagetags %}
+{% load static %}
 
 {% block sub-title %}Organization | {{ organization.name }} | {% endblock %}
 
@@ -22,7 +23,7 @@
 			</div>
 			{% if can_edit %}
 			<div class='org-img-edit' id='pic_tab'>
-				<img id="img-edit" alt='edit image' />
+				<img id="img-edit" alt='edit image' src="{% static 'img/camera.png' %}"/>
         <h5>Edit Photo</h5>
 			</div>
 			{% endif %}
@@ -52,14 +53,14 @@
 		<div class='col s3'>
 			{% if organizaiton.locked %}
 				<div class='col s4 tooltipped' data-position="bottom" data-tooltip='Locked'>
-					<img id='locked' alt='locked icon'/>
+					<img id='locked' alt='locked icon' src="{% static 'img/locked.png' %}"/>
 				</div>
 			{% endif %}
 			{% if can_edit %}
-				<a class='col s4 tooltipped' data-position="bottom" data-tooltip="Edit Details" href="{% url 'member_org_edit' organization.id %}"><img id='edit' alt='edit icon' style='height:30px;'/></a>
+				<a class='col s4 tooltipped' data-position="bottom" data-tooltip="Edit Details" href="{% url 'member_org_edit' organization.id %}"><img id='edit' alt='edit icon' style='height:30px;' src="{% static 'img/edit.png' %}"/></a>
 			{% endif %}
 			{% if request.user.is_staff %}
-				<a class='col s4 tooltipped' data-position="bottom" data-tooltip='Admin' href="{{ organization.admin_url }}"><img id='admin' alt='admin icon'/></a>
+				<a class='col s4 tooltipped' data-position="bottom" data-tooltip='Admin' href="{{ organization.admin_url }}"><img id='admin' alt='admin icon' src="{% static 'img/admin.png' %}"/></a>
 			{% endif %}
 		</div>
 		<div class='col s12'>
