@@ -77,3 +77,23 @@
 	{% endif %}
 
 {% endblock %}</div>
+
+
+{% block extrajs %}
+<script>
+	$(document).ready(function() {
+		$('li').on('click', function(e) {
+			e.preventDefault();
+
+			if($('#tabs-2').height() < 699) {
+				console.log('little!');
+				$('footer').attr('class', 'sticky-footer');
+			} else {
+				if($('footer').hasClass('sticky-footer')) {
+					$('footer').attr('page-footer main-footer');
+				}
+			}
+		})
+	});
+</script>
+{% endblock %}
