@@ -12,7 +12,7 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidde
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 
-from nadine.forms import OrganizationForm, OrganizationMemberForm
+from nadine.forms import OrganizationForm, OrganizationMemberForm, OrganizationSearchForm
 from nadine.models.organization import Organization, OrganizationMember
 
 from members.views.core import is_active_member
@@ -22,7 +22,20 @@ from members.views.core import is_active_member
 @user_passes_test(is_active_member, login_url='member_not_active')
 def org_list(request):
     orgs = Organization.objects.active_organizations()
-    context = {'organizations': orgs}
+
+    search_terms = None
+    search_results = None
+    if request.method == "POST":
+        search_form = OrganizationSearchForm(request.POST)
+        if search_form.is_valid():
+            search_terms = search_form.cleaned_data['terms']
+            search_results = Organization.objects.search(search_terms)
+            
+    else:
+        search_form = OrganizationSearchForm()
+
+    context = {'organizations': orgs, 'search_results': search_results,
+        'search_form': search_form, 'search_terms': search_terms, }
     return render(request, 'members/org_list.html', context)
 
 
