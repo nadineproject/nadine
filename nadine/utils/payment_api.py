@@ -73,10 +73,16 @@ class PaymentAPI(object):
         return response
 
     def void_transaction(self, username, transaction_id):
-        t = clean_transaction(self.entry_point.getTransaction(transaction_id))
+        t = self.get_transaction(transaction_id)
         if t['username'] == username and t['status'] == "Authorized":
             return self.entry_point.voidTransaction(transaction_id)
         return False
+
+    def get_transaction(self, transaction_id, clean=True):
+        transaction = self.entry_point.getTransaction(transaction_id)
+        if clean:
+            return clean_transaction(transaction)
+        return transaction
 
     def update_recurring(self, customer_id, enabled, next_date, description, comment, amount):
         customer_object = self.entry_point.getCustomer(customer_id)
@@ -231,6 +237,10 @@ class USAEPAY_SOAP_API(object):
         search.addParameter("created", "gte", start)
         search.addParameter("created", "lte", end)
         return self.searchTransactions(search)
+
+    def getTransaction(self, transaction_id):
+        transaction_object = self.client.service.getTransaction(self.token, transaction_id)
+        return transaction_object
 
     def getSettledCheckTransactions(self, year, month, day):
         start, end = getDateRange(year, month, day)
