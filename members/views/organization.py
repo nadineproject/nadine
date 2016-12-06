@@ -30,7 +30,7 @@ def org_list(request):
         if search_form.is_valid():
             search_terms = search_form.cleaned_data['terms']
             search_results = Organization.objects.search(search_terms)
-            
+
     else:
         search_form = OrganizationSearchForm()
 
@@ -53,11 +53,12 @@ def org_view(request, org_id):
         else:
             counts['inactive'] = counts['inactive'] + 1
 
+    show_all = 'show_all' in request.GET or counts['active'] == 0
     context = {'organization': org,
         'can_edit':can_edit,
         'members': members,
         'counts': counts,
-        'show_all': 'show_all' in request.GET,
+        'show_all': show_all,
     }
     return render(request, 'members/org_view.html', context)
 
