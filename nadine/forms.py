@@ -65,6 +65,8 @@ class OrganizationForm(forms.Form):
             org.locked = self.cleaned_data['locked']
         org.save()
 
+class OrganizationSearchForm(forms.Form):
+    terms = forms.CharField(max_length=100)
 
 class OrganizationMemberForm(forms.Form):
     def __init__(self, *args, **kwargs):

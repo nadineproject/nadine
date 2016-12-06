@@ -35,6 +35,16 @@ class OrganizationManager(models.Manager):
     def with_tag(self, tag):
         return self.active_organizations().filter(tags__name__in=[tag])
 
+    def search(self, search_string):
+        if len(search_string) == 0:
+            return None
+
+        org_query = Organization.objects.all()
+        name_query = Q(name__icontains=search_string)
+
+        org_query = org_query.filter(name_query).order_by('name')
+
+        return org_query.order_by('name')
 
 def org_photo_path(instance, filename):
     ext = filename.split('.')[-1]
