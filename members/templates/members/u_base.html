@@ -65,7 +65,7 @@
 						<nav class='row' id='main-nav'>
 							<div class='nav-wrapper'>
 								<div id='logo'>
-									<a href="{% url 'site_index' %}" class='brand-logo' id="home">
+									<a href="{% url 'member_home' %}" class='brand-logo' id="home">
 										<img class='sec-logo' src="{% static 'img/logo-line.png' %}"/>
 									</a>
 								</div>
@@ -98,7 +98,14 @@
 									<li><a href="{% url 'member_email_lists' %}">Mailing Lists</a></li>
 									<li><a class='slack-a' href="{% url 'member_slack' user.username %}">Slack</a></li>
 									<li><a href="{% url 'member_faq' %}">FAQ</a></li>
-									<li><a href="{% url 'logout' %}">Logout</a></li>
+									<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown3' href="{% url 'logout' %}">Logout</a>
+										<ul id='dropdown3' class='dropdown-content'>
+											{% if request.user.is_staff %}
+												<li><a href="{% url 'staff_todo' %}">Staff</a></li>
+												<li><a href="{% url 'admin:index' %}">Admin</a></li>
+											{% endif %}
+										</ul>
+									</li>
 								{% else %}
 									<li><a href="{% url 'member_not_active' %}">Members</a></li>
 									<li><a href="{% url 'member_not_active' %}">Organizations</a></li>
