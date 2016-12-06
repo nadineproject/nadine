@@ -192,6 +192,10 @@ p {
 }
 
 /* Body */
+.messages {
+	margin-top: 3%;
+}
+
 table th {
 	padding: 0.5em 0.5em 0.25em;
 }
