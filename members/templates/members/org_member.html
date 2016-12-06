@@ -29,7 +29,9 @@
 				{% endif %}
 			</td>
 			<td class='pf-error'>
-				{{ form.username.errors }}
+				{% if form.username.errors %}
+					Please enter a valid user
+				{% endif %}
 			</td>
 		</tr>
 		<tr>
@@ -86,16 +88,10 @@
 				e.preventDefault();
 				$('.username_input').val(ui.item.label);
 				$('#username').val(ui.item.value);
-				// $('#new_id').val(ui.item.id);
 			}
 		})
 
 		$('.datepicker').datepicker()
-		// $('.datepicker').pickadate({
-		// 	selectMonths: true,
-		// 	selectYears: 6,
-		// 	format: 'yyyy-mm-dd'
-		// });
 	})();
 </script>
 {% endblock %}

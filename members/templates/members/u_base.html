@@ -69,7 +69,7 @@
 										<img class='sec-logo' src="{% static 'img/logo-line.png' %}"/>
 									</a>
 								</div>
-								<a href='#' data-activates="mobile-demo" class="button-collapse"><img class='menu-img' src="{% static 'img/ic_menu_white_24dp/web/ic_menu_white_24dp_2x.png' %}"/></a>
+								<a href='#' data-activates="mobile" class="button-collapse"><img class='menu-img' src="{% static 'img/hamburger.png' %}"/></a>
 							<ul id="nav-mobile" class="right hide-on-med-and-down">
 					{% endblock %}
 								<li><a href="{% url 'member_profile_redirect' %}">Profile</a></li>
@@ -110,7 +110,7 @@
 								{% endif %}
 				      </ul>
 							{% block side-nav %}
-							<ul class="side-nav" id="mobile-demo">
+							<ul class="side-nav" id="mobile">
 								<li><a href="{% url 'member_profile_redirect' %}">Profile</a></li>
 								{% if not request.user.is_authenticated %}
 									<li><a>Members</a></li>
