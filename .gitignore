@@ -25,6 +25,7 @@ newrelic-celery.ini
 gw_config.json
 .vagrant/
 __pycache__/
+docs/_build/*
 
 # Ignore Themes
 /themes/**
