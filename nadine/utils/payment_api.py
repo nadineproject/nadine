@@ -351,7 +351,9 @@ class USAEPAY_SOAP_API(object):
 
     def voidTransaction(self, transaction_id):
         response = self.client.service.voidTransaction(self.token, transaction_id)
-        if response.Error:
+        if response == False:
+            raise Exception("Could not void transaction.  No error given.")
+        elif hasattr(response, 'Error'):
             raise Exception(response.Error)
         return response
 
