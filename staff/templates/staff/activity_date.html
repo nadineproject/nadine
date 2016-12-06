@@ -24,7 +24,8 @@ nav #activity-tab { background: #FBD850; color: black; }
 	Daily Activity - {{ activity_date|date:"l, M dS" }}
 	<span style="float:right;">
 	<a href="{% url 'staff_activity_day' previous_date.year previous_date.month previous_date.day %}">&larr;</a>
-	<input type='date' name='date' class='datepicker' value="{{ activity_date|date:'Y-m-d' }}"/>
+	<a href="{% url 'staff_activity_today' %}">&bull;</a>
+	<!-- <input type='date' name='date' class='datepicker' value="{{ activity_date|date:'Y-m-d' }}"/> -->
 	<a href="{% url 'staff_activity_day' next_date.year next_date.month next_date.day %}">&rarr;</a>
 	</span>
 </h2>
@@ -75,19 +76,19 @@ nav #activity-tab { background: #FBD850; color: black; }
 
 {% block extrajs %}
 	<script>
-		(function() {
-			$('.datepicker').datepicker({
-				dateFormat: 'yy-mm-dd',
-				onSelect: function(ui, e) {
-					var date = ui.split('-');
-					var url_first = "{% url 'staff_activity_day' ";
-					var url_second = date[0] + ' ' + date[1] + ' ' + date[2] + ' %}'
-					var redirect = '"' + url_first.concat(url_second) + '"';
-					console.log(redirect);
-
-					// window.location.href = redirect;
-				}
-			});
-		})();
+		// (function() {
+		// 	$('.datepicker').datepicker({
+		// 		dateFormat: 'yy-mm-dd',
+		// 		onSelect: function(ui, e) {
+		// 			var date = ui.split('-');
+		// 			var url_first = "{% url 'staff_activity_day' ";
+		// 			var url_second = date[0] + ' ' + date[1] + ' ' + date[2] + ' %}'
+		// 			var redirect = '"' + url_first.concat(url_second) + '"';
+		// 			console.log(redirect);
+		//
+		// 			window.location.href = redirect;
+		// 		}
+		// 	});
+		// })();
 	</script>
 {% endblock %}
