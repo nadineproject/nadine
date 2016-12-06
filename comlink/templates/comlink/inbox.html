@@ -1,0 +1,37 @@
+{% extends "comlink/base.html" %}
+
+{% block sub-title %} | Home {% endblock %}
+
+{% block content %}
+<!-- <h2>Threads</h2>
+<table>
+  <tr>
+    <th>Thread</th>
+    <th>Children</th>
+    <th>Parent</th>
+  </tr>
+{% for t in threads %}
+    <tr>
+      <td>{{ t }}</td>
+      <td>{{ t.children|length }}</td>
+      <td>{{ t.parent }}</td>
+    </tr>
+{% endfor %}
+</table> -->
+
+<h2>All Messages ({{ messages|length }})</h2>
+<table>
+  <tr>
+    <th>Received</th>
+    <th>From</th>
+    <th>Subject</th>
+  </tr>
+{% for m in messages %}
+    <tr>
+      <td>{{ m.received }}</td>
+      <td>{{ m.sender }}</td>
+      <td><a href="{% url 'comlink_mail' m.id %}">{{ m.subject }}</a></td>
+    </tr>
+{% endfor %}
+</table>
+{% endblock %}
