@@ -12,6 +12,7 @@ from django.conf import settings
 from django.utils import timezone
 from django.contrib.auth.models import User
 
+# from nadine.models import core
 from taggit.managers import TaggableManager
 
 logger = logging.getLogger(__name__)
@@ -62,6 +63,7 @@ class Organization(models.Model):
     public = models.BooleanField(default=False)
     locked = models.BooleanField(default=False)
     tags = TaggableManager(blank=True)
+    # websites = models.ManyToManyField(core.Website, blank=True)
 
     objects = OrganizationManager()
 
