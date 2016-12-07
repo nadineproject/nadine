@@ -64,7 +64,7 @@ class Organization(models.Model):
     public = models.BooleanField(default=False)
     locked = models.BooleanField(default=False)
     tags = TaggableManager(blank=True)
-    # websites = models.ManyToManyField(core.Website, blank=True)
+    websites = models.ManyToManyField(Website, blank=True)
 
     objects = OrganizationManager()
 
