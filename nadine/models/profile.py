@@ -39,7 +39,7 @@ from PIL import Image
 from nadine.utils.payment_api import PaymentAPI
 from nadine.utils.slack_api import SlackAPI
 from nadine.models.core import GENDER_CHOICES, HowHeard, Industry, Neighborhood, Website
-from nadine.models.membership import Membership, MembershipPlan
+from nadine.models.membership import Membership, MembershipPlan, SecurityDeposit
 from nadine.models.usage import CoworkingDay
 from nadine.models.payment import Bill
 from nadine.models.organization import Organization
