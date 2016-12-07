@@ -83,18 +83,6 @@ class URLType(models.Model):
         ordering = ['name']
 
 
-class URL(models.Model):
-    user = models.ForeignKey(User)
-    url_type = models.ForeignKey(URLType)
-    url_value = models.URLField(blank=True, null=True)
-
-    def __str__(self):
-        return self.url_value
-
-    class Meta:
-        app_label = 'nadine'
-
-
 class Website(models.Model):
     url_type = models.ForeignKey(URLType)
     url = models.URLField(blank=True, null=True)

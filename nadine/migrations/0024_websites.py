@@ -48,4 +48,15 @@ class Migration(migrations.Migration):
             field=models.ManyToManyField(blank=True, to='nadine.Website'),
         ),
         migrations.RunPython(forward, reverse),
+        migrations.RemoveField(
+            model_name='url',
+            name='url_type',
+        ),
+        migrations.RemoveField(
+            model_name='url',
+            name='user',
+        ),
+        migrations.DeleteModel(
+            name='URL',
+        ),
     ]

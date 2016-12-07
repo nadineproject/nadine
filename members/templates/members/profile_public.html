@@ -48,7 +48,7 @@
 </table>
 
 <div class='profile-links'>
-  {% for url in user.url_set.all %}
+  {% for url in user.profile.websites.all %}
     <li class='bold-blue url-links'>
       <a target="_self" href="{{ url }}"><img class='tooltipped' data-position='bottom' data-tooltip='{{ url.url_type | title }}' id='{{ url.url_type | title}}' /></a>
     </li>
