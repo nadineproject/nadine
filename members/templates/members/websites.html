@@ -1,0 +1,7 @@
+<div class='profile-links'>
+  {% for url in websites.all %}
+    <li class='bold-blue url-links'>
+      <a target="_self" href="{{ url }}"><img class='tooltipped' data-position='bottom' data-tooltip='{{ url.url_type | title }}' id='{{ url.url_type | title}}' /></a>
+    </li>
+  {% endfor %}
+</div>

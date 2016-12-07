@@ -38,8 +38,8 @@ from PIL import Image
 
 from nadine.utils.payment_api import PaymentAPI
 from nadine.utils.slack_api import SlackAPI
-from nadine.models.core import GENDER_CHOICES, HowHeard, Industry, Neighborhood, Website
-from nadine.models.membership import Membership, MembershipPlan
+from nadine.models.core import GENDER_CHOICES, HowHeard, Industry, Neighborhood, Website, URLType
+from nadine.models.membership import Membership, MembershipPlan, SecurityDeposit
 from nadine.models.usage import CoworkingDay
 from nadine.models.payment import Bill
 from nadine.models.organization import Organization
@@ -275,27 +275,37 @@ class UserProfile(models.Model):
 
     @property
     def url_personal(self):
-        return self.user.url_set.filter(url_type__name="personal").first()
+        return self.websites.filter(url_type__name="personal").first()
 
     @property
     def url_professional(self):
-        return self.user.url_set.filter(url_type__name="professional").first()
+        return self.websites.filter(url_type__name="professional").first()
 
     @property
     def url_facebook(self):
-        return self.user.url_set.filter(url_type__name="facebook").first()
+        return self.websites.filter(url_type__name="facebook").first()
 
     @property
     def url_twitter(self):
-        return self.user.url_set.filter(url_type__name="twitter").first()
+        return self.websites.filter(url_type__name="twitter").first()
 
     @property
     def url_linkedin(self):
-        return self.user.url_set.filter(url_type__name="linkedin").first()
+        return self.websites.filter(url_type__name="linkedin").first()
 
     @property
     def url_github(self):
-        return self.user.url_set.filter(url_type__name="github").first()
+        return self.websites.filter(url_type__name="github").first()
+
+    def save_url(self, url_type, url_value):
+        if url_type and url_value:
+            w = self.websites.filter(url_type__name=url_type).first()
+            if w:
+                w.url = url_value
+                w.save()
+            else:
+                t = URLType.objects.get(name=url_type)
+                self.websites.create(url_type=t, url=url_value)
 
     def active_organization_memberships(self, on_date=None):
         if not on_date:
@@ -307,16 +317,6 @@ class UserProfile(models.Model):
     def active_organizations(self, on_date=None):
         active = self.active_organization_memberships(on_date)
         return Organization.objects.filter(id__in=active.values('organization'))
-
-    def save_url(self, url_type, url_value):
-        if url_type and url_value:
-            url = self.user.url_set.filter(url_type__name=url_type).first()
-            if url:
-                url.url_value = url_value
-                url.save()
-            else:
-                t = URLType.objects.get(name=url_type)
-                URL.objects.create(user=self.user, url_type=t, url_value=url_value)
 
     def all_bills(self):
         """Returns all of the open bills, both for this user and any bills for other members which are marked to be paid by this member."""
