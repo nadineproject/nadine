@@ -231,29 +231,34 @@ class BaseLinkFormSet(BaseFormSet):
         if any(self.errors):
             return
 
-        websites = []
+        types = []
         urls = []
         duplicates = False
 
         for form in self.forms:
             if form.cleaned_data:
-                website = form.cleaned_data['name']
+                type = form.cleaned_data['type']
                 url = form.cleaned_data['url']
 
-                if website and url :
-                    if website in websites:
-                        duplicates = True
-                    websites.append(website)
-
+                if type and url :
                     if url in urls:
                         duplicates = True
                     urls.append(url)
 
+                if duplicates:
+                    raise forms.ValidationError(message='Websites must have unique URLS', code='duplicate_links')
+
+                if url and not type:
+                    raise forms.ValidationError(message='All websites must have a URL', code='missing_anchor')
+
+                if type and not url:
+                    raise forms.ValidationError(message='All URLS must have a name', code='missing_anchor')
 
 
 class LinkForm(forms.Form):
-    website = forms.CharField(max_length=64, widget=forms.TextInput(attrs={ 'placeholder': 'Name of Link e.g. Facebook'}), required=False)
+    type = forms.CharField(max_length=64, widget=forms.TextInput(attrs={ 'placeholder': 'Name of Link e.g. Facebook'}), required=False)
     url = forms.URLField(widget=forms.URLInput(attrs={'placeholder': 'http://www.facebook.com/myprofile'}), required=False)
+
 
 class EditProfileForm(forms.Form):
     username = forms.CharField(required=True, widget=forms.HiddenInput)

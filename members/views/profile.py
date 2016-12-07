@@ -8,6 +8,8 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.csrf import csrf_exempt
+from django.db import IntegrityError, transaction
+from django.forms.formsets import formset_factory
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404, HttpRequest
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
@@ -18,7 +20,7 @@ from nadine.models.usage import CoworkingDay
 from nadine.models.payment import Transaction
 from nadine.models.alerts import MemberAlert
 from nadine.models.organization import Organization, OrganizationMember
-from nadine.forms import EditProfileForm, ProfileImageForm
+from nadine.forms import EditProfileForm, ProfileImageForm, LinkForm, BaseLinkFormSet
 from nadine.utils import network
 from arpwatch import arp
 from arpwatch.models import ArpLog, UserDevice
@@ -284,11 +286,34 @@ def edit_photo(request, username):
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
-def edit_urls(request, username):
+def edit_websites(request, username):
     user= get_object_or_404(User, username=username)
 
-    context = {'user': user}
-    return render(request, 'members/edit_urls.html', context)
+    LinkFormSet = formset_factory(LinkForm, formset=BaseLinkFormSet)
+
+    if request.method == 'POST':
+        profile_form = EditProfileForm(request.POST)
+        link_formset = LinkFormSet(request.POST)
+
+        if profile_form.is_valid and link_formset.is_valid():
+            new_links = []
+
+            for link_form in link_formset:
+                type = link_form.cleaned_data.get('type')
+                url = link_form.cleaned_data.get('url')
+
+                if type and url:
+                    new_links.append(UserLink(user=user, type=type, url=url))
+
+            print new_links
+            # messages.success(request, 'You have updated your profile.')
+
+    else:
+        profile_form = EditProfileForm()
+        link_formset = LinkFormSet()
+
+    context = {'user': user, 'profile_form': profile_form, 'link_formset': link_formset, }
+    return render(request, 'members/edit_websites.html', context)
 
 
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
