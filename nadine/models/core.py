@@ -146,6 +146,39 @@ class Neighborhood(models.Model):
         ordering = ['name']
 
 
+class URLType(models.Model):
+    name = models.CharField(max_length=128, unique=True)
+
+    def __str__(self): return self.name
+
+    class Meta:
+        app_label = 'nadine'
+        ordering = ['name']
+
+
+class URL(models.Model):
+    user = models.ForeignKey(User)
+    url_type = models.ForeignKey(URLType)
+    url_value = models.URLField(blank=True, null=True)
+
+    def __str__(self):
+        return self.url_value
+
+    class Meta:
+        app_label = 'nadine'
+
+
+class Website(models.Model):
+    url_type = models.ForeignKey(URLType)
+    url = models.URLField(blank=True, null=True)
+
+    def __str__(self):
+        return self.url
+
+    class Meta:
+        app_label = 'nadine'
+
+
 class UserQueryHelper():
 
     def active_members(self):
@@ -355,6 +388,7 @@ class UserProfile(models.Model):
     photo = models.ImageField(upload_to=user_photo_path, blank=True, null=True)
     tags = TaggableManager(blank=True)
     valid_billing = models.NullBooleanField(blank=True, null=True)
+    websites = models.ManyToManyField(Website, blank=True)
 
     @property
     def url_personal(self):
@@ -871,27 +905,6 @@ def sync_primary_callback(sender, **kwargs):
     email_address.set_primary()
 post_save.connect(sync_primary_callback, sender=User)
 
-
-class URLType(models.Model):
-    name = models.CharField(max_length=128, unique=True)
-
-    def __str__(self): return self.name
-
-    class Meta:
-        app_label = 'nadine'
-        ordering = ['name']
-
-
-class URL(models.Model):
-    user = models.ForeignKey(User)
-    url_type = models.ForeignKey(URLType)
-    url_value = models.URLField(blank=True, null=True)
-
-    def __str__(self):
-        return self.url_value
-
-    class Meta:
-        app_label = 'nadine'
 
 
 class EmergencyContact(models.Model):
