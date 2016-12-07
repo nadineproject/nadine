@@ -282,5 +282,13 @@ def edit_photo(request, username):
     context = {'user': user, 'page_message': page_message}
     return render(request, 'members/profile_image_edit.html', context)
 
+@login_required
+@user_passes_test(is_active_member, login_url='member_not_active')
+def edit_urls(request, username):
+    user= get_object_or_404(User, username=username)
+
+    context = {'user': user}
+    return render(request, 'members/edit_urls.html', context)
+
 
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

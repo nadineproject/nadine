@@ -3,6 +3,7 @@ import datetime
 
 from django import forms
 from django.forms import modelformset_factory
+from django.forms.formsets import BaseFormSet
 from django.contrib.auth.models import User
 from django.utils.html import strip_tags
 from django.conf import settings
@@ -223,6 +224,34 @@ class ProfileImageForm(forms.Form):
         user.profile.photo = self.cleaned_data['photo']
         user.profile.save()
 
+class BaseLinkFormSet(BaseFormSet):
+    def clean(self):
+        if any(self.errors):
+            return
+
+        websites = []
+        urls = []
+        duplicates = False
+
+        for form in self.forms:
+            if form.cleaned_data:
+                website = form.cleaned_data['name']
+                url = form.cleaned_data['url']
+
+                if website and url :
+                    if website in websites:
+                        duplicates = True
+                    websites.append(website)
+
+                    if url in urls:
+                        duplicates = True
+                    urls.append(url)
+
+
+
+class LinkForm(forms.Form):
+    website = forms.CharField(max_length=64, widget=forms.TextInput(attrs={ 'placeholder': 'Name of Link e.g. Facebook'}), required=False)
+    url = forms.URLField(widget=forms.URLInput(attrs={'placeholder': 'http://www.facebook.com/myprofile'}), required=False)
 
 class EditProfileForm(forms.Form):
     username = forms.CharField(required=True, widget=forms.HiddenInput)
