@@ -12,7 +12,6 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidde
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 
-from nadine.models.core import UserProfile, Membership
 from nadine.models.usage import CoworkingDay, Event
 from nadine.models.resource import Room
 from nadine.forms import EventForm

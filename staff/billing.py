@@ -9,7 +9,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.contrib.auth.models import User
 
-from nadine.models.core import Membership
+from nadine.models.membership import Membership
 from nadine.models.payment import Bill, BillingLog, Transaction
 from nadine.models.usage import CoworkingDay
 

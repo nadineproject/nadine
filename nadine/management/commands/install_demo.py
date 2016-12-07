@@ -10,7 +10,9 @@ from django.contrib.sites.models import Site
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
-from nadine.models.core import MembershipPlan, Membership, UserProfile, Industry, Neighborhood
+from nadine.models.core import Industry, Neighborhood
+from nadine.models.profile import UserProfile
+from nadine.models.membership import MembershipPlan, Membership
 from nadine.models.usage import CoworkingDay
 from nadine.models.payment import BillingLog, Bill, Transaction
 from interlink.models import MailingList, IncomingMail, OutgoingMail

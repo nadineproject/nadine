@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from datetime import date, datetime, timedelta
 from django.utils import timezone
-from nadine.models.core import Membership
+from nadine.models.membership import Membership
 from arpwatch.models import UserDevice
 from django.forms.extras.widgets import SelectDateWidget
 

@@ -7,7 +7,7 @@ from django.utils.html import format_html
 from django.core.urlresolvers import reverse
 
 
-from nadine.models.core import EmailAddress
+from nadine.models.profile import EmailAddress
 
 register = template.Library()
 

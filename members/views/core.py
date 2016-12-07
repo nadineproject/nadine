@@ -13,7 +13,7 @@ from django.template import Template, Context, RequestContext
 
 from nadine import email
 from nadine.utils import mailgun
-from nadine.models.core import UserProfile, Membership
+from nadine.models.profile import UserProfile
 from nadine.models.usage import CoworkingDay
 #from nadine.models.resource import Room
 #from nadine.models.payment import Transaction

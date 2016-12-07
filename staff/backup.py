@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 from django.conf import settings
 from django.utils import timezone
 
-from nadine.models.core import EmergencyContact
+from nadine.models.profile import EmergencyContact
 
 class BackupError(Exception):
     pass

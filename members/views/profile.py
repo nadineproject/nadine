@@ -13,7 +13,7 @@ from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 
 from nadine import email
-from nadine.models.core import UserProfile, Membership, FileUpload
+from nadine.models.profile import UserProfile, FileUpload
 from nadine.models.usage import CoworkingDay
 from nadine.models.payment import Transaction
 from nadine.models.alerts import MemberAlert

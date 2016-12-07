@@ -372,7 +372,7 @@ def send_email(recipient, subject, text_message, html_message=None, fail_silentl
     finally:
         if user:
             try:
-                from nadine.models.core import SentEmailLog
+                from nadine.models.profile import SentEmailLog
                 log = SentEmailLog(user=user, recipient=recipient, subject=subject, success=success)
                 if note:
                     log.note = note

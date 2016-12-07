@@ -12,7 +12,7 @@ import pytz
 from datetime import datetime, time, date, timedelta
 from xml.dom.minidom import parse, parseString
 
-from nadine.models.core import XeroContact
+from nadine.models.profile import XeroContact
 
 def test_xero_connection():
     api = XeroAPI()

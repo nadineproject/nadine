@@ -21,7 +21,7 @@ from django.utils import timezone
 
 import arp
 from arpwatch.models import UserDevice, ArpLog
-from nadine.models.core import Membership
+from nadine.models.membership import Membership
 from nadine.models.usage import CoworkingDay
 from staff.templatetags import imagetags
 

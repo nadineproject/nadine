@@ -32,3 +32,33 @@ from django.contrib.auth.models import User
 #     subscribers = models.ManyToManyField(User, blank=True, related_name='subscribed_mailing_lists')
 #     moderators = models.ManyToManyField(User, blank=True, related_name='moderated_mailing_lists', help_text='Users who will be sent moderation emails', limit_choices_to={'is_staff': True})
 #     throttle_limit = models.IntegerField(default=0, help_text='The number of recipients in 10 minutes this mailing list is limited to. Default is 0, which means no limit.')
+
+# Not ready yet.  This was pulled in from modernomads. --JLS
+# Keys need to be updated to keys in nadine.email.py
+
+# class EmailTemplate(models.Model):
+#     ''' Template overrides for system generated emails '''
+#
+#     ADMIN_DAILY = 'admin_daily_update'
+#     GUEST_DAILY = 'guest_daily_update'
+#     INVOICE = 'invoice'
+#     RECEIPT = 'receipt'
+#     SUBSCRIPTION_RECEIPT = 'subscription_receipt'
+#     NEW_RESERVATION = 'newreservation'
+#     WELCOME = 'pre_arrival_welcome'
+#     DEPARTURE = 'departure'
+#
+#     KEYS = (
+#     (ADMIN_DAILY, 'Admin Daily Update'),
+#     (GUEST_DAILY, 'Guest Daily Update'),
+#     (INVOICE, 'Invoice'),
+#     (RECEIPT, 'Reservation Receipt'),
+#     (SUBSCRIPTION_RECEIPT, 'Subscription Receipt'),
+#     (NEW_RESERVATION, 'New Reservation'),
+#     (WELCOME, 'Pre-Arrival Welcome'),
+#     (DEPARTURE, 'Departure'),
+#     )
+#
+#     key = models.CharField(max_length=32, choices=KEYS)
+#     text_body = models.TextField(verbose_name="The text body of the email")
+#     html_body = models.TextField(blank=True, null=True, verbose_name="The html body of the email")
