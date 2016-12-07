@@ -141,6 +141,7 @@ def org_member(request, org_id):
             initial_data={ 'username':new_username,
                 'start_date': timezone.now()
             }
+
             form = OrganizationMemberForm(initial=initial_data)
         if 'save' == action:
             form = OrganizationMemberForm(request.POST, request.FILES)
