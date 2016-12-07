@@ -297,6 +297,16 @@ class UserProfile(models.Model):
     def url_github(self):
         return self.websites.filter(url_type__name="github").first()
 
+    def save_url(self, url_type, url_value):
+        if url_type and url_value:
+            w = self.websites.filter(url_type__name=url_type).first()
+            if w:
+                w.url = url_value
+                w.save()
+            else:
+                t = URLType.objects.get(name=url_type)
+                self.websites.create(url_type=t, url=url_value)
+
     def active_organization_memberships(self, on_date=None):
         if not on_date:
             on_date = timezone.now().date()
@@ -307,16 +317,6 @@ class UserProfile(models.Model):
     def active_organizations(self, on_date=None):
         active = self.active_organization_memberships(on_date)
         return Organization.objects.filter(id__in=active.values('organization'))
-
-    def save_url(self, url_type, url_value):
-        if url_type and url_value:
-            w = self.websites.filter(url_type__name=url_type).first()
-            if w:
-                w.url = url_value
-                w.save()
-            else:
-                t = URLType.objects.get(name=url_type)
-                self.websites.create(url_type=t, url=url_value)
 
     def all_bills(self):
         """Returns all of the open bills, both for this user and any bills for other members which are marked to be paid by this member."""
