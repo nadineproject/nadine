@@ -4,6 +4,7 @@ from django.forms.utils import ErrorList
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.admin import UserAdmin
 
+
 from nadine.models import *
 
 
@@ -11,17 +12,16 @@ admin.site.register(URLType)
 
 
 # class WebsiteInline(admin.TabularInline):
-#     # model = UserProfile.websites.through
 #     model = Website
+#     fields = ['url_type', 'url']
 #     extra = 1
 
 
 class UserProfileInline(admin.StackedInline):
-    # inlines = [WebsiteInline, ]
-    exclude = ('websites', )
     model = UserProfile
     can_delete = False
     max_num = 1
+    exclude = ('websites', )
 
 
 class EmailAddressInline(admin.TabularInline):

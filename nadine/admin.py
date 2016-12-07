@@ -37,6 +37,7 @@ class OrganizationAdmin(StyledAdmin):
     search_fields = ('name', )
     readonly_fields = ('created_by', 'created_ts', )
     raw_id_fields = ('lead', )
+    exclude = ('websites', )
     def save_formset(self, request, form, formset, change):
         instances = formset.save(commit=False)
         for obj in formset.deleted_objects:
