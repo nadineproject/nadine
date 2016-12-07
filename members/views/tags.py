@@ -71,7 +71,7 @@ def add_tag(request, username):
         return HttpResponseForbidden
 
     tag = request.POST.get("tag", "").strip().lower()
-    if tag.isalnum() or ' ' in tag:
+    if tag.isalnum() or ' ' in tag or '-' in tag:
         user.profile.tags.add(tag)
     else:
         messages.add_message(request, messages.ERROR, "Tags can't contain punctuation.")

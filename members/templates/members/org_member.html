@@ -28,9 +28,13 @@
 					<input class="username_input" id="id_username" name="name"/>
 				{% endif %}
 			</td>
-			<td class='pf-error'>
+		</tr>
+		<tr>
+			<td>
+			</td>
+			<td class='pf-error name-error' style='padding-bottom: 3%;'>
 				{% if form.username.errors %}
-					Please enter a valid user
+					Slow down and try again. You must select an existing user from the dropdown.
 				{% endif %}
 			</td>
 		</tr>
@@ -79,7 +83,10 @@
 <script>
 	(function() {
 		var start = '{{ form.start_date.value }}';
-		console.log(start);
+		$('.username_input').on('focus', function() {
+			$('.name-error').html('');
+		})
+
 		$('.username_input').autocomplete({
 			source: "{% url 'json_user_search' %}",
 			minLength: 2,
@@ -88,6 +95,20 @@
 				e.preventDefault();
 				$('.username_input').val(ui.item.label);
 				$('#username').val(ui.item.value);
+				if($('#username').val().length > 0) {
+					$('.org-btn').attr('disabled', false);
+				}
+			}
+		});
+
+
+		if ($('#username').val().length < 1 && !($('#member_id').val())) {
+			$('.org-btn').attr('disabled', 'disabled');
+		}
+
+		$('.username_input').on('focusout', function() {
+			if ($('#username').val().length == 0 && $('.username_input').val().length > 0) {
+				$('.pf-error.name-error').html('<p>Slow down and try again. You must select an existing user from the dropdown.</p>');
 			}
 		})
 

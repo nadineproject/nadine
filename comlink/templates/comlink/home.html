@@ -3,34 +3,17 @@
 {% block sub-title %} | Home {% endblock %}
 
 {% block content %}
-<!-- <h2>Threads</h2>
-<table>
-  <tr>
-    <th>Thread</th>
-    <th>Children</th>
-    <th>Parent</th>
-  </tr>
-{% for t in threads %}
-    <tr>
-      <td>{{ t }}</td>
-      <td>{{ t.children|length }}</td>
-      <td>{{ t.parent }}</td>
-    </tr>
-{% endfor %}
-</table> -->
 
-<h2>All Messages</h2>
+<h2>Inboxes</h2>
 <table>
   <tr>
-    <th>Received</th>
-    <th>From</th>
-    <th>Subject</th>
+    <th>Address</th>
+    <th>Messages</th>
   </tr>
-{% for m in messages %}
+{% for i in inboxes %}
     <tr>
-      <td>{{ m.received }}</td>
-      <td>{{ m.sender }}</td>
-      <td><a href="{% url 'comlink_mail' m.id %}">{{ m.subject }}</a></td>
+      <td><a href="{% url 'comlink_inbox' i.address %}">{{ i.address }}</a></td>
+      <td style="text-align:center;">{{ i.messages }}</td>
     </tr>
 {% endfor %}
 </table>
