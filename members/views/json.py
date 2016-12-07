@@ -76,9 +76,15 @@ def user_search(request):
     term = request.GET.get('term', '').strip()
     query = User.objects.all()
     if len(term) >= 3:
-        first = Q(first_name__icontains=term)
-        last = Q(last_name__icontains=term)
-        query = query.filter(first | last)
+        if ' ' in term:
+            terms = term.split(' ')
+            first = Q(first_name__icontains=terms[0])
+            last = Q(last_name__icontains=terms[1])
+            query = query.filter(first & last)
+        else:
+            first = Q(first_name__icontains=term)
+            last = Q(last_name__icontains=term)
+            query = query.filter(first | last)
     elif len(term) > 0:
         query = query.filter(first_name__istartswith=term)
     items = []
