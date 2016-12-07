@@ -20,7 +20,7 @@ from django.conf import settings
 #from django.forms.models import model_to_dict
 #from django.db.models import Sum
 
-from nadine.models.core import Membership, MembershipPlan, MemberGroups, SecurityDeposit
+from nadine.models.membership import Membership, MembershipPlan, MemberGroups, SecurityDeposit
 from nadine.models.alerts import MemberAlert
 from nadine.forms import MemberSearchForm, MembershipForm, EventForm
 from nadine.utils.slack_api import SlackAPI

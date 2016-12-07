@@ -12,7 +12,7 @@ from django.db import connection
 from django.db.models import Min, Max
 from django.utils import timezone
 
-from nadine.models.core import Membership
+from nadine.models.membership import Membership
 from nadine.utils import network
 
 logger = logging.getLogger(__name__)

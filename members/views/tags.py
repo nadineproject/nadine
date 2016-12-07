@@ -11,7 +11,7 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidde
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 
-from nadine.models.core import UserProfile
+from nadine.models.profile import UserProfile
 from nadine.models.organization import Organization
 
 from members.views.core import is_active_member

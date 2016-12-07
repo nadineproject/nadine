@@ -14,7 +14,8 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.conf import settings
 
-from nadine.models.core import Membership, MembershipPlan, Neighborhood
+from nadine.models.core import Neighborhood
+from nadine.models.membership import Membership, MembershipPlan
 from nadine.models.usage import CoworkingDay
 from nadine.forms import DateRangeForm
 

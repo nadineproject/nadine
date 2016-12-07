@@ -11,7 +11,6 @@ from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 
 from nadine import email
-from nadine.models.core import UserProfile, Membership
 from nadine.models.usage import CoworkingDay
 from nadine.models.resource import Room
 from nadine.utils.slack_api import SlackAPI

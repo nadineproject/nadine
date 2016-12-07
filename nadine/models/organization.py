@@ -12,6 +12,9 @@ from django.conf import settings
 from django.utils import timezone
 from django.contrib.auth.models import User
 
+from nadine.models.core import Website
+from nadine.models.membership import Membership
+
 from taggit.managers import TaggableManager
 
 logger = logging.getLogger(__name__)
@@ -26,7 +29,6 @@ class OrganizationManager(models.Manager):
         if not on_date:
             on_date = timezone.now().date()
         org_ids = []
-        from nadine.models.core import Membership
         for m in Membership.objects.active_memberships(on_date):
             for o in m.user.profile.active_organizations():
                 org_ids.append(o.id)
@@ -62,6 +64,7 @@ class Organization(models.Model):
     public = models.BooleanField(default=False)
     locked = models.BooleanField(default=False)
     tags = TaggableManager(blank=True)
+    websites = models.ManyToManyField(Website, blank=True)
 
     objects = OrganizationManager()
 

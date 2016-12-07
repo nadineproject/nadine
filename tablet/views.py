@@ -17,7 +17,7 @@ from django.utils import timezone
 
 from nadine import email
 from nadine.utils import mailgun
-from nadine.models.core import FileUpload
+from nadine.models.profile import FileUpload
 from nadine.models.usage import CoworkingDay
 from nadine.models.payment import Bill
 from nadine.utils.slack_api import SlackAPI

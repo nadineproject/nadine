@@ -26,7 +26,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.forms import PasswordResetForm
 from django.views.decorators.csrf import csrf_protect
 
-from nadine.models.core import EmailAddress
+from nadine.models.profile import EmailAddress
 from nadine import email
 
 logger = logging.getLogger(__name__)
