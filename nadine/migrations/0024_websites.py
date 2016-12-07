@@ -6,6 +6,12 @@ from django.db import migrations, models
 import django.db.models.deletion
 
 
+def forward(apps, schema_editor):
+    pass
+
+def reverse(apps, schema_editor):
+    pass
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -26,4 +32,5 @@ class Migration(migrations.Migration):
             name='websites',
             field=models.ManyToManyField(blank=True, to='nadine.Website'),
         ),
+        migrations.RunPython(forward, reverse),
     ]
