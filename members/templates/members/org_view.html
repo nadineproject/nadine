@@ -75,6 +75,11 @@
 			</div>
 		{% endif %}
 
+		<!-- Website Icons -->
+		{% with organization.websites as websites %}
+			{% include "members/websites.html" %}
+		{% endwith %}
+
 		<h5 class='oswald org-members col s12'>Organization Members</h5>
 		<table>
 			<tr>
