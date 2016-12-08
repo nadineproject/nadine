@@ -121,11 +121,17 @@ def edit_profile(request, username):
         if not request.user.is_staff:
             return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
 
+    LinkFormSet = formset_factory(LinkForm, formset=BaseLinkFormSet)
+
+    user_links = user.profile.websites.all()
+    link_data = [{'url_type': l.url_type, 'url': l.url, 'username': user.username} for l in user_links]
+
     if request.method == 'POST':
         profile_form = EditProfileForm(request.POST)
+        link_formset = LinkFormSet(request.POST)
         profile_form.public_profile = request.POST['public_profile']
 
-        if profile_form.is_valid():
+        if profile_form.is_valid() and link_formset.is_valid():
             if request.POST.get('password-create') == request.POST.get('password-confirm'):
                 pwd = request.POST.get('password-create')
 
@@ -140,12 +146,29 @@ def edit_profile(request, username):
                     else:
                         page_message = 'Your password must be at least 8 characters long.'
                 else:
+                    for link_form in link_formset:
+                        try:
+                            if link_form.is_valid():
+                                url_type = link_form.cleaned_data.get('url_type')
+                                url = link_form.cleaned_data.get('url')
+                                username = link_form.cleaned_data.get('username')
+
+                                if url_type and url:
+                                    new_link = {'url_type': url_type, 'url': url, 'username': username}
+                                if new_link not in link_data:
+                                    print link_form
+                                    link_form.save()
+
+                        except Exception as e:
+                            messages.add_message(request, messages.ERROR, "Could not save website: %s" % str(e))
+
                     profile_form.save()
 
                     return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
             else:
                 page_message = 'The entered passwords do not match. Please try again.'
     else:
+        link_formset = LinkFormSet(initial=link_data)
         profile = user.profile
         emergency_contact = user.get_emergency_contact()
         profile_form = EditProfileForm(initial={'username': user.username, 'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email,
@@ -162,7 +185,7 @@ def edit_profile(request, username):
                                                 'emergency_phone': emergency_contact.phone, 'emergency_email': emergency_contact.email,
                                             })
 
-    context = {'user': user, 'profile_form': profile_form, 'page_message': page_message}
+    context = {'user': user, 'profile_form': profile_form, 'page_message': page_message, 'link_formset': link_formset}
     return render(request, 'members/profile_edit.html', context)
 
 
@@ -283,37 +306,5 @@ def edit_photo(request, username):
 
     context = {'user': user, 'page_message': page_message}
     return render(request, 'members/profile_image_edit.html', context)
-
-@login_required
-@user_passes_test(is_active_member, login_url='member_not_active')
-def edit_websites(request, username):
-    user= get_object_or_404(User, username=username)
-
-    LinkFormSet = formset_factory(LinkForm, formset=BaseLinkFormSet)
-
-    if request.method == 'POST':
-        profile_form = EditProfileForm(request.POST)
-        link_formset = LinkFormSet(request.POST)
-
-        if profile_form.is_valid and link_formset.is_valid():
-            new_links = []
-
-            for link_form in link_formset:
-                type = link_form.cleaned_data.get('type')
-                url = link_form.cleaned_data.get('url')
-
-                if type and url:
-                    new_links.append(UserLink(user=user, type=type, url=url))
-
-            print new_links
-            # messages.success(request, 'You have updated your profile.')
-
-    else:
-        profile_form = EditProfileForm()
-        link_formset = LinkFormSet()
-
-    context = {'user': user, 'profile_form': profile_form, 'link_formset': link_formset, }
-    return render(request, 'members/edit_websites.html', context)
-
 
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

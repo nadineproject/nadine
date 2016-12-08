@@ -202,7 +202,7 @@
           <td>{{ profile_form.bio.errors }}</td>
         </tr>
       </table>
-      <table>
+      <!-- <table>
         <tr>
           <td class='cap-label viewable'><strong>Professional Website</strong></td>
           <td class='cap-label viewable'><strong>Personal Website</strong></td>
@@ -241,7 +241,7 @@
           <td>{{ profile_form.url_github.errors }}</td>
           <td>{{ profile_form.url_linkedin.errors }}</td>
         </tr>
-      </table>
+      </table> -->
       </div>
 
     <table id="otherinfo">
@@ -294,6 +294,30 @@
       </tr>
     </table>
 
+    <h3 style='text-align:left;'>Websites</h3>
+    {{ link_formset.management_form }}
+    {% for link_form in link_formset %}
+      <table class='link-formset'>
+        <tr>
+          <td class='cap-label viewable'><strong>Website Type</strong></td>
+          <td class='cap-label viewable'><strong>Website URL</strong></td>
+        </tr>
+        <tr>
+          <td class='pf-input url-type'>{{ link_form.url_type }}</td>
+          <td class='pf-input form-url'>{{ link_form.url }}</td>
+        </tr>
+        <tr>
+          <td>{{ link_form.url_type.errors }}</td>
+          <td>{{ link_form.url.errors }}</td>
+        </tr>
+        <tr>
+          <td>
+            {{ link_form.username }}
+          </td>
+        </tr>
+      </table>
+    {% endfor %}
+
 {% block emergency_info %}
     <h3 style='text-align:left;'>Emergency Contact Information</h3>
     <a name="emergency_contact"></a>
@@ -335,9 +359,11 @@
 {% block extrajs %}
 <script>
   $(document).ready(function(){
-    console.log('{{ user.profile.public_profile }}');
-
     $('.button-collapse').sideNav();
+    $('.link-formset').formset({
+      addText: 'Add Another',
+      deleteText: 'Delete'
+    })
 
     $('#password-create').on('focus', function(e) {
       e.preventDefault();

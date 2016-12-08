@@ -30,7 +30,6 @@ urlpatterns = [
     url(r'^edit_pic/(?P<username>[^/]+)/$', profile.edit_pic, name='member_edit_pic'),
     url(r'^edit_photo/(?P<username>[^/]+)/$', profile.edit_photo, name='member_edit_photo'),
     url(r'^activity/(?P<username>[^/]+)/json/$', profile.user_activity_json, name='member_activity_json'),
-    url(r'^edit_websites/(?P<username>[^/]+)/$', profile.edit_websites, name='member_edit_websites'),
 
     # Organization
     url(r'^organizations/$', organization.org_list, name='member_org_list'),

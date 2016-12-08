@@ -13,7 +13,7 @@ from localflavor.us.us_states import US_STATES
 from localflavor.ca.ca_provinces import PROVINCE_CHOICES
 
 from nadine import email
-from nadine.models.core import HowHeard, Industry, Neighborhood, GENDER_CHOICES
+from nadine.models.core import HowHeard, Industry, Neighborhood, URLType, GENDER_CHOICES
 from nadine.models.profile import UserProfile, MemberNote
 from nadine.models.membership import Membership, MembershipPlan
 from nadine.models.usage import PAYMENT_CHOICES, CoworkingDay
@@ -231,33 +231,34 @@ class BaseLinkFormSet(BaseFormSet):
         if any(self.errors):
             return
 
-        types = []
+        url_types = []
         urls = []
-        duplicates = False
 
         for form in self.forms:
             if form.cleaned_data:
-                type = form.cleaned_data['type']
+                url_type = form.cleaned_data['url_type']
                 url = form.cleaned_data['url']
-
                 if type and url :
                     if url in urls:
                         duplicates = True
                     urls.append(url)
-
-                if duplicates:
-                    raise forms.ValidationError(message='Websites must have unique URLS', code='duplicate_links')
-
-                if url and not type:
+                if url and not url_type:
                     raise forms.ValidationError(message='All websites must have a URL', code='missing_anchor')
-
-                if type and not url:
+                if url_type and not url:
                     raise forms.ValidationError(message='All URLS must have a name', code='missing_anchor')
 
 
 class LinkForm(forms.Form):
-    type = forms.CharField(max_length=64, widget=forms.TextInput(attrs={ 'placeholder': 'Name of Link e.g. Facebook'}), required=False)
+    username = forms.CharField(required=False, widget=forms.HiddenInput)
+    url_type = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), label='Website Type', queryset=URLType.objects.all(), required=False)
     url = forms.URLField(widget=forms.URLInput(attrs={'placeholder': 'http://www.facebook.com/myprofile'}), required=False)
+
+    def save(self):
+        if not self.is_valid():
+            raise Exception('The form must be valid in order to save')
+
+        user = User.objects.get(username=self.cleaned_data['username'])
+        user.profile.save_url(self.cleaned_data['url_type'], self.cleaned_data['url'])
 
 
 class EditProfileForm(forms.Form):

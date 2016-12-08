@@ -351,7 +351,7 @@ input#id_photo {
 	font-weight: bold;
 }
 
-#contact, #photo, #emergencyinfo, #websites, #passwords {
+#contact, #photo, #emergencyinfo, #websites, #passwords, .link-formset {
 	margin-left: 4%;
 	padding-left: 2%;
 	padding-right: 2%;
@@ -443,6 +443,20 @@ input#id_phone, input#id_phone2 {
 
 #passInput-error {
 	width: 50%;
+}
+
+td.pf-input.url-type {
+	padding-top: 0;
+	vertical-align: text-top;
+}
+
+.url-type select {
+	box-sizing: border-box;
+	font-size: .9em;
+}
+
+.form-url input{
+	width: 70%;
 }
 
 input#id_city {
