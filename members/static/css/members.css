@@ -457,6 +457,21 @@ td.pf-input.url-type {
 
 .form-url input{
 	width: 70%;
+	margin-bottom: 0;
+}
+
+.url-btn {
+	font-size: .9em;
+	padding-left: 3%;
+	padding-right: 3%;
+}
+
+.add-row {
+	margin-left: 6%;
+}
+
+.delete-row {
+	margin-left: 5%;
 }
 
 input#id_city {

@@ -267,13 +267,8 @@
           <td class='pf-input form-url'>{{ link_form.url }}</td>
         </tr>
         <tr>
-          <td>{{ link_form.url_type.errors }}</td>
+          <td>{{ link_form.username }}</td>
           <td>{{ link_form.url.errors }}</td>
-        </tr>
-        <tr>
-          <td>
-            {{ link_form.username }}
-          </td>
         </tr>
       </table>
     {% endfor %}
@@ -321,9 +316,12 @@
   $(document).ready(function(){
     $('.button-collapse').sideNav();
     $('.link-formset').formset({
-      addText: 'Add Another',
+      addText: 'Add',
       deleteText: 'Delete'
     })
+
+    $('.delete-row').addClass('btn url-btn');
+    $('.add-row').addClass('btn url-btn');
 
     $('#password-create').on('focus', function(e) {
       e.preventDefault();
