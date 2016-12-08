@@ -160,6 +160,8 @@ def edit_profile(request, username):
                                 if new_link not in link_data:
                                     link_form.save()
 
+                        # Need to add delete website functionality
+
                         except Exception as e:
                             messages.add_message(request, messages.ERROR, "Could not save website: %s" % str(e))
 

@@ -237,7 +237,6 @@ class BaseLinkFormSet(BaseFormSet):
         for form in self.forms:
             if form.cleaned_data:
                 username = form.cleaned_data['username']
-                print username
                 url_type = form.cleaned_data['url_type']
                 url = form.cleaned_data['url']
                 if url_type and url :
