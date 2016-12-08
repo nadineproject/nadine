@@ -60,19 +60,27 @@
 				{{ form.bio.errors }}
 			</td>
 		</tr>
-		<!-- <tr>
-			<td class='org-label'>
-				Logo
-			</td>
-			<td>
-				{{ form.photo }}
-			</td>
-		</tr>
-		<tr>
-			<td class='pf-error'>
-				{{ form.photo.errors }}
-			</td>
-		</tr> -->
+		</table>
+		<table>
+			{{ org_link_formset.management_form }}
+			{% for link_form in org_link_formset %}
+			<table class='link-formset'>
+				<tr>
+          <td class='cap-label'><strong>Website Type</strong></td>
+          <td class='cap-label'><strong>Website URL</strong></td>
+        </tr>
+        <tr>
+          <td class='pf-input url-type'>{{ link_form.url_type }}</td>
+          <td class='pf-input form-url'>{{ link_form.url }}</td>
+        </tr>
+        <tr>
+          <td>{{ link_form.org_id }}</td>
+          <td>{{ link_form.url.errors }}</td>
+        </tr>
+			</table>
+			{% endfor %}
+		</table>
+		<table>
 		<tr>
 			<td class='org-label'>
 				Visibility
@@ -112,7 +120,6 @@
 {% block extrajs %}
 <script>
 	$(document).ready(function() {
-		console.log('{{ organization.name }}');
 		$('#id_blurb').on('focusout', function(){
 			var blurb = $('#id_blurb').val();
 
@@ -122,6 +129,13 @@
 				$('#id_blurb').css('border', 'none');
 			}
 		})
+		$('.link-formset').formset({
+			addText: 'Add',
+      deleteText: 'Delete'
+		});
+		$('.delete-row').addClass('btn url-btn');
+    $('.add-row').addClass('btn url-btn');
+
 	});
 </script>
 {% endblock %}

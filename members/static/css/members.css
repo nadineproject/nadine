@@ -458,6 +458,9 @@ td.pf-input.url-type {
 .form-url input{
 	width: 70%;
 	margin-bottom: 0;
+	background-color: white;
+	border-bottom: none;
+	padding: 1%;
 }
 
 .url-btn {

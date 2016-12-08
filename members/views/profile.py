@@ -20,7 +20,7 @@ from nadine.models.usage import CoworkingDay
 from nadine.models.payment import Transaction
 from nadine.models.alerts import MemberAlert
 from nadine.models.organization import Organization, OrganizationMember
-from nadine.forms import EditProfileForm, ProfileImageForm, LinkForm, BaseLinkFormSet
+from nadine.forms import EditProfileForm, ProfileImageForm, ProfileLinkForm, ProfileLinkFormSet
 from nadine.utils import network
 from arpwatch import arp
 from arpwatch.models import ArpLog, UserDevice
@@ -121,7 +121,7 @@ def edit_profile(request, username):
         if not request.user.is_staff:
             return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
 
-    LinkFormSet = formset_factory(LinkForm, formset=BaseLinkFormSet)
+    LinkFormSet = formset_factory(ProfileLinkForm, formset=ProfileLinkFormSet)
 
     user_links = user.profile.websites.all()
     link_data = [{'url_type': l.url_type, 'url': l.url, 'username': user.username} for l in user_links]

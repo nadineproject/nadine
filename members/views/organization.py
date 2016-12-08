@@ -7,12 +7,13 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.forms.formsets import formset_factory
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404, HttpRequest, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 
-from nadine.forms import OrganizationForm, OrganizationMemberForm, OrganizationSearchForm
+from nadine.forms import OrganizationForm, OrganizationMemberForm, OrganizationSearchForm, OrganizationLinkForm, OrganizationLinkFormSet
 from nadine.models.organization import Organization, OrganizationMember
 
 from members.views.core import is_active_member
@@ -90,19 +91,50 @@ def org_edit(request, org_id):
     if not (request.user.is_staff or org.can_edit(request.user)):
         return HttpResponseForbidden("Forbidden")
 
+    OrgFormSet = formset_factory(OrganizationLinkForm, formset=OrganizationLinkFormSet)
+
+    org_links = org.websites.all()
+    link_data = [{'url_type': l.url_type, 'url': l.url, 'org_id': org.id} for l in org_links]
+
     if request.method == "POST":
         form = OrganizationForm(request.POST, request.FILES)
+        org_link_formset = OrgFormSet(request.POST)
         form.public = request.POST['public']
         try:
-            if form.is_valid():
+            if form.is_valid() and org_link_formset.is_valid():
+                total_new = []
+                for link_form in org_link_formset:
+                    print link_form
+                    if not link_form.cleaned_data.get('org_id'):
+                        link_form.cleaned_data['org_id'] = org.id
+                    try:
+                        if link_form.is_valid():
+                            url_type = link_form.cleaned_data.get('url_type')
+                            url = link_form.cleaned_data.get('url')
+                            org_id = link_form.cleaned_data.get('org_id')
+
+                            if url_type and url:
+                                new_link = {'url_type': url_type, 'url': url, 'org_id': org_id}
+                                total_new.append(new_link)
+                            if new_link not in link_data:
+                                link_form.save()
+                    except Exception as e:
+                        print("Could not save website: %s" % str(e))
+
+                for link in link_data:
+                    if link not in total_new:
+                        del_url = link.get('url')
+                        org.websites.filter(url=del_url).delete()
+
                 form.save()
                 return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
         except Exception as e:
             messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
     else:
         form = OrganizationForm(instance=org)
+        org_link_formset = OrgFormSet(initial=link_data)
 
-    context = {'organization': org, 'form':form,}
+    context = {'organization': org, 'form':form, 'org_link_formset': org_link_formset}
     return render(request, 'members/org_edit.html', context)
 
 

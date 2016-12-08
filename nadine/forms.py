@@ -71,6 +71,39 @@ class OrganizationForm(forms.Form):
 class OrganizationSearchForm(forms.Form):
     terms = forms.CharField(max_length=100)
 
+class OrganizationLinkFormSet(BaseFormSet):
+    def clean(self):
+        if any(self.errors):
+            return
+
+        url_types = []
+        urls = []
+
+        for form in self.forms:
+            if form.cleaned_data:
+                org_id = form.cleaned_data['org_id']
+                url_type = form.cleaned_data['url_type']
+                url = form.cleaned_data['url']
+                if url_type and url :
+                    urls.append(url)
+                if url and not url_type:
+                    raise forms.ValidationError(message='All websites must have a URL', code='missing_anchor')
+                if url_type and not url:
+                    raise forms.ValidationError(message='All URLS must have a type', code='missing_anchor')
+
+class OrganizationLinkForm(forms.Form):
+    org_id = forms.IntegerField(required=False, widget=forms.HiddenInput)
+    url_type = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), label='Website Type', queryset=URLType.objects.all(), required=False)
+    url = forms.URLField(widget=forms.URLInput(attrs={'placeholder': 'http://www.facebook.com/myprofile'}), required=False)
+
+    def save(self):
+        if not self.is_valid():
+            raise Exception('The form must be valid in order to save')
+
+        org = Organization.objects.get(id=self.cleaned_data['org_id'])
+        org.save_url(self.cleaned_data['url_type'], self.cleaned_data['url'])
+
+
 class OrganizationMemberForm(forms.Form):
     def __init__(self, *args, **kwargs):
         if 'instance' in kwargs:
@@ -226,7 +259,7 @@ class ProfileImageForm(forms.Form):
         user.profile.photo = self.cleaned_data['photo']
         user.profile.save()
 
-class BaseLinkFormSet(BaseFormSet):
+class ProfileLinkFormSet(BaseFormSet):
     def clean(self):
         if any(self.errors):
             return
@@ -244,10 +277,10 @@ class BaseLinkFormSet(BaseFormSet):
                 if url and not url_type:
                     raise forms.ValidationError(message='All websites must have a URL', code='missing_anchor')
                 if url_type and not url:
-                    raise forms.ValidationError(message='All URLS must have a name', code='missing_anchor')
+                    raise forms.ValidationError(message='All URLS must have a type', code='missing_type')
 
 
-class LinkForm(forms.Form):
+class ProfileLinkForm(forms.Form):
     username = forms.CharField(required=False, widget=forms.HiddenInput)
     url_type = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), label='Website Type', queryset=URLType.objects.all(), required=False)
     url = forms.URLField(widget=forms.URLInput(attrs={'placeholder': 'http://www.facebook.com/myprofile'}), required=False)

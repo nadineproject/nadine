@@ -12,7 +12,7 @@ from django.conf import settings
 from django.utils import timezone
 from django.contrib.auth.models import User
 
-from nadine.models.core import Website
+from nadine.models.core import Website, URLType
 from nadine.models.membership import Membership
 
 from taggit.managers import TaggableManager
@@ -118,6 +118,11 @@ class Organization(models.Model):
     def set_lead(self, user):
         self.lead = user
         self.save()
+
+    def save_url(self, url_type, url_value):
+        if url_type and url_value:
+            t = URLType.objects.get(name=url_type)
+            self.websites.create(url_type=t, url=url_value)
 
     def __unicode__(self):
         return self.name
