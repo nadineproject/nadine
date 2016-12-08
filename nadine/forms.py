@@ -236,11 +236,11 @@ class BaseLinkFormSet(BaseFormSet):
 
         for form in self.forms:
             if form.cleaned_data:
+                username = form.cleaned_data['username']
+                print username
                 url_type = form.cleaned_data['url_type']
                 url = form.cleaned_data['url']
-                if type and url :
-                    if url in urls:
-                        duplicates = True
+                if url_type and url :
                     urls.append(url)
                 if url and not url_type:
                     raise forms.ValidationError(message='All websites must have a URL', code='missing_anchor')

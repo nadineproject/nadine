@@ -147,6 +147,8 @@ def edit_profile(request, username):
                         page_message = 'Your password must be at least 8 characters long.'
                 else:
                     for link_form in link_formset:
+                        if not link_form.cleaned_data.get('username'):
+                            link_form.cleaned_data['username'] = user.username
                         try:
                             if link_form.is_valid():
                                 url_type = link_form.cleaned_data.get('url_type')
@@ -156,7 +158,6 @@ def edit_profile(request, username):
                                 if url_type and url:
                                     new_link = {'url_type': url_type, 'url': url, 'username': username}
                                 if new_link not in link_data:
-                                    print link_form
                                     link_form.save()
 
                         except Exception as e:
