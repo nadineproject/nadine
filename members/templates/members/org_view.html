@@ -8,6 +8,20 @@
 	body {
 		background-color: RGBA(239, 238, 231, 1);
 	}
+
+	div.profile-links {
+		margin-top: 0;
+		margin-bottom: 2%;
+		marin-left: 4%;
+	}
+
+	@media only screen and (max-width: 1179px) {
+    .col.s10.offset-s1 {
+      margin: 0;
+      margin-top: 6%;
+      width: 100%;
+    }
+  }
 {% endblock %}
 
 {% block content %}
@@ -49,18 +63,18 @@
 
 <div class='right-profile col s9'>
 	<div class='org-info'>
-		<h3 class='oswald col s9' style='margin-bottom:1%;'>{{ organization.name }}</h3>
-		<div class='col s3'>
+		<h3 class='oswald col s10' style='margin-bottom:1%;'>{{ organization.name }}</h3>
+		<div>
 			{% if organization.locked %}
-				<div class='col s4 tooltipped' data-position="bottom" data-tooltip='Locked'>
+				<div class='col s1 tooltipped' data-position="bottom" data-tooltip='Locked'>
 					<img id='locked' alt='locked icon' src="{% static 'img/locked.png' %}"/>
 				</div>
 			{% endif %}
 			{% if can_edit %}
-				<a class='col s4 tooltipped' data-position="bottom" data-tooltip="Edit Details" href="{% url 'member_org_edit' organization.id %}"><img id='edit' alt='edit icon' style='height:30px;' src="{% static 'img/edit.png' %}"/></a>
+				<a class='col s1 tooltipped' data-position="bottom" data-tooltip="Edit Details" href="{% url 'member_org_edit' organization.id %}"><img id='edit' alt='edit icon' style='height:30px;' src="{% static 'img/edit.png' %}"/></a>
 			{% endif %}
 			{% if request.user.is_staff %}
-				<a class='col s4 tooltipped' data-position="bottom" data-tooltip='Admin' href="{{ organization.admin_url }}"><img id='admin' alt='admin icon' src="{% static 'img/admin.png' %}"/></a>
+				<a class='col s1 tooltipped' data-position="bottom" data-tooltip='Admin' href="{{ organization.admin_url }}"><img id='admin' alt='admin icon' src="{% static 'img/admin.png' %}"/></a>
 			{% endif %}
 		</div>
 		<div class='col s12'>
@@ -77,7 +91,9 @@
 
 		<!-- Website Icons -->
 		{% with organization.websites as websites %}
+		<div class='col s12 links'>
 			{% include "members/websites.html" %}
+		</div>
 		{% endwith %}
 
 		<h5 class='oswald org-members col s12'>Organization Members</h5>
