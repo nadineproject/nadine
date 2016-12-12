@@ -91,7 +91,7 @@
 			</td>
 		</tr>
 	</table>
-	<h5 class='oswald'>Links</h5>
+	<h5 class='oswald links-header'>Links</h5>
 	{{ org_link_formset.management_form }}
 	{% for link_form in org_link_formset %}
 	<div class='link-formset row'>
@@ -109,8 +109,8 @@
 				<p>{{ link_form.url.errors }}</p>
 			</div>
 		</div>
-	{% endfor %}
 	</div>
+	{% endfor %}
 	<div class='row'>
 		<input class='btn org-btn' type="submit" value="Save"/>
 		<input type="button" value="Cancel" class='btn cancel-btn' onclick="location.href='{% url 'member_org_view' organization.id %}'"/>

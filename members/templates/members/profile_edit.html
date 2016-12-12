@@ -257,21 +257,23 @@
     <h3 style='text-align:left;'>Websites</h3>
     {{ link_formset.management_form }}
     {% for link_form in link_formset %}
-      <table class='link-formset'>
-        <tr>
-          <td class='cap-label viewable'><strong>Website Type</strong></td>
-          <td class='cap-label viewable'><strong>Website URL</strong></td>
-        </tr>
-        <tr>
-          <td class='pf-input url-type'>{{ link_form.url_type }}</td>
-          <td class='pf-input form-url'>{{ link_form.url }}</td>
-        </tr>
-        <tr>
-          <td>{{ link_form.username }}</td>
-          <td>{{ link_form.url.errors }}</td>
-        </tr>
-      </table>
-    {% endfor %}
+    <div class='link-formset row'>
+  		<div class='col s10'>
+  			<div class='row headers'>
+  				<p class='cap-label col s4'><strong>Link Type</strong></p>
+  				<p class='cap-label col s6 offset-s2'><strong>Link URL</strong></p>
+  			</div>
+  			<div class='row'>
+  				<p class='pf-input url-type col s4'>{{ link_form.url_type }}</p>
+  				<p class='pf-input form-url col s6 offset-s2'>{{ link_form.url  }}</p>
+  			</div>
+  			<div class='row'>
+  				<p>{{ link_form.username }}</p>
+  				<p>{{ link_form.url.errors }}</p>
+  			</div>
+  		</div>
+  	</div>
+  {% endfor %}
 
 {% block emergency_info %}
     <h3 style='text-align:left;'>Emergency Contact Information</h3>
@@ -318,14 +320,18 @@
 		  $(this).text($(this).text().charAt(0).toUpperCase() + $(this).text().slice(1));
 		});
 
+
     $('.button-collapse').sideNav();
     $('.link-formset').formset({
-      addText: 'Add',
-      deleteText: 'Delete'
+      addText: 'Add Another',
+      deleteText: 'Remove'
     })
 
-    $('.delete-row').addClass('btn url-btn');
-    $('.add-row').addClass('btn url-btn');
+    $('.delete-row').addClass('btn-floating btn-large btn url-btn');
+
+		$('.add-row').on('click', function(e) {
+			$('.delete-row').addClass('btn-floating btn-large btn url-btn');
+		})
 
     $('#password-create').on('focus', function(e) {
       e.preventDefault();
@@ -345,7 +351,6 @@
         $('#password-row').after("<tr class='password-error'><td class='pf-error' id='passInput-error'>Passwords do not match.</td><td></td></tr>")
       }
     });
-
   });
 </script>
 {% endblock %}

@@ -464,6 +464,10 @@ td.pf-input.url-type {
 	margin-bottom: 0;
 }
 
+.links-header {
+	margin-top: 6%;
+}
+
 div.link-formset.row.dynamic-form {
 	margin-left: 0;
 }
@@ -1859,6 +1863,31 @@ footer.sticky-footer {
 @media only screen and (max-width: 1100px) {
 	.row .col.offset-s1.s10 {
 		margin-left: 0;
+	}
+
+	p.pf-input.form-url.col.s6.offset-s2, p.cap-label.col.s6.offset-s2  {
+		margin-left: 0;
+	}
+
+	.form-url input {
+		width: 100%;
+	}
+
+	.link-formset div.col.s10 {
+		width: 85%;
+	}
+
+	.link-formset .btn-floating {
+		margin-top: 4%;
+	}
+
+	.btn-floating {
+		margin: 0;
+		width: 50%;
+	}
+
+	.form-url {
+		width: 2%;
 	}
 
 	.row .col.s10 {
