@@ -62,25 +62,6 @@
 		</tr>
 		</table>
 		<table>
-			{{ org_link_formset.management_form }}
-			{% for link_form in org_link_formset %}
-			<table class='link-formset'>
-				<tr>
-          <td class='cap-label'><strong>Website Type</strong></td>
-          <td class='cap-label'><strong>Website URL</strong></td>
-        </tr>
-        <tr>
-          <td class='pf-input url-type'>{{ link_form.url_type }}</td>
-          <td class='pf-input form-url'>{{ link_form.url  }}</td>
-        </tr>
-        <tr>
-          <td>{{ link_form.org_id }}</td>
-          <td>{{ link_form.url.errors }}</td>
-        </tr>
-			</table>
-			{% endfor %}
-		</table>
-		<table>
 		<tr>
 			<td class='org-label'>
 				Visibility
@@ -110,9 +91,31 @@
 			</td>
 		</tr>
 	</table>
-	<input class='btn org-btn' type="submit" value="Save"/>
-	<input type="button" value="Cancel" class='btn cancel-btn' onclick="location.href='{% url 'member_org_view' organization.id %}'"/>
-	{% csrf_token %}
+	<h5 class='oswald'>Links</h5>
+	{{ org_link_formset.management_form }}
+	{% for link_form in org_link_formset %}
+	<div class='link-formset row'>
+		<div class='col s10'>
+			<div class='row headers'>
+				<p class='cap-label col s4'><strong>Link Type</strong></p>
+				<p class='cap-label col s6 offset-s2'><strong>Link URL</strong></p>
+			</div>
+			<div class='row'>
+				<p class='pf-input url-type col s4'>{{ link_form.url_type }}</p>
+				<p class='pf-input form-url col s6 offset-s2'>{{ link_form.url  }}</p>
+			</div>
+			<div class='row'>
+				<p>{{ link_form.org_id }}</p>
+				<p>{{ link_form.url.errors }}</p>
+			</div>
+		</div>
+	{% endfor %}
+	</div>
+	<div class='row'>
+		<input class='btn org-btn' type="submit" value="Save"/>
+		<input type="button" value="Cancel" class='btn cancel-btn' onclick="location.href='{% url 'member_org_view' organization.id %}'"/>
+		{% csrf_token %}
+	</div>
 </form>
 
 {% endblock %}
@@ -134,12 +137,15 @@
 			}
 		})
 		$('.link-formset').formset({
-			addText: 'Add',
-      deleteText: 'Delete'
+			addText: 'Add Another',
+      deleteText: 'Remove'
 		});
-		$('.delete-row').addClass('btn url-btn');
-    $('.add-row').addClass('btn url-btn');
 
+		$('.delete-row').addClass('btn-floating btn-large btn url-btn');
+
+		$('.add-row').on('click', function(e) {
+			$('.delete-row').addClass('btn-floating btn-large btn url-btn');
+		})
 	});
 </script>
 {% endblock %}

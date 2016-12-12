@@ -455,25 +455,42 @@ td.pf-input.url-type {
 	font-size: .9em;
 }
 
+.link-formset .cap-label {
+	display: inline-block;
+	margin: 0;
+}
+
+.link-formset div.row.headers {
+	margin-bottom: 0;
+}
+
+div.link-formset.row.dynamic-form {
+	margin-left: 0;
+}
+
+.link-formset div.row {
+	margin-bottom: 0;
+}
+
 .form-url input{
-	width: 70%;
 	margin-bottom: 0;
 	background-color: white;
 	border-bottom: none;
 	padding: 1%;
+	width: 100%;
 }
 
 .url-btn {
-	font-size: .9em;
-	padding-left: 3%;
-	padding-right: 3%;
+	font-size: .7em;
 }
 
 .add-row {
-	margin-left: 6%;
+	margin-left: 4%;
+	margin-bottom: 10%;
 }
 
 .delete-row {
+	margin-top: 4%;
 	margin-left: 5%;
 }
 
