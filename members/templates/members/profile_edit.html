@@ -314,6 +314,10 @@
 {% block extrajs %}
 <script>
   $(document).ready(function(){
+    $("option").each(function() {
+		  $(this).text($(this).text().charAt(0).toUpperCase() + $(this).text().slice(1));
+		});
+
     $('.button-collapse').sideNav();
     $('.link-formset').formset({
       addText: 'Add',

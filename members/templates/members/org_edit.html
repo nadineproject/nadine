@@ -71,7 +71,7 @@
         </tr>
         <tr>
           <td class='pf-input url-type'>{{ link_form.url_type }}</td>
-          <td class='pf-input form-url'>{{ link_form.url }}</td>
+          <td class='pf-input form-url'>{{ link_form.url  }}</td>
         </tr>
         <tr>
           <td>{{ link_form.org_id }}</td>
@@ -120,6 +120,10 @@
 {% block extrajs %}
 <script>
 	$(document).ready(function() {
+		$("option").each(function() {
+		  $(this).text($(this).text().charAt(0).toUpperCase() + $(this).text().slice(1));
+		});
+
 		$('#id_blurb').on('focusout', function(){
 			var blurb = $('#id_blurb').val();
 
