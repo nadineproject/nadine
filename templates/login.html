@@ -2,17 +2,13 @@
 
 {% block sub-title %}Login | {% endblock %}
 
-<!-- {% block style %}
-#content { font-size: 1em; border: none; }
-#content h1 { font-size: 1.8em; margin: 0; }
-#content table td { border-bottom: none;} -->
-<!-- #content table th { width: 40%; } -->
-<!-- {% endblock %} -->
+{% block style %}
+{% endblock %}
 
 {% block content %}
 
 	{% if ALLOW_ONLINE_REGISTRATION %}
-	<div class='row'>
+	<div>
 		<div class='col s6 offset-s3' id='login_box'>
 			{% if form.errors %}
 			<p>Your username and password didn't match. Please try again.</p>
@@ -79,7 +75,7 @@
 		</div>
 	</div>
 	{% else %}
-	<div class='col s6 offset-s3' id='login_box'>
+	<div class='col s6' id='login_box'>
 		{% if form.errors %}
 			<p>Your username and password didn't match. Please try again.</p>
 		{% endif %}

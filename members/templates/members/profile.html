@@ -163,8 +163,6 @@
           var img = $('#mem-photo');
           get_orientation(img);
 
-          // load_tab('#orgs_target', "{% url 'member_profile_orgs' user.username %}")
-
           onclick_tab("#membership", "{% url 'member_profile_membership' user.username %}");
           onclick_tab("#activity", "{% url 'member_profile_activity' user.username %}");
           onclick_tab("#billing", "{% url 'member_profile_billing' user.username %}");
@@ -190,15 +188,6 @@
                 scrollTop: e.screenY
             }, 1000);
           })
-
-          // TODO finish responsive footer by testing on a device
-  				if($('.main').height() < 990) {
-            $('footer').attr('class', 'sticky-footer');
-  				} else {
-  					if($('footer').hasClass('sticky-footer')) {
-              $('footer').attr('page-footer main-footer');
-  					}
-  				}
         });
     </script>
 {% endblock %}

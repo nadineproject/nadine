@@ -182,7 +182,7 @@ p {
 	margin: 0;
 }
 
-#dropdown1 a, #dropdown2 a {
+#dropdown1 a, #dropdown2 a, #dropdown3 a {
 	color: RGBA(79, 134, 135, 1);
 }
 
@@ -255,6 +255,10 @@ textarea#id_bio {
 
 #reg_box, #login_box {
 	margin-top: 3%;
+}
+
+div#login_box.col.s6 {
+	margin-left: 25%;
 }
 
 #login_form {
@@ -1826,6 +1830,10 @@ footer.sticky-footer {
 	}
 }
 
+@media only screen and (max-width: 800px) {
+
+}
+
 @media only screen and (max-width: 990px) {
 
 	 .event-card {
@@ -1858,6 +1866,13 @@ footer.sticky-footer {
 		 margin-top: 10%;
 		 height: 100%;
 	 }
+
+	div#login_box.col.s6 {
+		margin-top: 10%;
+ 		margin-left: 5%;
+ 		width: 90%;
+ 	}
+
 }
 
 @media only screen and (max-width: 1100px) {

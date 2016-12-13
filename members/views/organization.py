@@ -104,7 +104,6 @@ def org_edit(request, org_id):
             if form.is_valid() and org_link_formset.is_valid():
                 total_new = []
                 for link_form in org_link_formset:
-                    print link_form
                     if not link_form.cleaned_data.get('org_id'):
                         link_form.cleaned_data['org_id'] = org.id
                     try:
