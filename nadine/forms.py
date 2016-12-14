@@ -68,8 +68,10 @@ class OrganizationForm(forms.Form):
             org.locked = self.cleaned_data['locked']
         org.save()
 
+
 class OrganizationSearchForm(forms.Form):
     terms = forms.CharField(max_length=100)
+
 
 class OrganizationLinkFormSet(BaseFormSet):
     def clean(self):
@@ -90,6 +92,7 @@ class OrganizationLinkFormSet(BaseFormSet):
                     raise forms.ValidationError(message='All websites must have a URL', code='missing_anchor')
                 if url_type and not url:
                     raise forms.ValidationError(message='All URLS must have a type', code='missing_anchor')
+
 
 class OrganizationLinkForm(forms.Form):
     org_id = forms.IntegerField(required=False, widget=forms.HiddenInput)
@@ -252,7 +255,6 @@ class ProfileImageForm(forms.Form):
 
 
     def save(self):
-        print "fuck"
         user = User.objects.get(username=self.cleaned_data['username'])
         # Delete the old photo before we save a new one
         user.profile.photo.delete()
