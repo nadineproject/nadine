@@ -80,12 +80,15 @@
               {% for block, times in room_dict.items %}
                 {% if room == block %}
                   {% for time in times %}
-                    {% if forloop.counter0|divisibleby:2 %}
-                      <th class="rotate"><div><span>
-                        {{ time.hour }}:{{ time.minutes }}
-                      </div></span></th>
+                    {% if forloop.last %}
                     {% else %}
-                      <th></th>
+                      {% if forloop.counter0|divisibleby:2 %}
+                        <th class="rotate"><div><span>
+                          {{ time.hour }}:{{ time.minutes }}
+                        </div></span></th>
+                      {% else %}
+                        <th></th>
+                      {% endif %}
                     {% endif %}
                   {% endfor %}
                 {% endif %}
@@ -96,15 +99,18 @@
                 {% for block, times in room_dict.items %}
                   {% if room == block %}
                     {% for time in times %}
-                      {% if time.reserved %}
-                        <td class="cal-box reserved" id="hour-{{time.mil_hour}}{{time.minutes}}">
-                        </td>
-                      {% elif time.searched %}
-                        <td class="cal-box searched" id="hour-{{time.mil_hour}}{{time.minutes}}">
-                        </td>
+                      {% if forloop.last %}
                       {% else %}
-                        <td class="cal-box available" id="hour-{{time.mil_hour}}{{time.minutes}}">
-                        </td>
+                        {% if time.reserved %}
+                          <td class="cal-box reserved" id="hour-{{time.mil_hour}}{{time.minutes}}">
+                          </td>
+                        {% elif time.searched %}
+                          <td class="cal-box searched" id="hour-{{time.mil_hour}}{{time.minutes}}">
+                          </td>
+                        {% else %}
+                          <td class="cal-box available" id="hour-{{time.mil_hour}}{{time.minutes}}">
+                          </td>
+                        {% endif %}
                       {% endif %}
                     {% endfor %}
                   {% endif %}
