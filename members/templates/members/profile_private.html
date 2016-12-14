@@ -1,9 +1,10 @@
 {% load email_tags %}
 {% load static %}
+{% load app_filters %}
 
 <div class='row'>
   <h3 class='col s9 oswald' style='margin-bottom:0;margin-top:2%;'>Private Details</h3>
-  <a class='col s1' href="{% url 'member_edit_profile' user.username %}"><img id='edit' alt='edit-icon' style='height:20px;'/></a>
+  <a class='col s1 tooltipped' data-position="bottom" data-tooltip="Edit Profile" href="{% url 'member_edit_profile' user.username %}" style='margin-top:3%;'><img id='edit' src="{% static 'img/edit.png' %}" alt='edit-icon'/></a>
 </div>
 
 <table>
@@ -84,7 +85,7 @@
     {% if user.profile.gender %}
       <tr>
          <td>Gender:</td>
-         <td>{{ user.profile.gender }}</td>
+         <td>{{ user.profile.gender|gender_filter }}</td>
       </tr>
     {% endif %}
 </table>
@@ -98,20 +99,27 @@
 {% else %}
     <table>
         <tr>
-            <td>Name</td>
+            <td>Name:</td>
             <td>{{ emergency_contact.name }}</td>
         </tr>
         <tr>
-            <td>Relationship</td>
+            <td>Relationship:</td>
             <td>{{ emergency_contact.relationship }}</td>
         </tr>
         <tr>
-            <td>Phone</td>
+            <td>Phone:</td>
             <td>{{ emergency_contact.phone }}</td>
         </tr>
         <tr>
-            <td>E-mail</td>
+            <td>E-mail:</td>
             <td>{{ emergency_contact.email }}</td>
         </tr>
     </table>
 {% endif %}
+
+
+<script>
+  $(document).ready(function() {
+    $('.tooltipped').tooltip({delay: 50});
+  });
+</script>
