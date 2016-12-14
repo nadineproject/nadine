@@ -52,8 +52,12 @@ class Bill(models.Model):
     new_member_deposit = models.BooleanField(default=False, blank=False, null=False)
     paid_by = models.ForeignKey(User, blank=True, null=True, related_name='guest_bills')
 
+    @property
     def overage_days(self):
-        return self.dropins.count() - self.membership.dropin_allowance
+        days = self.dropins.count() + self.guest_dropins.count()
+        if self.membership and self.membership.dropin_allowance < days:
+            return days - self.membership.dropin_allowance
+        return 0
 
     class Meta:
         app_label = 'nadine'
