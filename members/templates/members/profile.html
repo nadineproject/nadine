@@ -10,12 +10,30 @@
       margin: 0;
       margin-top: 6%;
       width: 100%;
+    } }
+
+  @media only screen and (max-width: 800px) {
+    #fb, #tw, #ye, #inst {
+      display: none;
+    }
+
+    footer#footer.sticky-footer {
+      margin-top: 5%;
+      background: RGBA(61, 61, 61, .9);
+    	bottom: 0;
+      right: 0;
+      left: 0;
+      position: absolute;
+    }
+
+    .row {
+      margin-bottom: 0;
     }
   }
 {% endblock %}
 
 {% block content %}
-<div class='left-profile col s4'>
+<div class='left-profile col s12 m4 l4'>
   {% if ALLOW_PHOTO_UPLOAD and can_edit %}
     <div class='profile-img-box' id='change-opacity'>
   {% else %}
@@ -41,7 +59,6 @@
     <p style='text-align:center;'> - <strong>Tags</strong> - </p>
     {% include "members/profile_tags.html" %}
   </div>
-
 </div>
 
 <div id='picModal' class='modal'>
@@ -54,7 +71,7 @@
   </div>
 </div>
 
-<div class='right-profile col s8'>
+<div class='right-profile col s12 m8 l8'>
   <div class='basic-info'>
     <div class='row'>
       <h2 class='col s9 oswald' id='prof-name'>{{ user.get_full_name }}</h2>
@@ -188,6 +205,13 @@
                 scrollTop: e.screenY
             }, 1000);
           })
+
+          if ($(window).width < 801) {
+            var pic = '{{ user.profile.photo }}';
+            if (pic) {
+              $('h2')
+            }
+          }
         });
     </script>
 {% endblock %}

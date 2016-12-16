@@ -1219,12 +1219,7 @@ img.org-photo#mem-photo {
 }
 
 .left-profile {
-	min-width: 320px !important;
-	max-width: 400px;
-}
-
-.right-profile {
-	min-width: 700px;
+	max-width: 450px;
 }
 
 .collapsible-header {
@@ -1817,65 +1812,38 @@ footer.sticky-footer {
 	text-indent: -9999px;
 }
 
-@media only screen and (max-width: 700px) {
-	footer.main-footer {
-		background: RGBA(61, 61, 61, .9);
-		clear: both;
-		width: 100%;
-		padding: 10px;
-		right: 0;
-		bottom: 0;
-		left: 0;
-		position: absolute;
+@media only screen and (max-width: 1500px) {
+
+	#profile_form, #registration_form {
+		margin-left: 7%;
+		min-width: 900px;
+	}
+
+}
+
+@media only screen and (max-width: 1390px) {
+	.org-img  {
+		margin-left: 1%;
+	}
+
+	.org-img-edit #img-edit {
+		margin-left: 25%;
+	}
+
+	.org-img-edit h5 {
+		font-size: 1.5em;
+		margin-left: -30px;
+	}
+
+	.prof-img, .edit-img, .locked-img {
+		max-width: 250px;
+		max-height: 250px;
+		margin-left: 3%;
 	}
 }
 
-@media only screen and (max-width: 800px) {
-
-}
-
-@media only screen and (max-width: 990px) {
-
-	 .event-card {
-		 width: 250px;
-	 }
-
-	 #home_cal {
-		 width: 200px;
-	 }
-
-	 #profile_form {
-		 margin-right: 1%;
-	 }
-
-	 img.sec-logo {
-		 max-height: 60px;
-		 max-width: 60px;
-	 }
-
-	 .lightbg {
-		 margin-top: 8%;
-	 }
-
-	 .modal-content {
-		 height: 40%;
-		 width: 60%;
-	 }
-
-	 .eModal-content {
-		 margin-top: 10%;
-		 height: 100%;
-	 }
-
-	div#login_box.col.s6 {
-		margin-top: 10%;
- 		margin-left: 5%;
- 		width: 90%;
- 	}
-
-}
-
 @media only screen and (max-width: 1100px) {
+
 	.row .col.offset-s1.s10 {
 		margin-left: 0;
 	}
@@ -1938,47 +1906,94 @@ footer.sticky-footer {
 	}
 }
 
-@media only screen and (max-width: 1300px) {
+
+@media only screen and (max-width: 990px) {
 	.prof-img, .edit-img, .locked-img {
 		width: 200px;
 		height: 200px;
+		margin-left: 4%;
 	}
 
-	.right-profile {
-		min-width: 600px;
+	 .event-card {
+		 width: 250px;
+	 }
+
+	 #home_cal {
+		 width: 200px;
+	 }
+
+	 #profile_form {
+		 margin-right: 1%;
+	 }
+
+	 img.sec-logo {
+		 max-height: 60px;
+		 max-width: 60px;
+	 }
+
+	 .lightbg {
+		 margin-top: 8%;
+	 }
+
+	 .modal-content {
+		 height: 40%;
+		 width: 60%;
+	 }
+
+	 .eModal-content {
+		 margin-top: 10%;
+		 height: 100%;
+	 }
+
+	div#login_box.col.s6 {
+		margin-top: 10%;
+ 		margin-left: 5%;
+ 		width: 90%;
+ 	}
+
+	.prof-tabs {
+		margin-bottom: 10%;
 	}
 }
 
-@media only screen and (max-width: 1390px) {
+@media only screen and (max-width: 810px) {
 	.prof-img, .edit-img, .locked-img {
-		width: 250px;
-		height: 250px;
+		min-width: 175px;
+		min-height: 150px;
 		margin-left: 3%;
 	}
+}
 
-	.org-img  {
-		margin-left: 1%;
-	}
-
-	.org-img-edit #img-edit {
-		margin-left: 25%;
-	}
-
-	.org-img-edit h5 {
-		font-size: 1.5em;
-		margin-left: -30px;
-	}
-
-	.left-profile {
-		min-width: 250px;
+@media only screen and (max-width: 700px) {
+	footer.main-footer {
+		background: RGBA(61, 61, 61, .9);
+		clear: both;
+		width: 100%;
+		padding: 10px;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		position: absolute;
 	}
 }
 
-@media only screen and (max-width: 1500px) {
-
-	#profile_form, #registration_form {
-		margin-left: 7%;
-		min-width: 900px;
+@media only screen and (max-width: 600px) {
+	.prof-img, .edit-img, .locked-img {
+		min-width: 250px;
+		min-height: 250px;
+		margin-left: 10%;
 	}
 
+	.prof-tabs {
+		margin-bottom: 20%;
+	}
+
+	footer#footer.main-footer {
+		background: RGBA(61, 61, 61, .9);
+		bottom: 0;
+		right: 0;
+		left: 0;
+		position: absolute;
+		padding: 0;
+	}
 }
