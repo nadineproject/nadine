@@ -124,12 +124,12 @@ p {
 	background-color: RGBA(80, 80, 80, 1);
 	padding-top: 2%;
 	padding-left: 3%;
-	width: 50%;
 }
 
 .side-nav li a {
 	font-size: 1.5em;
 	padding-top: 20%;
+	padding-right: 5%;
 }
 
 #sidenav-overlay {
@@ -1812,8 +1812,15 @@ footer.sticky-footer {
 	text-indent: -9999px;
 }
 
-@media only screen and (max-width: 1500px) {
+/*Media Queries*/
 
+@media only screen and (min-width: 844px) {
+	a.button-collapse {
+		display: none !important;
+	}
+}
+
+@media only screen and (max-width: 1500px) {
 	#profile_form, #registration_form {
 		margin-left: 7%;
 		min-width: 900px;
@@ -1956,6 +1963,12 @@ footer.sticky-footer {
 	}
 }
 
+@media only screen and (max-width: 843px) {
+	.right.hide-on-small-only {
+		display: none !important;
+	}
+}
+
 @media only screen and (max-width: 810px) {
 	.prof-img, .edit-img, .locked-img {
 		min-width: 175px;
@@ -1978,6 +1991,10 @@ footer.sticky-footer {
 }
 
 @media only screen and (max-width: 600px) {
+	#fb, #tw, #ye, #inst {
+		display: none;
+	}
+
 	.prof-img, .edit-img, .locked-img {
 		min-width: 250px;
 		min-height: 250px;

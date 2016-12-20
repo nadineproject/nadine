@@ -13,7 +13,8 @@
 	</div>
 	<nav class='row' id='home-nav'>
 		<div class="nav-wrapper" id=''>
-			<ul id="nav-mobile" class="right">
+			<a href='#' data-activates="mobile" class="button-collapse"><img class='menu-img' src="{% static 'img/hamburger.png' %}"/></a>
+			<ul class="right hide-on-small-only">
 {% endblock %}
 
 {% block lower_nav %}{% endblock %}
@@ -29,7 +30,7 @@
 			</p>
 		</div>
 		<div class="row">
-			<div class="card col s6 m3 l3 offset-s3 offset-l1">
+			<div class="card col s6 m3 l3 offset-s3 offset-m2 offset-l1">
 				<div class="card-content white-text">
 					<img id='chat_icon' src="{% static 'img/chat_icon.png' %}"/>
 					<p>Printing, billing, or general questions about the space?</p>
@@ -47,7 +48,7 @@
 					<a class='card-a' href="{% url 'member_members' %}">View All Members</a>
 				</div>
 			</div>
-			<div class="card event-card col offset-s3 offset-l1">
+			<div class="card event-card col offset-s2 offset-m4 offset-l1">
 				<div class="card-content white-text">
 					<iframe id='home_cal' src="https://calendar.google.com/calendar/embed?
 					mode=AGENDA&amp;
@@ -85,7 +86,7 @@
 {% block extrajs %}
 <script>
 	$(document).ready(function() {
-		// $('.button-collapse').sideNav();
+		$('.button-collapse').sideNav();
 	});
 </script>
 {% endblock %}
