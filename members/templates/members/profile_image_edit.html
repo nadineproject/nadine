@@ -11,11 +11,12 @@
  <h3 style='text-align:center;'>Edit Your Profile Image:</h3>
 
  <form id="profile_image_form" action="{% url 'member_edit_photo' user.username %}" method="POST" enctype="multipart/form-data">
-   {{ form.username }}
+   <input type='hidden' name='username' value='{{ user.username }}'  />
    {{ form.cropped_image_data }}
 
    <div id="form-errors">
-     {{ form.photo.errors|safe }}
+    {{ form.photo.errors|safe }}
+    {{ form.username.errors }}
    </div>
 
    <div id="img-cropper-wrapper">
@@ -46,7 +47,6 @@
        guides: false,
        dragCrop: false,
      });
-     // set the dimensions of the wrapper to be the same as the image
    }
 
    function showImage(input) {
@@ -65,11 +65,10 @@
    $("#id_photo").change(function() {
      $("#image-preview").cropper('destroy');
      if ($("#id_photo").val()) {
-       console.log('found image. previewing.');
        showImage(this);
      }
    });
- 
+
    $("#profile_image_form").submit(function(){
      // add the cropped image data to the form, then submit.
      $("#id_cropped_image_data").val($("#image-preview").cropper('getCroppedCanvas').toDataURL().match(/data:image\/(png|jpeg);base64,(.*)$/)[2])

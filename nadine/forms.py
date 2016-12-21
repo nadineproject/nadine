@@ -1,5 +1,7 @@
 import logging
 import datetime
+import base64
+import uuid
 
 from django import forms
 from django.forms import modelformset_factory
@@ -248,15 +250,38 @@ def get_state_choices():
         return PROVINCE_CHOICES
 
 
+def save_cropped_image(raw_img_data, upload_path):
+    img_data = base64.b64decode(raw_img_data)
+    filename = "%s.jpeg" % upload_path
+
+    # upload_abs_path = os.path.join(settings.MEDIA_ROOT, upload_path)
+    # if not os.path.exists(upload_abs_path):
+    #     os.makedirs(upload_abs_path)
+    # full_file_name = os.path.join(upload_abs_path, filename)
+
+    with open(filename, 'wb') as f:
+        f.write(img_data)
+        f.close()
+    return filename
+
 class ProfileImageForm(forms.Form):
     username = forms.CharField(required=True, widget=forms.HiddenInput)
     photo = forms.FileField(required=False)
     cropped_image_data = forms.CharField(widget=forms.HiddenInput())
 
-
     def save(self):
         user = User.objects.get(username=self.cleaned_data['username'])
         # Delete the old photo before we save a new one
+        try:
+            img_data = self.cleaned_data['cropped_image_data']
+            if (not img_data) or img_data is None or len(img_data) == 0:
+                return
+        except:
+            raise forms.ValidationError('No valid image was provided.')
+
+        upload_path = "media/user_photos/%s" % self.cleaned_data['username']
+        relative_file_name = save_cropped_image(img_data, upload_path)
+        self.cleaned_data['image'] = relative_file_name
         user.profile.photo.delete()
         user.profile.photo = self.cleaned_data['photo']
         user.profile.save()
