@@ -1245,7 +1245,7 @@ img.org-photo#mem-photo {
 	padding: .3em;
 }
 
-.current-orgs {
+.current-orgs, .past-orgs {
 	margin-bottom: 5%;
 }
 
@@ -1814,12 +1814,6 @@ footer.sticky-footer {
 
 /*Media Queries*/
 
-@media only screen and (min-width: 844px) {
-	a.button-collapse {
-		display: none !important;
-	}
-}
-
 @media only screen and (max-width: 1500px) {
 	#profile_form, #registration_form {
 		margin-left: 7%;
@@ -1971,9 +1965,15 @@ footer.sticky-footer {
 
 @media only screen and (max-width: 810px) {
 	.prof-img, .edit-img, .locked-img {
-		min-width: 175px;
-		min-height: 150px;
-		margin-left: 3%;
+		min-width: 125px;
+		min-height: 125px;
+		margin-left: 2%;
+	}
+}
+
+@media only screen and (max-width: 810px) {
+	.prof-img, .edit-img, .locked-img {
+		margin-left: 1%;
 	}
 }
 
@@ -1987,6 +1987,12 @@ footer.sticky-footer {
 		bottom: 0;
 		left: 0;
 		position: absolute;
+	}
+
+	.prof-img, .edit-img, .locked-img {
+		max-width: 150px;
+		max-height: 150px;
+		margin-left: 3%;
 	}
 }
 

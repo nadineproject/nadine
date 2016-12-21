@@ -314,6 +314,13 @@ class UserProfile(models.Model):
         unending = Q(end_date__gte=on_date)
         return self.user.organizationmember_set.filter(start_date__lte=on_date).filter(future | unending)
 
+    def past_organization_memberships(self, on_date=None):
+        if not on_date:
+            on_date = timezone.now().date()
+        # future = Q(end_date__isnull=False)
+        # ending = Q(end_date__lte=on_date)
+        return self.user.organizationmember_set.filter(end_date__lte=on_date)
+
     def active_organizations(self, on_date=None):
         active = self.active_organization_memberships(on_date)
         return Organization.objects.filter(id__in=active.values('organization'))

@@ -36,7 +36,8 @@ def profile_redirect(request):
 def profile(request, username):
     user = get_object_or_404(User, username=username)
     emergency_contact = user.get_emergency_contact()
-    org_memberships = user.profile.active_organization_memberships()
+    current_org_memberships = user.profile.active_organization_memberships()
+    past_org_memberships = user.profile.past_organization_memberships()
     can_edit = request.user == user or request.user.is_staff
 
     ALLOW_PHOTO_UPLOAD = settings.ALLOW_PHOTO_UPLOAD
@@ -45,7 +46,7 @@ def profile(request, username):
 
     context = {'user': user, 'emergency_contact': emergency_contact,
         'settings': settings, 'ALLOW_PHOTO_UPLOAD': ALLOW_PHOTO_UPLOAD,
-        'can_edit': can_edit, 'org_memberships': org_memberships
+        'can_edit': can_edit, 'current_org_memberships': current_org_memberships, 'past_org_memberships': past_org_memberships
     }
     return render(request, 'members/profile.html', context)
 

@@ -3,7 +3,7 @@
 {% endcomment %}
 
 <h3 class='oswald'>Current Organizations</h3>
-{% if org_memberships %}
+{% if current_org_memberships %}
 <table class='current-orgs'>
   <thead>
     <tr>
@@ -13,7 +13,7 @@
     </tr>
   </thead>
   <tbody>
-    {% for m in org_memberships %}
+    {% for m in current_org_memberships %}
       <tr class="{% cycle 'row-even' 'row-odd' %}">
          <td>
            <a href="{% url 'member_org_view' m.organization.id %}">{{ m.organization.name }}</a>
@@ -26,6 +26,30 @@
 </table>
 {% else %}
     No Organizations
+{% endif %}
+
+{% if past_org_memberships %}
+<h3 class='oswald'>Past Organizations</h3>
+<table class='past-orgs'>
+  <thead>
+    <tr>
+      <th>Organization</th>
+      <th align="center">Start Date</th>
+      <th align="left">End Date</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for n in past_org_memberships %}
+      <tr class="{% cycle 'row-even' 'row-odd' %}">
+         <td>
+           <a href="{% url 'member_org_view' n.organization.id %}">{{ n.organization.name }}</a>
+         </td>
+         <td align="center">{{ n.start_date|date:"M d, Y" }}</td>
+         <td align="left">{% if n.end_date %}{{ n.end_date|date:"M d, Y" }}{% endif %}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
 {% endif %}
 
 <div class="ui-widget">
