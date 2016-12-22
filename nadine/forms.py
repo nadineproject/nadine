@@ -75,40 +75,6 @@ class OrganizationSearchForm(forms.Form):
     terms = forms.CharField(max_length=100)
 
 
-class OrganizationLinkFormSet(BaseFormSet):
-    def clean(self):
-        if any(self.errors):
-            return
-
-        url_types = []
-        urls = []
-
-        for form in self.forms:
-            if form.cleaned_data:
-                org_id = form.cleaned_data['org_id']
-                url_type = form.cleaned_data['url_type']
-                url = form.cleaned_data['url']
-                if url_type and url :
-                    urls.append(url)
-                if url and not url_type:
-                    raise forms.ValidationError(message='All websites must have a URL', code='missing_anchor')
-                if url_type and not url:
-                    raise forms.ValidationError(message='All URLS must have a type', code='missing_anchor')
-
-
-class OrganizationLinkForm(forms.Form):
-    org_id = forms.IntegerField(required=False, widget=forms.HiddenInput)
-    url_type = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), label='Website Type', queryset=URLType.objects.all(), required=False)
-    url = forms.URLField(widget=forms.URLInput(attrs={'placeholder': 'http://www.facebook.com/myprofile'}), required=False)
-
-    def save(self):
-        if not self.is_valid():
-            raise Exception('The form must be valid in order to save')
-
-        org = Organization.objects.get(id=self.cleaned_data['org_id'])
-        org.save_url(self.cleaned_data['url_type'], self.cleaned_data['url'])
-
-
 class OrganizationMemberForm(forms.Form):
     def __init__(self, *args, **kwargs):
         if 'instance' in kwargs:
@@ -286,7 +252,7 @@ class ProfileImageForm(forms.Form):
         user.profile.photo = self.cleaned_data['photo']
         user.profile.save()
 
-class ProfileLinkFormSet(BaseFormSet):
+class BaseLinkFormSet(BaseFormSet):
     def clean(self):
         if any(self.errors):
             return
@@ -297,6 +263,7 @@ class ProfileLinkFormSet(BaseFormSet):
         for form in self.forms:
             if form.cleaned_data:
                 username = form.cleaned_data['username']
+                org_id = form.cleaned_data['org_id']
                 url_type = form.cleaned_data['url_type']
                 url = form.cleaned_data['url']
                 if url_type and url :
@@ -307,8 +274,9 @@ class ProfileLinkFormSet(BaseFormSet):
                     raise forms.ValidationError(message='All URLS must have a type', code='missing_type')
 
 
-class ProfileLinkForm(forms.Form):
+class LinkForm(forms.Form):
     username = forms.CharField(required=False, widget=forms.HiddenInput)
+    org_id = forms.IntegerField(required=False, widget=forms.HiddenInput)
     url_type = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), label='Website Type', queryset=URLType.objects.all(), required=False)
     url = forms.URLField(widget=forms.URLInput(attrs={'placeholder': 'http://www.facebook.com/myprofile'}), required=False)
 
@@ -316,9 +284,12 @@ class ProfileLinkForm(forms.Form):
         if not self.is_valid():
             raise Exception('The form must be valid in order to save')
 
-        user = User.objects.get(username=self.cleaned_data['username'])
-        user.profile.save_url(self.cleaned_data['url_type'], self.cleaned_data['url'])
-
+        if self.cleaned_data['username']:
+            user = User.objects.get(username=self.cleaned_data['username'])
+            user.profile.save_url(self.cleaned_data['url_type'], self.cleaned_data['url'])
+        if self.cleaned_data['org_id']:
+            org = Organization.objects.get(id=self.cleaned_data['org_id'])
+            org.save_url(self.cleaned_data['url_type'], self.cleaned_data['url'])
 
 class EditProfileForm(forms.Form):
     username = forms.CharField(required=True, widget=forms.HiddenInput)

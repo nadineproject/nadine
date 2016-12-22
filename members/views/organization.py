@@ -13,7 +13,7 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidde
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 
-from nadine.forms import OrganizationForm, OrganizationMemberForm, OrganizationSearchForm, OrganizationLinkForm, OrganizationLinkFormSet
+from nadine.forms import OrganizationForm, OrganizationMemberForm, OrganizationSearchForm, LinkForm, BaseLinkFormSet
 from nadine.models.organization import Organization, OrganizationMember
 
 from members.views.core import is_active_member
@@ -91,7 +91,7 @@ def org_edit(request, org_id):
     if not (request.user.is_staff or org.can_edit(request.user)):
         return HttpResponseForbidden("Forbidden")
 
-    OrgFormSet = formset_factory(OrganizationLinkForm, formset=OrganizationLinkFormSet)
+    OrgFormSet = formset_factory(LinkForm, formset=BaseLinkFormSet)
 
     org_links = org.websites.all()
     link_data = [{'url_type': l.url_type, 'url': l.url, 'org_id': org.id} for l in org_links]

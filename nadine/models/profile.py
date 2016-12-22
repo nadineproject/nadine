@@ -317,8 +317,6 @@ class UserProfile(models.Model):
     def past_organization_memberships(self, on_date=None):
         if not on_date:
             on_date = timezone.now().date()
-        # future = Q(end_date__isnull=False)
-        # ending = Q(end_date__lte=on_date)
         return self.user.organizationmember_set.filter(end_date__lte=on_date)
 
     def active_organizations(self, on_date=None):
