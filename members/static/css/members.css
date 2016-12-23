@@ -1995,6 +1995,18 @@ footer.sticky-footer {
 }
 
 @media only screen and (max-width: 600px) {
+	.fc-toolbar {
+		margin-top: 10%;
+	}
+
+	.fc-left h2 {
+		font-size: 1.5em;
+	}
+
+	.fc-right button  {
+		font-size: .8em;
+	}
+
 	#fb, #tw, #ye, #inst {
 		display: none;
 	}
