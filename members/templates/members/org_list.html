@@ -9,10 +9,10 @@
 {% block content %}
 <h3 class='oswald' style='text-align:center;'>Organizations at {{ site.name }}</h3>
 <div class='ui-widget row'>
-	<form class='col s7 offset-s6' id='org-search-form' action="." method='POST'>
+	<form class='col s9 m7 l7 offset-s1 offset-m6 offset-l6' id='org-search-form' action="." method='POST'>
 		{% csrf_token %}
 		<input class='col s7' id='org-search' name='terms' type='text' placeholder="Search for an Organization" />
-		<input class='btn search-btn col s2' type='submit' value='Search' />
+		<input class='btn search-btn col s5 m2 l2' type='submit' value='Search' />
 	</form>
 </div>
 	{% if search_terms %}
@@ -48,7 +48,7 @@
 
 		$(document).ready(function() {
 			$('.button-collapse').sideNav();
-			
+
 			if($('.main').height() < 699) {
 				$('footer').attr('class', 'sticky-footer');
 			} else {
