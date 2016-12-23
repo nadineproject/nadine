@@ -3,6 +3,8 @@
 {% block extrajs %}
   <script>
   $(document).ready(function() {
+    $('.button-collapse').sideNav();
+    
     $('#calendar').fullCalendar({
       googleCalendarApiKey: '{{ GOOGLE_API_KEY }}',
       events: {

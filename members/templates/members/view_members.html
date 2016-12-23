@@ -82,6 +82,8 @@
 {% block extrajs %}
 <script>
 	$(document).ready(function() {
+		$('.button-collapse').sideNav();
+		
 		$('.tabs li').on('click', function(e) {
 			e.preventDefault();
 

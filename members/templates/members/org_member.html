@@ -82,6 +82,8 @@
 {% block extrajs %}
 <script>
 	(function() {
+		$('.button-collapse').sideNav();
+
 		var start = '{{ form.start_date.value }}';
 		$('.username_input').on('focus', function() {
 			$('.name-error').html('');
@@ -100,7 +102,6 @@
 				}
 			}
 		});
-
 
 		if ($('#username').val().length < 1 && !($('#member_id').val())) {
 			$('.org-btn').attr('disabled', 'disabled');

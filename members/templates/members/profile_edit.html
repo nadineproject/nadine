@@ -317,6 +317,8 @@
 {% block extrajs %}
 <script>
   $(document).ready(function(){
+    $('.button-collapse').sideNav();
+
     $("option").each(function() {
 		  $(this).text($(this).text().charAt(0).toUpperCase() + $(this).text().slice(1));
 		});
