@@ -689,6 +689,10 @@ textarea#id_bio {
 	white-space: nowrap;
 }
 
+.org-list {
+	padding-left: 5%;
+}
+
 .org-card {
 	width: 210px;
 	height: 315px;
@@ -1976,6 +1980,14 @@ footer.sticky-footer {
 }
 
 @media only screen and (max-width: 700px) {
+	.org-list {
+		padding-left: 10%;
+	}
+
+	#org-search-form .search-btn {
+		font-size: .7em;
+	}
+
 	footer.main-footer {
 		background: RGBA(61, 61, 61, .9);
 		clear: both;
@@ -1995,6 +2007,14 @@ footer.sticky-footer {
 }
 
 @media only screen and (max-width: 600px) {
+	.org-card {
+		margin-left: 20%;
+	}
+
+	.lightbg {
+		margin-top: 11%;
+	}
+
 	.fc-toolbar {
 		margin-top: 10%;
 	}

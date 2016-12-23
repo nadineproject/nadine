@@ -28,9 +28,11 @@
 			</div>
 		{% endif %}
 	{% else %}
+	<div class='org-list'>
 		{% for org in organizations %}
 			{% include 'members/org_card_frag.html' %}
 		{% endfor %}
+	</div>
 	{% endif %}
 </div>
 {% endblock %}
