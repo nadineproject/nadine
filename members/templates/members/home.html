@@ -56,7 +56,7 @@
 					<a class='card-a' href="{% url 'member_members' %}">View All Members</a>
 				</div>
 			</div>
-			<div class="card event-card col offset-s2 offset-m4 offset-l1">
+			<div class="card event-card col offset-s3 offset-m4 offset-l1">
 				<div class="card-content white-text">
 					<iframe id='home_cal' src="https://calendar.google.com/calendar/embed?
 					mode=AGENDA&amp;
@@ -71,7 +71,7 @@
 					bgcolor=%23FFFFFF&amp;
 					src=ji34r7qou7vk2k2kuo40fhije8%40group.calendar.google.com&amp;
 					color=%23B1365F&amp;
-					ctz=America%2FLos_Angeles" style=" border-width:0 " width="275" height="150" frameborder="0" scrolling="no"></iframe>
+					ctz=America%2FLos_Angeles" style=" border-width:0 " width="250" height="150" frameborder="0" scrolling="no"></iframe>
 				</div>
 				<div class="card-action">
 					<a class='card-a' href="{% url 'member_events' %}">See all Events</a>
@@ -95,6 +95,14 @@
 <script>
 	$(document).ready(function() {
 		$('.button-collapse').sideNav();
+
+		$(window).on('change', function() {
+			if ($(window).width() < 601) {
+				$('.event-card').addClass('s6');
+			} else {
+				$('.event-card').removeClass('s6');
+			}
+		})
 	});
 </script>
 {% endblock %}
