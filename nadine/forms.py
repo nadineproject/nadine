@@ -220,11 +220,6 @@ def save_cropped_image(raw_img_data, upload_path):
     img_data = base64.b64decode(raw_img_data)
     filename = "%s.jpeg" % upload_path
 
-    # upload_abs_path = os.path.join(settings.MEDIA_ROOT, upload_path)
-    # if not os.path.exists(upload_abs_path):
-    #     os.makedirs(upload_abs_path)
-    # full_file_name = os.path.join(upload_abs_path, filename)
-
     with open(filename, 'wb') as f:
         f.write(img_data)
         f.close()
@@ -237,7 +232,7 @@ class ProfileImageForm(forms.Form):
 
     def save(self):
         user = User.objects.get(username=self.cleaned_data['username'])
-        # Delete the old photo before we save a new one
+
         try:
             img_data = self.cleaned_data['cropped_image_data']
             if (not img_data) or img_data is None or len(img_data) == 0:

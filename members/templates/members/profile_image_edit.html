@@ -70,8 +70,9 @@
    });
 
    $("#profile_image_form").submit(function(){
+     var img = $("#image-preview").cropper('getCroppedCanvas').toDataURL('image/jpeg');
      // add the cropped image data to the form, then submit.
-     $("#id_cropped_image_data").val($("#image-preview").cropper('getCroppedCanvas').toDataURL().match(/data:image\/(png|jpeg);base64,(.*)$/)[2])
+     $("#id_cropped_image_data").val(img);
      return true;
    })
  </script>

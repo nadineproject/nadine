@@ -303,12 +303,12 @@ def edit_photo(request, username):
 
     if request.method == 'POST':
         form = ProfileImageForm(request.POST, request.FILES)
-        try:
-            if form.is_valid():
-                form.save()
-                return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
-        except Exception as e:
-            page_message = str(e)
+        # try:
+        #     if form.is_valid():
+        #         form.save()
+        #         return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
+        # except Exception as e:
+        #     page_message = str(e)
     else:
         form = ProfileImageForm()
 
