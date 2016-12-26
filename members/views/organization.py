@@ -31,7 +31,8 @@ def org_list(request):
         if search_form.is_valid():
             search_terms = search_form.cleaned_data['terms']
             search_results = Organization.objects.search(search_terms)
-
+            if len(search_results) == 1:
+                return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': search_results[0].id}))
     else:
         search_form = OrganizationSearchForm()
 
