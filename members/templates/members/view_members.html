@@ -95,6 +95,14 @@
 				}
 			}
 		})
+
+		if($('#tabs-3').height() < 699) {
+			$('footer').attr('class', 'sticky-footer');
+		} else {
+			if($('footer').hasClass('sticky-footer')) {
+				$('footer').attr('page-footer main-footer');
+			}
+		}
 	});
 </script>
 {% endblock %}

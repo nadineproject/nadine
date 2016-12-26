@@ -16,17 +16,19 @@
 	</form>
 </div>
 	{% if search_terms %}
-		{% if search_results %}
-			<div style="width:100%; text-align:center;" class='org-group'>
-				{% for org in search_results %}
-					{% include 'members/org_card_frag.html' %}
-				{% endfor %}
-			</div>
-		{% else %}
-			<div class='row'>
-				<h3 class='org-error' style="text-align:center; font-family:'Oswald', sans-serif; margin-top:10%;">No organization matches that query</h3>
-			</div>
-		{% endif %}
+		<div class='org-list'>
+			{% if search_results %}
+				<div style="width:100%; text-align:center;" class='org-group'>
+					{% for org in search_results %}
+						{% include 'members/org_card_frag.html' %}
+					{% endfor %}
+				</div>
+			{% else %}
+				<div class='row'>
+					<h3 class='org-error' style="text-align:center; font-family:'Oswald', sans-serif; margin-top:10%;">No organization matches that query</h3>
+				</div>
+			{% endif %}
+		</div>
 	{% else %}
 	<div class='org-list'>
 		{% for org in organizations %}

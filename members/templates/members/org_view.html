@@ -218,7 +218,7 @@
 		var img = $('#mem-photo');
 		get_orientation(img);
 
-		if($(document).width() < 990) {
+		if($('.main').width() < 990) {
 			$('footer').attr('class', 'sticky-footer');
 		} else {
 			if($('footer').hasClass('sticky-footer')) {

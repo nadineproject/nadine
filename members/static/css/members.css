@@ -1996,9 +1996,14 @@ footer.sticky-footer {
 		margin-left: 2%;
 	}
 
-	.org-img, .org-photo{
+	.org-img, .org-photo {
 		min-width: 125px;
 		margin-left: 5%;
+	}
+
+	div.org-list {
+		padding-left: 15%;
+	}
 }
 
 @media only screen and (max-width: 750px) {
@@ -2018,6 +2023,10 @@ footer.sticky-footer {
 	#fb, #tw, #ye, #inst {
 		display: none;
 	}
+
+	.org-list {
+		padding-left: 10%;
+	}
 }
 
 @media only screen and (max-width: 700px) {
@@ -2025,7 +2034,7 @@ footer.sticky-footer {
 		margin-left: 0;
 	}
 
-	.org-list {
+	div.org-list {
 		padding-left: 5%;
 	}
 
