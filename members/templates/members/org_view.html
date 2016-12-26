@@ -25,7 +25,7 @@
 {% endblock %}
 
 {% block content %}
-<div class='org-left-profile col s3'>
+<div class='org-left-profile col s6 m3 l3 offset-s3'>
 	<div class='photo-div'>
 		<div class='profile-img-box' id='change-opacity'>
 			<div class='editable-photo org-img'>
@@ -61,7 +61,7 @@
   </div>
 </div>
 
-<div class='right-profile col s9'>
+<div class='right-profile col s12 m9 l9'>
 	<div class='org-info'>
 		<h3 class='oswald col s10' style='margin-bottom:1%;'>{{ organization.name }}</h3>
 		<div>
@@ -196,7 +196,7 @@
 
 	$(document).ready(function() {
 		$('.button-collapse').sideNav();
-		
+
 		$('.org-img-edit').on('click', function(e) {
 			e.preventDefault();
 			$('#picModal').css('display', 'block');

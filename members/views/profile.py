@@ -164,7 +164,7 @@ def edit_profile(request, username):
                                     link_form.save()
                         except Exception as e:
                             messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
-
+                            
                     for link in link_data:
                         if link not in total_new:
                             del_url = link.get('url')

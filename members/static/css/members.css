@@ -797,10 +797,6 @@ a.name-a {
 	margin-bottom: 5%;
 }
 
-.org-edit {
-	/*content: url(../img/camera.png);*/
-}
-
 h5.org-members {
 	display: inline-block;
 	color: black;
@@ -1838,7 +1834,7 @@ footer.sticky-footer {
 		margin-left: -30px;
 	}
 
-	.prof-img, .edit-img, .locked-img {
+	.prof-img, .edit-img, .locked-img, .org-img, .org-photo {
 		max-width: 250px;
 		max-height: 250px;
 		margin-left: 3%;
@@ -1846,7 +1842,6 @@ footer.sticky-footer {
 }
 
 @media only screen and (max-width: 1100px) {
-
 	.row .col.offset-s1.s10 {
 		margin-left: 0;
 	}
@@ -1911,10 +1906,19 @@ footer.sticky-footer {
 
 
 @media only screen and (max-width: 990px) {
+	#star-img {
+		margin-left: 0;
+	}
+
 	.prof-img, .edit-img, .locked-img {
 		width: 200px;
 		height: 200px;
 		margin-left: 4%;
+	}
+
+	.org-img, .org-photo {
+		width: 200px;
+		height: 200px;
 	}
 
 	 .event-card {
@@ -1966,7 +1970,7 @@ footer.sticky-footer {
 }
 
 @media only screen and (max-width: 810px) {
-	.prof-img, .edit-img, .locked-img {
+	.prof-img, .edit-img, .locked-img, .org-img, .org-photo{
 		min-width: 125px;
 		min-height: 125px;
 		margin-left: 2%;
@@ -1974,14 +1978,28 @@ footer.sticky-footer {
 }
 
 @media only screen and (max-width: 810px) {
-	.prof-img, .edit-img, .locked-img {
+	.prof-img, .edit-img, .locked-img, .org-img, .org-photo{
 		margin-left: 1%;
 	}
 }
 
+@media only screen and (max-width: 750px) {
+	.org-photo, .no-photo {
+		font-size: 120px;
+	}
+
+	#star-img {
+		margin-left: 10%;
+	}
+}
+
 @media only screen and (max-width: 700px) {
+	#star-img {
+		margin-left: 0;
+	}
+
 	.org-list {
-		padding-left: 10%;
+		padding-left: 5%;
 	}
 
 	#org-search-form .search-btn {
@@ -1999,7 +2017,7 @@ footer.sticky-footer {
 		position: absolute;
 	}
 
-	.prof-img, .edit-img, .locked-img {
+	.prof-img, .edit-img, .locked-img, .org-img, .org-photo {
 		max-width: 150px;
 		max-height: 150px;
 		margin-left: 3%;
@@ -2035,6 +2053,19 @@ footer.sticky-footer {
 		min-width: 250px;
 		min-height: 250px;
 		margin-left: 10%;
+	}
+
+	.org-photo, .no-photo {
+		font-size: 160px;
+	}
+
+	#star-img {
+		margin-left: 10%;
+	}
+
+	.org-img, .org-photo {
+		min-width: 250px;
+		min-height: 250px;
 	}
 
 	.prof-tabs {
