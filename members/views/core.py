@@ -122,6 +122,8 @@ def view_members(request):
         if search_form.is_valid():
             search_terms = search_form.cleaned_data['terms']
             search_results = User.helper.search(search_terms, True)
+            if len(search_results) == 1:
+                return HttpResponseRedirect(reverse('member_profile', kwargs={'username': search_results[0].username}))
     else:
         search_form = MemberSearchForm()
 
