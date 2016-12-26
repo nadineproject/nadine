@@ -2014,6 +2014,10 @@ footer.sticky-footer {
 	.org-photo #star-img {
 		margin-left: 10%;
 	}
+
+	#fb, #tw, #ye, #inst {
+		display: none;
+	}
 }
 
 @media only screen and (max-width: 700px) {
@@ -2071,10 +2075,6 @@ footer.sticky-footer {
 
 	.fc-right button  {
 		font-size: .8em;
-	}
-
-	#fb, #tw, #ye, #inst {
-		display: none;
 	}
 
 	.prof-img, .edit-img, .locked-img {
