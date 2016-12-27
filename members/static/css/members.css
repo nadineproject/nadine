@@ -1922,6 +1922,10 @@ footer.sticky-footer {
 
 
 @media only screen and (max-width: 990px) {
+	.col.s10.offset-s1 {
+		margin-top: 8%;
+	}
+
 	.org-photo, .no-photo {
 		font-size: 150px;
 	}
@@ -2004,6 +2008,10 @@ footer.sticky-footer {
 	div.org-list {
 		padding-left: 15%;
 	}
+
+	.col.s10.offset-s1 {
+		margin-top: 10%;
+	}
 }
 
 @media only screen and (max-width: 750px) {
@@ -2026,6 +2034,10 @@ footer.sticky-footer {
 
 	.org-list {
 		padding-left: 10%;
+	}
+
+	.right-profile {
+		margin-bottom: 20%;
 	}
 }
 
@@ -2070,8 +2082,16 @@ footer.sticky-footer {
 		margin-left: 20%;
 	}
 
+	.event-card {
+		margin-left: 20% !important;
+	}
+
 	.lightbg {
 		margin-top: 11%;
+	}
+
+	.col.s10.offset-s1 {
+		margin-top: 15%;
 	}
 
 	.fc-toolbar {
@@ -2111,10 +2131,6 @@ footer.sticky-footer {
 
 	.org-right-profile {
 		min-width: 515px;
-	}
-
-	.prof-tabs {
-		margin-bottom: 20%;
 	}
 
 	footer#footer.main-footer {

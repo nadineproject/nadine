@@ -10,12 +10,10 @@
       margin: 0;
       margin-top: 6%;
       width: 100%;
-    } }
+    }
+  }
 
   @media only screen and (max-width: 800px) {
-    #fb, #tw, #ye, #inst {
-      display: none;
-    }
 
     footer#footer.sticky-footer {
       margin-top: 5%;
@@ -30,6 +28,7 @@
       margin-bottom: 0;
     }
   }
+
 {% endblock %}
 
 {% block content %}
@@ -172,7 +171,7 @@
 
         $(document).ready(function() {
           $('.button-collapse').sideNav();
-          
+
           $('body').css('background-color', 'RGBA(239, 238, 231, 1)');
           $('.tooltipped').tooltip({delay: 50});
           $('.collapsible').collapsible();
