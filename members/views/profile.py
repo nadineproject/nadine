@@ -147,7 +147,10 @@ def edit_profile(request, username):
                     else:
                         page_message = 'Your password must be at least 8 characters long.'
                 else:
-                    total_new = []
+                    for link in link_data:
+                        del_url = link.get('url')
+                        user.profile.websites.filter(url=del_url).delete()
+
                     for link_form in link_formset:
                         if not link_form.cleaned_data.get('username'):
                             link_form.cleaned_data['username'] = user.username
@@ -156,20 +159,10 @@ def edit_profile(request, username):
                                 url_type = link_form.cleaned_data.get('url_type')
                                 url = link_form.cleaned_data.get('url')
                                 username = link_form.cleaned_data.get('username')
-
                                 if url_type and url:
-                                    new_link = {'url_type': url_type, 'url': url, 'username': username}
-                                    total_new.append(new_link)
-                                if new_link not in link_data:
                                     link_form.save()
                         except Exception as e:
                             messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
-                            
-                    for link in link_data:
-                        if link not in total_new:
-                            del_url = link.get('url')
-                            user.profile.websites.filter(url=del_url).delete()
-
                     profile_form.save()
 
                     return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
