@@ -113,12 +113,26 @@ p {
 	margin: 0;
 	top: 0;
 	left: 0;
+	max-width: 100%;
 	width: 100%;
 	z-index: 2;
 	box-sizing: padding-box;
 	border-bottom: none;
 	background-color: RGBA(66, 98, 113, 1);
 }
+
+/*@-moz-document url-prefix() {
+    #jumbo-img {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+     #jumbo-img {
+        max-width: 100%;
+    }
+}*/
 
 .side-nav {
 	background-color: RGBA(80, 80, 80, 1);
@@ -128,8 +142,11 @@ p {
 
 .side-nav li a {
 	font-size: 1.5em;
-	padding-top: 20%;
 	padding-right: 5%;
+}
+
+.side-nav li:first-child {
+	margin-top: 10%;
 }
 
 #sidenav-overlay {
@@ -137,7 +154,6 @@ p {
 }
 
 .logo-img {
-	/*content: url(../img/logo.png);*/
 	position: absolute;
 	z-index: 2000;
 	top: 10%;
@@ -160,6 +176,7 @@ p {
 
 #jumbo-img {
 	content: url(../img/jumbo.png);
+	max-width: 100%;
 	width: 100%;
 	margin: 0;
 	padding: 0;
@@ -169,6 +186,7 @@ p {
 #jumbo-img:after {
 	/*for firefox*/
 	content: url(../img/jumbo.png);
+	max-width: 100%;
 	width: 100%;
 	margin: 0;
 	padding: 0;
@@ -274,6 +292,9 @@ div#login_box.col.s6 {
 	padding: 2%;
 	border-top-right-radius: 2px;
 	border-top-left-radius: 2px;
+	margin-top: 5%;
+	margin-bottom: 5%;
+	text-align: center;
 }
 
 #login_form th, #registration_form th {
@@ -283,6 +304,9 @@ div#login_box.col.s6 {
 
 #login_reset {
 	padding-bottom: 5%;
+	margin-top:1.5em;
+	margin-left:12%;
+	margin-right: 12%;
 }
 
 #profile_form tr, #registration_form tr, #login_form tr, #booking_form tr {
@@ -315,11 +339,6 @@ input#id_photo {
 	padding-left: 2%;
 	margin-right: 2%;
 
-}
-
-#login-header {
-	margin-top: 5%;
-	margin-bottom: 5%;
 }
 
 .sub-btn, #confirm-btn, .reg-btn  {
@@ -1876,10 +1895,6 @@ footer.sticky-footer {
 }
 
 @media only screen and (max-width: 1100px) {
-	.row .col.offset-s1.s10 {
-		margin-left: 0;
-	}
-
 	p.pf-input.form-url.col.s6.offset-s2, p.cap-label.col.s6.offset-s2  {
 		margin-left: 0;
 	}
@@ -1905,9 +1920,6 @@ footer.sticky-footer {
 		width: 2%;
 	}
 
-	.row .col.s10 {
-		width: 100%;
-	}
 
 	#profile_form, #registration_form {
 		margin-left: 2%;
@@ -2158,5 +2170,17 @@ footer.sticky-footer {
 		left: 0;
 		position: absolute;
 		padding: 0;
+	}
+}
+
+@media only screen and (max-width: 450px) {
+	.org-card {
+		margin-left: 0;
+	}
+}
+
+@media only screen and (max-width: 400px) {
+	.prof-img, .edit-img, .locked-img{
+		margin-left: 5%;
 	}
 }
