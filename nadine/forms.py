@@ -2,21 +2,24 @@ import logging
 import datetime
 import base64
 import uuid
+import os
 
 from django import forms
+from django.core.files.base import ContentFile
 from django.forms import modelformset_factory
 from django.forms.formsets import BaseFormSet
 from django.contrib.auth.models import User
 from django.utils.html import strip_tags
 from django.conf import settings
 from django.utils import timezone
+from django.core.files.base import ContentFile
 
 from localflavor.us.us_states import US_STATES
 from localflavor.ca.ca_provinces import PROVINCE_CHOICES
 
 from nadine import email
 from nadine.models.core import HowHeard, Industry, Neighborhood, URLType, GENDER_CHOICES
-from nadine.models.profile import UserProfile, MemberNote
+from nadine.models.profile import UserProfile, MemberNote, user_photo_path
 from nadine.models.membership import Membership, MembershipPlan
 from nadine.models.usage import PAYMENT_CHOICES, CoworkingDay
 from nadine.models.resource import Room
@@ -216,15 +219,6 @@ def get_state_choices():
         return PROVINCE_CHOICES
 
 
-def save_cropped_image(raw_img_data, upload_path):
-    img_data = base64.b64decode(raw_img_data)
-    filename = "%s.jpeg" % upload_path
-
-    with open(filename, 'wb') as f:
-        f.write(img_data)
-        f.close()
-    return filename
-
 class ProfileImageForm(forms.Form):
     username = forms.CharField(required=True, widget=forms.HiddenInput)
     photo = forms.FileField(required=False)
@@ -232,20 +226,16 @@ class ProfileImageForm(forms.Form):
 
     def save(self):
         user = User.objects.get(username=self.cleaned_data['username'])
+        filename = "user_photos/%s.png" % self.cleaned_data['username']
+        raw_img_data = self.cleaned_data['cropped_image_data']
+        if not raw_img_data or len(raw_img_data) == 0:
+            # Nothing to save here
+            return
+        img_data = base64.b64decode(raw_img_data)
+        if user.profile.photo:
+            user.profile.photo.delete()
+        user.profile.photo.save(filename, ContentFile(img_data))
 
-        try:
-            img_data = self.cleaned_data['cropped_image_data']
-            if (not img_data) or img_data is None or len(img_data) == 0:
-                return
-        except:
-            raise forms.ValidationError('No valid image was provided.')
-
-        upload_path = "media/user_photos/%s" % self.cleaned_data['username']
-        relative_file_name = save_cropped_image(img_data, upload_path)
-        self.cleaned_data['image'] = relative_file_name
-        user.profile.photo.delete()
-        user.profile.photo = self.cleaned_data['photo']
-        user.profile.save()
 
 class BaseLinkFormSet(BaseFormSet):
     def clean(self):
@@ -285,6 +275,7 @@ class LinkForm(forms.Form):
         if self.cleaned_data['org_id']:
             org = Organization.objects.get(id=self.cleaned_data['org_id'])
             org.save_url(self.cleaned_data['url_type'], self.cleaned_data['url'])
+
 
 class EditProfileForm(forms.Form):
     username = forms.CharField(required=True, widget=forms.HiddenInput)

@@ -288,23 +288,24 @@ def edit_pic(request, username):
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def edit_photo(request, username):
-    page_message = None
     user=get_object_or_404(User, username=username)
     if not user == request.user and not request.user.is_staff:
         return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
 
     if request.method == 'POST':
         form = ProfileImageForm(request.POST, request.FILES)
-        # try:
-        #     if form.is_valid():
-        #         form.save()
-        #         return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
-        # except Exception as e:
-        #     page_message = str(e)
+        try:
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
+            else:
+                print form
+        except Exception as e:
+            messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
     else:
         form = ProfileImageForm()
 
-    context = {'user': user, 'page_message': page_message, 'form': form}
+    context = {'user': user, 'form': form}
     return render(request, 'members/profile_image_edit.html', context)
 
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
