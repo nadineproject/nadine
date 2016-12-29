@@ -2163,6 +2163,15 @@ footer.sticky-footer {
 		min-width: 515px;
 	}
 
+	.fc-center {
+		display: block !important;
+		text-align: center;
+	}
+
+	.fc-left, .fc-right {
+		margin-bottom: 5%;
+	}
+
 	footer#footer.main-footer {
 		background: RGBA(61, 61, 61, .9);
 		bottom: 0;
@@ -2182,5 +2191,22 @@ footer.sticky-footer {
 @media only screen and (max-width: 400px) {
 	.prof-img, .edit-img, .locked-img{
 		margin-left: 5%;
+	}
+
+	.fc-right {
+		display: none;
+	}
+
+	.fc-left {
+		margin-bottom: 5%;
+	}
+
+	.fc-scroller, .fc-view-container {
+		height: 325px !important;
+	}
+
+	.fc-scroller {
+		overflow-y: visible;
+		overflow-x: scroll !important;
 	}
 }
