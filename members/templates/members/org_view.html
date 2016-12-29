@@ -15,25 +15,21 @@
 		marin-left: 4%;
 	}
 
-	@media only screen and (max-width: 1179px) {
-    .col.s10.offset-s1 {
-      margin: 0;
-      margin-top: 6%;
-      width: 100%;
+	media only screen and (max-width: 800px) {
+    footer#footer.sticky-footer {
+      margin-top: 5%;
+      background: RGBA(61, 61, 61, .9);
+    	bottom: 0;
+      right: 0;
+      left: 0;
+      position: absolute;
+    }
+
+    .row {
+      margin-bottom: 0;
     }
   }
 
-	@media only screen and (max-width: 900px) {
-		.col.s10.offset-s1 {
-			margin-top: 8%;
-		}
-	}
-
-	@media only screen and (max-width: 600px) {
-		.col.s10.offset-s1 {
-			margin-top: 10%;
-		}
-	}
 {% endblock %}
 
 {% block content %}

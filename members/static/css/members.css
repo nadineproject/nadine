@@ -1271,253 +1271,253 @@ dl dd:last-child:after {
 	content: "";
 }
 /*booking_create styling*/
-	#thumbnail-box {
-		padding-top: 4%;
-		height: 130px;
-	}
+#thumbnail-box {
+	padding-top: 4%;
+	height: 130px;
+}
 
-	.room-thumbnail {
-		max-height: 70px;
-		max-width: 70px;
-	}
+.room-thumbnail {
+	max-height: 70px;
+	max-width: 70px;
+}
 
-	#booking-reqs {
-		padding-left: 4%;
-		border-bottom: 1px solid grey;
-		margin-bottom: 4%;
-	}
+#booking-reqs {
+	padding-left: 4%;
+	border-bottom: 1px solid grey;
+	margin-bottom: 4%;
+}
 
-	#booking-date, #start-time, #end-time {
-		width: 75%;
-	}
+#booking-date, #start-time, #end-time {
+	width: 75%;
+}
 
-	.book-btn, .device-btn {
-		background: RGBA(79, 134, 135, 1);
-	}
+.book-btn, .device-btn {
+	background: RGBA(79, 134, 135, 1);
+}
 
-	#booking-reqs select.browser-default {
-		background: white;
-		border-radius: 1px;
-		margin-top: 0;
-	}
+#booking-reqs select.browser-default {
+	background: white;
+	border-radius: 1px;
+	margin-top: 0;
+}
 
-	[type="checkbox"].filled-in:not(:checked)+label:after {
-		background-color: white;
-	}
+[type="checkbox"].filled-in:not(:checked)+label:after {
+	background-color: white;
+}
 
-	[type="checkbox"]+label {
-		color: black;
-		height: 43.5px;
+[type="checkbox"]+label {
+	color: black;
+	height: 43.5px;
 
-	}
+}
 
-	td.booking-td {
-		width: 30%;
-	}
+td.booking-td {
+	width: 30%;
+}
 
-	#av-btn, #phone-btn {
-		vertical-align: bottom;
-		padding: 0;
-		width: 15%;
-	}
+#av-btn, #phone-btn {
+	vertical-align: bottom;
+	padding: 0;
+	width: 15%;
+}
 
-	#av-btn {
-		padding-left: 1%;
-	}
+#av-btn {
+	padding-left: 1%;
+}
 
-	#time-row {
-		text-align: center;
-	}
+#time-row {
+	text-align: center;
+}
 
-	#floor-select, #seat-select {
-		vertical-align: text-top;
-		margin-top: 0;
-	}
+#floor-select, #seat-select {
+	vertical-align: text-top;
+	margin-top: 0;
+}
 
-	select#floor {
-		min-width: 150px;
-	}
+select#floor {
+	min-width: 150px;
+}
 
-	#room-search {
-		padding-top: 1%;
-	}
+#room-search {
+	padding-top: 1%;
+}
 
-	#room-criteria {
-		padding-top: 2%;
-		padding-bottom: 5%;
-	}
+#room-criteria {
+	padding-top: 2%;
+	padding-bottom: 5%;
+}
 
-	.book-room {
-		margin-top: 5%;
-	}
+.book-room {
+	margin-top: 5%;
+}
 
-	.book-btn, .room-show, .room-close {
-		background-color: RGBA(79, 134, 135, 1);
-	}
+.book-btn, .room-show, .room-close {
+	background-color: RGBA(79, 134, 135, 1);
+}
 
-	.room-show, .room-close {
-		font-size: .7em;
-		min-width: 70px;
-		padding: 0% 5%;
-	}
+.room-show, .room-close {
+	font-size: .7em;
+	min-width: 70px;
+	padding: 0% 5%;
+}
 
-	.book-btn {
-		margin-left: 15%;
-	}
+.book-btn {
+	margin-left: 15%;
+}
 
-	.cal-table, .booking-bar {
-		margin-top: 10px;
-	}
+.cal-table, .booking-bar {
+	margin-top: 10px;
+}
 
-	.booking-bar {
-		min-width: 670px;
-	}
+.booking-bar {
+	min-width: 670px;
+}
 
-	.cal-table thead, .booking-bar thead {
-		border: none;
-	}
+.cal-table thead, .booking-bar thead {
+	border: none;
+}
 
-	.cal-table th, .booking-bar th{
-		font-size: .8em;
-		text-align: left;
-		height: 10px;
-		width: 2%;
-	}
+.cal-table th, .booking-bar th{
+	font-size: .8em;
+	text-align: left;
+	height: 10px;
+	width: 2%;
+}
 
-	th.rotate{
-	  height: 40px;
-	  width: 2%;
-	  min-width: 2%;
-	  max-width: 2%;
-	  position: relative;
-	  vertical-align: bottom;
-	  padding: 0;
-	  font-size: 12px;
-	  line-height: 0.8;
-	}
+th.rotate{
+  height: 40px;
+  width: 2%;
+  min-width: 2%;
+  max-width: 2%;
+  position: relative;
+  vertical-align: bottom;
+  padding: 0;
+  font-size: 12px;
+  line-height: 0.8;
+}
 
-	th.rotate > div {
-		position: relative;
-		top: 0px;
-		left: 20px;
-		height: 100%;
-		-ms-transform:skew(-45deg,0deg);
-		-moz-transform:skew(-45deg,0deg);
-		-webkit-transform:skew(-45deg,0deg);
-		-o-transform:skew(-45deg,0deg);
-		transform:skew(-45deg,0deg);
-	}
+th.rotate > div {
+	position: relative;
+	top: 0px;
+	left: 20px;
+	height: 100%;
+	-ms-transform:skew(-45deg,0deg);
+	-moz-transform:skew(-45deg,0deg);
+	-webkit-transform:skew(-45deg,0deg);
+	-o-transform:skew(-45deg,0deg);
+	transform:skew(-45deg,0deg);
+}
 
-	th.rotate span {
-		-ms-transform:skew(45deg,0deg) rotate(315deg);
-		-moz-transform:skew(45deg,0deg) rotate(315deg);
-		-webkit-transform:skew(45deg,0deg) rotate(315deg);
-		-o-transform:skew(45deg,0deg) rotate(315deg);
-		transform:skew(45deg,0deg) rotate(315deg);
-		position: absolute;
-		bottom: 30px;
-		left: -44px;
-		display: inline-block;
-		width: 100%;
-		width: 85px;
-		text-align: left;
-		white-space: nowrap;
-	}
+th.rotate span {
+	-ms-transform:skew(45deg,0deg) rotate(315deg);
+	-moz-transform:skew(45deg,0deg) rotate(315deg);
+	-webkit-transform:skew(45deg,0deg) rotate(315deg);
+	-o-transform:skew(45deg,0deg) rotate(315deg);
+	transform:skew(45deg,0deg) rotate(315deg);
+	position: absolute;
+	bottom: 30px;
+	left: -44px;
+	display: inline-block;
+	width: 100%;
+	width: 85px;
+	text-align: left;
+	white-space: nowrap;
+}
 
-	.cal-table th:first-child, .booking-bar th:first-child {
-		width: 2%;
-	}
+.cal-table th:first-child, .booking-bar th:first-child {
+	width: 2%;
+}
 
-	.booking-bar {
-		margin-bottom: 2%;
-	}
+.booking-bar {
+	margin-bottom: 2%;
+}
 
-	.cal-box {
-		border-bottom: none;
-		border-top: none;
-		width: 2%;
-		height: 65px;
-		border-right: 1px solid white;
-		box-sizing: border-box;
-		padding: 0;
-		border-radius: 0px 0px 0px 0px;
-		background-color: RGBA(178, 225, 203, .6);
-	}
+.cal-box {
+	border-bottom: none;
+	border-top: none;
+	width: 2%;
+	height: 65px;
+	border-right: 1px solid white;
+	box-sizing: border-box;
+	padding: 0;
+	border-radius: 0px 0px 0px 0px;
+	background-color: RGBA(178, 225, 203, .6);
+}
 
-	.cal-table td:last-child, .booking-bar td:last-child {
-		border-right: none;
-	}
+.cal-table td:last-child, .booking-bar td:last-child {
+	border-right: none;
+}
 
-	.cal-table .reserved, .booking-bar .reserved {
-		background-color: RGBA(217, 95, 73, .4);
-	}
+.cal-table .reserved, .booking-bar .reserved {
+	background-color: RGBA(217, 95, 73, .4);
+}
 
-	.cal-table .searched, .booking-bar .searched {
-		background-color: RGBA(49, 39, 50, .7);
-	}
+.cal-table .searched, .booking-bar .searched {
+	background-color: RGBA(49, 39, 50, .7);
+}
 
-	.cal-table td:first-child, .booking-bar td:first-child {
-		border-radius: 4px 0px 0px 4px;
-	}
+.cal-table td:first-child, .booking-bar td:first-child {
+	border-radius: 4px 0px 0px 4px;
+}
 
-	.cal-table td:last-child, .booking-bar td:last-child {
-		border-radius: 0px 4px 4px 0px;
-	}
+.cal-table td:last-child, .booking-bar td:last-child {
+	border-radius: 0px 4px 4px 0px;
+}
 
-	#start-forw, #start-back, #end-forw, #end-back {
-		border-radius: 100px;
-		width: 30px;
-		height: 30px;
-		background: RGBA(63, 146, 161, 1);
-		color: white;
-		box-shadow: none;
-		border: none;
-	}
+#start-forw, #start-back, #end-forw, #end-back {
+	border-radius: 100px;
+	width: 30px;
+	height: 30px;
+	background: RGBA(63, 146, 161, 1);
+	color: white;
+	box-shadow: none;
+	border: none;
+}
 
-	#start-forw {
-		margin-left: 10%;
-	}
+#start-forw {
+	margin-left: 10%;
+}
 
-	#end-forw {
-		margin-left: 15%;
-	}
+#end-forw {
+	margin-left: 15%;
+}
 
-	.time-btns {
-		min-width: 300px;
-		overflow: auto;
-	}
+.time-btns {
+	min-width: 300px;
+	overflow: auto;
+}
 
-	#cal-error td {
-		text-align: center;
-		color: red;
-	}
+#cal-error td {
+	text-align: center;
+	color: red;
+}
 
-	.slider {
-		overflow-y: hidden;
-		max-height: 300px; /* approximate max height */
-		transition-property: all;
-		transition-duration: .7s;
-		transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
-		background-color: white;
-		padding-top: 1%;
-		border-radius: 2px;
-	}
+.slider {
+	overflow-y: hidden;
+	max-height: 300px; /* approximate max height */
+	transition-property: all;
+	transition-duration: .7s;
+	transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+	background-color: white;
+	padding-top: 1%;
+	border-radius: 2px;
+}
 
-	.slider.closed {
-		max-height: 0;
-		padding-top: 0;
-	}
+.slider.closed {
+	max-height: 0;
+	padding-top: 0;
+}
 
-	div#time-range {
-		max-height: 60px;
-	}
+div#time-range {
+	max-height: 60px;
+}
 
-	div#slider-range {
-		/*position: absolute;*/
-		max-height: 50px;
-		min-width: 50px;
-		margin-bottom: 5%;
-	}
+div#slider-range {
+	/*position: absolute;*/
+	max-height: 50px;
+	min-width: 50px;
+	margin-bottom: 5%;
+}
 
 /*calendar and making event styling*/
 
@@ -1716,6 +1716,24 @@ div.ui-timepicker-container.ui-timepicker-standard {
 	padding-bottom: 2%;
 }
 
+/*Mail Page*/
+.mail-content {
+	margin-top: 4%;
+}
+
+.mail-content h5 {
+	margin-top: 3%;
+}
+
+
+/*Mail Message*/
+#label {
+	font-size:1.2em;
+}
+
+#label strong {
+	font-size:1.2;
+}
 
 /* Footer */
 

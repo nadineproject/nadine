@@ -5,6 +5,9 @@
 {% block sub-title %}{{ user.get_full_name }} | {% endblock %}
 
 {% block style %}
+  body {
+    background-color: RGBA(239, 238, 231, 1);
+  }
 
   @media only screen and (max-width: 800px) {
     footer#footer.sticky-footer {
@@ -163,8 +166,6 @@
 
         $(document).ready(function() {
           $('.button-collapse').sideNav();
-
-          $('body').css('background-color', 'RGBA(239, 238, 231, 1)');
           $('.tooltipped').tooltip({delay: 50});
           $('.collapsible').collapsible();
           $('.chips').material_chip();

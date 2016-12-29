@@ -2,19 +2,7 @@
 
 {% block sub-title %}Mail | {% endblock %}
 
-{% block style %}
-#content ul { margin-left: 0; }
-#content ul li {
-	list-style: none;
-}
-#content h2 { margin-bottom: 1em; }
-
-#mailing-list-subscription-form { display: none; }
-.list_mail { margin-left: 2em; }
-.msg_table td, th {text-align: left; }
-.list_desc { margin-left: 2em; }
-
-{% endblock %}
+{% block style %}{% endblock %}
 
 {%block sub-head %}
 	<script>
@@ -52,7 +40,7 @@
 {% for mailing_list, is_subscriber in user.mailing_list_memberships %}
 <div id="tabs-{{forloop.counter}}" class="plan-section">
 <ul>
-	<li>
+	<li class='mail-content'>
 		<h4 class='oswald'>
 			{{ mailing_list.name }}
 			{% if not mailing_list.moderator_controlled %} - {{ mailing_list.email_address}}
