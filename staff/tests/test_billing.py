@@ -196,7 +196,7 @@ class BillingTestCase(TestCase):
         self.assertEqual(may_20_overage.membership.membership_plan, self.pt5Plan)
         self.assertEqual(date(2010, 6, 19), may_20_overage.bill_date)
         self.assertEqual(9, may_20_overage.dropins.count())
-        self.assertEqual(4, may_20_overage.overage_days())
+        self.assertEqual(4, may_20_overage.overage_days)
         self.assertEqual(80, may_20_overage.amount)
 
         # Third bill is for the new Basic membership

@@ -5,6 +5,7 @@ import requests
 import datetime
 import logging
 import email.utils
+from collections import OrderedDict
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -23,53 +24,46 @@ class MailgunException(Exception):
     pass
 
 
+def address_map(mailgun_data, key, exclude=None):
+    if not exclude: exclude = []
+    a_map = OrderedDict()
+    if key in mailgun_data:
+        for a in mailgun_data[key]:
+            name, address = email.utils.parseaddr(a)
+            if not address in exclude:
+                a_map[address.lower()] = a
+        # print("mailgun_data[%s] = %s" % (key, mailgun_data[key]))
+        # print("exclude = %s" % exclude)
+        # print("a_map = %s" % a_map)
+    return a_map
+
+
 def clean_mailgun_data(mailgun_data):
     # Make sure we have what we need
+    if not 'to' in mailgun_data or not 'from' in mailgun_data or not 'subject' in mailgun_data:
+        raise MailgunException("Mailgun data missing FROM, TO, or SUBJECT!")
+    logger.debug("dirty mailgun_data: %s" % mailgun_data)
+
+    # Compile all our addresses
     from_name, from_address = email.utils.parseaddr(mailgun_data["from"])
     to_name, to_address = email.utils.parseaddr(mailgun_data["to"][0])
-    subject = mailgun_data["subject"]
-    if not from_address or not to_address or not subject:
-        raise MailgunException("Mailgun data missing FROM, TO, or SUBJECT!")
-    logger.debug("from: %s, to: %s, subject: %s" % (from_address, to_address, subject))
+    exclude = [from_address, to_address]
+    bccs = address_map(mailgun_data, "bcc", exclude)
+    exclude.extend(bccs.keys())
+    # We do not want to remove our first 'to' address
+    to_exclude = list(set(exclude))
+    to_exclude.remove(to_address)
+    tos = address_map(mailgun_data, "to", to_exclude)
+    exclude.extend(tos.keys())
+    ccs = address_map(mailgun_data, "cc", exclude)
 
-    # Clean up our bcc list
-    bcc_list = None
-    if "bcc" in mailgun_data:
-        bcc_list = mailgun_data["bcc"]
-        if from_address in bcc_list:
-            bcc_list.remove(from_address)
-        if to_address in bcc_list:
-            bcc_list.remove(to_address)
-        mailgun_data["bcc"] = list(set(bcc_list))
-        logger.debug("bcc: %s" % mailgun_data["bcc"])
+    # Repopulate our data with our clean lists
+    mailgun_data["bcc"] = bccs.values()
+    mailgun_data["cc"] = ccs.values()
+    mailgun_data["to"] = tos.values()
 
-    # Clean up our cc list too
-    cc_list = None
-    if "cc" in mailgun_data:
-        cc_list = mailgun_data["cc"]
-        if from_address in cc_list:
-            cc_list.remove(from_address)
-        if to_address in cc_list:
-            cc_list.remove(to_address)
-        if bcc_list:
-            for cc in cc_list:
-                if cc in bcc_list:
-                    cc_list.remove(cc)
-        mailgun_data["cc"] = list(set(cc_list))
-        logger.debug("cc: %s" % mailgun_data["cc"])
-
-    # Lastly clean up our to list
-    to_list = mailgun_data["to"]
-    if len(to_list) > 1:
-        if from_address in to_list:
-            to_list.remove(from_address)
-        for to in to_list[1:]:
-            if cc_list and to in cc_list:
-                to_list.remove(to)
-            if bcc_list and to in bcc_list:
-                to_list.remove(to)
-    mailgun_data["to"] = to_list
-
+    logger.debug("clean mailgun_data: %s" % mailgun_data)
+    return mailgun_data
 
 def inject_list_headers(mailgun_data):
     # Attach some headers: LIST-ID, REPLY-TO, Precedence...

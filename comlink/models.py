@@ -7,6 +7,8 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils.datastructures import MultiValueDict
 from django.utils.translation import ugettext as _
+from django.core.urlresolvers import reverse
+from django.contrib.sites.models import Site
 
 from email.Utils import parseaddr
 
@@ -88,6 +90,9 @@ class EmailBaseModel(models.Model):
     def in_reply_to(self):
         return self.headers.get('In-Reply-To', None)
 
+    @property
+    def site_url(self): return 'https://%s%s' % (Site.objects.get_current().domain, reverse('comlink_mail', kwargs={'id': self.id}))
+
     def get_mailgun_data(self, stripped=True, footer=True):
         if stripped:
             body_plain = self.stripped_text
@@ -98,10 +103,10 @@ class EmailBaseModel(models.Model):
 
         if footer:
             # Add in a footer
-            text_footer = "\n\n-------------------------------------------\n*~*~*~* Sent through Nadine *~*~*~* "
+            text_footer = "\n\n-------------------------------------------\n*~*~*~* Sent through Nadine *~*~*~*\n%s" % self.site_url
             body_plain = body_plain + text_footer
             if body_html:
-                html_footer = "<br><br>-------------------------------------------<br>*~*~*~* Sent through Nadine *~*~*~* "
+                html_footer = "<br><br>-------------------------------------------<br>*~*~*~* Sent through Nadine *~*~*~*\n%s" % self.site_url
                 body_html = body_html + html_footer
 
         # Build and return our data

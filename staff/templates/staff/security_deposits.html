@@ -13,29 +13,21 @@ nav #members-tab { background: #FBD850; color: black; }
 {% include "staff/member_menu.frag" %}
 
 <h2>Security Deposits</h2>
-<table>
-	<tr>
-		<th>Name</th>
-		<th>Amount</th>
-		<th>Action</th>
-		<th></th>
-	</tr>
-	{% for d in deposits %}
-	<tr class="{% cycle 'row-even' 'row-odd' %}">
-		<td nowrap ><a href="{% url 'staff_user_detail' d.username %}">{{ d.name }}</a></td>
-		<td>${{ d.amount }}</td>
-		<td>
-			<form action="." method="POST" onSubmit="return confirm('Are you sure?');">
-				<input name="deposit_id" value="{{ d.deposit_id }}" type="hidden" />
-				<input name="mark_returned" type="submit" Value="Mark Returned" />
-				{% csrf_token %}
-			</form>
-		</td>
-		<td></td>
-	</tr>
-	{% endfor %}
-	<tr><th><strong>Total Deposits</strong><th align="left">${{total_deposits}}</th></tr>
-</table>
+<strong>Total Deposits: </strong> ${{total_deposits}}
+
+{% if inactive_deposits %}
+	<h3>Inactive Members</h3>
+	{% with inactive_deposits as deposits %}
+		{% include "staff/security_deposit_table.html" %}
+	{% endwith %}
+{% endif %}
+
+{% if active_deposits %}
+	<h3>Active Members</h3>
+	{% with active_deposits as deposits %}
+		{% include "staff/security_deposit_table.html" %}
+	{% endwith %}
+{% endif %}
 
 
 {% endblock %}

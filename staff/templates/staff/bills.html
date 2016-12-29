@@ -83,6 +83,11 @@ nav #billing-tab { background: #FBD850; color: black; }
 								Deposit: ${{ bill.new_member_deposit }}
 							</div>
 							{% endif %}
+							{% if bill.overage_days %}
+							<div class="bill-info">
+								Overage: {{ bill.overage_days }} day{{ bill.overage_days|pluralize }}
+							</div>
+							{% endif %}
 							{% if bill.dropins.all %}
 							<div class="bill-info">Dropins ({{ bill.dropins.count }}):
 								{% for dropin in bill.dropins.all %}

@@ -3,18 +3,11 @@
 
 {% block sub-title %}Activity on {{ activity_date|date:"M d, Y" }} | {% endblock %}
 
-{% block sub-head %}
-	<link rel="stylesheet" href="{% static 'css/jquery-ui.min.css' %}" />
-	<script src="{% static 'jquery-3.1.1.min.js' %}"></script>
-	<script src="{% static 'jquery-ui.min.js' %}"></script>
-{% endblock %}
-
 {% block style%}
 nav #activity-tab { background: #FBD850; color: black; }
 #content table { width: 100%; }
 .log-note { width: 100px; }
 #quick-links { text-align: right; margin-bottom: 20px;}
-
 {% endblock %}
 
 {% block content %}
