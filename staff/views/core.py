@@ -102,12 +102,20 @@ def security_deposits(request):
         if username:
             return HttpResponseRedirect(reverse('staff_user_detail', kwargs={'username': username}))
 
-    deposits = []
+    active_deposits = []
+    inactive_deposits = []
     total_deposits = 0
     for deposit in SecurityDeposit.objects.filter(returned_date=None).order_by('user__username'):
-        deposits.append({'username': deposit.user.username, 'name': deposit.user.get_full_name(), 'deposit_id': deposit.id, 'amount': deposit.amount})
+        d = {'username': deposit.user.username, 'name': deposit.user.get_full_name(), 'deposit_id': deposit.id, 'amount': deposit.amount}
+        if deposit.user.profile.is_active():
+            active_deposits.append(d)
+        else:
+            inactive_deposits.append(d)
         total_deposits = total_deposits + deposit.amount
-    context = {'deposits': deposits, 'total_deposits': total_deposits}
+    context = {'active_deposits': active_deposits,
+        'inactive_deposits':inactive_deposits,
+        'total_deposits': total_deposits
+    }
     return render(request, 'staff/security_deposits.html', context)
 
 

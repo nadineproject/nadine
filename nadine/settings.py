@@ -149,6 +149,7 @@ INSTALLED_APPS = (
     'taggit',
     'djcelery',
     'doors.keymaster',
+    #'django_extensions',
     #'debug_toolbar',
 )
 
