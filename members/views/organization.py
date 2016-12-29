@@ -103,7 +103,9 @@ def org_edit(request, org_id):
         form.public = request.POST['public']
         try:
             if form.is_valid() and org_link_formset.is_valid():
-                total_new = []
+                for link in link_data:
+                    del_url = link.get('url')
+                    org.websites.filter(url=del_url).delete()
                 for link_form in org_link_formset:
                     if not link_form.cleaned_data.get('org_id'):
                         link_form.cleaned_data['org_id'] = org.id
@@ -111,20 +113,11 @@ def org_edit(request, org_id):
                         if link_form.is_valid():
                             url_type = link_form.cleaned_data.get('url_type')
                             url = link_form.cleaned_data.get('url')
-                            org_id = link_form.cleaned_data.get('org_id')
 
                             if url_type and url:
-                                new_link = {'url_type': url_type, 'url': url, 'org_id': org_id}
-                                total_new.append(new_link)
-                            if new_link not in link_data:
                                 link_form.save()
                     except Exception as e:
                         print("Could not save website: %s" % str(e))
-
-                for link in link_data:
-                    if link not in total_new:
-                        del_url = link.get('url')
-                        org.websites.filter(url=del_url).delete()
 
                 form.save()
                 return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))

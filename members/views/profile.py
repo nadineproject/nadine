@@ -158,7 +158,6 @@ def edit_profile(request, username):
                             if link_form.is_valid():
                                 url_type = link_form.cleaned_data.get('url_type')
                                 url = link_form.cleaned_data.get('url')
-                                username = link_form.cleaned_data.get('username')
                                 if url_type and url:
                                     link_form.save()
                         except Exception as e:
