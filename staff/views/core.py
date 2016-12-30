@@ -146,7 +146,7 @@ def todo(request):
     if showall:
         assigned_alerts = MemberAlert.objects.filter(resolved_ts__isnull=True, muted_ts__isnull=True, assigned_to__isnull=False)
     else:
-        assigned_alerts = request.user.assigned_alerts.all()
+        assigned_alerts = request.user.assigned_alerts.filter(resolved_ts__isnull=True, muted_ts__isnull=True)
 
     # Did anyone forget to sign in in the last 7 days?
     check_date = timezone.now().date() - timedelta(days=7)
@@ -192,6 +192,7 @@ def todo_detail(request, key):
                 messages.add_message(request, messages.INFO, "Alert '%s:%s' %sd!" % (alert.user.username, alert.key, action))
         except Exception as e:
             messages.add_message(request, messages.ERROR, "Could not %s alert: %s" % (action, e))
+
         if "next" in request.POST:
             next_url = request.POST.get("next")
             return HttpResponseRedirect(next_url)
@@ -201,7 +202,10 @@ def todo_detail(request, key):
     is_system_alert = MemberAlert.isSystemAlert(key)
     staff_members = User.objects.filter(is_staff=True).order_by('id').reverse()
 
-    context = {'key': key, 'description': description, 'alerts': alerts,
+    context = {
+        'key': key,
+        'description': description,
+        'alerts': alerts,
         'is_system_alert': is_system_alert,
         'staff_members': staff_members,
     }
