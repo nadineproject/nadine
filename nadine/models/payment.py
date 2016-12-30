@@ -50,6 +50,7 @@ class Bill(models.Model):
     guest_dropins = models.ManyToManyField('CoworkingDay', related_name='guest_bills')
     new_member_deposit = models.BooleanField(default=False, blank=False, null=False)
     paid_by = models.ForeignKey(User, blank=True, null=True, related_name='guest_bills')
+    in_progress = models.BooleanField(default=False, blank=False, null=False)
 
     @property
     def overage_days(self):
