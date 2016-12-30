@@ -835,8 +835,7 @@ h5.org-members {
 .org-form {
 	background: RGBA(239, 238, 231, 1);
 	padding: 2%;
-	width: 80%;
-	margin-left: 10%;
+	min-width: 600px;
 }
 
 .org-form .org-label {
@@ -2037,7 +2036,7 @@ footer.sticky-footer {
 		margin-bottom: 10%;
 	}
 
-	select#id_public_profile.browser-default {
+	select#id_public_profile.browser-default, select#id_public.browser-default {
 		width: 50%;
 	}
 }
