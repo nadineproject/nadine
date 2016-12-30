@@ -9,6 +9,16 @@
         padding: 1em;
         display: none;
     }
+
+    @media only screen and (max-width: 1100px) {
+      .row .col.offset-s1.s10 {
+    		margin-left: 0;
+    	}
+
+  		.row .col.s10 {
+  			width: 100%;
+  		}
+  	}
 {% endblock %}
 
 {% block content %}
@@ -259,10 +269,6 @@
     {% for link_form in link_formset %}
     <div class='link-formset row'>
   		<div class='col s10'>
-  			<div class='row headers'>
-  				<p class='cap-label col s4'><strong>Link Type</strong></p>
-  				<p class='cap-label col s6 offset-s2'><strong>Link URL</strong></p>
-  			</div>
   			<div class='row'>
   				<p class='pf-input url-type col s4'>{{ link_form.url_type }}</p>
   				<p class='pf-input form-url col s6 offset-s2'>{{ link_form.url  }}</p>

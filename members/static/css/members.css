@@ -522,7 +522,7 @@ div.link-formset.row.dynamic-form {
 }
 
 .delete-row {
-	margin-top: 4%;
+	/*margin-top: 4%;*/
 	margin-left: 5%;
 }
 
@@ -1929,7 +1929,7 @@ footer.sticky-footer {
 	}
 
 	.link-formset .btn-floating {
-		margin-top: 4%;
+		/*margin-top: 4%;*/
 	}
 
 	.btn-floating {
@@ -1944,7 +1944,7 @@ footer.sticky-footer {
 
 	#profile_form, #registration_form {
 		margin-left: 2%;
-		min-width: 900px;
+		min-width: 600px;
 	}
 
 	#profile_form input {
@@ -2036,6 +2036,10 @@ footer.sticky-footer {
 	.prof-tabs, . {
 		margin-bottom: 10%;
 	}
+
+	select#id_public_profile.browser-default {
+		width: 50%;
+	}
 }
 
 @media only screen and (max-width: 843px) {
@@ -2113,7 +2117,7 @@ footer.sticky-footer {
 		right: 0;
 		bottom: 0;
 		left: 0;
-		position: absolute;
+		/*position: absolute;*/
 	}
 
 	.prof-img, .edit-img, .locked-img, .org-img {
