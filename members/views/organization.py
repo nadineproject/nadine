@@ -88,6 +88,7 @@ def org_add(request):
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def org_edit(request, org_id):
+    page_message = None
     org = get_object_or_404(Organization, id=org_id)
     if not (request.user.is_staff or org.can_edit(request.user)):
         return HttpResponseForbidden("Forbidden")
@@ -102,32 +103,35 @@ def org_edit(request, org_id):
         org_link_formset = OrgFormSet(request.POST)
         form.public = request.POST['public']
         try:
-            if form.is_valid() and org_link_formset.is_valid():
-                for link in link_data:
-                    del_url = link.get('url')
-                    org.websites.filter(url=del_url).delete()
-                for link_form in org_link_formset:
-                    if not link_form.cleaned_data.get('org_id'):
-                        link_form.cleaned_data['org_id'] = org.id
-                    try:
-                        if link_form.is_valid():
-                            url_type = link_form.cleaned_data.get('url_type')
-                            url = link_form.cleaned_data.get('url')
+            if form.is_valid():
+                if org_link_formset.is_valid():
+                    for link in link_data:
+                        del_url = link.get('url')
+                        org.websites.filter(url=del_url).delete()
+                    for link_form in org_link_formset:
+                        if not link_form.cleaned_data.get('org_id'):
+                            link_form.cleaned_data['org_id'] = org.id
+                        try:
+                            if link_form.is_valid():
+                                url_type = link_form.cleaned_data.get('url_type')
+                                url = link_form.cleaned_data.get('url')
 
-                            if url_type and url:
-                                link_form.save()
-                    except Exception as e:
-                        print("Could not save website: %s" % str(e))
+                                if url_type and url:
+                                    link_form.save()
+                        except Exception as e:
+                            print("Could not save website: %s" % str(e))
 
-                form.save()
-                return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
+                    form.save()
+                    return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
+                else:
+                    page_message = 'There was an error saving your websites. Please make sure they have a valid URL and URL type.'
         except Exception as e:
             messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
     else:
         form = OrganizationForm(instance=org)
         org_link_formset = OrgFormSet(initial=link_data)
 
-    context = {'organization': org, 'form':form, 'org_link_formset': org_link_formset}
+    context = {'organization': org, 'form':form, 'org_link_formset': org_link_formset, 'page_message': page_message}
     return render(request, 'members/org_edit.html', context)
 
 
