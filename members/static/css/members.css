@@ -722,7 +722,7 @@ textarea#id_bio {
 	height: 130px;
 	width: 130px;
 	position: relative;
-	margin-left: 10%;
+	margin-left: 15%;
 }
 
 .org-card a.photo img {
@@ -791,7 +791,7 @@ a.name-a {
 }
 
 .org-card #star-img {
-	margin-left: 10%;
+	margin-left: 15%;
 }
 
 a#star-img.org-photo {
