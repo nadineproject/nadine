@@ -63,7 +63,7 @@
 	</header>{% endblock %}
 
 	<!-- Content -->
-	<div id="content">
+	<div id="content" style="margin-bottom: 5%;">
 		{% if request.user.is_authenticated %}
 		<form id="site-search-form" action="{% url 'staff_search' %}" method="post">
 			{% for field in site_search_form %}{{ field }}{% endfor %}
