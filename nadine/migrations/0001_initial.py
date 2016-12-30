@@ -310,6 +310,20 @@ class Migration(migrations.Migration):
             },
             bases=(models.Model,),
         ),
+        migrations.CreateModel(
+            name='MemberAlert',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('created_ts', models.DateTimeField(auto_now_add=True)),
+                ('key', models.CharField(max_length=16)),
+                ('resolved_ts', models.DateTimeField(null=True)),
+                ('muted_ts', models.DateTimeField(null=True)),
+                ('note', models.TextField(blank=True, null=True)),
+                ('muted_by', models.ForeignKey(null=True, related_name='muted_by', to=settings.AUTH_USER_MODEL)),
+                ('resolved_by', models.ForeignKey(null=True, related_name='resolved_by', to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+            ],
+        ),
         migrations.AlterUniqueTogether(
             name='onboard_task_completed',
             unique_together=set([('member', 'task')]),

@@ -262,9 +262,10 @@ class MemberAlert(models.Model):
     key = models.CharField(max_length=16)
     user = models.ForeignKey(User)
     resolved_ts = models.DateTimeField(null=True)
-    resolved_by = models.ForeignKey(User, related_name="resolved_by", null=True)
+    resolved_by = models.ForeignKey(User, related_name="resolved_alerts", null=True)
     muted_ts = models.DateTimeField(null=True)
-    muted_by = models.ForeignKey(User, related_name="muted_by", null=True)
+    muted_by = models.ForeignKey(User, related_name="muted_alerts", null=True)
+    assigned_to = models.ForeignKey(User, related_name="assigned_alerts", null=True)
     note = models.TextField(blank=True, null=True)
     objects = MemberAlertManager()
 
