@@ -2102,7 +2102,7 @@ footer.sticky-footer {
 	.prof-img, .edit-img, .locked-img, .org-img {
 		max-width: 150px;
 		max-height: 150px;
-		margin-left: 3%;
+		margin-left: 6%;
 	}
 
 	.org-img, .org-photo {
@@ -2223,6 +2223,14 @@ footer.sticky-footer {
 	.fc-scroller {
 		overflow-y: visible;
 		overflow-x: scroll !important;
+	}
+
+	.org-left-profile {
+		display: none;
+	}
+
+	.org-right-profile {
+		margin-top: 10%;
 	}
 }
 
