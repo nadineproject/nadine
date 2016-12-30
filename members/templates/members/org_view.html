@@ -80,21 +80,23 @@
   </div>
 </div>
 
-<div class='org-right-profile col s8 m8 l9'>
+<div class='org-right-profile col s12 m8 l9'>
 	<div class='org-info'>
-		<h3 class='oswald col s10' style='margin-bottom:1%;'>{{ organization.name }}</h3>
-		<div>
-			{% if organization.locked %}
-				<div class='col s1 tooltipped' data-position="bottom" data-tooltip='Locked'>
-					<img id='locked' alt='locked icon' src="{% static 'img/locked.png' %}"/>
-				</div>
-			{% endif %}
-			{% if can_edit %}
-				<a class='col s1 tooltipped' data-position="bottom" data-tooltip="Edit Details" href="{% url 'member_org_edit' organization.id %}"><img id='edit' alt='edit icon' style='height:30px;' src="{% static 'img/edit.png' %}"/></a>
-			{% endif %}
-			{% if request.user.is_staff %}
-				<a class='col s1 tooltipped' data-position="bottom" data-tooltip='Admin' href="{{ organization.admin_url }}"><img id='admin' alt='admin icon' src="{% static 'img/admin.png' %}"/></a>
-			{% endif %}
+		<div class='row'>
+			<h3 class='oswald col s9' style='margin-bottom:1%;'>{{ organization.name }}</h3>
+			<div>
+				{% if organization.locked %}
+					<div class='col s1 tooltipped' data-position="bottom" data-tooltip='Locked'>
+						<img id='locked' alt='locked icon' src="{% static 'img/locked.png' %}"/>
+					</div>
+				{% endif %}
+				{% if can_edit %}
+					<a class='col s1 tooltipped' data-position="bottom" data-tooltip="Edit Details" href="{% url 'member_org_edit' organization.id %}"><img id='edit' alt='edit icon' style='height:30px;' src="{% static 'img/edit.png' %}"/></a>
+				{% endif %}
+				{% if request.user.is_staff %}
+					<a class='col s1 tooltipped' data-position="bottom" data-tooltip='Admin' href="{{ organization.admin_url }}"><img id='admin' alt='admin icon' src="{% static 'img/admin.png' %}"/></a>
+				{% endif %}
+			</div>
 		</div>
 		<div class='col s12'>
 			<p style="font-style:italic;">

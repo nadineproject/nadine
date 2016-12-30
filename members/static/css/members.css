@@ -2184,6 +2184,7 @@ footer.sticky-footer {
 
 	.org-right-profile {
 		min-width: 515px;
+		padding-left: 0 !important;
 	}
 
 	.fc-center {
@@ -2202,12 +2203,6 @@ footer.sticky-footer {
 		left: 0;
 		position: absolute;
 		padding: 0;
-	}
-}
-
-@media only screen and (max-width: 510px) {
-	.org-img img {
-		/*Stop it from sliding across the screen*/
 	}
 }
 
