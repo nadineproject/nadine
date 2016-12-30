@@ -132,41 +132,44 @@ def edit_profile(request, username):
         link_formset = LinkFormSet(request.POST)
         profile_form.public_profile = request.POST['public_profile']
 
-        if profile_form.is_valid() and link_formset.is_valid():
-            if request.POST.get('password-create') == request.POST.get('password-confirm'):
-                pwd = request.POST.get('password-create')
+        if profile_form.is_valid():
+            if link_formset.is_valid():
+                if request.POST.get('password-create') == request.POST.get('password-confirm'):
+                    pwd = request.POST.get('password-create')
 
-                if len(pwd.strip()) > 0:
-                    if pwd.strip() == pwd and len(pwd) > 7:
+                    if len(pwd.strip()) > 0:
+                        if pwd.strip() == pwd and len(pwd) > 7:
 
+                            profile_form.save()
+                            user.set_password(pwd)
+                            user.save()
+
+                            return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
+                        else:
+                            page_message = 'Your password must be at least 8 characters long.'
+                    else:
+                        for link in link_data:
+                            del_url = link.get('url')
+                            user.profile.websites.filter(url=del_url).delete()
+
+                        for link_form in link_formset:
+                            if not link_form.cleaned_data.get('username'):
+                                link_form.cleaned_data['username'] = user.username
+                            try:
+                                if link_form.is_valid():
+                                    url_type = link_form.cleaned_data.get('url_type')
+                                    url = link_form.cleaned_data.get('url')
+                                    if url_type and url:
+                                        link_form.save()
+                            except Exception as e:
+                                messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
                         profile_form.save()
-                        user.set_password(pwd)
-                        user.save()
 
                         return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
-                    else:
-                        page_message = 'Your password must be at least 8 characters long.'
                 else:
-                    for link in link_data:
-                        del_url = link.get('url')
-                        user.profile.websites.filter(url=del_url).delete()
-
-                    for link_form in link_formset:
-                        if not link_form.cleaned_data.get('username'):
-                            link_form.cleaned_data['username'] = user.username
-                        try:
-                            if link_form.is_valid():
-                                url_type = link_form.cleaned_data.get('url_type')
-                                url = link_form.cleaned_data.get('url')
-                                if url_type and url:
-                                    link_form.save()
-                        except Exception as e:
-                            messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
-                    profile_form.save()
-
-                    return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
+                    page_message = 'The entered passwords do not match. Please try again.'
             else:
-                page_message = 'The entered passwords do not match. Please try again.'
+                page_message = 'There was an error saving your websites. Please make sure they have a valid URL and URL type.'
     else:
         link_formset = LinkFormSet(initial=link_data)
         profile = user.profile

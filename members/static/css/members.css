@@ -126,19 +126,6 @@ p {
 	background-color: RGBA(66, 98, 113, 1);
 }
 
-/*@-moz-document url-prefix() {
-    #jumbo-img {
-        width: 100%;
-        max-width: 100%;
-    }
-}
-
-@media screen and (-webkit-min-device-pixel-ratio:0) {
-     #jumbo-img {
-        max-width: 100%;
-    }
-}*/
-
 .side-nav {
 	background-color: RGBA(80, 80, 80, 1);
 	padding-top: 2%;
@@ -178,24 +165,10 @@ p {
 }
 
 #jumbo-img {
-	content: url(../img/jumbo.png);
 	width: 100%;
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
-}
-
-#jumbo-img:after {
-	/*for firefox*/
-	content: url(../img/jumbo.png);
-	/*width: 100%;
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;*/
-}
-
-@-moz-document url-prefix() {
-  #jumbo-img { width: 100%; max-width: -moz-max-content; }
 }
 
 #logo {
@@ -215,6 +188,10 @@ p {
 }
 
 /* Body */
+.row.main {
+	margin-bottom: 0;
+}
+
 .messages {
 	margin-top: 3%;
 }
@@ -522,7 +499,7 @@ div.link-formset.row.dynamic-form {
 }
 
 .delete-row {
-	margin-top: 4%;
+	/*margin-top: 4%;*/
 	margin-left: 5%;
 }
 
@@ -714,7 +691,7 @@ textarea#id_bio {
 }
 
 .org-list {
-	padding-left: 5%;
+	margin-left: 5%;
 }
 
 .org-card {
@@ -835,8 +812,7 @@ h5.org-members {
 .org-form {
 	background: RGBA(239, 238, 231, 1);
 	padding: 2%;
-	width: 80%;
-	margin-left: 10%;
+	min-width: 600px;
 }
 
 .org-form .org-label {
@@ -1916,6 +1892,7 @@ footer.sticky-footer {
 }
 
 @media only screen and (max-width: 1100px) {
+
 	p.pf-input.form-url.col.s6.offset-s2, p.cap-label.col.s6.offset-s2  {
 		margin-left: 0;
 	}
@@ -1929,7 +1906,7 @@ footer.sticky-footer {
 	}
 
 	.link-formset .btn-floating {
-		margin-top: 4%;
+		/*margin-top: 4%;*/
 	}
 
 	.btn-floating {
@@ -1941,10 +1918,9 @@ footer.sticky-footer {
 		width: 2%;
 	}
 
-
 	#profile_form, #registration_form {
 		margin-left: 2%;
-		min-width: 900px;
+		min-width: 600px;
 	}
 
 	#profile_form input {
@@ -1968,6 +1944,9 @@ footer.sticky-footer {
 
 	.eModal-content {
 		margin-top: 10%;
+	}
+	.org-list {
+		margin-left: 10%;
 	}
 }
 
@@ -2035,6 +2014,10 @@ footer.sticky-footer {
 
 	.prof-tabs, . {
 		margin-bottom: 10%;
+	}
+
+	select#id_public_profile.browser-default, select#id_public.browser-default {
+		width: 50%;
 	}
 }
 
@@ -2113,7 +2096,7 @@ footer.sticky-footer {
 		right: 0;
 		bottom: 0;
 		left: 0;
-		position: absolute;
+		/*position: absolute;*/
 	}
 
 	.prof-img, .edit-img, .locked-img, .org-img {

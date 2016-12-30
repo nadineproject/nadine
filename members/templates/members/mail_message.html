@@ -3,7 +3,17 @@
 {% block sub-title %}Mail | {% endblock %}
 
 {% block style %}
-
+	@media only screen and (max-width: 750px) {
+		footer.main-footer {
+			background: RGBA(61, 61, 61, .9);
+			clear: both;
+			width: 100%;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			position: inherit;
+		}
+	}
 {% endblock %}
 
 {%block sub-head %}
