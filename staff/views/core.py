@@ -143,12 +143,25 @@ def todo(request):
 
     showall = "showall" in request.GET
 
+    if showall:
+        assigned_alerts = MemberAlert.objects.filter(resolved_ts__isnull=True, muted_ts__isnull=True, assigned_to__isnull=False)
+    else:
+        assigned_alerts = request.user.assigned_alerts.all()
+
     # Did anyone forget to sign in in the last 7 days?
     check_date = timezone.now().date() - timedelta(days=7)
     not_signed_in = User.helper.not_signed_in_since(check_date)
+    staff_members = User.objects.filter(is_staff=True).order_by('id').reverse()
     today = timezone.now().date()
 
-    context = {'member_alerts': member_alerts, 'not_signed_in': not_signed_in, 'showall':showall, 'today':today}
+    context = {
+        'member_alerts': member_alerts,
+        'assigned_alerts': assigned_alerts,
+        'not_signed_in': not_signed_in,
+        'staff_members': staff_members,
+        'showall':showall,
+        'today':today
+    }
     return render(request, 'staff/todo.html', context)
 
 
@@ -158,30 +171,40 @@ def todo_detail(request, key):
         action = request.POST.get("action").lower()
         try:
             alert = get_object_or_404(MemberAlert, pk=request.POST.get("alert_id"))
-            note = None
-            if "note" in request.POST:
-                note = request.POST.get("note").strip()
-            if action == "resolve":
-                alert.resolve(request.user, note=note)
-                messages.add_message(request, messages.INFO, "Alert '%s:%s' resolved!" % (alert.user.username, alert.key))
-            elif action == "mute":
-                if note:
-                    alert.mute(request.user, note=note)
-                    messages.add_message(request, messages.INFO, "Alert '%s:%s' muted!" % (alert.user.username, alert.key))
-                else:
-                    messages.add_message(request, messages.ERROR, "Note required to mute an alert!")
+            note = request.POST.get("note", "").strip()
+            alert.note = note
+            assigned_to = request.POST.get("assigned_to", "")
+            if assigned_to:
+                alert.assigned_to = User.objects.get(username=assigned_to)
+            else:
+                alert.assigned_to = None
+
+            if action == "mute" and not note:
+                messages.add_message(request, messages.ERROR, "Note required to mute an alert!")
+            else:
+                if action == "mute":
+                    alert.muted_ts = timezone.now()
+                    alert.muted_by = request.user
+                elif action == "resolve":
+                    alert.resolved_ts = timezone.now()
+                    alert.resolved_by = request.user
+                alert.save()
+                messages.add_message(request, messages.INFO, "Alert '%s:%s' %sd!" % (alert.user.username, alert.key, action))
         except Exception as e:
             messages.add_message(request, messages.ERROR, "Could not %s alert: %s" % (action, e))
         if "next" in request.POST:
             next_url = request.POST.get("next")
             return HttpResponseRedirect(next_url)
 
-
     alerts = MemberAlert.objects.unresolved(key).order_by('user__first_name')
     description = MemberAlert.getDescription(key)
     is_system_alert = MemberAlert.isSystemAlert(key)
+    staff_members = User.objects.filter(is_staff=True).order_by('id').reverse()
 
-    context = {'key': key, 'description': description, 'alerts': alerts, 'is_system_alert': is_system_alert}
+    context = {'key': key, 'description': description, 'alerts': alerts,
+        'is_system_alert': is_system_alert,
+        'staff_members': staff_members,
+    }
     return render(request, 'staff/todo_detail.html', context)
 
 

@@ -44,12 +44,16 @@ def detail(request, username):
         else:
             print(request.POST)
 
+    staff_members = User.objects.filter(is_staff=True).order_by('id').reverse()
+
     email_keys = email.valid_message_keys()
     email_keys.remove("all")
 
     context = {'user':user, 'emergency_contact': emergency_contact,
         'memberships': memberships, 'email_logs': email_logs,
-        'email_keys': email_keys, 'settings': settings}
+        'email_keys': email_keys, 'settings': settings,
+        'staff_members':staff_members,
+    }
     return render(request, 'staff/member_detail.html', context)
 
 

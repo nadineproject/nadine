@@ -19,36 +19,12 @@ nav #todo-tab { background: #FBD850; color: black; }
 </div>
 {% endif %}
 
-{% if alerts %}
-	<table>
-		<tr>
-			<th>Member</th>
-			<th></th>
-		</tr>
-		{% for alert in alerts %}
-		<tr class="{% cycle 'row-even' 'row-odd' %}">
-			<td nowrap><a href="{% url 'staff_user_detail' alert.user.username %}">{{ alert.user.get_full_name }}</a></td>
-			<td style="text-align: right;">
-				<form action="{% url 'staff_todo_detail' key %}" method="POST">
-					<input type="hidden" name="alert_id" value="{{ alert.id }}"/>
-					<button name="action" value="resolve" type="submit" {% if is_system_alert %} disabled{% endif %}>Resolve</button>
-					<button name="action" value="mute" type="submit" >Mute</button>
-					<input name="note" size="32"/>
-					{% csrf_token %}
-				</form>
-			</td>
-		</tr>
-		{% endfor %}
-	</table>
-
-	<!--
-	<form action="." method="POST">
-		<input name="Mark All" type="Submit" Value="Mark All Members Completed" onclick="return confirm('Are you sure?');">
-		{% csrf_token %}
-	</form>
-	-->
-{% else %}
+{% with True as member and False as description %}
+	{% if alerts %}
+		{% include "staff/todo_detail_table.html" %}
+	{% else %}
 	<p style="font-size: 1.4em; font-weight: bold;">Nothing to do!  Yay!</p>
-{% endif %}
+	{% endif %}
+{% endwith %}
 
 {% endblock %}

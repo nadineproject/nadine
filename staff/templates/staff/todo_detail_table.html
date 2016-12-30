@@ -1,0 +1,52 @@
+<table>
+  <tr>
+    {% if member %}
+      <th>Member</th>
+    {% endif %}
+    {% if description %}
+      <th>Description</th>
+    {% endif %}
+    <th>Assigned To</th>
+    <th>Note</th>
+    <th>Action</th>
+  </tr>
+  {% for alert in alerts %}
+  <form action="{% url 'staff_todo_detail' alert.key %}" method="POST">
+    <input type="hidden" name="alert_id" value="{{ alert.id }}"/>
+      <tr class="{% cycle 'row-even' 'row-odd' %}">
+      {% if member %}
+        <td nowrap>
+          <a href="{% url 'staff_user_detail' alert.user.username %}">{{ alert.user.get_full_name }}</a>
+        </td>
+      {% endif %}
+      {% if description %}
+        <td nowrap>{{ alert.description }}</td>
+      {% endif %}
+      <td>
+        <select name="assigned_to">
+        <option></option>
+          {% for s in staff_members %}
+            <option value="{{ s.username }}" {% if s == alert.assigned_to %} SELECTED {% endif %}>
+              {{ s.get_full_name}}
+            </option>
+          {% endfor %}
+      </select>
+      </td>
+      <td><input name="note" value="{{ alert.note|default:'' }}" style="width:100%"/></td>
+      <td style="text-align: center;">
+          <button name="action" value="save" type="submit" >Save</button>
+          <button name="action" value="resolve" type="submit" {% if is_system_alert %} disabled{% endif %}>Resolve</button>
+          <button name="action" value="mute" type="submit" >Mute</button>
+      </td>
+    </tr>
+    {% csrf_token %}
+  </form>
+  {% endfor %}
+</table>
+
+<!--
+<form action="." method="POST">
+  <input name="Mark All" type="Submit" Value="Mark All Members Completed" onclick="return confirm('Are you sure?');">
+  {% csrf_token %}
+</form>
+-->

@@ -430,7 +430,6 @@ function gotoEmailReset(emailAddress){
 </div>
 
 <div id="tabs-4">
-    <h2>Action Required</h2>
 
     {% if messages %}
     <div class="messages">
@@ -440,6 +439,14 @@ function gotoEmailReset(emailAddress){
     </div>
     {% endif %}
 
+    {% with user.profile.open_alerts as alerts and True as description and False as member %}
+      {% if alerts %}
+        <h2>Action Required</h2>
+        {% include "staff/todo_detail_table.html" %}
+      {% endif %}
+    {% endwith %}
+
+    <!--
     <table id="onboard-form">
         {% for alert in user.profile.open_alerts %}
             <tr>
@@ -456,7 +463,7 @@ function gotoEmailReset(emailAddress){
                 </td>
             </tr>
         {% endfor %}
-    </table>
+    </table> -->
 
     <h2>Completed Tasks</h2>
     <table>

@@ -79,6 +79,23 @@ nav #todo-tab { background: #FBD850; color: black; }
 </div>
 {% endif %}
 
+<div>
+{% with assigned_alerts as alerts and True as member and True as description %}
+	{% if alerts %}
+		<h2>Assigned Alerts</h2>
+		{% include "staff/todo_detail_table.html" %}
+	{% endif %}
+{% endwith %}
+</div>
+
+<p style="float:right;">
+	{% if showall %}
+		[ <a href="?">Trim Alert Lists</a> ]
+	{% else %}
+		[ <a href="?showall">Show All Alerts</a> ]
+	{% endif %}
+</p>
+
 <h2>TODO:</h2>
 <table>
 	<tr>
@@ -98,13 +115,5 @@ nav #todo-tab { background: #FBD850; color: black; }
 		{% endif %}
 	{% endfor %}
 </table>
-
-<p>
-	{% if showall %}
-		[ <a href="?">Hide Completed Alerts</a> ]
-	{% else %}
-		[ <a href="?showall">Show All Alerts</a> ]
-	{% endif %}
-</p>
 
 {% endblock %}
