@@ -215,6 +215,10 @@ p {
 }
 
 /* Body */
+.row.main {
+	margin-bottom: 0;
+}
+
 .messages {
 	margin-top: 3%;
 }
@@ -714,7 +718,7 @@ textarea#id_bio {
 }
 
 .org-list {
-	padding-left: 5%;
+	margin-left: 5%;
 }
 
 .org-card {
@@ -1915,6 +1919,7 @@ footer.sticky-footer {
 }
 
 @media only screen and (max-width: 1100px) {
+
 	p.pf-input.form-url.col.s6.offset-s2, p.cap-label.col.s6.offset-s2  {
 		margin-left: 0;
 	}
@@ -1939,7 +1944,6 @@ footer.sticky-footer {
 	.form-url {
 		width: 2%;
 	}
-
 
 	#profile_form, #registration_form {
 		margin-left: 2%;
@@ -1967,6 +1971,9 @@ footer.sticky-footer {
 
 	.eModal-content {
 		margin-top: 10%;
+	}
+	.org-list {
+		margin-left: 10%;
 	}
 }
 

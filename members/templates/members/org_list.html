@@ -4,6 +4,15 @@
 {% block sub-title %}Organization | {% endblock %}
 
 {% block style %}
+@media only screen and (max-width: 1100px) {
+	.row .col.offset-s1.s10 {
+		margin-left: 0;
+	}
+
+	.row .col.s10 {
+		width: 100%;
+	}
+}
 {% endblock %}
 
 {% block content %}
@@ -11,7 +20,7 @@
 <div class='ui-widget row'>
 	<form class='col s12 m7 l7 offset-m6 offset-l6' id='org-search-form' action="." method='POST'>
 		{% csrf_token %}
-		<input class='col s9' id='org-search' name='terms' type='text' placeholder="Search for an Organization" />
+		<input class='col s8' id='org-search' name='terms' type='text' placeholder="Search for an Organization" />
 		<input class='btn search-btn col s3 m2 l2' type='submit' value='Search' />
 	</form>
 </div>
