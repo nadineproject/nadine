@@ -16,8 +16,14 @@
 	}
 
 	@media only screen and (max-width: 1100px) {
-		.row .col.s10 {
-			width: 100%;
+		@media only screen and (max-width: 1100px) {
+	    .row .col.offset-s1.s10 {
+	  		margin-left: 0;
+	  	}
+
+			.row .col.s10 {
+				width: 100%;
+			}
 		}
 	}
 
@@ -39,7 +45,7 @@
 {% endblock %}
 
 {% block content %}
-<div class='org-left-profile col s6 m4 l3 offset-s3'>
+<div class='org-left-profile col s12 m4 l3'>
 	<div class='photo-div'>
 		<div class='profile-img-box' id='change-opacity'>
 			<div class='editable-photo org-img'>

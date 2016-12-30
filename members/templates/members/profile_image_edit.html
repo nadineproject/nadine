@@ -1,14 +1,6 @@
-{% extends "members/u_base.html" %}
  {% load static %}
 
- {% block sub-head %}
- 	<!-- image cropping -->
- 	<link  href="{% static 'css/cropper.min.css' %}" rel="stylesheet">
- 	<script src="{% static 'js/cropper.min.js' %}"></script>
- {% endblock %}
-
- {% block content %}
- <h3 style='text-align:center;'>Edit Your Profile Image:</h3>
+ <h3 class='oswald' style='text-align: center;'>Edit Your Profile Image:</h3>
 
  <form id="profile_image_form" action="{% url 'member_edit_photo' user.username %}" method="POST" enctype="multipart/form-data">
    <input type='hidden' name='username' value='{{ user.username }}'  />
@@ -30,14 +22,19 @@
        <img id="image-preview" src="{% static 'img/noun_160064_cc.png' %}">
      {% endif %}
    </div>
-
-   <input type="submit" value="Save"/>
+   <table>
+     <tr class='btn-row'>
+       <td><button type='submit' class='btn pic-btn'>Save</button></td>
+       <td>
+         <a class='modal-btn' id='cancel-event'>Cancel</a>
+       </td>
+     </tr>
+   </table>
    {% csrf_token %}
  </form>
- {% endblock %}
 
- {% block extrajs %}
  <script>
+ (function() {
    function showCropper() {
      $("#image-preview").cropper({
        aspectRatio: 1/1,
@@ -56,13 +53,16 @@
        reader.onload = function (e) {
          $('#image-preview').fadeOut(300, function() {
            $(this).attr('src',e.target.result);
-         }).fadeIn(800, showCropper);
+         }).fadeIn(400, showCropper);
        }
        reader.readAsDataURL(input.files[0]);
      }
    }
 
+   $('.pic-btn').attr('disabled', 'disabled');
+
    $("#id_photo").change(function() {
+     $('.pic-btn').attr('disabled', false);
      $("#image-preview").cropper('destroy');
      if ($("#id_photo").val()) {
        showImage(this);
@@ -74,6 +74,10 @@
      // add the cropped image data to the form, then submit.
      $("#id_cropped_image_data").val(img);
      return true;
-   })
+   });
+
+   $('.modal-btn').on('click', function() {
+     $('#picModal').css('display', 'none');
+   });
+ })();
  </script>
- {% endblock %}

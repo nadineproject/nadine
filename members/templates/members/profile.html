@@ -20,6 +20,7 @@
 	}
 
   @media only screen and (max-width: 800px) {
+
     footer#footer.sticky-footer {
       margin-top: 5%;
       background: RGBA(61, 61, 61, .9);
@@ -68,8 +69,8 @@
 <div id='picModal' class='modal'>
   <div class='picModal-content'>
     <div class='picModal-body'>
-      <h4>Edit Profile Picture</h4>
       <div class='container' id='pic_target'>
+        {% include "members/spinner.html" %}
       </div>
     </div>
   </div>
@@ -188,7 +189,7 @@
           onclick_tab("#activity", "{% url 'member_profile_activity' user.username %}");
           onclick_tab("#billing", "{% url 'member_profile_billing' user.username %}");
           onclick_tab("#devices", "{% url 'member_profile_devices' user.username %}");
-          onclick_tab("#pic", "{% url 'member_edit_pic' user.username %}")
+          onclick_tab("#pic", "{% url 'member_edit_photo' user.username %}")
 
     			$('.edit-img').on('click', function(e) {
             e.preventDefault();

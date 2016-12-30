@@ -16,6 +16,7 @@
 	<link rel='stylesheet' href="{% static 'js/fullcalendar/fullcalendar.css' %}" />
 	<link rel = 'stylesheet' href="{% static 'css/jquery.timepicker.min.css' %}" />
 	<link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet">
+	<link  href="{% static 'css/cropper.min.css' %}" rel="stylesheet">
 
 	<!--[if IE]>
 		<script src="{{ STATIC_URL }}html5.js"></script>
@@ -27,7 +28,7 @@
 	<script src="{% static 'js/fullcalendar/gcal.js' %}"></script>
 	<script src="{% static 'js/timepicker/jquery.timepicker.min.js' %}"></script>
 	<script src="{% static 'js/jquery.formset.js' %}"></script>
-
+	<script src="{% static 'js/cropper.min.js' %}"></script>
 {% block scripts %}
 	<!-- Compiled and minified CSS -->
 	<link rel="stylesheet" href="{% static 'css/materialize.min.css' %}" />
@@ -62,7 +63,7 @@
 		{% block top_div %}{% endblock %}
 			<!-- Page -->
 			<div id="header_container">
-				<div id="header" class="setwidth">
+				<div id="header">
 					{% block top_nav %}
 						<nav class='row' id='main-nav'>
 							<div class='nav-wrapper'>
