@@ -2219,6 +2219,10 @@ footer.sticky-footer {
 	.prof-img, .edit-img, .locked-img, .org-img {
 		margin-left: 14%;
 	}
+
+	.profile-img-box {
+		position: relative;
+	}
 }
 
 @media only screen and (max-width: 400px) {
