@@ -56,38 +56,60 @@ def run_billing(request):
 def bills(request):
     page_message = None
     if request.method == 'POST':
+        action = request.POST.get("action", "Set Paid")
         pay_bills_form = PayBillsForm(request.POST)
         if pay_bills_form.is_valid():
-            try:
-                user = User.objects.get(username=pay_bills_form.cleaned_data['username'])
-            except:
-                page_message = 'Error: I could not find that user.'
-
-            amount = pay_bills_form.cleaned_data['amount']
-            if page_message == None:
-                bill_ids = [int(bill_id) for bill_id in request.POST.getlist('bill_id')]
+            user = User.objects.get(username=pay_bills_form.cleaned_data['username'])
+            users_bills = {}
+            for bill in user.profile.open_bills():
+                users_bills[bill.id] = bill
+            bill_ids = [int(bill_id) for bill_id in request.POST.getlist('bill_id')]
+            if action == "set_paid":
+                amount = pay_bills_form.cleaned_data['amount']
                 transaction = Transaction(user=user, status='closed', amount=Decimal(amount))
                 transaction.note = pay_bills_form.cleaned_data['transaction_note']
                 transaction.save()
-                for bill in user.profile.open_bills():
-                    if bill.id in bill_ids:
-                        transaction.bills.add(bill)
+                for bill_id in bill_ids:
+                    transaction.bills.add(users_bills[bill_id])
                 transaction_url = reverse('staff_transaction', args=[], kwargs={'id': transaction.id})
                 page_message = 'Created a <a href="%s">transaction for %s</a>' % (transaction_url, user.get_full_name())
+            elif action == "mark_in_progress":
+                for bill_id in bill_ids:
+                    bill = users_bills[bill_id]
+                    bill.in_progress = True
+                    bill.save()
+                    page_message = "Bills marked 'In Progress'"
+            elif action == "clear_in_progress":
+                for bill_id in bill_ids:
+                    bill = users_bills[bill_id]
+                    bill.in_progress = False
+                    bill.save()
+                    page_message = "Bills updated"
 
     bills = {}
+    bills_in_progress = {}
     unpaid = models.Q(bill__isnull=False, bill__transactions=None, bill__paid_by__isnull=True)
     unpaid_guest = models.Q(guest_bills__isnull=False, guest_bills__transactions=None)
-    users = User.objects.filter(unpaid | unpaid_guest).distinct().order_by('last_name')
-    for u in users:
+    for u in User.objects.filter(unpaid | unpaid_guest).distinct().order_by('last_name'):
         last_bill = u.profile.open_bills()[0]
-        if not last_bill.bill_date in bills:
-            bills[last_bill.bill_date] = []
-        bills[last_bill.bill_date].append(u)
+        if last_bill.in_progress:
+            bucket = bills_in_progress
+        else:
+            bucket = bills
+        if not last_bill.bill_date in bucket:
+            bucket[last_bill.bill_date] = []
+        bucket[last_bill.bill_date].append(u)
+
     ordered_bills = OrderedDict(sorted(bills.items(), key=lambda t: t[0]))
+    ordered_bills_in_progress = OrderedDict(sorted(bills_in_progress.items(), key=lambda t: t[0]))
     invalids = User.helper.invalid_billing()
 
-    context = {'bills': ordered_bills, 'page_message': page_message, 'invalid_members': invalids}
+    context = {
+        'bills': ordered_bills,
+        'bills_in_progress': bills_in_progress,
+        'page_message': page_message,
+        'invalid_members': invalids,
+    }
     return render(request, 'staff/bills.html', context)
 
 
