@@ -211,18 +211,19 @@
           hour++;
         }
 
-        if (hour > 23) {
+        if (hour == 12){
+          amOrPm = ' PM';
+        } else if (hour == 0) {
+            hour = 12;
+        } else if (hour > 23) {
             hour = 12;
         } else if (hour > 12) {
             hour = hour - 12;
             amOrPm = ' PM';
-        } else if (hour == 0) {
-            hour = 12;
         } else {
           hour = hour;
           amOrPm = ' AM';
         }
-
         if (hour.length != 2) {
           hour = '0' + hour;
         }
