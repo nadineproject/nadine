@@ -129,7 +129,7 @@ def create_booking(request):
         return HttpResponseRedirect(reverse('member_confirm_booking', kwargs={'room': room, 'start': start, 'end': end, 'date': date}))
 
     context = {'rooms': rooms, 'start':start, 'end':end, 'date': date,
-        'has_av':has_av, 'floor': floor, 'has_phone': has_phone,
+        'has_av':has_av, 'floor': floor, 'seats': seats, 'has_phone': has_phone,
         'room_dict': room_dict}
     return render(request, 'members/booking_create.html', context)
 

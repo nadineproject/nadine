@@ -240,6 +240,7 @@ table td {
 	background-color: RGBA(239, 238, 231, 1);
 	border-radius: 2px;
 	padding: 2%;
+	min-width: 800px;
 }
 
 textarea#id_bio {
@@ -1304,14 +1305,13 @@ dl dd:last-child:after {
 	margin-top: 0;
 }
 
-[type="checkbox"].filled-in:not(:checked)+label:after {
+[type="checkbox"].filled-in:not(:checked)+label:after{
 	background-color: white;
 }
 
 [type="checkbox"]+label {
 	color: black;
 	height: 43.5px;
-
 }
 
 td.booking-td {
@@ -1948,10 +1948,15 @@ footer.sticky-footer {
 	.org-list {
 		margin-left: 10%;
 	}
+
+	img.room-thumbnail, .thumbnail-box {
+		display: none;
+	}
 }
 
 
 @media only screen and (max-width: 990px) {
+
 	.col.s10.offset-s1 {
 		margin-top: 8%;
 	}
@@ -2046,6 +2051,10 @@ footer.sticky-footer {
 	.col.s10.offset-s1 {
 		margin-top: 10%;
 	}
+
+	.booking-box th {
+		font-weight: normal;
+	}
 }
 
 @media only screen and (max-width: 750px) {
@@ -2072,6 +2081,10 @@ footer.sticky-footer {
 
 	.right-profile {
 		margin-bottom: 20%;
+	}
+
+	.booking-box th {
+		font-size: .8em;
 	}
 }
 
