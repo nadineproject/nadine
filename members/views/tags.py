@@ -23,12 +23,14 @@ def get_tag_data(type):
         for tag in UserProfile.tags.all().order_by('name'):
             items = User.helper.members_with_tag(tag)
             count = items.count()
-            if count: tags.append((tag, items, count))
+            if count:
+                tags.append((tag, items, count))
     elif type == "organizations":
         for tag in Organization.tags.all().order_by('name'):
             items = Organization.objects.with_tag(tag)
             count = items.count()
-            if count: tags.append((tag, items, count))
+            if count:
+                tags.append((tag, items, count))
     else:
         raise Exception("Invalid type '%s'" % type)
     return tags
@@ -38,7 +40,7 @@ def get_tag_data(type):
 @user_passes_test(is_active_member, login_url='member_not_active')
 def tag_list(request, type):
     tags = get_tag_data(type)
-    context = {'type':type, 'tags': tags}
+    context = {'type': type, 'tags': tags}
     return render(request, 'members/tag_list.html', context)
 
 
@@ -46,14 +48,14 @@ def tag_list(request, type):
 @user_passes_test(is_active_member, login_url='member_not_active')
 def tag_cloud(request, type):
     tags = get_tag_data(type)
-    context = {'type':type, 'tags': tags}
+    context = {'type': type, 'tags': tags}
     return render(request, 'members/tag_cloud.html', context)
 
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def tag_view(request, type, tag):
-    context = {'type':type, 'tag': tag}
+    context = {'type': type, 'tag': tag}
     if type == "members":
         context['members'] = User.helper.members_with_tag(tag)
     elif type == "organizations":

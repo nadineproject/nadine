@@ -40,6 +40,7 @@ def quarter_hours(hour, minutes):
 
     return hour, minutes
 
+
 def coerce_times(start, end, date):
     if len(start) > 5:
         start = start.split(" ")
@@ -65,7 +66,7 @@ def coerce_times(start, end, date):
             mil_end = end[0].split(":")
             if int(mil_end[0]) < 12:
                 hour = int(mil_end[0]) + 12
-            else :
+            else:
                 hour = mil_end[0]
             end_hour, end_minutes = quarter_hours(hour, mil_end[1])
             end = str(end_hour) + ':' + end_minutes
@@ -85,6 +86,7 @@ def coerce_times(start, end, date):
 
     return start_ts, end_ts, start, end
 
+
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def create_booking(request):
@@ -100,7 +102,7 @@ def create_booking(request):
     # Turn our date, start, and end strings into timestamps
     start_ts, end_ts, start, end = coerce_times(start, end, date)
 
-    #Make auto date for start and end if not otherwise given
+    # Make auto date for start and end if not otherwise given
     room_dict = {}
     rooms = Room.objects.available(start=start_ts, end=end_ts, has_av=has_av, has_phone=has_phone, floor=floor, seats=seats)
 
@@ -128,10 +130,18 @@ def create_booking(request):
 
         return HttpResponseRedirect(reverse('member_confirm_booking', kwargs={'room': room, 'start': start, 'end': end, 'date': date}))
 
-    context = {'rooms': rooms, 'start':start, 'end':end, 'date': date,
-        'has_av':has_av, 'floor': floor, 'seats': seats, 'has_phone': has_phone,
-        'room_dict': room_dict}
+    context = {'rooms': rooms,
+               'start': start,
+               'end': end,
+               'date': date,
+               'has_av': has_av,
+               'floor': floor,
+               'seats': seats,
+               'has_phone': has_phone,
+               'room_dict': room_dict
+               }
     return render(request, 'members/booking_create.html', context)
+
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
@@ -190,10 +200,16 @@ def confirm_booking(request, room, start, end, date):
     else:
         booking_form = EventForm()
 
-    context = {'booking_form':booking_form, 'start':start, 'end':end,
-        'room': room, 'date': date, 'page_message': page_message,
-        'event_dict': event_dict}
+    context = {'booking_form': booking_form,
+               'start': start,
+               'end': end,
+               'room': room,
+               'date': date,
+               'page_message': page_message,
+               'event_dict': event_dict
+               }
     return render(request, 'members/booking_confirm.html', context)
+
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
@@ -212,7 +228,7 @@ def calendar(request):
         date = request.POST.get('date')
 
         start_ts, end_ts, start, end = coerce_times(start, end, date)
-        if start_ts < end_ts :
+        if start_ts < end_ts:
             description = request.POST.get('description', '')
             charge = request.POST.get('charge', 0)
             is_public = True

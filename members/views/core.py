@@ -15,8 +15,8 @@ from nadine import email
 from nadine.utils import mailgun
 from nadine.models.profile import UserProfile
 from nadine.models.usage import CoworkingDay
-#from nadine.models.resource import Room
-#from nadine.models.payment import Transaction
+# from nadine.models.resource import Room
+# from nadine.models.payment import Transaction
 from nadine.models.alerts import MemberAlert
 from nadine.forms import MemberSearchForm, NewUserForm, EditProfileForm
 from members.models import HelpText
@@ -49,7 +49,7 @@ def is_manager(user):
 def is_new_user(user):
     # also check for staff and if settings allow registration
     if user.is_anonymous() or user.profile.is_manager():
-        if settings.ALLOW_ONLINE_REGISTRATION == True:
+        if settings.ALLOW_ONLINE_REGISTRATION is True:
             return True
 
     return False
@@ -86,8 +86,11 @@ def faq(request):
     template = Template(template_text)
     rendered = template.render(current_context)
 
-    context = {'title': title, 'page_body': rendered,
-        'other_topics': other_topics, 'settings': settings}
+    context = {'title': title,
+               'page_body': rendered,
+               'other_topics': other_topics,
+               'settings': settings
+               }
     return render(request, 'members/faq.html', context)
 
 
@@ -100,8 +103,11 @@ def help_topic(request, slug):
     current_context = context_instance = RequestContext(request)
     template = Template(template_text)
     rendered = template.render(current_context)
-    context = {'title': title, 'page_body': rendered,
-        'other_topics': other_topics, 'settings': settings}
+    context = {'title': title,
+               'page_body': rendered,
+               'other_topics': other_topics,
+               'settings': settings
+               }
     return render(request, 'members/help_topic.html', context)
 
 
@@ -127,10 +133,15 @@ def view_members(request):
     else:
         search_form = MemberSearchForm()
 
-    context = {'settings': settings, 'active_members': active_members,
-        'here_today': here_today, 'search_results': search_results,
-        'search_form': search_form, 'search_terms': search_terms,
-        'has_key': has_key, 'has_mail': has_mail}
+    context = {'settings': settings,
+               'active_members': active_members,
+               'here_today': here_today,
+               'search_results': search_results,
+               'search_form': search_form,
+               'search_terms': search_terms,
+               'has_key': has_key,
+               'has_mail': has_mail
+               }
     return render(request, 'members/view_members.html', context)
 
 
@@ -142,7 +153,7 @@ def manage_member(request, username):
 
     # Handle the buttons if a task is being marked done
     if request.method == 'POST':
-        #print(request.POST)
+        # print(request.POST)
         if 'resolve_task' in request.POST:
             alert = MemberAlert.objects.get(pk=request.POST.get('alert_id'))
             alert.resolve(request.user)
@@ -166,7 +177,7 @@ def register(request):
 
                     registration = get_object_or_404(UserProfile, user=user)
                     registration.address1 = request.POST.get('address1', None)
-                    registration.phone =  request.POST.get('phone', None)
+                    registration.phone = request.POST.get('phone', None)
                     registration.phone2 = request.POST.get('phone2', None)
                     registration.address2 = request.POST.get('address2', None)
                     registration.city = request.POST.get('city', None)
@@ -200,9 +211,12 @@ def register(request):
         registration_form = NewUserForm()
         profile_form = EditProfileForm()
 
-    context = {'registration_form': registration_form, 'page_message': page_message,
-        'ALLOW_PHOTO_UPLOAD': settings.ALLOW_PHOTO_UPLOAD,
-        'settings': settings, 'profile_form': profile_form}
+    context = {'registration_form': registration_form,
+               'page_message': page_message,
+               'ALLOW_PHOTO_UPLOAD': settings.ALLOW_PHOTO_UPLOAD,
+               'settings': settings,
+               'profile_form': profile_form
+               }
     return render(request, 'members/register.html', context)
 
 
