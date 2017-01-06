@@ -2,10 +2,6 @@
 
 {% block sub-title %}Activity{% endblock %}
 
-{% block nav-style%}
-    nav #activity-tab { background: #FBD850; color: black; }
-{% endblock %}
-
 {% block submenu %}
     <a href="{% url 'staff:activity:today' %}">record activity</a> |
     <a href="{% url 'staff:activity:graph' %}">activity graph</a> |
