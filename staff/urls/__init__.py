@@ -19,6 +19,7 @@ urlpatterns = [
     url(r'^membership/(?P<membership_id>\d+)/$', core.membership, name='membership'),
 
     url(r'^tasks/', include('staff.urls.tasks', namespace="tasks")),
+    url(r'^member/', include('staff.urls.member', namespace="members")),
     url(r'^activity/', include('staff.urls.activity', namespace="activity")),
     url(r'^settings/', include('staff.urls.settings', namespace="settings")),
     url(r'^stats/', include('staff.urls.stats', namespace="stats")),
@@ -31,15 +32,6 @@ urlpatterns = [
     url(r'^transaction/(?P<id>\d+)/$', billing.transaction, name='transaction'),
     url(r'^pay_all/(?P<username>[^/]+)/$', billing.bills_pay_all, name='bills_paid'),
     url(r'^toggle_billing_flag/(?P<username>[^/]+)/$', billing.toggle_billing_flag, name='toggle_bill'),
-
-    url(r'^detail/(?P<username>[^/]+)/$', member.detail, name='user_detail'),
-    # url(r'^signins/(?P<username>[^/]+)/$', member.signins, name='user_signins'),
-    # url(r'^signins/json/(?P<username>[^/]+)/$', member.signins_json, name='json_signins'),
-    url(r'^transactions/(?P<username>[^/]+)/$', member.transactions, name='user_transactions'),
-    url(r'^bill/(?P<username>[^/]+)/$', member.bills, name='user_bills'),
-    url(r'^membership/(?P<username>[^/]+)/$', member.membership, name='user_membership'),
-    url(r'^files/(?P<username>[^/]+)/$', member.files, name='user_files'),
-    # url(r'^edit/(?P<username>[^/]+)/$', member.edit, name='user_edit'),
 
     url(r'^usaepay/m/$', payment.usaepay_members, name='payments_members'),
     url(r'^usaepay/void/$', payment.usaepay_void, name='payment_void'),
