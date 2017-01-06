@@ -13,10 +13,10 @@ nav #billing-tab { background: #FBD850; color: black; }
 <h2>
 	Daily Charges - {{ date|date:"l, M dS" }}
 	<span style="float:right;">
-	<a href="{% url 'staff_charges' previous_date.year previous_date.month previous_date.day %}">&larr;</a>
-	<!-- <a href="{% url 'staff_charges_today' %}">&bull;</a> -->
+	<a href="{% url 'staff:charges' previous_date.year previous_date.month previous_date.day %}">&larr;</a>
+	<!-- <a href="{% url 'staff:charges_today' %}">&bull;</a> -->
 	<input type='date' name='date' class='datepicker' value="{{ date|date:'Y-m-d' }}" style='font-size:.6em; text-align:center; width:150px;'/>
-	<a href="{% url 'staff_charges' next_date.year next_date.month next_date.day %}">&rarr;</a>
+	<a href="{% url 'staff:charges' next_date.year next_date.month next_date.day %}">&rarr;</a>
 	</span>
 </h2>
 
@@ -97,7 +97,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 	{% for t in other_transactions %}
 	  <!-- transaction_id: {{ t.transaction_id }} -->
 		<tr class="{% cycle 'row-even' 'row-odd' %}">
-			<td><a href="{% url 'staff_user_detail' t.username %}">{{ t.username }}</a></td>
+			<td><a href="{% url 'staff:user_detail' t.username %}">{{ t.username }}</a></td>
 			<td>{{ t.description }}</td>
 			<td>{{ t.card_type }}</td>
 			<td>{{ t.transaction_type }}</td>
@@ -113,8 +113,8 @@ nav #billing-tab { background: #FBD850; color: black; }
 			<td>{{ t.note }}</td>
 			<td>${{ t.amount|floatformat:2 }}</td>
 			<td style="text-align:center;">
-				<a href="{% url 'staff_user_payment' t.username %}"><input type="button" value="U"></a>
-				<a href="{% url 'staff_xero' t.username %}"><input type="button" value="X"></a>
+				<a href="{% url 'staff:user_payment' t.username %}"><input type="button" value="U"></a>
+				<a href="{% url 'staff:xero' t.username %}"><input type="button" value="X"></a>
 			</td>
 		</tr>
 	{% endfor %}
@@ -130,7 +130,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 				dateFormat: 'yy-mm-dd',
 				onSelect: function(ui, e) {
 					var date = ui.split('-');
-					var url = "{% url 'staff_charges' 2016 12 14 %}".replace(/14/, date[2]).replace(/12/, date[1]).replace(/2016/, date[0]);
+					var url = "{% url 'staff:charges' 2016 12 14 %}".replace(/14/, date[2]).replace(/12/, date[1]).replace(/2016/, date[0]);
 
 					window.location.href = url;
 				}

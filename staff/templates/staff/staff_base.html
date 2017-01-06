@@ -44,19 +44,16 @@
 	<!-- Header -->
 	{% block header %}<header>
 		<nav>
-		<a id="todo-tab" href="{% url 'staff_todo' %}">Todo</a>
-		<a id="members-tab" href="{% url 'staff_members' %}">Member List</a>
-		<a id="activity-tab" href="{% url 'staff_activity' %}">Activity</a>
-		<a id="billing-tab" href="{% url 'staff_bills' %}">Billing</a>
-		<a id="stats-tab" href="{% url 'staff_stats' %}">Stats</a>
+		<a id="todo-tab" href="{% url 'staff:todo' %}">Todo</a>
+		<a id="members-tab" href="{% url 'staff:members' %}">Member List</a>
+		<a id="activity-tab" href="{% url 'staff:activity' %}">Activity</a>
+		<a id="billing-tab" href="{% url 'staff:bills' %}">Billing</a>
+		<a id="stats-tab" href="{% url 'staff:stats' %}">Stats</a>
 		<a id="logs-tab" href="{% url 'arp_user' %}">Logs</a>
 		<a id="lists-tab" href="{% url 'interlink_index' %}">Lists</a>
 		<a id="doors-tab" href="{% url 'doors_index' %}">Doors</a>
-		{% if request.user.is_authenticated %}
+		<a id="settings-tab" href="{% url 'staff:settings:index' %}">Settings</a>
 		<a id="log-tab" href="{% url 'logout' %}">Logout</a>
-		{% else %}
-		<a id="log-tab" href="{% url 'login' %}">Login</a>
-		{% endif %}
 		</nav>
 
 		{% block header-title %}{% endblock %}
@@ -65,13 +62,14 @@
 	<!-- Content -->
 	<div id="content" style="margin-bottom: 5%;">
 		{% if request.user.is_authenticated %}
-		<form id="site-search-form" action="{% url 'staff_search' %}" method="post">
+		<form id="site-search-form" action="{% url 'staff:search' %}" method="post">
 			{% for field in site_search_form %}{{ field }}{% endfor %}
 			<input type="submit" value="search" />
 			{% csrf_token %}
 		</form>
 		{% endif %}
 
+		<div id="submenu">{% block submenu %}{% endblock %}</div>
 		{% block content %}{% endblock %}
 	</div>
 

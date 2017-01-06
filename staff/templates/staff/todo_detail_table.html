@@ -11,12 +11,12 @@
     <th>Action</th>
   </tr>
   {% for alert in alerts %}
-  <form action="{% url 'staff_todo_detail' alert.key %}" method="POST">
+  <form action="{% url 'staff:todo_detail' alert.key %}" method="POST">
     <input type="hidden" name="alert_id" value="{{ alert.id }}"/>
       <tr class="{% cycle 'row-even' 'row-odd' %}">
       {% if member %}
         <td nowrap>
-          <a href="{% url 'staff_user_detail' alert.user.username %}">{{ alert.user.get_full_name }}</a>
+          <a href="{% url 'staff:user_detail' alert.user.username %}">{{ alert.user.get_full_name }}</a>
         </td>
       {% endif %}
       {% if description %}

@@ -38,8 +38,8 @@ nav #stats-tab { background: #FBD850; color: black; }
 			<td>{{ d.daily_logs }}</td>
 			<td>{{ d.max_days }}</td>
 			<td nowrap>
-				<a href="{% url 'staff_activity_user' d.user.username %}">activity</a> |
-				<a href="{% url 'staff_user_detail' d.user.username %}">profile</a>
+				<a href="{% url 'staff:activity_user' d.user.username %}">activity</a> |
+				<a href="{% url 'staff:user_detail' d.user.username %}">profile</a>
 			</td>
 		</tr>
 	{% endfor %}

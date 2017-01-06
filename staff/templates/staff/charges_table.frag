@@ -14,7 +14,7 @@
     {% for t in transactions %}
         <!-- transaction_id: {{ t.transaction_id }} -->
         <tr>
-            <td><a href="{% url 'staff_user_detail' t.username %}">{{ t.username }}</a></td>
+            <td><a href="{% url 'staff:user_detail' t.username %}">{{ t.username }}</a></td>
             <td>{{ t.description }}</td>
             <!--<td>{{ t.card_type }}</td>-->
             <td {% if t.status == "Authorized" %} style="color:green;"{% endif %}>{{ t.status }}</td>
@@ -30,17 +30,17 @@
                 {% endfor %}
             </td>
             <td style="text-align:center;">
-                <a href="{% url 'staff_user_payment' t.username %}"><input type="button" value="U"></a>
-                <a href="{% url 'staff_xero' t.username %}"><input type="button" value="X"></a>
+                <a href="{% url 'staff:user_payment' t.username %}"><input type="button" value="U"></a>
+                <a href="{% url 'staff:xero' t.username %}"><input type="button" value="X"></a>
                 {% ifequal "Authorized" t.status %}
-                    <form action="{% url 'staff_payment_void' %}" method="POST" style="display:inline;">
+                    <form action="{% url 'staff:payment_void' %}" method="POST" style="display:inline;">
                         <input type="hidden" name="transaction_id" value="{{ t.transaction_id }}" />
                         <input type="submit" value="Void"/>
                         {% csrf_token %}
                     </form>
                 {% endifequal %}
                 {% if t.open_bill_amount %}
-                    <form action="{% url 'staff_bills_paid' t.username %}" method="POST" style="display:inline;">
+                    <form action="{% url 'staff:bills_paid' t.username %}" method="POST" style="display:inline;">
                         <input type="hidden" name="next" value="{{request.path}}" />
                         <input type="submit" value="Paid"/>
                         {% csrf_token %}
