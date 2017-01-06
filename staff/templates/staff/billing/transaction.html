@@ -1,0 +1,31 @@
+{% extends "staff/base.html" %}
+
+{% block sub-title %}Transaction | {% endblock %}
+
+{% block style %}
+nav #billing-tab { background: #FBD850; color: black; }
+{% endblock %}
+
+{% block content %}
+{% include "staff/billing/billing_menu.frag" %}
+
+<h2><a href="{% url 'staff:user_transactions' transaction.user.username %}">{{ transaction.user.get_full_name }}</a>'s Transaction:</h2>
+
+<dl id="transaction-metadata">
+		<dt>Created:</dt><dd>{{ transaction.transaction_date }}</dd>
+		<dt>Amount:</dt><td>${{ transaction.amount }}</td>
+	{% if transaction.note %}
+  <th>Note:</th><td>{{ transaction.note }}</td>
+	{% endif %}
+</table>
+
+<h2>Bills covered by this transaction:</h2>
+<ul>
+{% for bill in transaction.bills.all %}
+<li><a href="{% url 'staff:bill' bill.id %}">Bill on {{ bill.bill_date }}</a> for ${{ bill.amount }}</li>
+{% endfor %}
+</ul>
+
+[<a href="{{ transaction.get_admin_url }}">edit this transaction</a>]
+
+{% endblock %}

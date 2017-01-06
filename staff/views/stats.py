@@ -85,7 +85,7 @@ def p(p, w):
 ################################################################################
 
 @staff_member_required
-def stats(request):
+def daily(request):
     # Group the daily logs into months
     daily_logs_by_month = []
     number_dict = {'month': 'firstrun'}
@@ -101,16 +101,16 @@ def stats(request):
             if daily_log.payment in number_dict:
                 number_dict[daily_log.payment] = number_dict[daily_log.payment] + 1
 
-    return render(request, 'staff/stats.html', {'daily_logs_by_month': daily_logs_by_month})
+    return render(request, 'staff/stats/daily.html', {'daily_logs_by_month': daily_logs_by_month})
 
 
 @staff_member_required
-def membership_history(request):
+def memberships(request):
     if 'start_date' in request.POST:
         try:
             start_date = datetime.datetime.strptime(request.POST.get('start_date'), "%m-%Y").date()
         except:
-            return render(request, 'staff/stats_membership_history.html', {'page_message': "Invalid Start Date!  Example: '01-2012'."})
+            return render(request, 'staff/stats/memberships.html', {'page_message': "Invalid Start Date!  Example: '01-2012'."})
     else:
         start_date = timezone.now().date() - timedelta(days=365)
     start_month = date(year=start_date.year, month=start_date.month, day=1)
@@ -147,7 +147,7 @@ def membership_history(request):
 
     context = {'history_types': sorted(month_histories[0].data.keys()),
         'year_histories': year_histories, 'start_date': start_date, 'average_only': average_only}
-    return render(request, 'staff/stats_membership_history.html', context)
+    return render(request, 'staff/stats/memberships.html', context)
 
 
 @staff_member_required
@@ -165,7 +165,7 @@ def history(request):
         stat['started'] = Membership.objects.filter(start_date__range=(stat['start_date'], stat['end_date'])).count()
         stat['ended'] = Membership.objects.filter(end_date__range=(stat['start_date'], stat['end_date'])).count()
     monthly_stats.reverse()
-    return render(request, 'staff/stats_history.html', {'monthly_stats': monthly_stats})
+    return render(request, 'staff/stats/history.html', {'monthly_stats': monthly_stats})
 
 
 @staff_member_required
@@ -176,7 +176,7 @@ def monthly(request):
     for membership in memberships:
         total_income = total_income + membership.monthly_rate
     context = {'memberships': memberships, 'total_income': total_income}
-    return render(request, 'staff/stats_monthly.html', context)
+    return render(request, 'staff/stats/monthly.html', context)
 
 
 @staff_member_required
@@ -199,11 +199,11 @@ def neighborhood(request):
                   'specified_perc': 100 * specified_count / total_count, 'unknown_perc': 100 * (total_count - specified_count) / total_count}
 
     context = {'neighborhoods': neighborhoods, 'stats': stats_dict, 'active_only': active_only}
-    return render(request, 'staff/stats_neighborhood.html', context)
+    return render(request, 'staff/stats/neighborhood.html', context)
 
 
 @staff_member_required
-def membership_days(request):
+def longevity(request):
     MembershipDays = namedtuple('MembershipDays', 'user, membership_count, total_days, daily_logs, max_days, current')
     membership_days = []
     users = User.objects.all()
@@ -233,7 +233,7 @@ def membership_days(request):
             avg_total = avg_total + total_days
     membership_days.sort(key=lambda x: x.total_days, reverse=True)
     context = {'membership_days': membership_days, 'avg_days': avg_total / avg_count}
-    return render(request, 'staff/stats_membership_days.html', context)
+    return render(request, 'staff/stats/longevity.html', context)
 
 
 @staff_member_required
@@ -258,7 +258,7 @@ def gender(request):
 
     context = {'counts': counts, 'percentages': percentages,
         'active_only': active_only}
-    return render(request, 'staff/stats_gender.html', context)
+    return render(request, 'staff/stats/gender.html', context)
 
 
 @staff_member_required
@@ -284,11 +284,10 @@ def graph(request):
     elif graph == "churn":
         title = "Membership Churn"
 
-
     context = {'title':title, 'graph':graph,
         'days': days, 'date_range_form': date_range_form, 'start': start, 'end': end,
         'min': min_v, 'max': max_v, 'avg': avg_v}
-    return render(request, 'staff/stats_graph.html', context)
+    return render(request, 'staff/stats/graph.html', context)
 
 
 def graph_members(days):
@@ -343,4 +342,4 @@ def graph_amv(days):
     return (min_v, max_v, avg_v, days)
 
 
-# Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

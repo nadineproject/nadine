@@ -1,0 +1,183 @@
+{% extends "staff/base.html" %}
+{% load static %}
+
+{% block sub-title %}Membership | {% endblock %}
+
+{% block style %}
+nav #members-tab { background: #FBD850; color: black; }
+#page-message { font-size: 1.5em; color: #933; margin: 20px 0px; }
+{% endblock %}
+
+{% block sub-head %}
+	<link rel="stylesheet" href="{% static 'c3/c3.min.css' %}" />
+	<link rel="stylesheet" href="{% static 'themes/custom-staff/jquery-ui-1.10.4.custom.css' %}" />
+	<script src="{% static 'c3/date.min.js' %}"></script>
+	<script src="{% static 'c3/d3.min.js' %}" charset="utf-8"></script>
+	<script src="{% static 'c3/c3.min.js' %}"></script>
+{% endblock %}
+
+
+{% block content %}
+{% include "staff/members/member_menu.frag" %}
+
+<script>
+    $(function() {
+        $('#id_start_date').datepicker({ dateFormat: "yy-mm-dd" });
+        $('#id_end_date').datepicker({ dateFormat: "yy-mm-dd" });
+    });
+</script>
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+	 var formData = {
+		 {% for plan in membership_plans %}
+		  '{{plan.id}}':{ 'monthly_rate':{{plan.monthly_rate}}, 'dropin_allowance':{{plan.dropin_allowance}}, 'daily_rate':{{plan.daily_rate}},
+								'has_desk':'{{plan.has_desk}}' },
+		 {% endfor %}
+	 }
+
+	 $('#id_membership_plan').change(function() {
+		  var value = $(this).val();
+		  var new_values = formData[value];
+		  $('#id_monthly_rate').val(new_values['monthly_rate']);
+		  $('#id_dropin_allowance').val(new_values['dropin_allowance']);
+		  $('#id_daily_rate').val(new_values['daily_rate']);
+		  if (new_values['has_desk']=='True') {
+			  $('#id_has_desk').attr('checked', 'checked');
+		  } else {
+			  $('#id_has_desk').removeAttr('checked');
+		  }
+	 });
+
+	$('#end_today').click(function() {
+		$('#id_end_date').val('{{today}}');
+	});
+	$('#end_last').click(function() {
+		$('#id_end_date').val('{{ last }}');
+	});
+
+})
+</script>
+
+<h2>{% if membership %} Update {% else %} Add {% endif %} Membership for <a href="{% url 'staff:user_detail' user.username %}">{{ user.get_full_name }}</a></h2>
+
+{% if messages %}
+<div class="messages">
+	{% for message in messages %}
+		<div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+	{% endfor %}
+</div>
+{% endif %}
+
+
+<div id="membership_form">
+	<form name="membership_form" enctype="multipart/form-data" action='.' method='post'>
+		{% if membership %}{{ membership_form.membership_id }}{% endif %}
+		{{ membership_form.username }}
+		<table id="membership">
+			<tr class="row-odd">
+				<td nowrap>Membership Plan</td>
+				<td style="text-align:left;">
+					{% if membership %}
+						{{ membership.membership_plan }}
+						{{ membership_form.membership_plan.as_hidden }}
+					{% else %}
+						{{ membership_form.membership_plan }}
+					{% endif %}
+				</td>
+				<td style="width:60%;">{{ membership_form.membership_plan.errors }}</td>
+			</tr>
+			<tr class="row-even">
+				<td nowrap>Start Date</td>
+				<td style="text-align:left;">
+					{% if membership %}
+						{{ membership.start_date }}
+						{{ membership_form.start_date.as_hidden }}
+					{% else %}
+						{{ membership_form.start_date }}
+					{% endif %}
+				</td>
+				<td>{{ membership_form.start_date.errors }}</td>
+			</tr>
+			<tr class="row-odd">
+				<td nowrap>End Date</td>
+				<td style="text-align:left;">{{ membership_form.end_date }} [ <a id="end_last">last</a> | <a id="end_today">today</a> ]</td>
+				<td>{{ membership_form.end_date.errors }}</td>
+			</tr>
+			<tr class="row-even">
+				<td nowrap>Monthly Rate</td>
+				<td style="text-align:left;">
+					{% if membership %}
+						{{ membership.monthly_rate }}
+						{{ membership_form.monthly_rate.as_hidden }}
+					{% else %}
+						{{ membership_form.monthly_rate }}
+					{% endif %}
+				</td>
+				<td>{{ membership_form.monthly_rate.errors }}</td>
+			</tr>
+			<tr class="row-odd">
+				<td nowrap>Drop-in Allowance</td>
+				<td style="text-align:left;">
+					{% if membership %}
+						{{ membership.dropin_allowance }}
+						{{ membership_form.dropin_allowance.as_hidden }}
+					{% else %}
+						{{ membership_form.dropin_allowance }}
+					{% endif %}
+				</td>
+				<td>{{ membership_form.dropin_allowance.errors }}</td>
+			</tr>
+			<tr class="row-even">
+				<td nowrap>Daily Rate</td>
+				<td style="text-align:left;">
+					{% if membership %}
+						{{ membership.daily_rate }}
+						{{ membership_form.daily_rate.as_hidden }}
+					{% else %}
+						{{ membership_form.daily_rate }}
+					{% endif %}
+				</td>
+				<td>{{ membership_form.daily_rate.errors }}</td>
+			</tr>
+			<tr class="row-odd">
+				<td nowrap>Extras</td>
+				<td style="text-align:left;">
+					{% if membership %}
+						{% if membership.has_desk %}<span style="margin-right:2em;">&check; Desk</span>{% endif %}
+						{% if membership.has_key %}<span style="margin-right:2em;">&check; Key</span>{% endif %}
+						{% if membership.has_mail %}<span style="margin-right:2em;">&check; Mail</span>{% endif %}
+						{{ membership_form.has_desk.as_hidden }}
+						{{ membership_form.has_key.as_hidden }}
+						{{ membership_form.has_mail.as_hidden }}
+					{% else %}
+						<span style="margin-right:2em;">{{ membership_form.has_desk }} Desk</span>
+						<span style="margin-right:2em;">{{ membership_form.has_key }} Key</span>
+						<span style="margin-right:2em;">{{ membership_form.has_mail }} Mail</span>
+					{% endif %}
+				</td>
+				<td></td>
+			</tr>
+			<tr class="row-even">
+				<td>Paid by</td>
+				<td style="text-align:left;">{{ membership_form.paid_by }}</td>
+				<td>{{ membership_form.paid_by.errors }}</td>
+			</tr>
+			<tr class="row-odd">
+				<td>Note</td>
+				<td style="text-align:left;">{{ membership_form.note }}</td>
+				<td>{{ membership_form.note.errors }}</td>
+			</tr>
+	      <tr><td></td><td><input type="submit" value="Submit" /></td></tr>
+	   </table>
+	   {% csrf_token %}
+	</form>
+</div>
+
+<div id="membership_list">
+</div>
+
+
+
+{% endblock %}

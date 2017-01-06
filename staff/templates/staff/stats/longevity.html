@@ -1,0 +1,52 @@
+{% extends "staff/stats/base.html" %}
+{% load stats_tags %}
+
+{% block sub-title %}Stats | Membership Days | {% endblock %}
+
+{% block style %}
+#content table { width: auto; margin-bottom: 40px; }
+#content td { border-bottom: none; width: 50px; }
+#content th { width: 100px;}
+{% endblock %}
+
+{% block content %}
+
+<h2>Stats - Membership Days:</h2>
+
+<table>
+	<tr>
+		<th>User</th>
+		<th>Rank</th>
+		<th>First Visit</th>
+		<th>Duration</th>
+		<th>Memberships</th>
+		<th>Total Days</th>
+		<th>Sign-Ins</th>
+		<th>Max Days</th>
+		<th></th>
+	</tr>
+	{% for d in membership_days %}
+		<tr class="{% cycle 'row-even' 'row-odd' %}">
+			<td width="1">{% if d.current %}<strong>{% endif %}{{ d.user }}{% if d.current %}</strong>{% endif %}</td>
+			<td>{{ forloop.counter }}</th>
+			<td>{{ d.user.profile.first_visit|date:"Y-m-d" }}</td>
+			<td>{{ d.user.profile.duration_str }}</td>
+			<td>{{ d.membership_count }}</td>
+			<td>{{ d.total_days }}</td>
+			<td>{{ d.daily_logs }}</td>
+			<td>{{ d.max_days }}</td>
+			<td nowrap>
+				<a href="{% url 'staff:activity:user' d.user.username %}">activity</a> |
+				<a href="{% url 'staff:user_detail' d.user.username %}">profile</a>
+			</td>
+		</tr>
+	{% endfor %}
+</table>
+
+<table>
+	<tr>
+		<th>Average Days</th>
+		<td>{{ avg_days }}</td>
+</table>
+
+{% endblock %}
