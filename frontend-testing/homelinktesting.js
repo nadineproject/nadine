@@ -1,3 +1,6 @@
+// To test this file, make sure CapserJs is installed on local machine
+// (brew install casperjs) then use code 'casperjs test homelinktesting.js'
+
 // This tests to make sure all urls are valid on the homepage
 
 var url = 'http://127.0.0.1:8000';
@@ -22,7 +25,8 @@ casper.test.begin('Profile has 30 links', 35, function suite(test) {
 
   casper.then(function() {
     this.evaluate(function() {
-      document.getElementById('id_username').value = 'alexandra';
+      //insert username to test
+      document.getElementById('id_username').value = '';
       document.getElementById('id_password').value = 'hellocats';
       document.getElementById('loginonly-btn').click();
     })
