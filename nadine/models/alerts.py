@@ -124,7 +124,8 @@ class MemberAlertManager(models.Manager):
         open_alerts = user.profile.alerts_by_key(include_resolved=False)
         all_alerts = user.profile.alerts_by_key(include_resolved=True)
         existing_files = user.profile.files_by_type()
-        existing_memberships = user.membership_set.all().order_by('start_date')
+        # existing_memberships = user.membership_set.all().order_by('start_date')
+        existing_memberships = Membership.objects.filter(user=user).order_by('start_date')
         new_membership = existing_memberships.last()
 
         # Member Information

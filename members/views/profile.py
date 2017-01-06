@@ -20,6 +20,7 @@ from nadine.models.usage import CoworkingDay
 from nadine.models.payment import Transaction
 from nadine.models.alerts import MemberAlert
 from nadine.models.organization import Organization, OrganizationMember
+from nadine.models.membership import Membership
 from nadine.forms import EditProfileForm, ProfileImageForm, LinkForm, BaseLinkFormSet
 from nadine.utils import network
 from arpwatch import arp
@@ -61,7 +62,8 @@ def profile_private(request, username):
 @login_required
 def profile_membership(request, username):
     user = get_object_or_404(User, username=username)
-    memberships = user.membership_set.all().reverse()
+    # memberships = user.membership_set.all().reverse()
+    memberships = Membership.objects.filter(user=user).reverse()
 
     context = {'user': user, 'memberships': memberships }
     return render(request, 'members/profile_membership.html', context)

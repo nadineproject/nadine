@@ -16,10 +16,13 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-# class Resource(models.Model):
-#     name = models.CharField(max_length=64)
-#     default_monthly_rate = models.DecimalField(decimal_places=2, max_digits=9)
-#     default_overage_rate = models.DecimalField(decimal_places=2, max_digits=9)
+class Resource(models.Model):
+    name = models.CharField(max_length=64)
+    # default_monthly_rate = models.DecimalField(decimal_places=2, max_digits=9)
+    # default_overage_rate = models.DecimalField(decimal_places=2, max_digits=9)
+    
+    def __str__(self): return self.name
+
 
 
 def room_img_upload_to(instance, filename):
