@@ -26,6 +26,9 @@ def events_google(request, location_slug=None):
 
 
 def quarter_hours(hour, minutes):
+    if len(hour) < 2:
+        hour = '0' + hour
+
     if int(minutes) < 15:
         minutes = '00'
     elif int(minutes) < 30:

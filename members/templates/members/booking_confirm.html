@@ -2,6 +2,19 @@
 
 {% block sub-title %}Confirm Booking | {% endblock %}
 
+{% block style %}
+
+  @media only screen and (max-width: 1100px) {
+    .row .col.offset-s1.s10 {
+  		margin-left: 0;
+  	}
+
+		.row .col.s10 {
+			width: 100%;
+		}
+	}
+{% endblock %}
+
 {% block content %}
   <div id='booking_form'>
     <form enctype="multipart/form-data" action='#' method='POST'>
@@ -30,7 +43,7 @@
         <tr>
           <td><strong>Date:</strong></td>
           <td>
-            <input type="date" name="date" value='{{ date }}' class="datepicker col s4 offset-s4" id='booking-date' >
+            <input type="date" name="date" value='{{ date }}' readonly />
           </td>
         </tr>
       </table>
@@ -55,15 +68,18 @@
             {% for block, times in event_dict.items %}
               {% if room == block %}
                 {% for time in times %}
-                  {% if time.reserved %}
-                    <td class="cal-box reserved" id="hour-{{time.mil_hour}}{{time.minutes}}">
-                    </td>
-                  {% elif time.searched %}
-                    <td class="cal-box searched" id="hour-{{time.mil_hour}}{{time.minutes}}">
-                    </td>
+                  {% if forloop.last %}
                   {% else %}
-                    <td class="cal-box available" id="hour-{{time.mil_hour}}{{time.minutes}}">
-                    </td>
+                    {% if time.reserved %}
+                      <td class="cal-box reserved" id="hour-{{time.mil_hour}}{{time.minutes}}">
+                      </td>
+                    {% elif time.searched %}
+                      <td class="cal-box searched" id="hour-{{time.mil_hour}}{{time.minutes}}">
+                      </td>
+                    {% else %}
+                      <td class="cal-box available" id="hour-{{time.mil_hour}}{{time.minutes}}">
+                      </td>
+                    {% endif %}
                   {% endif %}
                 {% endfor %}
               {% endif %}
