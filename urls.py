@@ -20,7 +20,7 @@ urlpatterns = [
     url(r'^favicon\.ico$', favicon_view),
 
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^staff/', include('staff.urls')),
+    url(r'^staff/', include('staff.urls', namespace='staff')),
     url(r'^member/', include('members.urls')),
     url(r'^interlink/', include('interlink.urls')),
     url(r'^doors/', include('doors.keymaster.urls')),
