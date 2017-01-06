@@ -11,7 +11,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 {% include "staff/billing/billing_menu.frag" %}
 
 <h2><a href="{% url 'staff:user:detail' bill.user.username %}">{{ bill.user.get_full_name }}</a>'s Bill:</h2>
-{% include "staff/bill_table.frag" %}
+{% include "staff/billing/bill_table.frag" %}
 
 
 [<a href="{{ bill.get_admin_url }}">edit this bill</a>]

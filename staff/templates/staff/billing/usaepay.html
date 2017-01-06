@@ -218,7 +218,7 @@ nav #billing-tab { background: #FBD850; color: black; }
     onSubmit="return validateForm()">
 
     <input type="hidden" name="UMkey" value="{{ settings.USA_EPAY_KEY }}">
-    <input type="hidden" name="UMredir" value="https://apps.officenomads.com{% url 'staff:user_payment' user.username %}">
+    <input type="hidden" name="UMredir" value="https://apps.officenomads.com{% url 'staff:billing:user_payment' user.username %}">
     <input type="hidden" name="UMdescription" value="Office Nomads Billing Authorization">
     <input type="hidden" name="UMcustid" value="{{ user.username }}">
     <input type="hidden" name="UMcommand" value="AuthOnly">

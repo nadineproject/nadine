@@ -30,8 +30,8 @@
                 {% endfor %}
             </td>
             <td style="text-align:center;">
-                <a href="{% url 'staff:user_payment' t.username %}"><input type="button" value="U"></a>
-                <a href="{% url 'staff:xero' t.username %}"><input type="button" value="X"></a>
+                <a href="{% url 'staff:billing:user_payment' t.username %}"><input type="button" value="U"></a>
+                <a href="{% url 'staff:billing:xero' t.username %}"><input type="button" value="X"></a>
                 {% ifequal "Authorized" t.status %}
                     <form action="{% url 'staff:payment_void' %}" method="POST" style="display:inline;">
                         <input type="hidden" name="transaction_id" value="{{ t.transaction_id }}" />

@@ -17,8 +17,8 @@
 			<td style="text-align:center;">
 				<a href="{% url 'staff:activity:user' user.username %}">activity</a> |
 				<a href="{% url 'staff:user:files' user.username %}">files</a> |
-				<a href="{% url 'staff:user_payment' user.username %}">usaepay</a> |
-				<a href="{% url 'staff:xero' user.username %}">xero</a> |
+				<a href="{% url 'staff:billing:user_payment' user.username %}">usaepay</a> |
+				<a href="{% url 'staff:billing:xero' user.username %}">xero</a> |
 				{% if user.profile.is_active %}
 					<a href="{% url 'staff:user:membership' user.profile.active_membership.id %}">membership</a>
 				{% else %}

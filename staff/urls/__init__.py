@@ -1,7 +1,7 @@
 from django.shortcuts import redirect
 from django.conf.urls import include, url
 
-from staff.views import billing, core, payment
+from staff.views import core
 
 urlpatterns = [
     url(r'^$', lambda r: redirect('staff:tasks:todo'), name="index"),
@@ -9,25 +9,9 @@ urlpatterns = [
     url(r'^tasks/', include('staff.urls.tasks', namespace="tasks")),
     url(r'^user/', include('staff.urls.user', namespace="user")),
     url(r'^activity/', include('staff.urls.activity', namespace="activity")),
+    url(r'^billing/', include('staff.urls.billing', namespace="billing")),
     url(r'^settings/', include('staff.urls.settings', namespace="settings")),
     url(r'^stats/', include('staff.urls.stats', namespace="stats")),
-
-    url(r'^bills/$', billing.bills, name='bills'),
-    url(r'^bill/list/$', billing.bill_list, name='bill_list'),
-    url(r'^bill/run/$', billing.run_billing, name='billing_run'),
-    url(r'^bill/(?P<id>\d+)/$', billing.bill, name='bill'),
-    url(r'^transactions/$', billing.transactions, name='transactions'),
-    url(r'^transaction/(?P<id>\d+)/$', billing.transaction, name='transaction'),
-    url(r'^pay_all/(?P<username>[^/]+)/$', billing.bills_pay_all, name='bills_paid'),
-    url(r'^toggle_billing_flag/(?P<username>[^/]+)/$', billing.toggle_billing_flag, name='toggle_bill'),
-
-    url(r'^usaepay/m/$', payment.usaepay_members, name='payments_members'),
-    url(r'^usaepay/void/$', payment.usaepay_void, name='payment_void'),
-    url(r'^usaepay/(?P<username>[^/]+)/$', payment.usaepay_user, name='user_payment'),
-    url(r'^charges/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', payment.usaepay_transactions, name='charges'),
-    url(r'^charges/today/$', payment.usaepay_transactions_today, name='charges_today'),
-    url(r'^xero/(?P<username>[^/]+)/$', payment.xero_user, name='xero'),
-
 
     url(r'^view_ip/$', core.view_ip, name='view_ip'),
     url(r'^view_config/$', core.view_config, name='view_config'),

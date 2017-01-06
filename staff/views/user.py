@@ -220,21 +220,6 @@ def slack_users(request):
     return render(request, 'staff/user/slack_users.html', context)
 
 
-
-@staff_member_required
-def transactions(request, username):
-    user = get_object_or_404(User, username=username)
-    transactions = user.transaction_set.all()
-    return render(request, 'staff:user:transactions.html', {'user':user, 'transactions':transactions})
-
-
-@staff_member_required
-def bills(request, username):
-    user = get_object_or_404(User, username=username)
-    bills = user.bill_set.all()
-    return render(request, 'staff:user:bills.html', {'user':user, 'bills':bills})
-
-
 @staff_member_required
 def files(request, username):
     user = get_object_or_404(User, username=username)

@@ -66,8 +66,8 @@ function gotoEmailReset(emailAddress){
         <a href="{% url 'staff:activity:user' user.username %}">activity</a> |
         <a href="{% url 'doors_keys' user.username %}">keys</a> |
         <a href="{% url 'staff:user:files' user.username %}">files</a> |
-        <a href="{% url 'staff:user_payment' user.username %}">usaepay</a> |
-        <a href="{% url 'staff:xero' user.username %}">xero</a> |
+        <a href="{% url 'staff:billing:user_payment' user.username %}">usaepay</a> |
+        <a href="{% url 'staff:billing:xero' user.username %}">xero</a> |
         <a href="{% url 'admin:auth_user_change' user.id %}">admin</a> |
         <a href="{% url 'member_profile' user.username %}">view profile</a> |
         <a href="{% url 'member_edit_profile' user.username %}">edit profile</a> |
@@ -330,14 +330,14 @@ function gotoEmailReset(emailAddress){
 <div id="tabs-2">
     <div id="quick-links">
         <strong>More Info:</strong>
-        <a href="{% url 'staff:user:bills' user.username %}">bills</a> |
-        <a href="{% url 'staff:user:transactions' user.username %}">transactions</a>
+        <a href="{% url 'staff:billing:user_bills' user.username %}">bills</a> |
+        <a href="{% url 'staff:billing:user_transactions' user.username %}">transactions</a>
     </div>
     <!-- Billing Profile -->
     <h2>Billing Profile</h2>
     {% include "members/profile_billing_frag.html" %}
     <div style="margin-left: 2em; margin-top: .5em;">
-        <form method=POST action="{% url 'staff:toggle_bill' user.username %}" onSubmit="return confirm('Are you sure?');">
+        <form method=POST action="{% url 'staff:billing:toggle_bill' user.username %}" onSubmit="return confirm('Are you sure?');">
             <input type="hidden" name="back" value="{{ request.get_full_path }}">
             {% if user.profile.has_valid_billing %}
                 <input type="submit" value="Flag Invalid Billing Profile">

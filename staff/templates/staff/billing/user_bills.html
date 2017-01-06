@@ -16,7 +16,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 {% for bill in bills %}
    {% with "yes" as hide_paid_by %}
    {% with "yes" as show_member_name %}
-      {% include "staff/bill_table.frag" %}
+      {% include "staff/billing/bill_table.frag" %}
    {% endwith %}
    {% endwith %}
 {% endfor %}

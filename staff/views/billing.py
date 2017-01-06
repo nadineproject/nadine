@@ -71,7 +71,7 @@ def bills(request):
                 transaction.save()
                 for bill_id in bill_ids:
                     transaction.bills.add(users_bills[bill_id])
-                transaction_url = reverse('staff_transaction', args=[], kwargs={'id': transaction.id})
+                transaction_url = reverse('staff:billing:transaction', args=[], kwargs={'id': transaction.id})
                 page_message = 'Created a <a href="%s">transaction for %s</a>' % (transaction_url, user.get_full_name())
             elif action == "mark_in_progress":
                 for bill_id in bill_ids:
@@ -174,3 +174,20 @@ def bill(request, id):
     bill = get_object_or_404(Bill, pk=id)
     context = {"bill": bill, 'new_member_deposit': settings.NEW_MEMBER_DEPOSIT}
     return render(request, 'staff/billing/bill.html', context)
+
+
+@staff_member_required
+def user_bills(request, username):
+    user = get_object_or_404(User, username=username)
+    bills = user.bill_set.all()
+    return render(request, 'staff/billing/user_bills.html', {'user':user, 'bills':bills})
+
+
+@staff_member_required
+def user_transactions(request, username):
+    user = get_object_or_404(User, username=username)
+    transactions = user.transaction_set.all()
+    return render(request, 'staff/billing/user_transactions.html', {'user':user, 'transactions':transactions})
+
+
+# Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

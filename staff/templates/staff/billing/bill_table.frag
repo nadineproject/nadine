@@ -3,14 +3,14 @@
 	<tr>
 		<th>Date:</th>
 		<td>
-			<a href="{% url 'staff:bill' bill.id %}">{{ bill.bill_date|date:"m/d/y" }}</a>
+			<a href="{% url 'staff:billing:bill' bill.id %}">{{ bill.bill_date|date:"m/d/y" }}</a>
 			{% if show_member_name %}for <a href="{% url 'staff:user:detail' bill.user.username %}">{{ bill.user.get_full_name }}</a>{% endif %}
 		</td>
 	</tr>
 	<tr><th>Status:</th>
 		<td>
 			{% if bill.transactions.all %}
-				closed on {% for transaction in bill.transactions.all %}<a href="{% url 'staff:transaction' transaction.id %}">{{ transaction.transaction_date | date:"m/d/y"}}</a>{% endfor %}
+				closed on {% for transaction in bill.transactions.all %}<a href="{% url 'staff:billing:transaction' transaction.id %}">{{ transaction.transaction_date | date:"m/d/y"}}</a>{% endfor %}
 			{% else %}
 				open
 			{% endif %}
