@@ -11,19 +11,12 @@ casper.on("page.error", function(msg, trace) {
 });
 
 casper.test.begin('Profile has 30 links', 35, function suite(test) {
-  function getLinks() {
-    var links = document;
-    return Array.prototype.map.call(links, function(e) {
-        return e.getAttribute('href');
-    });
-  }
-
   casper.start(url + '/login', function() {
       test.assertTitle("Login | Office Nomads", "Login page title is the one expected");
       test.assertExists('form[method="post"]', "login form is found");
   });
 
-  casper.then(function() {
+  casper.then(function(username, password) {
     this.evaluate(function() {
       //insert username to test
       document.getElementById('id_username').value = '';
