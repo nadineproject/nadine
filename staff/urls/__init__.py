@@ -4,8 +4,7 @@ from django.conf.urls import include, url
 from staff.views import billing, core, payment
 
 urlpatterns = [
-    # TODO - don't hardcode
-    url(r'^$', lambda r: redirect('/staff/tasks'), name="index"),
+    url(r'^$', lambda r: redirect('staff:tasks:todo'), name="index"),
 
     url(r'^tasks/', include('staff.urls.tasks', namespace="tasks")),
     url(r'^user/', include('staff.urls.user', namespace="user")),
