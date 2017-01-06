@@ -14,7 +14,7 @@
     {% for t in transactions %}
         <!-- transaction_id: {{ t.transaction_id }} -->
         <tr>
-            <td><a href="{% url 'staff:user_detail' t.username %}">{{ t.username }}</a></td>
+            <td><a href="{% url 'staff:member:detail' t.username %}">{{ t.username }}</a></td>
             <td>{{ t.description }}</td>
             <!--<td>{{ t.card_type }}</td>-->
             <td {% if t.status == "Authorized" %} style="color:green;"{% endif %}>{{ t.status }}</td>

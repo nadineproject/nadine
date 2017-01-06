@@ -40,9 +40,9 @@
       </tr>
       {% for log in daily_logs %}
          <tr class="{% cycle 'row-even' 'row-odd' %}">
-            <td><a href="{% url 'staff:user_detail' log.user.username %}">{{ log.user.get_full_name }}</a></td>
+            <td><a href="{% url 'staff:member:detail' log.user.username %}">{{ log.user.get_full_name }}</a></td>
             <td>{{ log.payment }}</td>
-            <td>{% if log.paid_by %}<a href="{% url 'staff:user_detail' log.paid_by.username %}">{{ log.paid_by.get_full_name }}</a>{% endif %}</td>
+            <td>{% if log.paid_by %}<a href="{% url 'staff:member:detail' log.paid_by.username %}">{{ log.paid_by.get_full_name }}</a>{% endif %}</td>
             <td class="log-note">{{ log.note }}</td>
             <td style="text-align: center;">
                 <a href="{% url 'admin:nadine_coworkingday_change' log.id %}">edit data </a> |

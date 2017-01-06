@@ -54,7 +54,7 @@ def members(request, group=None):
 
     context = {'group': group, 'group_name': group_name, 'users': users,
         'member_count': member_count, 'group_list': group_list, 'total_members': total_members}
-    return render(request, 'staff/members/members.html', context)
+    return render(request, 'staff/member/members.html', context)
 
 
 def member_bcc(request, group=None):
@@ -70,7 +70,7 @@ def member_bcc(request, group=None):
         users = User.helper.members_by_plan(group)
     group_list = MemberGroups.get_member_groups()
     context = {'group': group, 'group_name': group_name, 'group_list': group_list, 'users': users}
-    return render(request, 'staff/members/member_bcc.html', context)
+    return render(request, 'staff/member/member_bcc.html', context)
 
 
 @staff_member_required
@@ -80,7 +80,7 @@ def export_users(request):
     else:
         users = User.objects.all()
     context = {'member_list': users}
-    return render(request, 'staff/members/memberList.csv', context)
+    return render(request, 'staff/member/memberList.csv', context)
 
 
 @staff_member_required
@@ -99,7 +99,7 @@ def security_deposits(request):
             deposit = SecurityDeposit.objects.create(user=user, received_date=today, amount=amount, note=note)
             deposit.save()
         if username:
-            return HttpResponseRedirect(reverse('staff_user_detail', kwargs={'username': username}))
+            return HttpResponseRedirect(reverse('staff:member:detail', kwargs={'username': username}))
 
     active_deposits = []
     inactive_deposits = []
@@ -115,7 +115,7 @@ def security_deposits(request):
         'inactive_deposits':inactive_deposits,
         'total_deposits': total_deposits
     }
-    return render(request, 'staff/members/security_deposits.html', context)
+    return render(request, 'staff/member/security_deposits.html', context)
 
 
 @staff_member_required
@@ -126,11 +126,11 @@ def member_search(request):
         if member_search_form.is_valid():
             search_results = User.helper.search(member_search_form.cleaned_data['terms'])
             if len(search_results) == 1:
-                return HttpResponseRedirect(reverse('staff_user_detail', kwargs={'username': search_results[0].username}))
+                return HttpResponseRedirect(reverse('staff:member:detail', kwargs={'username': search_results[0].username}))
     else:
         member_search_form = MemberSearchForm()
     context = {'member_search_form': member_search_form, 'search_results': search_results}
-    return render(request, 'staff/members/member_search.html', context)
+    return render(request, 'staff/member/member_search.html', context)
 
 
 @staff_member_required
@@ -142,7 +142,7 @@ def membership(request, membership_id):
         try:
             if membership_form.is_valid():
                 membership_form.save()
-                return HttpResponseRedirect(reverse('staff_user_detail', kwargs={'username': membership.user.username}))
+                return HttpResponseRedirect(reverse('staff:member:detail', kwargs={'username': membership.user.username}))
         except Exception as e:
             messages.add_message(request, messages.ERROR, e)
     else:
@@ -157,7 +157,7 @@ def membership(request, membership_id):
     context = {'user': membership.user, 'membership': membership,
         'membership_plans': MembershipPlan.objects.all(), 'membership_form': membership_form,
         'today': today.isoformat(), 'last': last.isoformat()}
-    return render(request, 'staff/members/membership.html', context)
+    return render(request, 'staff/member/membership.html', context)
 
 
 @staff_member_required
@@ -169,7 +169,7 @@ def view_user_reports(request):
 
     report = user_reports.User_Report(form)
     users = report.get_users()
-    return render(request, 'staff/members/user_reports.html', {'users': users, 'form': form})
+    return render(request, 'staff/member/user_reports.html', {'users': users, 'form': form})
 
 
 @staff_member_required
@@ -183,7 +183,7 @@ def slack_users(request):
     non_slack_users = User.helper.active_members().exclude(email__in=slack_emails)
     context = {'expired_users':expired_users, 'slack_users':slack_users,
          'non_slack_users':non_slack_users, 'slack_url':settings.SLACK_TEAM_URL}
-    return render(request, 'staff/members/slack_users.html', context)
+    return render(request, 'staff/member/slack_users.html', context)
 
 
 @staff_member_required

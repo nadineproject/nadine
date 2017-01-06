@@ -11,7 +11,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 {% block content %}
 {% include "staff/billing/billing_menu.frag" %}
 
-<h2>USAePay - <a href="{% url 'staff:user_detail' user.username %}">{{ user.get_full_name }}</a></h2>
+<h2>USAePay - <a href="{% url 'staff:member:detail' user.username %}">{{ user.get_full_name }}</a></h2>
 
 {% if messages %}
     <div class="messages">

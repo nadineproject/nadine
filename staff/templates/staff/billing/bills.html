@@ -60,7 +60,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 <table>
 	{% for u in invalid_members %}
 		<tr class="{% cycle 'row-odd' 'row-even' %}">
-			<td nowrap style="text-align:left;"><li><a href="{% url 'staff:user_detail' u.username %}">{{ u.get_full_name }}</a></li></td>
+			<td nowrap style="text-align:left;"><li><a href="{% url 'staff:member:detail' u.username %}">{{ u.get_full_name }}</a></li></td>
 			<td></td>
 		</tr>
 	{% endfor %}

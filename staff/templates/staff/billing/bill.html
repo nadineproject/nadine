@@ -10,7 +10,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 {% block content %}
 {% include "staff/billing/billing_menu.frag" %}
 
-<h2><a href="{% url 'staff:user_detail' bill.user.username %}">{{ bill.user.get_full_name }}</a>'s Bill:</h2>
+<h2><a href="{% url 'staff:member:detail' bill.user.username %}">{{ bill.user.get_full_name }}</a>'s Bill:</h2>
 {% include "staff/bill_table.frag" %}
 
 

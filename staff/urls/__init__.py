@@ -19,7 +19,7 @@ urlpatterns = [
     url(r'^membership/(?P<membership_id>\d+)/$', core.membership, name='membership'),
 
     url(r'^tasks/', include('staff.urls.tasks', namespace="tasks")),
-    url(r'^member/', include('staff.urls.member', namespace="members")),
+    url(r'^member/', include('staff.urls.member', namespace="member")),
     url(r'^activity/', include('staff.urls.activity', namespace="activity")),
     url(r'^settings/', include('staff.urls.settings', namespace="settings")),
     url(r'^stats/', include('staff.urls.stats', namespace="stats")),

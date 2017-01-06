@@ -54,21 +54,21 @@ def detail(request, username):
         'email_keys': email_keys, 'settings': settings,
         'staff_members':staff_members,
     }
-    return render(request, 'staff/members/member_detail.html', context)
+    return render(request, 'staff/member/detail.html', context)
 
 
 @staff_member_required
 def transactions(request, username):
     user = get_object_or_404(User, username=username)
     transactions = user.transaction_set.all()
-    return render(request, 'staff/members/member_transactions.html', {'user':user, 'transactions':transactions})
+    return render(request, 'staff/member/transactions.html', {'user':user, 'transactions':transactions})
 
 
 @staff_member_required
 def bills(request, username):
     user = get_object_or_404(User, username=username)
     bills = user.bill_set.all()
-    return render(request, 'staff/members/member_bills.html', {'user':user, 'bills':bills})
+    return render(request, 'staff/member/bills.html', {'user':user, 'bills':bills})
 
 
 @staff_member_required
@@ -93,7 +93,7 @@ def files(request, username):
     files = FileUpload.objects.filter(user=user)
 
     context = {'user':user, 'files': files, 'doc_types': doc_types}
-    return render(request, 'staff/members/member_files.html', context)
+    return render(request, 'staff/member/files.html', context)
 
 
 @staff_member_required
@@ -112,7 +112,7 @@ def membership(request, username):
             if membership_form.is_valid():
                 membership_form.created_by = request.user
                 membership_form.save()
-                return HttpResponseRedirect(reverse('staff_user_detail', kwargs={'username': username}))
+                return HttpResponseRedirect(reverse('staff:member:detail', kwargs={'username': username}))
         except Exception as e:
             messages.add_message(request, messages.ERROR, e)
     else:
@@ -120,13 +120,13 @@ def membership(request, username):
 
     # Send them to the update page if we don't have an end date
     if (last_membership and not last_membership.end_date):
-        return HttpResponseRedirect(reverse('staff_membership', kwargs={'membership_id': last_membership.id}))
+        return HttpResponseRedirect(reverse('staff:member:memberships', kwargs={'membership_id': last_membership.id}))
 
     plans = MembershipPlan.objects.filter(enabled=True).order_by('name')
     context = {'user':user, 'membership_plans': plans,
         'membership_form': membership_form, 'today': today.isoformat(),
         'last': last.isoformat()}
-    return render(request, 'staff/members/membership.html', context)
+    return render(request, 'staff/member/membership.html', context)
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

@@ -10,7 +10,7 @@ nav #members-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {% block content %}
-{% include "staff/members/member_menu.frag" %}
+{% include "staff/member/member_menu.frag" %}
 
 <h2>Security Deposits</h2>
 <strong>Total Deposits: </strong> ${{total_deposits}}
@@ -18,14 +18,14 @@ nav #members-tab { background: #FBD850; color: black; }
 {% if inactive_deposits %}
 	<h3>Inactive Members</h3>
 	{% with inactive_deposits as deposits %}
-		{% include "staff/members/security_deposit_table.html" %}
+		{% include "staff/member/security_deposit_table.html" %}
 	{% endwith %}
 {% endif %}
 
 {% if active_deposits %}
 	<h3>Active Members</h3>
 	{% with active_deposits as deposits %}
-		{% include "staff/members/security_deposit_table.html" %}
+		{% include "staff/member/security_deposit_table.html" %}
 	{% endwith %}
 {% endif %}
 

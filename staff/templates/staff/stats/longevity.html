@@ -37,7 +37,7 @@
 			<td>{{ d.max_days }}</td>
 			<td nowrap>
 				<a href="{% url 'staff:activity:user' d.user.username %}">activity</a> |
-				<a href="{% url 'staff:user_detail' d.user.username %}">profile</a>
+				<a href="{% url 'staff:member:detail' d.user.username %}">profile</a>
 			</td>
 		</tr>
 	{% endfor %}

@@ -38,7 +38,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 		{% for bill in bills %}
 			<tr class="{% cycle 'row-even' 'row-odd' %}">
 				<td><a href="{% url 'staff:bill' bill.id %}">{{ bill.bill_date|date:"m/d/y" }}</a></td>
-				<td><a href="{% url 'staff:user_detail' bill.user.username %}">{{ bill.user.get_full_name }}</a></td>
+				<td><a href="{% url 'staff:member:detail' bill.user.username %}">{{ bill.user.get_full_name }}</a></td>
 				<td>{{ bill.membership.membership_plan }}</td>
 				<td>{{ bill.dropins.all | length }}</td>
 				<td>{{ bill.guest_dropins.all | length }}</td>

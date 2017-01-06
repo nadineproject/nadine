@@ -49,7 +49,7 @@ function gotoEmailReset(emailAddress){
 {% endblock %}
 
 {% block content %}
-{% include "staff/members/member_menu.frag" %}
+{% include "staff/member/member_menu.frag" %}
 
 <div class="member-photo">
     {% if user.profile.photo %}
@@ -65,7 +65,7 @@ function gotoEmailReset(emailAddress){
     <div id="quick-links">
         <a href="{% url 'staff:activity:user' user.username %}">activity</a> |
         <a href="{% url 'doors_keys' user.username %}">keys</a> |
-        <a href="{% url 'staff:user_files' user.username %}">files</a> |
+        <a href="{% url 'staff:member:files' user.username %}">files</a> |
         <a href="{% url 'staff:user_payment' user.username %}">usaepay</a> |
         <a href="{% url 'staff:xero' user.username %}">xero</a> |
         <a href="{% url 'admin:auth_user_change' user.id %}">admin</a> |
@@ -281,7 +281,7 @@ function gotoEmailReset(emailAddress){
                 <td nowrap>
                     {{ membership.membership_plan }}
                     {% if membership.paid_by %}
-                     (<a href="{% url 'staff:user_detail' membership.paid_by.username %}">{{ membership.paid_by.username }}</a>)
+                     (<a href="{% url 'staff:member:detail' membership.paid_by.username %}">{{ membership.paid_by.username }}</a>)
                     {% endif %}
                 </td>
                 <td>${{ membership.monthly_rate }}</td>
@@ -318,7 +318,7 @@ function gotoEmailReset(emailAddress){
 
                 {% for guest in user.profile.guests %}
                     <tr class="{% cycle 'row-even' 'row-odd' %}">
-                        <td nowrap><a href="{% url 'staff:user_detail' guest.username %}">{{ guest.get_full_name }}</a></td>
+                        <td nowrap><a href="{% url 'staff:member:detail' guest.username %}">{{ guest.get_full_name }}</a></td>
                         <td>{{ guest.profile.active_membership.membership_plan }}</td>
                         <td style="text-align: center;">{{ guest.profile.first_visit }}</td>
                     </tr>
@@ -330,8 +330,8 @@ function gotoEmailReset(emailAddress){
 <div id="tabs-2">
     <div id="quick-links">
         <strong>More Info:</strong>
-        <a href="{% url 'staff:user_bills' user.username %}">bills</a> |
-        <a href="{% url 'staff:user_transactions' user.username %}">transactions</a>
+        <a href="{% url 'staff:member:bills' user.username %}">bills</a> |
+        <a href="{% url 'staff:member:transactions' user.username %}">transactions</a>
     </div>
     <!-- Billing Profile -->
     <h2>Billing Profile</h2>
@@ -454,7 +454,7 @@ function gotoEmailReset(emailAddress){
                 <td>
                     <form action="{% url 'staff:todo_detail' alert.key %}" method="POST">
                         <input type="hidden" name="alert_id" value="{{ alert.id }}"/>
-                        <input type="hidden" name="next" value="{% url 'staff:user_detail' alert.user.username %}#tabs-4"/>
+                        <input type="hidden" name="next" value="{% url 'staff:member:detail' alert.user.username %}#tabs-4"/>
                         <button name="action" value="resolve" type="submit" {% if alert.is_system_alert %} disabled{% endif %}>Resolve</button>
                         <button name="action" value="mute" type="submit" >Mute</button>
                         <input name="note" size="32"/>

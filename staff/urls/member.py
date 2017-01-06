@@ -3,7 +3,7 @@ from django.conf.urls import include, url
 from staff.views import member
 
 urlpatterns = [
-     url(r'^details/(?P<username>[^/]+)/$', member.detail, name='details'),
+     url(r'^detail/(?P<username>[^/]+)/$', member.detail, name='detail'),
      url(r'^transactions/(?P<username>[^/]+)/$', member.transactions, name='transactions'),
      url(r'^bills/(?P<username>[^/]+)/$', member.bills, name='bills'),
      url(r'^memberships/(?P<username>[^/]+)/$', member.membership, name='memberships'),

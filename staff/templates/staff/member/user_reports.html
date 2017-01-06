@@ -9,7 +9,7 @@ table th.bottom_line { border-bottom:1px solid; }
 {% endblock %}
 
 {% block content %}
-{% include "staff/members/member_menu.frag" %}
+{% include "staff/member/member_menu.frag" %}
 
 <h2>User Reports</h2>
 
@@ -50,7 +50,7 @@ table th.bottom_line { border-bottom:1px solid; }
 
 	{% for user in users %}
 		<tr class="{% cycle 'row-even' 'row-odd' %}">
-			<td nowrap style="text-align:left;"><a href="{% url 'staff:user_detail' user.username %}">{{ user.get_full_name }}</a></td>
+			<td nowrap style="text-align:left;"><a href="{% url 'staff:member:detail' user.username %}">{{ user.get_full_name }}</a></td>
 			<td>{{ user.date_joined|date:"M d, Y" }}</td>
 			{% if user.profile.has_valid_billing %}
 				<td>Valid</td>
