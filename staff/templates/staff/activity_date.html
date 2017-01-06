@@ -16,10 +16,10 @@ nav #activity-tab { background: #FBD850; color: black; }
 <h2>
 	Daily Activity - {{ activity_date|date:"l, M dS" }}
 	<span style="float:right;">
-	<a href="{% url 'staff_activity_day' previous_date.year previous_date.month previous_date.day %}">&larr;</a>
-	<!-- <a href="{% url 'staff_activity_today' %}">&bull;</a> -->
+	<a href="{% url 'staff:activity_day' previous_date.year previous_date.month previous_date.day %}">&larr;</a>
+	<!-- <a href="{% url 'staff:activity_today' %}">&bull;</a> -->
 	<input type='date' name='date' class='datepicker' value="{{ activity_date|date:'Y-m-d' }}" style='font-size:.6em; text-align:center; width:150px;'/>
-	<a href="{% url 'staff_activity_day' next_date.year next_date.month next_date.day %}">&rarr;</a>
+	<a href="{% url 'staff:activity_day' next_date.year next_date.month next_date.day %}">&rarr;</a>
 	</span>
 </h2>
 
@@ -42,13 +42,13 @@ nav #activity-tab { background: #FBD850; color: black; }
       </tr>
       {% for log in daily_logs %}
          <tr class="{% cycle 'row-even' 'row-odd' %}">
-            <td><a href="{% url 'staff_user_detail' log.user.username %}">{{ log.user.get_full_name }}</a></td>
+            <td><a href="{% url 'staff:user_detail' log.user.username %}">{{ log.user.get_full_name }}</a></td>
             <td>{{ log.payment }}</td>
-            <td>{% if log.paid_by %}<a href="{% url 'staff_user_detail' log.paid_by.username %}">{{ log.paid_by.get_full_name }}</a>{% endif %}</td>
+            <td>{% if log.paid_by %}<a href="{% url 'staff:user_detail' log.paid_by.username %}">{{ log.paid_by.get_full_name }}</a>{% endif %}</td>
             <td class="log-note">{{ log.note }}</td>
             <td style="text-align: center;">
                 <a href="{% url 'admin:nadine_coworkingday_change' log.id %}">edit data </a> |
-                <a href="{% url 'staff_activity_user' log.user.username %}">user activity</a>
+                <a href="{% url 'staff:activity_user' log.user.username %}">user activity</a>
             </td>
          </tr>
       {% endfor %}
@@ -74,7 +74,7 @@ nav #activity-tab { background: #FBD850; color: black; }
 				dateFormat: 'yy-mm-dd',
 				onSelect: function(ui, e) {
 					var date = ui.split('-');
-					var url = "{% url 'staff_activity_day' 2016 12 14 %}".replace(/14/, date[2]).replace(/12/, date[1]).replace(/2016/, date[0]);
+					var url = "{% url 'staff:activity_day' 2016 12 14 %}".replace(/14/, date[2]).replace(/12/, date[1]).replace(/2016/, date[0]);
 
 					window.location.href = url;
 				}
