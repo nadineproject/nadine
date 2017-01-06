@@ -1,0 +1,80 @@
+{% extends "staff/stats/base.html" %}
+
+{% block sub-title %}Stats | Monthly Members | {% endblock %}
+
+{% block sub-head %}
+<script>
+function toggleDetails(neighborhoodID){
+	var neighborhood_selector = '#neighborhood-details-' + neighborhoodID;
+	var neighborhood_toggle_selector = '#neighborhood-details-toggle-' + neighborhoodID;
+	if($(neighborhood_selector).is(':hidden')) {
+		$(neighborhood_selector).show();
+		$(neighborhood_toggle_selector).html('[-]');
+	} else {
+		$(neighborhood_selector).hide();
+		$(neighborhood_toggle_selector).html('[+]');
+	}
+}
+
+function initPage(){
+	$(".neighborhood-details").hide();
+}
+$(document).ready(function() { initPage(); });
+</script>
+{% endblock %}
+
+{% block style %}
+.neighborhood-details { margin: 8px; }
+{% endblock %}
+
+{% block content %}
+
+<h2>Stats - Neighborhoods:</h2>
+
+<div style="margin: 10px 0;">
+	<strong>Total {% if active_only %} active {% endif %} members:</strong> {{ stats.member_count }}<br>
+	<strong>With Neighborhood:</strong> {{ stats.specified_count}} ({{stats.specified_perc}}%)<br>
+	<strong>Neighborhood Unspecified</strong> {{ stats.unknown_count}} ({{stats.unknown_perc}}%)
+	<p><form method="POST" action="">
+	   {% if active_only %}
+	      <input type="submit" name="" value="Show All Members">
+	   {% else %}
+	      <input type="submit" name="ActiveOnly" value="Show Active Members Only">
+	   {% endif %}
+	   {% csrf_token %}
+	</form></p>
+</div>
+
+<div id="neighborhoods">
+	<table class="neighborhood_table">
+      <tr>
+         <th>&nbsp;</th>
+         <th>Neighborhood</th>
+         <th>Members</th>
+      </tr>
+
+      {% for hood in neighborhoods %}
+	      <tr class="{% cycle 'row-even' 'row-odd' %}">
+	         <td>
+	            {% ifnotequal hood.count 0 %}
+	               <a class="detail-toggle" id="neighborhood-details-toggle-{{hood.id}}"
+	                  href="." onclick="toggleDetails('{{hood.id}}'); return false;">[+]</a>
+	            {% endifnotequal %}
+	         </td>
+	         <td>{{ hood.name }}</td>
+	         <td>{{ hood.count }} {% ifnotequal hood.perc 0 %} ({{hood.perc}}%) {% endifnotequal %}</td>
+	      </tr>
+	      <tr>
+	         <td colspan="3">
+	            <div class="neighborhood-details" id="neighborhood-details-{{hood.id}}">
+	               {% with hood.users as users %}
+                     {% include "staff/members/user_list_frag.html" %}
+                  {% endwith %}
+	            </div>
+	         </td>
+	      </tr>
+	   {% endfor %}
+
+	</table>
+</div>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "staff/activity/base.html" %}
+{% load static %}
+
+{% block sub-title %}Activity on {{ activity_date|date:"M d, Y" }}{% endblock %}
+
+{% block style%}
+#content table { width: 100%; }
+.log-note { width: 100px; }
+#quick-links { text-align: right; margin-bottom: 20px;}
+{% endblock %}
+
+{% block content %}
+
+<h2>
+	Daily Activity - {{ activity_date|date:"l, M dS" }}
+	<span style="float:right;">
+	<a href="{% url 'staff:activity:date' previous_date.year previous_date.month previous_date.day %}">&larr;</a>
+	<!-- <a href="{% url 'staff:activity:today' %}">&bull;</a> -->
+	<input type='date' name='date' class='datepicker' value="{{ activity_date|date:'Y-m-d' }}" style='font-size:.6em; text-align:center; width:150px;'/>
+	<a href="{% url 'staff:activity:date' next_date.year next_date.month next_date.day %}">&rarr;</a>
+	</span>
+</h2>
+
+<div id="activity_list">
+	{% if messages %}
+	<div class="messages">
+		{% for message in messages %}
+			<div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+		{% endfor %}
+	</div>
+	{% endif %}
+
+   <table>
+      <tr>
+         <th>Member</th>
+         <th>Payment</th>
+         <th>Paid by</th>
+         <th>Note</th>
+         <th></th>
+      </tr>
+      {% for log in daily_logs %}
+         <tr class="{% cycle 'row-even' 'row-odd' %}">
+            <td><a href="{% url 'staff:user_detail' log.user.username %}">{{ log.user.get_full_name }}</a></td>
+            <td>{{ log.payment }}</td>
+            <td>{% if log.paid_by %}<a href="{% url 'staff:user_detail' log.paid_by.username %}">{{ log.paid_by.get_full_name }}</a>{% endif %}</td>
+            <td class="log-note">{{ log.note }}</td>
+            <td style="text-align: center;">
+                <a href="{% url 'admin:nadine_coworkingday_change' log.id %}">edit data </a> |
+                <a href="{% url 'staff:activity:user' log.user.username %}">user activity</a>
+            </td>
+         </tr>
+      {% endfor %}
+  </table>
+  <div style="font-weight:bold; text-align:right;">{{ daily_logs | length }} records found</div>
+</div>
+
+<!-- Display form errors if there are some -->
+<div id="form_errors">
+{% for field in daily_log_form %}
+   {% if field.errors %}
+      {{ field.label_tag }} {{ field.errors }}
+   {% endif %}
+{% endfor %}
+</div>
+
+{% endblock %}
+
+{% block extrajs %}
+	<script>
+		(function() {
+			$('.datepicker').datepicker({
+				dateFormat: 'yy-mm-dd',
+				onSelect: function(ui, e) {
+					var date = ui.split('-');
+					var url = "{% url 'staff:activity:date' 2016 12 14 %}".replace(/14/, date[2]).replace(/12/, date[1]).replace(/2016/, date[0]);
+
+					window.location.href = url;
+				}
+			});
+		})();
+	</script>
+{% endblock %}

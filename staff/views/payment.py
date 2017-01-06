@@ -52,7 +52,7 @@ def xero_user(request, username):
     context = {'user': user, 'xero_contact': xero_contact, 'invoices': invoices,
         'repeating_invoices':repeating_invoices, 'xero_contact_data': xero_contact_data,
         'xero_contact_search': xero_contact_search}
-    return render(request, 'staff/xero.html', context)
+    return render(request, 'staff/billing/xero.html', context)
 
 
 @staff_member_required
@@ -107,7 +107,7 @@ def usaepay_user(request, username):
         messages.add_message(request, messages.ERROR, e)
 
     context = {'user': user, 'history': history, 'settings':settings }
-    return render(request, 'staff/usaepay.html', context)
+    return render(request, 'staff/billing/usaepay.html', context)
 
 
 @staff_member_required
@@ -179,7 +179,7 @@ def usaepay_transactions(request, year, month, day):
         'open_batch':open_batch, 'other_transactions': other_transactions,
         'settled_checks':settled_checks, 'totals':totals,
         'next_date': d + timedelta(days=1), 'previous_date': d - timedelta(days=1)}
-    return render(request, 'staff/charges.html', context)
+    return render(request, 'staff/billing/charges.html', context)
 
 
 @staff_member_required
@@ -193,7 +193,7 @@ def usaepay_members(request):
             for c in customers:
                 if c.Enabled:
                     members.append({'user': u, 'username': username, 'next': c.Next, 'customer_number': c.CustNum})
-    return render(request, 'staff/usaepay_members.html', {'members': members})
+    return render(request, 'staff/billing/usaepay_members.html', {'members': members})
 
 
 @staff_member_required
@@ -212,7 +212,7 @@ def usaepay_void(request):
                 return HttpResponseRedirect(reverse('staff_charges_today'))
     except Exception as e:
         messages.add_message(request, messages.ERROR, e)
-    return render(request, 'staff/usaepay_void.html', {'transaction':transaction})
+    return render(request, 'staff/billing/usaepay_void.html', {'transaction':transaction})
 
 
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

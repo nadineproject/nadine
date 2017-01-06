@@ -1,0 +1,33 @@
+{% extends "staff/base.html" %}
+
+{% block sub-title %}Security Deposits | {% endblock %}
+
+{% block style%}
+nav #members-tab { background: #FBD850; color: black; }
+
+#deposit_table { text-align:right; background: #FBD850;}
+
+{% endblock %}
+
+{% block content %}
+{% include "staff/members/member_menu.frag" %}
+
+<h2>Security Deposits</h2>
+<strong>Total Deposits: </strong> ${{total_deposits}}
+
+{% if inactive_deposits %}
+	<h3>Inactive Members</h3>
+	{% with inactive_deposits as deposits %}
+		{% include "staff/members/security_deposit_table.html" %}
+	{% endwith %}
+{% endif %}
+
+{% if active_deposits %}
+	<h3>Active Members</h3>
+	{% with active_deposits as deposits %}
+		{% include "staff/members/security_deposit_table.html" %}
+	{% endwith %}
+{% endif %}
+
+
+{% endblock %}

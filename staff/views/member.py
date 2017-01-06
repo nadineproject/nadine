@@ -54,21 +54,21 @@ def detail(request, username):
         'email_keys': email_keys, 'settings': settings,
         'staff_members':staff_members,
     }
-    return render(request, 'staff/member_detail.html', context)
+    return render(request, 'staff/members/member_detail.html', context)
 
 
 @staff_member_required
 def transactions(request, username):
     user = get_object_or_404(User, username=username)
     transactions = user.transaction_set.all()
-    return render(request, 'staff/member_transactions.html', {'user':user, 'transactions':transactions})
+    return render(request, 'staff/members/member_transactions.html', {'user':user, 'transactions':transactions})
 
 
 @staff_member_required
 def bills(request, username):
     user = get_object_or_404(User, username=username)
     bills = user.bill_set.all()
-    return render(request, 'staff/member_bills.html', {'user':user, 'bills':bills})
+    return render(request, 'staff/members/member_bills.html', {'user':user, 'bills':bills})
 
 
 @staff_member_required
@@ -93,7 +93,7 @@ def files(request, username):
     files = FileUpload.objects.filter(user=user)
 
     context = {'user':user, 'files': files, 'doc_types': doc_types}
-    return render(request, 'staff/member_files.html', context)
+    return render(request, 'staff/members/member_files.html', context)
 
 
 @staff_member_required
@@ -126,7 +126,7 @@ def membership(request, username):
     context = {'user':user, 'membership_plans': plans,
         'membership_form': membership_form, 'today': today.isoformat(),
         'last': last.isoformat()}
-    return render(request, 'staff/membership.html', context)
+    return render(request, 'staff/members/membership.html', context)
 
 
 # Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

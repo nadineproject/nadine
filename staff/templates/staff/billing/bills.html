@@ -1,0 +1,69 @@
+{% extends "staff/base.html" %}
+
+{% block sub-title %}Bills | {% endblock %}
+
+{% block sub-head %}
+<script>
+function toggleBillDetails(userID){
+	var detail_selector = '#bill-details-' + userID;
+	var detail_toggle_selector = '#bill-details-toggle-' + userID;
+	if($(detail_selector).is(':hidden')) {
+		$(detail_selector).show();
+		$(detail_toggle_selector).html('[-]');
+	} else {
+		$(detail_selector).hide();
+		$(detail_toggle_selector).html('[+]');
+	}
+}
+
+function initPage(){
+	$(".bill-details").hide();
+}
+$(document).ready(function() { initPage(); });
+</script>
+{% endblock %}
+
+{% block style %}
+nav #billing-tab { background: #FBD850; color: black; }
+
+#bill-list li { margin-bottom: 20px; }
+#bill-list h4 { font-weight: normal; }
+.bill-list-fees { margin: 5px 10px; width: 700px; }
+.bill-list-fees th { width: 100px; text-align: right; font-style: italic; background-color: #FFF; font-weight: normal; }
+.bill-list-fees td, .bill-list-fees th { border-bottom: 0px; }
+.pay-bill-form input[type=text] { width: 8em; }
+.bill-details { margin: 10px 40px 20px 40px; }
+.bill-detail-toggle { text-decoration: none; }
+.bill-info { margin-left: 40px; }
+{% endblock %}
+
+{% block content %}
+{% include "staff/billing/billing_menu.frag" %}
+
+<h2>Outstanding Bills</h2>
+{% if page_message%}<p id="page-message">{{ page_message|safe }}</p>{% endif %}
+
+{% if bills %}
+	{% include "staff/billing/bills_table.html" %}
+{% else %}
+	<p>There are no open bills!</p>
+{% endif %}
+
+{% if bills_in_progress %}
+	<h2>In Progress</h2>
+	{% with bills_in_progress as bills and True as in_progress %}
+		{% include "staff/billing/bills_table.html" %}
+	{% endwith %}
+{% endif %}
+
+<h2>{{ invalid_members.count }} Invalid Billing Profiles</h2>
+<table>
+	{% for u in invalid_members %}
+		<tr class="{% cycle 'row-odd' 'row-even' %}">
+			<td nowrap style="text-align:left;"><li><a href="{% url 'staff:user_detail' u.username %}">{{ u.get_full_name }}</a></li></td>
+			<td></td>
+		</tr>
+	{% endfor %}
+</table>
+
+{% endblock %}

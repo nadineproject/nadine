@@ -1,0 +1,18 @@
+{% extends "staff/base.html" %}
+{% load list_tags %}
+
+{% block sub-title %}Bill | {{ bill.bill_date }} | {{ bill.member.first_name }} {{ bill.member.last_name }} | {% endblock %}
+
+{% block style %}
+nav #billing-tab { background: #FBD850; color: black; }
+{% endblock %}
+
+{% block content %}
+{% include "staff/billing/billing_menu.frag" %}
+
+<h2><a href="{% url 'staff:user_detail' bill.user.username %}">{{ bill.user.get_full_name }}</a>'s Bill:</h2>
+{% include "staff/bill_table.frag" %}
+
+
+[<a href="{{ bill.get_admin_url }}">edit this bill</a>]
+{% endblock %}

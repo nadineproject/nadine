@@ -21,7 +21,6 @@ from django.conf import settings
 #from django.db.models import Sum
 
 from nadine.models.membership import Membership, MembershipPlan, MemberGroups, SecurityDeposit
-from nadine.models.alerts import MemberAlert
 from nadine.forms import MemberSearchForm, MembershipForm, EventForm
 from nadine.utils.slack_api import SlackAPI
 from nadine.utils import network
@@ -55,7 +54,7 @@ def members(request, group=None):
 
     context = {'group': group, 'group_name': group_name, 'users': users,
         'member_count': member_count, 'group_list': group_list, 'total_members': total_members}
-    return render(request, 'staff/members.html', context)
+    return render(request, 'staff/members/members.html', context)
 
 
 def member_bcc(request, group=None):
@@ -71,7 +70,7 @@ def member_bcc(request, group=None):
         users = User.helper.members_by_plan(group)
     group_list = MemberGroups.get_member_groups()
     context = {'group': group, 'group_name': group_name, 'group_list': group_list, 'users': users}
-    return render(request, 'staff/member_bcc.html', context)
+    return render(request, 'staff/members/member_bcc.html', context)
 
 
 @staff_member_required
@@ -81,7 +80,7 @@ def export_users(request):
     else:
         users = User.objects.all()
     context = {'member_list': users}
-    return render(request, 'staff/memberList.csv', context)
+    return render(request, 'staff/members/memberList.csv', context)
 
 
 @staff_member_required
@@ -116,7 +115,7 @@ def security_deposits(request):
         'inactive_deposits':inactive_deposits,
         'total_deposits': total_deposits
     }
-    return render(request, 'staff/security_deposits.html', context)
+    return render(request, 'staff/members/security_deposits.html', context)
 
 
 @staff_member_required
@@ -131,85 +130,7 @@ def member_search(request):
     else:
         member_search_form = MemberSearchForm()
     context = {'member_search_form': member_search_form, 'search_results': search_results}
-    return render(request, 'staff/member_search.html', context)
-
-
-@staff_member_required
-def todo(request):
-    member_alerts = []
-    for key, desc in MemberAlert.ALERT_DESCRIPTIONS:
-        count = MemberAlert.objects.unresolved(key).count()
-        member_alerts.append((key, desc, count))
-
-    showall = "showall" in request.GET
-
-    if showall:
-        assigned_alerts = MemberAlert.objects.filter(resolved_ts__isnull=True, muted_ts__isnull=True, assigned_to__isnull=False)
-    else:
-        assigned_alerts = request.user.assigned_alerts.filter(resolved_ts__isnull=True, muted_ts__isnull=True)
-
-    # Did anyone forget to sign in in the last 7 days?
-    check_date = timezone.now().date() - timedelta(days=7)
-    not_signed_in = User.helper.not_signed_in_since(check_date)
-    staff_members = User.objects.filter(is_staff=True).order_by('id').reverse()
-    today = timezone.now().date()
-
-    context = {
-        'member_alerts': member_alerts,
-        'assigned_alerts': assigned_alerts,
-        'not_signed_in': not_signed_in,
-        'staff_members': staff_members,
-        'showall':showall,
-        'today':today
-    }
-    return render(request, 'staff/todo.html', context)
-
-
-@staff_member_required
-def todo_detail(request, key):
-    if request.method == 'POST' and "action" in request.POST:
-        action = request.POST.get("action").lower()
-        try:
-            alert = get_object_or_404(MemberAlert, pk=request.POST.get("alert_id"))
-            note = request.POST.get("note", "").strip()
-            alert.note = note
-            assigned_to = request.POST.get("assigned_to", "")
-            if assigned_to:
-                alert.assigned_to = User.objects.get(username=assigned_to)
-            else:
-                alert.assigned_to = None
-
-            if action == "mute" and not note:
-                messages.add_message(request, messages.ERROR, "Note required to mute an alert!")
-            else:
-                if action == "mute":
-                    alert.muted_ts = timezone.now()
-                    alert.muted_by = request.user
-                elif action == "resolve":
-                    alert.resolved_ts = timezone.now()
-                    alert.resolved_by = request.user
-                alert.save()
-                messages.add_message(request, messages.INFO, "Alert '%s:%s' %sd!" % (alert.user.username, alert.key, action))
-        except Exception as e:
-            messages.add_message(request, messages.ERROR, "Could not %s alert: %s" % (action, e))
-
-        if "next" in request.POST:
-            next_url = request.POST.get("next")
-            return HttpResponseRedirect(next_url)
-
-    alerts = MemberAlert.objects.unresolved(key).order_by('user__first_name')
-    description = MemberAlert.getDescription(key)
-    is_system_alert = MemberAlert.isSystemAlert(key)
-    staff_members = User.objects.filter(is_staff=True).order_by('id').reverse()
-
-    context = {
-        'key': key,
-        'description': description,
-        'alerts': alerts,
-        'is_system_alert': is_system_alert,
-        'staff_members': staff_members,
-    }
-    return render(request, 'staff/todo_detail.html', context)
+    return render(request, 'staff/members/member_search.html', context)
 
 
 @staff_member_required
@@ -236,7 +157,7 @@ def membership(request, membership_id):
     context = {'user': membership.user, 'membership': membership,
         'membership_plans': MembershipPlan.objects.all(), 'membership_form': membership_form,
         'today': today.isoformat(), 'last': last.isoformat()}
-    return render(request, 'staff/membership.html', context)
+    return render(request, 'staff/members/membership.html', context)
 
 
 @staff_member_required
@@ -248,7 +169,7 @@ def view_user_reports(request):
 
     report = user_reports.User_Report(form)
     users = report.get_users()
-    return render(request, 'staff/user_reports.html', {'users': users, 'form': form})
+    return render(request, 'staff/members/user_reports.html', {'users': users, 'form': form})
 
 
 @staff_member_required
@@ -262,7 +183,7 @@ def slack_users(request):
     non_slack_users = User.helper.active_members().exclude(email__in=slack_emails)
     context = {'expired_users':expired_users, 'slack_users':slack_users,
          'non_slack_users':non_slack_users, 'slack_url':settings.SLACK_TEAM_URL}
-    return render(request, 'staff/slack_users.html', context)
+    return render(request, 'staff/members/slack_users.html', context)
 
 
 @staff_member_required

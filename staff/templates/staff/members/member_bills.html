@@ -1,0 +1,24 @@
+{% extends "staff/base.html" %}
+
+{% block sub-title %}Bills for {{ member.first_name }} {{ member.last_name }} | {% endblock %}
+
+{% block style %}
+nav #billing-tab { background: #FBD850; color: black; }
+.bill-fees { margin-bottom: 40px; }
+{% endblock %}
+
+{% block content %}
+<h2>Bills for <a href="{% url 'staff:user_detail' user.username %}">{{ user.get_full_name }}</a>:</h2>
+{% if not bills %}
+  <p>There are no bills!</p>
+{% endif%}
+
+{% for bill in bills %}
+   {% with "yes" as hide_paid_by %}
+   {% with "yes" as show_member_name %}
+      {% include "staff/bill_table.frag" %}
+   {% endwith %}
+   {% endwith %}
+{% endfor %}
+
+{% endblock %}

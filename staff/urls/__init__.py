@@ -1,10 +1,12 @@
+from django.shortcuts import redirect
 from django.conf.urls import include, url
 
 from staff.views import activity, billing, core, member, stats, payment, settings
 
 urlpatterns = [
-    url(r'^$', core.todo, name='todo'),
-    url(r'^todo/(?P<key>[^/]+)/$', core.todo_detail, name='todo_detail'),
+    # TODO - don't hardcode
+    url(r'^$', lambda r: redirect('/staff/tasks'), name="index"),
+
     url(r'^members/$', core.members, name='members'),
     url(r'^members/(?P<group>[^/]+)/$', core.members, name='member_group'),
     url(r'^bcc/(?P<group>[^/]+)/$', core.member_bcc, name='group_bcc'),
@@ -16,11 +18,10 @@ urlpatterns = [
     url(r'^slack_users/$', core.slack_users, name='slack_users'),
     url(r'^membership/(?P<membership_id>\d+)/$', core.membership, name='membership'),
 
-    url(r'^activity/$', activity.activity, name='activity'),
-    url(r'^activity/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', activity.for_date, name='activity_day'),
-    url(r'^activity/today/$', activity.for_today, name='activity_today'),
-    url(r'^activity/list/$', activity.list, name='activity_list'),
-    url(r'^activity/user/(?P<username>[^/]+)/$', activity.for_user, name='activity_user'),
+    url(r'^tasks/', include('staff.urls.tasks', namespace="tasks")),
+    url(r'^activity/', include('staff.urls.activity', namespace="activity")),
+    url(r'^settings/', include('staff.urls.settings', namespace="settings")),
+    url(r'^stats/', include('staff.urls.stats', namespace="stats")),
 
     url(r'^bills/$', billing.bills, name='bills'),
     url(r'^bill/list/$', billing.bill_list, name='bill_list'),
@@ -40,25 +41,13 @@ urlpatterns = [
     url(r'^files/(?P<username>[^/]+)/$', member.files, name='user_files'),
     # url(r'^edit/(?P<username>[^/]+)/$', member.edit, name='user_edit'),
 
-    url(r'^stats/$', stats.stats, name='stats'),
-    url(r'^stats/history/$', stats.history, name='stats_history'),
-    url(r'^stats/monthly/$', stats.monthly, name='stats_monthly'),
-    url(r'^stats/gender/$', stats.gender, name='stats_gender'),
-    url(r'^stats/neighborhood/$', stats.neighborhood, name='stats_neighborhood'),
-    url(r'^stats/membership-history/$', stats.membership_history, name='stats_memberships'),
-    url(r'^stats/membership-days/$', stats.membership_days, name='stats_memberdays'),
-    url(r'^stats/graph/$', stats.graph, name='stats_graph'),
-
-    # url(r'^settings/$', settin,gs.index, namespace="settings", name='index'),
-    url(r'^settings/', include('staff.urls.settings', namespace="settings")),
-
-
     url(r'^usaepay/m/$', payment.usaepay_members, name='payments_members'),
     url(r'^usaepay/void/$', payment.usaepay_void, name='payment_void'),
     url(r'^usaepay/(?P<username>[^/]+)/$', payment.usaepay_user, name='user_payment'),
     url(r'^charges/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', payment.usaepay_transactions, name='charges'),
     url(r'^charges/today/$', payment.usaepay_transactions_today, name='charges_today'),
     url(r'^xero/(?P<username>[^/]+)/$', payment.xero_user, name='xero'),
+
 
     url(r'^view_ip/$', core.view_ip, name='view_ip'),
     url(r'^view_config/$', core.view_config, name='view_config'),
