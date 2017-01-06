@@ -16,7 +16,7 @@ casper.test.begin('Profile has 30 links', 35, function suite(test) {
       test.assertExists('form[method="post"]', "login form is found");
   });
 
-  casper.then(function(username, password) {
+  casper.then(function() {
     this.evaluate(function() {
       //insert username to test
       document.getElementById('id_username').value = '';
