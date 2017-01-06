@@ -26,11 +26,11 @@ var steps = [
     page.evaluate(function() {
       var form = document.getElementById("login_form");
       var element = form.getAttribute('method');
-      if (element == "POST") {
+      if (element == "post") {
         //insert testing username
-        form.elements["username"].value="";
+        form.elements["username"].value="alexandra";
         //insert testing password
-        form.elements["password"].value="";
+        form.elements["password"].value="hellocats";
       }
     });
   },
@@ -38,38 +38,22 @@ var steps = [
     page.evaluate(function() {
       var form = document.getElementById("login_form");
       var element = form.getAttribute('method');
-      if (element == "POST") {
+      if (element == "post") {
         form.submit();
       }
     });
   },
   function() {
-    // page.render('done.png');
+    page.render('loggedin.png');
     page.evaluate(function() {
       console.log('Done login.');
     });
   },
   function() {
-    page.open(url + '/member/profile/alexandra');
+    page.open(url + '/member/edit/alexandra');
   },
   function() {
-    links = page.evaluate(function(links) {
-       var as = document.getElementsByTagName('a');
-       var hrefs = [];
-       for (var k = 0; k < as.length; k++ ){
-         hrefs.push(as[k].getAttribute('href'));
-       }
-       return hrefs;
-    }, links);
-  },
-  function() {
-    for(var j = 0; j < (links.length - 5); j++) {
-      //TODO fix async issue with this to test links.
-      page = new WebPage();
-      page.open(url + links[3], function() {
-        page.render('img/page' + j + '.png');
-      })
-    }
+    
   },
   function() {
     page.render('done.png');
