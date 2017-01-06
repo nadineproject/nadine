@@ -128,7 +128,7 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'urls'
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -149,9 +149,7 @@ INSTALLED_APPS = (
     'taggit',
     'djcelery',
     'doors.keymaster',
-    #'django_extensions',
-    #'debug_toolbar',
-)
+]
 
 #
 # Celery initialization
