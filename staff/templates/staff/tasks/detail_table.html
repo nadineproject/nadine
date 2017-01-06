@@ -16,7 +16,7 @@
       <tr class="{% cycle 'row-even' 'row-odd' %}">
       {% if member %}
         <td nowrap>
-          <a href="{% url 'staff:member:detail' alert.user.username %}">{{ alert.user.get_full_name }}</a>
+          <a href="{% url 'staff:user:detail' alert.user.username %}">{{ alert.user.get_full_name }}</a>
         </td>
       {% endif %}
       {% if description %}

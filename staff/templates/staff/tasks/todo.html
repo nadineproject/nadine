@@ -58,7 +58,7 @@ nav #todo-tab { background: #FBD850; color: black; }
 					<a href="{% url 'staff:activity:date' row.day.year row.day.month row.day.day %}">{{ row.day|date:"l, M dS" }}</a>
 				</td>
 				<td style="text-align:left;">
-					<a href="{% url 'staff:member:detail' row.user.username %}">{{ row.user.get_full_name }}</a>
+					<a href="{% url 'staff:user:detail' row.user.username %}">{{ row.user.get_full_name }}</a>
 				</td>
 				<td style="text-align:center;">
 						<button id="yes{{forloop.counter}}" onClick="return yes({{ forloop.counter }});">Yes - Mark as BILLABLE</button>

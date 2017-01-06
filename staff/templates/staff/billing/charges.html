@@ -97,7 +97,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 	{% for t in other_transactions %}
 	  <!-- transaction_id: {{ t.transaction_id }} -->
 		<tr class="{% cycle 'row-even' 'row-odd' %}">
-			<td><a href="{% url 'staff:member:detail' t.username %}">{{ t.username }}</a></td>
+			<td><a href="{% url 'staff:user:detail' t.username %}">{{ t.username }}</a></td>
 			<td>{{ t.description }}</td>
 			<td>{{ t.card_type }}</td>
 			<td>{{ t.transaction_type }}</td>

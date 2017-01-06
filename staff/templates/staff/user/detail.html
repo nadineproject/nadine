@@ -49,7 +49,7 @@ function gotoEmailReset(emailAddress){
 {% endblock %}
 
 {% block content %}
-{% include "staff/member/member_menu.frag" %}
+{% include "staff/user/member_menu.frag" %}
 
 <div class="member-photo">
     {% if user.profile.photo %}
@@ -65,16 +65,16 @@ function gotoEmailReset(emailAddress){
     <div id="quick-links">
         <a href="{% url 'staff:activity:user' user.username %}">activity</a> |
         <a href="{% url 'doors_keys' user.username %}">keys</a> |
-        <a href="{% url 'staff:member:files' user.username %}">files</a> |
+        <a href="{% url 'staff:user:files' user.username %}">files</a> |
         <a href="{% url 'staff:user_payment' user.username %}">usaepay</a> |
         <a href="{% url 'staff:xero' user.username %}">xero</a> |
         <a href="{% url 'admin:auth_user_change' user.id %}">admin</a> |
         <a href="{% url 'member_profile' user.username %}">view profile</a> |
         <a href="{% url 'member_edit_profile' user.username %}">edit profile</a> |
         {% if user.profile.is_active %}
-            <a href="{% url 'staff:membership' user.profile.last_membership.id %}">update membership</a>
+            <a href="{% url 'staff:user:membership' user.profile.last_membership.id %}">update membership</a>
         {% else %}
-            <a href="{% url 'staff:user_membership' user.username %}">add membership</a>
+            <a href="{% url 'staff:user:membership' user.username %}">add membership</a>
         {% endif %}
     </div>
 </div>
@@ -281,7 +281,7 @@ function gotoEmailReset(emailAddress){
                 <td nowrap>
                     {{ membership.membership_plan }}
                     {% if membership.paid_by %}
-                     (<a href="{% url 'staff:member:detail' membership.paid_by.username %}">{{ membership.paid_by.username }}</a>)
+                     (<a href="{% url 'staff:user:detail' membership.paid_by.username %}">{{ membership.paid_by.username }}</a>)
                     {% endif %}
                 </td>
                 <td>${{ membership.monthly_rate }}</td>
@@ -292,7 +292,7 @@ function gotoEmailReset(emailAddress){
                 <td>{% if membership.has_mail %}&check;{% endif %}</td>
                 <td style="text-align:center;">
                     {% if membership == user.profile.last_membership %}
-                        [<a href="{% url 'staff:membership' membership.id %}">edit</a>]
+                        [<a href="{% url 'staff:user:membership' membership.id %}">edit</a>]
                     {% endif %}
                 &nbsp;</td>
             </tr>
@@ -318,7 +318,7 @@ function gotoEmailReset(emailAddress){
 
                 {% for guest in user.profile.guests %}
                     <tr class="{% cycle 'row-even' 'row-odd' %}">
-                        <td nowrap><a href="{% url 'staff:member:detail' guest.username %}">{{ guest.get_full_name }}</a></td>
+                        <td nowrap><a href="{% url 'staff:user:detail' guest.username %}">{{ guest.get_full_name }}</a></td>
                         <td>{{ guest.profile.active_membership.membership_plan }}</td>
                         <td style="text-align: center;">{{ guest.profile.first_visit }}</td>
                     </tr>
@@ -330,8 +330,8 @@ function gotoEmailReset(emailAddress){
 <div id="tabs-2">
     <div id="quick-links">
         <strong>More Info:</strong>
-        <a href="{% url 'staff:member:bills' user.username %}">bills</a> |
-        <a href="{% url 'staff:member:transactions' user.username %}">transactions</a>
+        <a href="{% url 'staff:user:bills' user.username %}">bills</a> |
+        <a href="{% url 'staff:user:transactions' user.username %}">transactions</a>
     </div>
     <!-- Billing Profile -->
     <h2>Billing Profile</h2>
@@ -369,7 +369,7 @@ function gotoEmailReset(emailAddress){
                 <td>${{ deposit.amount }}</td>
                 <td>{% if deposit.note %}{{ deposit.note }}{% endif %}</td>
                 <td style="text-align:right;">{% if not deposit.returned_date %}
-                    <form action="{% url 'staff:deposits' %}" method="POST" onSubmit="return confirm('Are you sure?');">
+                    <form action="{% url 'staff:user:deposits' %}" method="POST" onSubmit="return confirm('Are you sure?');">
                         <input name="username" value="{{ user.username }}" type="hidden" />
                         <input name="deposit_id" value="{{ deposit.id }}" type="hidden" />
                         <input name="mark_returned" type="submit" Value="Mark Returned" />
@@ -379,7 +379,7 @@ function gotoEmailReset(emailAddress){
             </tr>
         {% endfor %}
 
-    <form action="{% url 'staff:deposits' %}" method="POST">
+    <form action="{% url 'staff:user:deposits' %}" method="POST">
         <input name="username" value="{{ user.username }}" type="hidden" />
         <tr>
             <td colspan="2" style="text-align:right;"><strong>Record New Deposit:</strong></th>
@@ -454,7 +454,7 @@ function gotoEmailReset(emailAddress){
                 <td>
                     <form action="{% url 'staff:todo_detail' alert.key %}" method="POST">
                         <input type="hidden" name="alert_id" value="{{ alert.id }}"/>
-                        <input type="hidden" name="next" value="{% url 'staff:member:detail' alert.user.username %}#tabs-4"/>
+                        <input type="hidden" name="next" value="{% url 'staff:user:detail' alert.user.username %}#tabs-4"/>
                         <button name="action" value="resolve" type="submit" {% if alert.is_system_alert %} disabled{% endif %}>Resolve</button>
                         <button name="action" value="mute" type="submit" >Mute</button>
                         <input name="note" size="32"/>

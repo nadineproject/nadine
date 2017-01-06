@@ -9,9 +9,9 @@ nav #members-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {% block content %}
-{% include "staff/member/member_menu.frag" %}
+{% include "staff/user/member_menu.frag" %}
 
-<h2>Edit Member: <a href="{% url 'staff:member:detail' user.username %}">{{ user.get_full_name }}</a></h2>
+<h2>Edit Member: <a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a></h2>
 
 {% if messages %}
 <div class="messages">
@@ -46,7 +46,7 @@ nav #members-tab { background: #FBD850; color: black; }
 	      <tr>
 				<td  class="row-even" colspan="3" style="text-align: center;">
 					<button type="submit">Save Changes</button>
-					<button onclick="window.location='{% url 'staff:member:detail' user.username %}'; return false;">Cancel</button>
+					<button onclick="window.location='{% url 'staff:user:detail' user.username %}'; return false;">Cancel</button>
 				</td>
 			</tr>
 	   </table>

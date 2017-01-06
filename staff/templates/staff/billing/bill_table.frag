@@ -4,7 +4,7 @@
 		<th>Date:</th>
 		<td>
 			<a href="{% url 'staff:bill' bill.id %}">{{ bill.bill_date|date:"m/d/y" }}</a>
-			{% if show_member_name %}for <a href="{% url 'staff:member:detail' bill.user.username %}">{{ bill.user.get_full_name }}</a>{% endif %}
+			{% if show_member_name %}for <a href="{% url 'staff:user:detail' bill.user.username %}">{{ bill.user.get_full_name }}</a>{% endif %}
 		</td>
 	</tr>
 	<tr><th>Status:</th>
@@ -20,7 +20,7 @@
 	{% if not hide_paid_by %}
 		{% if bill.paid_by %}
 			<tr>
-				<th>Paid by:</th><td><a href="{% url 'staff:member:detail' bill.paid_by.user.username %}">{{ bill.paid_by.user.get_full_name }}</a></td>
+				<th>Paid by:</th><td><a href="{% url 'staff:user:detail' bill.paid_by.user.username %}">{{ bill.paid_by.user.get_full_name }}</a></td>
 			</tr>
 		{% endif %}
 	{% endif %}
@@ -54,7 +54,7 @@
 		<th>Guest Dropins:</th>
 		<td>
 			{% for dropin in bill.guest_dropins.all %}
-				<a href="{% url 'staff:member:detail' dropin.user.username %}">{{dropin.user.get_full_name}}</a>
+				<a href="{% url 'staff:user:detail' dropin.user.username %}">{{dropin.user.get_full_name}}</a>
 				on <a href="{{ dropin.get_admin_url }}">{{ dropin.visit_date|date:"m/d/y" }}</a>{% loop_comma %}
 			{% endfor %}
 		</td>

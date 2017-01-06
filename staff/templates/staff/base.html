@@ -51,7 +51,7 @@
 				<a id="todo-tab" href="{% url 'staff:tasks:todo' %}">Tasks</a>
 			</li>
 			<li>
-				<a href="{% url 'staff:members' %}">Member List</a>
+				<a href="{% url 'staff:user:members' %}">Member List</a>
 			</li>
 			<li>
 				<a href="{% url 'staff:activity:graph' %}">Activity</a>
@@ -87,7 +87,7 @@
 	<!-- Content -->
 	<div id="content" style="margin-bottom: 5%;">
 		{% if request.user.is_authenticated %}
-		<form id="site-search-form" action="{% url 'staff:search' %}" method="post">
+		<form id="site-search-form" action="{% url 'staff:user:search' %}" method="post">
 			{% for field in site_search_form %}{{ field }}{% endfor %}
 			<input type="submit" value="search" />
 			{% csrf_token %}

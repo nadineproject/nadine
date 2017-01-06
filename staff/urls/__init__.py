@@ -1,25 +1,14 @@
 from django.shortcuts import redirect
 from django.conf.urls import include, url
 
-from staff.views import activity, billing, core, member, stats, payment, settings
+from staff.views import billing, core, payment
 
 urlpatterns = [
     # TODO - don't hardcode
     url(r'^$', lambda r: redirect('/staff/tasks'), name="index"),
 
-    url(r'^members/$', core.members, name='members'),
-    url(r'^members/(?P<group>[^/]+)/$', core.members, name='member_group'),
-    url(r'^bcc/(?P<group>[^/]+)/$', core.member_bcc, name='group_bcc'),
-    url(r'^bcc/$', core.member_bcc, name='bcc'),
-    url(r'^deposits/$', core.security_deposits, name='deposits'),
-    url(r'^export/$', core.export_users, name='export_users'),
-    url(r'^search/$', core.member_search, name='search'),
-    url(r'^user_reports/$', core.view_user_reports, name='user_reports'),
-    url(r'^slack_users/$', core.slack_users, name='slack_users'),
-    url(r'^membership/(?P<membership_id>\d+)/$', core.membership, name='membership'),
-
     url(r'^tasks/', include('staff.urls.tasks', namespace="tasks")),
-    url(r'^member/', include('staff.urls.member', namespace="member")),
+    url(r'^user/', include('staff.urls.user', namespace="user")),
     url(r'^activity/', include('staff.urls.activity', namespace="activity")),
     url(r'^settings/', include('staff.urls.settings', namespace="settings")),
     url(r'^stats/', include('staff.urls.stats', namespace="stats")),

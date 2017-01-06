@@ -23,7 +23,7 @@ nav #lists-tab { background: #FBD850; color: black; }
 <ul>
 {% for u in non_slack_users %}
 	<li>
-		<strong><a href="{% url 'staff:member:detail' u.username %}">{{ u.get_full_name }}</a></strong>: 
+		<strong><a href="{% url 'staff:user:detail' u.username %}">{{ u.get_full_name }}</a></strong>: 
 		{{ m.email }}</a>
 	</li>
 {% endfor %}

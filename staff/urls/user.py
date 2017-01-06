@@ -1,13 +1,24 @@
 from django.conf.urls import include, url
 
-from staff.views import member
+from staff.views import user
 
 urlpatterns = [
-     url(r'^detail/(?P<username>[^/]+)/$', member.detail, name='detail'),
-     url(r'^transactions/(?P<username>[^/]+)/$', member.transactions, name='transactions'),
-     url(r'^bills/(?P<username>[^/]+)/$', member.bills, name='bills'),
-     url(r'^memberships/(?P<username>[^/]+)/$', member.membership, name='memberships'),
-     url(r'^files/(?P<username>[^/]+)/$', member.files, name='files'),
+     url(r'^members/$', user.members, name='members'),
+     url(r'^members/(?P<group>[^/]+)/$', user.members, name='member_group'),
+     url(r'^bcc/$', user.bcc_tool, name='bcc_tool'),
+     url(r'^bcc/(?P<group>[^/]+)/$', user.bcc_tool, name='group_bcc'),
+     url(r'^deposits/$', user.security_deposits, name='deposits'),
+     url(r'^export/$', user.export_users, name='export_users'),
+     url(r'^search/$', user.member_search, name='search'),
+     url(r'^user_reports/$', user.view_user_reports, name='user_reports'),
+     url(r'^slack_users/$', user.slack_users, name='slack_users'),
+     url(r'^membership/(?P<membership_id>\d+)/$', user.membership, name='membership'),
+
+     url(r'^detail/(?P<username>[^/]+)/$', user.detail, name='detail'),
+     url(r'^transactions/(?P<username>[^/]+)/$', user.transactions, name='transactions'),
+     url(r'^bills/(?P<username>[^/]+)/$', user.bills, name='bills'),
+     url(r'^memberships/(?P<username>[^/]+)/$', user.membership, name='memberships'),
+     url(r'^files/(?P<username>[^/]+)/$', user.files, name='files'),
 
      # TODO remove
      # url(r'^signins/(?P<username>[^/]+)/$', member.signins, name='user_signins'),

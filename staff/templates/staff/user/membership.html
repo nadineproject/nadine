@@ -17,7 +17,7 @@ nav #members-tab { background: #FBD850; color: black; }
 
 
 {% block content %}
-{% include "staff/member/member_menu.frag" %}
+{% include "staff/user/member_menu.frag" %}
 
 <script>
     $(function() {
@@ -59,7 +59,7 @@ $(document).ready(function() {
 })
 </script>
 
-<h2>{% if membership %} Update {% else %} Add {% endif %} Membership for <a href="{% url 'staff:member:detail' user.username %}">{{ user.get_full_name }}</a></h2>
+<h2>{% if membership %} Update {% else %} Add {% endif %} Membership for <a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a></h2>
 
 {% if messages %}
 <div class="messages">
