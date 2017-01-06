@@ -98,6 +98,11 @@ def create_booking(request):
     date = request.GET.get('date', str(timezone.now().date()))
     start = request.GET.get('start', str(datetime.now().hour) + ':' + str(datetime.now().minute))
     end = request.GET.get('end', str(datetime.now().hour + 2) + ':' + str(datetime.now().minute))
+    all_day = request.GET.get('all_day', None)
+
+    if all_day:
+        start = settings.OPEN_TIME
+        end = settings.CLOSE_TIME
 
     # Turn our date, start, and end strings into timestamps
     start_ts, end_ts, start, end = coerce_times(start, end, date)
@@ -137,6 +142,7 @@ def create_booking(request):
                'has_av': has_av,
                'floor': floor,
                'seats': seats,
+               'all_day': all_day,
                'has_phone': has_phone,
                'room_dict': room_dict
                }

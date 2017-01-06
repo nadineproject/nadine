@@ -30,6 +30,10 @@
         <td class='booking-td'><input type="date" name="date" class="datepicker" id='booking-date' ></td>
         <td><input name='start' class='timepicker' step=900 id='start-time'/></td>
         <td><input name='end' class='timepicker' step=900 id='end-time'/></td>
+        <td>
+          <input id='day-btn' name='all_day' type='checkbox' class='filled-in' />
+          <label for='day-btn' name='all-day'>All Day Event</label>
+        </td>
       </tr>
     </table>
     <div class='row' id='room-criteria'>
@@ -73,7 +77,7 @@
       <div class='row'>
         {% if room.image %}
           <div class='col s1'>
-            <h5 class='oswald'>{{ room.name }}</h5>
+            <h5 class='oswald' style='color:RGBA(66, 98, 113, 1.00);'>{{ room.name }}</h5>
             <p>Floor {{room.floor}}</p>
             <button class='btn room-show' id='{{ room.id }}'>More Info</button>
             <button class='btn room-close'>Hide Info</button>
@@ -83,7 +87,7 @@
           </div>
         {% else %}
         <div class='col s2'>
-          <h5>{{ room.name }}</h5>
+          <h5 class='oswald' style='color:RGBA(66, 98, 113, 1.00);'>{{ room.name }}</h5>
           <p>Floor {{room.floor}}</p>
           <button class='btn room-show' id='{{ room.id }}'>More Info</button>
           <button class='btn room-close'>Hide Info</button>
@@ -191,8 +195,28 @@
         scrollbar: true
       });
 
+      //Keep data from search on screen reload
       var phone = '{{ has_phone }}';
       var av = '{{ has_av }}';
+      var all_day = '{{ all_day }}';
+
+      if (phone === 'None') {
+        $('#phone-btn').attr('checked', false);
+      } else {
+        $('#phone-btn').attr('checked', true);
+      }
+
+      if (av === 'None') {
+        $('#av-btn').attr('checked', false);
+      } else {
+        $('#av-btn').attr('checked', true);
+      }
+
+      if (all_day === 'None') {
+        $('#day-btn').attr('checked', false);
+      } else {
+        $('#day-btn').attr('checked', true);
+      }
 
       var floor = '{{ floor }}';
 
@@ -216,18 +240,6 @@
         $('#ppl-10').attr('selected', 'true');
       } else if (seats == 20){
         $('#ppl-20').attr('selected', 'true');
-      }
-
-      if (phone === 'None') {
-        $('#phone-btn').attr('checked', false);
-      } else {
-        $('#phone-btn').attr('checked', true);
-      }
-
-      if (av === 'None') {
-        $('#av-btn').attr('checked', false);
-      } else {
-        $('#av-btn').attr('checked', true);
       }
 
       $('.datepicker').pickadate({
