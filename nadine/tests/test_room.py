@@ -63,10 +63,8 @@ class RoomTestCase(TestCase):
 
     def test_available_early(self):
         #Check for room for search which starts and ends before any saved events
-        # start = self.start1 - timedelta(hours=2)
-        # end = start + timedelta(hours=1)
-        start = timezone.now() - timedelta(hours=3)
-        end = timezone.now() - timedelta(hours=2)
+        start = self.start1 - timedelta(hours=2)
+        end = start + timedelta(hours=1)
         rooms = Room.objects.available(start=start, end=end)
         self.assertTrue(len(rooms) == 2)
         self.assertTrue(self.room1 in rooms)

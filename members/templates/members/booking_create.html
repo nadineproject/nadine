@@ -2,6 +2,19 @@
 
 {% block sub-title %}Book a Meeting Room | {% endblock %}
 
+{% block style %}
+
+  @media only screen and (max-width: 1100px) {
+    .row .col.offset-s1.s10 {
+  		margin-left: 0;
+  	}
+
+		.row .col.s10 {
+			width: 100%;
+		}
+	}
+{% endblock %}
+
 {% block content %}
 <div class='booking-box'>
   <h3 class='oswald' style='text-align:center; color:black;'>Book a Meeting Room</h3>
@@ -22,28 +35,30 @@
     <div class='row' id='room-criteria'>
       <table>
         <tr>
-          <td id="av-btn"><input name='has_av' type="checkbox" class='filled-in' />
-          <label for="av-btn">Has A/V</label></td>
-          <td id='phone-btn'>
-            <input name="has_phone" type="checkbox" class='filled-in' />
+          <td>
+            <input id="av-btn" name='has_av' type="checkbox" class='filled-in' />
+            <label for="av-btn">Has A/V</label>
+          </td>
+          <td>
+            <input id='phone-btn' name="has_phone" type="checkbox" class='filled-in' />
             <label for="phone-btn">Has Phone</label>
           </td>
           <td id='floor-select'>
             <select class='browser-default input-field' name='floor' id='floor'>
               <option value="" disabled selected>On Floor:</option>
-              <option value="1">Floor 1</option>
-              <option value="2">Floor 2</option>
-              <option value="3">Floor 3</option>
+              <option id='floor-1' value="1">Floor 1</option>
+              <option id='floor-2' value="2">Floor 2</option>
+              <option id='floor-2' value="3">Floor 3</option>
             </select>
           </td>
           <td id='seat-select'>
             <select class='browser-default input-field' name='seats'>
               <option value="" disabled selected>Seats:</option>
-              <option value="2">2 People</option>
-              <option value="4">4 People</option>
-              <option value="6">6 People</option>
-              <option value="10">10-20 People</option>
-              <option value="20">20+ People</option>
+              <option id='ppl-2' value="2">2 People</option>
+              <option id='ppl-4' value="4">4 People</option>
+              <option id='ppl-6' value="6">6 People</option>
+              <option id='ppl-10' value="10">10-20 People</option>
+              <option id='ppl-20' value="20">20+ People</option>
             </select>
           </td>
           <td>
@@ -58,7 +73,7 @@
       <div class='row'>
         {% if room.image %}
           <div class='col s1'>
-            <h5>{{ room.name }}</h5>
+            <h5 class='oswald'>{{ room.name }}</h5>
             <p>Floor {{room.floor}}</p>
             <button class='btn room-show' id='{{ room.id }}'>More Info</button>
             <button class='btn room-close'>Hide Info</button>
@@ -130,12 +145,12 @@
       </div>
       <div class='row dropdown-room slider closed' id='dropdown-{{ room.id }}'>
         {% if room.image %}
-          <img class='col s3' src='{{ room.image.url }}'/>
+          <img class='col s3 m3 l3 offset-l1' src='{{ room.image.url }}'/>
         {% endif %}
-        <div class='col s8 offset s1'>
+        <div class='col s7 offset-s1'>
           <div class='row' style='margin-bottom:0;'>
-            <h4 class='col s10'>{{ room.name }}</h4>
-            <button class='btn col s1 room-close'>X</p>
+            <h4 class='col s9 m10 l10'>{{ room.name }}</h4>
+            <button class='btn col s1 m1 l1 room-close'>X</p>
           </div>
           <ul>
             <li>Seats: {{ room.seats }}</li>
@@ -178,6 +193,30 @@
 
       var phone = '{{ has_phone }}';
       var av = '{{ has_av }}';
+
+      var floor = '{{ floor }}';
+
+      if (floor == 1) {
+        $('#floor-1').attr('selected', 'true');
+      } else if (floor == 2) {
+        $('#floor-2').attr('selected', 'true');
+      } else if (floor == 3) {
+        $('#floor-3').attr('selected', 'true');
+      }
+
+      var seats = '{{ seats }}';
+
+      if (seats == 2) {
+        $('#ppl-2').attr('selected', 'true');
+      } else if (seats == 4) {
+        $('#ppl-4').attr('selected', 'true');
+      } else if (seats == 6) {
+        $('#ppl-6').attr('selected', 'true');
+      } else if (seats == 10) {
+        $('#ppl-10').attr('selected', 'true');
+      } else if (seats == 20){
+        $('#ppl-20').attr('selected', 'true');
+      }
 
       if (phone === 'None') {
         $('#phone-btn').attr('checked', false);
