@@ -20,6 +20,7 @@ from nadine.models.usage import CoworkingDay
 from nadine.models.payment import Transaction
 from nadine.models.alerts import MemberAlert
 from nadine.models.organization import Organization, OrganizationMember
+from nadine.models.membership import Membership
 from nadine.forms import EditProfileForm, ProfileImageForm, LinkForm, BaseLinkFormSet
 from nadine.utils import network
 from arpwatch import arp
@@ -61,7 +62,8 @@ def profile_private(request, username):
 @login_required
 def profile_membership(request, username):
     user = get_object_or_404(User, username=username)
-    memberships = user.membership_set.all().reverse()
+    # memberships = user.membership_set.all().reverse()
+    memberships = Membership.objects.filter(user=user).reverse()
 
     context = {'user': user, 'memberships': memberships }
     return render(request, 'members/profile_membership.html', context)
@@ -311,4 +313,4 @@ def edit_photo(request, username):
     context = {'user': user, 'form': form}
     return render(request, 'members/profile_image_edit.html', context)
 
-# Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

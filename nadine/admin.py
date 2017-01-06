@@ -126,4 +126,19 @@ class FileUploadAdmin(StyledAdmin):
 admin.site.register(FileUpload, FileUploadAdmin)
 
 
-# Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+class ResourceAllowanceInline(admin.TabularInline):
+    model = ResourceAllowance
+    extra = 1
+class IndividualMembershipAdmin(StyledAdmin):
+    # inlines = [ResourceAllowanceInline, ]
+    readonly_fields = ('allowances', )
+admin.site.register(IndividualMembership, IndividualMembershipAdmin)
+
+#admin.site.register(OrganizationMembership)
+
+admin.site.register(Resource)
+admin.site.register(MembershipPackage)
+admin.site.register(DefaultAllowance)
+admin.site.register(ResourceAllowance)
+
+# Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
