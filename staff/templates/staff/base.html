@@ -18,6 +18,8 @@
 
 	{%block sub-head %}{% endblock %}
 
+	<link rel="stylesheet" type="text/css" href= "{% static 'staff/css/base.css'%}" />
+
 	<!-- Used to style the slected nav -->
 	<style>{% block nav-style %}{% endblock %}</style>
 
@@ -44,22 +46,46 @@
 	</div>
 
 	<!-- Header -->
-	{% block header %}<header>
-		<nav>
-		<a id="todo-tab" href="{% url 'staff:tasks:todo' %}">Tasks</a>
-		<a id="members-tab" href="{% url 'staff:members' %}">Member List</a>
-		<a id="activity-tab" href="{% url 'staff:activity:graph' %}">Activity</a>
-		<a id="billing-tab" href="{% url 'staff:bills' %}">Billing</a>
-		<a id="stats-tab" href="{% url 'staff:stats:daily' %}">Stats</a>
-		<a id="logs-tab" href="{% url 'arp_user' %}">Logs</a>
-		<a id="lists-tab" href="{% url 'interlink_index' %}">Lists</a>
-		<a id="doors-tab" href="{% url 'doors_index' %}">Doors</a>
-		<a id="settings-tab" href="{% url 'staff:settings:index' %}">Settings</a>
-		<a id="log-tab" href="{% url 'logout' %}">Logout</a>
-		</nav>
+	{% block header %}
+	<header>
+		<div id="navcontainer">
+		<ul>
+			<li>
+				<a id="todo-tab" href="{% url 'staff:tasks:todo' %}">Tasks</a>
+			</li>
+			<li>
+				<a href="{% url 'staff:members' %}">Member List</a>
+			</li>
+			<li>
+				<a href="{% url 'staff:activity:graph' %}">Activity</a>
+			</li>
+			<li>
+				<a href="{% url 'staff:bills' %}">Billing</a>
+			</li>
+			<li>
+				<a href="{% url 'staff:stats:daily' %}">Stats</a>
+			</li>
+			<li>
+				<a href="{% url 'arp_user' %}">Logs</a>
+			</li>
+			<li>
+				<a href="{% url 'interlink_index' %}">Lists</a>
+			</li>
+			<li>
+				<a href="{% url 'doors_index' %}">Doors</a>
+			</li>
+			<li>
+				<a href="{% url 'staff:settings:index' %}">Settings</a>
+			</li>
+			<li>
+				<a href="{% url 'logout' %}">Logout</a>
+			</li>
+		</ul>
+		</div>
 
 		{% block header-title %}{% endblock %}
-	</header>{% endblock %}
+	</header>
+	{% endblock %}
 
 	<!-- Content -->
 	<div id="content" style="margin-bottom: 5%;">

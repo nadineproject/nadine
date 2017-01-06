@@ -3,11 +3,10 @@
 {% block sub-title %}Stats | Members | {% endblock %}
 
 {% block sub-head %}
-	<link rel="stylesheet" href="{{ STATIC_URL }}c3/c3.min.css" />
-	<link rel="stylesheet" href="{{ STATIC_URL }}themes/custom-staff/jquery-ui-1.10.4.custom.css" />
-	<script src="{{ STATIC_URL }}c3/date.min.js"></script>
-	<script src="{{ STATIC_URL }}c3/d3.min.js" charset="utf-8"></script>
-	<script src="{{ STATIC_URL }}c3/c3.min.js"></script>
+  <link rel="stylesheet" href="{% static 'staff/c3/c3.min.css' %}" />
+  <script src="{% static 'staff/c3/date.min.js' %}"></script>
+  <script src="{% static 'staff/c3/d3.min.js' %}" charset="utf-8"></script>
+  <script src="{% static 'staff/c3/c3.min.js' %}"></script>
 {% endblock %}
 
 {% block style%}
