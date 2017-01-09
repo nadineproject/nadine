@@ -5,6 +5,7 @@ var url = 'http://127.0.0.1:8000';
 username = casper.cli.get('username');
 password = casper.cli.get('password');
 
+// print out all the messages in the headless browser context
 casper.on("page.error", function(msg, trace) {
     this.echo("Page Error: " + msg, "ERROR");
 });
@@ -80,9 +81,14 @@ casper.test.begin('Can update password in member edit page', 9, function suite(t
   });
 
   casper.then(function() {
-    this.evaluate(function() {
-      document.getElementById('password-create').value = 'hellocats';
-      document.getElementById('password-confirm').value = 'hellocats';
+    this.fill("form[name='edit']", {
+      'password-create': password,
+      'password-confirm': password
+    }, false);
+  })
+
+  casper.then(function() {
+    this.evaluate(function(password) {
       document.getElementsByClassName('sub-btn')[0].click();
     });
   });

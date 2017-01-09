@@ -31,7 +31,7 @@ casper.test.begin('Home page links all return 200', function suite(test) {
   })
 
   casper.then(function() {
-    test.assertTitle("Office Nomads", "Homepage title is ok");
+    test.assertTitle("Office Nomads", "Homepage title is 'Office Nomads'");
     test.assertUrlMatch(/member/, "Homepage url correct");
   });
 
