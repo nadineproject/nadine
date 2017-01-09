@@ -1,8 +1,7 @@
 // To test this file, make sure CapserJs is installed on local machine
-// (brew install casperjs) then use code 'casperjs test linktesting.js --username='YOUR_USERNAME' --password='YOUR_PASSWORD' --path='/GIVEN_PATH/''
+// (brew install casperjs) then use code 'casperjs test linktesting.js --username='YOUR_USERNAME' --password='YOUR_PASSWORD' --path='/GIVEN_PATH/' --log-level=debug'
 
 // This tests to make sure all urls are valid on given page
-
 var url = 'http://127.0.0.1:8000';
 var links;
 
@@ -45,12 +44,13 @@ casper.test.begin('Links from given path return 200', function suite(test) {
     this.each(links,function(self,link) {
       path = url + link;
       self.thenOpen(path,function(a) {
-        test.assertEquals(this.currentHTTPStatus, 200, 'Link has status code 200');
+        test.assertEquals(this.currentHTTPStatus, 200, link + ' has status code 200');
       });
     });
   });
 
   casper.run(function() {
-      test.done();
+    require('utils').dump(this.result.log);
+    test.done();
   });
 });
