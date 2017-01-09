@@ -16,20 +16,7 @@ from django.contrib.sites.models import Site
 from django.contrib import messages
 from django.conf import settings
 
-from nadine.models.membership import Membership, MembershipPlan, MemberGroups, SecurityDeposit
-from nadine.forms import MemberSearchForm, MembershipForm, EventForm
-from nadine.utils import network
-
-
-@staff_member_required
-def view_ip(request):
-    ip = network.get_addr(request)
-    return render(request, 'staff/view_ip.html', {'ip': ip})
-
-
-@staff_member_required
-def view_config(request):
-    return render(request, 'staff/view_config.html', {})
+from nadine.forms import EventForm
 
 
 @staff_member_required

@@ -13,9 +13,6 @@ urlpatterns = [
     url(r'^settings/', include('staff.urls.settings', namespace="settings")),
     url(r'^stats/', include('staff.urls.stats', namespace="stats")),
 
-    url(r'^view_ip/$', core.view_ip, name='view_ip'),
-    url(r'^view_config/$', core.view_config, name='view_config'),
-
     url(r'^event/create$', core.create_event, name='create_event'),
 ]
 
