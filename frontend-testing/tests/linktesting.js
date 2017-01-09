@@ -1,20 +1,21 @@
 // To test this file, make sure CapserJs is installed on local machine
-// (brew install casperjs) then use code 'casperjs test homelinktesting.js'
+// (brew install casperjs) then use code 'casperjs test linktesting.js --username='YOUR_USERNAME' --password='YOUR_PASSWORD' --path='/GIVEN_PATH/''
 
-// This tests to make sure all urls are valid on the member homepage
+// This tests to make sure all urls are valid on given page
 
 var url = 'http://127.0.0.1:8000';
 var links;
 
 username = casper.cli.get('username');
 password = casper.cli.get('password');
+path = casper.cli.get('path');
 
 casper.on("page.error", function(msg, trace) {
     this.echo("Page Error: " + msg, "ERROR");
 });
 
-casper.test.begin('Home page links all return 200', function suite(test) {
-  casper.start(url + '/login', function() {
+casper.test.begin('Links from given path return 200', function suite(test) {
+  casper.start(url + path, function() {
       test.assertTitle("Login | Office Nomads", "Login page title is the one expected");
       test.assertExists('form[method="post"]', "login form is found");
       this.fill("form[method='post']", {
@@ -30,11 +31,6 @@ casper.test.begin('Home page links all return 200', function suite(test) {
     })
   })
 
-  casper.then(function() {
-    test.assertTitle("Office Nomads", "Homepage title is 'Office Nomads'");
-    test.assertUrlMatch(/member/, "Homepage url correct");
-  });
-
   casper.then(function getLinks() {
     links = this.evaluate(function(){
       var links = document.getElementsByTagName('a');
@@ -49,7 +45,7 @@ casper.test.begin('Home page links all return 200', function suite(test) {
     this.each(links,function(self,link) {
       path = url + link;
       self.thenOpen(path,function(a) {
-        test.assertEquals(this.currentHTTPStatus, 200);
+        test.assertEquals(this.currentHTTPStatus, 200, 'Link has status code 200');
       });
     });
   });
