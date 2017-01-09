@@ -331,7 +331,7 @@ class EditProfileForm(forms.Form):
         user.profile.industry = self.cleaned_data['industry']
         user.profile.neighborhood = self.cleaned_data['neighborhood']
         user.profile.has_kids = self.cleaned_data['has_kids']
-        user.profile.self_emplyed = self.cleaned_data['self_employed']
+        user.profile.self_employed = self.cleaned_data['self_employed']
         user.profile.public_profile = self.cleaned_data['public_profile']
         user.profile.save()
 

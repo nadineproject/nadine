@@ -36,8 +36,11 @@ def org_list(request):
     else:
         search_form = OrganizationSearchForm()
 
-    context = {'organizations': orgs, 'search_results': search_results,
-        'search_form': search_form, 'search_terms': search_terms, }
+    context = {'organizations': orgs,
+               'search_results': search_results,
+               'search_form': search_form,
+               'search_terms': search_terms,
+               }
     return render(request, 'members/org_list.html', context)
 
 
@@ -48,7 +51,7 @@ def org_view(request, org_id):
     can_edit = org.can_edit(request.user) or request.user.is_staff
 
     members = org.organizationmember_set.all().order_by('start_date')
-    counts = { 'total': members.count(), 'active': 0, 'inactive': 0 }
+    counts = {'total': members.count(), 'active': 0, 'inactive': 0}
     for m in members:
         if m.is_active():
             counts['active'] = counts['active'] + 1
@@ -57,18 +60,18 @@ def org_view(request, org_id):
 
     show_all = 'show_all' in request.GET or counts['active'] == 0
     context = {'organization': org,
-        'can_edit':can_edit,
-        'members': members,
-        'counts': counts,
-        'show_all': show_all,
-    }
+               'can_edit': can_edit,
+               'members': members,
+               'counts': counts,
+               'show_all': show_all,
+               }
     return render(request, 'members/org_view.html', context)
 
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def org_add(request):
-    if not 'org' in request.POST and 'username' in request.POST:
+    if 'org' not in request.POST and 'username' in request.POST:
         return HttpResponseForbidden("Forbidden")
 
     user = get_object_or_404(User, username=request.POST['username'])
@@ -124,14 +127,18 @@ def org_edit(request, org_id):
                     form.save()
                     return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
                 else:
-                    page_message = 'There was an error saving your websites. Please make sure they have a valid URL and URL type.'
+                    page_message = 'Please make sure the websites have a valid URL and URL type.'
         except Exception as e:
             messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
     else:
         form = OrganizationForm(instance=org)
         org_link_formset = OrgFormSet(initial=link_data)
 
-    context = {'organization': org, 'form':form, 'org_link_formset': org_link_formset, 'page_message': page_message}
+    context = {'organization': org,
+               'form': form,
+               'org_link_formset': org_link_formset,
+               'page_message': page_message
+               }
     return render(request, 'members/org_edit.html', context)
 
 
@@ -167,9 +174,9 @@ def org_member(request, org_id):
         if 'edit' == action:
             form = OrganizationMemberForm(instance=org_member)
         if 'add' == action:
-            initial_data={ 'username':new_username,
-                'start_date': timezone.now()
-            }
+            initial_data = {'username': new_username,
+                            'start_date': timezone.now()
+                            }
 
             form = OrganizationMemberForm(initial=initial_data)
         if 'save' == action:
@@ -182,10 +189,15 @@ def org_member(request, org_id):
     except Exception as e:
         messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
 
-    context = {'organization': org, 'member':org_member, 'username':new_username,
-        'full_name':full_name, 'form':form, 'action':action,
-    }
+    context = {'organization': org,
+               'member': org_member,
+               'username': new_username,
+               'full_name': full_name,
+               'form': form,
+               'action': action,
+               }
     return render(request, 'members/org_member.html', context)
+
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
@@ -197,14 +209,14 @@ def org_edit_photo(request, org_id):
         form = OrganizationForm(request.POST, request.FILES)
         org.photo = request.FILES.get('photo', None)
 
-        org.save();
+        org.save()
 
         return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
 
     else:
         form = OrganizationForm(request.POST, request.FILES)
 
-    context = { 'organization': org }
+    context = {'organization': org}
     return render(request, 'members/org_edit_photo.html', context)
 
 

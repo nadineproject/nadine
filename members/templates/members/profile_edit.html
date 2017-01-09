@@ -329,12 +329,12 @@
 		  $(this).text($(this).text().charAt(0).toUpperCase() + $(this).text().slice(1));
 		});
 
-
     $('.button-collapse').sideNav();
+
     $('.link-formset').formset({
       addText: 'Add Another',
       deleteText: 'Remove'
-    })
+    });
 
     $('.delete-row').addClass('btn-floating btn-large btn url-btn');
 
@@ -344,7 +344,6 @@
 
     $('#password-create').on('focus', function(e) {
       e.preventDefault();
-
       $('.password-error').remove();
     });
 

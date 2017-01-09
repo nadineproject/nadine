@@ -22,7 +22,7 @@ from members.views.core import is_active_member
 def query_to_item_list(query):
     items = []
     for i in query.order_by('name'):
-        items.append({'id': i.id, 'value': i.name,})
+        items.append({'id': i.id, 'value': i.name, })
     return items
 
 
@@ -89,7 +89,10 @@ def user_search(request):
         query = query.filter(first_name__istartswith=term)
     items = []
     for i in query.order_by('first_name'):
-        items.append({'id': i.id, 'label': i.get_full_name(), 'value': i.username,})
+        items.append({'id': i.id,
+                      'label': i.get_full_name(),
+                      'value': i.username,
+                      })
     return JsonResponse(items, safe=False)
 
 

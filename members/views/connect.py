@@ -73,8 +73,10 @@ def mail(request):
         if sub_form.is_valid():
             sub_form.save(user)
             return HttpResponseRedirect(reverse('member_email_lists'))
-    context = {'user': user, 'mailing_list_subscription_form': MailingListSubscriptionForm(),
-        'settings': settings}
+    context = {'user': user,
+               'mailing_list_subscription_form': MailingListSubscriptionForm(),
+               'settings': settings
+               }
     return render(request, 'members/mail.html', context)
 
 
@@ -100,7 +102,10 @@ def slack(request, username):
         except Exception as e:
             messages.add_message(request, messages.ERROR, "Failed to send invitation: %s" % e)
 
-    context = {'user': user, 'team_url':settings.SLACK_TEAM_URL, 'settings': settings}
+    context = {'user': user,
+               'team_url': settings.SLACK_TEAM_URL,
+               'settings': settings
+               }
     return render(request, 'members/slack.html', context)
 
 

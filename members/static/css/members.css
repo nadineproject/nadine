@@ -2017,12 +2017,16 @@ footer.sticky-footer {
  		width: 90%;
  	}
 
-	.prof-tabs, . {
+	.prof-tabs, {
 		margin-bottom: 10%;
 	}
 
 	select#id_public_profile.browser-default, select#id_public.browser-default {
 		width: 50%;
+	}
+
+	.booking-bar th.rotate span {
+		font-weight: normal;
 	}
 }
 

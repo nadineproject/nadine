@@ -1,13 +1,19 @@
 <div class='tags'>
   <ul>
-    {% for t in organization.tags.all %}
-      <li class='chip'>
-        <a class="tag-chip" href="{% url 'member_tag_view' 'organizations' t %}">{{ t }}</a>
-        {% if can_edit %}
-         (<a href="{% url 'member_org_remove_tag' organization.id t %}" style="color: RGBA(199, 121, 102, 1);"> X </a>)
-         {% endif %}
-      </li>
-    {% endfor %}
+    {% if organizations.tags.all %}
+      {% for t in organization.tags.all %}
+        <li class='chip'>
+          <a class="tag-chip" href="{% url 'member_tag_view' 'organizations' t %}">{{ t }}</a>
+          {% if can_edit %}
+           (<a href="{% url 'member_org_remove_tag' organization.id t %}" style="color: RGBA(199, 121, 102, 1);"> X </a>)
+           {% endif %}
+        </li>
+      {% endfor %}
+      {% else %}
+        <p style='font-style: italic;text-align: center;'>
+          No tags yet.
+        </p>
+      {% endif %}
   </ul>
 
   {% if can_edit %}

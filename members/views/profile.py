@@ -45,10 +45,13 @@ def profile(request, username):
     if request.user.is_staff:
         ALLOW_PHOTO_UPLOAD = True
 
-    context = {'user': user, 'emergency_contact': emergency_contact,
-        'settings': settings, 'ALLOW_PHOTO_UPLOAD': ALLOW_PHOTO_UPLOAD,
-        'can_edit': can_edit, 'current_org_memberships': current_org_memberships, 'past_org_memberships': past_org_memberships
-    }
+    context = {'user': user,
+               'emergency_contact': emergency_contact,
+               'settings': settings,
+               'ALLOW_PHOTO_UPLOAD': ALLOW_PHOTO_UPLOAD,
+               'can_edit': can_edit,
+               'current_org_memberships': current_org_memberships, 'past_org_memberships': past_org_memberships
+               }
     return render(request, 'members/profile.html', context)
 
 
@@ -65,7 +68,9 @@ def profile_membership(request, username):
     # memberships = user.membership_set.all().reverse()
     memberships = Membership.objects.filter(user=user).reverse()
 
-    context = {'user': user, 'memberships': memberships }
+    context = {'user': user,
+               'memberships': memberships
+               }
     return render(request, 'members/profile_membership.html', context)
 
 
@@ -85,9 +90,9 @@ def user_activity_json(request, username):
         response_data['is_active'] = True
         response_data['allowance'] = active_membership.get_allowance()
     activity_this_month = user.profile.activity_this_month()
-    #response_data['activity_this_month'] = serializers.serialize('json', activity_this_month)
+    # response_data['activity_this_month'] = serializers.serialize('json', activity_this_month)
     response_data['usage_this_month'] = len(activity_this_month)
-    #response_data['coworkingdays'] = serializers.serialize('json', user.coworkingday_set.all())
+    # response_data['coworkingdays'] = serializers.serialize('json', user.coworkingday_set.all())
     return JsonResponse(response_data)
 
 
@@ -101,8 +106,13 @@ def profile_activity(request, username):
         is_active = True
         allowance = active_membership.get_allowance()
     activity = user.profile.activity_this_month()
-    context = {'user': user, 'is_active': is_active, 'activity':activity, 'allowance':allowance}
+    context = {'user': user,
+               'is_active': is_active,
+               'activity': activity,
+               'allowance': allowance
+               }
     return render(request, 'members/profile_activity.html', context)
+
 
 @login_required
 def profile_billing(request, username):
@@ -111,8 +121,12 @@ def profile_billing(request, username):
     active_membership = user.profile.active_membership()
     bills = user.bill_set.filter(bill_date__gte=six_months_ago)
     payments = user.transaction_set.prefetch_related('bills').filter(transaction_date__gte=six_months_ago)
-    context = {'user':user, 'active_membership':active_membership,
-        'bills':bills, 'payments':payments, 'settings':settings}
+    context = {'user': user,
+               'active_membership': active_membership,
+               'bills': bills,
+               'payments': payments,
+               'settings': settings
+               }
     return render(request, 'members/profile_billing.html', context)
 
 
@@ -176,7 +190,10 @@ def edit_profile(request, username):
         link_formset = LinkFormSet(initial=link_data)
         profile = user.profile
         emergency_contact = user.get_emergency_contact()
-        profile_form = EditProfileForm(initial={'username': user.username, 'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email,
+        profile_form = EditProfileForm(initial={'username': user.username,
+                                                'first_name': user.first_name,
+                                                'last_name': user.last_name,
+                                                'email': user.email,
                                                 'phone': profile.phone, 'phone2': profile.phone2,
                                                 'address1': profile.address1, 'address2': profile.address2, 'city': profile.city, 'state': profile.state, 'zipcode': profile.zipcode,
                                                 'url_personal': profile.url_personal, 'url_professional': profile.url_professional,
@@ -188,7 +205,7 @@ def edit_profile(request, username):
                                                 'has_kids': profile.has_kids, 'self_employed': profile.self_employed,
                                                 'emergency_name': emergency_contact.name, 'emergency_relationship': emergency_contact.relationship,
                                                 'emergency_phone': emergency_contact.phone, 'emergency_email': emergency_contact.email,
-                                            })
+                                                })
 
     context = {'user': user, 'profile_form': profile_form, 'page_message': page_message, 'link_formset': link_formset}
     return render(request, 'members/profile_edit.html', context)
@@ -236,8 +253,13 @@ def user_devices(request, username):
     ip = network.get_addr(request)
     this_device = arp.device_by_ip(ip)
 
-    context = {'user': user, 'devices': devices, 'this_device': this_device,
-        'ip': ip, 'error': error, 'settings': settings}
+    context = {'user': user,
+               'devices': devices,
+               'this_device': this_device,
+               'ip': ip,
+               'error': error,
+               'settings': settings
+               }
     return render(request, 'members/profile_devices.html', context)
 
 
@@ -259,16 +281,17 @@ def file_view(request, disposition, username, file_name):
     file_upload = FileUpload.objects.filter(user__username=username, name=file_name).first()
     if not file_upload:
         raise Http404
-    if disposition == None or not (disposition == "inline" or disposition == "attachment"):
+    if disposition is None or not (disposition == "inline" or disposition == "attachment"):
         disposition = "inline"
     response = HttpResponse(file_upload.file, content_type=file_upload.content_type)
     response['Content-Disposition'] = '%s; filename="%s"' % (disposition, file_upload.name)
     return response
 
+
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def edit_pic(request, username):
-    user=get_object_or_404(User, username=username)
+    user = get_object_or_404(User, username=username)
     if not user == request.user and not request.user.is_staff:
         return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
     if request.method == 'POST':
@@ -293,7 +316,7 @@ def edit_pic(request, username):
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def edit_photo(request, username):
-    user=get_object_or_404(User, username=username)
+    user = get_object_or_404(User, username=username)
     if not user == request.user and not request.user.is_staff:
         return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
 
