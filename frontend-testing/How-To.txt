@@ -1,7 +1,9 @@
-##How to run CasperJS front-end testing
+## How to run CasperJS front-end testing
 
-- Install CasperJS via Homebrew
+- Install CasperJS via Homebrew:
+  'brew install casperjs'
 - Make sure PhantomJS is installed
+  'phantomjs --version'
 - To run all tests:
   casperjs test frontend-testing/tests --username='YOUR_USERNAME' --password='YOUR_PASSWORD'
 - To run one test:
