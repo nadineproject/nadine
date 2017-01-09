@@ -5,4 +5,4 @@
 - To run all tests:
   casperjs test frontend-testing/tests --username='YOUR_USERNAME' --password='YOUR_PASSWORD'
 - To run one test:
-  casperjs test frontend-testing/tests/FILENAME.js --username='YOUR_USERNAME' --password='YOUR_PASSWORD'
+  casperjs test frontend-testing/tests/FILENAME.js --username='YOUR_USERNAME' --password='YOUR_PASSWORD' --EXTRA_VARIABLE='YOUR_VALUE'
