@@ -1,13 +1,6 @@
-{% extends "staff/base.html" %}
-
-{% block sub-title %} Doors | {% endblock %}
-
-{% block style %}
-nav #doors-tab { background: #FBD850; color: black; }
-{% endblock %}
+{% extends "keymaster/base.html" %}
 
 {% block content %}
-{% include "keymaster/doors_menu.html" %}
 
 {% if not keymasters %}
 	<h3>No Keymasters!</h3>
