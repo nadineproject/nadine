@@ -1,0 +1,22 @@
+{% extends "staff/base.html" %}
+
+{% block sub-title %} Doors | {% endblock %}
+
+{% block navcss %}
+<style>
+  nav #doors-tab {
+    background: #FBD850;
+    color: black;
+  }
+</style>
+{% endblock %}
+
+{% block submenu %}
+  <a href="{% url 'doors_index' %}">keymaster</a> |
+  <a href="{% url 'doors_logs' %}">logs</a> |
+  <a href="{% url 'doors_users' %}">users</a> |
+  <a href="{% url 'doors_add_key' %}">add key</a>
+{% endblock %}
+
+{% block content %}
+{% endblock %}

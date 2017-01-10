@@ -1,0 +1,15 @@
+{% extends "staff/base.html" %}
+
+{% block sub-title %}Logs | {% endblock %}
+
+{% block navcss %}
+nav #logs-tab { background: #FBD850; color: black; }
+{% endblock %}
+
+{% block submenu %}
+	<a href="{% url 'arp_devices_today' %}">device logs</a> |
+	<a href="{% url 'arp_user' %}">user logins</a>
+{% endblock %}
+
+{% block content %}
+{% endblock %}
