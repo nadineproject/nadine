@@ -1,16 +1,14 @@
-{% extends "staff/base.html" %}
+{% extends "interlink/base.html" %}
 
 {% block sub-title %}{{ mailing_list.name }} Log | {% endblock %}
 
 {% block style %}
-nav #lists-tab { background: #FBD850; color: black; }
 #content td, #content th { text-align: left; padding-right: 2em; }
 #content td:first-child, #content th:first-child { width: 15em; }
 .last-attempt { color: #F44; }
 {% endblock %}
 
 {% block content%}
-{% include "interlink/list_menu.frag" %}  
 
 <h2>{{ mailing_list.name }} Log:</h2>
 
