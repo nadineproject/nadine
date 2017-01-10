@@ -1,3 +1,7 @@
+a {
+  font-size: 1.1em;
+}
+
 #navcontainer {
   background-color: #000;
   font-size: 1.2em;
@@ -18,7 +22,6 @@
 
 #navcontainer ul li a {
   text-decoration: none;
-  padding: 1em;
   color: #fff;
   float: left;
   background-color: #000;

@@ -1,6 +1,6 @@
 {% load static %}
 
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html lang="en">
 <head>
 	<meta charset="utf-8">
@@ -10,11 +10,13 @@
 	<!--[if IE]>
 		<script src="{{ STATIC_URL }}html5.js"></script>
 	<![endif]-->
-	<link rel="stylesheet" href="{% static 'jquery-custom.css' %}">
+	<link rel="stylesheet" href="{% static 'jquery-custom.css' %}" />
+	<link rel="stylesheet" href="{% static 'themes/custom-staff/jquery-ui-1.10.4.custom.min.css' %}" />
+	<link rel='stylesheet' href="{% static 'materialize.min.css' %}" />
 
-	<link rel="stylesheet" href="{% static 'themes/custom-staff/jquery-ui-1.10.4.custom.min.css' %}">
 	<script src="{% static 'jquery-2.1.0.min.js' %}"></script>
 	<script src="{% static 'jquery-ui-1.10.4.custom.min.js' %}"></script>
+	<script src="{% static 'materialize.min.js' %}"></script>
 
 	{%block sub-head %}{% endblock %}
 
@@ -46,39 +48,39 @@
 	{% block header %}
 	<header>
 		<nav id="navcontainer">
-		<ul>
-			<li>
-				<a id="todo-tab" href="{% url 'staff:tasks:todo' %}">Tasks</a>
-			</li>
-			<li>
-				<a id='member-tab' href="{% url 'staff:user:members' %}">Member List</a>
-			</li>
-			<li>
-				<a id='activity-tab' href="{% url 'staff:activity:graph' %}">Activity</a>
-			</li>
-			<li>
-				<a id='billing-tab' href="{% url 'staff:billing:bills' %}">Billing</a>
-			</li>
-			<li>
-				<a id='stats-tab' href="{% url 'staff:stats:daily' %}">Stats</a>
-			</li>
-			<li>
-				<a id='logs-tab' href="{% url 'arp_user' %}">Logs</a>
-			</li>
-			<li>
-				<a id='lists-tab' href="{% url 'interlink_index' %}">Lists</a>
-			</li>
-			<li>
-				<a id='doors-tab' href="{% url 'doors_index' %}">Doors</a>
-			</li>
-			<li>
-				<a id='settings-tab' href="{% url 'staff:settings:index' %}">Settings</a>
-			</li>
-			<li>
-				<a id='logout-tab' href="{% url 'logout' %}">Logout</a>
-			</li>
-		</ul>
-	</nav>
+			<ul class='left'>
+				<li>
+					<a id="todo-tab" href="{% url 'staff:tasks:todo' %}">Tasks</a>
+				</li>
+				<li>
+					<a id='member-tab' href="{% url 'staff:user:members' %}">Member List</a>
+				</li>
+				<li>
+					<a id='activity-tab' href="{% url 'staff:activity:graph' %}">Activity</a>
+				</li>
+				<li>
+					<a id='billing-tab' href="{% url 'staff:billing:bills' %}">Billing</a>
+				</li>
+				<li>
+					<a id='stats-tab' href="{% url 'staff:stats:daily' %}">Stats</a>
+				</li>
+				<li>
+					<a id='logs-tab' href="{% url 'arp_user' %}">Logs</a>
+				</li>
+				<li>
+					<a id='lists-tab' href="{% url 'interlink_index' %}">Lists</a>
+				</li>
+				<li>
+					<a id='doors-tab' href="{% url 'doors_index' %}">Doors</a>
+				</li>
+				<li>
+					<a id='settings-tab' href="{% url 'staff:settings:index' %}">Settings</a>
+				</li>
+				<li>
+					<a id='logout-tab' href="{% url 'logout' %}">Logout</a>
+				</li>
+			</ul>
+		</nav>
 
 		{% block header-title %}{% endblock %}
 	</header>
@@ -87,7 +89,7 @@
 	<!-- Content -->
 	<div id="content" style="margin-bottom: 5%;">
 		{% if request.user.is_authenticated %}
-		<form id="site-search-form" action="{% url 'staff:user:search' %}" method="post">
+		<form class='col s6' id="site-search-form" action="{% url 'staff:user:search' %}" method="post">
 			{% for field in site_search_form %}{{ field }}{% endfor %}
 			<input type="submit" value="search" />
 			{% csrf_token %}

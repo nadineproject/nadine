@@ -7,7 +7,7 @@ b, i,
 dl, dt, dd, ol, ul, li,
 fieldset, form, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, figcaption, figure, 
+article, aside, canvas, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section, summary,
 time, mark, audio, video {
   margin:0;
@@ -17,10 +17,10 @@ time, mark, audio, video {
   font-size:100%;
   vertical-align:baseline;
   background:transparent;
-}                  
+}
 
 article, aside, details, figcaption, figure,
-footer, header, hgroup, menu, nav, section, summary { 
+footer, header, hgroup, menu, nav, section, summary {
     display:block;
 }
 
@@ -57,17 +57,17 @@ body {
 table { font-size:inherit; font: 100%; }
 select, input, textarea, button { font:99% sans-serif; }
 pre, code, kbd, samp { font-family: monospace, sans-serif; }
- 
+
 h1,h2,h3,h4,h5,h6 { font-weight: bold; }
 
-html { 
-  -webkit-font-smoothing: antialiased; 
+html {
+  -webkit-font-smoothing: antialiased;
   overflow-y: scroll;
 }
 
- 
+
 a:hover, a:active { outline: none; }
-a, a:active, a:visited { color: #607890; text-decoration: none; }
+/*a, a:active, a:visited { color: #607890; text-decoration: none; }*/
 a:hover { text-decoration: underline; }
 
 
@@ -77,13 +77,13 @@ ol { margin-left: 30px; list-style-type: decimal; }
 small { font-size: 85%; }
 strong, th { font-weight: bold; }
 
-td, td img { vertical-align: top; } 
+td, td img { vertical-align: top; }
 
 sub { vertical-align: sub; font-size: smaller; }
 sup { vertical-align: super; font-size: smaller; }
 
-pre { 
-  padding: 15px; 
+pre {
+  padding: 15px;
   white-space: pre; /* CSS2 */
   white-space: pre-wrap; /* CSS 2.1 */
   white-space: pre-line; /* CSS 3 (and 2.1 as well, actually) */
@@ -98,19 +98,19 @@ label, input[type=button], input[type=submit], button { cursor: pointer; }
 
 
 ::-moz-selection{ background: #FF5E99; color:#fff; }
-::selection { background:#FF5E99; color:#fff; } 
+::selection { background:#FF5E99; color:#fff; }
 
-a:link { -webkit-tap-highlight-color: #FF5E99; } 
+a:link { -webkit-tap-highlight-color: #FF5E99; }
 
 button {  width: auto; overflow: visible; }
 .ie7 img { -ms-interpolation-mode: bicubic; }
 
-/* 
- * Non-semantic helper classes 
+/*
+ * Non-semantic helper classes
  */
 .ir { display: block; text-indent: -999em; overflow: hidden; background-repeat: no-repeat; }
-.hidden { display: none; visibility: hidden; } 
-.visuallyhidden { position: absolute !important;    
+.hidden { display: none; visibility: hidden; }
+.visuallyhidden { position: absolute !important;
   clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
   clip: rect(1px, 1px, 1px, 1px); }
 .invisible { visibility: hidden; }
@@ -118,7 +118,7 @@ button {  width: auto; overflow: visible; }
 .clearfix { zoom: 1; }
 
  /* Primary Styles
-    Author: 
+    Author:
  */
 
 #branding { font-size: 1.3em; color:black; background: #5a7abd; padding: 0.5em;}
@@ -129,7 +129,7 @@ button {  width: auto; overflow: visible; }
 
 nav { color: white; width: 960px; margin: 0 auto; }
 nav:before { position: absolute; top: 2.7em; left: 0; width: 100%; background: black;  height: 30px; content: ""; z-index: -1;}
-nav a, nav a:active, nav a:visited { display: inline-block; padding: 0.5em; color: white; } 
+nav a, nav a:active, nav a:visited { display: inline-block; padding: 0.5em; color: white; }
 nav ul { list-style:none; }
 
 header { padding-bottom: 5px; }
@@ -172,8 +172,8 @@ table tr.row-even td { background: #eee; }
 #color-key b { margin-right: 1em; padding: 0px 5px; }
 #membership-key {  background-color: #9F9; }
 #has-desk-key { background-color: #F99; }
-#daily-logs-key { background-color: #99F; }  
-.membership-bar { float: right; margin: 5px 0px; background-color: #9F9; padding-left: 5px; }  
+#daily-logs-key { background-color: #99F; }
+.membership-bar { float: right; margin: 5px 0px; background-color: #9F9; padding-left: 5px; }
 .has-desk-bar { margin: 5px 0px; background-color: #F99; padding-right: 5px; display:inline-block; text-align: right; }
 .daily-logs-bar { margin: 5px 0px; background-color: #99F; padding-left: 5px; display:inline-block; }
 .daily-logs-number { display: inline-block; }
@@ -192,14 +192,14 @@ table tr.row-even td { background: #eee; }
 
   a, a:visited { color: #444 !important; text-decoration: underline; }
 
-  a:after { content: " (" attr(href) ")"; } 
+  a:after { content: " (" attr(href) ")"; }
 
   abbr:after { content: " (" attr(title) ")"; }
-  
+
   .ir a:after { content: ""; }  /* Don't show links for images */
-  
+
   pre, blockquote { border: 1px solid #999; page-break-inside: avoid; }
-  
+
   img { page-break-inside: avoid; }
 
   @page { margin: 0.5cm; }
