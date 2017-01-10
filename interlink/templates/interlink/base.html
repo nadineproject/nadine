@@ -6,11 +6,11 @@
 nav #lists-tab { background: #FBD850; color: black; }
 {% endblock %}
 
-<div class="submenu">
+{% block submenu %}
 	<a href="{% url 'interlink_index' %}">view all</a> |
 	<a href="{% url 'interlink_moderate' %}">moderate</a> |
 	<a href="{% url 'staff:user:slack_users' %}">slack users</a>
-</div>
+{% endblock %}
 
 {% block content%}
 {% endblock %}
