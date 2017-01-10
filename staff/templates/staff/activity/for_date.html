@@ -3,10 +3,20 @@
 
 {% block sub-title %}Activity on {{ activity_date|date:"M d, Y" }}{% endblock %}
 
-{% block style%}
-#content table { width: 100%; }
-.log-note { width: 100px; }
-#quick-links { text-align: right; margin-bottom: 20px;}
+{% block style %}
+	#content table {
+		width: 100%;
+	}
+
+	.log-note {
+		width: 100px;
+	}
+
+	#quick-links {
+		text-align: right;
+		margin-bottom: 20px;
+	}
+
 {% endblock %}
 
 {% block content %}

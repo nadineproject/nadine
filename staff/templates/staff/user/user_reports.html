@@ -1,11 +1,20 @@
-{% extends "staff/base.html" %}
+{% extends "staff/user/base.html" %}
 
 {% block sub-title %}User Reports | {% endblock %}
 
 {% block style%}
-nav #members-tab { background: #FBD850; color: black; }
-table #user_report { padding: 2em;}
-table th.bottom_line { border-bottom:1px solid; }
+	nav #members-tab {
+		background: #FBD850;
+		color: black;
+	}
+
+	table #user_report {
+		padding: 2em;
+	}
+
+	table th.bottom_line {
+		border-bottom:1px solid;
+	}
 {% endblock %}
 
 {% block content %}

@@ -1,8 +1,14 @@
 {% extends "staff/base.html" %}
 
 {% block style %}
-nav #todo-tab { background: #FBD850; color: black; }
-#content td { white-space:nowrap; }
+	nav #todo-tab {
+		background: #FBD850;
+		color: black;
+	}
+
+	#content td {
+		white-space:nowrap;
+	}
 {% endblock %}
 
 {% block sub-title %}TODO | {% endblock %}
@@ -116,4 +122,12 @@ nav #todo-tab { background: #FBD850; color: black; }
 	{% endfor %}
 </table>
 
+{% endblock %}
+
+{% block navcss %}
+  <style>
+    #todo-tab {
+      background-color: RGBA(90, 122, 189, 1.00) !important;
+    }
+  </style>
 {% endblock %}

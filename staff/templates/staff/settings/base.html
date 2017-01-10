@@ -8,3 +8,11 @@
 	<a href="{% url 'staff:user:bcc_tool' %}">bcc tool</a> |
 	<a href="{% url 'staff:user:user_reports' %}">user reports</a>
 {% endblock %}
+
+{% block navcss %}
+  <style>
+    #settings-tab {
+      background-color: RGBA(90, 122, 189, 1.00) !important;
+    }
+  </style>
+{% endblock %}

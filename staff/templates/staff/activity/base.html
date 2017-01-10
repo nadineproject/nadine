@@ -7,3 +7,11 @@
     <a href="{% url 'staff:activity:graph' %}">activity graph</a> |
     <a href="{% url 'staff:activity:list' %}">activity list</a>
 {% endblock %}
+
+{% block navcss %}
+  <style>
+    #activity-tab {
+      background-color: RGBA(90, 122, 189, 1.00) !important;
+    }
+  </style>
+{% endblock %}

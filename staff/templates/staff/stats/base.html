@@ -13,3 +13,12 @@
 <a href="{% url 'staff:stats:history' %}">member history</a> |
 <a href="{% url 'staff:stats:graph' %}">graphs</a>
 {% endblock %}
+
+
+{% block navcss %}
+  <style>
+    #stats-tab {
+      background-color: RGBA(90, 122, 189, 1.00) !important;
+    }
+  </style>
+{% endblock %}

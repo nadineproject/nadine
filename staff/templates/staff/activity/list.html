@@ -3,13 +3,16 @@
 {% block sub-title %}Activity List | {% endblock %}
 
 {% block style%}
-nav #activity-tab { background: #FBD850; color: black; }
-#content table { width: 100%; }
-.log-note { width: 100px; }
+	#content table {
+		width: 100%;
+	}
+
+	.log-note {
+		width: 100px;
+	}
 {% endblock %}
 
 {% block content %}
-
 <h2>Activity List</h2>
 {% url 'staff:activity_list' as date_range_form_action %}
 <div class="columns clearfix date-range">
@@ -39,4 +42,12 @@ nav #activity-tab { background: #FBD850; color: black; }
    <p>There are no recorded activity for this period.</p>
 {% endif %}
 
+{% endblock %}
+
+{% block extracss %}
+  <style>
+    #activity-tab {
+      background-color: RGBA(90, 122, 189, 1.00) !important;
+    }
+  </style>
 {% endblock %}

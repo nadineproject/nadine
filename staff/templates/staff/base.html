@@ -30,11 +30,11 @@
 	<div id="branding">
 		<div style="float:right;">
 			{% if request.user.is_authenticated %}
-				<span style="color:#e1e1e1">App:</span>
-				<a href="/member">member</a> |
-				<span style="color:#FBD850;">staff</span> |
-				<a href="/admin">admin</a> |
-				<a href="/tablet">tablet</a>
+				<!-- <span style="color:#e1e1e1">App:</span> -->
+				<a href="/member">Member</a> |
+				<span style="color:#e1e1e1">Staff</span> |
+				<a href="/admin">Admin</a> |
+				<a href="/tablet">Tablet</a>
 			{% else %}
 				<a href="http://nadineproject.org" target="_new">The Nadine Project</a>
 			{% endif %}
@@ -45,40 +45,40 @@
 	<!-- Header -->
 	{% block header %}
 	<header>
-		<div id="navcontainer">
+		<nav id="navcontainer">
 		<ul>
 			<li>
 				<a id="todo-tab" href="{% url 'staff:tasks:todo' %}">Tasks</a>
 			</li>
 			<li>
-				<a href="{% url 'staff:user:members' %}">Member List</a>
+				<a id='member-tab' href="{% url 'staff:user:members' %}">Member List</a>
 			</li>
 			<li>
-				<a href="{% url 'staff:activity:graph' %}">Activity</a>
+				<a id='activity-tab' href="{% url 'staff:activity:graph' %}">Activity</a>
 			</li>
 			<li>
-				<a href="{% url 'staff:billing:bills' %}">Billing</a>
+				<a id='billing-tab' href="{% url 'staff:billing:bills' %}">Billing</a>
 			</li>
 			<li>
-				<a href="{% url 'staff:stats:daily' %}">Stats</a>
+				<a id='stats-tab' href="{% url 'staff:stats:daily' %}">Stats</a>
 			</li>
 			<li>
-				<a href="{% url 'arp_user' %}">Logs</a>
+				<a id='logs-tab' href="{% url 'arp_user' %}">Logs</a>
 			</li>
 			<li>
-				<a href="{% url 'interlink_index' %}">Lists</a>
+				<a id='lists-tab' href="{% url 'interlink_index' %}">Lists</a>
 			</li>
 			<li>
-				<a href="{% url 'doors_index' %}">Doors</a>
+				<a id='doors-tab' href="{% url 'doors_index' %}">Doors</a>
 			</li>
 			<li>
-				<a href="{% url 'staff:settings:index' %}">Settings</a>
+				<a id='settings-tab' href="{% url 'staff:settings:index' %}">Settings</a>
 			</li>
 			<li>
-				<a href="{% url 'logout' %}">Logout</a>
+				<a id='logout-tab' href="{% url 'logout' %}">Logout</a>
 			</li>
 		</ul>
-		</div>
+	</nav>
 
 		{% block header-title %}{% endblock %}
 	</header>
@@ -110,6 +110,9 @@
 </body>
 
 {% block extrajs %}
+{% endblock %}
+
+{% block navcss %}
 {% endblock %}
 
 </html>
