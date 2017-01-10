@@ -2,10 +2,6 @@
 
 {% block sub-title %}Interlink | {% endblock %}
 
-{% block navcss %}
-nav #lists-tab { background: #FBD850; color: black; }
-{% endblock %}
-
 <div class="submenu">
 	<a href="{% url 'interlink_index' %}">view all</a> |
 	<a href="{% url 'interlink_moderate' %}">moderate</a> |
@@ -13,4 +9,12 @@ nav #lists-tab { background: #FBD850; color: black; }
 </div>
 
 {% block content%}
+{% endblock %}
+
+{% block navcss %}
+  <style>
+    #lists-tab {
+      background-color: RGBA(90, 122, 189, 1.00) !important;
+    }
+  </style>
 {% endblock %}

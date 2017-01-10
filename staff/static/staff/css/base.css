@@ -39,3 +39,27 @@ a {
 #content h2 {
   padding-bottom: 1%;
 }
+
+.dropdown-content a {
+  font-size: 1em;
+}
+
+#dropdown4 {
+  min-width: 120px;
+}
+
+#dropdown5 {
+  min-width: 140px;
+}
+
+/*ul .dropdown-content.active li {
+  width: 100%:
+}*/
+
+#dropdown5 li a, #dropdown7 li a {
+  width: 100%;
+}
+
+.submenu li {
+  display: inline;
+}

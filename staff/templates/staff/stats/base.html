@@ -3,15 +3,33 @@
 {% block sub-title %}Stats{% endblock %}
 
 {% block submenu %}
-<a href="{% url 'staff:stats:daily' %}">daily logs</a> |
-<a href="{% url 'staff:stats:neighborhood' %}">neighborhoods</a> |
-<a href="{% url 'staff:stats:monthly' %}">monthly members</a> |
-<a href="{% url 'staff:stats:memberships' %}">memberships</a>
-<br/>
-<a href="{% url 'staff:stats:gender' %}">gender balance</a> |
-<a href="{% url 'staff:stats:longevity' %}">longevity</a> |
-<a href="{% url 'staff:stats:history' %}">member history</a> |
-<a href="{% url 'staff:stats:graph' %}">graphs</a>
+<ul class='submenu'>
+  <li>
+    <a href="{% url 'staff:stats:daily' %}">daily logs</a> |
+  </li>
+  <li>
+    <a href="{% url 'staff:stats:neighborhood' %}">neighborhoods</a> |
+  </li>
+  <li>
+    <a href="{% url 'staff:stats:monthly' %}">monthly members</a> |
+  </li>
+  <li>
+    <a href="{% url 'staff:stats:memberships' %}">memberships</a> |
+  </li>
+  <li>
+    <a href="{% url 'staff:stats:gender' %}">gender balance</a> |
+  </li>
+  <li>
+    <a href="{% url 'staff:stats:longevity' %}">longevity</a> |
+  </li>
+  <li>
+    <a href="{% url 'staff:stats:history' %}">member history</a> |
+  </li>
+  <li>
+    <a href="{% url 'staff:stats:graph' %}">graphs</a>
+  </li>
+</ul>
+
 {% endblock %}
 
 

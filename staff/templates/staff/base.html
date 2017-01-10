@@ -49,29 +49,116 @@
 	<header>
 		<nav id="navcontainer">
 			<ul class='left'>
-				<li>
-					<a id="todo-tab" href="{% url 'staff:tasks:todo' %}">Tasks</a>
+				<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown1' id="todo-tab" href="{% url 'staff:tasks:todo' %}">Tasks</a>
+					<ul id='dropdown1' class='dropdown-content'>
+						<li>
+							<a href="{% url 'staff:activity:today' %}">Record Activity</a>
+						</li>
+						<li>
+							<a href="{% url 'staff:user:deposits' %}">Security Deposits</a>
+						</li>
+						<li>
+							<a href="{% url 'staff:billing:charges_today' %}">Daily Charges</a>
+						</li>
+					</ul>
+				</li>
+				<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown2' id='member-tab' href="{% url 'staff:user:members' %}">Member List</a>
+					<ul id='dropdown2' class='dropdown-content'>
+						<li>
+							<a href="{% url 'staff:user:deposits' %}">Security Deposits</a>
+						</li>
+						<li>
+							<a style='width: 100%;' href="{% url 'staff:user:bcc_tool' %}">BCC  Tool</a>
+						</li>
+						<li>
+							<a href="{% url 'staff:user:user_reports' %}">User Reports</a>
+						</li>
+					</ul>
+				</li>
+				<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown3'  id='activity-tab' href="{% url 'staff:activity:graph' %}">Activity</a>
+					<ul id='dropdown3' class='dropdown-content'>
+						<li>
+							<a href="{% url 'staff:activity:today' %}">Record Activity</a>
+						</li>
+						<li>
+							<a href="{% url 'staff:activity:graph' %}">Activity Graph</a>
+						</li>
+						<li>
+							<a href="{% url 'staff:activity:list' %}">Activity List</a>
+						</li>
+					</ul>
+				</li>
+				<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown4' id='billing-tab' href="{% url 'staff:billing:bills' %}">Billing</a>
+					<ul id='dropdown4' class='dropdown-content'>
+						<li>
+							<a href="{% url 'staff:billing:bills' %}">Outstanding Bills</a>
+						</li>
+						<li>
+							<a href="{% url 'staff:billing:charges_today' %}">Daily Charges</a>
+						</li>
+						<li>
+							<a href="{% url 'staff:billing:payments_members' %}">Auto-Billing</a>
+						</li>
+						<li>
+							<a style='width: 100%;' href="{% url 'staff:billing:run' %}">Run Billing</a>
+						</li>
+					</ul>
+				</li>
+				<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown5' id='stats-tab' href="{% url 'staff:stats:daily' %}">Stats</a>
+					<ul id='dropdown5' class='dropdown-content'>
+						<li>
+					    <a href="{% url 'staff:stats:daily' %}">Daily Logs</a>
+					  </li>
+					  <li>
+					    <a href="{% url 'staff:stats:neighborhood' %}">Neighborhoods</a>
+					  </li>
+					  <li>
+					    <a href="{% url 'staff:stats:monthly' %}">Monthly Members</a>
+					  </li>
+					  <li>
+					    <a href="{% url 'staff:stats:memberships' %}">Memberships</a>
+					  </li>
+					  <li>
+					    <a href="{% url 'staff:stats:gender' %}">Gender Balance</a>
+					  </li>
+					  <li>
+					    <a href="{% url 'staff:stats:longevity' %}">Longevity</a>
+					  </li>
+					  <li>
+					    <a href="{% url 'staff:stats:history' %}">Member History</a>
+					  </li>
+					  <li>
+					    <a href="{% url 'staff:stats:graph' %}">Graphs</a>
+					  </li>
+					</ul>
 				</li>
 				<li>
-					<a id='member-tab' href="{% url 'staff:user:members' %}">Member List</a>
-				</li>
-				<li>
-					<a id='activity-tab' href="{% url 'staff:activity:graph' %}">Activity</a>
-				</li>
-				<li>
-					<a id='billing-tab' href="{% url 'staff:billing:bills' %}">Billing</a>
-				</li>
-				<li>
-					<a id='stats-tab' href="{% url 'staff:stats:daily' %}">Stats</a>
-				</li>
-				<li>
-					<a id='logs-tab' href="{% url 'arp_user' %}">Logs</a>
+					<a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown6' id='logs-tab' href="{% url 'arp_user' %}">Logs</a>
+					<ul class='dropdown-content' id='dropdown6'>
+						<li>
+							<a href="{% url 'arp_devices_today' %}">Device Logs</a>
+						</li>
+						<li>
+							<a href="{% url 'arp_user' %}">User Logins</a>
+						</li>
+					</ul>
 				</li>
 				<li>
 					<a id='lists-tab' href="{% url 'interlink_index' %}">Lists</a>
 				</li>
 				<li>
-					<a id='doors-tab' href="{% url 'doors_index' %}">Doors</a>
+					<a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown7' id='doors-tab' href="{% url 'doors_index' %}">Doors</a>
+					<ul class='dropdown-content' id='dropdown7'>
+						<li>
+							<a href="{% url 'doors_logs' %}">Logs</a>
+						</li>
+						<li>
+							<a href="{% url 'doors_users' %}">Users</a>
+						</li>
+						<li>
+							<a href="{% url 'doors_add_key' %}">Add Key</a>
+						</li>
+					</ul>
 				</li>
 				<li>
 					<a id='settings-tab' href="{% url 'staff:settings:index' %}">Settings</a>
@@ -89,10 +176,12 @@
 	<!-- Content -->
 	<div id="content" style="margin-bottom: 5%;">
 		{% if request.user.is_authenticated %}
-		<form class='col s6' id="site-search-form" action="{% url 'staff:user:search' %}" method="post">
-			{% for field in site_search_form %}{{ field }}{% endfor %}
-			<input type="submit" value="search" />
-			{% csrf_token %}
+		<form id="site-search-form" action="{% url 'staff:user:search' %}" method="post">
+			<div>
+				{% for field in site_search_form %}{{ field }}{% endfor %}
+				<input type="submit" value="search" style="display: inline-block;"/>
+				{% csrf_token %}
+			</div>
 		</form>
 		{% endif %}
 
