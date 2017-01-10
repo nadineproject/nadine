@@ -1,13 +1,6 @@
-{% extends "staff/base.html" %}
-
-{% block sub-title %}Logs | {% endblock %}
-
-{% block style %}
-nav #logs-tab { background: #FBD850; color: black; }
-{% endblock %}
+{% extends "arpwatch/base.html" %}
 
 {% block content %}
-{% include "arpwatch/logs_menu.frag" %}
 
 <div>
 	<div style="size:large; float:right;"><strong>{{ logs|length }} Logins</strong></div>
