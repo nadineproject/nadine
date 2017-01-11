@@ -38,7 +38,6 @@ nav #billing-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {% block content %}
-{% include "staff/billing/billing_menu.frag" %}
 
 <h2>Outstanding Bills</h2>
 {% if page_message%}<p id="page-message">{{ page_message|safe }}</p>{% endif %}
@@ -66,4 +65,12 @@ nav #billing-tab { background: #FBD850; color: black; }
 	{% endfor %}
 </table>
 
+{% endblock %}
+
+{% block navcss %}
+  <style>
+    #billing-tab {
+      background-color: RGBA(90, 122, 189, 1.00) !important;
+    }
+  </style>
 {% endblock %}

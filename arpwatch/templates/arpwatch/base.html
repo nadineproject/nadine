@@ -2,14 +2,19 @@
 
 {% block sub-title %}Logs | {% endblock %}
 
-{% block navcss %}
-nav #logs-tab { background: #FBD850; color: black; }
-{% endblock %}
-
 {% block submenu %}
-	<a href="{% url 'arp_devices_today' %}">device logs</a> |
-	<a href="{% url 'arp_user' %}">user logins</a>
+	<a href="{% url 'arp_devices_today' %}">Device Logs</a> |
+	<a href="{% url 'arp_user' %}">User Logins</a>
 {% endblock %}
 
 {% block content %}
+{% endblock %}
+
+{% block navcss %}
+<style>
+	#logs-tab {
+		background: #FBD850;
+		color: black;
+	}
+</style>
 {% endblock %}

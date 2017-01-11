@@ -2,12 +2,6 @@
 
 {% block sub-title %}Activity{% endblock %}
 
-{% block submenu %}
-    <a href="{% url 'staff:activity:today' %}">record activity</a> |
-    <a href="{% url 'staff:activity:graph' %}">activity graph</a> |
-    <a href="{% url 'staff:activity:list' %}">activity list</a>
-{% endblock %}
-
 {% block navcss %}
   <style>
     #activity-tab {

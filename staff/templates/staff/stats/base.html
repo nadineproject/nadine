@@ -2,37 +2,6 @@
 
 {% block sub-title %}Stats{% endblock %}
 
-{% block submenu %}
-<ul class='submenu'>
-  <li>
-    <a href="{% url 'staff:stats:daily' %}">daily logs</a> |
-  </li>
-  <li>
-    <a href="{% url 'staff:stats:neighborhood' %}">neighborhoods</a> |
-  </li>
-  <li>
-    <a href="{% url 'staff:stats:monthly' %}">monthly members</a> |
-  </li>
-  <li>
-    <a href="{% url 'staff:stats:memberships' %}">memberships</a> |
-  </li>
-  <li>
-    <a href="{% url 'staff:stats:gender' %}">gender balance</a> |
-  </li>
-  <li>
-    <a href="{% url 'staff:stats:longevity' %}">longevity</a> |
-  </li>
-  <li>
-    <a href="{% url 'staff:stats:history' %}">member history</a> |
-  </li>
-  <li>
-    <a href="{% url 'staff:stats:graph' %}">graphs</a>
-  </li>
-</ul>
-
-{% endblock %}
-
-
 {% block navcss %}
   <style>
     #stats-tab {

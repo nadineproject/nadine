@@ -10,7 +10,6 @@ nav #billing-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {% block content %}
-{% include "staff/billing/billing_menu.frag" %}
 
 <h2>Bill List</h2>
 {% url 'staff:bill_list' as date_range_form_action %}
@@ -57,4 +56,12 @@ nav #billing-tab { background: #FBD850; color: black; }
 	<p>There are no bills for this period.</p>
 {% endif %}
 
+{% endblock %}
+
+{% block navcss %}
+  <style>
+    #billing-tab {
+      background-color: RGBA(90, 122, 189, 1.00) !important;
+    }
+  </style>
 {% endblock %}

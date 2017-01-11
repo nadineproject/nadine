@@ -7,7 +7,6 @@ nav #billing-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {% block content %}
-{% include "staff/billing/billing_menu.frag" %}
 
 <h2><a href="{% url 'staff:user:transactions' transaction.user.username %}">{{ transaction.user.get_full_name }}</a>'s Transaction:</h2>
 
@@ -28,4 +27,12 @@ nav #billing-tab { background: #FBD850; color: black; }
 
 [<a href="{{ transaction.get_admin_url }}">edit this transaction</a>]
 
+{% endblock %}
+
+{% block navcss %}
+  <style>
+    #billing-tab {
+      background-color: RGBA(90, 122, 189, 1.00) !important;
+    }
+  </style>
 {% endblock %}

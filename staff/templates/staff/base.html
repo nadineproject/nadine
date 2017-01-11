@@ -143,12 +143,22 @@
 						</li>
 					</ul>
 				</li>
-				<li>
-					<a id='lists-tab' href="{% url 'interlink_index' %}">Lists</a>
+				<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown7' id='lists-tab' href="{% url 'interlink_index' %}">Lists</a>
+					<ul class='dropdown-content' id='dropdown7'>
+						<li>
+							<a href="{% url 'interlink_index' %}">View All</a>
+						</li>
+						<li>
+							<a href="{% url 'interlink_moderate' %}">Moderate</a>
+						</li>
+						<li>
+							<a href="{% url 'staff:user:slack_users' %}">Slack Users</a>
+						</li>
+					</ul>
 				</li>
 				<li>
-					<a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown7' id='doors-tab' href="{% url 'doors_index' %}">Doors</a>
-					<ul class='dropdown-content' id='dropdown7'>
+					<a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown8' id='doors-tab' href="{% url 'doors_index' %}">Doors</a>
+					<ul class='dropdown-content' id='dropdown8'>
 						<li>
 							<a href="{% url 'doors_logs' %}">Logs</a>
 						</li>
@@ -179,13 +189,17 @@
 		<form id="site-search-form" action="{% url 'staff:user:search' %}" method="post">
 			<div>
 				{% for field in site_search_form %}{{ field }}{% endfor %}
-				<input type="submit" value="search" style="display: inline-block;"/>
+				<input type="submit" value="Search" style="display: inline-block;"/>
 				{% csrf_token %}
 			</div>
 		</form>
 		{% endif %}
 
-		<div id="submenu">{% block submenu %}{% endblock %}</div>
+		<div id="submenu">
+			<a class='chip' href="{% url 'staff:activity:today' %}">Record Activity +</a>
+			{% block submenu %}{% endblock %}
+
+		</div>
 		{% block content %}{% endblock %}
 	</div>
 
@@ -201,6 +215,11 @@
 </body>
 
 {% block extrajs %}
+<script>
+	$(document).ready(function() {
+		$('#id_terms').attr('placeholder', 'Search Here');
+	});
+</script>
 {% endblock %}
 
 {% block navcss %}

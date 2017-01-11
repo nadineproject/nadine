@@ -2,6 +2,14 @@ a {
   font-size: 1.1em;
 }
 
+th {
+  text-align: center;
+}
+
+nav {
+  box-shadow: none;
+}
+
 #navcontainer {
   background-color: #000;
   font-size: 1.2em;
@@ -38,6 +46,7 @@ a {
 
 #content h2 {
   padding-bottom: 1%;
+  margin-top: 3%;
 }
 
 .dropdown-content a {
@@ -52,14 +61,20 @@ a {
   min-width: 140px;
 }
 
-/*ul .dropdown-content.active li {
-  width: 100%:
-}*/
-
 #dropdown5 li a, #dropdown7 li a {
   width: 100%;
 }
 
 .submenu li {
   display: inline;
+}
+
+#site-search-form {
+  width: 30%;
+}
+
+#site-search-form #id_terms {
+  width: 60%;
+  margin-right: 3%;
+  padding: 1%;
 }

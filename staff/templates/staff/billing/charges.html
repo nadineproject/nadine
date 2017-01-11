@@ -8,7 +8,6 @@ nav #billing-tab { background: #FBD850; color: black; }
 {% block sub-title %}Daily Charges | {% endblock %}
 
 {% block content %}
-{% include "staff/billing/billing_menu.frag" %}
 
 <h2>
 	Daily Charges - {{ date|date:"l, M dS" }}
@@ -137,4 +136,12 @@ nav #billing-tab { background: #FBD850; color: black; }
 			});
 		})();
 	</script>
+{% endblock %}
+
+{% block navcss %}
+  <style>
+    #billing-tab {
+      background-color: RGBA(90, 122, 189, 1.00) !important;
+    }
+  </style>
 {% endblock %}
