@@ -78,6 +78,9 @@
 {% block extrajs %}
 	<script>
 		(function() {
+			$('.button-collapse').sideNav();
+			$('.collapsible').collapsible();
+			
 			$('.datepicker').datepicker({
 				dateFormat: 'yy-mm-dd',
 				onSelect: function(ui, e) {

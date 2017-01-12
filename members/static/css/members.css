@@ -57,7 +57,7 @@ p {
 	visibility: hidden;
 }
 
-.clearfix:after  {
+/*.clearfix:after  {
 	content: ".";
 	display: block;
 	height: 0;
@@ -67,7 +67,7 @@ p {
 
 .clearfix {
 	zoom: 1;
-}
+}*/
 
 /* Header */
 

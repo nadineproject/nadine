@@ -3,7 +3,9 @@
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="DC.title" content="{{ site.name }}" />
 	<title>{% block title %}{% block sub-title %}{% endblock %} | {{ site.name }}{% endblock %}</title>
 	<link rel="stylesheet" type="text/css" href="{% static 'base.css' %}" />
@@ -12,7 +14,7 @@
 	<![endif]-->
 	<link rel="stylesheet" href="{% static 'jquery-custom.css' %}" />
 	<link rel="stylesheet" href="{% static 'themes/custom-staff/jquery-ui-1.10.4.custom.min.css' %}" />
-	<link rel='stylesheet' href="{% static 'materialize.min.css' %}" />
+	<link rel='stylesheet' href= "{% static 'staff/css/materialize.css'%}" />
 
 	<script src="{% static 'jquery-2.1.0.min.js' %}"></script>
 	<script src="{% static 'jquery-ui-1.10.4.custom.min.js' %}"></script>
@@ -27,12 +29,11 @@
 	</style>
 </head>
 
-<body>{% block body %}
-
-	<div id="branding">
-		<div style="float:right;">
+<body>
+	{% block body %}
+	<nav id="branding">
+		<div class='right nav-wrapper'>
 			{% if request.user.is_authenticated %}
-				<!-- <span style="color:#e1e1e1">App:</span> -->
 				<a href="/member">Member</a> |
 				<span style="color:#e1e1e1">Staff</span> |
 				<a href="/admin">Admin</a> |
@@ -41,14 +42,17 @@
 				<a href="http://nadineproject.org" target="_new">The Nadine Project</a>
 			{% endif %}
 		</div>
-		<a href="/">{{ site.name}}</a>: <span style="color:#e1e1e1">Nadine Membership Console</span>
-	</div>
+		<div id='site-id'>
+			<a href="/">{{ site.name}}</a>: <span style="color:#e1e1e1">Nadine Membership Console</span>
+		</div>
+	</nav>
 
 	<!-- Header -->
 	{% block header %}
 	<header>
 		<nav id="navcontainer">
-			<ul class='left'>
+			<a href='#' data-activates="mobile" class="button-collapse"><img class='menu-img' src="{% static 'img/hamburger.png' %}"/></a>
+			<ul id='nav-mobile' class='left hide-on-small-and-down'>
 				<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown1' id="todo-tab" href="{% url 'staff:tasks:todo' %}">Tasks</a>
 					<ul id='dropdown1' class='dropdown-content'>
 						<li>
@@ -177,6 +181,195 @@
 					<a id='logout-tab' href="{% url 'logout' %}">Logout</a>
 				</li>
 			</ul>
+			<ul class="side-nav" id="mobile">
+				<li class='no-padding'>
+					<ul class="collapsible collapsible-accordion">
+						<li>
+							<a class='collapsible-header'>Tasks</a>
+							<div class='collapsible-body'>
+								<ul>
+									<li>
+										<a href="{% url 'staff:tasks:todo' %}">TODO</a>
+									</li>
+									<li>
+										<a href="{% url 'staff:activity:today' %}">Record Activity</a>
+									</li>
+									<li>
+										<a href="{% url 'staff:user:deposits' %}">Security Deposits</a>
+									</li>
+									<li>
+										<a href="{% url 'staff:billing:charges_today' %}">Daily Charges</a>
+									</li>
+								</ul>
+							</div>
+						</li>
+					</ul>
+				</li>
+				<li class='no-padding'>
+					<ul class="collapsible collapsible-accordion">
+						<li>
+							<a class='collapsible-header'>Member List</a>
+							<div class='collapsible-body'>
+								<ul>
+									<li>
+										<a href="{% url 'staff:user:members' %}">Member List</a>
+									</li>
+									<li>
+										<a href="{% url 'staff:user:deposits' %}">Security Deposits</a>
+									</li>
+									<li>
+										<a style='width: 100%;' href="{% url 'staff:user:bcc_tool' %}">BCC  Tool</a>
+									</li>
+									<li>
+										<a href="{% url 'staff:user:user_reports' %}">User Reports</a>
+									</li>
+								</ul>
+							</div>
+						</li>
+					</ul>
+				</li>
+				<li class='no-padding'>
+					<ul class="collapsible collapsible-accordion">
+						<li>
+							<a class='collapsible-header'>Activity</a>
+							<div class='collapsible-body'>
+								<ul>
+									<li>
+										<a href="{% url 'staff:activity:today' %}">Record Activity</a>
+									</li>
+									<li>
+										<a href="{% url 'staff:activity:graph' %}">Activity Graph</a>
+									</li>
+									<li>
+										<a href="{% url 'staff:activity:list' %}">Activity List</a>
+									</li>
+								</ul>
+							</div>
+						</li>
+					</ul>
+				</li>
+				<li class='no-padding'>
+					<ul class="collapsible collapsible-accordion">
+						<li>
+							<a class='collapsible-header'>Billing</a>
+							<div class='collapsible-body'>
+								<ul>
+									<li>
+										<a href="{% url 'staff:billing:bills' %}">Outstanding Bills</a>
+									</li>
+									<li>
+										<a href="{% url 'staff:billing:charges_today' %}">Daily Charges</a>
+									</li>
+									<li>
+										<a href="{% url 'staff:billing:payments_members' %}">Auto-Billing</a>
+									</li>
+									<li>
+										<a style='width: 100%;' href="{% url 'staff:billing:run' %}">Run Billing</a>
+									</li>
+								</ul>
+							</div>
+						</li>
+					</ul>
+				</li>
+				<li class='no-padding'>
+					<ul class="collapsible collapsible-accordion">
+						<li>
+							<a class='collapsible-header'>Stats</a>
+							<div class='collapsible-body'>
+								<ul>
+									<li>
+										<a href="{% url 'staff:stats:daily' %}">Daily Logs</a>
+								  </li>
+								  <li>
+								    <a href="{% url 'staff:stats:neighborhood' %}">Neighborhoods</a>
+								  </li>
+								  <li>
+								    <a href="{% url 'staff:stats:monthly' %}">Monthly Members</a>
+								  </li>
+								  <li>
+								    <a href="{% url 'staff:stats:memberships' %}">Memberships</a>
+								  </li>
+								  <li>
+								    <a href="{% url 'staff:stats:gender' %}">Gender Balance</a>
+								  </li>
+								  <li>
+								    <a href="{% url 'staff:stats:longevity' %}">Longevity</a>
+								  </li>
+								  <li>
+								    <a href="{% url 'staff:stats:history' %}">Member History</a>
+								  </li>
+								  <li>
+								    <a href="{% url 'staff:stats:graph' %}">Graphs</a>
+								  </li>
+								</ul>
+							</div>
+						</li>
+					</ul>
+				</li>
+				<li class='no-padding'>
+					<ul class="collapsible collapsible-accordion">
+						<li>
+							<a class='collapsible-header'>Logs</a>
+							<div class='collapsible-body'>
+								<ul>
+									<li>
+										<a href="{% url 'arp_devices_today' %}">Device Logs</a>
+									</li>
+									<li>
+										<a href="{% url 'arp_user' %}">User Logins</a>
+									</li>
+								</ul>
+							</div>
+						</li>
+					</ul>
+				</li>
+				<li class='no-padding'>
+					<ul class="collapsible collapsible-accordion">
+						<li>
+							<a class='collapsible-header'>Lists</a>
+							<div class='collapsible-body'>
+								<ul>
+									<li>
+										<a href="{% url 'interlink_index' %}">View All</a>
+									</li>
+									<li>
+										<a href="{% url 'interlink_moderate' %}">Moderate</a>
+									</li>
+									<li>
+										<a href="{% url 'staff:user:slack_users' %}">Slack Users</a>
+									</li>
+								</ul>
+							</div>
+						</li>
+					</ul>
+				</li>
+				<li class='no-padding'>
+					<ul class="collapsible collapsible-accordion">
+						<li>
+							<a class='collapsible-header'>Doors</a>
+							<div class='collapsible-body'>
+								<ul>
+									<li>
+										<a href="{% url 'doors_logs' %}">Logs</a>
+									</li>
+									<li>
+										<a href="{% url 'doors_users' %}">Users</a>
+									</li>
+									<li>
+										<a href="{% url 'doors_add_key' %}">Add Key</a>
+									</li>
+								</ul>
+							</div>
+						</li>
+					</ul>
+				</li>
+				<li>
+					<a id='settings-tab' href="{% url 'staff:settings:index' %}">Settings</a>
+				</li>
+				<li>
+					<a id='logout-tab' href="{% url 'logout' %}">Logout</a>
+				</li>
+			</ul>
 		</nav>
 
 		{% block header-title %}{% endblock %}
@@ -185,21 +378,22 @@
 
 	<!-- Content -->
 	<div id="content" style="margin-bottom: 5%;">
-		{% if request.user.is_authenticated %}
-		<form id="site-search-form" action="{% url 'staff:user:search' %}" method="post">
-			<div>
-				{% for field in site_search_form %}{{ field }}{% endfor %}
-				<input type="submit" value="Search" style="display: inline-block;"/>
-				{% csrf_token %}
+		<div class='row' id='top-content'>
+			<div id="submenu">
+				<a class='chip' href="{% url 'staff:activity:today' %}">Record Activity +</a>
+				{% block submenu %}{% endblock %}
 			</div>
-		</form>
-		{% endif %}
-
-		<div id="submenu">
-			<a class='chip' href="{% url 'staff:activity:today' %}">Record Activity +</a>
-			{% block submenu %}{% endblock %}
-
+			{% if request.user.is_authenticated %}
+			<form id="site-search-form" action="{% url 'staff:user:search' %}" method="post">
+				<div>
+					{% for field in site_search_form %}{{ field }}{% endfor %}
+					<input type="submit" value="Search" style="display: inline-block;"/>
+					{% csrf_token %}
+				</div>
+			</form>
+			{% endif %}
 		</div>
+
 		{% block content %}{% endblock %}
 	</div>
 
@@ -217,6 +411,9 @@
 {% block extrajs %}
 <script>
 	$(document).ready(function() {
+		$('.button-collapse').sideNav();
+		$('.collapsible').collapsible();
+
 		$('#id_terms').attr('placeholder', 'Search Here');
 	});
 </script>
