@@ -113,6 +113,10 @@ nav {
 }
 
 /*Top of body content styling*/
+#content {
+	margin-bottom: 5%;
+}
+
 .submenu li {
   display: inline;
 }
@@ -174,6 +178,22 @@ div#submenu {
 	background-color: RGBA(34, 83, 120, 1.00);
 }
 
+/*Bills Pages Styling*/
+.bill-deets {
+	width: 300px;
+	display: inline-block;
+}
+
+#id_amount {
+	width: 40% !important;
+	vertical-align: baseline;
+	padding-left: 3%;
+}
+
+#set_paid {
+	margin-left: 5%;
+}
+
 
 /*Media queries*/
 @media only screen and (max-width: 992px) {
@@ -191,15 +211,26 @@ div#submenu {
 }
 
 @media only screen and (max-width: 900px) {
+	h5 {
+		margin-left: 2%;
+	}
+	
 	#activity-dates {
 		margin-left: 10%;
 	}
 }
 
 @media only screen and (max-width: 700px) {
+
   #alert-a {
     margin-left: 75%;
   }
+
+	#id_amount {
+		width: 20% !important;
+		vertical-align: baseline;
+		padding-left: 1%;
+	}
 }
 
 @media only screen and (max-width: 650px) {
@@ -245,6 +276,10 @@ div#submenu {
 		height: 26px;
 		line-height: 26px;
 	}
+
+	.bill-row {
+		margin-bottom: 0;
+	}
 }
 
 @media only screen and (max-width: 550px) {
@@ -255,9 +290,23 @@ div#submenu {
 }
 
 @media only screen and (max-width: 450px) {
+	#content {
+		margin-bottom: 15%;
+	}
+
   #alert-a {
     margin-left: 65%;
   }
+
+	div.bill-deets {
+		margin-left: 0;
+	}
+
+	#id_amount {
+		width: 25% !important;
+		vertical-align: baseline;
+		padding-left: 2%;
+	}
 }
 
 @media only screen and (max-width: 350px) {

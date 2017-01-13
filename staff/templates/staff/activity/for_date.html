@@ -4,6 +4,10 @@
 {% block sub-title %}Activity on {{ activity_date|date:"M d, Y" }}{% endblock %}
 
 {% block style %}
+	h5 {
+		border-bottom: 1px dotted;
+	}
+
 	#content table {
 		width: 100%;
 	}
@@ -21,7 +25,7 @@
 
 {% block content %}
 
-<h2>
+<h5>
 	Daily Activity - {{ activity_date|date:"l, M dS" }}
 	<span id='activity-dates'>
 	<a href="{% url 'staff:activity:date' previous_date.year previous_date.month previous_date.day %}">&larr;</a>
@@ -29,7 +33,7 @@
 	<input type='date' name='date' class='datepicker' value="{{ activity_date|date:'Y-m-d' }}" style='font-size:.6em; text-align:center; width:150px;'/>
 	<a href="{% url 'staff:activity:date' next_date.year next_date.month next_date.day %}">&rarr;</a>
 	</span>
-</h2>
+</h5>
 
 <div id="activity_list">
 	{% if messages %}

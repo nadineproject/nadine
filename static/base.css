@@ -143,8 +143,8 @@ header h1 a {  }
 .user-card a.photo { height: 180px; background-color: #EEE; font-size: 150px; color: #DDD; text-decoration: none; }
 
 #content { max-width: 960px; margin: 0 auto; }
-#content h2 { font-size: 2em; margin: 1em 0 0.25em 0; border-bottom: 1px dotted; }
-#content h3 { font-size: 1.5em; margin: 1em 0 0.5em 0; }
+#content h2 { margin: 1em 0 0.25em 0; border-bottom: 1px dotted; }
+#content h3 { margin: 1em 0 0.5em 0; }
 #content h3 em { font-style: normal; }
 #content p { margin-top: 1em; }
 .member-photo { float: left; margin: 0 1em 1em 0;}
