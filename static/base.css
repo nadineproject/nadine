@@ -154,7 +154,7 @@ dd:after { content:"|"; margin-left: 0.5em; font-size: 1.2em; }
 dl dd:last-child:after { content: ""; }
 
 table th { padding: 0.5em 0.5em 0.25em; }
-table th:first-child { text-align: left; width: 15%;}
+/*table th:first-child { text-align: left; width: 15%;}*/
 table td:first-child, table td:last-child { text-align: left; }
 table td { text-align: center; border-bottom: 1px solid #ccc; padding: 0.5em; }
 table tr.row-even td { background: #eee; }

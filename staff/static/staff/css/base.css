@@ -147,6 +147,7 @@ div#submenu {
 	margin-left: 30%;
 }
 
+
 /*Member List Page styling*/
 #group_form {
 	margin-left: 2%;
@@ -172,6 +173,7 @@ div#submenu {
 .tabs .indicator {
 	background-color: RGBA(34, 83, 120, 1.00);
 }
+
 
 /*Media queries*/
 @media only screen and (max-width: 992px) {
@@ -223,7 +225,30 @@ div#submenu {
 	}
 }
 
+@media only screen and (max-width: 599px) {
+	.responsive-table thead {
+		margin-top: 1%;
+	}
+
+	#assigned-th {
+		height: 45px;
+		line-height: 45px;
+	}
+
+	#note-th {
+		height: 65px;
+		line-height: 65px;
+	}
+
+	#action-th {
+		margin-top: 20px;
+		height: 26px;
+		line-height: 26px;
+	}
+}
+
 @media only screen and (max-width: 550px) {
+
   #site-search-form {
     width: 50%;
   }

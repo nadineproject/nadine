@@ -181,6 +181,7 @@ def monthly(request):
 
 @staff_member_required
 def neighborhood(request):
+    print request.POST
     active_only = 'ActiveOnly' in request.POST
 
     if active_only:
@@ -192,10 +193,16 @@ def neighborhood(request):
     for hood in Neighborhood.objects.all():
         users = User.helper.members_by_neighborhood(hood, active_only)
         specified_count = specified_count + users.count()
-        neighborhoods.append({'name': hood.name, 'id': hood.id, 'users': users, 'count': users.count(), 'perc': (100 * users.count()) / total_count})
+        neighborhoods.append({'name': hood.name,
+                              'id': hood.id,
+                              'users': users,
+                              'count': users.count(),
+                              'perc': (100 * users.count()) / total_count})
 
     # Group all our statistics into a dictionary
-    stats_dict = {'member_count': total_count, 'specified_count': specified_count, 'unknown_count': total_count - specified_count,
+    stats_dict = {'member_count': total_count,
+                  'specified_count': specified_count,
+                  'unknown_count': total_count - specified_count,
                   'specified_perc': 100 * specified_count / total_count, 'unknown_perc': 100 * (total_count - specified_count) / total_count}
 
     context = {'neighborhoods': neighborhoods, 'stats': stats_dict, 'active_only': active_only}

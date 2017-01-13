@@ -1,47 +1,51 @@
-<table>
-  <tr>
-    {% if member %}
-      <th>Member</th>
-    {% endif %}
-    {% if description %}
-      <th>Description</th>
-    {% endif %}
-    <th>Assigned To</th>
-    <th>Note</th>
-    <th>Action</th>
-  </tr>
-  {% for alert in alerts %}
-  <form action="{% url 'staff:tasks:detail' alert.key %}" method="POST">
-    <input type="hidden" name="alert_id" value="{{ alert.id }}"/>
-      <tr class="{% cycle 'row-even' 'row-odd' %}">
+<table class='responsive-table'>
+  <thead>
+    <tr>
       {% if member %}
-        <td nowrap>
-          <a href="{% url 'staff:user:detail' alert.user.username %}">{{ alert.user.get_full_name }}</a>
-        </td>
+        <th id='member-th'>Member</th>
       {% endif %}
       {% if description %}
-        <td nowrap>{{ alert.description }}</td>
+        <th id='desc-th'>Description</th>
       {% endif %}
-      <td>
-        <select class='browser-default' name="assigned_to">
-        <option></option>
-          {% for s in staff_members %}
-            <option value="{{ s.username }}" {% if s == alert.assigned_to %} SELECTED {% endif %}>
-              {{ s.get_full_name}}
-            </option>
-          {% endfor %}
-      </select>
-      </td>
-      <td><input name="note" value="{{ alert.note|default:'' }}" style="width:100%"/></td>
-      <td style="text-align: center;">
-          <button name="action" value="save" type="submit" >Save</button>
-          <button name="action" value="resolve" type="submit" {% if is_system_alert %} disabled{% endif %}>Resolve</button>
-          <button name="action" value="mute" type="submit" >Mute</button>
-      </td>
+      <th id='assigned-th'>Assigned To</th>
+      <th id='note-th'>Note</th>
+      <th id='action-th'>Action</th>
     </tr>
-    {% csrf_token %}
-  </form>
+  </thead>
+  <tbody>
+  {% for alert in alerts %}
+    <tr class="{% cycle 'row-even' 'row-odd' %}">
+      <form action="{% url 'staff:tasks:detail' alert.key %}" method="POST">
+        <input type="hidden" name="alert_id" value="{{ alert.id }}"/>
+          {% if member %}
+            <td nowrap>
+              <a href="{% url 'staff:user:detail' alert.user.username %}">{{ alert.user.get_full_name }}</a>
+            </td>
+          {% endif %}
+          {% if description %}
+            <td nowrap>{{ alert.description }}</td>
+          {% endif %}
+          <td>
+            <select class='browser-default' name="assigned_to">
+            <option></option>
+              {% for s in staff_members %}
+                <option value="{{ s.username }}" {% if s == alert.assigned_to %} SELECTED {% endif %}>
+                  {{ s.get_full_name}}
+                </option>
+              {% endfor %}
+          </select>
+          </td>
+          <td><input name="note" value="{{ alert.note|default:'' }}" style="width:100%"/></td>
+          <td style="text-align: center;">
+              <button name="action" value="save" type="submit" >Save</button>
+              <button name="action" value="resolve" type="submit" {% if is_system_alert %} disabled{% endif %}>Resolve</button>
+              <button name="action" value="mute" type="submit" >Mute</button>
+          </td>
+        {% csrf_token %}
+      </form>
+    </tr>
   {% endfor %}
+  </tbody>
 </table>
 
 <!--
