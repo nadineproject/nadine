@@ -442,28 +442,9 @@ function gotoEmailReset(emailAddress){
     {% with user.profile.open_alerts as alerts and True as description and False as member %}
       {% if alerts %}
         <h2>Action Required</h2>
-        {% include "staff/todo_detail_table.html" %}
+        {% include "staff/tasks/detail_table.html" %}
       {% endif %}
     {% endwith %}
-
-    <!--
-    <table id="onboard-form">
-        {% for alert in user.profile.open_alerts %}
-            <tr>
-                <td>{{ alert.description }}</td>
-                <td>
-                    <form action="{% url 'staff:todo_detail' alert.key %}" method="POST">
-                        <input type="hidden" name="alert_id" value="{{ alert.id }}"/>
-                        <input type="hidden" name="next" value="{% url 'staff:user:detail' alert.user.username %}#tabs-4"/>
-                        <button name="action" value="resolve" type="submit" {% if alert.is_system_alert %} disabled{% endif %}>Resolve</button>
-                        <button name="action" value="mute" type="submit" >Mute</button>
-                        <input name="note" size="32"/>
-                        {% csrf_token %}
-                    </form>
-                </td>
-            </tr>
-        {% endfor %}
-    </table> -->
 
     <h2>Completed Tasks</h2>
     <table>
@@ -613,6 +594,6 @@ function gotoEmailReset(emailAddress){
 		$('.collapsible').collapsible();
 
     $('.billing-btn').attr('class', 'billing-btn');
-  }):
+  });
 </script>
 {% endblock %}
