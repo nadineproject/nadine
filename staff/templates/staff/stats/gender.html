@@ -16,13 +16,13 @@
 
 {% block content %}
 
-<h2>Gender Balance -
+<h4>Gender Balance -
 	{% if active_only %}
 		Active Members Only
 	{% else %}
 		All Members
 	{% endif %}
-</h2>
+</h4>
 
 <div id="stats">
 	<span>Male: {{ counts.male }} ({{percentages.male}}%)</span>
@@ -35,13 +35,13 @@
 <canvas id="cvs" width="500" height="400">[No canvas support]</canvas>
 
 <script>
-    window.onload = function ()
-    {
-        var pie = new RGraph.Pie('cvs', [{{counts.male}},{{counts.female}},{{counts.other}},{{counts.unknown}}]);
-        pie.Set('chart.labels', ['Male','Female','Other', 'Unknown']);
-        pie.Set('chart.colors', ['#6666ff','#ff4444','#99ff99','#aaaaaa']);
-        pie.Draw();
-    }
+	window.onload = function ()
+	{
+    var pie = new RGraph.Pie('cvs', [{{counts.male}},{{counts.female}},{{counts.other}},{{counts.unknown}}]);
+    pie.Set('chart.labels', ['Male','Female','Other', 'Unknown']);
+    pie.Set('chart.colors', ['#6666ff','#ff4444','#99ff99','#aaaaaa']);
+    pie.Draw();
+	}
 </script>
 
 <form action="." method="POST">

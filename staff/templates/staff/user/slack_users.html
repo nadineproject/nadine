@@ -3,13 +3,12 @@
 {% block sub-title %} Slack Users | {% endblock %}
 
 {% block style %}
-nav #lists-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {% block content%}
 {% include "interlink/list_menu.frag" %}
 
-<h2>Expired Slack Users ({{ expired_users|length }})</h2>
+<h4>Expired Slack Users ({{ expired_users|length }})</h4>
 <ul>
 {% for u in expired_users %}
 	<li>
@@ -19,7 +18,7 @@ nav #lists-tab { background: #FBD850; color: black; }
 {% endfor %}
 </ul>
 
-<h2>Non Slack Users ({{ non_slack_users|length }})</h2>
+<h4>Non Slack Users ({{ non_slack_users|length }})</h4>
 <ul>
 {% for u in non_slack_users %}
 	<li>
@@ -29,7 +28,7 @@ nav #lists-tab { background: #FBD850; color: black; }
 {% endfor %}
 </ul>
 
-<h2>All Slack Users ({{ slack_users|length }})</h2>
+<h4>All Slack Users ({{ slack_users|length }})</h4>
 <ul>
 {% for u in slack_users %}
 	{% if not u.is_bot and u.profile.email %}

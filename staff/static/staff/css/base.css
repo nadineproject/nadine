@@ -24,6 +24,10 @@ th {
   text-align: center;
 }
 
+h4 {
+	border-bottom: 1px dotted;
+}
+
 /*Navbar and dropdown stylings*/
 nav {
   box-shadow: none;
@@ -214,7 +218,7 @@ div#submenu {
 	h5 {
 		margin-left: 2%;
 	}
-	
+
 	#activity-dates {
 		margin-left: 10%;
 	}

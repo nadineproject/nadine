@@ -4,7 +4,6 @@
 {% block sub-title %}Membership | {% endblock %}
 
 {% block style %}
-nav #members-tab { background: #FBD850; color: black; }
 #page-message { font-size: 1.5em; color: #933; margin: 20px 0px; }
 {% endblock %}
 
@@ -58,7 +57,7 @@ $(document).ready(function() {
 })
 </script>
 
-<h2>{% if membership %} Update {% else %} Add {% endif %} Membership for <a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a></h2>
+<h4>{% if membership %} Update {% else %} Add {% endif %} Membership for <a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a></h4>
 
 {% if messages %}
 <div class="messages">
@@ -175,7 +174,4 @@ $(document).ready(function() {
 
 <div id="membership_list">
 </div>
-
-
-
 {% endblock %}

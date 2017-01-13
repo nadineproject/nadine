@@ -23,7 +23,7 @@
 		{% csrf_token %}
 	</form>
 
-	<h2>Search results</h2>
+	<h4>Search results</h4>
 	{% if search_results %}
 		{% with search_results as users %}
 			{% include "staff/user/user_list_frag.html" %}
