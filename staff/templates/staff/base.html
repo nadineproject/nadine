@@ -56,9 +56,6 @@
 				<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown1' id="todo-tab" href="{% url 'staff:tasks:todo' %}">Tasks</a>
 					<ul id='dropdown1' class='dropdown-content'>
 						<li>
-							<a href="{% url 'staff:activity:today' %}">Record Activity</a>
-						</li>
-						<li>
 							<a href="{% url 'staff:user:deposits' %}">Security Deposits</a>
 						</li>
 						<li>
@@ -190,9 +187,6 @@
 								<ul>
 									<li>
 										<a href="{% url 'staff:tasks:todo' %}">TODO</a>
-									</li>
-									<li>
-										<a href="{% url 'staff:activity:today' %}">Record Activity</a>
 									</li>
 									<li>
 										<a href="{% url 'staff:user:deposits' %}">Security Deposits</a>
@@ -380,7 +374,6 @@
 	<div id="content" style="margin-bottom: 5%;">
 		<div class='row' id='top-content'>
 			<div id="submenu">
-				<a class='chip' href="{% url 'staff:activity:today' %}">Record Activity +</a>
 				{% block submenu %}{% endblock %}
 			</div>
 			{% if request.user.is_authenticated %}

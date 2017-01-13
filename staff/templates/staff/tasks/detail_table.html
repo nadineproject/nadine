@@ -23,7 +23,7 @@
         <td nowrap>{{ alert.description }}</td>
       {% endif %}
       <td>
-        <select name="assigned_to">
+        <select class='browser-default' name="assigned_to">
         <option></option>
           {% for s in staff_members %}
             <option value="{{ s.username }}" {% if s == alert.assigned_to %} SELECTED {% endif %}>
