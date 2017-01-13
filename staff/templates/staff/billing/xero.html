@@ -8,7 +8,6 @@ nav #members-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {% block content %}
-{% include "staff/user/member_menu.frag" %}
 
 <h2>Xero Data - <a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a>:</h2>
 

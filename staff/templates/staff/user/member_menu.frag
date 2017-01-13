@@ -1,1 +1,9 @@
-
+<li>
+  <a href="{% url 'staff:user:deposits' %}">Security Deposits</a>
+</li>
+<li>
+  <a style='width: 100%;' href="{% url 'staff:user:bcc_tool' %}">BCC  Tool</a>
+</li>
+<li>
+  <a href="{% url 'staff:user:user_reports' %}">User Reports</a>
+</li>

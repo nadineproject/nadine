@@ -8,7 +8,6 @@ nav #members-tab { background: #FBD850; color: black; }
 {% block sub-title %}USAePay Customers | {% endblock %}
 
 {% block content %}
-{% include "staff/user/member_menu.frag" %}	 
 
 <h2>USAePay Customers - {{ username }}</h2>
 
@@ -49,7 +48,7 @@ nav #members-tab { background: #FBD850; color: black; }
 		</td>
 		<td></td>
 </table>
- 
+
 <div id="all-together-input">
   Address: <input type="text" name="address_1" />
   Address cont.: <input type="text" name="address_2" />
@@ -61,7 +60,7 @@ nav #members-tab { background: #FBD850; color: black; }
 </div>
 
 <script type="text/javascript" src="https://sandbox.usaepay.com/tokenize/jquery.ueform.js"></script>
- 
+
 <script>
   $('#btn-process-payment')
     .ueForm({
@@ -93,6 +92,6 @@ nav #members-tab { background: #FBD850; color: black; }
       console.log(e)
     });
 </script>
- 
+
 
 {% endblock %}

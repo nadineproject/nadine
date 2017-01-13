@@ -221,10 +221,6 @@ div#submenu {
 	#id_start, #id_end {
 		width: 30%;
 	}
-
-  /*#site-search-form {
-    width: 80%;
-  }*/
 }
 
 @media only screen and (max-width: 550px) {

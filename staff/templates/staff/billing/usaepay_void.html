@@ -7,7 +7,6 @@ nav #billing-tab { background: #FBD850; color: black; }
 {% block sub-title %}USAePay Void Authorization | {% endblock %}
 
 {% block content %}
-{% include "staff/billing/billing_menu.frag" %}	 
 
 <h2>USAePay Void Authorization</h2>
 
@@ -30,7 +29,7 @@ nav #billing-tab { background: #FBD850; color: black; }
         <strong>Description: </strong> {{ transaction.description}}<br>
         <strong>Amount: </strong> ${{ transaction.amount }}<br>
     </div>
-    
+
     <h3>Are you sure?</h3>
     <div style="margin-left: 2em;">
         <form action="." method="POST">
