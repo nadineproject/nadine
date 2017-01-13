@@ -23,7 +23,7 @@
 
 <h2>
 	Daily Activity - {{ activity_date|date:"l, M dS" }}
-	<span style="float:right;">
+	<span id='activity-dates'>
 	<a href="{% url 'staff:activity:date' previous_date.year previous_date.month previous_date.day %}">&larr;</a>
 	<!-- <a href="{% url 'staff:activity:today' %}">&bull;</a> -->
 	<input type='date' name='date' class='datepicker' value="{{ activity_date|date:'Y-m-d' }}" style='font-size:.6em; text-align:center; width:150px;'/>
@@ -80,7 +80,7 @@
 		(function() {
 			$('.button-collapse').sideNav();
 			$('.collapsible').collapsible();
-			
+
 			$('.datepicker').datepicker({
 				dateFormat: 'yy-mm-dd',
 				onSelect: function(ui, e) {

@@ -52,43 +52,43 @@ function gotoEmailReset(emailAddress){
 {% include "staff/user/member_menu.frag" %}
 
 <div class="member-photo">
-    {% if user.profile.photo %}
-        <a href="{{ user.profile.photo.url }}"><img src="{{ user.profile.photo.url|fit_image:"170x170" }}" /></a>
-    {% else %}
-        <img src="{% static 'BlankIcon150x150.jpg' %}">
-    {% endif %}
+  {% if user.profile.photo %}
+    <a href="{{ user.profile.photo.url }}"><img src="{{ user.profile.photo.url|fit_image:"170x170" }}" /></a>
+  {% else %}
+    <img src="{% static 'BlankIcon150x150.jpg' %}">
+  {% endif %}
 </div>
 
 <!-- Member Detail -->
-<div id="member-detail">
-    <h2>{{ user.get_full_name }} {% if user.profile.is_active %} - <i>{{ user.profile.membership_type }}</i> {% endif %}</h2>
-    <div id="quick-links">
-        <a href="{% url 'staff:activity:user' user.username %}">activity</a> |
-        <a href="{% url 'doors_keys' user.username %}">keys</a> |
-        <a href="{% url 'staff:user:files' user.username %}">files</a> |
-        <a href="{% url 'staff:billing:user_payment' user.username %}">usaepay</a> |
-        <a href="{% url 'staff:billing:xero' user.username %}">xero</a> |
-        <a href="{% url 'admin:auth_user_change' user.id %}">admin</a> |
-        <a href="{% url 'member_profile' user.username %}">view profile</a> |
-        <a href="{% url 'member_edit_profile' user.username %}">edit profile</a> |
-        {% if user.profile.is_active %}
-            <a href="{% url 'staff:user:membership' user.profile.last_membership.id %}">update membership</a>
-        {% else %}
-            <a href="{% url 'staff:user:membership' user.username %}">add membership</a>
-        {% endif %}
-    </div>
+<div class='row' id="member-detail">
+  <h2 style='margin-top: 0;'>{{ user.get_full_name }} {% if user.profile.is_active %} - <i>{{ user.profile.membership_type }}</i> {% endif %}</h2>
+  <div id="quick-links">
+    <a href="{% url 'staff:activity:user' user.username %}">activity</a> |
+    <a href="{% url 'doors_keys' user.username %}">keys</a> |
+    <a href="{% url 'staff:user:files' user.username %}">files</a> |
+    <a href="{% url 'staff:billing:user_payment' user.username %}">usaepay</a> |
+    <a href="{% url 'staff:billing:xero' user.username %}">xero</a> |
+    <a href="{% url 'admin:auth_user_change' user.id %}">admin</a> |
+    <a href="{% url 'member_profile' user.username %}">view profile</a> |
+    <a href="{% url 'member_edit_profile' user.username %}">edit profile</a> |
+    {% if user.profile.is_active %}
+      <a href="{% url 'staff:user:membership' user.profile.last_membership.id %}">update membership</a>
+    {% else %}
+      <a href="{% url 'staff:user:membership' user.username %}">add membership</a>
+    {% endif %}
+  </div>
 </div>
 
 <div class="clearfix"></div>
 
-<div id="tabs">
-    <ul>
-        <li><a href="#tabs-0">Details</a></li>
-        <li><a href="#tabs-1">Membership</a></li>
-        <li><a href="#tabs-2">Billing</a></li>
-        <li><a href="#tabs-3">Emails</a></li>
-        <li><a href="#tabs-4">Tasks</a></li>
-        <li><a href="#tabs-5">Notes</a></li>
+<div>
+    <ul class='tabs'>
+        <li class='tab'><a href="#tabs-0">Details</a></li>
+        <li class='tab'><a href="#tabs-1">Membership</a></li>
+        <li class='tab'><a href="#tabs-2">Billing</a></li>
+        <li class='tab'><a href="#tabs-3">Emails</a></li>
+        <li class='tab'><a href="#tabs-4">Tasks</a></li>
+        <li class='tab'><a href="#tabs-5">Notes</a></li>
     </ul>
 
 <div id="tabs-0">
@@ -335,17 +335,18 @@ function gotoEmailReset(emailAddress){
     </div>
     <!-- Billing Profile -->
     <h2>Billing Profile</h2>
+    <!-- TODO change look of button in members/profile_billing_frag -->
     {% include "members/profile_billing_frag.html" %}
     <div style="margin-left: 2em; margin-top: .5em;">
-        <form method=POST action="{% url 'staff:billing:toggle_bill' user.username %}" onSubmit="return confirm('Are you sure?');">
-            <input type="hidden" name="back" value="{{ request.get_full_path }}">
-            {% if user.profile.has_valid_billing %}
-                <input type="submit" value="Flag Invalid Billing Profile">
-            {% else %}
-                <input type="submit" value="Clear Invalid Billing Flag">
-            {% endif %}
-            {% csrf_token %}
-        </form>
+      <form method=POST action="{% url 'staff:billing:toggle_bill' user.username %}" onSubmit="return confirm('Are you sure?');">
+        <input type="hidden" name="back" value="{{ request.get_full_path }}">
+        {% if user.profile.has_valid_billing %}
+            <input type="submit" value="Flag Invalid Billing Profile">
+        {% else %}
+            <input type="submit" value="Clear Invalid Billing Flag">
+        {% endif %}
+        {% csrf_token %}
+      </form>
     </div>
     <div style="margin-left: 2em; margin-top: .5em;">
         [ <a href="https://secure.usaepay.com/interface/epayform/{{ settings.USA_EPAY_WEB_KEY }}/?UMdescription=Office%20Nomads%20Billing%20Authorization&UMcustid={{ user.username }}&UMcommand=AuthOnly&UMamount=1.00&UMaddcustomer=yes&UMschedule=disabled">payment link</a> ]
@@ -603,4 +604,16 @@ function gotoEmailReset(emailAddress){
 
 </div>
 
+{% endblock %}
+
+
+{% block extrajs %}
+<script>
+  $(document).ready(function() {
+    $('.button-collapse').sideNav();
+		$('.collapsible').collapsible();
+
+    $('.billing-btn').attr('class', 'billing-btn');
+  }):
+</script>
 {% endblock %}

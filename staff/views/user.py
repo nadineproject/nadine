@@ -86,6 +86,7 @@ def members(request, group=None):
     total_members = User.helper.active_members().count()
     group_list = MemberGroups.get_member_groups()
 
+
     context = {'group': group, 'group_name': group_name, 'users': users,
         'member_count': member_count, 'group_list': group_list, 'total_members': total_members}
     return render(request, 'staff/user/members.html', context)

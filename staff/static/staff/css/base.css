@@ -31,8 +31,13 @@ nav {
 
 #branding {
   padding: 0;
-  max-height: 50px;
+  max-height: 40px;
   line-height: 35px;
+	font-size: 1.2em;
+}
+
+#branding a {
+	padding-top: 0;
 }
 
 #navcontainer {
@@ -126,12 +131,47 @@ div#submenu {
   display: inline-block;
 }
 
-/*ToDo Page Styling*/
+
+/*Activity Pages Styling*/
 #alert-a {
   margin-left: 85%;
   margin-top: 3%;
 }
 
+#id_start, #id_end {
+	width: 15%;
+	padding-left: 1%;
+}
+
+#activity-dates {
+	margin-left: 30%;
+}
+
+/*Member List Page styling*/
+#group_form {
+	margin-left: 2%;
+}
+#group_form label {
+	display: inline-block;
+}
+
+.input-field {
+	width: 25%;
+	display: inline-block !important;
+}
+
+.tabs .tab a {
+	text-decoration: none;
+	color: RGBA(28, 164, 230, 1.00);
+}
+
+.tabs .tab a:hover, .tabs .tab a.active {
+	color: RGBA(34, 83, 120, 1.00);
+}
+
+.tabs .indicator {
+	background-color: RGBA(34, 83, 120, 1.00);
+}
 
 /*Media queries*/
 @media only screen and (max-width: 992px) {
@@ -142,6 +182,16 @@ div#submenu {
   #branding {
     padding: 0;
   }
+
+	#content h2, #content h3, .date-range {
+		margin-left: 2%;
+	}
+}
+
+@media only screen and (max-width: 900px) {
+	#activity-dates {
+		margin-left: 10%;
+	}
 }
 
 @media only screen and (max-width: 700px) {
@@ -167,6 +217,10 @@ div#submenu {
   #submenu {
     float: left;
   }
+
+	#id_start, #id_end {
+		width: 30%;
+	}
 
   /*#site-search-form {
     width: 80%;

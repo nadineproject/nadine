@@ -100,7 +100,7 @@ label, input[type=button], input[type=submit], button { cursor: pointer; }
 ::-moz-selection{ background: #FF5E99; color:#fff; }
 ::selection { background:#FF5E99; color:#fff; }
 
-a:link { -webkit-tap-highlight-color: #FF5E99; }
+/*a:link { -webkit-tap-highlight-color: #FF5E99; }*/
 
 button {  width: auto; overflow: visible; }
 .ie7 img { -ms-interpolation-mode: bicubic; }

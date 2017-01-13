@@ -11,16 +11,18 @@ nav #members-tab { background: #FBD850; color: black; }
 
 <h2>Member List [<i>{{total_members}} total</i> ]</h2>
 
-<div style="float:right;">
+<div>
 	<form id="group_form">
-	<strong>View: </strong>
-	<select name="group" OnChange="location.href=group_form.group.options[selectedIndex].value">
-		{% for k, v in group_list %}
-			<option value="{% url 'staff:user:member_group' k %}" {% if k == group %} SELECTED {% endif %}>
-				{{ v }}
-			</option>
-		{% endfor %}
-	</select>
+		<label for='group'>View:</label>
+		<div class='input-field'>
+			<select class='browser-default' id='group' name="group" OnChange="location.href=group_form.group.options[selectedIndex].value">
+			 {% for k, v in group_list %}
+				 <option value="{% url 'staff:user:member_group' k %}" {% if k == group %} SELECTED {% endif %}>
+					 {{ v }}
+				 </option>
+			 {% endfor %}
+		 </select>
+		</div>
 	</form>
 </div>
 
