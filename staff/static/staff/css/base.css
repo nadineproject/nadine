@@ -259,3 +259,9 @@ div#submenu {
     margin-left: 65%;
   }
 }
+
+@media only screen and (max-width: 350px) {
+	#footer, #footer a {
+		font-size: 1em;
+	}
+}
