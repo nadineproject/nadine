@@ -287,10 +287,17 @@ div#submenu {
 }
 
 @media only screen and (max-width: 550px) {
-
   #site-search-form {
     width: 50%;
   }
+}
+
+@media only screen and (max-width: 480px) {
+	.graph-column {
+		width: 5px;
+		float: left;
+		margin-bottom: 10%;
+	}
 }
 
 @media only screen and (max-width: 450px) {
