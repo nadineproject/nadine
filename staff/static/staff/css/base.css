@@ -220,6 +220,13 @@ canvas#cvs {
 	height: 400px;
 }
 
+
+/*Arpwatch stylings*/
+#logs-length {
+	float:right;
+}
+
+
 /*Media queries*/
 @media only screen and (max-width: 992px) {
 	.left.hide-on-small-and-down {
@@ -332,6 +339,10 @@ canvas#cvs {
 		width: 5px;
 		float: left;
 		margin-bottom: 10%;
+	}
+
+	#logs-length {
+		display: none;
 	}
 }
 
