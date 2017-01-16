@@ -446,19 +446,22 @@ function gotoEmailReset(emailAddress){
     {% endwith %}
 
     <h2>Completed Tasks</h2>
-    <table>
+    <table class='responsive-table'>
+      <thead>
         <tr>
             <th>Created</th>
-            <th style="text-align:left;">Alert</th>
+            <th id='alerts-th'>Alert</th>
             <th>Resolved</th>
             <th>Resolved By</th>
             <th>Muted</th>
             <th>Muted By</th>
             <th>Note</th>
         </tr>
+      </thead>
+      <tbody>
         {% for alert in user.profile.alerts %}
             {% if alert.is_resolved %}
-                <tr>
+                <tr class="{% cycle 'row-even' 'row-odd' %}">
                     <td>{{ alert.created_ts|date:"m/d/y" }}</td>
                     <td style="text-align:left;">{{ alert.description }}</td>
                     <td>{{ alert.resolved_ts|date:"m/d/y" }}</td>
@@ -469,6 +472,7 @@ function gotoEmailReset(emailAddress){
                 </tr>
             {% endif %}
         {% endfor %}
+      </tbody>
     </table>
 </div>
 

@@ -45,7 +45,7 @@ nav {
 }
 
 #navcontainer {
-  background-color: #000;
+  background-color: RGBA(0, 0, 0, 1.00);
   font-size: 1.2em;
   min-width: 100%;
   display: inline-block;
@@ -198,6 +198,11 @@ div#submenu {
 	margin-left: 5%;
 }
 
+/*Member detail page styling*/
+.responsive-table #alerts-th {
+	text-align: left;
+}
+
 
 /*Media queries*/
 @media only screen and (max-width: 992px) {
@@ -263,6 +268,10 @@ div#submenu {
 @media only screen and (max-width: 599px) {
 	.responsive-table thead {
 		margin-top: 1%;
+	}
+
+	.responsive-table #alerts-th {
+		text-align: right;
 	}
 
 	#assigned-th {
