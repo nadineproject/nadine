@@ -157,7 +157,7 @@ class DefaultAllowance(models.Model):
     overage_rate = models.DecimalField(decimal_places=2, max_digits=9)
 
     def __str__(self):
-        return "%s: at %s/month" % (self.resource, self.monthly_rate)
+        return "%d %s at %s/month" % (self.allowance, self.resource, self.monthly_rate)
 
 
 class ResourceAllowance(models.Model):

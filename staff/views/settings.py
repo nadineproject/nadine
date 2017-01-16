@@ -10,6 +10,7 @@ from django.contrib.sites.models import Site
 from django.contrib import messages
 from django.conf import settings
 
+from nadine.models.membership import MembershipPackage
 from nadine.utils import network
 
 
@@ -17,6 +18,14 @@ from nadine.utils import network
 def index(request):
     context = {}
     return render(request, 'staff/settings/index.html', context)
+
+
+@staff_member_required
+def membership_packages(request):
+    packages = MembershipPackage.objects.all().order_by('name')
+    context = {'packages':packages}
+    return render(request, 'staff/settings/membership_packages.html', context)
+
 
 @staff_member_required
 def view_ip(request):

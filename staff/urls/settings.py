@@ -4,6 +4,7 @@ from staff.views import settings
 
 urlpatterns = [
      url(r'^$', settings.index, name='index'),
+     url(r'^packages/$', settings.membership_packages, name='membership_packages'),
      url(r'^view_ip/$', settings.view_ip, name='view_ip'),
      url(r'^view_config/$', settings.view_config, name='view_config'),
 

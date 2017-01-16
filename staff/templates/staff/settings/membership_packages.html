@@ -1,0 +1,30 @@
+{% extends "staff/settings/base.html" %}
+
+{% block content %}
+  <h1>Membership Packages</h1>
+
+  <table>
+      <tr>
+        <th>Package Name</th>
+        <th>Resource</th>
+        <th>Allowance</th>
+        <th>Monthly Rate</th>
+        <th>Overage Rate</th>
+      </tr>
+  {% for package in packages %}
+      {% for a in package.allowances.all %}
+        <tr>
+          <td>{{ package.name }}</td>
+          <td>{{ a.resource.name }}</td>
+          <td>{{ a.allowance }}</td>
+          <td>{{ a.monthly_rate }}</td>
+          <td>{{ a.overage_rate }}</td>
+        </tr>
+      {% endfor %}
+  {% empty %}
+    <tr>
+      <td colspan="5"><i>No Membership Packages</i></td>
+    </tr>
+  {% endfor %}
+</table>
+{% endblock %}
