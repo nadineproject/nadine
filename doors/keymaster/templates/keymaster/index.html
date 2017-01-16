@@ -7,9 +7,9 @@
 {% endif %}
 
 {% for keymaster in keymasters %}
-	<h2>{{ keymaster.description }}</h2>
+	<h4>{{ keymaster.description }}</h4>
 	{% if keymaster.is_syncing %}
-		<h4 style="color:red;">Full sync in progress.  Logs will be delayed until completed.</h4>
+		<h5 style="color:red;">Full sync in progress.  Logs will be delayed until completed.</h5>
 	{% endif %}
 
 	{% include "keymaster/log_table.html" %}
@@ -17,7 +17,7 @@
 		<!-- [ <a href="{% url 'doors_logs' %}">more logs</a> ] -->
 	</div>
 
-	<h3>Gatekeeper Health</h3>
+	<h5>Gatekeeper Health</h5>
 	<table class='responsive-table'>
 		<thead>
 			<tr>
