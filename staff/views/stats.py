@@ -181,7 +181,6 @@ def monthly(request):
 
 @staff_member_required
 def neighborhood(request):
-    print request.POST
     active_only = 'ActiveOnly' in request.POST
 
     if active_only:
