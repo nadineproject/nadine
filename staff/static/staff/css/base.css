@@ -226,6 +226,10 @@ canvas#cvs {
 	float:right;
 }
 
+.responsive-header {
+	display: none;
+}
+
 
 /*Media queries*/
 @media only screen and (max-width: 992px) {
@@ -297,6 +301,14 @@ canvas#cvs {
 		text-align: right;
 	}
 
+	.responsive-header {
+		display: inline;
+	}
+
+	#clear-btn {
+		text-align: left;
+	}
+
 	#dis-date {
 		display: none;
 	}
@@ -331,6 +343,14 @@ canvas#cvs {
 		width: 400px;
 		height: 320px;
 		margin-left: 5%;
+	}
+
+	.outgoing-table th {
+		text-align: right !important;
+	}
+
+	.outgoing-table tr:first-child {
+		padding-right: 0;
 	}
 }
 
