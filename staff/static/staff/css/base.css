@@ -45,7 +45,7 @@ nav {
 }
 
 #navcontainer {
-  background-color: RGBA(0, 0, 0, 1.00);
+  background-color: RGBA(0, 0, 0, .70);
   font-size: 1.2em;
   min-width: 100%;
   display: inline-block;
@@ -89,12 +89,12 @@ nav {
   text-decoration: none;
   color: #fff;
   float: left;
-  background-color: #000;
+	background-color: RGBA(76, 76, 76, 1.00);
 }
 
 #nav-mobile li a:hover {
   color: #fff;
-  background-color: RGBA(34, 83, 120, 1.00);
+  background-color: RGBA(90, 122, 189, 1.00);
 }
 
 .selected#nav-mobile li a {
