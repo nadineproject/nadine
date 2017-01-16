@@ -8,7 +8,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 
 {% block content %}
 
-<h2><a href="{% url 'staff:user:transactions' transaction.user.username %}">{{ transaction.user.get_full_name }}</a>'s Transaction:</h2>
+<h4><a href="{% url 'staff:user:transactions' transaction.user.username %}">{{ transaction.user.get_full_name }}</a>'s Transaction:</h4>
 
 <dl id="transaction-metadata">
 		<dt>Created:</dt><dd>{{ transaction.transaction_date }}</dd>
@@ -18,7 +18,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 	{% endif %}
 </table>
 
-<h2>Bills covered by this transaction:</h2>
+<h4>Bills covered by this transaction:</h4>
 <ul>
 {% for bill in transaction.bills.all %}
 <li><a href="{% url 'staff:billing:bill' bill.id %}">Bill on {{ bill.bill_date }}</a> for ${{ bill.amount }}</li>

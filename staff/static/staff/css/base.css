@@ -24,6 +24,10 @@ th {
   text-align: center;
 }
 
+h4 {
+	border-bottom: 1px dotted;
+}
+
 /*Navbar and dropdown stylings*/
 nav {
   box-shadow: none;
@@ -41,7 +45,7 @@ nav {
 }
 
 #navcontainer {
-  background-color: #000;
+  background-color: RGBA(0, 0, 0, 1.00);
   font-size: 1.2em;
   min-width: 100%;
   display: inline-block;
@@ -113,6 +117,10 @@ nav {
 }
 
 /*Top of body content styling*/
+#content {
+	margin-bottom: 5%;
+}
+
 .submenu li {
   display: inline;
 }
@@ -143,9 +151,19 @@ div#submenu {
 	padding-left: 1%;
 }
 
+.day-header {
+	border-bottom: 1px dotted;
+}
+
+.day-header h5, .day-header #activity-dates {
+	display: inline;
+}
+
 #activity-dates {
 	margin-left: 30%;
+	font-size: 2em;
 }
+
 
 /*Member List Page styling*/
 #group_form {
@@ -173,6 +191,46 @@ div#submenu {
 	background-color: RGBA(34, 83, 120, 1.00);
 }
 
+/*Bills Pages Styling*/
+.bill-deets {
+	width: 300px;
+	display: inline-block;
+}
+
+#id_amount {
+	width: 40% !important;
+	vertical-align: baseline;
+	padding-left: 3%;
+}
+
+#set_paid {
+	margin-left: 5%;
+}
+
+
+/*Member detail page styling*/
+.responsive-table #alerts-th {
+	text-align: left;
+}
+
+
+/*Stats pages stylings*/
+canvas#cvs {
+	width: 500px;
+	height: 400px;
+}
+
+
+/*Arpwatch stylings*/
+#logs-length {
+	float:right;
+}
+
+.responsive-header {
+	display: none;
+}
+
+
 /*Media queries*/
 @media only screen and (max-width: 992px) {
 	.left.hide-on-small-and-down {
@@ -189,15 +247,26 @@ div#submenu {
 }
 
 @media only screen and (max-width: 900px) {
+	h5 {
+		margin-left: 2%;
+	}
+
 	#activity-dates {
 		margin-left: 10%;
 	}
 }
 
 @media only screen and (max-width: 700px) {
+
   #alert-a {
     margin-left: 75%;
   }
+
+	#id_amount {
+		width: 20% !important;
+		vertical-align: baseline;
+		padding-left: 1%;
+	}
 }
 
 @media only screen and (max-width: 650px) {
@@ -221,20 +290,122 @@ div#submenu {
 	#id_start, #id_end {
 		width: 30%;
 	}
+}
 
-  /*#site-search-form {
-    width: 80%;
-  }*/
+@media only screen and (max-width: 599px) {
+	.responsive-table thead {
+		margin-top: 1%;
+	}
+
+	.responsive-table #alerts-th {
+		text-align: right;
+	}
+
+	.responsive-header {
+		display: inline;
+	}
+
+	#clear-btn {
+		text-align: left;
+	}
+
+	#dis-date {
+		display: none;
+	}
+
+	#assigned-th {
+		height: 45px;
+		line-height: 45px;
+	}
+
+	#note-th {
+		height: 65px;
+		line-height: 65px;
+	}
+
+	#action-th {
+		margin-top: 20px;
+		height: 26px;
+		line-height: 26px;
+	}
+
+	.bill-row {
+		margin-bottom: 0;
+	}
 }
 
 @media only screen and (max-width: 550px) {
   #site-search-form {
     width: 50%;
   }
+
+	canvas#cvs {
+		width: 400px;
+		height: 320px;
+		margin-left: 5%;
+	}
+
+	.outgoing-table th {
+		text-align: right !important;
+	}
+
+	.outgoing-table tr:first-child {
+		padding-right: 0;
+	}
+}
+
+@media only screen and (max-width: 480px) {
+	.graph-column {
+		width: 5px;
+		float: left;
+		margin-bottom: 10%;
+	}
+
+	#logs-length {
+		display: none;
+	}
 }
 
 @media only screen and (max-width: 450px) {
+	#content {
+		margin-bottom: 15%;
+	}
+
+	#activity-dates:before {
+		content: ' ';
+		display: block;
+	}
+
+	#activity-dates a:first-child {
+		margin-left: 25%;
+	}
+
   #alert-a {
     margin-left: 65%;
   }
+
+	div.bill-deets {
+		margin-left: 0;
+	}
+
+	#id_amount {
+		width: 25% !important;
+		vertical-align: baseline;
+		padding-left: 2%;
+	}
+
+	canvas#cvs {
+		width: 300px;
+		height: 240px;
+	}
+}
+
+@media only screen and (max-width: 350px) {
+	#activity-dates a:first-child {
+		margin-left: 15%;
+	}
+
+	#footer, #footer a {
+		font-size: 1em;
+	}
 }

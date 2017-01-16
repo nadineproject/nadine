@@ -14,10 +14,9 @@
 {% block sub-title %}TODO | {% endblock %}
 
 {% block content %}
-{% include "staff/tasks/todo_menu.frag" %}
 
 {% if not_signed_in %}
-<h2>Forgot to sign in?</h2>
+<h4>Forgot to sign in?</h4>
 <div id="activity_list">
 	<table>
 		<tr>
@@ -89,7 +88,7 @@
 <div>
 {% with assigned_alerts as alerts and True as member and True as description %}
 	{% if alerts %}
-		<h2>Assigned Alerts</h2>
+		<h4>Assigned Alerts</h4>
 		{% include "staff/tasks/detail_table.html" %}
 	{% endif %}
 {% endwith %}
@@ -103,7 +102,7 @@
 	{% endif %}
 </p>
 
-<h2 style='margin-top: 0;'>TODO:</h2>
+<h4 style='margin-top: 0;'>TODO:</h4>
 <table>
 	<tr>
 		<th>Action Required</th>

@@ -9,290 +9,289 @@ nav #billing-tab { background: #FBD850; color: black; }
 {% block sub-title %}USAePay | {{ user }} | {% endblock %}
 
 {% block content %}
-{% include "staff/billing/billing_menu.frag" %}
 
-<h2>USAePay - <a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a></h2>
+<h4>USAePay - <a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a></h4>
 
 {% if messages %}
-    <div class="messages">
-        {% for message in messages %}
-        <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
-        {% endfor %}
-    </div>
+  <div class="messages">
+    {% for message in messages %}
+    <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+    {% endfor %}
+  </div>
 {% endif %}
 
 <form id="customer_form">
 <table>
-    <tr>
-        <th></th>
-        <th>Created</th>
-        <th nowrap>Customer #</th>
-        <th>Company</th>
-        <th style="width:80%;">Description</th>
-        <th>Last4</th>
-        <th nowrap>Next Bill</th>
-        <th>Amount</th>
-        <th>Auto</th>
+  <tr>
+    <th></th>
+    <th>Created</th>
+    <th nowrap>Customer #</th>
+    <th>Company</th>
+    <th style="width:80%;">Description</th>
+    <th>Last4</th>
+    <th nowrap>Next Bill</th>
+    <th>Amount</th>
+    <th>Auto</th>
+  </tr>
+
+  {% for cust in history.keys %}
+    <tr class="{% cycle 'row-even' 'row-odd' %}">
+      <td style="width:2px;"><input class="customer" name="customer" type="radio" onChange="selectCustomer('{{ cust.CustNum }}', this); return false;"/></td>
+      <td>{{ cust.Created | slice:":10"}}</td>
+      <td><a href="https://secure.usaepay.com/console/billing_edit?id={{ cust.CustNum }}" target="new">{{ cust.CustNum }}</a></td>
+      <td>{{ cust.BillingAddress.Company }}</td>
+      <td>{{ cust.Description }}</td>
+      <td>
+        {% with cust.PaymentMethods|first|first as method %}
+          {{ method.CardNumber|slice:"12:" }}
+        {% endwith %}
+      </td>
+
+      {% if cust.Enabled %}
+          <td>{{ cust.Next | slice:":10"}}</td>
+          <td>${{ cust.Amount|floatformat:2 }}</td>
+          <td style="text-align:center;">
+              <img src="{% static 'green_check.png' %}" height="16px" />
+          </td>
+      {% else %}
+          <td colspan="4"></td>
+      {% endif %}
     </tr>
-
-    {% for cust in history.keys %}
-        <tr class="{% cycle 'row-even' 'row-odd' %}">
-            <td style="width:2px;"><input class="customer" name="customer" type="radio" onChange="selectCustomer('{{ cust.CustNum }}', this); return false;"/></td>
-            <td>{{ cust.Created | slice:":10"}}</td>
-            <td><a href="https://secure.usaepay.com/console/billing_edit?id={{ cust.CustNum }}" target="new">{{ cust.CustNum }}</a></td>
-            <td>{{ cust.BillingAddress.Company }}</td>
-            <td>{{ cust.Description }}</td>
-            <td>
-              {% with cust.PaymentMethods|first|first as method %}
-                {{ method.CardNumber|slice:"12:" }}
-              {% endwith %}
-            </td>
-
-            {% if cust.Enabled %}
-                <td>{{ cust.Next | slice:":10"}}</td>
-                <td>${{ cust.Amount|floatformat:2 }}</td>
-                <td style="text-align:center;">
-                    <img src="{% static 'green_check.png' %}" height="16px" />
-                </td>
-            {% else %}
-                <td colspan="4"></td>
-            {% endif %}
-        </tr>
-    {% endfor %}
+  {% endfor %}
 </table>
 </form>
 
 <div style="padding: 12px;">
-    <h4 style="display:inline;">Actions:</h4>
+  <h5 style="display:inline;">Actions:</h5>
 
-    <input type="button" value="Create New Profile" onclick="addBillingProfile(); return false;">
+  <input type="button" value="Create New Profile" onclick="addBillingProfile(); return false;">
 
-    <form id="disable_auto_button"  method="POST" action="." style="display:inline;">
-        <input type="submit" name="disable_all" value="Disable Automatic Billing">
-        {% csrf_token %}
-    </form>
+  <form id="disable_auto_button"  method="POST" action="." style="display:inline;">
+    <input type="submit" name="disable_all" value="Disable Automatic Billing">
+    {% csrf_token %}
+  </form>
 
-    <input type="button" id="edit_profile_button" value="Edit Automatic Billing" onclick="editProfile()">
+  <input type="button" id="edit_profile_button" value="Edit Automatic Billing" onclick="editProfile()">
 
-    <!-- <form id="delete_profile_form" method="POST" action="." style="display:inline;" onSubmit="return confirm('Are you sure?');">
-        <input type="hidden" name="action" value="delete_profile">
-        <input type="hidden" name="customer_id" value="">
-        <input type="submit" name="delete_profile" value="Delete Profile">
-        {% csrf_token %}
-    </form> -->
+  <!-- <form id="delete_profile_form" method="POST" action="." style="display:inline;" onSubmit="return confirm('Are you sure?');">
+      <input type="hidden" name="action" value="delete_profile">
+      <input type="hidden" name="customer_id" value="">
+      <input type="submit" name="delete_profile" value="Delete Profile">
+      {% csrf_token %}
+  </form> -->
 
-    <input type="button" id="manual_charge_button" value="Manually Charge" onclick="manualCharge();">
+  <input type="button" id="manual_charge_button" value="Manually Charge" onclick="manualCharge();">
 
-    <form id="verify_profile_button" method="POST" action="." style="display:inline;" onSubmit="return confirm('Run an AUTH?');">
-        <input type="hidden" name="customer_id" value="">
-        <input type="hidden" name="action" value="verify_profile">
-        <input type="submit" value="Run Authorization">
-        {% csrf_token %}
-    </form>
+  <form id="verify_profile_button" method="POST" action="." style="display:inline;" onSubmit="return confirm('Run an AUTH?');">
+    <input type="hidden" name="customer_id" value="">
+    <input type="hidden" name="action" value="verify_profile">
+    <input type="submit" value="Run Authorization">
+    {% csrf_token %}
+  </form>
 
-     <input id="clear_button" type="button" value="Clear Selection" onclick="clearCustomerSelect(); return false;">
+   <input id="clear_button" type="button" value="Clear Selection" onclick="clearCustomerSelect(); return false;">
 </div>
 
 {% for customer, transactions in history.items %}
     <div id="billing_detail_{{ customer.CustNum }}">
-        <h3>Billing Detail ({{ customer.CustNum }})</h3>
-        <div style="padding: 12px;">
-            <strong>Address: </strong>{{ customer.BillingAddress.Street }}
-            <strong>Zip: </strong>{{ customer.BillingAddress.Zip }}
-            <strong>Email: </strong>{{ customer.BillingAddress.Email }}
-        </div>
-        <h3>Billing History</h3>
-        <table>
+      <h5>Billing Detail ({{ customer.CustNum }})</h5>
+      <div style="padding: 12px;">
+        <strong>Address: </strong>{{ customer.BillingAddress.Street }}
+        <strong>Zip: </strong>{{ customer.BillingAddress.Zip }}
+        <strong>Email: </strong>{{ customer.BillingAddress.Email }}
+      </div>
+      <h5>Billing History</h5>
+      <table>
+      <tr>
+        <th>Date</th>
+        <th>Description</th>
+        <th>Status</th>
+        <th>Type</th>
+        <th style="text-align:right;">Amount</th>
+        <th>Action</th>
+      </tr>
+      {% for t in transactions|dictsortreversed:"date_time"|slice:":100" %}
         <tr>
-            <th>Date</th>
-            <th>Description</th>
-            <th>Status</th>
-            <th>Type</th>
-            <th style="text-align:right;">Amount</th>
-            <th>Action</th>
+          <td>{{ t.date_time|date:'Y-m-d' }}</td>
+          <td>{{ t.description }}</td>
+          <td>{{ t.status }}</td>
+          <td>{{ t.card_type }}</td>
+          <td style="text-align:right;">${{ t.amount|floatformat:2 }}</td>
+          <td style="text-align:center;"><form method="POST" action=".">
+            <input type="hidden" name="transaction_id" value="{{ t.transaction_id }}"/>
+            <input type="hidden" name="action" value="email_receipt">
+            <input type="submit" value="Email Receipt"/>
+            {% csrf_token %}
+          </form>
+          </td>
         </tr>
-        {% for t in transactions|dictsortreversed:"date_time"|slice:":100" %}
-            <tr>
-                <td>{{ t.date_time|date:'Y-m-d' }}</td>
-                <td>{{ t.description }}</td>
-                <td>{{ t.status }}</td>
-                <td>{{ t.card_type }}</td>
-                <td style="text-align:right;">${{ t.amount|floatformat:2 }}</td>
-                <td style="text-align:center;"><form method="POST" action=".">
-                  <input type="hidden" name="transaction_id" value="{{ t.transaction_id }}"/>
-                  <input type="hidden" name="action" value="email_receipt">
-                  <input type="submit" value="Email Receipt"/>
-                  {% csrf_token %}
-                </form>
-              </td>
-            </tr>
-        {% endfor %}
-        </table>
+      {% endfor %}
+      </table>
     </div>
 
     <div id="manual_charge_{{ customer.CustNum }}">
-        <h3>Manually Run Charges</h3>
-        <form action="." method="POST">
-            <input type="hidden" name="customer_id" value="">
-            <input type="hidden" name="action" value="manual_charge">
-            <table>
-                <tr>
-                    <th>Invoice</th>
-                    <th>Description</th>
-                    <th>Comment</th>
-                    <th>Amount</th>
-                    <th></th>
-                </tr>
-                <tr>
-                    <td>
-                        <input name="invoice" size="10"/>
-                    </td>
-                    <td>
-                        <input name="description" size="60" value="{{ customer.Description }}"/>
-                    </td>
-                    <td>
-                        <input name="comment" size="30" value="Thank you!"/>
-                    </td>
-                    <td>
-                        <input name="amount" size="5" />
-                    </td>
-                    <td>
-                        <input type="submit" value="Run Charges">
-                    </td>
-                </tr>
-            </table>
-            {% csrf_token %}
-        </form>
+      <h5>Manually Run Charges</h5>
+      <form action="." method="POST">
+        <input type="hidden" name="customer_id" value="">
+        <input type="hidden" name="action" value="manual_charge">
+        <table>
+          <tr>
+            <th>Invoice</th>
+            <th>Description</th>
+            <th>Comment</th>
+            <th>Amount</th>
+            <th></th>
+          </tr>
+          <tr>
+            <td>
+              <input name="invoice" size="10"/>
+            </td>
+            <td>
+              <input name="description" size="60" value="{{ customer.Description }}"/>
+            </td>
+            <td>
+              <input name="comment" size="30" value="Thank you!"/>
+            </td>
+            <td>
+              <input name="amount" size="5" />
+            </td>
+            <td>
+              <input type="submit" value="Run Charges">
+            </td>
+          </tr>
+        </table>
+        {% csrf_token %}
+      </form>
     </div>
 
     <div id="edit_recurring_{{ customer.CustNum }}">
-        <h3>Edit Automatic Billing</h3>
-        <form action="." method="POST">
-            <input type="hidden" name="customer_id" value="">
-            <input type="hidden" name="action" value="edit_recurring">
-            <table>
-                <tr>
-                    <th style="width:12px;">Enabled</th>
-                    <th style="">Next Date</th>
-                    <th>Description</th>
-                    <th>Comment</th>
-                    <th>Amount</th>
-                    <th></th>
-                </tr>
-                <tr>
-                    <td style="text-align:center;">
-                        <input name="enabled" type="checkbox" {% if customer.Enabled %} CHECKED {% endif %} />
-                    </td>
-                    <td>
-                        <input id="next_date_{{ customer.CustNum }}" name="next_date" size="10"/>
-                    </td>
-                    <td>
-                        <input name="description" size="60" value="{{ customer.Description }}"/>
-                    </td>
-                    <td>
-                        <input name="comment" size="30" value="{{ customer.ReceiptNote }}"/>
-                    </td>
-                    <td>
-                        <input name="amount" size="5" />
-                    </td>
-                    <td>
-                        <input type="submit" value="Save Changes">
-                    </td>
-                </tr>
-            </table>
-            {% csrf_token %}
-        </form>
+      <h5>Edit Automatic Billing</h5>
+      <form action="." method="POST">
+        <input type="hidden" name="customer_id" value="">
+        <input type="hidden" name="action" value="edit_recurring">
+        <table>
+          <tr>
+            <th style="width:12px;">Enabled</th>
+            <th style="">Next Date</th>
+            <th>Description</th>
+            <th>Comment</th>
+            <th>Amount</th>
+            <th></th>
+          </tr>
+          <tr>
+            <td style="text-align:center;">
+              <input name="enabled" type="checkbox" {% if customer.Enabled %} CHECKED {% endif %} />
+            </td>
+            <td>
+              <input id="next_date_{{ customer.CustNum }}" name="next_date" size="10"/>
+            </td>
+            <td>
+              <input name="description" size="60" value="{{ customer.Description }}"/>
+            </td>
+            <td>
+              <input name="comment" size="30" value="{{ customer.ReceiptNote }}"/>
+            </td>
+            <td>
+              <input name="amount" size="5" />
+            </td>
+            <td>
+              <input type="submit" value="Save Changes">
+            </td>
+          </tr>
+        </table>
+        {% csrf_token %}
+      </form>
     </div>
 
     <script>
-        $(function() {
-          $('#next_date_{{ customer.CustNum }}').datepicker({ dateFormat: "yy-mm-dd" });
-        });
+      $(function() {
+        $('#next_date_{{ customer.CustNum }}').datepicker({ dateFormat: "yy-mm-dd" });
+      });
     </script>
 {% endfor %}
 
 <div id="add_profile_div">
-    <h3>Create New Billing Profile</h3>
+  <h5>Create New Billing Profile</h5>
 
-    <form name="ccform" action="https://www.usaepay.com/gate.php" method="POST"
-    onSubmit="return validateForm()">
+  <form name="ccform" action="https://www.usaepay.com/gate.php" method="POST"
+  onSubmit="return validateForm()">
 
-    <input type="hidden" name="UMkey" value="{{ settings.USA_EPAY_KEY }}">
-    <input type="hidden" name="UMredir" value="https://apps.officenomads.com{% url 'staff:billing:user_payment' user.username %}">
-    <input type="hidden" name="UMdescription" value="Office Nomads Billing Authorization">
-    <input type="hidden" name="UMcustid" value="{{ user.username }}">
-    <input type="hidden" name="UMcommand" value="AuthOnly">
-    <input type="hidden" name="UMamount" value="1.00">
-    <input type="hidden" name="UMinvoice" value="1617">
-    <input type="hidden" name="UMaddcustomer" value="yes">
-    <input type="hidden" name="UMschedule" value="disabled">
-    <input type="hidden" name="UMsoftware" value="nadine">
-    <input type="hidden" name="UMcustreceipt" value="yes">
-    <input type="hidden" name="UMcardpresent" value="true">
-    <input type="hidden" name="UMbillphone" value="{{ user.profile.phone }}">
-    <input type="hidden" name="UMname" value="{{ user.get_full_name }}">
-    <input type="hidden" name="UMemail" value="{{ user.email }}">
-    <input type="hidden" name="username" value="{{ user.username }}">
-    <input type="hidden" name="auth" value="{{ user.profile.usaepay_auth }}">
-    <!--<input type="hidden" name="UMtestmode" value="true">-->
+  <input type="hidden" name="UMkey" value="{{ settings.USA_EPAY_KEY }}">
+  <input type="hidden" name="UMredir" value="https://apps.officenomads.com{% url 'staff:billing:user_payment' user.username %}">
+  <input type="hidden" name="UMdescription" value="Office Nomads Billing Authorization">
+  <input type="hidden" name="UMcustid" value="{{ user.username }}">
+  <input type="hidden" name="UMcommand" value="AuthOnly">
+  <input type="hidden" name="UMamount" value="1.00">
+  <input type="hidden" name="UMinvoice" value="1617">
+  <input type="hidden" name="UMaddcustomer" value="yes">
+  <input type="hidden" name="UMschedule" value="disabled">
+  <input type="hidden" name="UMsoftware" value="nadine">
+  <input type="hidden" name="UMcustreceipt" value="yes">
+  <input type="hidden" name="UMcardpresent" value="true">
+  <input type="hidden" name="UMbillphone" value="{{ user.profile.phone }}">
+  <input type="hidden" name="UMname" value="{{ user.get_full_name }}">
+  <input type="hidden" name="UMemail" value="{{ user.email }}">
+  <input type="hidden" name="username" value="{{ user.username }}">
+  <input type="hidden" name="auth" value="{{ user.profile.usaepay_auth }}">
+  <!--<input type="hidden" name="UMtestmode" value="true">-->
 
-    <table border=1 width="80%">
+  <table border=1 width="80%">
 
-    <tr>
-        <td>First Name:</td>
-        <td><input type="text" name="UMbillfname" size="40" value="{{ user.first_name }}"></td>
-    </tr>
-    <tr>
-        <td>Last Name:</td>
-        <td><input type="text" name="UMbilllname" size="40" value="{{ user.last_name }}"></td>
-    </tr>
-    <tr>
-        <td>Company:</td>
-        <td><input type="text" name="UMbillcompany" size="40" value=""></td>
-    </tr>
-    <tr>
-        <td>Address: (<i>blank for international</a>)</td>
-        <td><input type="text" name="UMstreet" size="40" value="{{ user.profile.address1 }}"></td>
-    </tr>
-    <tr>
-        <td>Zip:</td>
-        <td><input type="text" name="UMzip" size="9" maxlength="5" value="{{ user.profile.zipcode }}"></td>
-    </tr>
+  <tr>
+    <td>First Name:</td>
+    <td><input type="text" name="UMbillfname" size="40" value="{{ user.first_name }}"></td>
+  </tr>
+  <tr>
+    <td>Last Name:</td>
+    <td><input type="text" name="UMbilllname" size="40" value="{{ user.last_name }}"></td>
+  </tr>
+  <tr>
+    <td>Company:</td>
+    <td><input type="text" name="UMbillcompany" size="40" value=""></td>
+  </tr>
+  <tr>
+    <td>Address: (<i>blank for international</a>)</td>
+    <td><input type="text" name="UMstreet" size="40" value="{{ user.profile.address1 }}"></td>
+  </tr>
+  <tr>
+    <td>Zip:</td>
+    <td><input type="text" name="UMzip" size="9" maxlength="5" value="{{ user.profile.zipcode }}"></td>
+  </tr>
 
-    <tr>
-        <td>Card Number:</td>
-        <td><input type="text" name="UMcard" size="40"></td>
-    </tr>
-    <tr>
-        <td>Expiration: (<i>MM/YY</i>)</td>
-        <td>
-            <input type="text" name="UMexpirM" size="2" maxlength="2">/
-            <input type="text" name="UMexpirY" size="2" maxlength="2">
-            <input type="hidden" name="UMexpir" value="">
-        </td>
-    </tr>
-    <tr>
-        <td>CVV:</td>
-        <td><input type="text" name="UMcvv" size="4"></td>
-    </tr>
-
-    <tr>
-        <td><strong>ACH</strong> - Routing Number:</td>
-        <td><input type="text" name="UMrouting" size="30"></td>
-    </tr>
-    <tr>
-        <td><strong>ACH</strong> - Account Number:</td>
-        <td><input type="text" name="UMaccount" size="30"></td>
-    </tr>
+  <tr>
+    <td>Card Number:</td>
+    <td><input type="text" name="UMcard" size="40"></td>
+  </tr>
+  <tr>
+    <td>Expiration: (<i>MM/YY</i>)</td>
+    <td>
+      <input type="text" name="UMexpirM" size="2" maxlength="2">/
+      <input type="text" name="UMexpirY" size="2" maxlength="2">
+      <input type="hidden" name="UMexpir" value="">
+    </td>
+  </tr>
+  <tr>
+    <td>CVV:</td>
+    <td><input type="text" name="UMcvv" size="4"></td>
+  </tr>
 
     <tr>
-        <td colspan="2" style="text-align: center;">
-            <input type="submit" value="Create New Billing Profile">
-        </td>
+      <td><strong>ACH</strong> - Routing Number:</td>
+      <td><input type="text" name="UMrouting" size="30"></td>
+    </tr>
+    <tr>
+      <td><strong>ACH</strong> - Account Number:</td>
+      <td><input type="text" name="UMaccount" size="30"></td>
     </tr>
 
-    </table>
-    </form>
+    <tr>
+      <td colspan="2" style="text-align: center;">
+        <input type="submit" value="Create New Billing Profile">
+      </td>
+    </tr>
+
+  </table>
+  </form>
 </div>
 
 {% endblock %}

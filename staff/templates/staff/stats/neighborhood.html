@@ -24,25 +24,29 @@ $(document).ready(function() { initPage(); });
 {% endblock %}
 
 {% block style %}
-.neighborhood-details { margin: 8px; }
+	.neighborhood-details {
+		margin: 8px;
+	}
 {% endblock %}
 
 {% block content %}
 
-<h2>Stats - Neighborhoods:</h2>
+<h4>Stats - Neighborhoods:</h4>
 
 <div style="margin: 10px 0;">
 	<strong>Total {% if active_only %} active {% endif %} members:</strong> {{ stats.member_count }}<br>
-	<strong>With Neighborhood:</strong> {{ stats.specified_count}} ({{stats.specified_perc}}%)<br>
-	<strong>Neighborhood Unspecified</strong> {{ stats.unknown_count}} ({{stats.unknown_perc}}%)
-	<p><form method="POST" action="">
+	<strong>With Neighborhood:</strong> {{ stats.specified_count}} ({{ stats.specified_perc }}%)<br>
+	<strong>Neighborhood Unspecified</strong> {{ stats.unknown_count }} ({{ stats.unknown_perc }}%)
+	<p>
+		<form method="POST" action=".">
 	   {% if active_only %}
-	      <input type="submit" name="" value="Show All Members">
+	      <input type="submit" name="" value="Show All Members" />
 	   {% else %}
-	      <input type="submit" name="ActiveOnly" value="Show Active Members Only">
+	      <input type="submit" name="ActiveOnly" value="Show Active Members Only" />
 	   {% endif %}
 	   {% csrf_token %}
-	</form></p>
+		</form>
+	</p>
 </div>
 
 <div id="neighborhoods">

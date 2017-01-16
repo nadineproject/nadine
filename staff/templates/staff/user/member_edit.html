@@ -3,15 +3,13 @@
 {% block sub-title %}Member Edit | {% endblock %}
 
 {% block style %}
-nav #members-tab { background: #FBD850; color: black; }
 #page-message { font-size: 1.5em; color: #933; margin: 20px 0px; }
 #quick-links { text-align: right; margin-bottom: 20px;}
 {% endblock %}
 
 {% block content %}
-{% include "staff/user/member_menu.frag" %}
 
-<h2>Edit Member: <a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a></h2>
+<h4>Edit Member: <a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a></h4>
 
 {% if messages %}
 <div class="messages">

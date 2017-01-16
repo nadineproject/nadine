@@ -7,9 +7,8 @@ nav #billing-tab { background: #FBD850; color: black; }
 {% block sub-title %}USAePay Void Authorization | {% endblock %}
 
 {% block content %}
-{% include "staff/billing/billing_menu.frag" %}	 
 
-<h2>USAePay Void Authorization</h2>
+<h4>USAePay Void Authorization</h4>
 
 {% if messages %}
     <div class="messages">
@@ -23,15 +22,15 @@ nav #billing-tab { background: #FBD850; color: black; }
 {% if not transaction %}
     No Transaction!
 {% else %}
-    <h3>Transaction Details</h3>
+    <h5>Transaction Details</h5>
     <div style="margin-left: 2em;">
         <strong>Date: </strong> {{ transaction.date_time }}<br>
         <strong>User: </strong> {{ transaction.username }}<br>
         <strong>Description: </strong> {{ transaction.description}}<br>
         <strong>Amount: </strong> ${{ transaction.amount }}<br>
     </div>
-    
-    <h3>Are you sure?</h3>
+
+    <h5>Are you sure?</h5>
     <div style="margin-left: 2em;">
         <form action="." method="POST">
             <input type="hidden" name="transaction_id" value="{{ transaction.transaction_id }}" />

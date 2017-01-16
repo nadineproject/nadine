@@ -8,9 +8,8 @@ nav #members-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {% block content %}
-{% include "staff/user/member_menu.frag" %}
 
-<h2>Xero Data - <a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a>:</h2>
+<h4>Xero Data - <a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a>:</h4>
 
 {% if messages %}
 <div class="messages">
@@ -21,7 +20,7 @@ nav #members-tab { background: #FBD850; color: black; }
 {% endif %}
 
 {% if not xero_contact %}
-	<h3>Contact Not Found - Searching</h3>
+	<h5>Contact Not Found - Searching</h5>
 	<table>
 		<tr>
 			<th>Name</th>
@@ -92,7 +91,7 @@ nav #members-tab { background: #FBD850; color: black; }
 		</tr>
 	</table>
 
-	<h3>Repeating Invoices</h3>
+	<h5>Repeating Invoices</h5>
 	<table>
 		<tr>
 			<th>Next Date</th>
@@ -116,7 +115,7 @@ nav #members-tab { background: #FBD850; color: black; }
 		{% endfor %}
 	</table>
 
-	<h3>Invoices</h3>
+	<h5>Invoices</h5>
 	<table>
 		<tr>
 			<th>Date</th>

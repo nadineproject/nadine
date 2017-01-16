@@ -3,6 +3,10 @@
 {% block sub-title %}Activity for {{ user }} | {% endblock %}
 
 {% block style%}
+	h4 {
+		border-bottom: 1px dotted;
+	}
+
 	#content table {
 		width: 100%;
 	}
@@ -20,7 +24,7 @@
 
 {% block content %}
 
-<h2>Activity for <a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a></h2>
+<h4>Activity for <a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a></h4>
 <div style="float:right;">
 	<form action="." method="POST">
 		<input type="hidden" name="start" value="{{ user.profile.first_visit|date:"Y-m-d" }}" />
@@ -49,7 +53,7 @@
 {% endif %}
 
 {% if daily_logs %}
-<h3>Sign-ins</h3>
+<h4>Sign-ins</h4>
 <table>
 	 <tr>
 			<th>Date</th>
@@ -71,7 +75,7 @@
 {% endif %}
 
 {% if arp_logs %}
-<h3>Network Usage</h3>
+<h4>Network Usage</h4>
 <table>
 	 <tr>
 			<th>From</th>
@@ -91,7 +95,7 @@
 {% endif %}
 
 {% if door_logs %}
-<h3>Doors</h3>
+<h4>Doors</h4>
 <table>
 	 <tr>
 			<th>Date</th>
@@ -111,4 +115,19 @@
 </table>
 {% endif %}
 
+{% endblock %}
+
+{% block extrajs %}
+<script>
+	$(document).ready(function() {
+		$('.button-collapse').sideNav();
+		$('.collapsible').collapsible();
+		$('#id_start').attr('class', 'datepicker');
+		$('#id_end').attr('class', 'datepicker');
+
+		$('.datepicker').datepicker({
+			dateFormat: 'yy-mm-dd'
+		});
+	});
+</script>
 {% endblock %}

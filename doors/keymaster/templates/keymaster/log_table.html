@@ -1,41 +1,45 @@
-<table>
-  <tr>
-    <th>Time</th>
-    <th>Door</th>
-    <th>Description</th>
-    <th>User</th>
-    <th>Code</th>
-    <th></th>
-  </tr>
-  {% for event in event_logs %}
-    <tr class="{% cycle 'row-even' 'row-odd' %}">
-      <td nowrap>{{ event.timestamp }}</td>
-      <td>
-          <a href="{% url 'doors_logs' %}?door={{event.door.id}}">{{ event.door }}</a>
-      </td>
-      <td>
-          <a href="{% url 'doors_logs' %}?type={{event.event_type}}">{{ event.event_description }}</a>
-      </td>
-      <td>
-        {% if event.user %}
-          <a href="{% url 'doors_keys' event.user.username %}">{{ event.user }}</a>
-        {% endif %}
-      </td>
-      <td>
-        {% if event.code %}
-          <a href="{% url 'doors_logs' %}?code={{event.code}}">{{ event.code }}</a>
-        {% endif %}
-      </td>
-      <td>
-        {% if event.code and not event.user and event.event_type == '1' %}
-          <form method="POST" action="{% url 'doors_add_key' %}" style="display:inline;">
-            <input type="hidden" name="code" value="{{ event.code }}">
-            <input name="action" type="submit" value="Add"/>
-            {% csrf_token %}
-          </form>
-        {% endif %}
-
-      </td>
+<table class='responsive-table'>
+  <thead>
+    <tr>
+      <th>Time</th>
+      <th>Door</th>
+      <th>Description</th>
+      <th>User</th>
+      <th>Code</th>
+      <th></th>
     </tr>
-  {% endfor %}
+  </thead>
+  <tbody>
+    {% for event in event_logs %}
+      <tr class="{% cycle 'row-even' 'row-odd' %}">
+        <td nowrap>{{ event.timestamp }}</td>
+        <td>
+            <a href="{% url 'doors_logs' %}?door={{event.door.id}}">{{ event.door }}</a>
+        </td>
+        <td>
+            <a href="{% url 'doors_logs' %}?type={{event.event_type}}">{{ event.event_description }}</a>
+        </td>
+        <td>
+          {% if event.user %}
+            <a href="{% url 'doors_keys' event.user.username %}">{{ event.user }}</a>
+          {% endif %}
+        </td>
+        <td>
+          {% if event.code %}
+            <a href="{% url 'doors_logs' %}?code={{event.code}}">{{ event.code }}</a>
+          {% endif %}
+        </td>
+        <td>
+          {% if event.code and not event.user and event.event_type == '1' %}
+            <form method="POST" action="{% url 'doors_add_key' %}" style="display:inline;">
+              <input type="hidden" name="code" value="{{ event.code }}">
+              <input name="action" type="submit" value="Add"/>
+              {% csrf_token %}
+            </form>
+          {% endif %}
+
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>  
 </table>

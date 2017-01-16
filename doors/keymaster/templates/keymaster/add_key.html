@@ -48,6 +48,9 @@
 {% block extrajs %}
 	<script>
 	$(function() {
+		$('.button-collapse').sideNav();
+		$('.collapsible').collapsible();
+
 	  var availableUsers = [
 	    {% for u in active_members %}
 	       "{{ u.username }}",

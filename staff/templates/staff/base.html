@@ -55,123 +55,44 @@
 			<ul id='nav-mobile' class='left hide-on-small-and-down'>
 				<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown1' id="todo-tab" href="{% url 'staff:tasks:todo' %}">Tasks</a>
 					<ul id='dropdown1' class='dropdown-content'>
-						<li>
-							<a href="{% url 'staff:activity:today' %}">Record Activity</a>
-						</li>
-						<li>
-							<a href="{% url 'staff:user:deposits' %}">Security Deposits</a>
-						</li>
-						<li>
-							<a href="{% url 'staff:billing:charges_today' %}">Daily Charges</a>
-						</li>
+						{% include 'staff/tasks/todo_menu.frag' %}
 					</ul>
 				</li>
 				<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown2' id='member-tab' href="{% url 'staff:user:members' %}">Member List</a>
 					<ul id='dropdown2' class='dropdown-content'>
-						<li>
-							<a href="{% url 'staff:user:deposits' %}">Security Deposits</a>
-						</li>
-						<li>
-							<a style='width: 100%;' href="{% url 'staff:user:bcc_tool' %}">BCC  Tool</a>
-						</li>
-						<li>
-							<a href="{% url 'staff:user:user_reports' %}">User Reports</a>
-						</li>
+						{% include 'staff/user/member_menu.frag' %}
 					</ul>
 				</li>
 				<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown3'  id='activity-tab' href="{% url 'staff:activity:graph' %}">Activity</a>
 					<ul id='dropdown3' class='dropdown-content'>
-						<li>
-							<a href="{% url 'staff:activity:today' %}">Record Activity</a>
-						</li>
-						<li>
-							<a href="{% url 'staff:activity:graph' %}">Activity Graph</a>
-						</li>
-						<li>
-							<a href="{% url 'staff:activity:list' %}">Activity List</a>
-						</li>
+						{% include 'staff/activity/activity_menu.frag' %}
 					</ul>
 				</li>
 				<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown4' id='billing-tab' href="{% url 'staff:billing:bills' %}">Billing</a>
 					<ul id='dropdown4' class='dropdown-content'>
-						<li>
-							<a href="{% url 'staff:billing:bills' %}">Outstanding Bills</a>
-						</li>
-						<li>
-							<a href="{% url 'staff:billing:charges_today' %}">Daily Charges</a>
-						</li>
-						<li>
-							<a href="{% url 'staff:billing:payments_members' %}">Auto-Billing</a>
-						</li>
-						<li>
-							<a style='width: 100%;' href="{% url 'staff:billing:run' %}">Run Billing</a>
-						</li>
+						{% include 'staff/billing/billing_menu.frag' %}
 					</ul>
 				</li>
 				<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown5' id='stats-tab' href="{% url 'staff:stats:daily' %}">Stats</a>
 					<ul id='dropdown5' class='dropdown-content'>
-						<li>
-					    <a href="{% url 'staff:stats:daily' %}">Daily Logs</a>
-					  </li>
-					  <li>
-					    <a href="{% url 'staff:stats:neighborhood' %}">Neighborhoods</a>
-					  </li>
-					  <li>
-					    <a href="{% url 'staff:stats:monthly' %}">Monthly Members</a>
-					  </li>
-					  <li>
-					    <a href="{% url 'staff:stats:memberships' %}">Memberships</a>
-					  </li>
-					  <li>
-					    <a href="{% url 'staff:stats:gender' %}">Gender Balance</a>
-					  </li>
-					  <li>
-					    <a href="{% url 'staff:stats:longevity' %}">Longevity</a>
-					  </li>
-					  <li>
-					    <a href="{% url 'staff:stats:history' %}">Member History</a>
-					  </li>
-					  <li>
-					    <a href="{% url 'staff:stats:graph' %}">Graphs</a>
-					  </li>
+						{% include 'staff/stats/stats_menu.frag' %}
 					</ul>
 				</li>
 				<li>
 					<a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown6' id='logs-tab' href="{% url 'arp_user' %}">Logs</a>
 					<ul class='dropdown-content' id='dropdown6'>
-						<li>
-							<a href="{% url 'arp_devices_today' %}">Device Logs</a>
-						</li>
-						<li>
-							<a href="{% url 'arp_user' %}">User Logins</a>
-						</li>
+						{% include 'arpwatch/arp_menu.frag' %}
 					</ul>
 				</li>
 				<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown7' id='lists-tab' href="{% url 'interlink_index' %}">Lists</a>
 					<ul class='dropdown-content' id='dropdown7'>
-						<li>
-							<a href="{% url 'interlink_index' %}">View All</a>
-						</li>
-						<li>
-							<a href="{% url 'interlink_moderate' %}">Moderate</a>
-						</li>
-						<li>
-							<a href="{% url 'staff:user:slack_users' %}">Slack Users</a>
-						</li>
+						{% include 'interlink/list_menu.frag' %}
 					</ul>
 				</li>
 				<li>
 					<a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown8' id='doors-tab' href="{% url 'doors_index' %}">Doors</a>
 					<ul class='dropdown-content' id='dropdown8'>
-						<li>
-							<a href="{% url 'doors_logs' %}">Logs</a>
-						</li>
-						<li>
-							<a href="{% url 'doors_users' %}">Users</a>
-						</li>
-						<li>
-							<a href="{% url 'doors_add_key' %}">Add Key</a>
-						</li>
+						{% include 'keymaster/keymaster_menu.frag' %}
 					</ul>
 				</li>
 				<li>
@@ -191,15 +112,7 @@
 									<li>
 										<a href="{% url 'staff:tasks:todo' %}">TODO</a>
 									</li>
-									<li>
-										<a href="{% url 'staff:activity:today' %}">Record Activity</a>
-									</li>
-									<li>
-										<a href="{% url 'staff:user:deposits' %}">Security Deposits</a>
-									</li>
-									<li>
-										<a href="{% url 'staff:billing:charges_today' %}">Daily Charges</a>
-									</li>
+									{% include 'staff/tasks/todo_menu.frag' %}
 								</ul>
 							</div>
 						</li>
@@ -214,15 +127,7 @@
 									<li>
 										<a href="{% url 'staff:user:members' %}">Member List</a>
 									</li>
-									<li>
-										<a href="{% url 'staff:user:deposits' %}">Security Deposits</a>
-									</li>
-									<li>
-										<a style='width: 100%;' href="{% url 'staff:user:bcc_tool' %}">BCC  Tool</a>
-									</li>
-									<li>
-										<a href="{% url 'staff:user:user_reports' %}">User Reports</a>
-									</li>
+									{% include 'staff/user/member_menu.frag' %}
 								</ul>
 							</div>
 						</li>
@@ -234,15 +139,7 @@
 							<a class='collapsible-header'>Activity</a>
 							<div class='collapsible-body'>
 								<ul>
-									<li>
-										<a href="{% url 'staff:activity:today' %}">Record Activity</a>
-									</li>
-									<li>
-										<a href="{% url 'staff:activity:graph' %}">Activity Graph</a>
-									</li>
-									<li>
-										<a href="{% url 'staff:activity:list' %}">Activity List</a>
-									</li>
+									{% include 'staff/activity/activity_menu.frag' %}
 								</ul>
 							</div>
 						</li>
@@ -254,18 +151,7 @@
 							<a class='collapsible-header'>Billing</a>
 							<div class='collapsible-body'>
 								<ul>
-									<li>
-										<a href="{% url 'staff:billing:bills' %}">Outstanding Bills</a>
-									</li>
-									<li>
-										<a href="{% url 'staff:billing:charges_today' %}">Daily Charges</a>
-									</li>
-									<li>
-										<a href="{% url 'staff:billing:payments_members' %}">Auto-Billing</a>
-									</li>
-									<li>
-										<a style='width: 100%;' href="{% url 'staff:billing:run' %}">Run Billing</a>
-									</li>
+									{% include 'staff/billing/billing_menu.frag' %}
 								</ul>
 							</div>
 						</li>
@@ -277,30 +163,7 @@
 							<a class='collapsible-header'>Stats</a>
 							<div class='collapsible-body'>
 								<ul>
-									<li>
-										<a href="{% url 'staff:stats:daily' %}">Daily Logs</a>
-								  </li>
-								  <li>
-								    <a href="{% url 'staff:stats:neighborhood' %}">Neighborhoods</a>
-								  </li>
-								  <li>
-								    <a href="{% url 'staff:stats:monthly' %}">Monthly Members</a>
-								  </li>
-								  <li>
-								    <a href="{% url 'staff:stats:memberships' %}">Memberships</a>
-								  </li>
-								  <li>
-								    <a href="{% url 'staff:stats:gender' %}">Gender Balance</a>
-								  </li>
-								  <li>
-								    <a href="{% url 'staff:stats:longevity' %}">Longevity</a>
-								  </li>
-								  <li>
-								    <a href="{% url 'staff:stats:history' %}">Member History</a>
-								  </li>
-								  <li>
-								    <a href="{% url 'staff:stats:graph' %}">Graphs</a>
-								  </li>
+									{% include 'staff/stats/stats_menu.frag' %}
 								</ul>
 							</div>
 						</li>
@@ -312,12 +175,7 @@
 							<a class='collapsible-header'>Logs</a>
 							<div class='collapsible-body'>
 								<ul>
-									<li>
-										<a href="{% url 'arp_devices_today' %}">Device Logs</a>
-									</li>
-									<li>
-										<a href="{% url 'arp_user' %}">User Logins</a>
-									</li>
+									{% include 'arpwatch/arp_menu.frag' %}
 								</ul>
 							</div>
 						</li>
@@ -329,15 +187,7 @@
 							<a class='collapsible-header'>Lists</a>
 							<div class='collapsible-body'>
 								<ul>
-									<li>
-										<a href="{% url 'interlink_index' %}">View All</a>
-									</li>
-									<li>
-										<a href="{% url 'interlink_moderate' %}">Moderate</a>
-									</li>
-									<li>
-										<a href="{% url 'staff:user:slack_users' %}">Slack Users</a>
-									</li>
+									{% include 'interlink/list_menu.frag' %}
 								</ul>
 							</div>
 						</li>
@@ -350,13 +200,9 @@
 							<div class='collapsible-body'>
 								<ul>
 									<li>
-										<a href="{% url 'doors_logs' %}">Logs</a>
+										<a href="{% url 'doors_index' %}">Keymaster</a>
 									</li>
-									<li>
-										<a href="{% url 'doors_users' %}">Users</a>
-									</li>
-									<li>
-										<a href="{% url 'doors_add_key' %}">Add Key</a>
+									{% include 'keymaster/keymaster_menu.frag' %}
 									</li>
 								</ul>
 							</div>
@@ -377,10 +223,9 @@
 	{% endblock %}
 
 	<!-- Content -->
-	<div id="content" style="margin-bottom: 5%;">
+	<div id="content">
 		<div class='row' id='top-content'>
 			<div id="submenu">
-				<a class='chip' href="{% url 'staff:activity:today' %}">Record Activity +</a>
 				{% block submenu %}{% endblock %}
 			</div>
 			{% if request.user.is_authenticated %}

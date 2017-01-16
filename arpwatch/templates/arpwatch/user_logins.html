@@ -2,15 +2,15 @@
 
 {% block content %}
 <div>
-	<div style="size:large; float:right;"><strong>{{ logs|length }} Logins</strong></div>
-	<h2>User Logins - {{ day|date:"M d, Y" }}</h2>
+	<div id='logs-length'><strong>{{ logs|length }} Logins</strong></div>
+	<h4>User Logins - {{ day|date:"M d, Y" }}</h4>
 </div>
 
-<h4 align="center">
+<h5 align="center">
 	<a href="{% url 'arp_user_logs' previous_day.year previous_day.month previous_day.day %}">&laquo; Prev</a>
 	[ <a href="{% url 'arp_user' %}">Today</a> ]
 	<a href="{% url 'arp_user_logs' next_day.year next_day.month next_day.day %}">Next &raquo;</a>
-</h4>
+</h5>
 
 <table border=1>
 	<tr>
@@ -29,12 +29,4 @@
 	{% endfor %}
 </table>
 
-{% endblock %}
-
-{% block navcss %}
-  <style>
-    #logs-tab {
-      background-color: RGBA(90, 122, 189, 1.00) !important;
-    }
-  </style>
 {% endblock %}

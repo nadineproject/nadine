@@ -9,7 +9,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 
 {% block content %}
 
-<h2>
+<h4>
 	Daily Charges - {{ date|date:"l, M dS" }}
 	<span style="float:right;">
 	<a href="{% url 'staff:billing:charges' previous_date.year previous_date.month previous_date.day %}">&larr;</a>
@@ -17,7 +17,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 	<input type='date' name='date' class='datepicker' value="{{ date|date:'Y-m-d' }}" style='font-size:.6em; text-align:center; width:150px;'/>
 	<a href="{% url 'staff:billing:charges' next_date.year next_date.month next_date.day %}">&rarr;</a>
 	</span>
-</h2>
+</h4>
 
 {% if messages %}
   <div class="messages">
@@ -57,7 +57,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 {% endif %}
 
 {% if settled_checks %}
-<h3>Cleared ACH</h3>
+<h4>Cleared ACH</h4>
 <table>
 	<tr>
 		<th>Name</th>
@@ -80,7 +80,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 {% endif %}
 
 {% if other_transactions %}
-<h3>Other Transactions</h3>
+<h4>Other Transactions</h4>
 <table>
 	<tr>
 		<th>Member</th>
@@ -125,6 +125,9 @@ nav #billing-tab { background: #FBD850; color: black; }
 {% block extrajs %}
 	<script>
 		(function() {
+			$('.button-collapse').sideNav();
+			$('.collapsible').collapsible();
+
 			$('.datepicker').datepicker({
 				dateFormat: 'yy-mm-dd',
 				onSelect: function(ui, e) {

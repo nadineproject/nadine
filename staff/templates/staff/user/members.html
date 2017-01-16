@@ -3,13 +3,11 @@
 {% block sub-title %}Members | {% endblock %}
 
 {% block style%}
-nav #members-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {% block content %}
-{% include "staff/user/member_menu.frag" %}
 
-<h2>Member List [<i>{{total_members}} total</i> ]</h2>
+<h4>Member List [<i>{{total_members}} total</i> ]</h4>
 
 <div>
 	<form id="group_form">
@@ -26,7 +24,7 @@ nav #members-tab { background: #FBD850; color: black; }
 	</form>
 </div>
 
-<h3>{{ group_name }}: <em>{{ member_count }} member{{ member_count|pluralize }}</em></h3>
+<h5>{{ group_name }}: <em>{{ member_count }} member{{ member_count|pluralize }}</em></h5>
 	{% include "staff/user/user_list_frag.html" %}
 
 {% endblock %}

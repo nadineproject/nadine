@@ -4,13 +4,11 @@
 {% block sub-title %}Files for {{ member.first_name }} {{ member.last_name }} | {% endblock %}
 
 {% block style %}
-nav #members-tab { background: #FBD850; color: black; }
 {% endblock %}
 
 {% block content %}
-{% include "staff/user/member_menu.frag" %}
 
-<h2>Files for <a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a>:</h2>
+<h4>Files for <a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a>:</h4>
 
 {% if messages %}
 <div class="messages">
@@ -51,7 +49,7 @@ nav #members-tab { background: #FBD850; color: black; }
 
 
 
-<h3>Upload File</h3>
+<h5>Upload File</h5>
 <form role="form" method="POST" enctype="multipart/form-data" action=".">
 	<input type="hidden" name="user" value="{{ user.username }}"/>
 	<select name="doc_type">

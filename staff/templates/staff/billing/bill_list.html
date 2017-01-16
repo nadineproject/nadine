@@ -11,7 +11,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 
 {% block content %}
 
-<h2>Bill List</h2>
+<h4>Bill List</h4>
 {% url 'staff:bill_list' as date_range_form_action %}
 <div class="columns clearfix date-range">
 	{% include "staff/date_range_form.html"%}

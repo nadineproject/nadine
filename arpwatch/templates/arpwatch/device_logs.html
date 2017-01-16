@@ -4,14 +4,14 @@
 
 <div>
 	<div style="size:large; float:right;"><strong>{{ device_logs|length }} Logs</strong></div>
-	<h2>Device Logs - {{ day|date:"M d, Y" }}</h2>
+	<h4>Device Logs - {{ day|date:"M d, Y" }}</h4>
 </div>
 
-<h4 align="center">
+<h5 align="center">
 	<a href="{% url 'arp_device_logs' previous_day.year previous_day.month previous_day.day %}">&laquo; Prev</a>
 	[ <a href="{% url 'arp_devices_today' %}">Today</a> ]
 	<a href="{% url 'arp_device_logs' next_day.year next_day.month next_day.day %}">Next &raquo;</a>
-</h4>
+</h5>
 
 <table border=1>
 	<tr>
@@ -32,12 +32,4 @@
 	{% endfor %}
 </table>
 
-{% endblock %}
-
-{% block navcss %}
-  <style>
-    #logs-tab {
-      background-color: RGBA(90, 122, 189, 1.00) !important;
-    }
-  </style>
 {% endblock %}

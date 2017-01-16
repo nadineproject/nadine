@@ -39,7 +39,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 
 {% block content %}
 
-<h2>Outstanding Bills</h2>
+<h4>Outstanding Bills</h4>
 {% if page_message%}<p id="page-message">{{ page_message|safe }}</p>{% endif %}
 
 {% if bills %}
@@ -49,13 +49,13 @@ nav #billing-tab { background: #FBD850; color: black; }
 {% endif %}
 
 {% if bills_in_progress %}
-	<h2>In Progress</h2>
+	<h4>In Progress</h4>
 	{% with bills_in_progress as bills and True as in_progress %}
 		{% include "staff/billing/bills_table.html" %}
 	{% endwith %}
 {% endif %}
 
-<h2>{{ invalid_members.count }} Invalid Billing Profiles</h2>
+<h4>{{ invalid_members.count }} Invalid Billing Profiles</h4>
 <table>
 	{% for u in invalid_members %}
 		<tr class="{% cycle 'row-odd' 'row-even' %}">

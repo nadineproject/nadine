@@ -86,9 +86,13 @@ def members(request, group=None):
     total_members = User.helper.active_members().count()
     group_list = MemberGroups.get_member_groups()
 
-
-    context = {'group': group, 'group_name': group_name, 'users': users,
-        'member_count': member_count, 'group_list': group_list, 'total_members': total_members}
+    context = {'group': group,
+               'group_name': group_name,
+               'users': users,
+               'member_count': member_count,
+               'group_list': group_list,
+               'total_members': total_members
+               }
     return render(request, 'staff/user/members.html', context)
 
 
@@ -140,16 +144,19 @@ def security_deposits(request):
     inactive_deposits = []
     total_deposits = 0
     for deposit in SecurityDeposit.objects.filter(returned_date=None).order_by('user__username'):
-        d = {'username': deposit.user.username, 'name': deposit.user.get_full_name(), 'deposit_id': deposit.id, 'amount': deposit.amount}
+        d = {'username': deposit.user.username,
+             'name': deposit.user.get_full_name(),
+             'deposit_id': deposit.id,
+             'amount': deposit.amount}
         if deposit.user.profile.is_active():
             active_deposits.append(d)
         else:
             inactive_deposits.append(d)
         total_deposits = total_deposits + deposit.amount
     context = {'active_deposits': active_deposits,
-        'inactive_deposits':inactive_deposits,
-        'total_deposits': total_deposits
-    }
+               'inactive_deposits': inactive_deposits,
+               'total_deposits': total_deposits
+               }
     return render(request, 'staff/user/security_deposits.html', context)
 
 

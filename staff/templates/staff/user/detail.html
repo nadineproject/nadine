@@ -5,15 +5,65 @@
 {% block sub-title %}{{ user.get_full_name }} | {% endblock %}
 
 {% block style%}
-    nav #members-tab { background: #FBD850; color: black; }
-    #quick-links { text-align: left; }
-    caption { font-weight: bold; font-size: 1.4em; margin-bottom: 10px; }
-    #right-floater { margin-top: 30px; float: right; width: 180px; min-height: 200px;  }
-    .member-photo { width: 170px; text-align: center; margin: 10px 10px; padding-top: 10px;}
-    #content td, #content th { padding-left: 20px; }
-    #onboard-form, #exit-form { width: 400px; }
-    #onboard-form td, #exit-form td { white-space: nowrap; }
-#onboard-form th, #exit-form th { text-align: left; }
+  h4 {
+    border-bottom: none;
+  }
+
+  #quick-links {
+    text-align: left;
+  }
+
+  caption {
+    font-weight: bold;
+    font-size: 1.4em;
+    margin-bottom: 10px;
+  }
+
+  #right-floater {
+    margin-top: 30px;
+    float: right;
+    width: 180px;
+    min-height: 200px;
+  }
+
+  .member-photo {
+    width: 170px;
+    text-align: center;
+    margin: 0px 10px;
+  }
+
+  #content td, #content th {
+    padding-left: 20px;
+  }
+
+  #onboard-form, #exit-form {
+    width: 400px;
+  }
+
+  #onboard-form td, #exit-form td {
+    white-space: nowrap;
+  }
+
+  #onboard-form th, #exit-form th {
+    text-align: left;
+  }
+
+  @media only screen and (max-width: 425px) {
+    h4 {
+      font-size: 2.5em;
+    }
+  }
+
+  @media only screen and (max-width: 350px) {
+    .member-photo, .member-detail {
+      float:none;
+    }
+
+    h4 {
+      font-size: 2.3em;
+      margin-left: 2%;
+    }
+  }
 {% endblock %}
 
 {% block sub-head %}
@@ -49,7 +99,6 @@ function gotoEmailReset(emailAddress){
 {% endblock %}
 
 {% block content %}
-{% include "staff/user/member_menu.frag" %}
 
 <div class="member-photo">
   {% if user.profile.photo %}
@@ -61,7 +110,7 @@ function gotoEmailReset(emailAddress){
 
 <!-- Member Detail -->
 <div class='row' id="member-detail">
-  <h2 style='margin-top: 0;'>{{ user.get_full_name }} {% if user.profile.is_active %} - <i>{{ user.profile.membership_type }}</i> {% endif %}</h2>
+  <h4 style='margin-top: 0;'>{{ user.get_full_name }} {% if user.profile.is_active %} - <i>{{ user.profile.membership_type }}</i> {% endif %}</h4>
   <div id="quick-links">
     <a href="{% url 'staff:activity:user' user.username %}">activity</a> |
     <a href="{% url 'doors_keys' user.username %}">keys</a> |
@@ -82,14 +131,14 @@ function gotoEmailReset(emailAddress){
 <div class="clearfix"></div>
 
 <div>
-    <ul class='tabs'>
-        <li class='tab'><a href="#tabs-0">Details</a></li>
-        <li class='tab'><a href="#tabs-1">Membership</a></li>
-        <li class='tab'><a href="#tabs-2">Billing</a></li>
-        <li class='tab'><a href="#tabs-3">Emails</a></li>
-        <li class='tab'><a href="#tabs-4">Tasks</a></li>
-        <li class='tab'><a href="#tabs-5">Notes</a></li>
-    </ul>
+  <ul class='tabs'>
+    <li class='tab'><a href="#tabs-0">Details</a></li>
+    <li class='tab'><a href="#tabs-1">Membership</a></li>
+    <li class='tab'><a href="#tabs-2">Billing</a></li>
+    <li class='tab'><a href="#tabs-3">Emails</a></li>
+    <li class='tab'><a href="#tabs-4">Tasks</a></li>
+    <li class='tab'><a href="#tabs-5">Notes</a></li>
+  </ul>
 
 <div id="tabs-0">
     <table>
@@ -443,43 +492,27 @@ function gotoEmailReset(emailAddress){
     {% with user.profile.open_alerts as alerts and True as description and False as member %}
       {% if alerts %}
         <h2>Action Required</h2>
-        {% include "staff/todo_detail_table.html" %}
+        {% include "staff/tasks/detail_table.html" %}
       {% endif %}
     {% endwith %}
 
-    <!--
-    <table id="onboard-form">
-        {% for alert in user.profile.open_alerts %}
-            <tr>
-                <td>{{ alert.description }}</td>
-                <td>
-                    <form action="{% url 'staff:todo_detail' alert.key %}" method="POST">
-                        <input type="hidden" name="alert_id" value="{{ alert.id }}"/>
-                        <input type="hidden" name="next" value="{% url 'staff:user:detail' alert.user.username %}#tabs-4"/>
-                        <button name="action" value="resolve" type="submit" {% if alert.is_system_alert %} disabled{% endif %}>Resolve</button>
-                        <button name="action" value="mute" type="submit" >Mute</button>
-                        <input name="note" size="32"/>
-                        {% csrf_token %}
-                    </form>
-                </td>
-            </tr>
-        {% endfor %}
-    </table> -->
-
     <h2>Completed Tasks</h2>
-    <table>
+    <table class='responsive-table'>
+      <thead>
         <tr>
             <th>Created</th>
-            <th style="text-align:left;">Alert</th>
+            <th id='alerts-th'>Alert</th>
             <th>Resolved</th>
             <th>Resolved By</th>
             <th>Muted</th>
             <th>Muted By</th>
             <th>Note</th>
         </tr>
+      </thead>
+      <tbody>
         {% for alert in user.profile.alerts %}
             {% if alert.is_resolved %}
-                <tr>
+                <tr class="{% cycle 'row-even' 'row-odd' %}">
                     <td>{{ alert.created_ts|date:"m/d/y" }}</td>
                     <td style="text-align:left;">{{ alert.description }}</td>
                     <td>{{ alert.resolved_ts|date:"m/d/y" }}</td>
@@ -490,6 +523,7 @@ function gotoEmailReset(emailAddress){
                 </tr>
             {% endif %}
         {% endfor %}
+      </tbody>
     </table>
 </div>
 
@@ -614,6 +648,6 @@ function gotoEmailReset(emailAddress){
 		$('.collapsible').collapsible();
 
     $('.billing-btn').attr('class', 'billing-btn');
-  }):
+  });
 </script>
 {% endblock %}

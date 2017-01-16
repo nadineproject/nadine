@@ -3,11 +3,6 @@
 {% block sub-title %}User Reports | {% endblock %}
 
 {% block style%}
-	nav #members-tab {
-		background: #FBD850;
-		color: black;
-	}
-
 	table #user_report {
 		padding: 2em;
 	}
@@ -18,9 +13,8 @@
 {% endblock %}
 
 {% block content %}
-{% include "staff/user/member_menu.frag" %}
 
-<h2>User Reports</h2>
+<h4>User Reports</h4>
 
 <form action="." method="POST" style="margin:1em 20em 1em 1em;">
 	<div style="padding:.5em;">
