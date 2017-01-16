@@ -207,11 +207,18 @@ div#submenu {
 	margin-left: 5%;
 }
 
+
 /*Member detail page styling*/
 .responsive-table #alerts-th {
 	text-align: left;
 }
 
+
+/*Stats pages stylings*/
+canvas#cvs {
+	width: 500px;
+	height: 400px;
+}
 
 /*Media queries*/
 @media only screen and (max-width: 992px) {
@@ -312,6 +319,12 @@ div#submenu {
   #site-search-form {
     width: 50%;
   }
+
+	canvas#cvs {
+		width: 400px;
+		height: 320px;
+		margin-left: 5%;
+	}
 }
 
 @media only screen and (max-width: 480px) {
@@ -348,6 +361,11 @@ div#submenu {
 		width: 25% !important;
 		vertical-align: baseline;
 		padding-left: 2%;
+	}
+
+	canvas#cvs {
+		width: 300px;
+		height: 240px;
 	}
 }
 

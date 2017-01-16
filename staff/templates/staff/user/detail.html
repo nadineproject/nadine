@@ -5,14 +5,65 @@
 {% block sub-title %}{{ user.get_full_name }} | {% endblock %}
 
 {% block style%}
-    #quick-links { text-align: left; }
-    caption { font-weight: bold; font-size: 1.4em; margin-bottom: 10px; }
-    #right-floater { margin-top: 30px; float: right; width: 180px; min-height: 200px;  }
-    .member-photo { width: 170px; text-align: center; margin: 10px 10px; padding-top: 10px;}
-    #content td, #content th { padding-left: 20px; }
-    #onboard-form, #exit-form { width: 400px; }
-    #onboard-form td, #exit-form td { white-space: nowrap; }
-#onboard-form th, #exit-form th { text-align: left; }
+  h4 {
+    border-bottom: none;
+  }
+
+  #quick-links {
+    text-align: left;
+  }
+
+  caption {
+    font-weight: bold;
+    font-size: 1.4em;
+    margin-bottom: 10px;
+  }
+
+  #right-floater {
+    margin-top: 30px;
+    float: right;
+    width: 180px;
+    min-height: 200px;
+  }
+
+  .member-photo {
+    width: 170px;
+    text-align: center;
+    margin: 0px 10px;
+  }
+
+  #content td, #content th {
+    padding-left: 20px;
+  }
+
+  #onboard-form, #exit-form {
+    width: 400px;
+  }
+
+  #onboard-form td, #exit-form td {
+    white-space: nowrap;
+  }
+
+  #onboard-form th, #exit-form th {
+    text-align: left;
+  }
+
+  @media only screen and (max-width: 425px) {
+    h4 {
+      font-size: 2.5em;
+    }
+  }
+
+  @media only screen and (max-width: 350px) {
+    .member-photo, .member-detail {
+      float:none;
+    }
+
+    h4 {
+      font-size: 2.3em;
+      margin-left: 2%;
+    }
+  }
 {% endblock %}
 
 {% block sub-head %}
@@ -80,14 +131,14 @@ function gotoEmailReset(emailAddress){
 <div class="clearfix"></div>
 
 <div>
-    <ul class='tabs'>
-        <li class='tab'><a href="#tabs-0">Details</a></li>
-        <li class='tab'><a href="#tabs-1">Membership</a></li>
-        <li class='tab'><a href="#tabs-2">Billing</a></li>
-        <li class='tab'><a href="#tabs-3">Emails</a></li>
-        <li class='tab'><a href="#tabs-4">Tasks</a></li>
-        <li class='tab'><a href="#tabs-5">Notes</a></li>
-    </ul>
+  <ul class='tabs'>
+    <li class='tab'><a href="#tabs-0">Details</a></li>
+    <li class='tab'><a href="#tabs-1">Membership</a></li>
+    <li class='tab'><a href="#tabs-2">Billing</a></li>
+    <li class='tab'><a href="#tabs-3">Emails</a></li>
+    <li class='tab'><a href="#tabs-4">Tasks</a></li>
+    <li class='tab'><a href="#tabs-5">Notes</a></li>
+  </ul>
 
 <div id="tabs-0">
     <table>
