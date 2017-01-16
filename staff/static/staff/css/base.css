@@ -151,8 +151,17 @@ div#submenu {
 	padding-left: 1%;
 }
 
+.day-header {
+	border-bottom: 1px dotted;
+}
+
+.day-header h5, .day-header #activity-dates {
+	display: inline;
+}
+
 #activity-dates {
 	margin-left: 30%;
+	font-size: 2em;
 }
 
 
@@ -274,6 +283,10 @@ div#submenu {
 		text-align: right;
 	}
 
+	#dis-date {
+		display: none;
+	}
+
 	#assigned-th {
 		height: 45px;
 		line-height: 45px;
@@ -314,6 +327,15 @@ div#submenu {
 		margin-bottom: 15%;
 	}
 
+	#activity-dates:before {
+		content: ' ';
+		display: block;
+	}
+
+	#activity-dates a:first-child {
+		margin-left: 25%;
+	}
+
   #alert-a {
     margin-left: 65%;
   }
@@ -330,6 +352,10 @@ div#submenu {
 }
 
 @media only screen and (max-width: 350px) {
+	#activity-dates a:first-child {
+		margin-left: 15%;
+	}
+
 	#footer, #footer a {
 		font-size: 1em;
 	}
