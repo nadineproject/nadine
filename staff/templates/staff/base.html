@@ -55,44 +55,44 @@
 			<ul id='nav-mobile' class='left hide-on-small-and-down'>
 				<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown1' id="todo-tab" href="{% url 'staff:tasks:todo' %}">Tasks</a>
 					<ul id='dropdown1' class='dropdown-content'>
-						{% include 'staff/tasks/todo_menu.frag' %}
+						{% include 'staff/tasks/nav.html' %}
 					</ul>
 				</li>
 				<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown2' id='member-tab' href="{% url 'staff:user:members' %}">Member List</a>
 					<ul id='dropdown2' class='dropdown-content'>
-						{% include 'staff/user/member_menu.frag' %}
+						{% include 'staff/user/nav.html' %}
 					</ul>
 				</li>
 				<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown3'  id='activity-tab' href="{% url 'staff:activity:graph' %}">Activity</a>
 					<ul id='dropdown3' class='dropdown-content'>
-						{% include 'staff/activity/activity_menu.frag' %}
+						{% include 'staff/activity/nav.html' %}
 					</ul>
 				</li>
 				<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown4' id='billing-tab' href="{% url 'staff:billing:bills' %}">Billing</a>
 					<ul id='dropdown4' class='dropdown-content'>
-						{% include 'staff/billing/billing_menu.frag' %}
+						{% include 'staff/billing/nav.html' %}
 					</ul>
 				</li>
 				<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown5' id='stats-tab' href="{% url 'staff:stats:daily' %}">Stats</a>
 					<ul id='dropdown5' class='dropdown-content'>
-						{% include 'staff/stats/stats_menu.frag' %}
+						{% include 'staff/stats/nav.html' %}
 					</ul>
 				</li>
 				<li>
 					<a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown6' id='logs-tab' href="{% url 'arp_user' %}">Logs</a>
 					<ul class='dropdown-content' id='dropdown6'>
-						{% include 'arpwatch/arp_menu.frag' %}
+						{% include 'arpwatch/nav.html' %}
 					</ul>
 				</li>
 				<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown7' id='lists-tab' href="{% url 'interlink_index' %}">Lists</a>
 					<ul class='dropdown-content' id='dropdown7'>
-						{% include 'interlink/list_menu.frag' %}
+						{% include 'interlink/nav.html' %}
 					</ul>
 				</li>
 				<li>
 					<a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown8' id='doors-tab' href="{% url 'doors_index' %}">Doors</a>
 					<ul class='dropdown-content' id='dropdown8'>
-						{% include 'keymaster/keymaster_menu.frag' %}
+						{% include 'keymaster/nav.html' %}
 					</ul>
 				</li>
 				<li>
@@ -112,7 +112,7 @@
 									<li>
 										<a href="{% url 'staff:tasks:todo' %}">TODO</a>
 									</li>
-									{% include 'staff/tasks/todo_menu.frag' %}
+									{% include 'staff/tasks/nav.html' %}
 								</ul>
 							</div>
 						</li>
@@ -127,7 +127,7 @@
 									<li>
 										<a href="{% url 'staff:user:members' %}">Member List</a>
 									</li>
-									{% include 'staff/user/member_menu.frag' %}
+									{% include 'staff/user/nav.html' %}
 								</ul>
 							</div>
 						</li>
@@ -139,7 +139,7 @@
 							<a class='collapsible-header'>Activity</a>
 							<div class='collapsible-body'>
 								<ul>
-									{% include 'staff/activity/activity_menu.frag' %}
+									{% include 'staff/activity/nav.html' %}
 								</ul>
 							</div>
 						</li>
@@ -151,7 +151,7 @@
 							<a class='collapsible-header'>Billing</a>
 							<div class='collapsible-body'>
 								<ul>
-									{% include 'staff/billing/billing_menu.frag' %}
+									{% include 'staff/billing/nav.html' %}
 								</ul>
 							</div>
 						</li>
@@ -163,7 +163,7 @@
 							<a class='collapsible-header'>Stats</a>
 							<div class='collapsible-body'>
 								<ul>
-									{% include 'staff/stats/stats_menu.frag' %}
+									{% include 'staff/stats/nav.html' %}
 								</ul>
 							</div>
 						</li>
@@ -175,7 +175,7 @@
 							<a class='collapsible-header'>Logs</a>
 							<div class='collapsible-body'>
 								<ul>
-									{% include 'arpwatch/arp_menu.frag' %}
+									{% include 'arpwatch/nav.html' %}
 								</ul>
 							</div>
 						</li>
@@ -187,7 +187,7 @@
 							<a class='collapsible-header'>Lists</a>
 							<div class='collapsible-body'>
 								<ul>
-									{% include 'interlink/list_menu.frag' %}
+									{% include 'interlink/nav.html' %}
 								</ul>
 							</div>
 						</li>
@@ -202,7 +202,7 @@
 									<li>
 										<a href="{% url 'doors_index' %}">Keymaster</a>
 									</li>
-									{% include 'keymaster/keymaster_menu.frag' %}
+									{% include 'keymaster/nav.html' %}
 									</li>
 								</ul>
 							</div>
