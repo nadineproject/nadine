@@ -44,6 +44,21 @@
 
 {% endblock %}
 
+{% block extrajs %}
+<script>
+	$(document).ready(function() {
+		$('.button-collapse').sideNav();
+		$('.collapsible').collapsible();
+		$('#id_start').attr('class', 'datepicker');
+		$('#id_end').attr('class', 'datepicker');
+
+		$('.datepicker').datepicker({
+			dateFormat: 'yy-mm-dd'
+		});
+	});
+</script>
+{% endblock %}
+
 {% block extracss %}
   <style>
     #activity-tab {
