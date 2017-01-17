@@ -350,7 +350,7 @@ function gotoEmailReset(emailAddress){
         {% if user.profile.last_membership.end_date %}
         <tr class="{% cycle 'row-even' 'row-odd' %}">
             <td colspan="7">&nbsp;</td>
-            <td>[<a href="{% url 'staff:user_membership' user.username %}">add membership</a>]</td>
+            <td>[<a href="{% url 'staff:user:membership' user.username %}">add membership</a>]</td>
         </tr>
         {% endif %}
     </table>
