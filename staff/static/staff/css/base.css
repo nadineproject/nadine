@@ -434,4 +434,9 @@ canvas#cvs {
 	#footer, #footer a {
 		font-size: 1em;
 	}
+
+	#photo-td, #photo-th {
+		display: none;
+	}
+
 }
