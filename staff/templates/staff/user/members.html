@@ -24,7 +24,7 @@
 	</form>
 </div>
 
-<h5>{{ group_name }}: <em>{{ member_count }} member{{ member_count|pluralize }}</em></h5>
+<h5 id='group-header'>{{ group_name }}: <em>{{ member_count }} member{{ member_count|pluralize }}</em></h5>
 	{% include "staff/user/user_list_frag.html" %}
 
 {% endblock %}

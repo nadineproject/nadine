@@ -170,8 +170,13 @@ div#submenu {
 #group_form {
 	margin-left: 2%;
 }
+
 #group_form label {
 	display: inline-block;
+}
+
+#group-header {
+	margin-top: 5%;
 }
 
 .input-field {
@@ -311,6 +316,10 @@ canvas#cvs {
 		margin-left: 2%;
 	}
 
+	h5 {
+		font-size: 1.5em;
+	}
+
 	.responsive-table thead {
 		margin-top: 1%;
 	}
@@ -374,6 +383,10 @@ canvas#cvs {
     width: 50%;
   }
 
+	#group-header {
+		margin-top: 10%;
+	}
+
 	canvas#cvs {
 		width: 400px;
 		height: 320px;
@@ -424,6 +437,16 @@ canvas#cvs {
 		width: 300px;
 		height: 240px;
 	}
+
+	#group-header {
+		margin-top: 15%;
+	}
+}
+
+@media only screen and (max-width: 400px) {
+	#photo-td, #photo-th {
+		display: none;
+	}
 }
 
 @media only screen and (max-width: 350px) {
@@ -431,12 +454,12 @@ canvas#cvs {
 		margin-left: 15%;
 	}
 
-	#footer, #footer a {
-		font-size: 1em;
+	.input-field {
+		width: 80%;
 	}
 
-	#photo-td, #photo-th {
-		display: none;
+	#footer, #footer a {
+		font-size: 1em;
 	}
 
 }
