@@ -142,8 +142,9 @@ div#submenu {
 
 /*Activity Pages Styling*/
 #alert-a {
-  margin-left: 85%;
+  /*margin-left: 85%;*/
   margin-top: 3%;
+	width: 40%;
 }
 
 #id_start, #id_end {
@@ -253,6 +254,18 @@ canvas#cvs {
 
 	#activity-dates {
 		margin-left: 10%;
+		width: 40%;
+	}
+}
+
+@media only screen and (max-width: 750px) {
+	#activity-dates:before {
+		content: ' ';
+		display: block;
+	}
+
+	#activity-dates a:first-child {
+		margin-left: 25%;
 	}
 }
 
@@ -293,6 +306,11 @@ canvas#cvs {
 }
 
 @media only screen and (max-width: 599px) {
+	h4 {
+		font-size: 1.7em;
+		margin-left: 2%;
+	}
+
 	.responsive-table thead {
 		margin-top: 1%;
 	}
@@ -303,6 +321,23 @@ canvas#cvs {
 
 	.responsive-header {
 		display: inline;
+	}
+
+	#site-search-form {
+		float: none !important;
+		display: inline;
+	}
+
+	#site-search-form div {
+		margin-left: 15%;
+	}
+
+	#site-search-form #id_terms {
+		width: 50%;
+	}
+
+	.input-field {
+		width: 40%;
 	}
 
 	#clear-btn {
@@ -369,15 +404,6 @@ canvas#cvs {
 @media only screen and (max-width: 450px) {
 	#content {
 		margin-bottom: 15%;
-	}
-
-	#activity-dates:before {
-		content: ' ';
-		display: block;
-	}
-
-	#activity-dates a:first-child {
-		margin-left: 25%;
 	}
 
   #alert-a {
