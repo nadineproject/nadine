@@ -16,14 +16,7 @@
 
 {% block content %}
 
-	<form id="member-search-form" action="." method="POST">
-		<strong>Find Member</strong>:
-		{% for field in member_search_form %}{{ field }}{% endfor %}
-		<input type="submit" value="search" />
-		{% csrf_token %}
-	</form>
-
-	<h4>Search results</h4>
+	<h4>Search results for: {{ term }}</h4>
 	{% if search_results %}
 		{% with search_results as users %}
 			{% include "staff/user/user_list_frag.html" %}

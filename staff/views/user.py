@@ -166,12 +166,13 @@ def member_search(request):
     if request.method == "POST":
         member_search_form = MemberSearchForm(request.POST)
         if member_search_form.is_valid():
-            search_results = User.helper.search(member_search_form.cleaned_data['terms'])
+            term = member_search_form.cleaned_data['terms']
+            search_results = User.helper.search(term)
             if len(search_results) == 1:
                 return HttpResponseRedirect(reverse('staff:user:detail', kwargs={'username': search_results[0].username}))
     else:
         member_search_form = MemberSearchForm()
-    context = {'member_search_form': member_search_form, 'search_results': search_results}
+    context = {'member_search_form': member_search_form, 'search_results': search_results, 'term': term, }
     return render(request, 'staff/user/search.html', context)
 
 
