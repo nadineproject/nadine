@@ -53,7 +53,7 @@ def coerce_times(start, end, date):
                 hour = int(mil_start[0]) + 12
             else:
                 hour = mil_start[0]
-            start_hour, start_minutes = quarter_hours(hour, mil_start[1])
+            start_hour, start_minutes = quarter_hours(str(hour), mil_start[1])
             start = str(hour) + ':' + mil_start[1]
         else:
             mil_start = start[0].split(":")
@@ -71,7 +71,7 @@ def coerce_times(start, end, date):
                 hour = int(mil_end[0]) + 12
             else:
                 hour = mil_end[0]
-            end_hour, end_minutes = quarter_hours(hour, mil_end[1])
+            end_hour, end_minutes = quarter_hours(str(hour), mil_end[1])
             end = str(end_hour) + ':' + end_minutes
         else:
             mil_end = end[0].split(":")
