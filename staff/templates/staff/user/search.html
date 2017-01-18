@@ -16,7 +16,7 @@
 
 {% block content %}
 
-	<form id="member-search-form" action="." method="post">
+	<form id="member-search-form" action="." method="POST">
 		<strong>Find Member</strong>:
 		{% for field in member_search_form %}{{ field }}{% endfor %}
 		<input type="submit" value="search" />

@@ -177,21 +177,7 @@ def member_search(request):
 
 @staff_member_required
 def membership(request, membership_id):
-    adding = None
-    user = None
-    today = timezone.localtime(timezone.now()).date()
     membership = get_object_or_404(Membership, pk=membership_id)
-
-    if membership.end_date and membership.end_date < today:
-        user_id = membership.user_id
-        user = get_object_or_404(User, id=user_id)
-        adding = user
-
-        start = today
-        last_membership = user.profile.last_membership()
-        if last_membership and last_membership.end_date and last_membership.end_date > today - timedelta(days=10):
-            start = (last_membership.end_date + timedelta(days=1))
-        last = start + MonthDelta(1) - timedelta(days=1)
 
     if request.method == 'POST':
         membership_form = MembershipForm(request.POST, request.FILES)
@@ -202,20 +188,17 @@ def membership(request, membership_id):
         except Exception as e:
             messages.add_message(request, messages.ERROR, e)
     else:
-        if user:
-            membership_form = MembershipForm(initial={'username': user.username, 'start_date': start})
-        else:
-            membership_form = MembershipForm(initial={'membership_id': membership.id, 'username': membership.user.username, 'membership_plan': membership.membership_plan,
-                                                  'start_date': membership.start_date, 'end_date': membership.end_date, 'monthly_rate': membership.monthly_rate, 'dropin_allowance': membership.dropin_allowance,
-                                                  'daily_rate': membership.daily_rate, 'has_desk': membership.has_desk, 'has_key': membership.has_key, 'has_mail': membership.has_mail,
-                                                  'paid_by': membership.paid_by})
+        membership_form = MembershipForm(initial={'membership_id': membership.id, 'username': membership.user.username, 'membership_plan': membership.membership_plan,
+                                              'start_date': membership.start_date, 'end_date': membership.end_date, 'monthly_rate': membership.monthly_rate, 'dropin_allowance': membership.dropin_allowance,
+                                              'daily_rate': membership.daily_rate, 'has_desk': membership.has_desk, 'has_key': membership.has_key, 'has_mail': membership.has_mail,
+                                              'paid_by': membership.paid_by})
 
     today = timezone.localtime(timezone.now()).date()
     last = membership.next_billing_date() - timedelta(days=1)
 
     context = {'user': membership.user, 'membership': membership,
         'membership_plans': MembershipPlan.objects.all(), 'membership_form': membership_form,
-        'today': today.isoformat(), 'last': last.isoformat(), 'adding': adding}
+        'today': today.isoformat(), 'last': last.isoformat()}
     return render(request, 'staff/user/membership.html', context)
 
 
@@ -269,5 +252,36 @@ def files(request, username):
     context = {'user':user, 'files': files, 'doc_types': doc_types}
     return render(request, 'staff/user/files.html', context)
 
+@staff_member_required
+def add_membership(request, username):
+    user = get_object_or_404(User, username=username)
+
+    start = today = timezone.localtime(timezone.now()).date()
+    last_membership = user.profile.last_membership()
+    if last_membership and last_membership.end_date and last_membership.end_date > today - timedelta(days=10):
+        start = (last_membership.end_date + timedelta(days=1))
+    last = start + MonthDelta(1) - timedelta(days=1)
+
+    if request.method == 'POST':
+      membership_form = MembershipForm(request.POST, request.FILES)
+      try:
+          if membership_form.is_valid():
+              membership_form.created_by = request.user
+              membership_form.save()
+              return HttpResponseRedirect(reverse('staff:user:detail', kwargs={'username': username}))
+      except Exception as e:
+          messages.add_message(request, messages.ERROR, e)
+    else:
+      membership_form = MembershipForm(initial={'username': username, 'start_date': start})
+
+    # Send them to the update page if we don't have an end date
+    if (last_membership and not last_membership.end_date):
+      return HttpResponseRedirect(reverse('staff:user:membership', kwargs={'membership_id': last_membership.id}))
+
+    plans = MembershipPlan.objects.filter(enabled=True).order_by('name')
+    context = {'user':user, 'membership_plans': plans,
+      'membership_form': membership_form, 'today': today.isoformat(),
+      'last': last.isoformat()}
+    return render(request, 'staff/user/membership.html', context)
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

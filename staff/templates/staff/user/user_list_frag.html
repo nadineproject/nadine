@@ -22,12 +22,12 @@
 				{% if user.profile.is_active %}
 					<a href="{% url 'staff:user:membership' user.profile.active_membership.id %}">membership</a>
 				{% else %}
-					<a href="{% url 'staff:user:membership' user.username %}">membership</a>
+					<a href="{% url 'staff:user:add_membership' user.username %}">membership</a>
 				{% endif %}
 			</td>
 			<td style="text-align:center;">
 				{% if user.profile.guests %}
-					<a href="." onclick="$('#guest-details-{{user.id}}').show(); return false;">{{user.profile.guests|length}}</a>
+					<a href="." onclick="$('#guest-details-{{user.id}}').show(); return false;">{{ user.profile.guests|length }}</a>
 				{% endif %}
 			</td>
 		</tr>
