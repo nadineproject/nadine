@@ -9,6 +9,11 @@
     color: #933;
     margin: 20px 0px;
   }
+
+  table td {
+    border-bottom: none;
+    text-align: inherit;
+  }
 {% endblock %}
 
 {% block sub-head %}
@@ -77,8 +82,8 @@ $(document).ready(function() {
 		{% if membership %}{{ membership_form.membership_id }}{% endif %}
 		{{ membership_form.username }}
 		<table id="membership">
-			<tr class="row-odd">
-				<td nowrap>Membership Plan</td>
+			<tr class="row-even">
+				<td class='mem-title' nowrap>Membership Plan</td>
 				<td style="text-align:left;">
 					{% if membership %}
 						{{ membership.membership_plan }}
@@ -89,9 +94,11 @@ $(document).ready(function() {
 				</td>
 				<td style="width:60%;">{{ membership_form.membership_plan.errors }}</td>
 			</tr>
-			<tr class="row-even">
-				<td nowrap>Start Date</td>
-				<td style="text-align:left;">
+    </table>
+    <table>
+      <tr class="row-odd">
+				<td class='date-title'>Start Date</td>
+				<td class='date-input' style="text-align:left;">
 					{% if membership %}
 						{{ membership.start_date }}
 						{{ membership_form.start_date.as_hidden }}
@@ -99,51 +106,54 @@ $(document).ready(function() {
 						{{ membership_form.start_date }}
 					{% endif %}
 				</td>
+        <td class='date-title'>End Date</td>
+				<td class='date-input' style="text-align:left;">{{ membership_form.end_date }} [ <a id="end_last">last</a> | <a id="end_today">today</a> ]</td>
+      </tr>
+      <tr class="row-odd">
 				<td>{{ membership_form.start_date.errors }}</td>
-			</tr>
-			<tr class="row-odd">
-				<td nowrap>End Date</td>
-				<td style="text-align:left;">{{ membership_form.end_date }} [ <a id="end_last">last</a> | <a id="end_today">today</a> ]</td>
+        <td></td>
 				<td>{{ membership_form.end_date.errors }}</td>
+        <td></td>
 			</tr>
 			<tr class="row-even">
-				<td nowrap>Monthly Rate</td>
-				<td style="text-align:left;">
+				<td class='mem-title' nowrap>Monthly Rate</td>
+				<td class='mem-input'>
 					{% if membership %}
-						{{ membership.monthly_rate }}
+						$ {{ membership.monthly_rate }}
 						{{ membership_form.monthly_rate.as_hidden }}
 					{% else %}
-						{{ membership_form.monthly_rate }}
+						$ {{ membership_form.monthly_rate }}
 					{% endif %}
 				</td>
-				<td>{{ membership_form.monthly_rate.errors }}</td>
-			</tr>
-			<tr class="row-odd">
-				<td nowrap>Drop-in Allowance</td>
-				<td style="text-align:left;">
+        <td class='mem-title' nowrap>Drop-in Allowance</td>
+				<td class='mem-input'>
 					{% if membership %}
 						{{ membership.dropin_allowance }}
 						{{ membership_form.dropin_allowance.as_hidden }}
 					{% else %}
-						{{ membership_form.dropin_allowance }}
+						$ {{ membership_form.dropin_allowance }}
 					{% endif %}
 				</td>
-				<td>{{ membership_form.dropin_allowance.errors }}</td>
 			</tr>
-			<tr class="row-even">
-				<td nowrap>Daily Rate</td>
-				<td style="text-align:left;">
+      <tr class="row-even">
+				<td>{{ membership_form.monthly_rate.errors }}</td>
+        <td></td>
+				<td>{{ membership_form.dropin_allowance.errors }}</td>
+        <td></td>
+			</tr>
+    </table>
+    <table>
+			<tr class="row-odd">
+				<td class='mem-title' nowrap>Daily Rate</td>
+				<td class='mem-input'>
 					{% if membership %}
-						{{ membership.daily_rate }}
+						$ {{ membership.daily_rate }}
 						{{ membership_form.daily_rate.as_hidden }}
 					{% else %}
-						{{ membership_form.daily_rate }}
+						$ {{ membership_form.daily_rate }}
 					{% endif %}
 				</td>
-				<td>{{ membership_form.daily_rate.errors }}</td>
-			</tr>
-			<tr class="row-odd">
-				<td nowrap>Extras</td>
+        <td class='mem-title' nowrap>Extras</td>
 				<td style="text-align:left;">
 					{% if membership %}
 						{% if membership.has_desk %}<span style="margin-right:2em;">&check; Desk</span>{% endif %}
@@ -153,21 +163,27 @@ $(document).ready(function() {
 						{{ membership_form.has_key.as_hidden }}
 						{{ membership_form.has_mail.as_hidden }}
 					{% else %}
-						<span style="margin-right:2em;">{{ membership_form.has_desk }} Desk</span>
+						<span style="margin-right:2em;">
+              <label for='has_desk'>Desk</label>
+              {{ membership_form.has_desk }}</span>
 						<span style="margin-right:2em;">{{ membership_form.has_key }} Key</span>
 						<span style="margin-right:2em;">{{ membership_form.has_mail }} Mail</span>
 					{% endif %}
 				</td>
-				<td></td>
 			</tr>
+      <tr>
+        <td>{{ membership_form.daily_rate.errors }}</td>
+      </tr>
+    </table>
+    <table>
 			<tr class="row-even">
-				<td>Paid by</td>
-				<td style="text-align:left;">{{ membership_form.paid_by }}</td>
+				<td class='mem-title'>Paid by</td>
+				<td class='mem-input' style="text-align:left;">{{ membership_form.paid_by }}</td>
 				<td>{{ membership_form.paid_by.errors }}</td>
 			</tr>
 			<tr class="row-odd">
 				<td>Note</td>
-				<td style="text-align:left;">{{ membership_form.note }}</td>
+				<td class='notes' style="text-align:left;">{{ membership_form.note }}</td>
 				<td>{{ membership_form.note.errors }}</td>
 			</tr>
 	      <tr><td></td><td><input type="submit" value="Submit" /></td></tr>
@@ -187,6 +203,8 @@ $(document).ready(function() {
 		$('.collapsible').collapsible();
 
     $('#id_membership_plan').attr('class', 'browser-default');
+    $('#id_paid_by').attr('class', 'browser-default');
+    $('#id_has_desk').attr('class', 'browser-default');
   });
 </script>
 {% endblock %}

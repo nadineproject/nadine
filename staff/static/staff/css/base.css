@@ -219,6 +219,29 @@ div#submenu {
 	text-align: left;
 }
 
+.date-title, .mem-title {
+	width: 5%;
+	font-weight: bold;
+}
+
+.date-input, .mem-input {
+	width: 50%;
+}
+
+.date-input input {
+	margin-bottom: 0;
+}
+
+.date-input input, .mem-input input {
+	width: 50%;
+	margin-left: 3%;
+}
+
+.notes {
+	width: 75%;
+	height: 5%;
+}
+
 
 /*Stats pages stylings*/
 canvas#cvs {
