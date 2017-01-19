@@ -28,7 +28,7 @@
     <li>Team Address = {{ settings.TEAM_EMAIL_ADDRESS }}</li>
     <li>Billing Address = {{ settings.BILLING_EMAIL_ADDRESS }}</li>
     <li>
-      Admins =
+      Nadine Admins =
       {% for name, email in settings.ADMINS %}
         {{ email }}{% if not forloop.last %}, {% endif %}
       {% endfor %}
