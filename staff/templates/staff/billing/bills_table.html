@@ -1,7 +1,7 @@
 {% load billing_tags %}
 {% load list_tags %}
 {% for bill_date, users in bills.items %}
-  <h6>{{ bill_date }}</h6>
+  <h6><strong>{{ bill_date }}</strong></h6>
   <ul id="bill-list">
   {% for u in users %}
     <li style="color:{% valid_billing_color u %};"><span style="color:black">
