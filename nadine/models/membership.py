@@ -28,9 +28,6 @@ from django.contrib.sites.models import Site
 
 from monthdelta import MonthDelta, monthmod
 
-from resource import Resource
-
-
 logger = logging.getLogger(__name__)
 
 
@@ -197,7 +194,6 @@ class MembershipManager(models.Manager):
     def future_memberships(self):
         today = timezone.now().date()
         return self.filter(start_date__gte=today)
-
 
 
 class Membership(models.Model):

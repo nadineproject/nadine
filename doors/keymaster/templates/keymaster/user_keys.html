@@ -12,7 +12,7 @@
 	</div>
 {% endif %}
 
-<table>
+<table class='responsive-table'>
 	<tr>
 		<th>Last Modified</th>
 		<th>Created by</th>
@@ -23,7 +23,7 @@
 		<tr>
 			<td nowrap>{{ key.modified_ts }}</td>
 			<td>{{ key.created_by }}</td>
-			<td style="text-align:center;">{{ key.code }}</td>
+			<td class='centered'>{{ key.code }}</td>
 			<td>
 				<form action="." method="POST" onSubmit="return confirm('Are you sure?');">
 					<input type="hidden" name="code_id" value="{{ key.id }}">
@@ -35,38 +35,37 @@
 	{% endfor %}
 </table>
 
-<h3>Assign a New Key</h3>
-<div style="margin-left:2em;">
-
+<h5>Assign a New Key</h5>
+<div>
 	{% if potential_key %}
 		Unrecognized key <em>'{{ potential_key.code }}'</em>
 		read at <strong>{{ potential_key.door.name }}</strong>
 		at {{ potential_key.timestamp|date:"h:i a" }}
-		<form method="POST" action="{% url 'doors_add_key' %}" style="display:inline;">
+		<form class='potential-key-form' method="POST" action="{% url 'doors_add_key' %}">
 			<input type="hidden" name="username" value="{{ user.username }}"/></td>
 			<input type="hidden" name="code" value="{{ potential_key.code }}"/>
-			<input type="submit" value="Assign" />
+			<input id='key-btn' type="submit" value="Assign" />
 		{% csrf_token %}
 		</form>
 	{% endif %}
 
-	<p>
-	<form method="POST" action="{% url 'doors_add_key' %}">
-		<input type="hidden" name="username" value="{{ user.username }}"/></td>
-		<strong>Manually Assign Key:</strong>
-		<input name="code" size="16" value="{{ code }}"/>
-		<input type="submit" value="Assign" />
-	{% csrf_token %}
-	</form>
-	</p>
+	<div>
+		<form class='key-form' method="POST" action="{% url 'doors_add_key' %}">
+			<input type="hidden" name="username" value="{{ user.username }}"/></td>
+			<strong>Manually Assign Key:</strong>
+			<input id='key-code' name="code" size="16" value="{{ code }}"/>
+			<input id='key-btn' type="submit" value="Assign" />
+		{% csrf_token %}
+		</form>
+	<div>
 </div>
 
 {% if logs %}
-	<h3>
+	<h5>
 		Access Logs ({{ logs|length }})
 		[ <a href="{% url 'doors_logs' %}?username={{user.username}}">view all</a> ]
-	</h3>
-	<table>
+	</h5>
+	<table class='responsive-table'>
 		<tr>
 			<th>Timestamp</th>
 			<th>Door</th>
