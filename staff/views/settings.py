@@ -10,8 +10,10 @@ from django.contrib.sites.models import Site
 from django.contrib import messages
 from django.conf import settings
 
+from nadine.utils import network
 
 @staff_member_required
 def index(request):
-    context = {}
+    ip = network.get_addr(request)
+    context = {'settings':settings, 'ip': ip, 'request':request}
     return render(request, 'staff/settings/index.html', context)
