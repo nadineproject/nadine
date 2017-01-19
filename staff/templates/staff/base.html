@@ -96,7 +96,10 @@
 					</ul>
 				</li>
 				<li>
-					<a id='settings-tab' href="{% url 'staff:settings:index' %}">Settings</a>
+					<a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown9' id='settings-tab' href="{% url 'staff:settings:index' %}">Settings</a>
+					<ul class='dropdown-content' id='dropdown9'>
+						{% include 'staff/settings/nav.html' %}
+					</ul>
 				</li>
 				<li>
 					<a id='logout-tab' href="{% url 'logout' %}">Logout</a>
