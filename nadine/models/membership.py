@@ -28,6 +28,8 @@ from django.contrib.sites.models import Site
 
 from monthdelta import MonthDelta, monthmod
 
+from resource import Resource
+
 logger = logging.getLogger(__name__)
 
 
