@@ -1,11 +1,8 @@
-{% extends "staff/base.html" %}
+{% extends "staff/billing/base.html" %}
 {% load list_tags %}
 
 {% block sub-title %}Bill | {{ bill.bill_date }} | {{ bill.member.first_name }} {{ bill.member.last_name }}{% endblock %}
 
-{% block style %}
-nav #billing-tab { background: #FBD850; color: black; }
-{% endblock %}
 
 {% block content %}
 

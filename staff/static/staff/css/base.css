@@ -32,6 +32,10 @@ h5 {
 	margin-top: 3%;
 }
 
+strong {
+	font-weight: bold;
+}
+
 .centered {
 	text-align: center;
 }

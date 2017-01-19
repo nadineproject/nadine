@@ -1,7 +1,7 @@
 {% load billing_tags %}
 {% load list_tags %}
 {% for bill_date, users in bills.items %}
-  <h5>{{ bill_date }}</h5>
+  <h6>{{ bill_date }}</h6>
   <ul id="bill-list">
   {% for u in users %}
     <li style="color:{% valid_billing_color u %};"><span style="color:black">
@@ -62,7 +62,7 @@
             {% endif %}
           {% endfor %}
 
-          {% if u.membernote_set %}
+          {% if u.membernote_set.all %}
             <br /><strong>Member notes:</strong>
             <ul>
             {% for note in u.membernote_set.all %}

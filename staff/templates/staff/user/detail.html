@@ -358,7 +358,7 @@ function gotoEmailReset(emailAddress){
 
     <!-- Active Guest Memberships -->
     {% if user.profile.guests %}
-        <h2>Active Guests:</h2>
+        <h5>Active Guests:</h5>
             <table>
                 <tr>
                     <th>Name</th>
@@ -384,7 +384,7 @@ function gotoEmailReset(emailAddress){
         <a href="{% url 'staff:billing:user_transactions' user.username %}">transactions</a>
     </div>
     <!-- Billing Profile -->
-    <h2>Billing Profile</h2>
+    <h5>Billing Profile</h5>
     <!-- TODO change look of button in members/profile_billing_frag -->
     {% include "members/profile_billing_frag.html" %}
     <div style="margin-left: 2em; margin-top: .5em;">
@@ -403,7 +403,7 @@ function gotoEmailReset(emailAddress){
     </div>
 
     <!-- Security Deposits -->
-    <h2>Security Deposits:</h2>
+    <h5>Security Deposits:</h5>
     <div>
     <table>
         <tr>
@@ -450,7 +450,7 @@ function gotoEmailReset(emailAddress){
         <strong>Actions:</strong>
         <a href="{% url 'password_reset' %}?email={{ user.email }}">password reset</a>
     </div>
-    <h2>Email Logs</h2>
+    <h5>Email Logs</h5>
     <div>
         {% if email_logs %}
             <table>
@@ -492,12 +492,12 @@ function gotoEmailReset(emailAddress){
 
     {% with user.profile.open_alerts as alerts and True as description and False as member %}
       {% if alerts %}
-        <h2>Action Required</h2>
+        <h5>Action Required</h5>
         {% include "staff/tasks/detail_table.html" %}
       {% endif %}
     {% endwith %}
 
-    <h2>Completed Tasks</h2>
+    <h5>Completed Tasks</h5>
     <table class='responsive-table'>
       <thead>
         <tr>
@@ -529,7 +529,7 @@ function gotoEmailReset(emailAddress){
 </div>
 
 <div id="tabs-5">
-    <h2>Notes</h2>
+    <h5>Notes</h5>
     <div>
         <table>
             <tr>
@@ -557,7 +557,7 @@ function gotoEmailReset(emailAddress){
         </table>
     </div>
 
-    <h2>Special Days:</h2>
+    <h5>Special Days:</h5>
     <div>
         <table>
             <tr>
