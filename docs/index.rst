@@ -5,6 +5,7 @@ Welcome to Nadine's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   alerts
 
 
 Indices and tables
