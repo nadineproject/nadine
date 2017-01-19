@@ -243,6 +243,10 @@ div#submenu {
 	margin-left: 3%;
 }
 
+#id_membership_plan {
+	width: 40%;
+}
+
 #rate-td {
 	width: 45%;
 }
@@ -317,6 +321,20 @@ canvas#cvs {
 		width: 20% !important;
 		vertical-align: baseline;
 		padding-left: 1%;
+	}
+
+	#id_membership_plan {
+		width: 100%;
+	}
+
+	.date-input input, .mem-input input {
+		width: 75%;
+		margin-left: 3%;
+	}
+
+	#last-today {
+		content: ' ';
+		display: block;
 	}
 }
 
@@ -479,6 +497,10 @@ canvas#cvs {
 @media only screen and (max-width: 400px) {
 	#photo-td, #photo-th {
 		display: none;
+	}
+
+	#end-td {
+		width: 2%;
 	}
 }
 

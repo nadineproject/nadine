@@ -92,7 +92,7 @@ $(document).ready(function() {
 						{{ membership_form.membership_plan }}
 					{% endif %}
 				</td>
-				<td style="width:60%;">{{ membership_form.membership_plan.errors }}</td>
+				<td class='error-td'>{{ membership_form.membership_plan.errors }}</td>
 			</tr>
     </table>
     <table>
@@ -106,8 +106,8 @@ $(document).ready(function() {
 						{{ membership_form.start_date }}
 					{% endif %}
 				</td>
-        <td class='right-title'>End Date</td>
-				<td class='date-input' style="text-align:left;">{{ membership_form.end_date }} [ <a id="end_last">last</a> | <a id="end_today">today</a> ]</td>
+        <td class='right-title' id='end-td'>End Date</td>
+				<td class='date-input' style="text-align:left;">{{ membership_form.end_date }} <span id='last-today'>[ <a id="end_last">last</a> | <a id="end_today">today</a> ]</span></td>
       </tr>
       <tr class="row-odd">
 				<td>{{ membership_form.start_date.errors }}</td>
