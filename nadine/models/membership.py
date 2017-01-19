@@ -28,9 +28,6 @@ from django.contrib.sites.models import Site
 
 from monthdelta import MonthDelta, monthmod
 
-from resource import Resource
-
-
 logger = logging.getLogger(__name__)
 
 
@@ -110,73 +107,6 @@ class MembershipPlan(models.Model):
         verbose_name_plural = "Membership Plans"
 
 
-class MembershipManager2(models.Manager):
-
-    # def create_with_plan(self, user, start_date, end_date, membership_plan, rate=-1, paid_by=None):
-    #     if rate < 0:
-    #         rate = membership_plan.monthly_rate
-    #     self.create(user=user, start_date=start_date, end_date=end_date, membership_plan=membership_plan,
-    #                 monthly_rate=rate, daily_rate=membership_plan.daily_rate, dropin_allowance=membership_plan.dropin_allowance,
-    #                 has_desk=membership_plan.has_desk, paid_by=paid_by)
-
-    def active_memberships(self, target_date=None):
-        if not target_date:
-            target_date = timezone.now().date()
-        current = Q(allowances__start_date__lte=target_date)
-        unending = Q(allowances__end_date__isnull=True)
-        future_ending = Q(allowances__end_date__gte=target_date)
-        return self.filter(current & (unending | future_ending)).distinct()
-
-    def future_memberships(self):
-        today = timezone.now().date()
-        return self.filter(allowances__start_date__gte=today)
-
-
-class Membership2(models.Model):
-    objects = MembershipManager2()
-    allowances = models.ManyToManyField('ResourceAllowance')
-
-
-class IndividualMembership(Membership2):
-    user = models.ForeignKey(User, related_name="membership")
-
-    def __str__(self):
-        return '%s: %s' % (self.user, self.allowances.all())
-
-class MembershipPackage(models.Model):
-    name = models.CharField(max_length=64)
-    allowances = models.ManyToManyField('DefaultAllowance')
-
-    def __str__(self): return self.name
-
-
-class DefaultAllowance(models.Model):
-    resource = models.ForeignKey(Resource, null=True)
-    allowance = models.IntegerField(default=0)
-    monthly_rate = models.DecimalField(decimal_places=2, max_digits=9)
-    overage_rate = models.DecimalField(decimal_places=2, max_digits=9)
-
-    def __str__(self):
-        return "%s: at %s/month" % (self.resource, self.monthly_rate)
-
-
-class ResourceAllowance(models.Model):
-    created_ts = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, related_name="+", null=True)
-    resource = models.ForeignKey(Resource, null=True)
-    allowance = models.IntegerField(default=0)
-    start_date = models.DateField(db_index=True)
-    end_date = models.DateField(blank=True, null=True, db_index=True)
-    monthly_rate = models.DecimalField(decimal_places=2, max_digits=9)
-    overage_rate = models.DecimalField(decimal_places=2, max_digits=9)
-    default = models.ForeignKey(DefaultAllowance)
-    bill_day = models.SmallIntegerField(default=0)
-    paid_by = models.ForeignKey(User, null=True, blank=True)
-
-    def __str__(self):
-        return "%s: at %s/month" % (self.resource, self.monthly_rate)
-
-
 class MembershipManager(models.Manager):
 
     def create_with_plan(self, user, start_date, end_date, membership_plan, rate=-1, paid_by=None):
@@ -199,12 +129,12 @@ class MembershipManager(models.Manager):
         return self.filter(start_date__gte=today)
 
 
-
 class Membership(models.Model):
 
     """A membership level which is billed monthly"""
     objects = MembershipManager()
-    user = models.ForeignKey(User, related_name="+")
+    # user = models.ForeignKey(User, related_name="+")
+    user = models.ForeignKey(User)
     membership_plan = models.ForeignKey(MembershipPlan, null=True)
     start_date = models.DateField(db_index=True)
     end_date = models.DateField(blank=True, null=True, db_index=True)
