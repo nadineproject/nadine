@@ -7,23 +7,25 @@
 
 {% block content %}
 
-<h2>Member BCC Tool - {{ group_name }}</h2>
+<h4>Member BCC Tool - {{ group_name }}</h4>
 
 <div>
 	<form id="group_form">
 	<strong>View: </strong>
-	<select name="group" OnChange="location.href=group_form.group.options[selectedIndex].value">
-		<option></option>
-		{% for k, v in group_list %}
-			<option value="{% url 'staff:user:group_bcc' k %}" {% if k == group %} SELECTED {% endif %}>
-				{{ v }}
-			</option>
-		{% endfor %}
-	</select>
+	<div class='input-field'>
+		<select class='browser-default group' name="group" OnChange="location.href=group_form.group.options[selectedIndex].value">
+			<option></option>
+			{% for k, v in group_list %}
+				<option value="{% url 'staff:user:group_bcc' k %}" {% if k == group %} SELECTED {% endif %}>
+					{{ v }}
+				</option>
+			{% endfor %}
+		</select>
+	</div>
 	</form>
 </div>
 
-<textarea rows="20" cols="80">
+<textarea class='bcc-textarea' rows="40" cols="80">
 {% for user in users %}{{ user.email }}, {% endfor %}
 </textarea>
 
