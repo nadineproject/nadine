@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<h2>Keys for <a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a></h2>
+<h4>Keys for <a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a></h4>
 
 {% if messages %}
 	<div class="messages">

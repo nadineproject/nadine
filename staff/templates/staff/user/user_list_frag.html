@@ -1,7 +1,7 @@
 {% load imagetags %}
 <table class="member-table">
 	<tr>
-		<th style="text-align:center;">Photo</th>
+		<th id='photo-th' style="text-align:center;">Photo</th>
 		<th style="text-align:left;">Name</th>
 		<th>Billing Date</th>
 		<th>Quicklinks</th>
@@ -9,7 +9,7 @@
 	</tr>
 	{% for user in users %}
 		<tr class="{% cycle 'row-even' 'row-odd' %}" >
-			<td style="text-align:center;">
+			<td id='photo-td' style="text-align:center;">
 				{% if user.profile.photo %}<a href="{% url 'staff:user:detail' user.username %}"><img class="member-table-photo" src="{{ user.profile.photo.url|fit_image:"48x48"}}" /></a>{% endif %}
 			</td>
 			<td nowrap style="text-align:left;"><a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a></td>
@@ -22,12 +22,12 @@
 				{% if user.profile.is_active %}
 					<a href="{% url 'staff:user:membership' user.profile.active_membership.id %}">membership</a>
 				{% else %}
-					<a href="{% url 'staff:user_membership' user.username %}">membership</a>
+					<a href="{% url 'staff:user:add_membership' user.username %}">membership</a>
 				{% endif %}
 			</td>
 			<td style="text-align:center;">
 				{% if user.profile.guests %}
-					<a href="." onclick="$('#guest-details-{{user.id}}').show(); return false;">{{user.profile.guests|length}}</a>
+					<a href="." onclick="$('#guest-details-{{user.id}}').show(); return false;">{{ user.profile.guests|length }}</a>
 				{% endif %}
 			</td>
 		</tr>

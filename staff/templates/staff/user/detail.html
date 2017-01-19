@@ -2,7 +2,7 @@
 {% load imagetags %}
 {% load static %}
 
-{% block sub-title %}{{ user.get_full_name }} | {% endblock %}
+{% block sub-title %}{{ user.get_full_name }}{% endblock %}
 
 {% block style%}
   h4 {
@@ -123,8 +123,9 @@ function gotoEmailReset(emailAddress){
     {% if user.profile.is_active %}
       <a href="{% url 'staff:user:membership' user.profile.last_membership.id %}">update membership</a>
     {% else %}
-      <a href="{% url 'staff:user:membership' user.username %}">add membership</a>
+      <a href="{% url 'staff:user:add_membership' user.username %}">add membership</a>
     {% endif %}
+    </a>
   </div>
 </div>
 
@@ -312,7 +313,7 @@ function gotoEmailReset(emailAddress){
 
 <div id="tabs-1">
     <!-- Memberships -->
-    <h2>Memberships</h2>
+    <h5>Memberships</h5>
     <table>
         <tr>
             <th>Plan</th>
@@ -350,7 +351,7 @@ function gotoEmailReset(emailAddress){
         {% if user.profile.last_membership.end_date %}
         <tr class="{% cycle 'row-even' 'row-odd' %}">
             <td colspan="7">&nbsp;</td>
-            <td>[<a href="{% url 'staff:user_membership' user.username %}">add membership</a>]</td>
+            <td>[<a href="{% url 'staff:user:add_membership' user.username %}">add membership</a>]</td>
         </tr>
         {% endif %}
     </table>

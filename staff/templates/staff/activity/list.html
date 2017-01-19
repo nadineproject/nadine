@@ -1,6 +1,6 @@
 {% extends "staff/base.html" %}
 
-{% block sub-title %}Activity List | {% endblock %}
+{% block sub-title %}Activity List{% endblock %}
 
 {% block style%}
 	#content table {
@@ -42,6 +42,21 @@
    <p>There are no recorded activity for this period.</p>
 {% endif %}
 
+{% endblock %}
+
+{% block extrajs %}
+<script>
+	$(document).ready(function() {
+		$('.button-collapse').sideNav();
+		$('.collapsible').collapsible();
+		$('#id_start').attr('class', 'datepicker');
+		$('#id_end').attr('class', 'datepicker');
+
+		$('.datepicker').datepicker({
+			dateFormat: 'yy-mm-dd'
+		});
+	});
+</script>
 {% endblock %}
 
 {% block extracss %}
