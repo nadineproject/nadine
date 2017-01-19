@@ -57,6 +57,10 @@ nav {
 }
 
 .dropdown-content a {
+	background-color: RGBA(76, 76, 76, 1.00);
+}
+
+.dropdown-content a {
   font-size: 1em;
 }
 
@@ -89,7 +93,6 @@ nav {
   text-decoration: none;
   color: #fff;
   float: left;
-	background-color: RGBA(76, 76, 76, 1.00);
 }
 
 #nav-mobile li a:hover {

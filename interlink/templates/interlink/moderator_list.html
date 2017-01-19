@@ -5,16 +5,16 @@
 {% block style %}
 #content td, #content th { text-align: left; padding-right: 2em; }
 #content td:first-child, #content th:first-child { width: 15em; }
-#content h3 { text-align: center; }
+#content h5 { text-align: center; }
 {% endblock %}
 
 {% block content%}
 
-<h2>Moderation List:</h2>
+<h4>Moderation List:</h4>
 
 {% if not request.user.mail_awaiting_moderation %}
-	<h3>You have no more email to moderate.</h3>
-	<h3>Go, team!</h3>
+	<h5>You have no more email to moderate.</h5>
+	<h5>Go, team!</h5>
 {% else %}
 	<table>
 		<tr>

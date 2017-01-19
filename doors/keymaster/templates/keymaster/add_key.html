@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<h2>Add a Key</h2>
+<h4>Add a Key</h4>
 
 {% if messages %}
 	<div class="messages">
@@ -16,11 +16,11 @@
 
 {% if door_code %}
 	<div style="text-align:center;">
-		<h3>
+		<h5>
 			Are you sure you want to create a key for
 			<strong>{{ door_code.user.get_full_name }}</strong>
 			with code '<em>{{ door_code.code }}</em>'?
-		</h3>
+		</h5>
 		<form method="POST" action=".">
 			<input type="hidden" name="username" value="{{ door_code.user.username }}" />
 			<input type="hidden" name="code" value="{{ door_code.code }}" />
