@@ -219,8 +219,14 @@ div#submenu {
 	text-align: left;
 }
 
-.date-title, .mem-title {
-	width: 5%;
+
+/*Add and Update Membership Styling*/
+.left-title {
+	width: 12%;
+	font-weight: bold;
+}
+
+.right-title {
 	font-weight: bold;
 }
 
@@ -235,6 +241,10 @@ div#submenu {
 .date-input input, .mem-input input {
 	width: 50%;
 	margin-left: 3%;
+}
+
+#rate-td {
+	width: 45%;
 }
 
 .notes {

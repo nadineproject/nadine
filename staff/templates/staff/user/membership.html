@@ -83,7 +83,7 @@ $(document).ready(function() {
 		{{ membership_form.username }}
 		<table id="membership">
 			<tr class="row-even">
-				<td class='mem-title' nowrap>Membership Plan</td>
+				<td class='left-title' nowrap>Membership Plan</td>
 				<td style="text-align:left;">
 					{% if membership %}
 						{{ membership.membership_plan }}
@@ -97,7 +97,7 @@ $(document).ready(function() {
     </table>
     <table>
       <tr class="row-odd">
-				<td class='date-title'>Start Date</td>
+				<td class='left-title'>Start Date</td>
 				<td class='date-input' style="text-align:left;">
 					{% if membership %}
 						{{ membership.start_date }}
@@ -106,7 +106,7 @@ $(document).ready(function() {
 						{{ membership_form.start_date }}
 					{% endif %}
 				</td>
-        <td class='date-title'>End Date</td>
+        <td class='right-title'>End Date</td>
 				<td class='date-input' style="text-align:left;">{{ membership_form.end_date }} [ <a id="end_last">last</a> | <a id="end_today">today</a> ]</td>
       </tr>
       <tr class="row-odd">
@@ -116,7 +116,7 @@ $(document).ready(function() {
         <td></td>
 			</tr>
 			<tr class="row-even">
-				<td class='mem-title' nowrap>Monthly Rate</td>
+				<td class='left-title' nowrap>Monthly Rate</td>
 				<td class='mem-input'>
 					{% if membership %}
 						$ {{ membership.monthly_rate }}
@@ -125,7 +125,7 @@ $(document).ready(function() {
 						$ {{ membership_form.monthly_rate }}
 					{% endif %}
 				</td>
-        <td class='mem-title' nowrap>Drop-in Allowance</td>
+        <td class='right-title' nowrap>Drop-in Allowance</td>
 				<td class='mem-input'>
 					{% if membership %}
 						{{ membership.dropin_allowance }}
@@ -144,8 +144,8 @@ $(document).ready(function() {
     </table>
     <table>
 			<tr class="row-odd">
-				<td class='mem-title' nowrap>Daily Rate</td>
-				<td class='mem-input'>
+				<td class='left-title' nowrap>Daily Rate</td>
+				<td class='mem-input' id='rate-td'>
 					{% if membership %}
 						$ {{ membership.daily_rate }}
 						{{ membership_form.daily_rate.as_hidden }}
@@ -153,8 +153,8 @@ $(document).ready(function() {
 						$ {{ membership_form.daily_rate }}
 					{% endif %}
 				</td>
-        <td class='mem-title' nowrap>Extras</td>
-				<td style="text-align:left;">
+        <td class='right-title' nowrap>Extras</td>
+				<td class='mem-input' style="text-align:left;">
 					{% if membership %}
 						{% if membership.has_desk %}<span style="margin-right:2em;">&check; Desk</span>{% endif %}
 						{% if membership.has_key %}<span style="margin-right:2em;">&check; Key</span>{% endif %}
@@ -164,10 +164,17 @@ $(document).ready(function() {
 						{{ membership_form.has_mail.as_hidden }}
 					{% else %}
 						<span style="margin-right:2em;">
-              <label for='has_desk'>Desk</label>
-              {{ membership_form.has_desk }}</span>
-						<span style="margin-right:2em;">{{ membership_form.has_key }} Key</span>
-						<span style="margin-right:2em;">{{ membership_form.has_mail }} Mail</span>
+              {{ membership_form.has_desk }}
+              <label for='id_has_desk'>Desk</label>
+            </span>
+						<span style="margin-right:2em;">
+              {{ membership_form.has_key }}
+              <label for='id_has_key'>Key</label>
+            </span>
+						<span style="margin-right:2em;">
+              {{ membership_form.has_mail }}
+              <label for='id_has_mail'>Mail</label>
+            </span>
 					{% endif %}
 				</td>
 			</tr>
@@ -177,7 +184,7 @@ $(document).ready(function() {
     </table>
     <table>
 			<tr class="row-even">
-				<td class='mem-title'>Paid by</td>
+				<td class='left-title'>Paid by</td>
 				<td class='mem-input' style="text-align:left;">{{ membership_form.paid_by }}</td>
 				<td>{{ membership_form.paid_by.errors }}</td>
 			</tr>
