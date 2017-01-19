@@ -3,9 +3,8 @@ Welcome to Nadine's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
 
-
+   foo
 
 Indices and tables
 ==================
