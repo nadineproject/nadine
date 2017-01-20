@@ -37,7 +37,7 @@ strong {
 }
 
 .centered {
-	text-align: center;
+	text-align: center !important;
 }
 
 /*Navbar and dropdown stylings*/
@@ -156,29 +156,7 @@ div#submenu {
 
 
 /*Activity Pages Styling*/
-#alert-a {
-  /*margin-left: 85%;*/
-  margin-top: 3%;
-	width: 40%;
-}
 
-#id_start, #id_end {
-	width: 15%;
-	padding-left: 1%;
-}
-
-.day-header {
-	border-bottom: 1px dotted;
-}
-
-.day-header h5, .day-header #activity-dates {
-	display: inline;
-}
-
-#activity-dates {
-	margin-left: 30%;
-	font-size: 2em;
-}
 
 
 /*Member List Page styling*/
@@ -238,6 +216,12 @@ div#submenu {
 textarea.bcc-textarea {
 	margin-top: 2%;
 	height: 6rem;
+}
+
+/*Date-Form styling*/
+#id_start, #id_end {
+	width: 15%;
+	padding-left: 1%;
 }
 
 

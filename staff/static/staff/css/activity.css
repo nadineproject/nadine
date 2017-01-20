@@ -1,0 +1,90 @@
+/*Styling for all staff/activity pages*/
+
+h4 {
+  border-bottom: 1px dotted;
+}
+
+.day-header {
+	border-bottom: 1px dotted;
+}
+
+.day-header h5, .day-header #activity-dates {
+	display: inline;
+}
+
+input.datepicker {
+  text-align: center;
+  width: 150px;
+}
+
+.log-note {
+  width: 100px;
+}
+
+.records-count {
+  font-weight: bold;
+  text-align: right;
+  margin-top: 5%;
+}
+
+#activity-dates {
+	margin-left: 30%;
+	font-size: 2em;
+}
+
+#activity-table th:first-child {
+  width: 80px;
+}
+
+#alert-a {
+  /*margin-left: 85%;*/
+  margin-top: 3%;
+	width: 40%;
+}
+
+#content table {
+  width: 100%;
+}
+
+#quick-links {
+  text-align: right;
+  margin-bottom: 20px;
+}
+
+#horizontal-graph { margin: 1em 0; }
+
+.graph-column {
+  width: 4px;
+  margin: 0 0 20px 0;
+  padding: 0px;
+  display: inline-block;
+  height: 200px;
+  position: relative;
+}
+
+.membership-column {
+  background-color: #9F9;
+}
+
+.daily-logs-column {
+  background-color: #99F;
+}
+
+.blank-div {
+  margin: 0px;
+  padding: 0px;
+  background-color: #FFF;
+}
+
+.hover-div {
+  position: absolute;
+  top: {{graph_size}}px;
+  display: none;
+  width: 200px;
+  z-index: 2;
+  background-color: #FFF;
+}
+
+.graph-column:hover .hover-div {
+  display: block;
+}

@@ -1,4 +1,4 @@
-<h3>{{ name }}</h3>
+<h5>{{ name }}</h5>
 <table>
     <tr class="row-even">
         <th>Member</th>

@@ -2,26 +2,6 @@
 
 {% block sub-title %}Activity for {{ user }}{% endblock %}
 
-{% block style%}
-	h4 {
-		border-bottom: 1px dotted;
-	}
-
-	#content table {
-		width: 100%;
-	}
-
-	.log-note {
-		width: 100px;
-	}
-
-	#quick-links {
-		text-align: right;
-		margin-bottom: 20px;
-	}
-
-{% endblock %}
-
 {% block content %}
 
 <h4>Activity for <a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a></h4>
