@@ -91,7 +91,7 @@ class EmailBaseModel(models.Model):
         return self.headers.get('In-Reply-To', None)
 
     @property
-    def site_url(self): return 'https://%s%s' % (Site.objects.get_current().domain, reverse('comlink_mail', kwargs={'id': self.id}))
+    def site_url(self): return 'https://%s%s' % (Site.objects.get_current().domain, reverse('comlink:mail', kwargs={'id': self.id}))
 
     def get_mailgun_data(self, stripped=True, footer=True):
         if stripped:

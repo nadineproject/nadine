@@ -25,7 +25,7 @@
 		</tr>
 	{% for incoming_mail in request.user.mail_awaiting_moderation %}
 		<tr>
-			<td><a href="{% url 'interlink_inspect' incoming_mail.id %}">{{ incoming_mail.sent_time }}</a></td>
+			<td><a href="{% url 'interlink:inspect' incoming_mail.id %}">{{ incoming_mail.sent_time }}</a></td>
 			<td>{{ incoming_mail.origin_address }}</td>
 			<td>{{ incoming_mail.subject }}</td>
 			<td>{% include "interlink/incoming_mail_controls.frag" %}</td>

@@ -36,7 +36,7 @@ def subscribe(request, list_id, username):
     if request.method == 'POST':
         if request.POST.get('confirm', 'No') == "Yes":
             mailing_list.subscribers.add(user)
-        return HttpResponseRedirect(reverse('interlink_subscribers', args=[list_id]))
+        return HttpResponseRedirect(reverse('interlink:subscribers', args=[list_id]))
     return render(request, 'interlink/subscribe.html', {'user': user, 'mailing_list': mailing_list})
 
 
@@ -47,7 +47,7 @@ def unsubscribe(request, list_id, username):
     if request.method == 'POST':
         if request.POST.get('confirm', 'No') == "Yes":
             mailing_list.subscribers.remove(user)
-        return HttpResponseRedirect(reverse('interlink_subscribers', args=[list_id]))
+        return HttpResponseRedirect(reverse('interlink:subscribers', args=[list_id]))
     return render(request, 'interlink/unsubscribe.html', {'user': user, 'mailing_list': mailing_list})
 
 
@@ -67,14 +67,14 @@ def moderator_approve(request, id):
     incoming_mail = get_object_or_404(IncomingMail, pk=id)
     if not request.user in incoming_mail.mailing_list.moderators.all():
         #print(request.user.get_full_name(), 'tried to moderate an email for %s' % incoming_mail.mailing_list.name)
-        return HttpResponseRedirect(reverse('interlink_moderate'))
+        return HttpResponseRedirect(reverse('interlink:moderate'))
 
     if incoming_mail.state != 'moderate':
         #print('Tried to moderate an email which needs no moderation:', incoming_mail, incoming_mail.state)
-        return HttpResponseRedirect(reverse('interlink_moderate'))
+        return HttpResponseRedirect(reverse('interlink:moderate'))
     #print('accepting')
     incoming_mail.create_outgoing()
-    return HttpResponseRedirect(reverse('interlink_moderate'))
+    return HttpResponseRedirect(reverse('interlink:moderate'))
 
 
 @staff_member_required
@@ -82,14 +82,14 @@ def moderator_reject(request, id):
     incoming_mail = get_object_or_404(IncomingMail, pk=id)
     if not request.user in incoming_mail.mailing_list.moderators.all():
         #print(request.user.get_full_name(), 'tried to moderate an email for %s' % incoming_mail.mailing_list.name)
-        return HttpResponseRedirect(reverse('interlink_moderate'))
+        return HttpResponseRedirect(reverse('interlink:moderate'))
 
     if incoming_mail.state != 'moderate':
         #print('Tried to moderate an email which needs no moderation.')
-        return HttpResponseRedirect(reverse('interlink_moderate'))
+        return HttpResponseRedirect(reverse('interlink:moderate'))
 
     incoming_mail.reject()
-    return HttpResponseRedirect(reverse('interlink_moderate'))
+    return HttpResponseRedirect(reverse('interlink:moderate'))
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

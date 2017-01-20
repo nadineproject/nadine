@@ -3,14 +3,14 @@ from django.conf.urls import url
 from arpwatch import views
 
 urlpatterns = [
-   url(r'^$', views.index, name='arp_index'),
-   url(r'^import/$', views.import_files, name='arp_import'),
-   url(r'^devices/$', views.device_list, name='arp_devices'),
-   url(r'^device/(?P<id>[\d]+)/$', views.device, name='arp_device'),
-   url(r'^device/$', views.device_logs_today, name='arp_devices_today'),
-   url(r'^device/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', views.device_logs_by_day, name='arp_device_logs'),
-   url(r'^user/$', views.logins_today, name='arp_user'),
-   url(r'^user/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', views.logins_by_day, name='arp_user_logs'),
+   url(r'^$', views.index, name='index'),
+   url(r'^import/$', views.import_files, name='import'),
+   url(r'^devices/$', views.device_list, name='devices'),
+   url(r'^device/(?P<id>[\d]+)/$', views.device, name='device'),
+   url(r'^device/$', views.device_logs_today, name='devices_today'),
+   url(r'^device/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', views.device_logs_by_day, name='device_logs'),
+   url(r'^user/$', views.logins_today, name='user'),
+   url(r'^user/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', views.logins_by_day, name='user_logs'),
 ]
 
 

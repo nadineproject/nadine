@@ -1,10 +1,10 @@
 {% extends "staff/base.html" %}
 
-{% block sub-title %}Logs | {% endblock %}
+{% block sub-title %}Logs{% endblock %}
 
 {% block submenu %}
-	<a href="{% url 'arp_devices_today' %}">Device Logs</a> |
-	<a href="{% url 'arp_user' %}">User Logins</a>
+	<a href="{% url 'arp:devices_today' %}">Device Logs</a> |
+	<a href="{% url 'arp:user' %}">User Logins</a>
 {% endblock %}
 
 {% block content %}

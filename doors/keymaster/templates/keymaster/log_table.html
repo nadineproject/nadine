@@ -14,24 +14,24 @@
       <tr class="{% cycle 'row-even' 'row-odd' %}">
         <td nowrap>{{ event.timestamp }}</td>
         <td>
-            <a href="{% url 'doors_logs' %}?door={{event.door.id}}">{{ event.door }}</a>
+            <a href="{% url 'doors:logs' %}?door={{event.door.id}}">{{ event.door }}</a>
         </td>
         <td>
-            <a href="{% url 'doors_logs' %}?type={{event.event_type}}">{{ event.event_description }}</a>
+            <a href="{% url 'doors:logs' %}?type={{event.event_type}}">{{ event.event_description }}</a>
         </td>
         <td>
           {% if event.user %}
-            <a href="{% url 'doors_keys' event.user.username %}">{{ event.user }}</a>
+            <a href="{% url 'doors:keys' event.user.username %}">{{ event.user }}</a>
           {% endif %}
         </td>
         <td>
           {% if event.code %}
-            <a href="{% url 'doors_logs' %}?code={{event.code}}">{{ event.code }}</a>
+            <a href="{% url 'doors:logs' %}?code={{event.code}}">{{ event.code }}</a>
           {% endif %}
         </td>
         <td>
           {% if event.code and not event.user and event.event_type == '1' %}
-            <form method="POST" action="{% url 'doors_add_key' %}" style="display:inline;">
+            <form method="POST" action="{% url 'doors:add_key' %}" style="display:inline;">
               <input type="hidden" name="code" value="{{ event.code }}">
               <input name="action" type="submit" value="Add"/>
               {% csrf_token %}

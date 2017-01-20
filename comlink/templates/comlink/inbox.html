@@ -30,7 +30,7 @@
     <tr>
       <td>{{ m.received }}</td>
       <td>{{ m.sender }}</td>
-      <td><a href="{% url 'comlink_mail' m.id %}">{{ m.subject }}</a></td>
+      <td><a href="{% url 'comlink:mail' m.id %}">{{ m.subject }}</a></td>
     </tr>
 {% endfor %}
 </table>
