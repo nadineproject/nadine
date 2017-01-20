@@ -54,6 +54,6 @@
 	</script>
 	<script>
 		//will call the function after 5 secs
-		setTimeout(function () { window.location.href = "{% url 'tablet_members' %}"; }, {{ motd.delay_ms }});
+		setTimeout(function () { window.location.href = "{% url 'tablet:members' %}"; }, {{ motd.delay_ms }});
 	</script>
 {% endblock %}
