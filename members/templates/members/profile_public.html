@@ -25,7 +25,7 @@
         <td>
           {% for org in org_memberships %}
             <li style='display:inline-block; padding-right: 2%;'>
-              <a href="{% url 'member_org_view' org.organization.id %}">{{ org.organization.name }}</a>
+              <a href="{% url 'member:org:view' org.organization.id %}">{{ org.organization.name }}</a>
             </li>
           {% endfor %}
         </td>

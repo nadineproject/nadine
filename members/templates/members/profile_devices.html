@@ -23,7 +23,7 @@
 			<th>Action</th>
 			<th></th>
 		</tr>
-		<form action="{% url 'member_profile_devices' user.username %}" method="POST">
+		<form action="{% url 'member:profile:devices' user.username %}" method="POST">
 			<input type="hidden" name="device_id", value="{{ this_device.id }}">
 			<tr>
 				<td>{{ this_device.mac_address}}</td>
@@ -46,7 +46,7 @@
 			<th></th>
 		</tr>
 	</table>
-	<form action="{% url 'member_profile_devices' user.username %}" method="POST" >
+	<form action="{% url 'member:profile:devices' user.username %}" method="POST" >
 		<table>
 			{% for d in devices %}
 					<input type="hidden" name="device_id", value="{{ d.id }}" />

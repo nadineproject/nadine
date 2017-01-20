@@ -2,7 +2,7 @@
 
  <h3 class='oswald' style='text-align: center;'>Edit Your Profile Image:</h3>
 
- <form id="profile_image_form" action="{% url 'member_edit_photo' user.username %}" method="POST" enctype="multipart/form-data">
+ <form id="profile_image_form" action="{% url 'member:profile:edit_photo' user.username %}" method="POST" enctype="multipart/form-data">
    <input type='hidden' name='username' value='{{ user.username }}'  />
    {{ form.cropped_image_data }}
 

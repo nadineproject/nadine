@@ -27,7 +27,7 @@
 	</tr>
 	{% for log in logs %}
 		<tr>
-			<td><a href="{% url 'arp_device_logs' log.day|date:'Y' log.day|date:'m' log.day|date:'d' %}">{{ log.day|date:"M d, Y" }}</a></td>
+			<td><a href="{% url 'arp:device_logs' log.day|date:'Y' log.day|date:'m' log.day|date:'d' %}">{{ log.day|date:"M d, Y" }}</a></td>
 			<td>{{ log.ip }}</td>
 			<td/>
 		</tr>

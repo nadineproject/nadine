@@ -44,7 +44,7 @@
 
 	<div style="width:100%; text-align:center;" id="signin" {% if search_results %} class="hidden" {% endif %}>
 	<h2>Are you going to stay and work today?</h2>
-	<form action="{% url 'tablet_post_create' user.username %}" method="POST" data-ajax="false">
+	<form action="{% url 'tablet:post_create' user.username %}" method="POST" data-ajax="false">
 		<fieldset class="visitor-form ui-grid-b">
 			<div class="ui-block-a"><input id="yes_button" name="work_today" type="Submit" value="Yes"/></div>
 			<div class="ui-block-b"><input id="no_button" name="work_today" type="Submit" value="No"/></div>
@@ -59,13 +59,13 @@
 			<div id="member-list">
 				<ul data-role="listview" data-inset="true" data-filter="false">
 					{% for u in search_results %}
-						<li style="padding: 0.5em;"><a href="{% url 'tablet_signin_guest' user.username u.username %}" data-transition="fade">{{ u.get_full_name }}</a></li>
+						<li style="padding: 0.5em;"><a href="{% url 'tablet:signin_guest' user.username u.username %}" data-transition="fade">{{ u.get_full_name }}</a></li>
 					{% endfor %}
 				</ul>
 			</div>
 		{% else %}
 			<div id="search-box">
-				<form id="member-search-form" action="{% url 'tablet_post_create' user.username %}" method="POST">
+				<form id="member-search-form" action="{% url 'tablet:post_create' user.username %}" method="POST">
 					<input id="id_terms"  placeholder="Search by first name" type="search" name="terms" maxlength="100"/>
 					<input type="submit" value="Search" data-theme="b" data-transition="fade"/>
 					{% csrf_token %}

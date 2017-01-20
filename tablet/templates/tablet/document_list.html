@@ -20,7 +20,7 @@
 				{% else %}
 					<input type="button"
 						value="Sign"
-						onClick="parent.location='{% url 'tablet_sig_capture' user.username key %}'">
+						onClick="parent.location='{% url 'tablet:sig_capture' user.username key %}'">
 				{% endif %}
 			</th>
 		</tr>

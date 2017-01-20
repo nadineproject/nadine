@@ -23,7 +23,7 @@
 	{% for key in codes %}
 		<tr>
 			<td>
-				<a href="{% url 'doors_keys' key.user.username %}">{{ key.user }}</a>
+				<a href="{% url 'doors:keys' key.user.username %}">{{ key.user }}</a>
 			</td>
 			<!--<td>{{ key.code }}</td>-->
 			<td>

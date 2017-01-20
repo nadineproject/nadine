@@ -113,13 +113,13 @@ function gotoEmailReset(emailAddress){
   <h4 style='margin-top: 0;'>{{ user.get_full_name }} {% if user.profile.is_active %} - <i>{{ user.profile.membership_type }}</i> {% endif %}</h4>
   <div id="quick-links">
     <a href="{% url 'staff:activity:user' user.username %}">activity</a> |
-    <a href="{% url 'doors_keys' user.username %}">keys</a> |
+    <a href="{% url 'doors:keys' user.username %}">keys</a> |
     <a href="{% url 'staff:user:files' user.username %}">files</a> |
     <a href="{% url 'staff:billing:user_payment' user.username %}">usaepay</a> |
     <a href="{% url 'staff:billing:xero' user.username %}">xero</a> |
     <a href="{% url 'admin:auth_user_change' user.id %}">admin</a> |
-    <a href="{% url 'member_profile' user.username %}">view profile</a> |
-    <a href="{% url 'member_edit_profile' user.username %}">edit profile</a> |
+    <a href="{% url 'member:profile:view' user.username %}">view profile</a> |
+    <a href="{% url 'member:profile:edit' user.username %}">edit profile</a> |
     {% if user.profile.is_active %}
       <a href="{% url 'staff:user:membership' user.profile.last_membership.id %}">update membership</a>
     {% else %}

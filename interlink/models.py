@@ -307,13 +307,13 @@ class IncomingMail(models.Model):
         return User.helper.by_email(self.origin_address)
 
     @property
-    def approve_url(self): return 'https://%s%s' % (Site.objects.get_current().domain, reverse('interlink_approve', kwargs={'id': self.id}, current_app='interlink'))
+    def approve_url(self): return 'https://%s%s' % (Site.objects.get_current().domain, reverse('interlink:approve', kwargs={'id': self.id}, current_app='interlink'))
 
     @property
-    def reject_url(self): return 'https://%s%s' % (Site.objects.get_current().domain, reverse('interlink_reject', kwargs={'id': self.id}))
+    def reject_url(self): return 'https://%s%s' % (Site.objects.get_current().domain, reverse('interlink:reject', kwargs={'id': self.id}))
 
     @property
-    def inspect_url(self): return 'https://%s%s' % (Site.objects.get_current().domain, reverse('interlink_inspect', kwargs={'id': self.id}))
+    def inspect_url(self): return 'https://%s%s' % (Site.objects.get_current().domain, reverse('interlink:inspect', kwargs={'id': self.id}))
 
     def __str__(self): return '%s: %s' % (self.origin_address, self.subject)
 

@@ -73,7 +73,7 @@
 		</tr>
 	</table>
 	<input class='btn org-btn' type="submit" value="Save"/>
-	<input class='btn cancel-btn' type="button" value="Cancel" onclick="location.href='{% url 'member_org_view' organization.id %}'"/>
+	<input class='btn cancel-btn' type="button" value="Cancel" onclick="location.href='{% url 'member:org:view' organization.id %}'"/>
 	{% csrf_token %}
 </form>
 
@@ -90,7 +90,7 @@
 		})
 
 		$('.username_input').autocomplete({
-			source: "{% url 'json_user_search' %}",
+			source: "{% url 'member:json:user_search' %}",
 			minLength: 2,
 			autoFocus: true,
 			select: function(e, ui) {

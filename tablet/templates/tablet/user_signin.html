@@ -8,7 +8,7 @@
 	<div class="ui-grid-a">
 		<div class="ui-block-a">
 			{% if user.profile.photo %}
-				<a href="{% url 'tablet_profile' user %}"><img src="{{ user.profile.photo.url }}" width="300px"></a>
+				<a href="{% url 'tablet:profile' user %}"><img src="{{ user.profile.photo.url }}" width="300px"></a>
 			{% else %}
 				<img src="{% static 'BlankIcon150x150.jpg' %}">
 			{% endif %}
@@ -31,7 +31,7 @@
 				</h3>
 			{% endif %}
 
-			<h3><a href="{% url 'tablet_document_list' user.username %}">Sign Documents</a></h3>
+			<h3><a href="{% url 'tablet:document_list' user.username %}">Sign Documents</a></h3>
 
 			{% if can_signin and not search_results %}
 				<div id="guestform-links">
@@ -50,7 +50,7 @@
 				<div id="member-list">
 					<ul data-role="listview" data-inset="true" data-filter="false">
 						{% for u in previous_hosts %}
-							<li style="padding: 0.5em;"><a href="{% url 'tablet_signin_guest' user.username u.username %}" data-transition="fade">{{ u.get_full_name }}</a></li>
+							<li style="padding: 0.5em;"><a href="{% url 'tablet:signin_guest' user.username u.username %}" data-transition="fade">{{ u.get_full_name }}</a></li>
 						{% endfor %}
 					</ul>
 				</div>
@@ -60,13 +60,13 @@
 				<div id="member-list">
 					<ul data-role="listview" data-inset="true" data-filter="false">
 						{% for u in search_results %}
-							<li style="padding: 0.5em;"><a href="{% url 'tablet_signin_guest' user.username u.username %}" data-transition="fade">{{ u.get_full_name }}</a></li>
+							<li style="padding: 0.5em;"><a href="{% url 'tablet:signin_guest' user.username u.username %}" data-transition="fade">{{ u.get_full_name }}</a></li>
 						{% endfor %}
 					</ul>
 				</div>
 			{% else %}
 				<div id="search-box">
-					<form id="member-search-form" action="{% url 'tablet_user_signin' user.username %}" method="POST">
+					<form id="member-search-form" action="{% url 'tablet:user_signin' user.username %}" method="POST">
 						<input id="id_terms"  placeholder="Search by first name" type="search" name="terms" maxlength="100"/>
 						<input type="submit" value="Search" data-theme="b" data-transition="fade"/>
 						{% csrf_token %}
@@ -76,7 +76,7 @@
 		</div>
 
 		<div id="signin" data-theme="a" {% if search_results %} class="hidden" {% endif %}>
-			<a href="{% url 'tablet_signin_user' user.username %}" data-role="button" data-theme="b" data-transition="fade">Sign In</a>
+			<a href="{% url 'tablet:signin_user' user.username %}" data-role="button" data-theme="b" data-transition="fade">Sign In</a>
 		</div>
 	{% endif %}
 {% endblock %}

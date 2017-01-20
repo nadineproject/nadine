@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 def index(request):
     if request.user.is_staff:
         return HttpResponseRedirect(reverse('staff:index'))
-    return HttpResponseRedirect(reverse('member_home'))
+    return HttpResponseRedirect(reverse('member:home'))
 
 
 @csrf_protect
@@ -85,7 +85,7 @@ def email_manage(request, email_pk, action):
     if 'HTTP_REFERER' in request.META:
         return redirect(request.META['HTTP_REFERER'])
     else:
-        return redirect(reverse('member_profile', kwargs={'username': email_address.user.username}))
+        return redirect(reverse('member:profile:view', kwargs={'username': email_address.user.username}))
 
 
 @login_required
@@ -98,7 +98,7 @@ def email_add(request):
     if 'HTTP_REFERER' in request.META:
         return redirect(request.META['HTTP_REFERER'])
     else:
-        return redirect(reverse('member_profile', kwargs={'username': email_address.user.username}))
+        return redirect(reverse('member:profile:view', kwargs={'username': email_address.user.username}))
 
 
 @login_required
@@ -152,7 +152,7 @@ def email_verify(request, email_pk):
             elif 'HTTP_REFERER' in request.META:
                 next_url = request.META['HTTP_REFERER']
             else:
-                next_url = reverse('member_profile', kwargs={'username': email_address.user.username})
+                next_url = reverse('member:profile:view', kwargs={'username': email_address.user.username})
             return HttpResponseRedirect(next_url)
         else:
             messages.error(request, "Invalid Key")

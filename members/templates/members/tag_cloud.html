@@ -10,7 +10,7 @@ var word_list = [
 	{
 		text: "{{ tag.name }}",
 		weight: {{ count }},
-		link: "{% url 'member_tag_view' type tag %}"
+		link: "{% url 'member:tag:view' type tag %}"
 	},
 {% endfor %}
 ];
@@ -21,6 +21,6 @@ var word_list = [
 {% endblock %}
 
 {% block content %}
-	<div style="float: right;">[ <a href="{% url 'member_tag_list' type %}">Tag List</a> ]</div>
+	<div style="float: right;">[ <a href="{% url 'member:tag:list' type %}">Tag List</a> ]</div>
 	<div id="tag-cloud" style="margin-left: 5%; font-size: 100%; width: 920px; height: 680px;"></div>
 {% endblock %}

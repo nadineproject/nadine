@@ -16,7 +16,7 @@
     {% for m in current_org_memberships %}
       <tr class="{% cycle 'row-even' 'row-odd' %}">
          <td>
-           <a href="{% url 'member_org_view' m.organization.id %}">{{ m.organization.name }}</a>
+           <a href="{% url 'member:org:view' m.organization.id %}">{{ m.organization.name }}</a>
          </td>
          <td align="center">{{ m.start_date|date:"M d, Y" }}</td>
          <td align="left">{% if m.end_date %}{{ m.end_date|date:"M d, Y" }}{% endif %}</td>
@@ -42,7 +42,7 @@
     {% for n in past_org_memberships %}
       <tr class="{% cycle 'row-even' 'row-odd' %}">
          <td>
-           <a href="{% url 'member_org_view' n.organization.id %}">{{ n.organization.name }}</a>
+           <a href="{% url 'member:org:view' n.organization.id %}">{{ n.organization.name }}</a>
          </td>
          <td align="center">{{ n.start_date|date:"M d, Y" }}</td>
          <td align="left">{% if n.end_date %}{{ n.end_date|date:"M d, Y" }}{% endif %}</td>
@@ -54,7 +54,7 @@
 
 <div class="ui-widget">
   <h3 class='oswald'>Add Organization</h3>
-  <form id='org-add-form' action="{% url 'member_org_add' %}" method="POST">
+  <form id='org-add-form' action="{% url 'member:org:add' %}" method="POST">
     {% csrf_token %}
     <input id="org_input" name="org" type='text' style='width:50%; margin-right:5%;' placeholder='Acme Corp'/>
     <input type='hidden' name='action' value='add' />
@@ -66,12 +66,12 @@
 <script>
 (function() {
   $("#org_input").autocomplete({
-    source: "{% url 'json_org_search' %}",
+    source: "{% url 'member:json:org_search' %}",
     minLength: 2,
     autoFocus: true,
     select: function(e, ui) {
       var org_id = ui.item.id;
-      var url = "{% url 'member_org_member' 0 %}".replace(/0/, org_id.toString());
+      var url = "{% url 'member:org:member' 0 %}".replace(/0/, org_id.toString());
       $('#org-add-form').attr('action', url);
     }
   });

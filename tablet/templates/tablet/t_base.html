@@ -36,9 +36,9 @@
 				<h1>Nadine Member Console</h1>
 				<div id="top-nav" data-role="navbar" data-iconpos="left">
 					<ul>
-						<li><a data-transition="fade" href="{% url 'tablet_members' %}" {% block nav-members %}{% endblock %}>Members</a></li>
-						<li><a data-transition="fade" href="{% url 'tablet_here_today' %}" {% block nav-here %}{% endblock %}>Here Today</a></li>
-						<li><a data-transition="fade" href="{% url 'tablet_visitors' %}" {% block nav-visitors %}{% endblock %}>Visitors</a></li>
+						<li><a data-transition="fade" href="{% url 'tablet:members' %}" {% block nav-members %}{% endblock %}>Members</a></li>
+						<li><a data-transition="fade" href="{% url 'tablet:here_today' %}" {% block nav-here %}{% endblock %}>Here Today</a></li>
+						<li><a data-transition="fade" href="{% url 'tablet:visitors' %}" {% block nav-visitors %}{% endblock %}>Visitors</a></li>
 					</ul>
 				</div>
 			</div>
