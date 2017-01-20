@@ -47,7 +47,7 @@ def add_notification(request, username):
     target = get_object_or_404(User, username=username)
     if UserNotification.objects.filter(notify_user=request.user, target_user=target, sent_date__isnull=True).count() == 0:
         UserNotification.objects.create(notify_user=request.user, target_user=target)
-    return HttpResponseRedirect(reverse('member_notifications', kwargs={}))
+    return HttpResponseRedirect(reverse('member:connect:notifications', kwargs={}))
 
 
 @login_required
@@ -55,7 +55,7 @@ def delete_notification(request, username):
     target = get_object_or_404(User, username=username)
     for n in UserNotification.objects.filter(notify_user=request.user, target_user=target):
         n.delete()
-    return HttpResponseRedirect(reverse('member_notifications', kwargs={}))
+    return HttpResponseRedirect(reverse('member:connect:notifications', kwargs={}))
 
 
 @login_required
@@ -72,7 +72,7 @@ def mail(request):
         sub_form = MailingListSubscriptionForm(request.POST)
         if sub_form.is_valid():
             sub_form.save(user)
-            return HttpResponseRedirect(reverse('member_email_lists'))
+            return HttpResponseRedirect(reverse('member:connect:email_lists'))
     context = {'user': user,
                'mailing_list_subscription_form': MailingListSubscriptionForm(),
                'settings': settings
@@ -92,7 +92,7 @@ def slack(request, username):
     user = get_object_or_404(User, username=username)
     if not user == request.user:
         if not request.user.is_staff:
-            return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
+            return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': request.user.username}))
 
     if request.method == 'POST':
         try:

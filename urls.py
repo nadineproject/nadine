@@ -21,7 +21,7 @@ urlpatterns = [
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^staff/', include('staff.urls', namespace='staff')),
-    url(r'^member/', include('members.urls')),
+    url(r'^member/', include('members.urls', namespace='member')),
     url(r'^interlink/', include('interlink.urls')),
     url(r'^doors/', include('doors.keymaster.urls')),
     url(r'^logs/', include('arpwatch.urls')),

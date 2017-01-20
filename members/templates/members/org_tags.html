@@ -3,9 +3,9 @@
     {% if organizations.tags.all %}
       {% for t in organization.tags.all %}
         <li class='chip'>
-          <a class="tag-chip" href="{% url 'member_tag_view' 'organizations' t %}">{{ t }}</a>
+          <a class="tag-chip" href="{% url 'member:tag:view' 'organizations' t %}">{{ t }}</a>
           {% if can_edit %}
-           (<a href="{% url 'member_org_remove_tag' organization.id t %}" style="color: RGBA(199, 121, 102, 1);"> X </a>)
+           (<a href="{% url 'member:tag:remove_org' organization.id t %}" style="color: RGBA(199, 121, 102, 1);"> X </a>)
            {% endif %}
         </li>
       {% endfor %}
@@ -18,7 +18,7 @@
 
   {% if can_edit %}
     <div class="ui-widget">
-      <form action="{% url 'member_org_add_tag' organization.id %}" method="POST">
+      <form action="{% url 'member:tag:add_org' organization.id %}" method="POST">
         <table class='tag-table'>
           <tr>
             <td>
@@ -38,7 +38,7 @@
 <script>
 	(function() {
 		$( "#tag_input" ).autocomplete({
-			source: "{% url 'json_org_tags' %}",
+			source: "{% url 'member:json:org_tags' %}",
 			minLength: 2,
 			autoFocus: true,
 		});

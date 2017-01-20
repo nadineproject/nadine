@@ -5,7 +5,7 @@
             <td>{{ f.uploadTS }}</td>
             <!--<td>{{ f.document_type }}</td>-->
             <td>
-                <a target="_self" href="{% url 'member_files' 'inline' f.user f.name     %}">{{ f.name }}</a>
+                <a target="_self" href="{% url 'member:profile:file' f.user 'inline' f.name     %}">{{ f.name }}</a>
             </td>
         <tr>
     {% endfor %}

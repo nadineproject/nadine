@@ -3,7 +3,7 @@
 
 It looks like you currently do not have any devices registered in Nadine.
 
-https://{{ site.domain }}{% url 'member_profile_redirect' %}
+https://{{ site.domain }}{% url 'member:profile:redirect' %}
 
 If you've got any questions or concerns, please e-mail staff@officenomads.com.
 

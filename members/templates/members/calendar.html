@@ -105,7 +105,7 @@
             <a class='modal-btn' id='cancel-event'>Cancel</a>
           </div>
           <div class='row'>
-            <p style='text-align:center;' id='goto-booking'>Need a room for your event? <a href="{% url 'member_create_booking' %}">Click here.</a></p>
+            <p style='text-align:center;' id='goto-booking'>Need a room for your event? <a href="{% url 'member:event:create_booking' %}">Click here.</a></p>
           </div>
           {% csrf_token %}
         </form>

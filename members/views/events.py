@@ -136,7 +136,7 @@ def create_booking(request):
         end = request.POST.get('end')
         date = request.POST.get('date')
 
-        return HttpResponseRedirect(reverse('member_confirm_booking', kwargs={'room': room, 'start': start, 'end': end, 'date': date}))
+        return HttpResponseRedirect(reverse('member:event:confirm_booking', kwargs={'room': room, 'start': start, 'end': end, 'date': date}))
 
     context = {'rooms': rooms,
                'start': start,
@@ -199,7 +199,7 @@ def confirm_booking(request, room, start, end, date):
             try:
                 event.save()
 
-                return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
+                return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': user.username}))
 
             except Exception as e:
                 page_message = str(e)
@@ -245,7 +245,7 @@ def calendar(request):
             event = Event(user=user, start_ts=start_ts, end_ts=end_ts, description=description, charge=charge, is_public=is_public)
             event.save()
 
-            return HttpResponseRedirect(reverse('member_calendar'))
+            return HttpResponseRedirect(reverse('member:event:calendar'))
         else:
             messages.add_message(request, messages.ERROR, "Did not save your event. Double check that the event start is before the end time. Thank you.")
 

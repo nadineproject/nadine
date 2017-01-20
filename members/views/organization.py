@@ -32,7 +32,7 @@ def org_list(request):
             search_terms = search_form.cleaned_data['terms']
             search_results = Organization.objects.search(search_terms)
             if len(search_results) == 1:
-                return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': search_results[0].id}))
+                return HttpResponseRedirect(reverse('member:org:view', kwargs={'org_id': search_results[0].id}))
     else:
         search_form = OrganizationSearchForm()
 
@@ -79,13 +79,13 @@ def org_add(request):
     org_name = request.POST.get('org', '').strip()
     existing_org = Organization.objects.filter(name__iexact=org_name).first()
     if existing_org:
-        return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': existing_org.id}))
+        return HttpResponseRedirect(reverse('member:org:view', kwargs={'org_id': existing_org.id}))
         # messages.add_message(request, messages.ERROR, "Organization '%s' already exists!" % org_name)
-        # return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
+        # return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': user.username}))
 
     org = Organization.objects.create(name=org_name, lead=user, created_by=request.user)
     OrganizationMember.objects.create(organization=org, user=user, start_date=timezone.now(), admin=True)
-    return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
+    return HttpResponseRedirect(reverse('member:org:view', kwargs={'org_id': org.id}))
 
 
 @login_required
@@ -125,7 +125,7 @@ def org_edit(request, org_id):
                             print("Could not save website: %s" % str(e))
 
                     form.save()
-                    return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
+                    return HttpResponseRedirect(reverse('member:org:view', kwargs={'org_id': org.id}))
                 else:
                     page_message = 'Please make sure the websites have a valid URL and URL type.'
         except Exception as e:
@@ -148,7 +148,7 @@ def org_member(request, org_id):
     org = get_object_or_404(Organization, id=org_id)
     if not (not org.locked or request.user.is_staff or org.can_edit(request.user)):
         messages.add_message(request, messages.ERROR, "You do not have permission to add yourself to this organization")
-        return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.username}))
+        return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': request.username}))
 
     # We require a POST and we require an action
     if not request.method == "POST" or 'action' not in request.POST:
@@ -183,7 +183,7 @@ def org_member(request, org_id):
             form = OrganizationMemberForm(request.POST, request.FILES)
             if form.is_valid():
                 form.save()
-                return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
+                return HttpResponseRedirect(reverse('member:org:view', kwargs={'org_id': org.id}))
             else:
                 print form
     except Exception as e:
@@ -211,7 +211,7 @@ def org_edit_photo(request, org_id):
 
         org.save()
 
-        return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
+        return HttpResponseRedirect(reverse('member:org:view', kwargs={'org_id': org.id}))
 
     else:
         form = OrganizationForm(request.POST, request.FILES)

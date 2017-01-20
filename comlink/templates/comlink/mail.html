@@ -11,7 +11,7 @@
   <p>
       <strong>From:</strong>
       {% if message.user %}
-          <a href="{% url 'member_profile' message.user.username %}">{{ message.user }}</a>
+          <a href="{% url 'member:profile:view' message.user.username %}">{{ message.user }}</a>
       {% else %}
           {{ message.from_str }}
       {% endif %}

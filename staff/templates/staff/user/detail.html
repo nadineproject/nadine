@@ -118,8 +118,8 @@ function gotoEmailReset(emailAddress){
     <a href="{% url 'staff:billing:user_payment' user.username %}">usaepay</a> |
     <a href="{% url 'staff:billing:xero' user.username %}">xero</a> |
     <a href="{% url 'admin:auth_user_change' user.id %}">admin</a> |
-    <a href="{% url 'member_profile' user.username %}">view profile</a> |
-    <a href="{% url 'member_edit_profile' user.username %}">edit profile</a> |
+    <a href="{% url 'member:profile:view' user.username %}">view profile</a> |
+    <a href="{% url 'member:profile:edit' user.username %}">edit profile</a> |
     {% if user.profile.is_active %}
       <a href="{% url 'staff:user:membership' user.profile.last_membership.id %}">update membership</a>
     {% else %}

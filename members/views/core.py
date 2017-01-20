@@ -129,7 +129,7 @@ def view_members(request):
             search_terms = search_form.cleaned_data['terms']
             search_results = User.helper.search(search_terms, True)
             if len(search_results) == 1:
-                return HttpResponseRedirect(reverse('member_profile', kwargs={'username': search_results[0].username}))
+                return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': search_results[0].username}))
     else:
         search_form = MemberSearchForm()
 
@@ -201,7 +201,7 @@ def register(request):
                     u.set_password(pwd)
                     u.save()
 
-                    return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
+                    return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': user.username}))
             else:
                 page_message = 'The entered passwords do not match. Please try again.'
         except Exception as e:

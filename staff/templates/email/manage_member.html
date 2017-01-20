@@ -19,7 +19,7 @@
 					{% if alert.is_system_alert %}
 						[ SYSTEM ]
 					{% else %}
-						<form action="{{ site_url }}{% url 'member_manage' user.username %}" method="POST">
+						<form action="{{ site_url }}{% url 'member:manage' user.username %}" method="POST">
 							<input name="alert_id" value="{{ alert.id }}" type="hidden" />
 							<input name="username" value="{{ user.username }}" type="hidden" />
 							<button type="submit" name="resolve_task" type="submit">Resolve</button>
