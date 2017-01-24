@@ -31,6 +31,10 @@ p {
 	 line-height: 1.6;
 }
 
+.centered {
+	text-align: center;
+}
+
 .btn {
 	background-color: RGBA(79, 134, 135, 1);
 }
@@ -1113,6 +1117,10 @@ img.org-photo#mem-photo {
 	content: url(../img/white_edit.png);
 	height: 30px;
 	padding: 1%;
+}
+
+.tooltipped {
+	margin-top: 3%;
 }
 
 #manage {

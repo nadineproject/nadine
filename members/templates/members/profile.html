@@ -81,10 +81,13 @@
     <div class='row'>
       <h2 class='col s9 oswald' id='prof-name'>{{ user.get_full_name }}</h2>
       {% if can_edit %}
-        <a class='col s1 tooltipped' data-position="bottom" data-tooltip="Edit Profile" href="{% url 'member:profile:edit' user.username %}" style='margin-top:3%;'><img id='edit' src="{% static 'img/edit.png' %}" alt='edit-icon'/></a>
+        <a class='col s1 tooltipped' data-position="bottom" data-tooltip="Edit Profile" href="{% url 'member:profile:edit' user.username %}"><img id='edit' src="{% static 'img/edit.png' %}" alt='edit-icon'/></a>
       {% endif %}
       {% if request.user.profile.is_manager %}
-        <a class='col s1 tooltipped' data-position="bottom" data-tooltip="Manage Member" href="{% url 'member:manage' user.username %}" style='margin-top:3%;'><img id='manage' alt='manage-icon' src="{% static 'img/manage.png' %}" /></a>
+        <a class='col s1 tooltipped' data-position="bottom" data-tooltip="Manage Member" href="{% url 'member:manage' user.username %}"><img id='manage' alt='manage-icon' src="{% static 'img/manage.png' %}" /></a>
+      {% endif %}
+      {% if request.user.is_staff %}
+        <a class='col s1 tooltipped' data-position="bottom" data-tooltip='Admin' href="{% url 'staff:user:detail' user.username %}"><img id='admin' alt='admin-icon' src="{% static 'img/admin.png' %}"/></a>
       {% endif %}
     </div>
 
@@ -95,7 +98,7 @@
     {% if user.username != request.user.username %}
     <dl>
         <dt>Contact:</dt>
-        <dd><a href="{% url 'member:connect' user %}">Connect with this member</a></dd>
+        <dd><a href="{% url 'member:connect:connect' user %}">Connect with this member</a></dd>
     </dl>
     {% endif %}
   </div>

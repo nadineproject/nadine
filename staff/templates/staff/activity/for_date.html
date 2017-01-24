@@ -61,6 +61,13 @@
 
 {% block extrajs %}
 	<script>
+		function changeDate(input) {
+			var date = input.split('-');
+			var url = "{% url 'staff:activity:date' 2016 12 14 %}".replace(/14/, date[2]).replace(/12/, date[1]).replace(/2016/, date[0]);
+
+			window.location.href = url;
+		}
+
 		(function() {
 			$('.button-collapse').sideNav();
 			$('.collapsible').collapsible();
@@ -68,12 +75,15 @@
 			$('.datepicker').datepicker({
 				dateFormat: 'yy-mm-dd',
 				onSelect: function(ui, e) {
-					var date = ui.split('-');
-					var url = "{% url 'staff:activity:date' 2016 12 14 %}".replace(/14/, date[2]).replace(/12/, date[1]).replace(/2016/, date[0]);
-
-					window.location.href = url;
+					changeDate(ui);
 				}
 			});
+
+			$('.datepicker').focusout(function(e) {
+				e.preventDefault();
+				var input = $('.datepicker').val();
+				changeDate(input);
+			})
 		})();
 	</script>
 {% endblock %}
