@@ -160,7 +160,7 @@ nav ul { list-style:none; }
 /*Navbar dropdown stylings*/
 .dropdown-content a {background-color: RGBA(76, 76, 76, 1.00);}
 .dropdown-content a {font-size: 1em;}
-#dropdown4 {min-width: 120px;}
+#dropdown4 {min-width: 140px;}
 #dropdown5 {min-width: 140px;}
 #dropdown1 li a, #dropdown5 li a, #dropdown7 li a, #dropdown8 li a {width: 100%;}
 
