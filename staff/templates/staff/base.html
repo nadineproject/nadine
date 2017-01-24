@@ -36,8 +36,8 @@
 			{% if request.user.is_authenticated %}
 				<a href="{% url 'member:home' %}">Member</a> |
 				<a href="{% url 'staff:home' %}" style="color:#e1e1e1">Staff</a> |
-				<a href="/admin">Admin</a> |
-				<a href="/tablet">Tablet</a>
+				<a href="{% url 'admin:index' %}">Admin</a> |
+				<a href="{% url 'tablet:home' %}">Tablet</a>
 			{% else %}
 				<a href="http://nadineproject.org" target="_new">The Nadine Project</a>
 			{% endif %}
@@ -84,13 +84,13 @@
 						{% include 'arpwatch/nav.html' %}
 					</ul>
 				</li>
-				<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown7' id='lists-tab' href="{% url 'interlink:index' %}">Lists</a>
+				<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown7' id='lists-tab' href="{% url 'interlink:home' %}">Lists</a>
 					<ul class='dropdown-content' id='dropdown7'>
 						{% include 'interlink/nav.html' %}
 					</ul>
 				</li>
 				<li>
-					<a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown8' id='doors-tab' href="{% url 'doors:index' %}">Doors</a>
+					<a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown8' id='doors-tab' href="{% url 'doors:home' %}">Doors</a>
 					<ul class='dropdown-content' id='dropdown8'>
 						{% include 'keymaster/nav.html' %}
 					</ul>

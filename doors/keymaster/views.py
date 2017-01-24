@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 @staff_member_required
-def index(request):
+def home(request):
     keymasters = Keymaster.objects.filter(is_enabled=True)
     twoMinutesAgo = timezone.now() - timedelta(minutes=2)
     logs = DoorEvent.objects.all().order_by('timestamp').reverse()[:11]
@@ -38,7 +38,7 @@ def index(request):
 
     context = {'keymasters': keymasters, 'twoMinutesAgo': twoMinutesAgo,
          'event_logs': logs}
-    return render(request, 'keymaster/index.html', context)
+    return render(request, 'keymaster/home.html', context)
 
 
 @staff_member_required

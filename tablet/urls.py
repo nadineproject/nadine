@@ -1,10 +1,12 @@
-from django.conf.urls import url
+from django.shortcuts import redirect
+from django.conf.urls import url, include
 from django.views.generic import RedirectView
 
 from . import views
 
 urlpatterns = [
-    url(r'^$', views.members),
+    url(r'^$', lambda r: redirect('tablet:members'), name="home"),
+
     url(r'^members/$', views.members, name='members'),
     url(r'^here_today/$', views.here_today, name='here_today'),
     url(r'^visitors/$', views.visitors, name='visitors'),
