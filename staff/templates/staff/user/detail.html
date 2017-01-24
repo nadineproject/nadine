@@ -381,7 +381,7 @@ function gotoEmailReset(emailAddress){
           <input name="username" value="{{ user.username }}" type="hidden" />
           <td><strong>Record New Deposit:</strong></th>
           <td><input name="amount" /></td>
-          <td><input name="note"/></td>
+          <td><input name="note" /></td>
           <td class='centered'><input name="add_deposit" type="submit" Value="Record Deposit" /></td>
       {% csrf_token %}
     </tr>
@@ -499,7 +499,7 @@ function gotoEmailReset(emailAddress){
         <table>
           <form action="." method="POST">
           <tr>
-              <td><input name="note"/></td>
+              <td><input name="note" placeholder='Enter note here' /></td>
               <td class='left'><input type="submit" name="add_note" value="Add Note"/></td>
           </tr>
           {% csrf_token %}
