@@ -1,3 +1,5 @@
+/*Styling for the user templates in the Nadine Staff App*/
+
 caption {
   font-weight: bold;
   font-size: 1.4em;
@@ -128,10 +130,6 @@ textarea.bcc-textarea {
   padding-left: 2em;
 }
 
-.emergency_contact strong {
-  border-bottom: 1px solid black;
-}
-
 .epay-link {
   margin-left: 2em;
   margin-top: .5em;
@@ -252,6 +250,11 @@ textarea.bcc-textarea {
 @media only screen and (max-width: 450px) {
   #group-header {
     margin-top: 15%;
+  }
+
+  .tabs .tab a {
+    padding: 0;
+    font-size: 1.2em;
   }
 }
 

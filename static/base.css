@@ -1,3 +1,5 @@
+/*This is the style sheet for repeatedly used styling in the Nadine Staff App*/
+
 html, body, div, span, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 abbr, address, cite, code,
@@ -225,7 +227,7 @@ table tr.row-even td { background: #eee; }
 
 #id_start, #id_end {width: 15%; padding-left: 1%;}
 
-
+/*Styling for print*/
 @media print {
   * { background: transparent !important; color: #444 !important; text-shadow: none !important; }
 
@@ -248,6 +250,7 @@ table tr.row-even td { background: #eee; }
   h2, h3{ page-break-after: avoid; }
 }
 
+/*Styling for smaller screens/mobile devices*/
 
 @media only screen and (max-width: 992px) {
   .left.hide-on-small-and-down {display: none !important;}

@@ -23,7 +23,7 @@
 
 {% block content %}
 {% block reg_edit %}
-<h3 class='oswald' style='text-align:center;'>Edit Your Profile</h3>
+<h3 class='oswald centered'>Edit Your Profile</h3>
 
 <p align="center"><em>NOTE: Items in <strong style='color:RGBA(79, 134, 135, 1);'>green bold</strong> are viewable by all active members.</em></p>
 
@@ -329,8 +329,6 @@
 		  $(this).text($(this).text().charAt(0).toUpperCase() + $(this).text().slice(1));
 		});
 
-    $('.button-collapse').sideNav();
-
     $('.link-formset').formset({
       addText: 'Add Another',
       deleteText: 'Remove'
@@ -340,7 +338,7 @@
 
 		$('.add-row').on('click', function(e) {
 			$('.delete-row').addClass('btn-floating btn-large btn url-btn');
-		})
+		});
 
     $('#password-create').on('focus', function(e) {
       e.preventDefault();

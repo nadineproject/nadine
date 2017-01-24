@@ -1,3 +1,5 @@
+/*Styling for the billing templates of the Nadine Staff App*/
+
 .amount {
   text-align:right;
 }
@@ -72,6 +74,14 @@
 
 .bill-list-fees td, .bill-list-fees th {
   border-bottom: 0px;
+}
+
+.bill-type h6, .bill-type p {
+  margin-left: 2%
+}
+
+.bill-type h6 {
+  margin-top: 2%;
 }
 
 .pay-bill-form input[type=text] {
