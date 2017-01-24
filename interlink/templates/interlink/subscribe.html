@@ -9,7 +9,7 @@
 <div align="center">
 <p>Are you sure you want to subscribe <strong>{{ user.get_full_name }}</strong> to <strong>{{ mailing_list }}</strong>?</p>
 <p/>
-<form action="{% url 'interlink_subscribe' mailing_list.id user.username %}" method='post'>
+<form action="{% url 'interlink:subscribe' mailing_list.id user.username %}" method='post'>
 	<input type="Submit" name="confirm" value="Yes">
 	<input type="Submit" name="confirm" value="No">
 	{% csrf_token %}

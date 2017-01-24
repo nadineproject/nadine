@@ -53,7 +53,7 @@
 	<script>
 		(function(){
 			$('#org-search').autocomplete({
-				source: "{% url 'json_org_search' %}",
+				source: "{% url 'member:json:org_search' %}",
 				minLength: 2,
 				autoFocus: true,
 			})

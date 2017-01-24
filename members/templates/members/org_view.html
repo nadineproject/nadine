@@ -91,7 +91,7 @@
 					</div>
 				{% endif %}
 				{% if can_edit %}
-					<a class='col s1 tooltipped' data-position="bottom" data-tooltip="Edit Details" href="{% url 'member_org_edit' organization.id %}"><img id='edit' alt='edit icon' style='height:30px;' src="{% static 'img/edit.png' %}"/></a>
+					<a class='col s1 tooltipped' data-position="bottom" data-tooltip="Edit Details" href="{% url 'member:org:edit' organization.id %}"><img id='edit' alt='edit icon' style='height:30px;' src="{% static 'img/edit.png' %}"/></a>
 				{% endif %}
 				{% if request.user.is_staff %}
 					<a class='col s1 tooltipped' data-position="bottom" data-tooltip='Admin' href="{{ organization.admin_url }}"><img id='admin' alt='admin icon' src="{% static 'img/admin.png' %}"/></a>
@@ -129,7 +129,7 @@
 			</tr>
 			{% for m in members %}
 				{% if show_all or m.is_active %}
-				<form id="org_mem_{{m.id}}" action="{% url 'member_org_member' organization.id %}" method="POST">
+				<form id="org_mem_{{m.id}}" action="{% url 'member:org:member' organization.id %}" method="POST">
 					<input type="hidden" name="member_id" value="{{ m.id }}"/>
 					<input type="hidden" name="action" value="edit"/>
 					{% csrf_token %}
@@ -160,7 +160,7 @@
 				{% endif %}
 			{% endfor %}
 			{% if can_edit %}
-				<form id="org_mem_add" action="{% url 'member_org_member' organization.id %}" method="POST">
+				<form id="org_mem_add" action="{% url 'member:org:member' organization.id %}" method="POST">
 					<input type="hidden" name="action" value="add"/>
 					{% csrf_token %}
 					<tr>
@@ -223,7 +223,7 @@
 			$('#picModal').css('display', 'block');
 		});
 
-		onclick_tab("#pic", "{% url 'member_org_edit_photo' organization.id %}");
+		onclick_tab("#pic", "{% url 'member:org:edit_photo' organization.id %}");
 
 		var img = $('#mem-photo');
 		get_orientation(img);

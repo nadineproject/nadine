@@ -8,9 +8,9 @@
 </div>
 
 <h5 align="center">
-	<a href="{% url 'arp_device_logs' previous_day.year previous_day.month previous_day.day %}">&laquo; Prev</a>
-	[ <a href="{% url 'arp_devices_today' %}">Today</a> ]
-	<a href="{% url 'arp_device_logs' next_day.year next_day.month next_day.day %}">Next &raquo;</a>
+	<a href="{% url 'arp:device_logs' previous_day.year previous_day.month previous_day.day %}">&laquo; Prev</a>
+	[ <a href="{% url 'arp:devices_today' %}">Today</a> ]
+	<a href="{% url 'arp:device_logs' next_day.year next_day.month next_day.day %}">Next &raquo;</a>
 </h5>
 
 <table border=1>
@@ -23,7 +23,7 @@
 	</tr>
 	{% for l in device_logs %}
 		<tr>
-			<td><a href="{% url 'arp_device' l.device.id %}">{{ l.device }}</a></td>
+			<td><a href="{% url 'arp:device' l.device.id %}">{{ l.device }}</a></td>
 			<td>{{ l.start|date:"h:i a" }}</td>
 			<td>{{ l.end|date:"h:i a" }}</td>
 			<td>{{ l.diff }}</td>

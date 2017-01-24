@@ -36,7 +36,7 @@ function togglePaymentDetails(){
         <div style="margin-bottom: .5em; text-align:left;">
             Automatic Billing: <span id="auto_billing" style="color:green;">The {{ active_membership.start_date|date:"jS" }}</span>
         </div>
-        <form id="disable_billing_form" action="{% url 'member_disable_billing' user.username %}">
+        <form id="disable_billing_form" action="{% url 'member:profile:disable_billing' user.username %}">
             <input class='billing-btn btn' id="disable_billing_button" type="submit" value="Disable Automatic Billing" />
         </form>
     </td>
@@ -71,7 +71,7 @@ function togglePaymentDetails(){
  <tbody>
     {% for transaction in payments %}
     <tr class="{% cycle 'row-even' 'row-odd' %}">
-        <td nowrap><a target="_self" href="{% url 'member_receipt' user.username transaction.id %}">{{ transaction.transaction_date | date:"M d, Y" }}</a></td>
+        <td nowrap><a target="_self" href="{% url 'member:profile:receipt' user.username transaction.id %}">{{ transaction.transaction_date | date:"M d, Y" }}</a></td>
         <td>${{ transaction.amount }}</td>
         <td>
             {% for bill in transaction.bills.all %}

@@ -7,9 +7,9 @@
 </div>
 
 <h5 align="center">
-	<a href="{% url 'arp_user_logs' previous_day.year previous_day.month previous_day.day %}">&laquo; Prev</a>
-	[ <a href="{% url 'arp_user' %}">Today</a> ]
-	<a href="{% url 'arp_user_logs' next_day.year next_day.month next_day.day %}">Next &raquo;</a>
+	<a href="{% url 'arp:user_logs' previous_day.year previous_day.month previous_day.day %}">&laquo; Prev</a>
+	[ <a href="{% url 'arp:user' %}">Today</a> ]
+	<a href="{% url 'arp:user_logs' next_day.year next_day.month next_day.day %}">Next &raquo;</a>
 </h5>
 
 <table border=1>

@@ -10,8 +10,8 @@
 {% for l in lists %}
 	<li>
 		<strong>{{ l }}</strong>:
-		<a href="{% url 'interlink_messages' l.id %}">messages</a> |
-		<a href="{% url 'interlink_subscribers' l.id %}">subscribers</a>
+		<a href="{% url 'interlink:messages' l.id %}">messages</a> |
+		<a href="{% url 'interlink:subscribers' l.id %}">subscribers</a>
 	</li>
 {% endfor %}
 </ul>

@@ -79,18 +79,18 @@
 					</ul>
 				</li>
 				<li>
-					<a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown6' id='logs-tab' href="{% url 'arp_user' %}">Logs</a>
+					<a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown6' id='logs-tab' href="{% url 'arp:user' %}">Logs</a>
 					<ul class='dropdown-content' id='dropdown6'>
 						{% include 'arpwatch/nav.html' %}
 					</ul>
 				</li>
-				<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown7' id='lists-tab' href="{% url 'interlink_index' %}">Lists</a>
+				<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown7' id='lists-tab' href="{% url 'interlink:index' %}">Lists</a>
 					<ul class='dropdown-content' id='dropdown7'>
 						{% include 'interlink/nav.html' %}
 					</ul>
 				</li>
 				<li>
-					<a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown8' id='doors-tab' href="{% url 'doors_index' %}">Doors</a>
+					<a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown8' id='doors-tab' href="{% url 'doors:index' %}">Doors</a>
 					<ul class='dropdown-content' id='dropdown8'>
 						{% include 'keymaster/nav.html' %}
 					</ul>

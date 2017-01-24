@@ -126,7 +126,7 @@
 	{% endfor %}
 	<div class='row'>
 		<input class='btn org-btn' type="submit" value="Save"/>
-		<input type="button" value="Cancel" class='btn cancel-btn' onclick="location.href='{% url 'member_org_view' organization.id %}'"/>
+		<input type="button" value="Cancel" class='btn cancel-btn' onclick="location.href='{% url 'member:org:view' organization.id %}'"/>
 		{% csrf_token %}
 	</div>
 </form>

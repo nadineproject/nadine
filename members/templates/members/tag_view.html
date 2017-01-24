@@ -8,11 +8,11 @@
 		{% for u in members %}
 			<tr>
 				<td style='min-width: 150px;'>
-					<a href="{% url 'member_profile' u.username %}">{{ u.get_full_name }}</a>:
+					<a href="{% url 'member:profile:view' u.username %}">{{ u.get_full_name }}</a>:
 				</td<>
 				<td>
 					{% for t in u.profile.tags.all %}
-						<dd><a class='chip' href="{% url 'member_tag_view' type t %}">{{ t }}</a></dd>
+						<dd><a class='chip' href="{% url 'member:tag:view' type t %}">{{ t }}</a></dd>
 					{% endfor %}
 				</td>
 			</tr>
@@ -24,9 +24,9 @@
 		<ul>
 		{% for o in organizations %}
 			<dl>
-				<dt><a href="{% url 'member_org_view' o.id %}">{{ o.name }}</a>:</td<>
+				<dt><a href="{% url 'member:org:view' o.id %}">{{ o.name }}</a>:</td<>
 				{% for t in o.tags.all %}
-					<dd><a class='chip' href="{% url 'member_tag_view' type t %}">{{ t }}</a></dd>
+					<dd><a class='chip' href="{% url 'member:tag:view' type t %}">{{ t }}</a></dd>
 				{% endfor %}
 			</dl>
 		{% endfor %}

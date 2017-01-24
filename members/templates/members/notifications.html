@@ -26,8 +26,8 @@
 	{% for n in notifications %}
 		<tr>
 			<td nowrap>{{ n.created }}</td>
-			<td><a href="{% url 'member_profile' n.target_user.username %}">{{ n.target_user.get_full_name }}</a></td>
-			<td><a href="{% url 'member_del_notification' n.target_user %}">delete</a></td>
+			<td><a href="{% url 'member:profile:view' n.target_user.username %}">{{ n.target_user.get_full_name }}</a></td>
+			<td><a href="{% url 'member:connect:del_notification' n.target_user %}">delete</a></td>
 		</tr>
 	{% endfor %}
 </table>

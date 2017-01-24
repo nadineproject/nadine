@@ -1,6 +1,6 @@
 {% load static %}
 
-<form enctype="multipart/form-data" action="{% url 'member_edit_pic' user.username %}" method="POST">
+<form enctype="multipart/form-data" action="{% url 'member:profile:edit_pic' user.username %}" method="POST">
   <table>
     <tr>
       <td class='upload-input'>

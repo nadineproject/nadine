@@ -30,7 +30,7 @@ from members.views.core import is_active_member
 
 @login_required
 def profile_redirect(request):
-    return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
+    return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': request.user.username}))
 
 
 @login_required
@@ -136,7 +136,7 @@ def edit_profile(request, username):
     user = get_object_or_404(User, username=username)
     if not user == request.user:
         if not request.user.is_staff:
-            return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
+            return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': request.user.username}))
 
     LinkFormSet = formset_factory(LinkForm, formset=BaseLinkFormSet)
 
@@ -160,7 +160,7 @@ def edit_profile(request, username):
                             user.set_password(pwd)
                             user.save()
 
-                            return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
+                            return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': user.username}))
                         else:
                             page_message = 'Your password must be at least 8 characters long.'
                     else:
@@ -181,7 +181,7 @@ def edit_profile(request, username):
                                 messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
                         profile_form.save()
 
-                        return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
+                        return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': user.username}))
                 else:
                     page_message = 'The entered passwords do not match. Please try again.'
             else:
@@ -216,12 +216,12 @@ def receipt(request, username, id):
     user = get_object_or_404(User, username=username)
     if not user == request.user:
         if not request.user.is_staff:
-            return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
+            return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': request.user.username}))
 
     transaction = get_object_or_404(Transaction, id=id)
     if not user == transaction.user:
         if not request.user.is_staff:
-            return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
+            return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': request.user.username}))
     bills = transaction.bills.all()
 
     context = {'user': user, 'transaction': transaction, 'bills': bills, 'settings': settings}
@@ -232,7 +232,7 @@ def receipt(request, username, id):
 def user_devices(request, username):
     user = get_object_or_404(User, username=username)
     if not user == request.user and not request.user.is_staff:
-        return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
+        return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': request.user.username}))
 
     error = None
     if request.method == 'POST':
@@ -247,7 +247,7 @@ def user_devices(request, username):
         device_name = device_name.strip()[:32]
         device.device_name = device_name
         device.save()
-        return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
+        return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': request.user.username}))
 
     devices = user.userdevice_set.all()
     ip = network.get_addr(request)
@@ -270,7 +270,7 @@ def disable_billing(request, username):
         api = PaymentAPI()
         api.disable_recurring(username)
         email.announce_billing_disable(user)
-    return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
+    return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': user.username}))
 
 
 @login_required
@@ -293,7 +293,7 @@ def file_view(request, disposition, username, file_name):
 def edit_pic(request, username):
     user = get_object_or_404(User, username=username)
     if not user == request.user and not request.user.is_staff:
-        return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
+        return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': request.user.username}))
     if request.method == 'POST':
         profile_form = EditProfileForm(request.POST, request.FILES)
         profile = get_object_or_404(UserProfile, user=user)
@@ -301,7 +301,7 @@ def edit_pic(request, username):
 
         profile.save()
 
-        return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
+        return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': user.username}))
     else:
         profile_form = EditProfileForm()
 
@@ -318,14 +318,14 @@ def edit_pic(request, username):
 def edit_photo(request, username):
     user = get_object_or_404(User, username=username)
     if not user == request.user and not request.user.is_staff:
-        return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
+        return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': request.user.username}))
 
     if request.method == 'POST':
         form = ProfileImageForm(request.POST, request.FILES)
         try:
             if form.is_valid():
                 form.save()
-                return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
+                return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': request.user.username}))
             else:
                 print form
         except Exception as e:

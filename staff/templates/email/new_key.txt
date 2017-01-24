@@ -8,7 +8,7 @@ regarding how your keycard works, but wanted to get a few other points over to
 you via email.
 
 If you prefer to read this information online you can always find it in the
-Nadine help pages:  http://{{ site.domain }}{% url 'member_help' 'keys' %}
+Nadine help pages:  http://{{ site.domain }}{% url 'member:help' 'keys' %}
 
 IMPORTANT POINTS:
 

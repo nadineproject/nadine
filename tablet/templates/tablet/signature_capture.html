@@ -39,7 +39,7 @@
 						<span>{{ today }}</span>
 					</div>
 
-					<form action="{% url 'tablet_sig_capture' user.username doc_type%}" method="POST">
+					<form action="{% url 'tablet:sig_capture' user.username doc_type%}" method="POST">
 						<div data-role="fieldcontain">
 							{% for field in form %}
 								{{ field.label_tag }}

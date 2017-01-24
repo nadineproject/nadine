@@ -77,7 +77,7 @@ def add_tag(request, username):
         user.profile.tags.add(tag)
     else:
         messages.add_message(request, messages.ERROR, "Tags can't contain punctuation.")
-    return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
+    return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': user.username}))
 
 
 @login_required
@@ -87,7 +87,7 @@ def remove_tag(request, username, tag):
     if not user == request.user and not request.user.is_staff:
         return HttpResponseForbidden
     user.profile.tags.remove(tag)
-    return HttpResponseRedirect(reverse('member_profile', kwargs={'username': username}))
+    return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': username}))
 
 
 @login_required
@@ -102,7 +102,7 @@ def add_org_tag(request, org_id):
         org.tags.add(tag)
     else:
         messages.add_message(request, messages.ERROR, "Tags can't contain punctuation.")
-    return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
+    return HttpResponseRedirect(reverse('member:org:view', kwargs={'org_id': org.id}))
 
 
 @login_required
@@ -110,9 +110,9 @@ def add_org_tag(request, org_id):
 def remove_org_tag(request, org_id, tag):
     org = get_object_or_404(Organization, id=org_id)
     if not (request.user.is_staff or org.can_edit(request.user)):
-        return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
+        return HttpResponseRedirect(reverse('member:org:view', kwargs={'org_id': org.id}))
     org.tags.remove(tag)
-    return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
+    return HttpResponseRedirect(reverse('member:org:view', kwargs={'org_id': org.id}))
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

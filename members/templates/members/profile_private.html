@@ -4,7 +4,7 @@
 
 <div class='row'>
   <h3 class='col s9 oswald' style='margin-bottom:0;margin-top:2%;'>Private Details</h3>
-  <a class='col s1 tooltipped' data-position="bottom" data-tooltip="Edit Profile" href="{% url 'member_edit_profile' user.username %}" style='margin-top:3%;'><img id='edit' src="{% static 'img/edit.png' %}" alt='edit-icon'/></a>
+  <a class='col s1 tooltipped' data-position="bottom" data-tooltip="Edit Profile" href="{% url 'member:profile:edit' user.username %}" style='margin-top:3%;'><img id='edit' src="{% static 'img/edit.png' %}" alt='edit-icon'/></a>
 </div>
 
 <table>
@@ -92,7 +92,7 @@
 
 <h3 class='oswald'>
     Emergency Contact
-    (<a target="_self" href="{% url 'member_edit_profile' user.username %}#emergency_contact">edit</a>)
+    (<a target="_self" href="{% url 'member:profile:edit' user.username %}#emergency_contact">edit</a>)
 </h3>
 {% if not emergency_contact.name %}
     <p style="font-style: italic; color:red; padding-left: 2em;">No Emergency Contact Information</p>

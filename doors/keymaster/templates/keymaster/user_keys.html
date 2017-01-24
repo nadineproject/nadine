@@ -41,7 +41,7 @@
 		Unrecognized key <em>'{{ potential_key.code }}'</em>
 		read at <strong>{{ potential_key.door.name }}</strong>
 		at {{ potential_key.timestamp|date:"h:i a" }}
-		<form class='potential-key-form' method="POST" action="{% url 'doors_add_key' %}">
+		<form class='potential-key-form' method="POST" action="{% url 'doors:add_key' %}">
 			<input type="hidden" name="username" value="{{ user.username }}"/></td>
 			<input type="hidden" name="code" value="{{ potential_key.code }}"/>
 			<input id='key-btn' type="submit" value="Assign" />
@@ -50,7 +50,7 @@
 	{% endif %}
 
 	<div>
-		<form class='key-form' method="POST" action="{% url 'doors_add_key' %}">
+		<form class='key-form' method="POST" action="{% url 'doors:add_key' %}">
 			<input type="hidden" name="username" value="{{ user.username }}"/></td>
 			<strong>Manually Assign Key:</strong>
 			<input id='key-code' name="code" size="16" value="{{ code }}"/>
@@ -63,7 +63,7 @@
 {% if logs %}
 	<h5>
 		Access Logs ({{ logs|length }})
-		[ <a href="{% url 'doors_logs' %}?username={{user.username}}">view all</a> ]
+		[ <a href="{% url 'doors:logs' %}?username={{user.username}}">view all</a> ]
 	</h5>
 	<table class='responsive-table'>
 		<tr>
