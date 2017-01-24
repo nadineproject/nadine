@@ -4,7 +4,7 @@
   <h6><strong>{{ bill_date }}</strong></h6>
   <ul id="bill-list">
   {% for u in users %}
-    <li style="color:{% valid_billing_color u %};"><span style="color:black">
+    <li style="color:{% valid_billing_color u %};"><span>
       <form class="pay-bill-form" action="." method="post">
         <div>
           <div class='row bill-row'>
@@ -63,7 +63,8 @@
           {% endfor %}
 
           {% if u.membernote_set.all %}
-            <br /><strong>Member notes:</strong>
+            <br />
+            <strong>Member notes:</strong>
             <ul>
             {% for note in u.membernote_set.all %}
               <li>{{ note.created|date:"m/d/y" }} - {{ note.note }}</li>

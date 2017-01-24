@@ -1,6 +1,7 @@
 {% extends "staff/billin/base.html" %}
 {% load staticfiles %}
 
+<!-- TODO finish review of this page for CSS redesign -->
 {% block style %}
 #content td { white-space:nowrap; }
 {% endblock %}
@@ -49,7 +50,7 @@
       {% if cust.Enabled %}
           <td>{{ cust.Next | slice:":10"}}</td>
           <td>${{ cust.Amount|floatformat:2 }}</td>
-          <td style="text-align:center;">
+          <td class='centered'>
               <img src="{% static 'green_check.png' %}" height="16px" />
           </td>
       {% else %}

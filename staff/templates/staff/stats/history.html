@@ -2,25 +2,12 @@
 
 {% block sub-title %}Stats | History{% endblock %}
 
-{% block style %}
-.monthly-stats { width: 70%; }
-.monthly-stats td { border-bottom: none; }
-.monthly-stats th, .monthly-stats td { text-align: left; }
-.monthly-stat th {font-weight: normal; width: 100px; }
-.year-heading th {  padding: 1.5em 0; font-size: 1.2em; }
-.total-bar { padding: 0 1em; background-color: #99F; }
-.started-bar { padding: 0 1em; background-color: #9F9; }
-.ended-bar { padding: 0 1em; background-color: #F99; }
-{% endblock %}
-
 {% block content %}
 
 <h4>Stats - Monthly Member History:</h4>
 
 <div class="columns clearfix date-range">
-  <div class="c1">
-    {% include "staff/date_range_form.html"%}
-  </div>
+  {% include "staff/date_range_form.html"%}
 </div>
 
 <table class="monthly-stats">

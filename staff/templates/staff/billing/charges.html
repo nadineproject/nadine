@@ -1,5 +1,5 @@
 {% extends "staff/billing/base.html" %}
-
+<!-- TODO finish the CSS styling review of this page -->
 {% block style %}
 #content td { white-space:nowrap; }
 {% endblock %}
@@ -10,7 +10,7 @@
 
 <h4>
 	Daily Charges - {{ date|date:"l, M dS" }}
-	<span style="float:right;">
+	<span class='right'>
 	<a href="{% url 'staff:billing:charges' previous_date.year previous_date.month previous_date.day %}">&larr;</a>
 	<!-- <a href="{% url 'staff:billing:charges_today' %}">&bull;</a> -->
 	<input type='date' name='date' class='datepicker' value="{{ date|date:'Y-m-d' }}" style='font-size:.6em; text-align:center; width:150px;'/>

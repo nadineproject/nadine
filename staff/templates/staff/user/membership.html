@@ -3,19 +3,6 @@
 
 {% block sub-title %}Membership{% endblock %}
 
-{% block style %}
-  #page-message {
-    font-size: 1.5em;
-    color: #933;
-    margin: 20px 0px;
-  }
-
-  table td {
-    border-bottom: none;
-    text-align: inherit;
-  }
-{% endblock %}
-
 {% block sub-head %}
   <link rel="stylesheet" href="{% static 'staff/c3/c3.min.css' %}" />
   <script src="{% static 'staff/c3/date.min.js' %}"></script>
@@ -69,7 +56,7 @@ $(document).ready(function() {
 <h4>{% if membership %} Update {% else %} Add {% endif %} Membership for <a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a></h4>
 
 {% if messages %}
-<div class="messages">
+<div class="page-message">
 	{% for message in messages %}
 		<div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
 	{% endfor %}
@@ -84,7 +71,7 @@ $(document).ready(function() {
 		<table id="membership">
 			<tr class="row-even">
 				<td class='left-title' nowrap>Membership Plan</td>
-				<td style="text-align:left;">
+				<td class='left'>
 					{% if membership %}
 						{{ membership.membership_plan }}
 						{{ membership_form.membership_plan.as_hidden }}
@@ -98,7 +85,7 @@ $(document).ready(function() {
     <table>
       <tr class="row-odd">
 				<td class='left-title'>Start Date</td>
-				<td class='date-input' style="text-align:left;">
+				<td class='date-input'>
 					{% if membership %}
 						{{ membership.start_date }}
 						{{ membership_form.start_date.as_hidden }}
@@ -107,7 +94,7 @@ $(document).ready(function() {
 					{% endif %}
 				</td>
         <td class='right-title' id='end-td'>End Date</td>
-				<td class='date-input' style="text-align:left;">{{ membership_form.end_date }} <span id='last-today'>[ <a id="end_last">last</a> | <a id="end_today">today</a> ]</span></td>
+				<td class='date-input'>{{ membership_form.end_date }} <span id='last-today'>[ <a id="end_last">last</a> | <a id="end_today">today</a> ]</span></td>
       </tr>
       <tr class="row-odd">
 				<td>{{ membership_form.start_date.errors }}</td>
@@ -154,24 +141,24 @@ $(document).ready(function() {
 					{% endif %}
 				</td>
         <td class='right-title' nowrap>Extras</td>
-				<td class='mem-input' style="text-align:left;">
+				<td class='mem-input'>
 					{% if membership %}
-						{% if membership.has_desk %}<span style="margin-right:2em;">&check; Desk</span>{% endif %}
+						{% if membership.has_desk %}<span>&check; Desk</span>{% endif %}
 						{% if membership.has_key %}<span style="margin-right:2em;">&check; Key</span>{% endif %}
-						{% if membership.has_mail %}<span style="margin-right:2em;">&check; Mail</span>{% endif %}
+						{% if membership.has_mail %}<span>&check; Mail</span>{% endif %}
 						{{ membership_form.has_desk.as_hidden }}
 						{{ membership_form.has_key.as_hidden }}
 						{{ membership_form.has_mail.as_hidden }}
 					{% else %}
-						<span style="margin-right:2em;">
+						<span>
               {{ membership_form.has_desk }}
               <label for='id_has_desk'>Desk</label>
             </span>
-						<span style="margin-right:2em;">
+						<span>
               {{ membership_form.has_key }}
               <label for='id_has_key'>Key</label>
             </span>
-						<span style="margin-right:2em;">
+						<span>
               {{ membership_form.has_mail }}
               <label for='id_has_mail'>Mail</label>
             </span>
@@ -185,12 +172,12 @@ $(document).ready(function() {
     <table>
 			<tr class="row-even">
 				<td class='left-title'>Paid by</td>
-				<td class='mem-input' style="text-align:left;">{{ membership_form.paid_by }}</td>
+				<td class='mem-input'>{{ membership_form.paid_by }}</td>
 				<td>{{ membership_form.paid_by.errors }}</td>
 			</tr>
 			<tr class="row-odd">
 				<td>Note</td>
-				<td class='notes' style="text-align:left;">{{ membership_form.note }}</td>
+				<td class='notes'>{{ membership_form.note }}</td>
 				<td>{{ membership_form.note.errors }}</td>
 			</tr>
 	      <tr><td></td><td><input type="submit" value="Submit" /></td></tr>

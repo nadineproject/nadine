@@ -1,12 +1,6 @@
 {% extends "staff/billing/base.html" %}
 
-{% block sub-title %}Activity List{% endblock %}
-
-{% block style%}
-#content table { width: 100%; }
-.amount { text-align:right; }
-#content table td:last-child { text-align: center; }
-{% endblock %}
+{% block sub-title %}Bill List{% endblock %}
 
 {% block content %}
 
@@ -55,12 +49,4 @@
 	<p>There are no bills for this period.</p>
 {% endif %}
 
-{% endblock %}
-
-{% block navcss %}
-  <style>
-    #billing-tab {
-      background-color: RGBA(90, 122, 189, 1.00) !important;
-    }
-  </style>
 {% endblock %}

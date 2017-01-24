@@ -1,0 +1,287 @@
+caption {
+  font-weight: bold;
+  font-size: 1.4em;
+  margin-bottom: 10px;
+}
+
+table td {
+  border-bottom: none;
+  text-align: inherit;
+}
+
+table th.bottom_line {
+  border-bottom:1px solid;
+}
+
+textarea.bcc-textarea {
+	margin-top: 2%;
+	height: 6rem;
+}
+
+#deposit_table {
+  text-align:right;
+  background: #FBD850;
+}
+
+#detail-links {
+  text-align: left;
+}
+
+#group_form {
+	margin-left: 2%;
+}
+
+#group_form label {
+	display: inline-block;
+}
+
+#group-header {
+	margin-top: 5%;
+}
+
+#id_membership_plan {
+	width: 40%;
+}
+
+#member-edit tr td:first-child {
+  width: 30%;
+}
+
+#member-search-form {
+  font-weight: bold;
+  font-size: 1.4em;
+  margin-top: 1.4em;
+}
+
+#onboard-form, #exit-form {
+  width: 400px;
+}
+
+#onboard-form td, #exit-form td {
+  white-space: nowrap;
+}
+
+#onboard-form th, #exit-form th {
+  text-align: left;
+}
+
+.page-message {
+  font-size: 1.5em;
+  color: #933;
+  margin: 20px 0px;
+}
+
+#quick-links {
+  text-align: right;
+  margin-bottom: 20px;
+}
+
+#rate-td {
+	width: 45%;
+}
+
+#report-btn {
+  margin-left:1em;
+}
+
+#right-floater {
+  margin-top: 30px;
+  float: right;
+  width: 180px;
+  min-height: 200px;
+}
+
+.date-input, .mem-input {
+	width: 50%;
+}
+
+.date-input input {
+	margin-bottom: 0;
+}
+
+.date-input input, .mem-input input {
+	width: 50%;
+	margin-left: 3%;
+}
+
+.detail-header {
+  margin-top: 0;
+  border-bottom: none;
+}
+
+.detail-title {
+  font-weight: bold;
+  padding-left: 5%;
+}
+
+.email-form {
+  margin-top: 2em;
+}
+
+.emergency_contact {
+  padding-top: 1em;
+}
+
+.emergency_contact p {
+  font-style: italic;
+  color:red;
+  padding-left: 2em;
+}
+
+.emergency_contact strong {
+  border-bottom: 1px solid black;
+}
+
+.epay-link {
+  margin-left: 2em;
+  margin-top: .5em;
+}
+
+.guest-row {
+  display: none;
+}
+
+.guest-detail {
+  margin-left: 6em;
+  width: 80%;
+}
+
+.guest-detail tr td:first-child{
+  border-bottom: 0px solid #ccc;
+}
+
+.guest-info {
+  border-bottom: 0px solid #ccc;
+  text-align: left;
+  padding: 0.5em;
+}
+
+.input-field {
+	width: 25%;
+	display: inline-block !important;
+}
+
+.left-title {
+	width: 12%;
+	font-weight: bold;
+}
+
+.log-note {
+  width: 160px;
+}
+
+.mem-input span {
+  margin-right: 2em;
+}
+
+.member-photo {
+  width: 170px;
+  text-align: center;
+  margin: 0px 10px;
+}
+
+.notes {
+	width: 75%;
+	height: 5%;
+  text-align: left;
+}
+
+.responsive-table #alerts-th {
+	text-align: left;
+}
+
+.right-title {
+	font-weight: bold;
+}
+
+.tabs .tab a {
+	text-decoration: none;
+	color: RGBA(28, 164, 230, 1.00);
+}
+
+.tabs .tab a:hover, .tabs .tab a.active {
+	color: RGBA(34, 83, 120, 1.00);
+}
+
+.tabs .indicator {
+	background-color: RGBA(34, 83, 120, 1.00);
+}
+
+.user-report {
+  margin:1em 20em 1em 1em;
+	padding: 2em;
+}
+
+.user-report div {
+  padding: .5em;
+}
+
+@media only screen and (max-width: 700px) {
+	#id_membership_plan {
+		width: 100%;
+	}
+
+  #last-today {
+		content: ' ';
+		display: block;
+	}
+
+  .date-input input, .mem-input input {
+		width: 75%;
+		margin-left: 3%;
+		text-align: left;
+	}
+}
+
+@media only screen and (max-width: 599px) {
+  .responsive-table #alerts-th {
+		text-align: right;
+	}
+
+  .input-field {
+		width: 40%;
+	}
+}
+
+@media only screen and (max-width: 550px) {
+  #group-header {
+    margin-top: 10%;
+  }
+}
+
+@media only screen and (max-width: 450px) {
+  #group-header {
+    margin-top: 15%;
+  }
+}
+
+@media only screen and (max-width: 425px) {
+  h4 {
+    font-size: 2.5em;
+  }
+}
+
+@media only screen and (max-width: 400px) {
+  #photo-td, #photo-th {
+		display: none;
+	}
+
+  #end-td {
+		width: 2%;
+	}
+}
+
+@media only screen and (max-width: 350px) {
+  .input-field {
+    width: 80%;
+  }
+
+  .member-photo, .member-detail {
+    float:none;
+  }
+
+  h4 {
+    font-size: 2.3em;
+    margin-left: 2%;
+  }
+}

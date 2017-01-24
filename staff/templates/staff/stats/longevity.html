@@ -3,27 +3,21 @@
 
 {% block sub-title %}Stats | Membership Days{% endblock %}
 
-{% block style %}
-#content table { width: auto; margin-bottom: 40px; }
-#content td { border-bottom: none; width: 50px; }
-#content th { width: 100px;}
-{% endblock %}
-
 {% block content %}
 
 <h4>Stats - Membership Days:</h4>
 
 <table>
 	<tr>
-		<th>User</th>
-		<th>Rank</th>
-		<th>First Visit</th>
-		<th>Duration</th>
-		<th>Memberships</th>
-		<th>Total Days</th>
-		<th>Sign-Ins</th>
-		<th>Max Days</th>
-		<th></th>
+		<th class='longevity-th'>User</th>
+		<th class='longevity-th'>Rank</th>
+		<th class='longevity-th'>First Visit</th>
+		<th class='longevity-th'>Duration</th>
+		<th class='longevity-th'>Memberships</th>
+		<th class='longevity-th'>Total Days</th>
+		<th class='longevity-th'>Sign-Ins</th>
+		<th class='longevity-th'>Max Days</th>
+		<th class='longevity-th'></th>
 	</tr>
 	{% for d in membership_days %}
 		<tr class="{% cycle 'row-even' 'row-odd' %}">

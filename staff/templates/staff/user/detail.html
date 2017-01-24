@@ -4,68 +4,6 @@
 
 {% block sub-title %}{{ user.get_full_name }}{% endblock %}
 
-{% block style%}
-  h4 {
-    border-bottom: none;
-  }
-
-  #quick-links {
-    text-align: left;
-  }
-
-  caption {
-    font-weight: bold;
-    font-size: 1.4em;
-    margin-bottom: 10px;
-  }
-
-  #right-floater {
-    margin-top: 30px;
-    float: right;
-    width: 180px;
-    min-height: 200px;
-  }
-
-  .member-photo {
-    width: 170px;
-    text-align: center;
-    margin: 0px 10px;
-  }
-
-  #content td, #content th {
-    padding-left: 20px;
-  }
-
-  #onboard-form, #exit-form {
-    width: 400px;
-  }
-
-  #onboard-form td, #exit-form td {
-    white-space: nowrap;
-  }
-
-  #onboard-form th, #exit-form th {
-    text-align: left;
-  }
-
-  @media only screen and (max-width: 425px) {
-    h4 {
-      font-size: 2.5em;
-    }
-  }
-
-  @media only screen and (max-width: 350px) {
-    .member-photo, .member-detail {
-      float:none;
-    }
-
-    h4 {
-      font-size: 2.3em;
-      margin-left: 2%;
-    }
-  }
-{% endblock %}
-
 {% block sub-head %}
 <script>
 function gotoEmailReset(emailAddress){
@@ -110,8 +48,8 @@ function gotoEmailReset(emailAddress){
 
 <!-- Member Detail -->
 <div class='row' id="member-detail">
-  <h4 style='margin-top: 0;'>{{ user.get_full_name }} {% if user.profile.is_active %} - <i>{{ user.profile.membership_type }}</i> {% endif %}</h4>
-  <div id="quick-links">
+  <h4 class='detail-header'>{{ user.get_full_name }} {% if user.profile.is_active %} - <i>{{ user.profile.membership_type }}</i> {% endif %}</h4>
+  <div id="detail-links">
     <a href="{% url 'staff:activity:user' user.username %}">activity</a> |
     <a href="{% url 'doors_keys' user.username %}">keys</a> |
     <a href="{% url 'staff:user:files' user.username %}">files</a> |
@@ -145,36 +83,36 @@ function gotoEmailReset(emailAddress){
     <table>
         <!-- Username -->
         <tr>
-            <td>Username</td>
+            <td class='detail-title'>Username</td>
             <td>{{ user.username }}</td>
         </tr>
 
         <!-- Plan Start -->
         {% if user.profile.active_membership %}
         <tr>
-            <td>Bill Date</td>
+            <td class='detail-title'>Bill Date</td>
             <td>{{ user.profile.active_membership.start_date|date:"jS" }}</td>
         </tr>
         {% endif %}
 
         <!-- Stats -->
         <tr>
-            <td>First Visit</td>
+            <td class='detail-title'>First Visit</td>
             <td>{{ user.profile.first_visit }}</td>
         </tr>
         <tr>
-            <td>Duration</td>
+            <td class='detail-title'>Duration</td>
             <td>{{ user.profile.duration_str }}</td>
         </tr>
         <tr>
-            <td>Last Visit</td>
+            <td class='detail-title'>Last Visit</td>
             <td>{{ user.profile.last_visit }}</td>
         </tr>
 
         <!-- organizations -->
         {% for o in user.profile.active_organizations %}
             <tr>
-                <td>Organization</td>
+                <td class='detail-title'>Organization</td>
                 <td>{{ o }}</td>
             </tr>
         {% endfor %}
@@ -182,7 +120,7 @@ function gotoEmailReset(emailAddress){
         <!-- Website -->
         {% if user.profile.url_personal %}
             <tr>
-                <td>Website</td>
+                <td class='detail-title'>Website</td>
                 <td><a href="{{ user.profile.url_personal }}">{{ user.profile.url_personal }}</a></td>
             </tr>
         {% endif %}
@@ -190,7 +128,7 @@ function gotoEmailReset(emailAddress){
         <!-- Gender -->
         {% if user.profile.gender %}
             <tr>
-                <td>Gender</td>
+                <td class='detail-title'>Gender</td>
                 <td>{{ user.profile.gender }}</td>
             </tr>
         {% endif %}
@@ -198,7 +136,7 @@ function gotoEmailReset(emailAddress){
         <!-- Emails -->
         {% for e in user.profile.all_emails %}
             <tr>
-                <td>Email Address {{forloop.counter}}</td>
+                <td class='detail-title'>Email Address {{forloop.counter}}</td>
                 <td>{{ e.email }}</td>
             </tr>
         {% endfor %}
@@ -206,7 +144,7 @@ function gotoEmailReset(emailAddress){
         <!-- Phone -->
         {% if user.profile.phone %}
             <tr>
-                <td>Phone</td>
+                <td class='detail-title'>Phone</td>
                 <td>{{ user.profile.phone }}</td>
             </tr>
         {% endif %}
@@ -214,7 +152,7 @@ function gotoEmailReset(emailAddress){
         <!-- Phone2 -->
         {% if user.profile.phone2 %}
             <tr>
-                <td>Alternate Phone</td>
+                <td class='detail-title'>Alternate Phone</td>
                 <td>{{ user.profile.phone2 }}</td>
             </tr>
         {% endif %}
@@ -222,7 +160,7 @@ function gotoEmailReset(emailAddress){
         <!-- Address 1-->
         {% if user.profile.address1 %}
             <tr>
-                <td>Address 1</td>
+                <td class='detail-title'>Address 1</td>
                 <td>{{ user.profile.address1 }}</td>
             </tr>
         {% endif %}
@@ -230,7 +168,7 @@ function gotoEmailReset(emailAddress){
         <!-- Address 2-->
         {% if user.profile.address2 %}
             <tr>
-                <td>Address 2</td>
+                <td class='detail-title'>Address 2</td>
                 <td>{{ user.profile.address2 }}</td>
             </tr>
         {% endif %}
@@ -238,7 +176,7 @@ function gotoEmailReset(emailAddress){
         <!-- City, State, Zip-->
         {% if user.profile.city %}
             <tr>
-                <td>City</td>
+                <td class='detail-title'>City</td>
                 <td>{{ user.profile.city }} {{ user.profile.state }}, {{ user.profile.zipcode }}</td>
             </tr>
         {% endif %}
@@ -246,7 +184,7 @@ function gotoEmailReset(emailAddress){
         <!-- How Heard -->
         {% if user.profile.howHeard %}
             <tr>
-                <td>How Heard</td>
+                <td class='detail-title'>How Heard</td>
                 <td>{{ user.profile.howHeard }}</td>
             </tr>
         {% endif %}
@@ -254,7 +192,7 @@ function gotoEmailReset(emailAddress){
         <!-- Industry -->
         {% if user.profile.industry %}
             <tr>
-                <td>Industry</td>
+                <td class='detail-title'>Industry</td>
                 <td>{{ user.profile.industry }}</td>
             </tr>
         {% endif %}
@@ -262,7 +200,7 @@ function gotoEmailReset(emailAddress){
         <!-- Neighborhood -->
         {% if user.profile.neighborhood %}
             <tr>
-                <td>Neighborhood</td>
+                <td class='detail-title'>Neighborhood</td>
                 <td>{{ user.profile.neighborhood }}</td>
             </tr>
         {% endif %}
@@ -270,7 +208,7 @@ function gotoEmailReset(emailAddress){
         <!-- Has Kids -->
         {% if user.profile.has_kids %}
             <tr>
-                <td>Has Kids?</td>
+                <td class='detail-title'>Has Kids?</td>
                 <td>{{ user.profile.has_kids }}</td>
             </tr>
         {% endif %}
@@ -278,16 +216,16 @@ function gotoEmailReset(emailAddress){
         <!-- Self Employed -->
         {% if user.profile.self_employed %}
             <tr>
-                <td>Self Employed?</td>
+                <td class='detail-title'>Self Employed?</td>
                 <td>{{ user.profile.self_employed }}</td>
             </tr>
         {% endif %}
     </table>
 
-    <div style="padding-top: 1em;">
+    <div class='emergency_contact'>
     <strong>Emergency Contact</strong>
     {% if not emergency_contact.name %}
-        <p style="font-style: italic; color:red; padding-left: 2em;">No Emergency Contact Information</p>
+        <p>No Emergency Contact Information</p>
     {% else %}
         <table>
             <tr>
@@ -340,7 +278,7 @@ function gotoEmailReset(emailAddress){
                 <td>{% if membership.has_desk %}&check;{% endif %}</td>
                 <td>{% if membership.has_key %}&check;{% endif %}</td>
                 <td>{% if membership.has_mail %}&check;{% endif %}</td>
-                <td style="text-align:center;">
+                <td class='centered'>
                     {% if membership == user.profile.last_membership %}
                         [<a href="{% url 'staff:user:membership' membership.id %}">edit</a>]
                     {% endif %}
@@ -370,7 +308,7 @@ function gotoEmailReset(emailAddress){
                     <tr class="{% cycle 'row-even' 'row-odd' %}">
                         <td nowrap><a href="{% url 'staff:user:detail' guest.username %}">{{ guest.get_full_name }}</a></td>
                         <td>{{ guest.profile.active_membership.membership_plan }}</td>
-                        <td style="text-align: center;">{{ guest.profile.first_visit }}</td>
+                        <td class='centered'>{{ guest.profile.first_visit }}</td>
                     </tr>
                 {% endfor %}
             </table>
@@ -385,7 +323,6 @@ function gotoEmailReset(emailAddress){
     </div>
     <!-- Billing Profile -->
     <h5>Billing Profile</h5>
-    <!-- TODO change look of button in members/profile_billing_frag -->
     {% include "members/profile_billing_frag.html" %}
     <div style="margin-left: 2em; margin-top: .5em;">
       <form method=POST action="{% url 'staff:billing:toggle_bill' user.username %}" onSubmit="return confirm('Are you sure?');">
@@ -393,51 +330,61 @@ function gotoEmailReset(emailAddress){
         {% if user.profile.has_valid_billing %}
             <input type="submit" value="Flag Invalid Billing Profile">
         {% else %}
-            <input type="submit" value="Clear Invalid Billing Flag">
+            <inputtype="submit" value="Clear Invalid Billing Flag">
         {% endif %}
         {% csrf_token %}
       </form>
     </div>
-    <div style="margin-left: 2em; margin-top: .5em;">
+    <div class='epay-link'>
         [ <a href="https://secure.usaepay.com/interface/epayform/{{ settings.USA_EPAY_WEB_KEY }}/?UMdescription=Office%20Nomads%20Billing%20Authorization&UMcustid={{ user.username }}&UMcommand=AuthOnly&UMamount=1.00&UMaddcustomer=yes&UMschedule=disabled">payment link</a> ]
     </div>
 
     <!-- Security Deposits -->
     <h5>Security Deposits:</h5>
     <div>
-    <table>
-        <tr>
-            <th>Received</th>
-            <th>Returned</th>
-            <th>Amount</th>
-            <th>Note</th>
-            <th>Action</th>
-        </tr>
-        {% for deposit in user.profile.deposits %}
-            <tr class="{% cycle 'row-even' 'row-odd' %}">
-                <td>{{ deposit.received_date }}</td>
-                <td>{% if deposit.returned_date %}{{ deposit.returned_date }}{% endif %}</td>
-                <td>${{ deposit.amount }}</td>
-                <td>{% if deposit.note %}{{ deposit.note }}{% endif %}</td>
-                <td style="text-align:right;">{% if not deposit.returned_date %}
-                    <form action="{% url 'staff:user:deposits' %}" method="POST" onSubmit="return confirm('Are you sure?');">
-                        <input name="username" value="{{ user.username }}" type="hidden" />
-                        <input name="deposit_id" value="{{ deposit.id }}" type="hidden" />
-                        <input name="mark_returned" type="submit" Value="Mark Returned" />
-                        {% csrf_token %}
-                    </form>
-                {% endif %}</td>
+      {% if user.profile.deposits %}
+        <table>
+            <tr>
+                <th>Received</th>
+                <th>Returned</th>
+                <th>Amount</th>
+                <th>Note</th>
+                <th>Action</th>
             </tr>
-        {% endfor %}
-
-    <form action="{% url 'staff:user:deposits' %}" method="POST">
-        <input name="username" value="{{ user.username }}" type="hidden" />
-        <tr>
-            <td colspan="2" style="text-align:right;"><strong>Record New Deposit:</strong></th>
-            <td><input name="amount" size="4" /></td>
-            <td><input name="note" size="32" /></td>
-            <td style="text-align:right;"><input name="add_deposit" type="submit" Value="Record Deposit" /></td>
-        {% csrf_token %}
+            {% for deposit in user.profile.deposits %}
+                <tr class="{% cycle 'row-even' 'row-odd' %}">
+                    <td>{{ deposit.received_date }}</td>
+                    <td>{% if deposit.returned_date %}{{ deposit.returned_date }}{% endif %}</td>
+                    <td>${{ deposit.amount }}</td>
+                    <td>{% if deposit.note %}{{ deposit.note }}{% endif %}</td>
+                    <td style="text-align:right;">{% if not deposit.returned_date %}
+                        <form action="{% url 'staff:user:deposits' %}" method="POST" onSubmit="return confirm('Are you sure?');">
+                            <input name="username" value="{{ user.username }}" type="hidden" />
+                            <input name="deposit_id" value="{{ deposit.id }}" type="hidden" />
+                            <input name="mark_returned" type="submit" Value="Mark Returned" />
+                            {% csrf_token %}
+                        </form>
+                    {% endif %}</td>
+                </tr>
+            {% endfor %}
+        </table>
+      {% endif %}
+    <table>
+      <tr>
+          <th></th>
+          <th>Amount</th>
+          <th>Note</th>
+          <th>Action</th>
+      </tr>
+      <tr>
+        <form action="{% url 'staff:user:deposits' %}" method="POST">
+          <input name="username" value="{{ user.username }}" type="hidden" />
+          <td><strong>Record New Deposit:</strong></th>
+          <td><input name="amount" /></td>
+          <td><input name="note"/></td>
+          <td class='centered'><input name="add_deposit" type="submit" Value="Record Deposit" /></td>
+      {% csrf_token %}
+    </tr>
     </form>
 
     </table>
@@ -454,7 +401,7 @@ function gotoEmailReset(emailAddress){
     <div>
         {% if email_logs %}
             <table>
-                <tr><th>Sent</th><th align="left">Subject</th></tr>
+                <tr><th class='left'>Sent</th><th class='right'>Subject</th></tr>
                 {% for log in email_logs %}
                     <tr {% if not log.success %} style="color:red;" {% endif %}>
                         <td nowrap>{{ log.created }}</td>
@@ -465,7 +412,7 @@ function gotoEmailReset(emailAddress){
         {% else %}
             <p>No email logs.</p>
         {% endif %}
-        <div style="margin:1em;">
+        <div class='email-form'>
             <form action="." method="POST">
                 <strong>Manually Send Email: </strong>
                 <select name="message_key">
@@ -483,7 +430,7 @@ function gotoEmailReset(emailAddress){
 <div id="tabs-4">
 
     {% if messages %}
-    <div class="messages">
+    <div class="page-message">
         {% for message in messages %}
             <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
         {% endfor %}
@@ -515,7 +462,7 @@ function gotoEmailReset(emailAddress){
             {% if alert.is_resolved %}
                 <tr class="{% cycle 'row-even' 'row-odd' %}">
                     <td>{{ alert.created_ts|date:"m/d/y" }}</td>
-                    <td style="text-align:left;">{{ alert.description }}</td>
+                    <td class='left'>{{ alert.description }}</td>
                     <td>{{ alert.resolved_ts|date:"m/d/y" }}</td>
                     <td>{{ alert.resolved_by|default:"" }}</td>
                     <td>{{ alert.muted_ts|date:"m/d/y" }}</td>
@@ -531,29 +478,32 @@ function gotoEmailReset(emailAddress){
 <div id="tabs-5">
     <h5>Notes</h5>
     <div>
+      {% if user.profile.member_notes %}
         <table>
             <tr>
                 <th>Date</th>
                 <th>By</th>
-                <th align="left">Note</th>
+                <th class='left'>Note</th>
                 <th></th>
             </tr>
             {% for note in user.profile.member_notes %}
                 <tr>
                     <td>{{ note.created|date:"M d, Y"}}</td>
                     <td>{% if note.created_by %}{{ note.created_by }} {% endif %}</td>
-                    <td style="text-align:left;">{{ note.note }}</td>
-                    <td style="text-align:right;" nowrap>[ <a href="{% url 'admin:nadine_membernote_change' note.id %}">edit</a> ]</td>
+                    <td class='left'>{{ note.note }}</td>
+                    <td class='right' nowrap>[ <a href="{% url 'admin:nadine_membernote_change' note.id %}">edit</a> ]</td>
                 </tr>
             {% endfor %}
         <table>
-            <form action="." method="POST">
-            <tr>
-                <td colspan="3" width="10%"><input name="note"/ size="90"></td>
-                <td style="text-align:right;"><input type="submit" name="add_note" value="Add Note"/></td>
-            </tr>
-            {% csrf_token %}
-            </form>
+      {% endif %}
+        <table>
+          <form action="." method="POST">
+          <tr>
+              <td><input name="note"/></td>
+              <td class='left'><input type="submit" name="add_note" value="Add Note"/></td>
+          </tr>
+          {% csrf_token %}
+          </form>
         </table>
     </div>
 
@@ -564,21 +514,23 @@ function gotoEmailReset(emailAddress){
                 <th>Month</th>
                 <th>Day</th>
                 <th>Year</th>
-                <th style="text-align:left;">Description</th>
+                <th class="left">Description</th>
                 <th></th>
             </tr>
-            {% for d in user.profile.special_days %}
-                <tr>
-                    <td>{{ d.month }}</td>
-                    <td>{{ d.day }}</td>
-                    <td>{% if d.year %}{{ d.year }}{% endif %}</td>
-                    <td style="text-align:left;">{{ d.description }}</td>
-                    <td style="text-align:right">[ <a href="{% url 'admin:nadine_specialday_change' d.id %}">edit</a> ]</td>
-                </tr>
-            {% endfor %}
+            {% if user.profile.special_days %}
+              {% for d in user.profile.special_days %}
+                  <tr>
+                      <td>{{ d.month }}</td>
+                      <td>{{ d.day }}</td>
+                      <td>{% if d.year %}{{ d.year }}{% endif %}</td>
+                      <td style="text-align:left;">{{ d.description }}</td>
+                      <td style="text-align:right">[ <a href="{% url 'admin:nadine_specialday_change' d.id %}">edit</a> ]</td>
+                  </tr>
+              {% endfor %}
+            {% endif %}
         <form action="." method=POST>
             <tr>
-                <td><select name="month">
+                <td><select class='browser-default' name="month">
                     <option></option>
                     <option>1</option>
                     <option>2</option>
@@ -593,7 +545,7 @@ function gotoEmailReset(emailAddress){
                     <option>11</option>
                     <option>12</option>
                 </select></td>
-                <td><select name="day">
+                <td><select class='browser-default' name="day">
                     <option></option>
                     <option>1</option>
                     <option>2</option>
@@ -628,8 +580,8 @@ function gotoEmailReset(emailAddress){
                     <option>31</option>
                 </select></td>
                 <td><input name="year" size=4/></td>
-                <td style="text-align:left;"><input id="specialdays" name="description" size="50"/></td>
-                <td style="text-align:right"><input type="submit" name="add_special_day" value="Add Special Day"/></td>
+                <td class='left'><input id="specialdays" name="description" size="50"/></td>
+                <td class='right'><input type="submit" name="add_special_day" value="Add Special Day"/></td>
             </tr>
             {% csrf_token %}
         </form>

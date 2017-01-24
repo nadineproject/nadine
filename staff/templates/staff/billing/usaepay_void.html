@@ -19,7 +19,7 @@
     No Transaction!
 {% else %}
     <h5>Transaction Details</h5>
-    <div style="margin-left: 2em;">
+    <div>
         <strong>Date: </strong> {{ transaction.date_time }}<br>
         <strong>User: </strong> {{ transaction.username }}<br>
         <strong>Description: </strong> {{ transaction.description}}<br>
@@ -27,7 +27,7 @@
     </div>
 
     <h5>Are you sure?</h5>
-    <div style="margin-left: 2em;">
+    <div>
         <form action="." method="POST">
             <input type="hidden" name="transaction_id" value="{{ transaction.transaction_id }}" />
             <input type="hidden" name="username" value="{{ transaction.username }}" />

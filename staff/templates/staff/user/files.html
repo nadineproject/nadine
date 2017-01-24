@@ -11,7 +11,7 @@
 <h4>Files for <a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a>:</h4>
 
 {% if messages %}
-<div class="messages">
+<div class='page-message'>
 	{% for message in messages %}
 		<div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
 	{% endfor %}
@@ -22,7 +22,7 @@
 	<table>
 		<tr>
 			<th>Uploaded</th>
-			<th style="text-align:right;">File Name</th>
+			<th class='right'>File Name</th>
 			<th>Content Type</th>
 			<th>Size</th>
 			<th>Uploaded By</th>
@@ -31,7 +31,7 @@
 		{% for f in files %}
 			<tr class="{% cycle 'row-even' 'row-odd' %}">
 				<td nowrap>{{ f.uploadTS }}</td>
-				<td style="text-align:right;"><a href="{% get_media_prefix %}{{ f.file.name }}">{{ f.name }}</a></td>
+				<td class='right'><a href="{% get_media_prefix %}{{ f.file.name }}">{{ f.name }}</a></td>
 				<td>{{ f.content_type }}</td>
 				<td>{{ f.file.size | filesizeformat }}</td>
 				<td>{{ f.uploaded_by }}</td>
@@ -48,7 +48,6 @@
 {% endif %}
 
 
-
 <h5>Upload File</h5>
 <form role="form" method="POST" enctype="multipart/form-data" action=".">
 	<input type="hidden" name="user" value="{{ user.username }}"/>
@@ -58,8 +57,8 @@
 			<option value="{{dt_val}}">{{dt_desc}}</option>
 		{% endfor %}
 	</select>
-	<span class="btn btn-default btn-file"><input name="file" type="file"></span>
-	<button class="btn btn-primary" type="submit">Upload</button>
+	<span class="btn-file"><input name="file" type="file"></span>
+	<button class="btn-primary" type="submit">Upload</button>
 	{% csrf_token %}
 </form>
 {% endblock %}

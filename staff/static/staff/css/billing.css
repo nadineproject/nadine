@@ -1,0 +1,117 @@
+.amount {
+  text-align:right;
+}
+
+.error {
+  text-align: center;
+  font-size: 150%;
+  color: red;
+}
+
+.bill-deets {
+	width: 300px;
+	display: inline-block;
+}
+
+.bl-failure {
+  background-color: #F99;
+}
+
+#bill-list li span {
+  color: black;
+}
+
+#billing-logs-table th:first-child, #billing-logs-table td:first-child { width: 40%; }
+
+#content table {
+  width: 100%;
+}
+
+#content table td:last-child {
+  text-align: center;
+}
+
+#id_amount {
+	width: 40% !important;
+	vertical-align: baseline;
+	padding-left: 3%;
+}
+
+#set_paid {
+	margin-left: 5%;
+}
+
+#bill-list li {
+  margin-bottom: 20px;
+}
+
+#bill-list h4 {
+  font-weight: normal;
+}
+
+.authorized {
+  color: green;
+}
+
+.open-bill {
+  color: red;
+}
+
+.bill-list-fees {
+  margin: 5px 10px;
+  width: 700px;
+}
+
+.bill-list-fees th {
+  width: 100px;
+  text-align: right;
+  font-style: italic;
+  background-color: #FFF;
+  font-weight: normal;
+}
+
+.bill-list-fees td, .bill-list-fees th {
+  border-bottom: 0px;
+}
+
+.pay-bill-form input[type=text] {
+  width: 8em;
+}
+
+.bill-details {
+  margin: 10px 40px 20px 40px;
+}
+
+.bill-detail-toggle {
+  text-decoration: none;
+}
+
+.bill-info {
+  margin-left: 40px;
+}
+
+@media only screen and (max-width: 700px) {
+  #id_amount {
+    width: 20% !important;
+    vertical-align: baseline;
+    padding-left: 1%;
+  }
+}
+
+@media only screen and (max-width: 599px) {
+  .bill-row {
+		margin-bottom: 0;
+	}
+}
+
+@media only screen and (max-width: 450px) {
+  div.bill-deets {
+		margin-left: 0;
+	}
+
+	#id_amount {
+		width: 25% !important;
+		vertical-align: baseline;
+		padding-left: 2%;
+	}
+}
