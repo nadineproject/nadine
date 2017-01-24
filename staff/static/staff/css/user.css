@@ -1,3 +1,5 @@
+/*Styling for the user templates in the Nadine Staff App*/
+
 caption {
   font-weight: bold;
   font-size: 1.4em;
@@ -126,10 +128,6 @@ textarea.bcc-textarea {
   font-style: italic;
   color:red;
   padding-left: 2em;
-}
-
-.emergency_contact strong {
-  border-bottom: 1px solid black;
 }
 
 .epay-link {
