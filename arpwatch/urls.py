@@ -3,7 +3,7 @@ from django.conf.urls import url
 from arpwatch import views
 
 urlpatterns = [
-   url(r'^$', views.index, name='index'),
+   url(r'^$', views.home, name='home'),
    url(r'^import/$', views.import_files, name='import'),
    url(r'^devices/$', views.device_list, name='devices'),
    url(r'^device/(?P<id>[\d]+)/$', views.device, name='device'),

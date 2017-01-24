@@ -4,7 +4,7 @@ from django.conf.urls import include, url
 from staff.views import core
 
 urlpatterns = [
-    url(r'^$', lambda r: redirect('staff:tasks:todo'), name="index"),
+    url(r'^$', lambda r: redirect('staff:tasks:todo'), name="home"),
 
     url(r'^tasks/', include('staff.urls.tasks', namespace="tasks")),
     url(r'^user/', include('staff.urls.user', namespace="user")),

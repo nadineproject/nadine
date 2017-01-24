@@ -15,7 +15,7 @@ from arpwatch import arp
 
 
 @staff_member_required
-def index(request):
+def home(request):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
@@ -31,7 +31,7 @@ def index(request):
             # return HttpResponseRedirect('/success/url/')
     else:
         form = UploadFileForm()
-    return render(request, 'arpwatch/index.html', {'form': form})
+    return render(request, 'arpwatch/home.html', {'form': form})
 
 
 def import_files(request):

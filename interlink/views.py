@@ -10,9 +10,9 @@ from interlink.models import MailingList, IncomingMail
 
 
 @staff_member_required
-def index(request):
+def home(request):
     lists = MailingList.objects.all()
-    return render(request, 'interlink/index.html', {'lists': lists})
+    return render(request, 'interlink/home.html', {'lists': lists})
 
 
 @staff_member_required
