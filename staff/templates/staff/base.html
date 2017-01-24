@@ -21,7 +21,7 @@
 	<script src="{% static 'materialize.min.js' %}"></script>
 
 	{%block sub-head %}{% endblock %}
-	
+
 	{% block pagestyle %}{% endblock %}
 
 	<style>
@@ -34,8 +34,8 @@
 	<nav id="branding">
 		<div class='right nav-wrapper'>
 			{% if request.user.is_authenticated %}
-				<a href="/member">Member</a> |
-				<span style="color:#e1e1e1">Staff</span> |
+				<a href="{% url 'member:home' %}">Member</a> |
+				<a href="{% url 'staff:home' %}" style="color:#e1e1e1">Staff</a> |
 				<a href="/admin">Admin</a> |
 				<a href="/tablet">Tablet</a>
 			{% else %}
@@ -43,7 +43,7 @@
 			{% endif %}
 		</div>
 		<div id='site-id'>
-			<a href="/">{{ site.name}}</a>: <span style="color:#e1e1e1">Nadine Membership Console</span>
+			<a href="/">{{ site.name }}</a>: <span style="color:#e1e1e1">Nadine Membership Console</span>
 		</div>
 	</nav>
 

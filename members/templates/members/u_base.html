@@ -103,7 +103,7 @@
 									<li><a href="{% url 'member:faq' %}">FAQ</a></li>
 									<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown3' href="{% url 'logout' %}">Logout</a>
 										<ul id='dropdown3' class='dropdown-content'>
-											{% if request.user.is_staff %} <li><a href="{% url 'staff:index' %}">Staff</a></li>
+											{% if request.user.is_staff %} <li><a href="{% url 'staff:home' %}">Staff</a></li>
 												<li><a href="{% url 'admin:index' %}">Admin</a></li>
 											{% endif %}
 										</ul>

@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 @login_required
 def index(request):
     if request.user.is_staff:
-        return HttpResponseRedirect(reverse('staff:index'))
+        return HttpResponseRedirect(reverse('staff:home'))
     return HttpResponseRedirect(reverse('member:home'))
 
 
