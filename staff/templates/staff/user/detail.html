@@ -388,8 +388,8 @@ function gotoEmailReset(emailAddress){
         <form action="{% url 'staff:user:deposits' %}" method="POST">
           <input name="username" value="{{ user.username }}" type="hidden" />
           <td><strong>Record New Deposit:</strong></th>
-          <td><input name="amount" /></td>
-          <td><input name="note" /></td>
+          <td><input name="amount" placeholder='Enter Amount Here'/></td>
+          <td><input name="note" placeholder='i.e. Key deposit for two members'/></td>
           <td class='centered'><input name="add_deposit" type="submit" Value="Record Deposit" /></td>
       {% csrf_token %}
     </tr>
@@ -592,7 +592,7 @@ function gotoEmailReset(emailAddress){
                 </select></td>
                 <td><input name="year" size=4/></td>
                 <td class='left'><input id="specialdays" name="description" size="50"/></td>
-                <td class='right'><input type="submit" name="add_special_day" value="Add Special Day"/></td>
+                <td class='left'><input type="submit" name="add_special_day" value="Add Special Day"/></td>
             </tr>
             {% csrf_token %}
         </form>

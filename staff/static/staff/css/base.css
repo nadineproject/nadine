@@ -170,13 +170,14 @@ nav ul { list-style:none; }
 
 
 /*Mobile Nav Stylings*/
-#nav-mobile { margin: 0; padding: 0; list-style-type: none; text-align: left;}
+#nav-mobile { margin: 0; padding: 0; list-style-type: none; text-align: left; box-shadow: none;}
 #nav-mobile li {display: inline;}
 #nav-mobile li a {text-decoration: none; color: #fff; float: left;}
-#nav-mobile li a:hover {color: RGBA(90, 122, 189, 1.00); background-color: RGBA(76, 76, 76, 1.00)}
-.selected#nav-mobile li a {background-color: RGBA(90, 122, 189, 1.00);}
+#nav-mobile li a:hover {color: RGBA(90, 122, 189, 1.00);}
+
+/*Side-nav stylings for menu on mobile devices and small screens*/
 .side-nav {background-color: RGBA(37, 37, 37, 1.00); height: 100%;}
-#mobile li ul li div ul {background-color:RGBA(80, 80, 80, 1.00);}
+#mobile li ul li div ul {background-color:RGBA(76, 76, 76, 1.00);}
 .side-nav a {text-decoration: none; color: #fff; font-size: 1.4em;}
 
 /*Top of content styling*/
