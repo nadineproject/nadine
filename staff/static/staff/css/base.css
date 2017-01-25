@@ -144,25 +144,22 @@ button {  width: auto; overflow: visible; }
     Author:
  */
 
+/*Navbar and Branding styling*/
 #branding { padding: 0; max-height: 40px; line-height: 35px; font-size: 1.2em; color:black; background: #5a7abd;}
 #branding a { color:black;  padding: 0.5em; padding-top: 0;}
 
 #navcontainer { background-color: RGBA(0, 0, 0, .70); font-size: 1.2em; min-width: 100%; display: inline-block;
 }
 
-#footer { font-size: small; color:black; background: #5a7abd; padding: 0.5em; margin-top: 1em}
-#footer a { font-size: small; color:black;}
-
 nav { color: white; margin: 0 auto; box-shadow: none !important;}
 nav:before { position: absolute; top: 2.7em; left: 0; width: 100%; height: 30px; content: ""; z-index: -1;}
 nav a, nav a:active, nav a:visited { display: inline-block; color: white; }
 nav ul { list-style:none; }
 
-
 /*Navbar dropdown stylings*/
 .dropdown-content a {background-color: RGBA(76, 76, 76, 1.00);}
 .dropdown-content a {font-size: 1em;}
-#dropdown4 {min-width: 140px;}
+#dropdown4 {min-width: 130px;}
 #dropdown5 {min-width: 140px;}
 #dropdown1 li a, #dropdown5 li a, #dropdown7 li a, #dropdown8 li a {width: 100%;}
 
@@ -226,6 +223,11 @@ table tr.row-even td { background: #eee; }
 .error-td {color: red;}
 
 #id_start, #id_end {width: 15%; padding-left: 1%;}
+
+
+/*Footer stylings*/
+#footer { font-size: small; color:black; background: #5a7abd; padding: 0.5em; margin-top: 1em}
+#footer a { font-size: small; color:black;}
 
 /*Styling for print*/
 @media print {
