@@ -1,6 +1,6 @@
 <div class='tags'>
   <ul>
-    {% if organizations.tags.all %}
+    {% if organization.tags.all %}
       {% for t in organization.tags.all %}
         <li class='chip'>
           <a class="tag-chip" href="{% url 'member:tag:view' 'organizations' t %}">{{ t }}</a>

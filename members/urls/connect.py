@@ -4,12 +4,12 @@ from django.shortcuts import redirect
 from members.views import connect
 
 urlpatterns = [
-    url(r'^(?P<username>[^/]+)/$', connect.connect, name='connect'),
     url(r'^notifications/$', connect.notifications, name='notifications'),
     url(r'^notifications/add/(?P<username>[^/]+)/$', connect.add_notification, name='add_notification'),
     url(r'^notifications/delete/(?P<username>[^/]+)/$', connect.delete_notification, name='del_notification'),
     url(r'^chat/$', connect.chat, name='chat'),
     url(r'^lists/$', connect.mail, name='email_lists'),
+    url(r'^(?P<username>[^/]+)/$', connect.connect, name='connect'),
     url(r'^mail/(?P<id>\d+)/$', connect.mail_message, name='view_mail'),
     url(r'^slack/(?P<username>[^/]+)/$', connect.slack, name='slack'),
     url(r'^slack_bots/$', connect.slack_bots, name='slack_bot'),

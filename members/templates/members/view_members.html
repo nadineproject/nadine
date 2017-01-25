@@ -38,7 +38,7 @@
 	<div id="tabs-1" class="plan-section">
 		<div style="margin:auto; width:100%; text-align:center;">
 		{% for user in active_members %}
-			{% include "members/user_card_frag.html" %}
+			{% include "members/profile/user_card_frag.html" %}
 		{% endfor %}
 		</div>
 	</div>
@@ -46,7 +46,7 @@
 	<div id="tabs-2" class="plan-section">
 		<div style="margin:auto; width:100%; text-align:center;">
 		{% for user in here_today %}
-			{% include "members/user_card_frag.html" %}
+			{% include "members/profile/user_card_frag.html" %}
 		{% endfor %}
 		</div>
 	</div>
@@ -56,7 +56,7 @@
 			{% if search_results %}
 				<div style="margin:auto; width:100%; text-align:center;">
 				{% for user in search_results %}
-					{% include "members/user_card_frag.html" %}
+					{% include "members/profile/user_card_frag.html" %}
 				{% endfor %}
 				</div>
 			{% else %}
@@ -66,12 +66,12 @@
 	{% elif user.profile.is_manager %}
 		<div id="tabs-4" class="plan-section">
 			{% for user in has_mail %}
-				{% include "members/user_card_frag.html" %}
+				{% include "members/profile/user_card_frag.html" %}
 			{% endfor %}
 		</div>
 		<div id="tabs-5" class="plan-section">
 			{% for user in has_key %}
-				{% include "members/user_card_frag.html" %}
+				{% include "members/profile/user_card_frag.html" %}
 			{% endfor %}
 		</div>
 	{% endif %}

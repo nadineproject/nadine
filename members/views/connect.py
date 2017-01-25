@@ -39,7 +39,7 @@ def connect(request, username):
 @login_required
 def notifications(request):
     notifications = UserNotification.objects.filter(notify_user=request.user, sent_date__isnull=True)
-    return render(request, 'members/notifications.html', {'notifications': notifications})
+    return render(request, 'members/connect/notifications.html', {'notifications': notifications})
 
 
 @login_required
@@ -61,7 +61,7 @@ def delete_notification(request, username):
 @login_required
 def chat(request):
     user = request.user
-    return render(request, 'members/chat.html', {'user': user})
+    return render(request, 'members/connect/chat.html', {'user': user})
 
 
 @login_required
@@ -77,14 +77,14 @@ def mail(request):
                'mailing_list_subscription_form': MailingListSubscriptionForm(),
                'settings': settings
                }
-    return render(request, 'members/mail.html', context)
+    return render(request, 'members/connect/mail.html', context)
 
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def mail_message(request, id):
     message = get_object_or_404(IncomingMail, id=id)
-    return render(request, 'members/mail_message.html', {'message': message, 'settings': settings})
+    return render(request, 'members/connect/mail_message.html', {'message': message, 'settings': settings})
 
 
 @login_required
@@ -106,7 +106,7 @@ def slack(request, username):
                'team_url': settings.SLACK_TEAM_URL,
                'settings': settings
                }
-    return render(request, 'members/slack.html', context)
+    return render(request, 'members/connect/slack.html', context)
 
 
 @csrf_exempt

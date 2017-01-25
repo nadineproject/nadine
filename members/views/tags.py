@@ -41,7 +41,7 @@ def get_tag_data(type):
 def tag_list(request, type):
     tags = get_tag_data(type)
     context = {'type': type, 'tags': tags}
-    return render(request, 'members/tag_list.html', context)
+    return render(request, 'members/tags/tag_list.html', context)
 
 
 @login_required
@@ -49,7 +49,7 @@ def tag_list(request, type):
 def tag_cloud(request, type):
     tags = get_tag_data(type)
     context = {'type': type, 'tags': tags}
-    return render(request, 'members/tag_cloud.html', context)
+    return render(request, 'members/tags/tag_cloud.html', context)
 
 
 @login_required
@@ -62,7 +62,7 @@ def tag_view(request, type, tag):
         context['organizations'] = Organization.objects.with_tag(tag)
     else:
         return Http404()
-    return render(request, 'members/tag_view.html', context)
+    return render(request, 'members/tags/tag_view.html', context)
 
 
 @login_required
