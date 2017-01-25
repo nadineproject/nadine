@@ -1,4 +1,4 @@
-{% extends "members/u_base.html" %}
+{% extends "members/base.html" %}
 
 {% block sub-title %}Events | {% endblock %}
 
@@ -45,7 +45,7 @@
 			<div class="event-form-help-text">{{ form.title.help_text }}</div>
 			</div>
 		</div>
-		
+
 		<div class="form-group">
 			<div class="col-sm-2">
 			{{ form.series.label_tag }}
@@ -78,7 +78,7 @@
 			<div class="event-form-help-text">{{ form.where.help_text }}</div>
 			</div>
 		</div>
-		
+
 		<input id="submit-event" type="submit" class="btn btn-lg" value="Submit Event">
 		{% csrf_token %}
 	</form>
@@ -92,7 +92,7 @@
 <script>
 	$('#id_start').datetimepicker({
 		controlType: 'select'
-	});	
+	});
 	$('#id_end').datetimepicker({
 		controlType: 'select'
 	});
