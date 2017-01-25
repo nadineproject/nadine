@@ -93,6 +93,11 @@ textarea.bcc-textarea {
   min-height: 200px;
 }
 
+#subject-th {
+  text-align: left !important;
+  margin-left: 20%;
+}
+
 .date-input, .mem-input {
 	width: 50%;
 }

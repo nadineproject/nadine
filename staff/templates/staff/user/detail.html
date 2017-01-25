@@ -329,7 +329,7 @@ function gotoEmailReset(emailAddress){
     </div>
     <!-- Billing Profile -->
     <h5>Billing Profile</h5>
-    {% include "members/profile_billing_frag.html" %}
+    {% include "members/profile/profile_billing_frag.html" %}
     <div style="margin-left: 2em; margin-top: .5em;">
       <form method=POST action="{% url 'staff:billing:toggle_bill' user.username %}" onSubmit="return confirm('Are you sure?');">
         <input type="hidden" name="back" value="{{ request.get_full_path }}">
@@ -409,7 +409,10 @@ function gotoEmailReset(emailAddress){
     <div>
         {% if email_logs %}
             <table>
-                <tr><th class='left'>Sent</th><th class='right'>Subject</th></tr>
+                <tr>
+                  <th class='left'>Sent</th>
+                  <th id='subject-th'>Subject</th>
+                </tr>
                 {% for log in email_logs %}
                     <tr {% if not log.success %} style="color:red;" {% endif %}>
                         <td nowrap>{{ log.created }}</td>

@@ -145,6 +145,8 @@ button {  width: auto; overflow: visible; }
  */
 
 /*Navbar and Branding styling*/
+
+/*Branding is the top navbar with site name and navigation to member and admin app*/
 #branding { padding: 0; max-height: 40px; line-height: 35px; font-size: 1.2em; color:black; background: #5a7abd;}
 #branding a { color:black;  padding: 0.5em; padding-top: 0;}
 
@@ -160,6 +162,8 @@ nav ul { list-style:none; }
 .dropdown-content { border-radius: 1px;}
 .dropdown-content a {background-color: RGBA(76, 76, 76, 1.00);}
 .dropdown-content a {font-size: 1.1em !important;}
+
+/*Specific sizing for dropdowns with longer page names*/
 #dropdown4 {min-width: 130px;}
 #dropdown5 {min-width: 140px;}
 #dropdown1 li a, #dropdown5 li a, #dropdown7 li a, #dropdown8 li a {width: 100%;}
@@ -211,11 +215,10 @@ table td { text-align: center; border-bottom: 1px solid #ccc; padding: 0.5em; }
 table tr.row-even td { background: #eee; }
 
 .columns { margin: 1em 0; }
-/*.columns .c1 { float: left; width: 50%; }*/
 .columns .c2 { float: right; width: 50%; }
-/*.columns.date-range .c1 { width: 70%; }*/
 .columns.date-range .c2 { width: 30%;}
 
+/*Repeated style classes for text-align and colors*/
 .row-even { background-color: #EEE; }
 .error { color: red; }
 .inline-form {display: inline;}
@@ -223,6 +226,7 @@ table tr.row-even td { background: #eee; }
 .left {text-align: left !important;}
 .error-td {color: red;}
 
+/*Styling for input for date start and end for form repeated on many pages*/
 #id_start, #id_end {width: 15%; padding-left: 1%;}
 
 
@@ -254,7 +258,6 @@ table tr.row-even td { background: #eee; }
 }
 
 /*Styling for smaller screens/mobile devices*/
-
 @media only screen and (max-width: 992px) {
   .left.hide-on-small-and-down {display: none !important;}
   #branding {padding: 0;}
