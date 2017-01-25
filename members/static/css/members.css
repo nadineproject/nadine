@@ -31,50 +31,9 @@ p {
 	 line-height: 1.6;
 }
 
-.centered {
-	text-align: center;
-}
 
-.btn {
-	background-color: RGBA(79, 134, 135, 1);
-}
 
-.ir {
-	display: block;
-	text-indent: -999em;
-	overflow: hidden;
-	background-repeat: no-repeat;
-}
-
-.hidden {
-	display: none;
-	visibility: hidden;
-}
-
-.visuallyhidden {
-	position: absolute !important;
-	clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
-	clip: rect(1px, 1px, 1px, 1px);
-}
-
-.invisible {
-	visibility: hidden;
-}
-
-/*.clearfix:after  {
-	content: ".";
-	display: block;
-	height: 0;
-	clear: both;
-	visibility: hidden;
-}
-
-.clearfix {
-	zoom: 1;
-}*/
-
-/* Header */
-
+/*Navigation*/
 #main-nav {
 	background-color: RGBA(66, 98, 113, 1);
 	position: fixed;
@@ -116,6 +75,13 @@ p {
 	width: 100%;
 }
 
+#dropdown1 a, #dropdown2 a, #dropdown3 a {
+	color: RGBA(79, 134, 135, 1);
+}
+
+
+
+/*Styling of large image with centered logo on home page*/
 #jumbotron {
 	position: relative;
 	margin: 0;
@@ -130,6 +96,32 @@ p {
 	background-color: RGBA(66, 98, 113, 1);
 }
 
+.logo-img {
+	position: absolute;
+	z-index: 2000;
+	top: 10%;
+	left: 42%;
+	height: 300px;
+  width: 300px;
+	z-index: 2000;
+}
+
+#jumbo-img {
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+#logo {
+	float: left;
+	padding-left: 1%;
+	padding-bottom: 0;
+	margin: 0;
+}
+
+
+/*Side-Nav styling for navigation on mobile devices*/
 .side-nav {
 	background-color: RGBA(80, 80, 80, 1);
 	padding-top: 2%;
@@ -149,16 +141,8 @@ p {
 	background-color: RGBA(80, 80, 80, .6);
 }
 
-.logo-img {
-	position: absolute;
-	z-index: 2000;
-	top: 10%;
-	left: 42%;
-	height: 300px;
-  width: 300px;
-	z-index: 2000;
-}
 
+/*Styling of small logo image on main nav throughout app*/
 .sec-logo {
 	position: fixed;
 	top: 0;
@@ -168,22 +152,11 @@ p {
 	z-index: 2000;
 }
 
-#jumbo-img {
-	width: 100%;
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
-}
 
-#logo {
-	float: left;
-	padding-left: 1%;
-	padding-bottom: 0;
-	margin: 0;
-}
 
-#dropdown1 a, #dropdown2 a, #dropdown3 a {
-	color: RGBA(79, 134, 135, 1);
+/* Body */
+.row.main {
+	margin-bottom: 0;
 }
 
 #content h2 {
@@ -191,9 +164,8 @@ p {
 	text-align: center;
 }
 
-/* Body */
-.row.main {
-	margin-bottom: 0;
+#content a {
+	outline:none;
 }
 
 .messages {
@@ -216,46 +188,205 @@ table td {
 	padding: 0.5em;
 }
 
-.prof-page {
-	background-color: white;
+.centered {
+	text-align: center;
 }
 
-#content a {
-	outline:none;
+.btn {
+	background-color: RGBA(79, 134, 135, 1);
 }
 
+.ir {
+	display: block;
+	text-indent: -999em;
+	overflow: hidden;
+	background-repeat: no-repeat;
+}
+
+.hidden {
+	display: none;
+	visibility: hidden;
+}
+
+.oswald {
+	font-family: 'Oswald', sans-serif;
+	color: RGBA(79, 134, 135, 1);
+}
+
+.bold-blue {
+	color: RGBA(66, 98, 113, 1);
+}
+
+.tooltipped {
+	margin-top: 3%;
+}
+
+.lightbg {
+	margin-top: 5%;
+	margin-bottom: 140px;
+	min-height: 500px;
+	padding-top: 10px;
+	overflow: auto;
+}
+
+
+/*Icon styling*/
+#manage {
+	height: 30px;
+}
+
+#admin {
+	height: 30px;
+}
+
+#locked {
+	height: 30px;
+}
+
+#unlocked {
+	height: 30px;
+}
+
+#edit {
+	height: 25px;
+}
+
+#white-edit {
+	content: url(../img/white_edit.png);
+	height: 30px;
+	padding: 1%;
+}
+
+#Facebook, #Facebook:after {
+	content: url(../img/Facebook.png);
+	height: 40px;
+}
+
+#Twitter, #Twitter:after {
+	content: url(../img/Twitter.png);
+	height: 40px;
+}
+
+#Instagram, #Instagram:after {
+	content: url(../img/Instagram.png);
+	height: 40px;
+}
+
+#Linkedin, #Linkedin:after {
+	content: url(../img/Linkedin.png);
+	height: 40px;
+}
+
+#Github, #Github:after {
+	content: url(../img/Github.png);
+	height: 40px;
+}
+
+#Personal, #Personal:after {
+	content: url(../img/Personal.png);
+	height: 40px;
+}
+
+#Professional, #Professional:after {
+	content: url(../img/Professional.png);
+	height: 40px;
+}
+
+#Blog, #Blog:after {
+	content: url(../img/blog.png);
+	height: 40px;
+}
+
+
+
+/*Tabs styling as used in view members, orgs, and mailing lists*/
+.tabs {
+	color: RGBA(44, 148, 231, 1);
+	width: 50%;
+}
+
+.tabs .tab {
+	text-transform: none;
+}
+
+.tabs .tab a {
+	color: RGBA(44, 148, 231, 1)
+}
+
+.tabs .tab a:hover, .tabs .tab a:focus {
+	color: RGBA(30, 52, 64, 1);
+}
+
+.tabs .indicator {
+	background-color: RGBA(30, 52, 64, 1);
+}
+
+.mem-tabs .indicator {
+	background-color: RGBA(30, 52, 64, 1);
+}
+
+.prof-tabs .indicator {
+	width: 15%;
+	background-color: RGBA(44, 148, 231, 1);
+}
+
+
+
+/*Home content styling*/
 #welcome-p {
 	font-size: 1.2em;
 	text-align: center;
 }
 
-#booking_form {
-	background-color: RGBA(239, 238, 231, 1);
-	padding: 2%;
-	margin-left: 15%;
-	width: 70%;
+.card {
+	text-align: center;
+	background-color: RGBA(96, 131, 157, 1.00);
 }
 
-#booking_form {
-	min-width: 700px;
-}
-
-.booking-box {
-	background-color: RGBA(239, 238, 231, 1);
-	border-radius: 2px;
-	padding: 2%;
-	min-width: 800px;
-}
-
-textarea#id_bio {
-	background-color: white;
-	height: 100px;
-	width: 500px;
-	border: none;
-}
-
-.public_bool {
+#chat_icon {
+	height: 25%;
 	width: 25%;
+}
+
+#group_icon {
+	height: 50%;
+	width: 50%;
+}
+
+.card a {
+	color: RGBA(96, 131, 157, 1.00);
+}
+
+.event-card {
+	width: 330px;
+}
+
+
+
+/*Login and Registration Page Styling*/
+#registration input#id_first_name, #registration input#id_last_name {
+	width: 300px;
+}
+
+#registration #id_email {
+	width: 400px;
+}
+
+#registration .pwd-input {
+	width: 300px;
+}
+
+#login-btn {
+	margin-left: 20%;
+	margin-right: 10%;
+	width: 35%;
+	background-color: RGBA(79, 134, 135, 1);
+}
+
+#loginonly-btn {
+	margin-left: 30%;
+	width: 40%;
+	background-color: RGBA(79, 134, 135, 1);
 }
 
 #reg_box, #login_box {
@@ -308,26 +439,12 @@ div#login_box.col.s6 {
 
 #login_form input {
 	width: 90%;
-}
-
-#booking_form td {
-	border-bottom: 0;
-}
-
-#booking_form h4 {
-	text-align: center;
-}
-
-input#id_photo {
-	background-color: RGBA(255, 255, 255, 0);
-}
-
-#login_form input{
 	padding-left: 2%;
 	margin-right: 2%;
-
 }
 
+
+/*Button styling*/
 .sub-btn, #confirm-btn, .reg-btn  {
 	background: RGBA(79, 134, 135, 1);
 	margin-top: 2%;
@@ -342,11 +459,62 @@ input#id_photo {
 	margin-left: 40%;
 }
 
+#email-btn {
+	width: 50%;
+}
+
 .reg-btn {
 	margin-left: 40%;
 }
 
+.tag-btn {
+	background-color: RGBA(79, 134, 135, 1);
+}
+
+.url-btn {
+	font-size: .7em;
+}
+
+.modal-btn {
+	margin-top: 2%;
+	margin-left: 45%;
+	background-color: RGBA(79, 134, 135, 1);
+}
+
+.org-btn {
+	margin-left: 37%;
+	margin-right: 5%;
+	margin-top: 2%;
+}
+
+.org-form .cancel-btn {
+	margin-top: 2%;
+}
+
+#org-search-form .search-btn {
+	padding: 0;
+	font-size: .9em;
+}
+
+.pic-btn {
+	background-color: RGBA(79, 134, 135, 1);
+	margin-left: 40%;
+	margin-top: 5%;
+}
+
+.edit-btn {
+	background-color: RGBA(79, 134, 135, 1);
+	height: 40px;
+}
+
+
+
 /*Edit Profile Page*/
+/*TODO Is this even being used?*/
+.prof-page {
+	background-color: white;
+}
+
 #profile_form, #registration_form {
 	margin-left: 15%;
 	min-width: 900px;
@@ -423,10 +591,6 @@ td.pf-input {
 	height: 90%;
 }
 
-#email-btn {
-	width: 50%;
-}
-
 .pf-input input {
 	width: 200px;
 }
@@ -451,10 +615,64 @@ input#id_phone, input#id_phone2 {
 	width: 70%;
 }
 
+input#id_city {
+	width: 85%;
+}
+
+#state-select{
+	vertical-align: text-top;
+	padding: 0;
+}
+
+select#id_state {
+	width: 85%;
+	font-size: .9em;
+	box-sizing: border-box;
+}
+
+textarea#id_bio {
+	background-color: white;
+	height: 100px;
+	/*width: 500px;*/
+	border: none;
+	width: 100%;
+}
+
+#email-input {
+	width: 50%;
+}
+
+#email-table input {
+	width:75%;
+}
+
+.verify-email, #add-email {
+	background: RGBA(63, 146, 161, 1);
+}
+
+input#id_photo {
+	background-color: RGBA(255, 255, 255, 0);
+}
+
+input#id_address1, input#id_address2 {
+	width: 90%;
+}
+
+input#id_url_twitter, input#id_url_facebook, input#id_url_github, input#id_url_linkedin,input#id_url_professional, input#id_url_personal {
+	width: 400px;
+}
+
+input#id_emergency_phone {
+	width: 200px;
+}
+
 #passInput-error {
 	width: 50%;
 }
 
+
+
+/*URL Link-formset styling for orgs and members*/
 td.pf-input.url-type {
 	padding-top: 0;
 	vertical-align: text-top;
@@ -494,10 +712,6 @@ div.link-formset.row.dynamic-form {
 	width: 100%;
 }
 
-.url-btn {
-	font-size: .7em;
-}
-
 .add-row {
 	margin-left: 4%;
 	margin-bottom: 10%;
@@ -508,49 +722,8 @@ div.link-formset.row.dynamic-form {
 	margin-left: 5%;
 }
 
-input#id_city {
-	width: 85%;
-}
 
-#state-select{
-	vertical-align: text-top;
-	padding: 0;
-}
-
-select#id_state {
-	width: 85%;
-	font-size: .9em;
-	box-sizing: border-box;
-}
-
-#email-table input {
-	width:75%;
-}
-
-input#id_address1, input#id_address2 {
-	width: 90%;
-}
-
-input#id_url_twitter, input#id_url_facebook, input#id_url_github, input#id_url_linkedin,input#id_url_professional, input#id_url_personal {
-	width: 400px;
-}
-
-input#id_emergency_phone {
-	width: 200px;
-}
-
-textarea#id_bio {
-	width: 100%;
-}
-
-.verify-email, #add-email {
-	background: RGBA(63, 146, 161, 1);
-}
-
-#email-input {
-	width: 50%;
-}
-
+/*Chip and tag creation styling*/
 .tags {
 	margin-top: 5%;
 	margin-left: 10%;
@@ -566,36 +739,8 @@ textarea#id_bio {
 	background-color: RGBA(228, 228, 228, 1);
 }
 
-.tag-btn {
-	background-color: RGBA(79, 134, 135, 1);
-}
 
-/*Registration form styling*/
-#registration input#id_first_name, #registration input#id_last_name {
-	width: 300px;
-}
-
-#registration #id_email {
-	width: 400px;
-}
-
-#registration .pwd-input {
-	width: 300px;
-}
-
-#login-btn {
-	margin-left: 20%;
-	margin-right: 10%;
-	width: 35%;
-	background-color: RGBA(79, 134, 135, 1);
-}
-
-#loginonly-btn {
-	margin-left: 30%;
-	width: 40%;
-	background-color: RGBA(79, 134, 135, 1);
-}
-
+/*Search form styling as seen on view_members and orgs*/
 #site-search-form input {
 	width: 60%;
 }
@@ -607,90 +752,9 @@ textarea#id_bio {
 	margin-left: 5%;
 }
 
-#event_cal {
-	margin-left: 10%;
-}
 
-.card {
-	text-align: center;
-	background-color: RGBA(96, 131, 157, 1.00);
-}
 
-#chat_icon {
-	height: 25%;
-	width: 25%;
-}
-
-#group_icon {
-	height: 50%;
-	width: 50%;
-}
-
-.card a {
-	color: RGBA(96, 131, 157, 1.00);
-}
-
-.event-card {
-	width: 330px;
-}
-
-.tabs {
-	color: RGBA(44, 148, 231, 1);
-	width: 50%;
-}
-
-.tabs .tab {
-	text-transform: none;
-}
-
-.tabs .tab a {
-	color: RGBA(44, 148, 231, 1)
-}
-
-.tabs .tab a:hover, .tabs .tab a:focus {
-	color: RGBA(30, 52, 64, 1);
-}
-
-.tabs .indicator {
-	background-color: RGBA(30, 52, 64, 1);
-}
-
-.mem-tabs .indicator {
-	background-color: RGBA(30, 52, 64, 1);
-}
-
-.prof-tabs .indicator {
-	width: 15%;
-	background-color: RGBA(44, 148, 231, 1);
-}
-
-.triptic {
-	text-align: justify;
-}
-
-.triptic > div {
-	width: 33%;
-	display: inline-block;
-	vertical-align: top;
-	/* IE fix. */
-	display: inline;
-	zoom: 1;
-}
-
-.triptic:after {
-	content: "";
-	width: 100%;
-	display: inline-block;
-}
-
-.lightbg {
-	margin-top: 5%;
-	margin-bottom: 140px;
-	min-height: 500px;
-	padding-top: 10px;
-	overflow: auto;
-}
-
+/*Org List and Organization Card stylgin*/
 .org-group {
 	white-space: nowrap;
 }
@@ -759,10 +823,9 @@ a.name-a {
 	white-space: normal;
 }
 
-#org-search-form .search-btn {
-	padding: 0;
-	font-size: .9em;
-}
+
+
+
 
 /*Organization view*/
 .photo-div {
@@ -813,6 +876,8 @@ h5.org-members {
 	margin-bottom: 2%;
 }
 
+
+
 /*Org edit page*/
 .org-form {
 	background: RGBA(239, 238, 231, 1);
@@ -856,16 +921,9 @@ h5.org-members {
 	padding: 1%;
 }
 
-.org-btn {
-	margin-left: 37%;
-	margin-right: 5%;
-	margin-top: 2%;
-}
 
-.org-form .cancel-btn {
-	margin-top: 2%;
-}
 
+/*View Members and Member Card Styling*/
 .user-card {
 	width: 190px;
 	border: solid 3px #EEE;
@@ -916,15 +974,14 @@ a.photo.star-img  {
   height: auto;
 }
 
-.oswald {
-	font-family: 'Oswald', sans-serif;
-	color: RGBA(79, 134, 135, 1);
-}
 
+/*TODO Is this being used?*/
 .frag {
 	text-spacing: 1px;
 }
 
+
+/*Profile Page Left Profile Box styling*/
 .tags-box {
 	margin-top: 5%;
 	margin-bottom: 10%;
@@ -935,6 +992,149 @@ a.photo.star-img  {
 }
 
 
+
+/*Modal styling*/
+/*Used for creation of event and for editing org and member photos*/
+/*.picModal for photos, eModal for events*/
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0,0,0);
+  background-color: rgba(0,0,0,0.4);
+  max-height: 100%;
+}
+
+.modal-content, .picModal-content {
+  position: relative;
+  background-color: #fefefe;
+  margin: auto;
+	margin-top: 10%;
+  padding: 0;
+  border: 1px solid #888;
+	border-radius: 3px;
+	height: 50%;
+  width: 50%;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+  -webkit-animation-name: animatetop;
+  -webkit-animation-duration: 0.4s;
+  animation-name: animatetop;
+  animation-duration: 0.4s
+}
+
+.picModal-content {
+	width: 60%;
+	min-width: 600px;
+	min-height: 550px;
+}
+
+.eModal-content {
+	position: relative;
+  background-color: #fefefe;
+  margin: auto;
+	margin-top: 5%;
+  padding: 0;
+  border: 1px solid #888;
+	border-radius: 4px;
+	height: 85%;
+  width: 50%;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+  -webkit-animation-name: animatetop;
+  -webkit-animation-duration: 0.4s;
+  animation-name: animatetop;
+  animation-duration: 0.4s;
+}
+
+.modal .modal-content {
+	padding:0;
+}
+
+.modal-content p {
+	margin: 0;
+}
+
+.modal-content .modal-body{
+	padding-top: 5%;
+	background-color: RGBA(229, 238, 215, .5);
+	height: 100%;
+	padding: 3%;
+}
+
+.modal-body tr {
+	margin: 4%;
+}
+
+#host-img {
+	height: 120px;
+	width: 100px;
+	border-radius: 100px;
+}
+
+.eModal-content .eModal-body {
+	padding-top: 5%;
+	background-color: RGBA(229, 238, 215, .5);
+	height: 100%;
+	padding: 5%;
+	font-size: 1.1em;
+}
+
+.eModal-body input, .modal-body span {
+	background: white;
+	border-bottom: none;
+}
+
+.modal-body span {
+	padding: 1% 15%;
+}
+
+.modal-body td {
+	font-size: 1.1em;
+}
+
+.eModal-body td, .modal-body td {
+	border: none;
+}
+
+.eModal-body #event-desc{
+	padding: 2% 0%;
+}
+
+.modal-content .modal-body p {
+	font-size: 1.2em;
+}
+
+#pic_target h3 {
+		margin-top: 5%;
+}
+
+#image-preview.user-img {
+	min-width: 300px;
+	height: 300px;
+	margin-left: 20%;
+}
+
+#img-cropper-wrapper {
+	margin-bottom: 5%;
+}
+
+.pic-upload {
+	width: 180px;
+}
+
+.picModal-content h4 {
+	text-align: center;
+	padding-top: 2%;
+}
+
+
+
+/*Styling for Org Logo and Member Photo*/
 img#mem-photo {
 	margin-top: 10%;
 }
@@ -974,10 +1174,6 @@ img#mem-photo {
 h2#prof-name {
 	text-align: left;
 	font-size: 2.4em;
-}
-
-.bold-blue {
-	color: RGBA(66, 98, 113, 1);
 }
 
 .editable-photo {
@@ -1109,75 +1305,8 @@ img.org-photo#mem-photo {
   height: auto;
 }
 
-#edit {
-	height: 25px;
-}
 
-#white-edit {
-	content: url(../img/white_edit.png);
-	height: 30px;
-	padding: 1%;
-}
 
-.tooltipped {
-	margin-top: 3%;
-}
-
-#manage {
-	height: 30px;
-}
-
-#admin {
-	height: 30px;
-}
-
-#locked {
-	height: 30px;
-}
-
-#unlocked {
-	height: 30px;
-}
-
-#Facebook, #Facebook:after {
-	content: url(../img/Facebook.png);
-	height: 40px;
-}
-
-#Twitter, #Twitter:after {
-	content: url(../img/Twitter.png);
-	height: 40px;
-}
-
-#Instagram, #Instagram:after {
-	content: url(../img/Instagram.png);
-	height: 40px;
-}
-
-#Linkedin, #Linkedin:after {
-	content: url(../img/Linkedin.png);
-	height: 40px;
-}
-
-#Github, #Github:after {
-	content: url(../img/Github.png);
-	height: 40px;
-}
-
-#Personal, #Personal:after {
-	content: url(../img/Personal.png);
-	height: 40px;
-}
-
-#Professional, #Professional:after {
-	content: url(../img/Professional.png);
-	height: 40px;
-}
-
-#Blog, #Blog:after {
-	content: url(../img/blog.png);
-	height: 40px;
-}
 
 .profile-links {
 	margin-top: 5%;
@@ -1188,15 +1317,6 @@ img.org-photo#mem-photo {
 .url-links {
 	display: inline-block;
 	padding-right: 5%;
-}
-
-.pic-upload {
-	width: 180px;
-}
-
-.picModal-content h4 {
-	text-align: center;
-	padding-top: 2%;
 }
 
 #upload-preview, #org-preview {
@@ -1212,17 +1332,9 @@ img.org-photo#mem-photo {
 	content: url(../img/blank_person.png);
 }
 
-.pic-btn {
-	background-color: RGBA(79, 134, 135, 1);
-	margin-left: 40%;
-	margin-top: 5%;
-}
 
-.edit-btn {
-	background-color: RGBA(79, 134, 135, 1);
-	height: 40px;
-}
 
+/*Member and Org profile layout*/
 .basic-info, .left-profile, .org-info, .org-left-profile {
 	background-color: white;
 	margin-bottom: 2%;
@@ -1238,6 +1350,9 @@ img.org-photo#mem-photo {
 	max-width: 450px;
 }
 
+
+
+/*Styling for collapsible sections of member profile*/
 .collapsible-header {
 	font-weight: bold;
 }
@@ -1265,6 +1380,8 @@ img.org-photo#mem-photo {
 	margin-bottom: 5%;
 }
 
+
+
 dt, dd {
 	display: inline-block;
 	margin: 0.25em;
@@ -1282,7 +1399,39 @@ dd:after {
 dl dd:last-child:after {
 	content: "";
 }
-/*booking_create styling*/
+
+
+
+/*Event and Room Booking Styling*/
+#booking_form {
+	background-color: RGBA(239, 238, 231, 1);
+	padding: 2%;
+	margin-left: 15%;
+	width: 70%;
+	min-width: 700px;
+}
+
+#booking_form td {
+	border-bottom: 0;
+}
+
+#booking_form h4 {
+	text-align: center;
+}
+
+.booking-box {
+	background-color: RGBA(239, 238, 231, 1);
+	border-radius: 2px;
+	padding: 2%;
+	min-width: 800px;
+}
+
+.public_bool {
+	width: 25%;
+}
+
+
+/*Booking create styling*/
 #thumbnail-box {
 	padding-top: 4%;
 	height: 130px;
@@ -1376,6 +1525,8 @@ select#floor {
 	margin-left: 15%;
 }
 
+
+/*Booking bar from create and confirm booking*/
 .cal-table, .booking-bar {
 	margin-top: 10px;
 }
@@ -1475,6 +1626,9 @@ th.rotate span {
 	border-radius: 0px 4px 4px 0px;
 }
 
+
+
+/*Directions buttons for the booking bar*/
 #start-forw, #start-back, #end-forw, #end-back {
 	border-radius: 100px;
 	width: 30px;
@@ -1503,6 +1657,8 @@ th.rotate span {
 	color: red;
 }
 
+
+/*Styling for room info slider in booking create page*/
 .slider {
 	overflow-y: hidden;
 	max-height: 300px; /* approximate max height */
@@ -1519,24 +1675,21 @@ th.rotate span {
 	padding-top: 0;
 }
 
-div#time-range {
-	max-height: 60px;
-}
 
-div#slider-range {
-	/*position: absolute;*/
-	max-height: 50px;
-	min-width: 50px;
-	margin-bottom: 5%;
-}
 
-/*calendar and making event styling*/
+/*Calendar Page Styling*/
+
+/*TODO Check if this is being used*/
+#event_cal {
+	margin-left: 10%;
+}
 
 #calendar {
 	max-width: 900px;
 	margin-top: 2%;
 }
 
+/*TODO Is this being used?*/
 #make-event {
 	margin-top: 5%;
 	margin-left: 2%;
@@ -1546,138 +1699,6 @@ div#slider-range {
 	font-size: 1em;
 	line-height: 100%;
 	overflow: auto;
-}
-
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgb(0,0,0);
-  background-color: rgba(0,0,0,0.4);
-  max-height: 100%;
-}
-
-.modal-content, .picModal-content {
-  position: relative;
-  background-color: #fefefe;
-  margin: auto;
-	margin-top: 10%;
-  padding: 0;
-  border: 1px solid #888;
-	border-radius: 3px;
-	height: 50%;
-  width: 50%;
-  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
-  -webkit-animation-name: animatetop;
-  -webkit-animation-duration: 0.4s;
-  animation-name: animatetop;
-  animation-duration: 0.4s
-}
-
-.picModal-content {
-	width: 60%;
-	min-width: 600px;
-	min-height: 550px;
-}
-
-.eModal-content {
-	position: relative;
-  background-color: #fefefe;
-  margin: auto;
-	margin-top: 5%;
-  padding: 0;
-  border: 1px solid #888;
-	border-radius: 4px;
-	height: 85%;
-  width: 50%;
-  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
-  -webkit-animation-name: animatetop;
-  -webkit-animation-duration: 0.4s;
-  animation-name: animatetop;
-  animation-duration: 0.4s;
-}
-
-.modal .modal-content {
-	padding:0;
-}
-
-.modal-content p {
-	margin: 0;
-}
-
-.modal-content .modal-body{
-	padding-top: 5%;
-	background-color: RGBA(229, 238, 215, .5);
-	height: 100%;
-	padding: 3%;
-}
-
-.modal-body tr {
-	margin: 4%;
-}
-
-#host-img {
-	height: 120px;
-	width: 100px;
-	border-radius: 100px;
-}
-
-.eModal-content .eModal-body {
-	padding-top: 5%;
-	background-color: RGBA(229, 238, 215, .5);
-	height: 100%;
-	padding: 5%;
-	font-size: 1.1em;
-}
-
-.eModal-body input, .modal-body span {
-	background: white;
-	border-bottom: none;
-}
-
-.modal-body span {
-	padding: 1% 15%;
-}
-
-.modal-body td {
-	font-size: 1.1em;
-}
-
-.eModal-body td, .modal-body td {
-	border: none;
-}
-
-.eModal-body #event-desc{
-	padding: 2% 0%;
-}
-
-.modal-content .modal-body p {
-	font-size: 1.2em;
-}
-
-#pic_target h3 {
-		margin-top: 5%;
-}
-
-#image-preview.user-img {
-	min-width: 300px;
-	height: 300px;
-	margin-left: 20%;
-}
-
-#img-cropper-wrapper {
-	margin-bottom: 5%;
-}
-
-.modal-btn {
-	margin-top: 2%;
-	margin-left: 45%;
-	background-color: RGBA(79, 134, 135, 1);
 }
 
 #event-btn-row {
@@ -1703,6 +1724,8 @@ div#slider-range {
 	font-size: 1.3em;
 }
 
+
+/*FullCalendar element Styling*/
 .fc-center h2 {
 	font-size: 1.875em;
 	font-family: 'Oswald', sans-serif;
@@ -1725,6 +1748,9 @@ div.ui-timepicker-container.ui-timepicker-standard {
 	border: none;
 }
 
+
+
+/*Styling for not_active page*/
 .letter {
 	text-align: justify;
 	text-justify: inter-word;
@@ -1735,10 +1761,14 @@ div.ui-timepicker-container.ui-timepicker-standard {
 	font-size: 1.3em;
 }
 
-/*Tav_View*/
+
+
+/*Tag_View Page Styling*/
 .tag-view td {
 	padding-bottom: 2%;
 }
+
+
 
 /*Mail Page*/
 .mail-content {
@@ -1750,6 +1780,7 @@ div.ui-timepicker-container.ui-timepicker-standard {
 }
 
 
+
 /*Mail Message*/
 #label {
 	font-size:1.2em;
@@ -1759,8 +1790,9 @@ div.ui-timepicker-container.ui-timepicker-standard {
 	font-size:1.2;
 }
 
-/* Footer */
 
+
+/* Footer */
 footer.home-footer {
 	padding: 1px;
 	padding-top: 10px;
@@ -1858,8 +1890,9 @@ footer.sticky-footer {
 	text-indent: -9999px;
 }
 
-/*Media Queries*/
 
+
+/*Media Queries*/
 @media only screen and (max-width: 1500px) {
 	#profile_form, #registration_form {
 		margin-left: 7%;
