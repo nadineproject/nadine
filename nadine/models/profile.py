@@ -602,6 +602,8 @@ class UserProfile(models.Model):
     def __str__(self): return '%s %s' % (smart_str(self.user.first_name), smart_str(self.user.last_name))
 
     def auto_bill_enabled(self):
+        if not hasattr(settings, 'USA_EPAY_KEY'):
+            return None
         api = PaymentAPI()
         return api.auto_bill_enabled(self.user.username)
 

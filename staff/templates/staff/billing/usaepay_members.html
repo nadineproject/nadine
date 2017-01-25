@@ -1,7 +1,6 @@
-{% extends "staff/base.html" %}
+{% extends "staff/billing/base.html" %}
 
 {% block style %}
-nav #billing-tab { background: #FBD850; color: black; }
 #content td { white-space:nowrap; }
 {% endblock %}
 
@@ -12,7 +11,7 @@ nav #billing-tab { background: #FBD850; color: black; }
 <h4>Members with Auto-Billing Enabled</h4>
 
 {% if error %}
-	<div style="text-align:center; font-size:150%; color:red">{{ error }}</div>
+	<div class='error'>{{ error }}</div>
 {% endif %}
 
 <table>

@@ -1,6 +1,11 @@
 {% extends "staff/base.html" %}
+{% load static %}
 
 {% block sub-title %}Logs{% endblock %}
+
+{% block pagestyle %}
+	<link rel='stylesheet' href="{% static 'staff/css/arpwatch.css' %}" />
+{% endblock %}
 
 {% block submenu %}
 	<a href="{% url 'arp:devices_today' %}">Device Logs</a> |

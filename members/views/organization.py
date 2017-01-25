@@ -41,7 +41,7 @@ def org_list(request):
                'search_form': search_form,
                'search_terms': search_terms,
                }
-    return render(request, 'members/org_list.html', context)
+    return render(request, 'members/organization/org_list.html', context)
 
 
 @login_required
@@ -65,7 +65,7 @@ def org_view(request, org_id):
                'counts': counts,
                'show_all': show_all,
                }
-    return render(request, 'members/org_view.html', context)
+    return render(request, 'members/organization/org_view.html', context)
 
 
 @login_required
@@ -139,7 +139,7 @@ def org_edit(request, org_id):
                'org_link_formset': org_link_formset,
                'page_message': page_message
                }
-    return render(request, 'members/org_edit.html', context)
+    return render(request, 'members/organization/org_edit.html', context)
 
 
 @login_required
@@ -196,7 +196,7 @@ def org_member(request, org_id):
                'form': form,
                'action': action,
                }
-    return render(request, 'members/org_member.html', context)
+    return render(request, 'members/organization/org_member.html', context)
 
 
 @login_required
@@ -217,7 +217,7 @@ def org_edit_photo(request, org_id):
         form = OrganizationForm(request.POST, request.FILES)
 
     context = {'organization': org}
-    return render(request, 'members/org_edit_photo.html', context)
+    return render(request, 'members/organization/org_edit_photo.html', context)
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

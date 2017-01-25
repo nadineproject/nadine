@@ -1,33 +1,25 @@
 {% extends "staff/user/base.html" %}
+{% load integrated_systems %}
+{% load_integrations as integrations %}
 
 {% block sub-title %}User Reports{% endblock %}
-
-{% block style%}
-	table #user_report {
-		padding: 2em;
-	}
-
-	table th.bottom_line {
-		border-bottom:1px solid;
-	}
-{% endblock %}
 
 {% block content %}
 
 <h4>User Reports</h4>
 
-<form action="." method="POST" style="margin:1em 20em 1em 1em;">
-	<div style="padding:.5em;">
+<form class='user-report' action="." method="POST">
+	<div>
 		<span><strong>Report: </strong>{{ form.report }}</span>
 	</div>
-	<div style="padding:.5em;">
+	<div>
 		<span><strong>Start: </strong>{{ form.start_date }}</span>
-		<span style="padding:.5em;"><strong>End: </strong>{{ form.end_date }}</span>
+		<span><strong>End: </strong>{{ form.end_date }}</span>
 	</div>
-	<div style="padding:.5em;">
+	<div>
 		<span><strong>Active Only: </strong>{{ form.active_only }}</span>
-		<span style="padding:.5em;"><strong>Order By: </strong>{{ form.order_by }}</span>
-		<input type="submit" value="View Report" style="margin-left:1em;" />
+		<span><strong>Order By: </strong>{{ form.order_by }}</span>
+		<input id='report-btn' type="submit" value="View Report" />
 	</div>
 	{% csrf_token %}
 </form>
@@ -44,7 +36,7 @@
 		<th>Name</th>
 		<th>Joined</th>
 		<th>Billing</th>
-		<th>Auto-Bill</th>
+		<th>{% if integrations.usaepay %} Auto-Bill {% endif %} </th>
 		<th>Plan</th>
 		<th>Start</th>
 		<th>End</th>
@@ -53,17 +45,21 @@
 
 	{% for user in users %}
 		<tr class="{% cycle 'row-even' 'row-odd' %}">
-			<td nowrap style="text-align:left;"><a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a></td>
+			<td nowrap class='left'><a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a></td>
 			<td>{{ user.date_joined|date:"M d, Y" }}</td>
 			{% if user.profile.has_valid_billing %}
 				<td>Valid</td>
 			{% else %}
-				<td style="color: red;">Invalid</td>
+				<td class='error-td'>Invalid</td>
 			{% endif %}
-			{% if user.profile.auto_bill_enabled %}
-				<td>On</td>
+			{% if integrations.usaepay %}
+				{% if user.profile.auto_bill_enabled %}
+					<td>On</td>
+				{% else %}
+					<td class='error-td'>Off</td>
+				{% endif %}
 			{% else %}
-				<td style="color: red;">Off</td>
+				<td></td>
 			{% endif %}
 			<td>{{ user.profile.last_membership.membership_plan }}</td>
 			<td>{{ user.profile.last_membership.start_date|date:"M d, Y" }}</td>

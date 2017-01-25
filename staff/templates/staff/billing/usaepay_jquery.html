@@ -1,7 +1,6 @@
-{% extends "staff/base.html" %}
-
+{% extends "staff/billing/base.html" %}
+<!-- TODO review this page for CSS redesign -->
 {% block style %}
-nav #members-tab { background: #FBD850; color: black; }
 #content td { white-space:nowrap; }
 {% endblock %}
 
@@ -12,7 +11,7 @@ nav #members-tab { background: #FBD850; color: black; }
 <h4>USAePay Customers - {{ username }}</h4>
 
 {% if error %}
-	<div style="text-align:center; font-size:150%; color:red">{{ error }}</div>
+	<div class='error'>{{ error }}</div>
 {% endif %}
 
 <table>
@@ -30,7 +29,7 @@ nav #members-tab { background: #FBD850; color: black; }
 			<td><a href="https://secure.usaepay.com/console/billing_edit?id={{ cust.getCustNum }}" target="new">{{ cust.getCustNum }}</a></td>
 			{% if cust.isEnabled %}
 			<td>{{ cust.getNext | slice:":10"}}</td>
-				<td><span style="color:green; font-weight:bold;">Enabled</span></td>
+				<td><strong class='authorized'>Enabled</strong></td>
 			{% else %}
 				<td colspan=2></td>
 			{% endif %}

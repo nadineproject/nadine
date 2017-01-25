@@ -1,0 +1,25 @@
+/*Styling for Arpwatch/Logs for Nadine Staff App*/
+
+#logs-length {
+	float:right;
+}
+
+.responsive-header {
+	display: none;
+}
+
+@media only screen and (max-width: 550px) {
+  .outgoing-table th {
+		text-align: right !important;
+	}
+
+	.outgoing-table tr:first-child {
+		padding-right: 0;
+	}
+}
+
+@media only screen and (max-width: 480px) {
+	#logs-length {
+		display: none;
+	}
+}

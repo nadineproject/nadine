@@ -1,11 +1,6 @@
-{% extends "staff/base.html" %}
+{% extends "staff/tasks/base.html" %}
 
 {% block sub-title %}TODO{% endblock %}
-
-{% block style%}
-nav #todo-tab { background: #FBD850; color: black; }
-{% endblock %}
-
 {% block content %}
 
 <h4>TODO: {{ description }}</h4>
@@ -22,16 +17,8 @@ nav #todo-tab { background: #FBD850; color: black; }
 	{% if alerts %}
 		{% include "staff/tasks/detail_table.html" %}
 	{% else %}
-	<p style="font-size: 1.4em; font-weight: bold;">Nothing to do!  Yay!</p>
+	<p class='empty-msg'>Nothing to do!  Yay!</p>
 	{% endif %}
 {% endwith %}
 
-{% endblock %}
-
-{% block navcss %}
-  <style>
-    #todo-tab {
-      background-color: RGBA(90, 122, 189, 1.00) !important;
-    }
-  </style>
 {% endblock %}

@@ -9,9 +9,7 @@
 		$(function () {
 			jQuery('#tabs').tabs();
 		});
-	</script>
 
-	<script>
 	function subscribe(mlID){
 		$('#id_subscribe').val(true);
 		$('#id_mailing_list_id').val(mlID);
@@ -27,7 +25,7 @@
 {% endblock %}
 
 {% block content %}
-<h3 class='oswald' style='text-align:center;'>Mailing lists</h3>
+<h3 class='oswald centered'>Mailing lists</h3>
 
 <div id="tabs">
 
@@ -45,7 +43,7 @@
 			{{ mailing_list.name }}
 			{% if not mailing_list.moderator_controlled %} - {{ mailing_list.email_address}}
     			{% if is_subscriber %}
-    			(<a target="_self" href="." onclick="unsubscribe({{mailing_list.id}}); return false;">unsubscribe</a>)
+    			(<a target="_self" href="." onclick="unsubscribe({{ mailing_list.id }}); return false;">unsubscribe</a>)
     			{% else %}
         			{% if request.user.profile.is_active or request.user.is_staff %}
         			    ( <a target="_self" href="." onclick="subscribe({{mailing_list.id}}); return false;">subscribe</a> )
@@ -56,7 +54,7 @@
 		<div class="list_desc">{{ mailing_list.description }}</div>
 
 		<h5 class='oswald'>Recent Messages</h5>
-		<div class="list_mail" id="recents-{{mailing_list.id}}">
+		<div class="list_mail" id="recents-{{ mailing_list.id }}">
 			<table class="msg_table">
 				<tr>
 					<th>Sent</th>
@@ -71,7 +69,7 @@
 					{% else %}
 						<td nowrap>{{ msg.origin_address }}</td>
 					{% endif %}
-					<td><a target="_self" href="{% url 'member:view_mail' msg.id %}">{{ msg.clean_subject }}</a></td>
+					<td><a target="_self" href="{% url 'member:connect:view_mail' msg.id %}">{{ msg.clean_subject }}</a></td>
 				</tr>
 				{% endfor %}
 			</table>

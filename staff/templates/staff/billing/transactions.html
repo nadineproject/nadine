@@ -1,10 +1,6 @@
-{% extends "staff/base.html" %}
+{% extends "staff/billing/base.html" %}
 
 {% block sub-title %}Transactions{% endblock %}
-
-{% block style %}
-nav #billing-tab { background: #FBD850; color: black; }
-{% endblock %}
 
 {% block content %}
 
@@ -30,12 +26,4 @@ nav #billing-tab { background: #FBD850; color: black; }
 	{% endfor %}
 </table>
 
-{% endblock %}
-
-{% block navcss %}
-  <style>
-    #billing-tab {
-      background-color: RGBA(90, 122, 189, 1.00) !important;
-    }
-  </style>
 {% endblock %}

@@ -1,4 +1,9 @@
 {% extends "staff/base.html" %}
+{% load static %}
+
+{% block pagestyle %}
+  <link rel='stylesheet' href="{% static 'staff/css/user.css' %}" />
+{% endblock %}
 
 {% block navcss %}
   <style>

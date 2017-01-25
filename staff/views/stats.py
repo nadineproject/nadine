@@ -152,6 +152,8 @@ def memberships(request):
 
 @staff_member_required
 def history(request):
+    start, end = date_range_from_request(request)
+    date_range_form = DateRangeForm({START_DATE_PARAM: start, END_DATE_PARAM: end})
     logs = [log for log in Membership.objects.all()]
     end_date = timezone.now().date()
     if len(logs) > 0:
@@ -165,7 +167,11 @@ def history(request):
         stat['started'] = Membership.objects.filter(start_date__range=(stat['start_date'], stat['end_date'])).count()
         stat['ended'] = Membership.objects.filter(end_date__range=(stat['start_date'], stat['end_date'])).count()
     monthly_stats.reverse()
-    return render(request, 'staff/stats/history.html', {'monthly_stats': monthly_stats})
+    context = {'monthly_stats': monthly_stats,
+               'date_range_form': date_range_form,
+               'start': start,
+               'end': end}
+    return render(request, 'staff/stats/history.html', context)
 
 
 @staff_member_required

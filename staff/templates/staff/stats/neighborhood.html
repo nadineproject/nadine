@@ -23,17 +23,11 @@ $(document).ready(function() { initPage(); });
 </script>
 {% endblock %}
 
-{% block style %}
-	.neighborhood-details {
-		margin: 8px;
-	}
-{% endblock %}
-
 {% block content %}
 
 <h4>Stats - Neighborhoods:</h4>
 
-<div style="margin: 10px 0;">
+<div class='titles'>
 	<strong>Total {% if active_only %} active {% endif %} members:</strong> {{ stats.member_count }}<br>
 	<strong>With Neighborhood:</strong> {{ stats.specified_count}} ({{ stats.specified_perc }}%)<br>
 	<strong>Neighborhood Unspecified</strong> {{ stats.unknown_count }} ({{ stats.unknown_perc }}%)

@@ -1,15 +1,4 @@
-{% extends "staff/base.html" %}
-
-{% block style %}
-	nav #todo-tab {
-		background: #FBD850;
-		color: black;
-	}
-
-	#content td {
-		white-space:nowrap;
-	}
-{% endblock %}
+{% extends "staff/tasks/base.html" %}
 
 {% block sub-title %}TODO{% endblock %}
 
@@ -21,7 +10,7 @@
 	<table>
 		<tr>
 			<th>Day</th>
-			<th style="text-align:left;">Member</th>
+			<th class='left'>Member</th>
 			<th>Were they here?</th>
 			<th></th>
 		</tr>
@@ -51,7 +40,7 @@
 		</script>
 
 		{% for row in not_signed_in %}
-			<form id="nsi_form{{ forloop.counter }}" enctype="multipart/form-data" method='POST' style="display:inline;" action="{% url 'staff:activity:date' row.day.year row.day.month row.day.day %}">
+			<form class='inline' id="nsi_form{{ forloop.counter }}" enctype="multipart/form-data" method='POST' action="{% url 'staff:activity:date' row.day.year row.day.month row.day.day %}">
 			<input type="hidden" name="visit_date" value="{{row.day|date:'Y-m-d'}}">
 			<input type="hidden" name="username" value="{{row.user.username}}">
 			<input type="hidden" id="member_name{{ forloop.counter }}" value="{{row.user.get_full_name}}">
@@ -62,10 +51,10 @@
 				<td>
 					<a href="{% url 'staff:activity:date' row.day.year row.day.month row.day.day %}">{{ row.day|date:"l, M dS" }}</a>
 				</td>
-				<td style="text-align:left;">
+				<td class='left'>
 					<a href="{% url 'staff:user:detail' row.user.username %}">{{ row.user.get_full_name }}</a>
 				</td>
-				<td style="text-align:center;">
+				<td class='centered'>
 						<button id="yes{{forloop.counter}}" onClick="return yes({{ forloop.counter }});">Yes - Mark as BILLABLE</button>
 						<button id="no{{forloop.counter}}" onClick="return no({{ forloop.counter }});">No - Mark as WAIVED</button>
 				</td>
@@ -102,7 +91,7 @@
 	{% endif %}
 </p>
 
-<h4 style='margin-top: 4%;'>TODO:</h4>
+<h4>TODO:</h4>
 <table>
 	<tr>
 		<th>Action Required</th>
@@ -122,12 +111,4 @@
 	{% endfor %}
 </table>
 
-{% endblock %}
-
-{% block navcss %}
-  <style>
-    #todo-tab {
-      background-color: RGBA(90, 122, 189, 1.00) !important;
-    }
-  </style>
 {% endblock %}

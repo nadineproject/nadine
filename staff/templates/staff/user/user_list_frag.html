@@ -1,50 +1,56 @@
+{% load integrated_systems %}
 {% load imagetags %}
 <table class="member-table">
 	<tr>
-		<th id='photo-th' style="text-align:center;">Photo</th>
-		<th style="text-align:left;">Name</th>
+		<th id='photo-th' class='centered'>Photo</th>
+		<th class='left'>Name</th>
 		<th>Billing Date</th>
 		<th>Quicklinks</th>
 		<th>Guests</th>
 	</tr>
+	{% load_integrations as integrations %}
 	{% for user in users %}
 		<tr class="{% cycle 'row-even' 'row-odd' %}" >
-			<td id='photo-td' style="text-align:center;">
+			<td id='photo-td' class='centered'>
 				{% if user.profile.photo %}<a href="{% url 'staff:user:detail' user.username %}"><img class="member-table-photo" src="{{ user.profile.photo.url|fit_image:"48x48"}}" /></a>{% endif %}
 			</td>
-			<td nowrap style="text-align:left;"><a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a></td>
+			<td nowrap class='left'><a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a></td>
 			<td>{{ user.profile.last_membership.start_date|date:"M d, Y" }}</td>
-			<td style="text-align:center;">
+			<td class='centered'>
 				<a href="{% url 'staff:activity:user' user.username %}">activity</a> |
 				<a href="{% url 'staff:user:files' user.username %}">files</a> |
-				<a href="{% url 'staff:billing:user_payment' user.username %}">usaepay</a> |
-				<a href="{% url 'staff:billing:xero' user.username %}">xero</a> |
+				{% if integrations.usaepay %}
+					<a href="{% url 'staff:billing:user_payment' user.username %}">usaepay</a> |
+				{% endif %}
+		    {% if integrations.xero %}
+					<a href="{% url 'staff:billing:xero' user.username %}">xero</a> |
+				{% endif %}
 				{% if user.profile.is_active %}
 					<a href="{% url 'staff:user:membership' user.profile.active_membership.id %}">membership</a>
 				{% else %}
 					<a href="{% url 'staff:user:add_membership' user.username %}">membership</a>
 				{% endif %}
 			</td>
-			<td style="text-align:center;">
+			<td class='centered'>
 				{% if user.profile.guests %}
 					<a href="." onclick="$('#guest-details-{{user.id}}').show(); return false;">{{ user.profile.guests|length }}</a>
 				{% endif %}
 			</td>
 		</tr>
-		<tr style="display: none;" id="guest-details-{{user.id}}">
-			<td colspan="5"><table class="guest-detail" style="margin-left: 5em;">
+		<tr class='guest-row' id="guest-details-{{user.id}}">
+			<td colspan="5"><table class="guest-detail">
 				{% for guest in user.profile.guests %}
-					<tr>
-						<td style="border-bottom: 0px solid #ccc;" width="2">{% if guest.profile.photo %}
+					<tr class="{% cycle 'row-even' 'row-odd' %}">
+						<td>{% if guest.profile.photo %}
 							<a href="{% url 'staff:user:detail' guest.username %}">
 								<img class="member-table-photo" src="{{ guest.profile.photo.url|fit_image:"48x48"}}" />
 							</a>
 						{% endif %}</td>
-						<td style="text-align: left; border-bottom: 0px solid #ccc; padding: 0.5em;">
+						<td class='guest-info'>
 							<a href="{% url 'staff:user:detail' guest.username %}">{{ guest.get_full_name }}</a>
 						</td>
-						<td style="text-align: left; border-bottom: 0px solid #ccc; padding: 0.5em;">{{ guest.profile.active_membership.membership_plan }}</td>
-						<td style="text-align: left; border-bottom: 0px solid #ccc; padding: 0.5em;">{{ guest.profile.active_membership.start_date }}</td>
+						<td class='guest-info'>{{ guest.profile.active_membership.membership_plan }}</td>
+						<td class='guest-info'>{{ guest.profile.active_membership.start_date }}</td>
 					</tr>
 				{% endfor %}
 			</table></td>

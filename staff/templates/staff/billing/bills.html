@@ -1,4 +1,4 @@
-{% extends "staff/base.html" %}
+{% extends "staff/billing/base.html" %}
 
 {% block sub-title %}Bills{% endblock %}
 
@@ -19,22 +19,11 @@ function toggleBillDetails(userID){
 function initPage(){
 	$(".bill-details").hide();
 }
-$(document).ready(function() { initPage(); });
+
+$(document).ready(function() {
+	initPage();
+});
 </script>
-{% endblock %}
-
-{% block style %}
-nav #billing-tab { background: #FBD850; color: black; }
-
-#bill-list li { margin-bottom: 20px; }
-#bill-list h4 { font-weight: normal; }
-.bill-list-fees { margin: 5px 10px; width: 700px; }
-.bill-list-fees th { width: 100px; text-align: right; font-style: italic; background-color: #FFF; font-weight: normal; }
-.bill-list-fees td, .bill-list-fees th { border-bottom: 0px; }
-.pay-bill-form input[type=text] { width: 8em; }
-.bill-details { margin: 10px 40px 20px 40px; }
-.bill-detail-toggle { text-decoration: none; }
-.bill-info { margin-left: 40px; }
 {% endblock %}
 
 {% block content %}
@@ -59,18 +48,10 @@ nav #billing-tab { background: #FBD850; color: black; }
 <table>
 	{% for u in invalid_members %}
 		<tr class="{% cycle 'row-odd' 'row-even' %}">
-			<td nowrap style="text-align:left;"><li><a href="{% url 'staff:user:detail' u.username %}">{{ u.get_full_name }}</a></li></td>
+			<td nowrap class='left'><li><a href="{% url 'staff:user:detail' u.username %}">{{ u.get_full_name }}</a></li></td>
 			<td></td>
 		</tr>
 	{% endfor %}
 </table>
 
-{% endblock %}
-
-{% block navcss %}
-  <style>
-    #billing-tab {
-      background-color: RGBA(90, 122, 189, 1.00) !important;
-    }
-  </style>
 {% endblock %}

@@ -4,18 +4,17 @@
 
 <h4>Activity</h4>
 <div class="columns clearfix date-range">
-	<!-- TODO double check date picker -->
 	{% include "staff/date_range_form.html"%}
 </div>
 
 <div id="color-key">
-  <h3>Color key:</h3>
+  <h5>Color key:</h5>
   <b id="has-desk-key">members with desks</b> <b id="daily-logs-key">part-time / drop-ins</b> <b id="membership-key">total members</b>
 </div>
 
 <table id="activity-table">
  <tr>
-  <th style="width: 80px;">Date</th>
+  <th>Date</th>
   <th>Occupancy</th>
  </tr>
 {% for day in days %}

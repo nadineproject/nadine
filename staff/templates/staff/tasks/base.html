@@ -1,0 +1,14 @@
+{% extends "staff/base.html" %}
+{% load static %}
+
+{% block pagestyle %}
+  <link rel='stylesheet' href="{% static 'staff/css/tasks.css' %}" />
+{% endblock %}
+
+{% block navcss %}
+  <style>
+    #todo-tab {
+      background-color: RGBA(90, 122, 189, 1.00) !important;
+    }
+  </style>
+{% endblock %}

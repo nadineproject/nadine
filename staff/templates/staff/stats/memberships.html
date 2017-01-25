@@ -4,12 +4,9 @@
 {% block sub-title %}Stats | Membership History{% endblock %}
 
 {% block style %}
-#content table { width: auto; margin-bottom: 40px; }
-#content td { border-bottom: none; width: 50px; }
-#content th { width: 100px;}
+<!-- #content th { width: 100px;} -->
 #page-message { font-size: 1.5em; color: #933; margin: 20px 0px; }
-#input-form { font-size:16px; margin-left: 2em; margin-bottom:2em; }
-#input-form input { size:16px; }
+
 {% endblock %}
 
 {% block content %}
@@ -18,8 +15,9 @@
 
 <div id="input-form">
 	<form action='.' method='POST'>
-		Start: <input name="start_date" value="{{ start_date|date:'m-Y' }}"/>
-		<input name="average_only" type="checkbox" {% if average_only %} CHECKED {% endif %} /> Average Only
+		Start: <input id='input-start' class='datepicker' name="start_date" value="{{ start_date|date:'m-Y' }}"/>
+		<input id='avg-only' name="average_only" type="checkbox" {% if average_only %} CHECKED {% endif %} />
+		<label for='avg-only'>Average Only</label>
 		<input type="submit" value="Refresh">
 		{% csrf_token %}
 	</form>
@@ -48,4 +46,17 @@
 </table>
 {% endfor %}
 
+{% endblock %}
+
+{% block extrajs %}
+<script>
+	$(document).ready(function(){
+		$('.button-collapse').sideNav();
+		$('.collapsible').collapsible();
+
+		$('.datepicker').datepicker({
+			dateFormat: 'mm-yy'
+		});
+	});
+</script>
 {% endblock %}

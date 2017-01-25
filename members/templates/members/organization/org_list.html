@@ -29,7 +29,7 @@
 			{% if search_results %}
 				<div style="width:100%; text-align:center;" class='org-group'>
 					{% for org in search_results %}
-						{% include 'members/org_card_frag.html' %}
+						{% include 'members/organization/org_card_frag.html' %}
 					{% endfor %}
 				</div>
 			{% else %}
@@ -41,7 +41,7 @@
 	{% else %}
 	<div class='org-list'>
 		{% for org in organizations %}
-			{% include 'members/org_card_frag.html' %}
+			{% include 'members/organization/org_card_frag.html' %}
 		{% endfor %}
 	</div>
 	{% endif %}

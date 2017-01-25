@@ -180,20 +180,20 @@ JSIGNATURE_RESET_BUTTON = False
 
 # USAePay Settings
 # Use API v1.4 Doc/Literal WSDL
-USA_EPAY_URL = "https://www.usaepay.com/soap/gate/YOUR_URL_CODE/usaepay.wsdl"
-USA_EPAY_KEY = "YOUR_USAEPAY_KEY"
-USA_EPAY_PIN = "YOUR_USAEPAY_PIN"
+#USA_EPAY_URL = "https://www.usaepay.com/soap/gate/YOUR_URL_CODE/usaepay.wsdl"
+#USA_EPAY_KEY = "YOUR_USAEPAY_KEY"
+#USA_EPAY_PIN = "YOUR_USAEPAY_PIN"
 # Used for adding billing profiles
-USA_EPAY_WEB_KEY = "YOUR_USAEPAY_KEY"
+#USA_EPAY_WEB_KEY = "YOUR_USAEPAY_KEY"
 
 # Comlink Settings
 MAILGUN_UPLOAD_TO = "attachments/"
 MAILGUN_VERIFY_INCOMING = True
 
 # Mailgun Settings
-MAILGUN_API_KEY = "YOUR-MAILGUN-API-KEY"
-MAILGUN_DOMAIN = "YOUR-MAILGUN-DOMAIN"
-MAILGUN_DEBUG = False
+#MAILGUN_API_KEY = "YOUR-MAILGUN-API-KEY"
+#MAILGUN_DOMAIN = "YOUR-MAILGUN-DOMAIN"
+#MAILGUN_DEBUG = False
 
 # Celery Settings
 CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
@@ -212,7 +212,7 @@ CELERY_ALWAYS_EAGER = False
 
 # MAILCHIMP_API_KEY="YourMailchimpKey"
 # MAILCHIMP_NEWSLETTER_KEY="YourNewsletter"
-MAILCHIMP_WEBHOOK_KEY = "nadine"
+#MAILCHIMP_WEBHOOK_KEY = "nadine"
 
 # Allows for the login page to include or not include the option for nonmembers to register and make a user account.
 ALLOW_ONLINE_REGISTRATION = False

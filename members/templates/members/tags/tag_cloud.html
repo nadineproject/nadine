@@ -5,15 +5,16 @@
 <link rel="stylesheet" type="text/css" href="{% static 'jqcloud/jqcloud-1.0.4.css' %}" />
 <script type="text/javascript" src="{% static 'jqcloud/jqcloud-1.0.4.min.js' %}"></script>
 <script type="text/javascript">
-var word_list = [
-{% for tag, items, count in tags %}
-	{
-		text: "{{ tag.name }}",
-		weight: {{ count }},
-		link: "{% url 'member:tag:view' type tag %}"
-	},
-{% endfor %}
-];
+	var word_list = [
+		{% for tag, items, count in tags %}
+			{
+				text: "{{ tag.name }}",
+				weight: {{ count }},
+				link: "{% url 'member:tag:view' type tag %}"
+			},
+		{% endfor %}
+	];
+
   $(function() {
     $("#tag-cloud").jQCloud(word_list, {shape: "rectangular", encodeURI:false});
   });

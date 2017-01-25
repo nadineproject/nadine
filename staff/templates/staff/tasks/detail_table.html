@@ -2,10 +2,10 @@
   <thead>
     <tr>
       {% if member %}
-        <th id='member-th'>Member</th>
+        <th>Member</th>
       {% endif %}
       {% if description %}
-        <th id='desc-th'>Description</th>
+        <th>Description</th>
       {% endif %}
       <th id='assigned-th'>Assigned To</th>
       <th id='note-th'>Note</th>
@@ -35,7 +35,7 @@
               {% endfor %}
           </select>
           </td>
-          <td><input name="note" value="{{ alert.note|default:'' }}" style="width:100%"/></td>
+          <td><input name="note" value="{{ alert.note|default:'' }}" /></td>
           <td style="text-align: center;">
               <button name="action" value="save" type="submit" >Save</button>
               <button name="action" value="resolve" type="submit" {% if is_system_alert %} disabled{% endif %}>Resolve</button>
