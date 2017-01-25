@@ -49,39 +49,39 @@ SECRET_KEY = ''
 CALENDAR_DICT = {'Public':'red', 'Member Only': 'RGBA(71, 159, 198, 1)' }
 
 # Google Settngs
-GOOGLE_ANALYTICS_ID = "YOUR-GOOGLE-CODE"
-GOOGLE_CALENDAR_ID = "YOUR-GOOGLE-CALENDAR-ID"
-GOOGLE_API_KEY = "YOUR-API-KEY"
+#GOOGLE_ANALYTICS_ID = "YOUR-GOOGLE-CODE"
+#GOOGLE_CALENDAR_ID = "YOUR-GOOGLE-CALENDAR-ID"
+#GOOGLE_API_KEY = "YOUR-API-KEY"
 
 # Mailgun Settings
-MAILGUN_API_KEY = "YOUR-MAILGUN-API-KEY"
-MAILGUN_DOMAIN = "YOUR-MAILGUN-DOMAIN"
-MAILGUN_DEBUG = False
+#MAILGUN_API_KEY = "YOUR-MAILGUN-API-KEY"
+#MAILGUN_DOMAIN = "YOUR-MAILGUN-DOMAIN"
+#MAILGUN_DEBUG = False
 
 # USAePay Settings
 # Use API v1.4 Doc/Literal WSDL
-USA_EPAY_URL = "https://www.usaepay.com/soap/gate/YOUR_URL_CODE/usaepay.wsdl"
-USA_EPAY_KEY = "YOUR_USAEPAY_KEY"
-USA_EPAY_PIN = "YOUR_USAEPAY_PIN"
+#USA_EPAY_URL = "https://www.usaepay.com/soap/gate/YOUR_URL_CODE/usaepay.wsdl"
+#USA_EPAY_KEY = "YOUR_USAEPAY_KEY"
+#USA_EPAY_PIN = "YOUR_USAEPAY_PIN"
 # Used for adding billing profiles
-USA_EPAY_WEB_KEY = "YOUR_USAEPAY_KEY"
+#USA_EPAY_WEB_KEY = "YOUR_USAEPAY_KEY"
 
 # Mailchimp Settings
-MAILCHIMP_API_KEY = "goMonkeygo"
-MAILCHIMP_NEWSLETTER_KEY = "melikekey"
-MAILCHIMP_WEBHOOK_KEY = "hookedonhooks"
+#MAILCHIMP_API_KEY = "goMonkeygo"
+#MAILCHIMP_NEWSLETTER_KEY = "melikekey"
+#MAILCHIMP_WEBHOOK_KEY = "hookedonhooks"
 
 # Xero Integration Settings
 # Generate an RSA key and register it with Xero as a private application.
 # openssl genrsa -out privatekey.pem 1024
 # openssl req -new -x509 -key privatekey.pem -out publickey.cer -days 1825
 # openssl pkcs12 -export -out public_privatekey.pfx -inkey privatekey.pem -in publickey.cer
-XERO_CONSUMER_KEY = "secretkey"
-XERO_PRIVATE_KEY = "/keys/privatekey.pem"
+#XERO_CONSUMER_KEY = "secretkey"
+#XERO_PRIVATE_KEY = "/keys/privatekey.pem"
 
 # Slack Settings
-SLACK_API_TOKEN = "your token"
-SLACK_TEAM_URL = "https://nadine.slack.com/"
+#SLACK_API_TOKEN = "your token"
+#SLACK_TEAM_URL = "https://nadine.slack.com/"
 
 # Arp Settings
 ARPWATCH_SNMP_SERVER = '192.168.1.1'
@@ -91,9 +91,9 @@ ARPWATCH_NETWORK_PREFIX = '192.168.'
 # HID Door System
 # Encryption Key must be a URL-safe base64-encoded 32-byte key.
 # https://cryptography.io/en/latest/fernet/
-HID_ENCRYPTION_KEY = "YOUR-HID-ENCRYPTION-KEY"
-HID_KEYMASTER_URL = "http://127.0.0.1:8000/doors/keymaster/"
-HID_POLL_DELAY_SEC = 60
+#HID_ENCRYPTION_KEY = "YOUR-HID-ENCRYPTION-KEY"
+#HID_KEYMASTER_URL = "http://127.0.0.1:8000/doors/keymaster/"
+#HID_POLL_DELAY_SEC = 60
 
 # Other Settings
 BILLING_START_DATE = datetime.date(2009, 11, 17)

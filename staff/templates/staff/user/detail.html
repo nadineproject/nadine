@@ -1,4 +1,5 @@
 {% extends "staff/user/base.html" %}
+{% load integrated_systems %}
 {% load imagetags %}
 {% load static %}
 
@@ -47,14 +48,19 @@ function gotoEmailReset(emailAddress){
 </div>
 
 <!-- Member Detail -->
+{% load_integrations as integrations %}
 <div class='row' id="member-detail">
   <h4 class='detail-header'>{{ user.get_full_name }} {% if user.profile.is_active %} - <i>{{ user.profile.membership_type }}</i> {% endif %}</h4>
   <div id="detail-links">
     <a href="{% url 'staff:activity:user' user.username %}">activity</a> |
     <a href="{% url 'doors:keys' user.username %}">keys</a> |
     <a href="{% url 'staff:user:files' user.username %}">files</a> |
-    <a href="{% url 'staff:billing:user_payment' user.username %}">usaepay</a> |
-    <a href="{% url 'staff:billing:xero' user.username %}">xero</a> |
+    {% if integrations.usaepay %}
+      <a href="{% url 'staff:billing:user_payment' user.username %}">usaepay</a> |
+    {% endif %}
+    {% if integrations.xero %}
+      <a href="{% url 'staff:billing:xero' user.username %}">xero</a> |
+    {% endif %}
     <a href="{% url 'admin:auth_user_change' user.id %}">admin</a> |
     <a href="{% url 'member:profile:view' user.username %}">view profile</a> |
     <a href="{% url 'member:profile:edit' user.username %}">edit profile</a> |
@@ -335,9 +341,11 @@ function gotoEmailReset(emailAddress){
         {% csrf_token %}
       </form>
     </div>
+    {% if integrations.usaepay %}
     <div class='epay-link'>
         [ <a href="https://secure.usaepay.com/interface/epayform/{{ settings.USA_EPAY_WEB_KEY }}/?UMdescription=Office%20Nomads%20Billing%20Authorization&UMcustid={{ user.username }}&UMcommand=AuthOnly&UMamount=1.00&UMaddcustomer=yes&UMschedule=disabled">payment link</a> ]
     </div>
+    {% endif %}
 
     <!-- Security Deposits -->
     <h5>Security Deposits:</h5>

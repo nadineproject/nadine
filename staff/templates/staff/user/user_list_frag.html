@@ -1,3 +1,4 @@
+{% load integrated_systems %}
 {% load imagetags %}
 <table class="member-table">
 	<tr>
@@ -7,6 +8,7 @@
 		<th>Quicklinks</th>
 		<th>Guests</th>
 	</tr>
+	{% load_integrations as integrations %}
 	{% for user in users %}
 		<tr class="{% cycle 'row-even' 'row-odd' %}" >
 			<td id='photo-td' class='centered'>
@@ -17,8 +19,12 @@
 			<td class='centered'>
 				<a href="{% url 'staff:activity:user' user.username %}">activity</a> |
 				<a href="{% url 'staff:user:files' user.username %}">files</a> |
-				<a href="{% url 'staff:billing:user_payment' user.username %}">usaepay</a> |
-				<a href="{% url 'staff:billing:xero' user.username %}">xero</a> |
+				{% if integrations.usaepay %}
+					<a href="{% url 'staff:billing:user_payment' user.username %}">usaepay</a> |
+				{% endif %}
+		    {% if integrations.xero %}
+					<a href="{% url 'staff:billing:xero' user.username %}">xero</a> |
+				{% endif %}
 				{% if user.profile.is_active %}
 					<a href="{% url 'staff:user:membership' user.profile.active_membership.id %}">membership</a>
 				{% else %}

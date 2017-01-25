@@ -1,4 +1,6 @@
 {% extends "staff/user/base.html" %}
+{% load integrated_systems %}
+{% load_integrations as integrations %}
 
 {% block sub-title %}User Reports{% endblock %}
 
@@ -34,7 +36,7 @@
 		<th>Name</th>
 		<th>Joined</th>
 		<th>Billing</th>
-		<th>Auto-Bill</th>
+		<th>{% if integrations.usaepay %} Auto-Bill {% endif %} </th>
 		<th>Plan</th>
 		<th>Start</th>
 		<th>End</th>
@@ -50,10 +52,14 @@
 			{% else %}
 				<td class='error-td'>Invalid</td>
 			{% endif %}
-			{% if user.profile.auto_bill_enabled %}
-				<td>On</td>
+			{% if integrations.usaepay %}
+				{% if user.profile.auto_bill_enabled %}
+					<td>On</td>
+				{% else %}
+					<td class='error-td'>Off</td>
+				{% endif %}
 			{% else %}
-				<td class='error-td'>Off</td>
+				<td></td>
 			{% endif %}
 			<td>{{ user.profile.last_membership.membership_plan }}</td>
 			<td>{{ user.profile.last_membership.start_date|date:"M d, Y" }}</td>
