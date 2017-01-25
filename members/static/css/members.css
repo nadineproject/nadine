@@ -1,5 +1,44 @@
-/* Member Pages Style */
+/*This style sheet includes the styling for all pages of the Nadine Member app*/
 
+/*
+ORDER OF SECTIONS:
+	Body
+	Icon Stylings
+	Navigation and Navigation Bar
+	Jumbotron and Large Logo Stylings
+	Small Logo for Main Navigation
+	Side Navigation Styling
+	Tabs as seen on Members, Organization and Mailing Lists
+	Buttons
+	Chip and Tag Creation
+	Home Page Content
+	Login and Registration Pages
+	Edit Profile Page
+	Organization Edit Page
+	URL Link-Formset
+	Search Form
+	Organization list and Organization Cards
+	Members and Member Cards
+	Modals
+	Organization Logos & Member Photos and Changing
+	Websites
+	Member and Organization Profile Layout
+	Collapsible Sections of Member Profile
+	Event and Room Bookings
+	Booking Creation
+	Booking Bar as used on booking/create and booking/confirm
+	Direction Buttons from Bookings
+	Room Information Slider
+	Calendar Page
+	FullCalendar
+	Not_Active Page
+	Mail Page
+	Footer
+	Media Queries
+*/
+
+/* Body */
+/*Styling for body elements which are either used on every page or on multiple*/
 html {
 	height: 100%;
 	box-sizing: border-box;
@@ -31,9 +70,152 @@ p {
 	 line-height: 1.6;
 }
 
+table th {
+	padding: 0.5em 0.5em 0.25em;
+}
+
+table th:first-child {
+	text-align: left;
+}
+
+table td:first-child, table td:last-child {
+	text-align: left;
+}
+
+table td {
+	padding: 0.5em;
+}
+
+.row.main {
+	margin-bottom: 0;
+}
+
+#content h2 {
+	display: block;
+	text-align: center;
+}
+
+#content a {
+	outline:none;
+}
+
+.messages {
+	margin-top: 3%;
+}
+
+.centered {
+	text-align: center;
+}
+
+.btn {
+	background-color: RGBA(79, 134, 135, 1);
+}
+
+.ir {
+	display: block;
+	text-indent: -999em;
+	overflow: hidden;
+	background-repeat: no-repeat;
+}
+
+.hidden {
+	display: none;
+	visibility: hidden;
+}
+
+.oswald {
+	font-family: 'Oswald', sans-serif;
+	color: RGBA(79, 134, 135, 1);
+}
+
+.bold-blue {
+	color: RGBA(66, 98, 113, 1);
+}
+
+.tooltipped {
+	margin-top: 3%;
+}
+
+.lightbg {
+	margin-top: 5%;
+	margin-bottom: 140px;
+	min-height: 500px;
+	padding-top: 10px;
+	overflow: auto;
+}
 
 
-/*Navigation*/
+
+/*Icon styling*/
+#manage {
+	height: 30px;
+}
+
+#admin {
+	height: 30px;
+}
+
+#locked {
+	height: 30px;
+}
+
+#unlocked {
+	height: 30px;
+}
+
+#edit {
+	height: 25px;
+}
+
+#white-edit {
+	content: url(../img/white_edit.png);
+	height: 30px;
+	padding: 1%;
+}
+
+#Facebook, #Facebook:after {
+	content: url(../img/Facebook.png);
+	height: 40px;
+}
+
+#Twitter, #Twitter:after {
+	content: url(../img/Twitter.png);
+	height: 40px;
+}
+
+#Instagram, #Instagram:after {
+	content: url(../img/Instagram.png);
+	height: 40px;
+}
+
+#Linkedin, #Linkedin:after {
+	content: url(../img/Linkedin.png);
+	height: 40px;
+}
+
+#Github, #Github:after {
+	content: url(../img/Github.png);
+	height: 40px;
+}
+
+#Personal, #Personal:after {
+	content: url(../img/Personal.png);
+	height: 40px;
+}
+
+#Professional, #Professional:after {
+	content: url(../img/Professional.png);
+	height: 40px;
+}
+
+#Blog, #Blog:after {
+	content: url(../img/blog.png);
+	height: 40px;
+}
+
+
+
+/*Navigation and the Navigation Bar*/
 #main-nav {
 	background-color: RGBA(66, 98, 113, 1);
 	position: fixed;
@@ -121,26 +303,6 @@ p {
 }
 
 
-/*Side-Nav styling for navigation on mobile devices*/
-.side-nav {
-	background-color: RGBA(80, 80, 80, 1);
-	padding-top: 2%;
-	padding-left: 3%;
-}
-
-.side-nav li a {
-	font-size: 1.5em;
-	padding-right: 5%;
-}
-
-.side-nav li:first-child {
-	margin-top: 10%;
-}
-
-#sidenav-overlay {
-	background-color: RGBA(80, 80, 80, .6);
-}
-
 
 /*Styling of small logo image on main nav throughout app*/
 .sec-logo {
@@ -154,147 +316,24 @@ p {
 
 
 
-/* Body */
-.row.main {
-	margin-bottom: 0;
+/*Side-Nav styling for navigation on mobile devices*/
+#sidenav-overlay {
+	background-color: RGBA(80, 80, 80, .6);
 }
 
-#content h2 {
-	display: block;
-	text-align: center;
+.side-nav {
+	background-color: RGBA(80, 80, 80, 1);
+	padding-top: 2%;
+	padding-left: 3%;
 }
 
-#content a {
-	outline:none;
+.side-nav li a {
+	font-size: 1.5em;
+	padding-right: 5%;
 }
 
-.messages {
-	margin-top: 3%;
-}
-
-table th {
-	padding: 0.5em 0.5em 0.25em;
-}
-
-table th:first-child {
-	text-align: left;
-}
-
-table td:first-child, table td:last-child {
-	text-align: left;
-}
-
-table td {
-	padding: 0.5em;
-}
-
-.centered {
-	text-align: center;
-}
-
-.btn {
-	background-color: RGBA(79, 134, 135, 1);
-}
-
-.ir {
-	display: block;
-	text-indent: -999em;
-	overflow: hidden;
-	background-repeat: no-repeat;
-}
-
-.hidden {
-	display: none;
-	visibility: hidden;
-}
-
-.oswald {
-	font-family: 'Oswald', sans-serif;
-	color: RGBA(79, 134, 135, 1);
-}
-
-.bold-blue {
-	color: RGBA(66, 98, 113, 1);
-}
-
-.tooltipped {
-	margin-top: 3%;
-}
-
-.lightbg {
-	margin-top: 5%;
-	margin-bottom: 140px;
-	min-height: 500px;
-	padding-top: 10px;
-	overflow: auto;
-}
-
-
-/*Icon styling*/
-#manage {
-	height: 30px;
-}
-
-#admin {
-	height: 30px;
-}
-
-#locked {
-	height: 30px;
-}
-
-#unlocked {
-	height: 30px;
-}
-
-#edit {
-	height: 25px;
-}
-
-#white-edit {
-	content: url(../img/white_edit.png);
-	height: 30px;
-	padding: 1%;
-}
-
-#Facebook, #Facebook:after {
-	content: url(../img/Facebook.png);
-	height: 40px;
-}
-
-#Twitter, #Twitter:after {
-	content: url(../img/Twitter.png);
-	height: 40px;
-}
-
-#Instagram, #Instagram:after {
-	content: url(../img/Instagram.png);
-	height: 40px;
-}
-
-#Linkedin, #Linkedin:after {
-	content: url(../img/Linkedin.png);
-	height: 40px;
-}
-
-#Github, #Github:after {
-	content: url(../img/Github.png);
-	height: 40px;
-}
-
-#Personal, #Personal:after {
-	content: url(../img/Personal.png);
-	height: 40px;
-}
-
-#Professional, #Professional:after {
-	content: url(../img/Professional.png);
-	height: 40px;
-}
-
-#Blog, #Blog:after {
-	content: url(../img/blog.png);
-	height: 40px;
+.side-nav li:first-child {
+	margin-top: 10%;
 }
 
 
@@ -331,16 +370,80 @@ table td {
 }
 
 
+/*Button styling*/
+.sub-btn, #confirm-btn, .reg-btn  {
+	margin-top: 2%;
+	margin-left: 35%;
+}
+
+.billing-btn {
+	font-size: .8em;
+}
+
+#confirm-btn, .reg-btn {
+	margin-left: 40%;
+}
+
+#email-btn {
+	width: 50%;
+}
+
+.url-btn {
+	font-size: .7em;
+}
+
+.modal-btn {
+	margin-top: 2%;
+	margin-left: 45%;
+}
+
+.org-btn {
+	margin-left: 37%;
+	margin-right: 5%;
+	margin-top: 2%;
+}
+
+.org-form .cancel-btn {
+	margin-top: 2%;
+}
+
+#org-search-form .search-btn {
+	padding: 0;
+	font-size: .9em;
+}
+
+.pic-btn {
+	margin-left: 40%;
+	margin-top: 5%;
+}
+
+.edit-btn {
+	height: 40px;
+}
+
+
+/*Chip and tag creation styling*/
+.tags {
+	margin-top: 5%;
+	margin-left: 10%;
+	margin-right: 10%;
+}
+
+.tag-table {
+	margin-right: 20%;
+}
+
+.tag-chip, .chip {
+	color: RGBA(92, 92, 92, 1);
+	background-color: RGBA(228, 228, 228, 1);
+}
+
+
 
 /*Home content styling*/
 #welcome-p {
 	font-size: 1.2em;
 	text-align: center;
-}
-
-.card {
-	text-align: center;
-	background-color: RGBA(96, 131, 157, 1.00);
 }
 
 #chat_icon {
@@ -351,6 +454,11 @@ table td {
 #group_icon {
 	height: 50%;
 	width: 50%;
+}
+
+.card {
+	text-align: center;
+	background-color: RGBA(96, 131, 157, 1.00);
 }
 
 .card a {
@@ -444,77 +552,9 @@ div#login_box.col.s6 {
 }
 
 
-/*Button styling*/
-.sub-btn, #confirm-btn, .reg-btn  {
-	background: RGBA(79, 134, 135, 1);
-	margin-top: 2%;
-	margin-left: 35%;
-}
-
-.billing-btn {
-	font-size: .8em;
-}
-
-#confirm-btn {
-	margin-left: 40%;
-}
-
-#email-btn {
-	width: 50%;
-}
-
-.reg-btn {
-	margin-left: 40%;
-}
-
-.tag-btn {
-	background-color: RGBA(79, 134, 135, 1);
-}
-
-.url-btn {
-	font-size: .7em;
-}
-
-.modal-btn {
-	margin-top: 2%;
-	margin-left: 45%;
-	background-color: RGBA(79, 134, 135, 1);
-}
-
-.org-btn {
-	margin-left: 37%;
-	margin-right: 5%;
-	margin-top: 2%;
-}
-
-.org-form .cancel-btn {
-	margin-top: 2%;
-}
-
-#org-search-form .search-btn {
-	padding: 0;
-	font-size: .9em;
-}
-
-.pic-btn {
-	background-color: RGBA(79, 134, 135, 1);
-	margin-left: 40%;
-	margin-top: 5%;
-}
-
-.edit-btn {
-	background-color: RGBA(79, 134, 135, 1);
-	height: 40px;
-}
-
 
 
 /*Edit Profile Page*/
-/*TODO Is this even being used?*/
-.prof-page {
-	background-color: white;
-}
-
 #profile_form, #registration_form {
 	margin-left: 15%;
 	min-width: 900px;
@@ -672,6 +712,51 @@ input#id_emergency_phone {
 
 
 
+/*Organization Edit Page*/
+.org-form {
+	background: RGBA(239, 238, 231, 1);
+	padding: 2%;
+	min-width: 600px;
+}
+
+.org-form .org-label {
+	width: 30%;
+	font-weight: bold;
+}
+
+.org-form #id_name, .org-form #id_bio, .org-form #id_blurb, .org-form #id_title, .org-form #id_start_date, .org-form #id_end_date, .org-form #id_username, .org-form #end_date, .org-form #start_date {
+	background-color: white;
+	width: 70%;
+	border: none;
+	padding: 1%;
+}
+
+.org-form #id_blurb {
+	padding-bottom: 10%;
+	height: 100px;
+}
+
+.org-form #id_bio {
+ 	height: 90%;
+}
+
+.org-form #public_help p, .org-form #blurb_help p {
+	width: 70%;
+	text-align: center;
+	margin-left: 10%;
+	background-color: white;
+	padding: 1%;
+}
+
+.org-form .org-input {
+	background-color: white;
+	width: 70%;
+	border: none;
+	padding: 1%;
+}
+
+
+
 /*URL Link-formset styling for orgs and members*/
 td.pf-input.url-type {
 	padding-top: 0;
@@ -723,22 +808,6 @@ div.link-formset.row.dynamic-form {
 }
 
 
-/*Chip and tag creation styling*/
-.tags {
-	margin-top: 5%;
-	margin-left: 10%;
-	margin-right: 10%;
-}
-
-.tag-table {
-	margin-right: 20%;
-}
-
-.tag-chip, .chip {
-	color: RGBA(92, 92, 92, 1);
-	background-color: RGBA(228, 228, 228, 1);
-}
-
 
 /*Search form styling as seen on view_members and orgs*/
 #site-search-form input {
@@ -754,7 +823,7 @@ div.link-formset.row.dynamic-form {
 
 
 
-/*Org List and Organization Card stylgin*/
+/*Org List and Organization Card styling*/
 .org-group {
 	white-space: nowrap;
 }
@@ -823,11 +892,6 @@ a.name-a {
 	white-space: normal;
 }
 
-
-
-
-
-/*Organization view*/
 .photo-div {
 	height: 250px;
 	width: 250px;
@@ -874,51 +938,6 @@ h5.org-members {
 	display: inline-block;
 	color: black;
 	margin-bottom: 2%;
-}
-
-
-
-/*Org edit page*/
-.org-form {
-	background: RGBA(239, 238, 231, 1);
-	padding: 2%;
-	min-width: 600px;
-}
-
-.org-form .org-label {
-	width: 30%;
-	font-weight: bold;
-}
-
-.org-form #id_name, .org-form #id_bio, .org-form #id_blurb, .org-form #id_title, .org-form #id_start_date, .org-form #id_end_date, .org-form #id_username, .org-form #end_date, .org-form #start_date {
-	background-color: white;
-	width: 70%;
-	border: none;
-	padding: 1%;
-}
-
-.org-form #id_blurb {
-	padding-bottom: 10%;
-	height: 100px;
-}
-
-.org-form #id_bio {
- 	height: 90%;
-}
-
-.org-form #public_help p, .org-form #blurb_help p {
-	width: 70%;
-	text-align: center;
-	margin-left: 10%;
-	background-color: white;
-	padding: 1%;
-}
-
-.org-form .org-input {
-	background-color: white;
-	width: 70%;
-	border: none;
-	padding: 1%;
 }
 
 
@@ -980,16 +999,6 @@ a.photo.star-img  {
 	text-spacing: 1px;
 }
 
-
-/*Profile Page Left Profile Box styling*/
-.tags-box {
-	margin-top: 5%;
-	margin-bottom: 10%;
-}
-
-.tags-box li {
-	margin-left: 3%;
-}
 
 
 
@@ -1209,6 +1218,11 @@ h2#prof-name {
   -ms-interpolation-mode: bicubic;
 }
 
+#blank-photo {
+	background-color: RGBA(143, 143, 139, 1);
+	content: url(../img/blank_person.png);
+}
+
 .prof-img, .upload-input {
   /*position: relative;*/
   width: 300px;
@@ -1307,7 +1321,7 @@ img.org-photo#mem-photo {
 
 
 
-
+/*Websites*/
 .profile-links {
 	margin-top: 5%;
 	margin-left: 5%;
@@ -1327,11 +1341,6 @@ img.org-photo#mem-photo {
 	max-width: 250px;
 }*/
 
-#blank-photo {
-	background-color: RGBA(143, 143, 139, 1);
-	content: url(../img/blank_person.png);
-}
-
 
 
 /*Member and Org profile layout*/
@@ -1348,6 +1357,15 @@ img.org-photo#mem-photo {
 
 .left-profile {
 	max-width: 450px;
+}
+
+.tags-box {
+	margin-top: 5%;
+	margin-bottom: 10%;
+}
+
+.tags-box li {
+	margin-left: 3%;
 }
 
 
