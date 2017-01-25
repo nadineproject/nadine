@@ -153,7 +153,7 @@ p {
 	position: absolute;
 	z-index: 2000;
 	top: 10%;
-	left: 37%;
+	left: 42%;
 	height: 300px;
   width: 300px;
 	z-index: 2000;
@@ -1866,6 +1866,9 @@ footer.sticky-footer {
 		min-width: 900px;
 	}
 
+	.logo-img {
+		left: 37%;
+	}
 }
 
 @media only screen and (max-width: 1390px) {
@@ -1897,6 +1900,10 @@ footer.sticky-footer {
 	a#star-img.org-photo {
 		margin-left: 10%
 	}
+}
+
+@media only screen and (max-width: 1300px) {
+
 }
 
 @media only screen and (max-width: 1100px) {
