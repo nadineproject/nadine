@@ -96,7 +96,10 @@
 					</ul>
 				</li>
 				<li>
-					<a id='settings-tab' href="{% url 'staff:settings:index' %}">Settings</a>
+					<a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown9' id='settings-tab' href="{% url 'staff:settings:index' %}">Settings</a>
+					<ul class='dropdown-content' id='dropdown9'>
+						{% include 'staff/settings/nav.html' %}
+					</ul>
 				</li>
 				<li>
 					<a id='logout-tab' href="{% url 'logout' %}">Logout</a>
@@ -194,14 +197,22 @@
 							<div class='collapsible-body'>
 								<ul>
 									{% include 'keymaster/nav.html' %}
-									</li>
 								</ul>
 							</div>
 						</li>
 					</ul>
 				</li>
-				<li>
-					<a id='settings-tab' href="{% url 'staff:settings:index' %}">Settings</a>
+				<li class='no-padding'>
+					<ul class="collapsible collapsible-accordion">
+						<li>
+							<a class='collapsible-header'>Settings</a>
+							<div class='collapsible-body'>
+								<ul>
+									{% include 'staff/settings/nav.html' %}
+								</ul>
+							</div>
+						<li>
+					</ul>
 				</li>
 				<li>
 					<a id='logout-tab' href="{% url 'logout' %}">Logout</a>
