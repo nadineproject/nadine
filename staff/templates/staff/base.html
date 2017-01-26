@@ -1,3 +1,4 @@
+{% load integrated_systems %}
 {% load static %}
 
 <!DOCTYPE HTML>
@@ -48,6 +49,7 @@
 	</nav>
 
 	<!-- Header -->
+	{% load_integrations as integrations %}
 	{% block header %}
 	<header>
 		<nav id="navcontainer">
@@ -89,12 +91,14 @@
 						{% include 'interlink/nav.html' %}
 					</ul>
 				</li>
+				{% if integrations.hid %}
 				<li>
 					<a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown8' id='doors-tab' href="{% url 'doors:home' %}">Doors</a>
 					<ul class='dropdown-content' id='dropdown8'>
 						{% include 'keymaster/nav.html' %}
 					</ul>
 				</li>
+				{% endif %}
 				<li>
 					<a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown9' id='settings-tab' href="{% url 'staff:settings:index' %}">Settings</a>
 					<ul class='dropdown-content' id='dropdown9'>
@@ -190,6 +194,7 @@
 						</li>
 					</ul>
 				</li>
+				{% if integrations.hid %}
 				<li class='no-padding'>
 					<ul class="collapsible collapsible-accordion">
 						<li>
@@ -202,6 +207,7 @@
 						</li>
 					</ul>
 				</li>
+				{% endif %}
 				<li class='no-padding'>
 					<ul class="collapsible collapsible-accordion">
 						<li>
