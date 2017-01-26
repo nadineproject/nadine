@@ -128,10 +128,12 @@ table td {
 	color: RGBA(79, 134, 135, 1);
 }
 
+/* Used in Websites and Edit Profile */
 .bold-blue {
 	color: RGBA(66, 98, 113, 1);
 }
 
+/*Top margin for small tooltips that appear on hover*/
 .tooltipped {
 	margin-top: 3%;
 }
@@ -173,6 +175,7 @@ table td {
 	padding: 1%;
 }
 
+/* ':after' reflects styling for Firefox */
 #Facebook, #Facebook:after {
 	content: url(../img/Facebook.png);
 	height: 40px;
