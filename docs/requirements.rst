@@ -3,7 +3,7 @@ Requirements
 
 * Python (Probably comes with your system otherwise it can be downloaded from their website)
 * Virtualenv (install with ``pip virtualenv``)
-* XCode is you are on Mac OS X
+* XCode if you are on Mac OS X
 * Postgresql
 
 .. important::
@@ -18,4 +18,4 @@ Installations
   $ sudo apt-get install postgresql postgresql-server-dev-all python-pip python-dev virtualenv libffi-dev git
 
 
-Once that is ready, you can start the :doc:`quick start<quickstart>`
+Once that is ready, you can start the :doc:`quickstart<quickstart>`
