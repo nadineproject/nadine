@@ -22,6 +22,7 @@ from nadine.models.alerts import MemberAlert
 from nadine.models.organization import Organization, OrganizationMember
 from nadine.forms import EditProfileForm, ProfileImageForm, LinkForm, BaseLinkFormSet
 from nadine.utils import network
+from nadine.utils.payment_api import PaymentAPI
 from arpwatch import arp
 from arpwatch.models import ArpLog, UserDevice
 from members.views.core import is_active_member

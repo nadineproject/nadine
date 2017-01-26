@@ -112,7 +112,7 @@ def send_manage_member(user, subject=None):
                     "text": text_content,
                     "html": html_content,
                     }
-    return mailgun_send(mailgun_data)
+    return mailgun_send(mailgun_data, inject_list_id=False)
 
 
 def render_templates(context, email_key):
