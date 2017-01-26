@@ -1,6 +1,8 @@
-## Member Alerts
+Alerts
+======
 
-### At Sign-in
+At Sign-in
+----------
 * First visit -> Free Trial Day
 * No photo
 * Billable visit - valid billing
@@ -8,8 +10,8 @@
 * Active member - Onboarding Task
 * Active member + Shell profile
 
-### Daily Check
+Daily Check
+-----------
 * Key Membershp - key agreement
 * Regular guest-of
 * Stale members
- 
