@@ -9,6 +9,10 @@ input.datepicker {
   width: 150px;
 }
 
+#activity-tab {
+  color: RGBA(90, 122, 189, 1.00) !important;
+}
+
 #activity-dates {
 	margin-left: 30%;
 	font-size: 2em;
