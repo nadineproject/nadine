@@ -42,7 +42,7 @@ At this point you can run the server
 
   ``$ ./manage.py runserver``
 
-  Visit your installation of Nadine at http://127.0.0.1:8000/
+Visit your installation of Nadine at http://127.0.0.1:8000/
 
 Run the scheduler
 

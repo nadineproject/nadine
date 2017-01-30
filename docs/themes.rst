@@ -15,7 +15,7 @@ Create a new project with the following doc tree:
 
 ::
 
-    theme/
+    theme_name/
     ├── theme_settings.py
     ├── static/
     │   ├── css/
@@ -52,4 +52,14 @@ For example, a theme_settings file for Office Nomads might look like:
   INSTAGRAM_URL = 'https://www.instagram.com/officenomads/'
 
 
-For More info, dance.
+Implementing the Theme
+^^^^^^^^^^^^^^^^^^^^^^
+
+First, copy your new theme folder into the themes/ folder. Then, in the terminal:
+
+.. code-block:: console
+
+  $ cd themes
+  $ ln -s theme_name active
+
+This command tells Nadine to prioritize your theme over the members.css that came with it. Reload the Member App and see how it all looks!
