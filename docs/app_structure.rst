@@ -6,22 +6,77 @@ Overview
 
 Nadine is comprised of three applications: Member, Staff, and Tablet.
 
-Member is that which is member facing application. We consider members to be users with active resource allocations. This application is what members will use to connect with eachother, the coworking space staff, and greater community.
-
-Staff is the application used by coworking team and staff members to help with the overall management of the community.
-
-Tablet is the application used for user sign-ins and for the interaction expected at the entrance of a space and greeting a new or returning user of the space.
-
+**Member** is that which is member facing application. We consider members to be users with active resource allocations. **Staff** is the application used by coworking team and staff members to help with the overall management of the community. **Tablet** is the application used for user sign-ins and for the interaction expected at the entrance of a space and greeting a new or returning user of the space.
 
 Member Application
 ------------------
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+This application is what members will use to connect with each other, the coworking space staff, and greater community.
+
+.. note::
+
+  Much of the information given by members and organizations is designated as either public (viewable by current members) or private (only viewable by staff and that specific member). This is clearly indicated to members and they opt in to sharing whatever of that information with which they are comfortable.
+
+In the Member Application there are profiles for both members and organizations/companies. Each have a photo or logo, URLS they would like others to see, a short bio, and tags. While the listed items are public, privately the members and organizations can see emergency contacts, billing history, signed documents (such as a membership agreement), and their user activity.
+
+A member and an organization can edit their profiles as often as they would like. One setting, though, that is set by application administrator is whether or not members are allowed to upload their own user photos. That setting is entitled ALLOW_PHOTO_UPLOAD. More information in :doc:`Changing Application Settings <settings>`.
+
+Other features of the Members Application are the calendar of events, ability to subscribe and unsubscribe from mailing lists, Slack invitation (if allowed in Settings), and the general ability to see who the other members and organizations are and to make a request to connect.
+
+One feature, tags, are interests they can share which are then sortable and searchable by other members and organizations. This allows a space to see how organizations self identify their industries and also what their members are doing.
+
+The Member Application is laid similarly in the views and the templates.
+
+* connect
+* core
+* events
+* organization
+* profile
+* tags
+
+
 
 Staff Application
 -----------------
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+The Staff Application allows the staff of a space to best manage memberships and the tasks required to run the space. It is the application designed for staff to easily track space usage, review billing and deposits, and edit member information if/when needed.
+
+The navigation of the Staff Application includes:
+
+* Tasks/ToDo
+* Member List
+* Activity
+* Billing
+* Stats
+* Logs
+* Lists
+* Settings
+
+Tasks/Todo
+//////////
+
+This section of the Staff Application deals with tasks that staff must complete. Tasks can be assigned to specific staff members or left available for anyone to complete and mark as such. This is the default home page for a staff member.
+
+Member List
+///////////
+
+Member List shows all members in a sortable manner and then allows a staff member to edit any person's information as needs.
+
+Activity
+////////
+
+Activity is for recording any members particular use of the space and to generate reports on past usage and membership levels.
+
+Logs
+////
+
+Logs show device and user logins to the local internet. To know the user, the system remembers devices after a member has logged into Nadine from that computer. This allows us to better track use of space and to make sure that a member is using the space per their membership.
+
+Lists
+/////
+
+These pages are for the management of whatever mailing lists a space might have and the Slack channel, if a space has it.
+
 
 Tablet Application
 ------------------

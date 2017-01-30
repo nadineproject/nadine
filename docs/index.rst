@@ -40,7 +40,6 @@ Indices and tables
 
   requirements
   quickstart
-  app_structure
   settings
   alerts
 
@@ -49,6 +48,7 @@ Indices and tables
   :glob:
   :caption: Style Documentation
 
+  app_structure
   themes
   django_templating
   static_files
@@ -59,3 +59,4 @@ Indices and tables
   :caption: Advanced Usage
 
   testing
+  mailing_lists
