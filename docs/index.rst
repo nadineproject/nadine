@@ -41,6 +41,7 @@ Indices and tables
   requirements
   quickstart
   app_structure
+  settings
   alerts
 
 .. toctree::
@@ -51,3 +52,10 @@ Indices and tables
   themes
   django_templating
   static_files
+
+.. toctree::
+  :maxdepth: 1
+  :glob:
+  :caption: Advanced Usage
+
+  testing

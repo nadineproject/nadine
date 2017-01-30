@@ -9,7 +9,7 @@ Currently the Member application is styled to be rather generic and includes the
 Creating a Theme
 ----------------
 
-It is easy to create your own theme and implement it with the member application.
+It is easy to create your own theme and implement it with the Member application.
 
 Create a new project with the following doc tree:
 
@@ -23,6 +23,8 @@ Create a new project with the following doc tree:
     │   └── img/
     │   └── js/
     │   └── fonts/
+    ├── templates/
+    │   ├── members/
     └── .gitignore
 
 Static Folder
@@ -30,9 +32,14 @@ Static Folder
 
 The static/ folder will contain all of your new styling(css), any particular javascript files you might need, new font files, and images. Here you can include the style sheets for any new CSS framework you might use and/or your own stylesheet.
 
-The members.css file will be the most important for your new styling. This is where you can override the stylings from the default theme.
+The **members.css** file will be the most important for your new styling. This is where you can override the stylings from the default theme.
 
-In in the img/ folder, you can include your logos which you will use. If you do not intend to change the HTML then you will need to include two versions of your logo. One to be used on the homepage jumbotron and another to be part of the top navigation throughout the app.
+To completely override the layout of a page, you will need to write that page with DTL and HTML and include that in the templates/members folder.
+
+Logo
+////
+
+In in the img/ folder, you can include your logos which you will use. If you do not intend to change the HTML then you will need to include two versions of your logo and save them as **logo.png** and **logo-line.png**. The first one to be used on the homepage jumbotron and the other to be part of the top navigation throughout the app.
 
 Theme Settings
 ^^^^^^^^^^^^^^

@@ -17,6 +17,12 @@ In the Staff App, the templates are divided up even more and each of those folde
 
 Below the 'extends' code, there might also be such code as:
 
-`` {% load static %}``
+``{% load static %}``
 
 This loading of static or settings or whatever is called is bringing in a variable from the backend to be used.
+
+To maintain our DRY code, there are points in the HTML in which the template 'includes' another HTML page. An example of this would be the date_range_form.html which is repeatedly used in the Staff App with:
+
+``{% include "staff/date_range_form.html" %}``
+
+Again, for more info on Django templating, please see `the documentation. <https://docs.djangoproject.com/en/1.10/topics/templates/>`_
