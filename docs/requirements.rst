@@ -9,8 +9,8 @@ Requirements
 .. important::
   Do not use SQLite.
 
-Installations
--------------
+Installation
+------------
 
 .. code-block:: console
 
