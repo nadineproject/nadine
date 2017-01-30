@@ -15,7 +15,7 @@ Create a new project with the following doc tree:
 
 ::
 
-    theme_name/
+    THEME_NAME/
     ├── theme_settings.py
     ├── static/
     │   ├── css/
@@ -67,6 +67,6 @@ First, copy your new theme folder into the themes/ folder. Then, in the terminal
 .. code-block:: console
 
   $ cd themes
-  $ ln -s theme_name active
+  $ ln -s THEME_NAME active
 
 This command tells Nadine to prioritize your theme over the members.css that came with it. Reload the Member App and see how it all looks!
