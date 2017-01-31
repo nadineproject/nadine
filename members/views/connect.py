@@ -88,6 +88,11 @@ def mail_message(request, id):
 
 
 @login_required
+def slack_redirect(request):
+    return HttpResponseRedirect(reverse('member:connect:slack', kwargs={'username': request.user.username}))
+
+
+@login_required
 def slack(request, username):
     user = get_object_or_404(User, username=username)
     if not user == request.user:

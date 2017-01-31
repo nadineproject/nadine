@@ -77,8 +77,10 @@ class UsaepayTestCase(SimpleTestCase):
             self._token.PinHash.HashValue = pin_hash.hexdigest()
         return self._token
 
-    # TODO - Fix!  Not sure what is up but I assume it's a configuration problem -- JLS
     def test_soap(self):
+        if not hasattr(settings, 'USA_EPAY_KEY'):
+            return
+
         key = settings.USA_EPAY_KEY
         pin = settings.USA_EPAY_PIN
 
