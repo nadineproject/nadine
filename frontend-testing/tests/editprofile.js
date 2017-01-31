@@ -24,10 +24,6 @@ casper.test.begin('Profile page links working', 3, function suite(test) {
     });
   });
 
-  casper.then(function() {
-
-  });
-
   casper.run(function() {
     test.done();
   })
