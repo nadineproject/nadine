@@ -28,7 +28,9 @@ Download the nadine source code from Github
 
 Install all the requirements
 
-  ``$ pip install -r requirements.txt``
+.. code-block:: console
+
+  $ pip install -r requirements.txt
 
 Run these scripts to setup nadine, install the database, and create your admin user
 
