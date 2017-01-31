@@ -21,6 +21,7 @@ To run all tests:
 
 .. code-block:: console
 
+  $ ./manage.py runserver  #make sure you have the server running it will error out
   $ casperjs test frontend-testing/tests --username='YOUR_USERNAME' --password='YOUR_PASSWORD'
 
 To run a singular test, include the filename after tests/ in the path.

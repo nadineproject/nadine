@@ -11,6 +11,7 @@ path = casper.cli.get('path');
 
 casper.on("page.error", function(msg, trace) {
     this.echo("Page Error: " + msg, "ERROR");
+    this.capture('error.png');
 });
 
 casper.test.begin('Links from given path return 200', function suite(test) {
