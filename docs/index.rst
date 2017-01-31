@@ -41,7 +41,6 @@ Indices and tables
   requirements
   quickstart
   settings
-  alerts
 
 .. toctree::
   :maxdepth: 1
