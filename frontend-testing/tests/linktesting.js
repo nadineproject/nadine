@@ -1,5 +1,5 @@
 // To test this file, make sure CapserJs is installed on local machine
-// (brew install casperjs) then use code 'casperjs test linktesting.js --username='YOUR_USERNAME' --password='YOUR_PASSWORD' --path='/GIVEN_PATH/' --log-level=debug'
+// (brew install casperjs) then use code 'casperjs test tests/linktesting.js --username='YOUR_USERNAME' --password='YOUR_PASSWORD' --path='/GIVEN_PATH/' --log-level=debug'
 
 // This tests to make sure all urls are valid on given page
 var url = 'http://127.0.0.1:8000';

@@ -1,4 +1,5 @@
 // This tests the mobile navigation in Member Application to make sure that the side-navigation opens up on smaller screens
+// To run this test enter 'casperjs test tests/mobil_nav.js --username=USERNAME --password=PASSWORD'
 
 var x = require('casper').selectXPath;
 username = casper.cli.get('username');
