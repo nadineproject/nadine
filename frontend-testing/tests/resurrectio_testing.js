@@ -1,5 +1,7 @@
 // This testing is based on using Resurrectio Chrome plugin to record user interaction and then test it again.
 
+username = casper.cli.get('username');
+password = casper.cli.get('password');
 
 var x = require('casper').selectXPath;
 casper.options.viewportSize = {width: 320, height: 568};
@@ -23,14 +25,14 @@ casper.test.begin('Resurrectio test', function(test) {
    });
    casper.waitForSelector("input[name='username']",
        function success() {
-           this.sendKeys("input[name='username']", "alexandra");
+           this.sendKeys("input[name='username']", username);
        },
        function fail() {
            test.assertExists("input[name='username']");
    });
    casper.waitForSelector("input[name='password']",
        function success() {
-           this.sendKeys("input[name='password']", "password");
+           this.sendKeys("input[name='password']", password);
        },
        function fail() {
            test.assertExists("input[name='password']");
