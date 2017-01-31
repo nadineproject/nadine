@@ -1,16 +1,27 @@
 Requirements
 ============
 
-* Python (Probably comes with your system otherwise it can be downloaded from their website)
-* Virtualenv (install with ``pip virtualenv``)
-* XCode if you are on Mac OS X
+* Python 2.7
+* Virtualenv (Virtual environment)
+* Homebrew if you are on Mac OS X (http://brew.sh)
 * Postgresql
 
 .. important::
   Do not use SQLite.
 
-Installation
-------------
+Base System Installation
+------------------------
+
+On Mac OS X
+
+.. code-block:: console
+
+  $ git # If you have not installed it, this will prompt you to download it.
+  $ brew update
+  $ brew install postgres python
+  $ pip install virtualenv
+
+On Ubuntu/Debian
 
 .. code-block:: console
 

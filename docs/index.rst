@@ -11,7 +11,7 @@ Welcome to Nadine
 
 Nadine is a Django web project which runs behind the scenes of coworking spaces.
 
-Nadine has four applications: Member, Staff, Admin, and Tablet.  These three applications help an administrator manage their coworking space.
+Nadine has four applications: Member, Staff, Admin, and Tablet.  These applications help your management team facilitate your coworking community.
 
 
 License & Copyright

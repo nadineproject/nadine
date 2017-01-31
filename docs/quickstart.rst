@@ -35,17 +35,11 @@ Run these scripts to setup nadine, install the database, and create your admin u
 .. code-block:: console
 
   $ ./manage.py setup
-	$ ./manage.py migrate
-	$ ./manage.py createsuperuser
+  $ ./manage.py migrate
+  $ ./manage.py createsuperuser
 
 At this point you can run the server
 
   ``$ ./manage.py runserver``
 
 Visit your installation of Nadine at http://127.0.0.1:8000/
-
-Run the scheduler
-
-  ``$ ./manage.py celeryd -B``
-
-You will need to run that command as a long lived process.  On linux and other unices, use something like the nohup command.
