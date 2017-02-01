@@ -99,7 +99,7 @@
 								<li><a class='slack-a' href="{% url 'member:connect:slack' user.username %}">Slack</a></li>
 							{% endif %}
 							<li><a href="{% url 'member:profile:redirect' %}">Profile</a></li>
-							<li><a class='logout-a' class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown3' href="{% url 'logout' %}">Logout</a>
+							<li><a class='logout-a dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown3' href="{% url 'logout' %}">Logout</a>
 								<ul id='dropdown3' class='dropdown-content'>
 									{% if request.user.is_staff %} <li><a href="{% url 'staff:home' %}">Staff</a></li>
 										<li><a href="{% url 'admin:index' %}">Admin</a></li>
