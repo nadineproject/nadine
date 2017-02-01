@@ -26,7 +26,7 @@ casper.test.begin('Links from given path return 200', function suite(test) {
   });
 
   casper.then(function() {
-    test.assertExists('button#loginonly-btn', 'Button here!')
+    test.assertExists('#loginonly-btn', 'Login button found.')
     this.evaluate(function() {
       document.getElementById('loginonly-btn').click();
     })

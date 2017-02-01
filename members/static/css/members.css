@@ -515,7 +515,7 @@ div#login_box.col.s6 {
 	border-radius: 2px;
 }
 
-#login_form h1, #registration_form h1 {
+#login_form h2, #registration_form h2 {
 	color: white;
 	background-color: RGBA(66, 98, 113, 1);
 	padding: 2%;
