@@ -105,6 +105,9 @@ casper.test.begin('Can update password in member edit page', 10, function suite(
     this.evaluate(function() {
       document.getElementsByClassName('logout-a')[0].click();
     })
+  })
+
+  casper.then(function() {
     this.capture('img/logged-out.png');
   })
 

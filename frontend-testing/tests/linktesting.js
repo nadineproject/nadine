@@ -26,10 +26,14 @@ casper.test.begin('Links from given path return 200', function suite(test) {
   });
 
   casper.then(function() {
-    this.log('Logging in', 'debug');
+    test.assertExists('button#loginonly-btn', 'Button here!')
     this.evaluate(function() {
       document.getElementById('loginonly-btn').click();
     })
+  })
+
+  casper.then(function() {
+    test.assertUrlMatch(path, 'Redirected to ' + path);
   })
 
   casper.then(function getLinks() {
