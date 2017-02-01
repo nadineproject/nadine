@@ -4,10 +4,11 @@
 // This tests to make sure all urls are valid on given page
 var url = 'http://127.0.0.1:8000';
 var links;
-
 username = casper.cli.get('username');
 password = casper.cli.get('password');
 path = casper.cli.get('path');
+
+casper.options.viewportSize = {width: 1100, height: 616};
 
 casper.on("page.error", function(msg, trace) {
     this.echo("Page Error: " + msg, "ERROR");
@@ -16,7 +17,7 @@ casper.on("page.error", function(msg, trace) {
 
 casper.test.begin('Links from given path return 200', function suite(test) {
   casper.start(url + path, function() {
-      test.assertTitle("Login | Office Nomads", "Login page title is the one expected");
+      // test.assertTitle("Login | Office Nomads", "Login page title is the one expected");
       test.assertExists('form[method="post"]', "login form is found");
       this.fill("form[method='post']", {
         'username': username,
