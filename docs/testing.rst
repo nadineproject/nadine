@@ -22,7 +22,7 @@ To run all tests:
 .. code-block:: console
 
   $ ./manage.py runserver  #make sure you have the server or running it will error out
-  $ casperjs test frontend-testing/tests --username='YOUR_USERNAME' --password='YOUR_PASSWORD'
+  $ casperjs test frontend-testing/tests --username='YOUR_USERNAME' --password='YOUR_PASSWORD' --path='/PAGE_TO_TEST/'
 
 To run a singular test, include the filename after tests/ in the path. In particular, to run tests to verify all links return a status code of 200, we have a test for that. Include a new variable called 'path' and either assign it '/member/' or '/staff/'.
 
