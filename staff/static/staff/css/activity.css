@@ -14,7 +14,7 @@ input.datepicker {
 }
 
 #activity-dates {
-	margin-left: 30%;
+	margin-left: 20%;
 	font-size: 2em;
 }
 
@@ -142,6 +142,8 @@ input.datepicker {
   text-align: right;
   margin-top: 5%;
 }
+
+
 
 @media only screen and (max-width: 900px) {
   #activity-dates {
