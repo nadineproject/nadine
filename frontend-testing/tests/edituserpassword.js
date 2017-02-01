@@ -13,7 +13,7 @@ casper.on("page.error", function(msg, trace) {
     this.capture('img/password-error.png');
 });
 
-casper.test.begin('Can update password in member edit page', 9, function suite(test) {
+casper.test.begin('Can update password in member edit page', 10, function suite(test) {
   casper.start(url + username + '/edit/', function() {
     test.assertTitle("Login | Office Nomads", "Login page title is the one expected");
     test.assertExists('form[method="post"]', "login form is found");
@@ -101,7 +101,10 @@ casper.test.begin('Can update password in member edit page', 9, function suite(t
   });
 
   casper.then(function() {
-    document.getElementsByClassName('logout-a')[0].click();
+    test.assertVisible('.logout-a');
+    this.evaluate(function() {
+      document.getElementsByClassName('logout-a')[0].click();
+    })
     this.capture('img/logged-out.png');
   })
 
