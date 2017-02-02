@@ -22,6 +22,7 @@ from nadine.models import CoworkingDay, Membership
 START_DATE_PARAM = 'start'
 END_DATE_PARAM = 'end'
 
+
 def date_range_from_request(request, days=31):
     # Pull the Start Date param
     start = request.POST.get(START_DATE_PARAM, None)
@@ -41,7 +42,7 @@ def date_range_from_request(request, days=31):
 
 
 @staff_member_required
-def activity(request):
+def graph(request):
     start, end = date_range_from_request(request)
     date_range_form = DateRangeForm({START_DATE_PARAM: start, END_DATE_PARAM: end})
     starteo = timeo.strptime(start, "%Y-%m-%d")
@@ -83,12 +84,17 @@ def activity(request):
             day['daily_logs_percentage'] = int(day['daily_logs'] / float(max_daily_logs) * 100)
             day['daily_logs_size'] = int(graph_size * day['daily_logs'] / float(max_daily_logs))
             day['daily_logs_size_negative'] = graph_size - day['daily_logs_size']
-    context = {'days': days, 'graph_size': graph_size,
-        'max_has_desk': max_has_desk, 'max_membership': max_membership,
-        'max_daily_logs': max_daily_logs, 'max_total': max_total,
-        'total_daily_logs': total_daily_logs, 'date_range_form': date_range_form,
-        'start': start, 'end': end}
-    return render(request, 'staff/activity.html', context)
+    context = {'days': days,
+               'graph_size': graph_size,
+               'max_has_desk': max_has_desk,
+               'max_membership': max_membership,
+               'max_daily_logs': max_daily_logs,
+               'max_total': max_total,
+               'total_daily_logs': total_daily_logs,
+               'date_range_form': date_range_form,
+               'start': start,
+               'end': end}
+    return render(request, 'staff/activity/graph.html', context)
 
 
 @staff_member_required
@@ -100,9 +106,11 @@ def list(request):
     endeo = timeo.strptime(end, "%Y-%m-%d")
     end_date = date(year=endeo.tm_year, month=endeo.tm_mon, day=endeo.tm_mday)
     daily_logs = CoworkingDay.objects.filter(visit_date__range=(start_date, end_date))
-    context = {'daily_logs': daily_logs, 'date_range_form': date_range_form,
-        'start_date': start_date, 'end_date': end_date}
-    return render(request, 'staff/activity_list.html', context)
+    context = {'daily_logs': daily_logs,
+               'date_range_form': date_range_form,
+               'start_date': start_date,
+               'end_date': end_date}
+    return render(request, 'staff/activity/list.html', context)
 
 
 @staff_member_required
@@ -120,10 +128,12 @@ def activity_for_date(request, activity_date):
     else:
         daily_log_form = CoworkingDayForm(initial={'visit_date': activity_date})
 
-    context = {'daily_logs': daily_logs, 'daily_log_form': daily_log_form,
-        'activity_date': activity_date, 'next_date': activity_date + timedelta(days=1),
-        'previous_date': activity_date - timedelta(days=1)}
-    return render(request, 'staff/activity_date.html', context)
+    context = {'daily_logs': daily_logs,
+               'daily_log_form': daily_log_form,
+               'activity_date': activity_date,
+               'next_date': activity_date + timedelta(days=1),
+               'previous_date': activity_date - timedelta(days=1)}
+    return render(request, 'staff/activity/for_date.html', context)
 
 
 @staff_member_required
@@ -135,7 +145,7 @@ def for_date(request, year, month, day):
 @staff_member_required
 def for_today(request):
     today = timezone.localtime(timezone.now())
-    return HttpResponseRedirect(reverse('staff_activity_day', args=[], kwargs={'year': today.year, 'month': today.month, 'day': today.day}))
+    return HttpResponseRedirect(reverse('staff:activity:date', args=[], kwargs={'year': today.year, 'month': today.month, 'day': today.day}))
 
 
 @staff_member_required
@@ -152,9 +162,12 @@ def for_user(request, username):
     door_logs = DoorEvent.objects.filter(user=user, timestamp__range=(start_date, end_date))
     daily_logs = CoworkingDay.objects.filter(user=user, visit_date__range=(start_date, end_date)).reverse()
 
-    context= {'user':user, 'date_range_form': date_range_form,
-        'arp_logs':arp_logs, 'door_logs':door_logs, 'daily_logs':daily_logs}
-    return render(request, 'staff/activity_user.html', context)
+    context = {'user': user,
+               'date_range_form': date_range_form,
+               'arp_logs': arp_logs,
+               'door_logs': door_logs,
+               'daily_logs': daily_logs}
+    return render(request, 'staff/activity/for_user.html', context)
 
 
-# Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

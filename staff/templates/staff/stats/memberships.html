@@ -1,0 +1,62 @@
+{% extends "staff/stats/base.html" %}
+{% load stats_tags %}
+
+{% block sub-title %}Stats | Membership History{% endblock %}
+
+{% block style %}
+<!-- #content th { width: 100px;} -->
+#page-message { font-size: 1.5em; color: #933; margin: 20px 0px; }
+
+{% endblock %}
+
+{% block content %}
+
+<h4>Stats - Membership History:</h4>
+
+<div id="input-form">
+	<form action='.' method='POST'>
+		Start: <input id='input-start' class='datepicker' name="start_date" value="{{ start_date|date:'m-Y' }}"/>
+		<input id='avg-only' name="average_only" type="checkbox" {% if average_only %} CHECKED {% endif %} />
+		<label for='avg-only'>Average Only</label>
+		<input type="submit" value="Refresh">
+		{% csrf_token %}
+	</form>
+</div>
+
+{% if page_message %}
+	<p id="page-message">{{ page_message|safe }}</p>
+{% endif %}
+
+{% for month_histories in year_histories %}
+<table class="membership-history">
+	<tr>
+		<td></td>
+	{% for month in month_histories %}
+		<th>{{ month.start_date|date:"M 'y" }}</th>
+	{% endfor %}
+	</tr>
+	{% for type in history_types %}
+	<tr class="{% cycle 'row-even' 'row-odd' %}">
+		<th>{{ type.title }}</th>
+		{% for month in month_histories %}
+			<td>{% month_history_datum %}</td>
+		{% endfor %}
+	</tr>
+	{% endfor %}
+</table>
+{% endfor %}
+
+{% endblock %}
+
+{% block extrajs %}
+<script>
+	$(document).ready(function(){
+		$('.button-collapse').sideNav();
+		$('.collapsible').collapsible();
+
+		$('.datepicker').datepicker({
+			dateFormat: 'mm-yy'
+		});
+	});
+</script>
+{% endblock %}

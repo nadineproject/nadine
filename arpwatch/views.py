@@ -15,7 +15,7 @@ from arpwatch import arp
 
 
 @staff_member_required
-def index(request):
+def home(request):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
@@ -31,7 +31,7 @@ def index(request):
             # return HttpResponseRedirect('/success/url/')
     else:
         form = UploadFileForm()
-    return render(request, 'arpwatch/index.html', {'form': form})
+    return render(request, 'arpwatch/home.html', {'form': form})
 
 
 def import_files(request):
@@ -94,4 +94,4 @@ def logins_by_day(request, year, month, day):
     return render(request, 'arpwatch/user_logins.html', context)
 
 
-# Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

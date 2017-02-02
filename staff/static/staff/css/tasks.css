@@ -1,0 +1,35 @@
+#todo-tab {
+  color: RGBA(90, 122, 189, 1.00) !important;
+}
+
+#alert-a {
+  margin-bottom: 4%;
+}
+
+.inline {
+  display: inline;
+}
+
+.empty-msg {
+  font-size: 1.4em;
+  font-weight: bold;
+}
+
+@media only screen and (max-width: 599px) {
+
+  #assigned-th {
+		height: 45px;
+		line-height: 45px;
+	}
+
+	#note-th {
+		height: 65px;
+		line-height: 65px;
+	}
+
+	#action-th {
+		margin-top: 20px;
+		height: 26px;
+		line-height: 26px;
+	}
+}

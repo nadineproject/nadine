@@ -1,0 +1,134 @@
+{% extends "staff/billing/base.html" %}
+{% load static %}
+
+{% block sub-title %}Xero | {{ user }}{% endblock %}
+
+{% block content %}
+
+<h4>Xero Data - <a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a>:</h4>
+
+{% if messages %}
+<div class="messages">
+	{% for message in messages %}
+		<div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+	{% endfor %}
+</div>
+{% endif %}
+
+{% if not xero_contact %}
+	<h5>Contact Not Found - Searching</h5>
+	<table>
+		<tr>
+			<th>Name</th>
+			<th>ContactID</th>
+			<th></th>
+		</tr>
+		{% for c in xero_contact_search %}
+			<tr class="{% cycle 'row-even' 'row-odd' %}">
+				<td>{{ c.Name }}</td>
+				<td>{{ c.ContactID }}</td>
+				<td>
+					<form method="POST" action="." onSubmit="return confirm('Are you sure you want to link {{ user.get_full_name }} to this Xero contact?');">
+						<input type="hidden" name="xero_id" value="{{ c.ContactID }}"/>
+						<input type="Submit" name="action" value="Link"/>
+						{% csrf_token %}
+					</form>
+				</td>
+			</tr>
+		{% endfor %}
+		<form method="POST" action=".">
+		<tr class="{% cycle 'row-even' 'row-odd' %}">
+			<td nowrap>Add Contact Manually</td>
+			<td><input name="xero_id" size="45" value="{{ c.ContactID }}"/></td>
+			<td><input type="Submit" name="action" value="Link"/></td>
+		</tr>
+		{% csrf_token %}
+		</form>
+		<form method="POST" action="." onSubmit="return confirm('Are you sure you want to add {{ user.get_full_name }} to Xero?');">
+		<tr>
+			<td colspan="3" style="text-align:center;">
+				<input type="hidden" name="action" value="add">
+				<input type="Submit" value="Create New Xero Contact"/>
+			</td>
+		</tr>
+		{% csrf_token %}
+		</form>
+	</table>
+{% else %}
+	<table>
+		<tr>
+			<th>Name</th>
+			<td nowrap>{{ xero_contact_data.Name }}</a></td>
+		</tr>
+		<tr>
+			<th>ContactID</th>
+			<td nowrap><a href="https://go.xero.com/Contacts/View.aspx?contactID={{ xero_contact.xero_id }}">{{ xero_contact.xero_id }}</a></td>
+		</tr>
+		<tr>
+			<th>Account Number</th>
+			<td nowrap>{{ xero_contact_data.AccountNumber }}</a></td>
+		</tr>
+		<tr>
+			<th>Email</th>
+			<td nowrap>{{ xero_contact_data.EmailAddress }}</a></td>
+		</tr>
+		<tr>
+			<th>Last Sync</th>
+			<td>{{ xero_contact.last_sync }}</td>
+		</tr>
+		<tr>
+			<th></th>
+			<td>
+				<form method="POST" action=".">
+					<input type="Submit" name="action" value="Sync"/>
+					{% csrf_token %}
+				</form>
+			</td>
+		</tr>
+	</table>
+
+	<h5>Repeating Invoices</h5>
+	<table>
+		<tr>
+			<th>Next Date</th>
+			<th>Description</th>
+			<th>Total</th>
+			<th></th>
+			<th></th>
+		{% for i in repeating_invoices %}
+			<tr>
+				<td>{{ i.Schedule.NextScheduledDate|date:"Y-m-d" }}</td>
+				<td>
+					{% for l in i.LineItems %}
+						{{ l.Description }}
+						{% if not forloop.last %}{% ifequal forloop.revcounter 2 %} and {% else %}, {% endifequal %}{% else %}{% endif %}
+					{% endfor %}
+				</td>
+				<td>${{ i.Total }}0</td>
+				<td><a href="https://go.xero.com/RepeatTransactions/Edit.aspx?type=AR&invoiceID={{ i.ID }}">Edit</a></td>
+				<td></td>
+			</tr>
+		{% endfor %}
+	</table>
+
+	<h5>Invoices</h5>
+	<table>
+		<tr>
+			<th>Date</th>
+			<th>Invoice</th>
+			<th>Total</th>
+			<th>Status</th>
+			<th></th>
+		{% for i in invoices %}
+			<tr>
+				<td>{{ i.DateString|slice:"10" }}</td>
+				<td><a href="https://go.xero.com/AccountsReceivable/View.aspx?InvoiceID={{ i.InvoiceID }}">{{ i.InvoiceNumber }}</a></td>
+				<td>${{ i.Total }}0</td>
+				<td>{{ i.Status }}</td>
+				<td></td>
+			</tr>
+		{% endfor %}
+	</table>
+{% endif %}
+
+{% endblock %}

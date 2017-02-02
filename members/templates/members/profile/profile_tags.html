@@ -1,0 +1,50 @@
+{% comment %}
+  Note:  The jquery on this page will not work if loaded outside the profile page.
+{% endcomment %}
+
+<div class='tags'>
+	<ul>
+    {% if user.profile.tags.all %}
+  		{% for t in user.profile.tags.all %}
+  			<li class='chip'>
+  				<a class="tag-chip" href="{% url 'member:tag:view' 'members' t %}">{{ t }}</a>
+  				{% if can_edit %}
+  					(<a href="{% url 'member:tag:remove' user.username t %}" style="color: RGBA(199, 121, 102, 1);"> X </a>)
+  				{% endif %}
+  			</li>
+  		{% endfor %}
+    {% else %}
+      <p style='font-style: italic;text-align: center;'>
+        No tags yet.
+      </p>
+    {% endif %}
+	</ul>
+
+	{% if can_edit %}
+	<div class="ui-widget">
+		<form action="{% url 'member:tag:add' user.username %}" method="POST">
+			<table class='tag-table'>
+				<tr>
+					<td>
+						<input id="tag_input" name="tag" placeholder="e.g. Biking"/>
+					</td>
+					<td>
+						<input class='btn tag-btn' type="submit" value="Add"/>
+					</td>
+				</tr>
+			</table>
+			{% csrf_token %}
+		</form>
+	</div>
+	{% endif %}
+</div>
+
+<script>
+	(function() {
+		$( "#tag_input" ).autocomplete({
+			source: "{% url 'member:json:user_tags' %}",
+			minLength: 2,
+			autoFocus: true,
+		});
+	})();
+</script>

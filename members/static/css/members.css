@@ -1,5 +1,44 @@
-/* Member Pages Style */
+/*This style sheet includes the styling for all pages of the Nadine Member app*/
 
+/*
+ORDER OF SECTIONS:
+	Body
+	Icon Stylings
+	Navigation and Navigation Bar
+	Jumbotron and Large Logo Stylings
+	Small Logo for Main Navigation
+	Side Navigation Styling
+	Tabs as seen on Members, Organization and Mailing Lists
+	Buttons
+	Chip and Tag Creation
+	Home Page Content
+	Login and Registration Pages
+	Edit Profile Page
+	Organization Edit Page
+	URL Link-Formset
+	Search Form
+	Organization list and Organization Cards
+	Members and Member Cards
+	Modals
+	Organization Logos & Member Photos and Changing
+	Websites
+	Member and Organization Profile Layout
+	Collapsible Sections of Member Profile
+	Event and Room Bookings
+	Booking Creation
+	Booking Bar as used on booking/create and booking/confirm
+	Direction Buttons from Bookings
+	Room Information Slider
+	Calendar Page
+	FullCalendar
+	Not_Active Page
+	Mail Page
+	Footer
+	Media Queries
+*/
+
+/* Body */
+/*Styling for body elements which are either used on every page or on multiple*/
 html {
 	height: 100%;
 	box-sizing: border-box;
@@ -31,6 +70,43 @@ p {
 	 line-height: 1.6;
 }
 
+table th {
+	padding: 0.5em 0.5em 0.25em;
+}
+
+table th:first-child {
+	text-align: left;
+}
+
+table td:first-child, table td:last-child {
+	text-align: left;
+}
+
+table td {
+	padding: 0.5em;
+}
+
+.row.main {
+	margin-bottom: 0;
+}
+
+#content h2 {
+	display: block;
+	text-align: center;
+}
+
+#content a {
+	outline:none;
+}
+
+.messages {
+	margin-top: 3%;
+}
+
+.centered {
+	text-align: center;
+}
+
 .btn {
 	background-color: RGBA(79, 134, 135, 1);
 }
@@ -47,30 +123,102 @@ p {
 	visibility: hidden;
 }
 
-.visuallyhidden {
-	position: absolute !important;
-	clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
-	clip: rect(1px, 1px, 1px, 1px);
+.oswald {
+	font-family: 'Oswald', sans-serif;
+	color: RGBA(79, 134, 135, 1);
 }
 
-.invisible {
-	visibility: hidden;
+/* Used in Websites and Edit Profile */
+.bold-blue {
+	color: RGBA(66, 98, 113, 1);
 }
 
-.clearfix:after  {
-	content: ".";
-	display: block;
-	height: 0;
-	clear: both;
-	visibility: hidden;
+/*Top margin for small tooltips that appear on hover*/
+.tooltipped {
+	margin-top: 3%;
 }
 
-.clearfix {
-	zoom: 1;
+.lightbg {
+	margin-top: 5%;
+	margin-bottom: 140px;
+	min-height: 500px;
+	padding-top: 10px;
+	overflow: auto;
 }
 
-/* Header */
 
+
+/*Icon styling*/
+#manage {
+	height: 30px;
+}
+
+#admin {
+	height: 30px;
+}
+
+#locked {
+	height: 30px;
+}
+
+#unlocked {
+	height: 30px;
+}
+
+#edit {
+	height: 25px;
+}
+
+#white-edit {
+	content: url(../img/white_edit.png);
+	height: 30px;
+	padding: 1%;
+}
+
+/* ':after' reflects styling for Firefox */
+#Facebook, #Facebook:after {
+	content: url(../img/Facebook.png);
+	height: 40px;
+}
+
+#Twitter, #Twitter:after {
+	content: url(../img/Twitter.png);
+	height: 40px;
+}
+
+#Instagram, #Instagram:after {
+	content: url(../img/Instagram.png);
+	height: 40px;
+}
+
+#Linkedin, #Linkedin:after {
+	content: url(../img/Linkedin.png);
+	height: 40px;
+}
+
+#Github, #Github:after {
+	content: url(../img/Github.png);
+	height: 40px;
+}
+
+#Personal, #Personal:after {
+	content: url(../img/Personal.png);
+	height: 40px;
+}
+
+#Professional, #Professional:after {
+	content: url(../img/Professional.png);
+	height: 40px;
+}
+
+#Blog, #Blog:after {
+	content: url(../img/blog.png);
+	height: 40px;
+}
+
+
+
+/*Navigation and the Navigation Bar*/
 #main-nav {
 	background-color: RGBA(66, 98, 113, 1);
 	position: fixed;
@@ -112,6 +260,13 @@ p {
 	width: 100%;
 }
 
+#dropdown1 a, #dropdown2 a, #dropdown3 a {
+	color: RGBA(79, 134, 135, 1);
+}
+
+
+
+/*Styling of large image with centered logo on home page*/
 #jumbotron {
 	position: relative;
 	margin: 0;
@@ -126,41 +281,13 @@ p {
 	background-color: RGBA(66, 98, 113, 1);
 }
 
-.side-nav {
-	background-color: RGBA(80, 80, 80, 1);
-	padding-top: 2%;
-	padding-left: 3%;
-}
-
-.side-nav li a {
-	font-size: 1.5em;
-	padding-right: 5%;
-}
-
-.side-nav li:first-child {
-	margin-top: 10%;
-}
-
-#sidenav-overlay {
-	background-color: RGBA(80, 80, 80, .6);
-}
-
 .logo-img {
 	position: absolute;
 	z-index: 2000;
 	top: 10%;
-	left: 37%;
+	left: 42%;
 	height: 300px;
   width: 300px;
-	z-index: 2000;
-}
-
-.sec-logo {
-	position: fixed;
-	top: 0;
-	left: 0;
-	height: 110px;
-	margin-left: 1%;
 	z-index: 2000;
 }
 
@@ -178,79 +305,199 @@ p {
 	margin: 0;
 }
 
-#dropdown1 a, #dropdown2 a, #dropdown3 a {
-	color: RGBA(79, 134, 135, 1);
+
+
+/*Styling of small logo image on main nav throughout app*/
+.sec-logo {
+	position: fixed;
+	top: 0;
+	left: 0;
+	height: 110px;
+	margin-left: 1%;
+	z-index: 2000;
 }
 
-#content h2 {
-	display: block;
-	text-align: center;
+
+
+/*Side-Nav styling for navigation on mobile devices*/
+#sidenav-overlay {
+	background-color: RGBA(80, 80, 80, .6);
 }
 
-/* Body */
-.row.main {
-	margin-bottom: 0;
+.side-nav {
+	background-color: RGBA(80, 80, 80, 1);
+	padding-top: 2%;
+	padding-left: 3%;
 }
 
-.messages {
-	margin-top: 3%;
+.side-nav li a {
+	font-size: 1.5em;
+	padding-right: 5%;
 }
 
-table th {
-	padding: 0.5em 0.5em 0.25em;
+.side-nav li:first-child {
+	margin-top: 10%;
 }
 
-table th:first-child {
-	text-align: left;
+
+
+/*Tabs styling as used in view members, orgs, and mailing lists*/
+.tabs {
+	color: RGBA(44, 148, 231, 1);
+	width: 50%;
 }
 
-table td:first-child, table td:last-child {
-	text-align: left;
+.tabs .tab {
+	text-transform: none;
 }
 
-table td {
-	padding: 0.5em;
+.tabs .tab a {
+	color: RGBA(44, 148, 231, 1)
 }
 
-.prof-page {
-	background-color: white;
+.tabs .tab a:hover, .tabs .tab a:focus {
+	color: RGBA(30, 52, 64, 1);
 }
 
-#content a {
-	outline:none;
+.tabs .indicator {
+	background-color: RGBA(30, 52, 64, 1);
 }
 
+.mem-tabs .indicator {
+	background-color: RGBA(30, 52, 64, 1);
+}
+
+.prof-tabs .indicator {
+	width: 15%;
+	background-color: RGBA(44, 148, 231, 1);
+}
+
+
+/*Button styling*/
+.sub-btn, #confirm-btn, .reg-btn  {
+	margin-top: 2%;
+	margin-left: 35%;
+}
+
+.billing-btn {
+	font-size: .8em;
+}
+
+#confirm-btn, .reg-btn {
+	margin-left: 40%;
+}
+
+#email-btn {
+	width: 50%;
+}
+
+.url-btn {
+	font-size: .7em;
+}
+
+.modal-btn {
+	margin-top: 2%;
+	margin-left: 45%;
+}
+
+.org-btn {
+	margin-left: 37%;
+	margin-right: 5%;
+	margin-top: 2%;
+}
+
+.org-form .cancel-btn {
+	margin-top: 2%;
+}
+
+#org-search-form .search-btn {
+	padding: 0;
+	font-size: .9em;
+}
+
+.pic-btn {
+	margin-left: 40%;
+	margin-top: 5%;
+}
+
+.edit-btn {
+	height: 40px;
+}
+
+
+/*Chip and tag creation styling*/
+.tags {
+	margin-top: 5%;
+	margin-left: 10%;
+	margin-right: 10%;
+}
+
+.tag-table {
+	margin-right: 20%;
+}
+
+.tag-chip, .chip {
+	color: RGBA(92, 92, 92, 1);
+	background-color: RGBA(228, 228, 228, 1);
+}
+
+
+
+/*Home content styling*/
 #welcome-p {
 	font-size: 1.2em;
 	text-align: center;
 }
 
-#booking_form {
-	background-color: RGBA(239, 238, 231, 1);
-	padding: 2%;
-	margin-left: 15%;
-	width: 70%;
-}
-
-#booking_form {
-	min-width: 700px;
-}
-
-.booking-box {
-	background-color: RGBA(239, 238, 231, 1);
-	border-radius: 2px;
-	padding: 2%;
-}
-
-textarea#id_bio {
-	background-color: white;
-	height: 100px;
-	width: 500px;
-	border: none;
-}
-
-.public_bool {
+#chat_icon {
+	height: 25%;
 	width: 25%;
+}
+
+#group_icon {
+	height: 50%;
+	width: 50%;
+}
+
+.card {
+	text-align: center;
+	background-color: RGBA(96, 131, 157, 1.00);
+}
+
+.card a {
+	color: RGBA(96, 131, 157, 1.00);
+}
+
+.event-card {
+	width: 330px;
+}
+
+
+
+/*Login and Registration Page Styling*/
+#registration input#id_first_name, #registration input#id_last_name {
+	width: 300px;
+}
+
+#registration #id_email {
+	width: 400px;
+}
+
+#registration .pwd-input {
+	width: 300px;
+}
+
+#loginonly-btn {
+	margin-left: 20%;
+	margin-right: 10%;
+	width: 35%;
+	background-color: RGBA(79, 134, 135, 1);
+}
+
+#loginonly-btn {
+	margin-left: 30%;
+	width: 40%;
+	background-color: RGBA(79, 134, 135, 1);
 }
 
 #reg_box, #login_box {
@@ -268,7 +515,7 @@ div#login_box.col.s6 {
 	border-radius: 2px;
 }
 
-#login_form h1, #registration_form h1 {
+#login_form h2, #registration_form h2 {
 	color: white;
 	background-color: RGBA(66, 98, 113, 1);
 	padding: 2%;
@@ -303,43 +550,12 @@ div#login_box.col.s6 {
 
 #login_form input {
 	width: 90%;
-}
-
-#booking_form td {
-	border-bottom: 0;
-}
-
-#booking_form h4 {
-	text-align: center;
-}
-
-input#id_photo {
-	background-color: RGBA(255, 255, 255, 0);
-}
-
-#login_form input{
 	padding-left: 2%;
 	margin-right: 2%;
-
 }
 
-.sub-btn, #confirm-btn, .reg-btn  {
-	background: RGBA(79, 134, 135, 1);
-	margin-top: 2%;
-	margin-left: 35%;
-}
 
-.billing-btn {
-	font-size: .8em;
-}
 
-#confirm-btn {
-	margin-left: 40%;
-}
-
-.reg-btn {
-	margin-left: 40%;
-}
 
 /*Edit Profile Page*/
 #profile_form, #registration_form {
@@ -418,10 +634,6 @@ td.pf-input {
 	height: 90%;
 }
 
-#email-btn {
-	width: 50%;
-}
-
 .pf-input input {
 	width: 200px;
 }
@@ -446,10 +658,109 @@ input#id_phone, input#id_phone2 {
 	width: 70%;
 }
 
+input#id_city {
+	width: 85%;
+}
+
+#state-select{
+	vertical-align: text-top;
+	padding: 0;
+}
+
+select#id_state {
+	width: 85%;
+	font-size: .9em;
+	box-sizing: border-box;
+}
+
+textarea#id_bio {
+	background-color: white;
+	height: 100px;
+	/*width: 500px;*/
+	border: none;
+	width: 100%;
+}
+
+#email-input {
+	width: 50%;
+}
+
+#email-table input {
+	width:75%;
+}
+
+.verify-email, #add-email {
+	background: RGBA(63, 146, 161, 1);
+}
+
+input#id_photo {
+	background-color: RGBA(255, 255, 255, 0);
+}
+
+input#id_address1, input#id_address2 {
+	width: 90%;
+}
+
+input#id_url_twitter, input#id_url_facebook, input#id_url_github, input#id_url_linkedin,input#id_url_professional, input#id_url_personal {
+	width: 400px;
+}
+
+input#id_emergency_phone {
+	width: 200px;
+}
+
 #passInput-error {
 	width: 50%;
 }
 
+
+
+/*Organization Edit Page*/
+.org-form {
+	background: RGBA(239, 238, 231, 1);
+	padding: 2%;
+	min-width: 600px;
+}
+
+.org-form .org-label {
+	width: 30%;
+	font-weight: bold;
+}
+
+.org-form #id_name, .org-form #id_bio, .org-form #id_blurb, .org-form #id_title, .org-form #id_start_date, .org-form #id_end_date, .org-form #id_username, .org-form #end_date, .org-form #start_date {
+	background-color: white;
+	width: 70%;
+	border: none;
+	padding: 1%;
+}
+
+.org-form #id_blurb {
+	padding-bottom: 10%;
+	height: 100px;
+}
+
+.org-form #id_bio {
+ 	height: 90%;
+}
+
+.org-form #public_help p, .org-form #blurb_help p {
+	width: 70%;
+	text-align: center;
+	margin-left: 10%;
+	background-color: white;
+	padding: 1%;
+}
+
+.org-form .org-input {
+	background-color: white;
+	width: 70%;
+	border: none;
+	padding: 1%;
+}
+
+
+
+/*URL Link-formset styling for orgs and members*/
 td.pf-input.url-type {
 	padding-top: 0;
 	vertical-align: text-top;
@@ -489,10 +800,6 @@ div.link-formset.row.dynamic-form {
 	width: 100%;
 }
 
-.url-btn {
-	font-size: .7em;
-}
-
 .add-row {
 	margin-left: 4%;
 	margin-bottom: 10%;
@@ -503,94 +810,9 @@ div.link-formset.row.dynamic-form {
 	margin-left: 5%;
 }
 
-input#id_city {
-	width: 85%;
-}
 
-#state-select{
-	vertical-align: text-top;
-	padding: 0;
-}
 
-select#id_state {
-	width: 85%;
-	font-size: .9em;
-	box-sizing: border-box;
-}
-
-#email-table input {
-	width:75%;
-}
-
-input#id_address1, input#id_address2 {
-	width: 90%;
-}
-
-input#id_url_twitter, input#id_url_facebook, input#id_url_github, input#id_url_linkedin,input#id_url_professional, input#id_url_personal {
-	width: 400px;
-}
-
-input#id_emergency_phone {
-	width: 200px;
-}
-
-textarea#id_bio {
-	width: 100%;
-}
-
-.verify-email, #add-email {
-	background: RGBA(63, 146, 161, 1);
-}
-
-#email-input {
-	width: 50%;
-}
-
-.tags {
-	margin-top: 5%;
-	margin-left: 10%;
-	margin-right: 10%;
-}
-
-.tag-table {
-	margin-right: 20%;
-}
-
-.tag-chip, .chip {
-	color: RGBA(92, 92, 92, 1);
-	background-color: RGBA(228, 228, 228, 1);
-}
-
-.tag-btn {
-	background-color: RGBA(79, 134, 135, 1);
-}
-
-/*Registration form styling*/
-#registration input#id_first_name, #registration input#id_last_name {
-	width: 300px;
-}
-
-#registration #id_email {
-	width: 400px;
-}
-
-#registration .pwd-input {
-	width: 300px;
-}
-
-#login-btn {
-	margin-left: 20%;
-	margin-right: 10%;
-	width: 35%;
-	background-color: RGBA(79, 134, 135, 1);
-}
-
-#loginonly-btn {
-	margin-left: 30%;
-	width: 40%;
-	background-color: RGBA(79, 134, 135, 1);
-}
-
+/*Search form styling as seen on view_members and orgs*/
 #site-search-form input {
 	width: 60%;
 }
@@ -602,90 +824,9 @@ textarea#id_bio {
 	margin-left: 5%;
 }
 
-#event_cal {
-	margin-left: 10%;
-}
 
-.card {
-	text-align: center;
-	background-color: RGBA(96, 131, 157, 1.00);
-}
 
-#chat_icon {
-	height: 25%;
-	width: 25%;
-}
-
-#group_icon {
-	height: 50%;
-	width: 50%;
-}
-
-.card a {
-	color: RGBA(96, 131, 157, 1.00);
-}
-
-.event-card {
-	width: 330px;
-}
-
-.tabs {
-	color: RGBA(44, 148, 231, 1);
-	width: 50%;
-}
-
-.tabs .tab {
-	text-transform: none;
-}
-
-.tabs .tab a {
-	color: RGBA(44, 148, 231, 1)
-}
-
-.tabs .tab a:hover, .tabs .tab a:focus {
-	color: RGBA(30, 52, 64, 1);
-}
-
-.tabs .indicator {
-	background-color: RGBA(30, 52, 64, 1);
-}
-
-.mem-tabs .indicator {
-	background-color: RGBA(30, 52, 64, 1);
-}
-
-.prof-tabs .indicator {
-	width: 15%;
-	background-color: RGBA(44, 148, 231, 1);
-}
-
-.triptic {
-	text-align: justify;
-}
-
-.triptic > div {
-	width: 33%;
-	display: inline-block;
-	vertical-align: top;
-	/* IE fix. */
-	display: inline;
-	zoom: 1;
-}
-
-.triptic:after {
-	content: "";
-	width: 100%;
-	display: inline-block;
-}
-
-.lightbg {
-	margin-top: 5%;
-	margin-bottom: 140px;
-	min-height: 500px;
-	padding-top: 10px;
-	overflow: auto;
-}
-
+/*Org List and Organization Card styling*/
 .org-group {
 	white-space: nowrap;
 }
@@ -754,12 +895,6 @@ a.name-a {
 	white-space: normal;
 }
 
-#org-search-form .search-btn {
-	padding: 0;
-	font-size: .9em;
-}
-
-/*Organization view*/
 .photo-div {
 	height: 250px;
 	width: 250px;
@@ -808,59 +943,9 @@ h5.org-members {
 	margin-bottom: 2%;
 }
 
-/*Org edit page*/
-.org-form {
-	background: RGBA(239, 238, 231, 1);
-	padding: 2%;
-	min-width: 600px;
-}
 
-.org-form .org-label {
-	width: 30%;
-	font-weight: bold;
-}
 
-.org-form #id_name, .org-form #id_bio, .org-form #id_blurb, .org-form #id_title, .org-form #id_start_date, .org-form #id_end_date, .org-form #id_username, .org-form #end_date, .org-form #start_date {
-	background-color: white;
-	width: 70%;
-	border: none;
-	padding: 1%;
-}
-
-.org-form #id_blurb {
-	padding-bottom: 10%;
-	height: 100px;
-}
-
-.org-form #id_bio {
- 	height: 90%;
-}
-
-.org-form #public_help p, .org-form #blurb_help p {
-	width: 70%;
-	text-align: center;
-	margin-left: 10%;
-	background-color: white;
-	padding: 1%;
-}
-
-.org-form .org-input {
-	background-color: white;
-	width: 70%;
-	border: none;
-	padding: 1%;
-}
-
-.org-btn {
-	margin-left: 37%;
-	margin-right: 5%;
-	margin-top: 2%;
-}
-
-.org-form .cancel-btn {
-	margin-top: 2%;
-}
-
+/*View Members and Member Card Styling*/
 .user-card {
 	width: 190px;
 	border: solid 3px #EEE;
@@ -911,634 +996,18 @@ a.photo.star-img  {
   height: auto;
 }
 
-.oswald {
-	font-family: 'Oswald', sans-serif;
-	color: RGBA(79, 134, 135, 1);
-}
 
+/*TODO Is this being used?*/
 .frag {
 	text-spacing: 1px;
 }
 
-.tags-box {
-	margin-top: 5%;
-	margin-bottom: 10%;
-}
 
-.tags-box li {
-	margin-left: 3%;
-}
 
 
-img#mem-photo {
-	margin-top: 10%;
-}
-
-#img-edit {
-	/*content: url(../img/camera.png);*/
-	display: none;
-	margin-left: 40%;
-}
-
-#change-opacity:hover #mem-photo {
-	opacity: 0.5;
-}
-
-#change-opacity:hover .edit-img, #change-opacity:hover .org-img-edit {
-	color: RGBA(0, 0, 0, 1);
-}
-
-.profile-img-box:hover #img-edit {
-	display: block;
-}
-
-.edit-img, .locked-img {
-	color: RGBA(0, 0, 0, 0);
-	position: relative;
-	top: 0;
-	left: 0;
-	text-align: center;
-	padding-top: 35%;
-	padding-left: 10%;
-}
-
-.edit-img h3 {
-	font-size: 1.7em;
-}
-
-h2#prof-name {
-	text-align: left;
-	font-size: 2.4em;
-}
-
-.bold-blue {
-	color: RGBA(66, 98, 113, 1);
-}
-
-.editable-photo {
-	float: left;
-	margin: 0px 1em 1em 0px;
-	position: absolute;
-}
-
-#img-preview, #upload-preview, #org-preview {
-	display: block;
-  overflow: hidden;
-  height: 200px;
-  width: 200px;
-	position: relative;
-}
-
-#prof-img, .edit-img, .locked-img {
-	margin-left: 2%;
-	display: block;
-  overflow: hidden;
-  height: 300px;
-  width: 310px;
-	/*Below is for when using cropperJS*/
-	/*width: 300px;*/
-	margin-bottom: 10%;
-}
-
-#img-preview img, #prof-img img {
-	display: block;
-  min-width: 100%;
-  min-height: 100%;
-	max-width: 100%;
-  -ms-interpolation-mode: bicubic;
-}
-
-.prof-img, .upload-input {
-  /*position: relative;*/
-  width: 300px;
-  height: 300px;
-  overflow: hidden;
-	margin: 2%;
-}
-
-.member-photo {
-	float: left;
-	position: relative;
-	margin: 10%;
-}
-
-.org-img {
-	width: 200px;
-  height: 200px;
-  overflow: hidden;
-	margin-left: 3%;
-}
-
-.org-img-edit {
-	color: RGBA(0, 0, 0, 0);
-	position: relative;
-	top: 0;
-	left: 0;
-	text-align: center;
-	padding-top: 25%;
-	padding-left: 10%;
-	margin-left: 2%;
-	display: block;
-	overflow: hidden;
-	margin-bottom: 10%;
-	width: 200px;
-  height: 200px;
-}
-
-.upload-input {
-	width: 200px;
-	height: 200px;
-	overflow: hidden;
-}
-
-#upload-preview img {
-	display: block;
-	position: absolute;
-	left: 50%;
-	top: 50%;
-	height: 100%;
-  width: auto;
-  -webkit-transform: translate(-50%,-50%);
-      -ms-transform: translate(-50%,-50%);
-          transform: translate(-50%,-50%);
-}
-
-#org-preview img {
-	display: block;
-	position: absolute;
-	left: 50%;
-	top: 50%;
-  -webkit-transform: translate(-50%,-50%);
-      -ms-transform: translate(-50%,-50%);
-          transform: translate(-50%,-50%);
-}
-
-.prof-img img {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  height: 100%;
-  width: auto;
-  -webkit-transform: translate(-50%,-50%);
-      -ms-transform: translate(-50%,-50%);
-          transform: translate(-50%,-50%);
-}
-
-img.org-photo#mem-photo {
-	margin-top: 0;
-}
-
-.org-img img {
-	position: absolute;
-	max-width: 200px;
-	max-height: 200px;
-  left: 50%;
-  top: 50%;
-	-webkit-transform: translate(-50%,-50%);
-      -ms-transform: translate(-50%,-50%);
-          transform: translate(-50%,-50%);
-}
-
-.prof-img img.portrait, #upload-preview img.portrait, .org-img img.portrait {
-  width: 100%;
-  height: auto;
-}
-
-#edit {
-	height: 25px;
-}
-
-#white-edit {
-	content: url(../img/white_edit.png);
-	height: 30px;
-	padding: 1%;
-}
-
-#manage {
-	height: 30px;
-}
-
-#admin {
-	height: 30px;
-}
-
-#locked {
-	height: 30px;
-}
-
-#unlocked {
-	height: 30px;
-}
-
-#Facebook, #Facebook:after {
-	content: url(../img/Facebook.png);
-	height: 40px;
-}
-
-#Twitter, #Twitter:after {
-	content: url(../img/Twitter.png);
-	height: 40px;
-}
-
-#Instagram, #Instagram:after {
-	content: url(../img/Instagram.png);
-	height: 40px;
-}
-
-#Linkedin, #Linkedin:after {
-	content: url(../img/Linkedin.png);
-	height: 40px;
-}
-
-#Github, #Github:after {
-	content: url(../img/Github.png);
-	height: 40px;
-}
-
-#Personal, #Personal:after {
-	content: url(../img/Personal.png);
-	height: 40px;
-}
-
-#Professional, #Professional:after {
-	content: url(../img/Professional.png);
-	height: 40px;
-}
-
-#Blog, #Blog:after {
-	content: url(../img/blog.png);
-	height: 40px;
-}
-
-.profile-links {
-	margin-top: 5%;
-	margin-left: 5%;
-	margin-bottom: 2%;
-}
-
-.url-links {
-	display: inline-block;
-	padding-right: 5%;
-}
-
-.pic-upload {
-	width: 180px;
-}
-
-.picModal-content h4 {
-	text-align: center;
-	padding-top: 2%;
-}
-
-#upload-preview, #org-preview {
-	margin-left: 5%;
-}
-
-/*.img-id {
-	max-width: 250px;
-}*/
-
-#blank-photo {
-	background-color: RGBA(143, 143, 139, 1);
-	content: url(../img/blank_person.png);
-}
-
-.pic-btn {
-	background-color: RGBA(79, 134, 135, 1);
-	margin-left: 40%;
-	margin-top: 5%;
-}
-
-.edit-btn {
-	background-color: RGBA(79, 134, 135, 1);
-	height: 40px;
-}
-
-.basic-info, .left-profile, .org-info, .org-left-profile {
-	background-color: white;
-	margin-bottom: 2%;
-	padding: 2%;
-	box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
-}
-
-.right-profile, .left-profile, .org-left-profile, .org-right-profile {
-	margin-top: 2%;
-}
-
-.left-profile {
-	max-width: 450px;
-}
-
-.collapsible-header {
-	font-weight: bold;
-}
-
-.collapsible-body {
-	background-color: RGBA(254, 254, 254, 1);
-	padding: 5%;
-}
-
-.collapsible-body h3 {
-	font-size: 1.3em;
-	margin-top: 0;
-	padding-top: 2%;
-}
-
-#device-header  {
-	margin-top: 4%;
-}
-
-.collapsible-body p {
-	padding: .3em;
-}
-
-.current-orgs, .past-orgs {
-	margin-bottom: 5%;
-}
-
-dt, dd {
-	display: inline-block;
-	margin: 0.25em;
-}
-
-dt {
-	font-weight: bold;
-}
-
-dd:after {
-	margin-left: 0.5em;
-	font-size: 1.2em;
-}
-
-dl dd:last-child:after {
-	content: "";
-}
-/*booking_create styling*/
-#thumbnail-box {
-	padding-top: 4%;
-	height: 130px;
-}
-
-.room-thumbnail {
-	max-height: 70px;
-	max-width: 70px;
-}
-
-#booking-reqs {
-	padding-left: 4%;
-	border-bottom: 1px solid grey;
-	margin-bottom: 4%;
-}
-
-#booking-date, #start-time, #end-time {
-	width: 75%;
-}
-
-.book-btn, .device-btn {
-	background: RGBA(79, 134, 135, 1);
-}
-
-#booking-reqs select.browser-default {
-	background: white;
-	border-radius: 1px;
-	margin-top: 0;
-}
-
-[type="checkbox"].filled-in:not(:checked)+label:after {
-	background-color: white;
-}
-
-[type="checkbox"]+label {
-	color: black;
-	height: 43.5px;
-
-}
-
-td.booking-td {
-	width: 30%;
-}
-
-#av-btn, #phone-btn {
-	vertical-align: bottom;
-	padding: 0;
-	width: 15%;
-}
-
-#av-btn {
-	padding-left: 1%;
-}
-
-#time-row {
-	text-align: center;
-}
-
-#floor-select, #seat-select {
-	vertical-align: text-top;
-	margin-top: 0;
-}
-
-select#floor {
-	min-width: 150px;
-}
-
-#room-search {
-	padding-top: 1%;
-}
-
-#room-criteria {
-	padding-top: 2%;
-	padding-bottom: 5%;
-}
-
-.book-room {
-	margin-top: 5%;
-}
-
-.book-btn, .room-show, .room-close {
-	background-color: RGBA(79, 134, 135, 1);
-}
-
-.room-show, .room-close {
-	font-size: .7em;
-	min-width: 70px;
-	padding: 0% 5%;
-}
-
-.book-btn {
-	margin-left: 15%;
-}
-
-.cal-table, .booking-bar {
-	margin-top: 10px;
-}
-
-.booking-bar {
-	min-width: 670px;
-}
-
-.cal-table thead, .booking-bar thead {
-	border: none;
-}
-
-.cal-table th, .booking-bar th{
-	font-size: .8em;
-	text-align: left;
-	height: 10px;
-	width: 2%;
-}
-
-th.rotate{
-  height: 40px;
-  width: 2%;
-  min-width: 2%;
-  max-width: 2%;
-  position: relative;
-  vertical-align: bottom;
-  padding: 0;
-  font-size: 12px;
-  line-height: 0.8;
-}
-
-th.rotate > div {
-	position: relative;
-	top: 0px;
-	left: 20px;
-	height: 100%;
-	-ms-transform:skew(-45deg,0deg);
-	-moz-transform:skew(-45deg,0deg);
-	-webkit-transform:skew(-45deg,0deg);
-	-o-transform:skew(-45deg,0deg);
-	transform:skew(-45deg,0deg);
-}
-
-th.rotate span {
-	-ms-transform:skew(45deg,0deg) rotate(315deg);
-	-moz-transform:skew(45deg,0deg) rotate(315deg);
-	-webkit-transform:skew(45deg,0deg) rotate(315deg);
-	-o-transform:skew(45deg,0deg) rotate(315deg);
-	transform:skew(45deg,0deg) rotate(315deg);
-	position: absolute;
-	bottom: 30px;
-	left: -44px;
-	display: inline-block;
-	width: 100%;
-	width: 85px;
-	text-align: left;
-	white-space: nowrap;
-}
-
-.cal-table th:first-child, .booking-bar th:first-child {
-	width: 2%;
-}
-
-.booking-bar {
-	margin-bottom: 2%;
-}
-
-.cal-box {
-	border-bottom: none;
-	border-top: none;
-	width: 2%;
-	height: 65px;
-	border-right: 1px solid white;
-	box-sizing: border-box;
-	padding: 0;
-	border-radius: 0px 0px 0px 0px;
-	background-color: RGBA(178, 225, 203, .6);
-}
-
-.cal-table td:last-child, .booking-bar td:last-child {
-	border-right: none;
-}
-
-.cal-table .reserved, .booking-bar .reserved {
-	background-color: RGBA(217, 95, 73, .4);
-}
-
-.cal-table .searched, .booking-bar .searched {
-	background-color: RGBA(49, 39, 50, .7);
-}
-
-.cal-table td:first-child, .booking-bar td:first-child {
-	border-radius: 4px 0px 0px 4px;
-}
-
-.cal-table td:last-child, .booking-bar td:last-child {
-	border-radius: 0px 4px 4px 0px;
-}
-
-#start-forw, #start-back, #end-forw, #end-back {
-	border-radius: 100px;
-	width: 30px;
-	height: 30px;
-	background: RGBA(63, 146, 161, 1);
-	color: white;
-	box-shadow: none;
-	border: none;
-}
-
-#start-forw {
-	margin-left: 10%;
-}
-
-#end-forw {
-	margin-left: 15%;
-}
-
-.time-btns {
-	min-width: 300px;
-	overflow: auto;
-}
-
-#cal-error td {
-	text-align: center;
-	color: red;
-}
-
-.slider {
-	overflow-y: hidden;
-	max-height: 300px; /* approximate max height */
-	transition-property: all;
-	transition-duration: .7s;
-	transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
-	background-color: white;
-	padding-top: 1%;
-	border-radius: 2px;
-}
-
-.slider.closed {
-	max-height: 0;
-	padding-top: 0;
-}
-
-div#time-range {
-	max-height: 60px;
-}
-
-div#slider-range {
-	/*position: absolute;*/
-	max-height: 50px;
-	min-width: 50px;
-	margin-bottom: 5%;
-}
-
-/*calendar and making event styling*/
-
-#calendar {
-	max-width: 900px;
-	margin-top: 2%;
-}
-
-#make-event {
-	margin-top: 5%;
-	margin-left: 2%;
-	border-radius: 100px;
-	width: 90px;
-	height: 90px;
-	font-size: 1em;
-	line-height: 100%;
-	overflow: auto;
-}
+/*Modal styling*/
+/*Used for creation of event and for editing org and member photos*/
+/*.picModal for photos, eModal for events*/
 
 .modal {
   display: none;
@@ -1666,10 +1135,591 @@ div#slider-range {
 	margin-bottom: 5%;
 }
 
-.modal-btn {
+.pic-upload {
+	width: 180px;
+}
+
+.picModal-content h4 {
+	text-align: center;
+	padding-top: 2%;
+}
+
+
+
+/*Styling for Org Logo and Member Photo*/
+img#mem-photo {
+	margin-top: 10%;
+}
+
+#img-edit {
+	/*content: url(../img/camera.png);*/
+	display: none;
+	margin-left: 40%;
+}
+
+#change-opacity:hover #mem-photo {
+	opacity: 0.5;
+}
+
+#change-opacity:hover .edit-img, #change-opacity:hover .org-img-edit {
+	color: RGBA(0, 0, 0, 1);
+}
+
+.profile-img-box:hover #img-edit {
+	display: block;
+}
+
+.edit-img, .locked-img {
+	color: RGBA(0, 0, 0, 0);
+	position: relative;
+	top: 0;
+	left: 0;
+	text-align: center;
+	padding-top: 35%;
+	padding-left: 10%;
+}
+
+.edit-img h3 {
+	font-size: 1.7em;
+}
+
+h2#prof-name {
+	text-align: left;
+	font-size: 2.4em;
+}
+
+.editable-photo {
+	float: left;
+	margin: 0px 1em 1em 0px;
+	position: absolute;
+}
+
+#img-preview, #upload-preview, #org-preview {
+	display: block;
+  overflow: hidden;
+  height: 200px;
+  width: 200px;
+	position: relative;
+}
+
+#prof-img, .edit-img, .locked-img {
+	margin-left: 2%;
+	display: block;
+  overflow: hidden;
+  height: 300px;
+  width: 310px;
+	/*Below is for when using cropperJS*/
+	/*width: 300px;*/
+	margin-bottom: 10%;
+}
+
+#img-preview img, #prof-img img {
+	display: block;
+  min-width: 100%;
+  min-height: 100%;
+	max-width: 100%;
+  -ms-interpolation-mode: bicubic;
+}
+
+#blank-photo {
+	background-color: RGBA(143, 143, 139, 1);
+	content: url(../img/blank_person.png);
+}
+
+.prof-img, .upload-input {
+  /*position: relative;*/
+  width: 300px;
+  height: 300px;
+  overflow: hidden;
+	margin: 2%;
+}
+
+.member-photo {
+	float: left;
+	position: relative;
+	margin: 10%;
+}
+
+.org-img {
+	width: 200px;
+  height: 200px;
+  overflow: hidden;
+	margin-left: 3%;
+}
+
+.org-img-edit {
+	color: RGBA(0, 0, 0, 0);
+	position: relative;
+	top: 0;
+	left: 0;
+	text-align: center;
+	padding-top: 25%;
+	padding-left: 10%;
+	margin-left: 2%;
+	display: block;
+	overflow: hidden;
+	margin-bottom: 10%;
+	width: 200px;
+  height: 200px;
+}
+
+.upload-input {
+	width: 200px;
+	height: 200px;
+	overflow: hidden;
+}
+
+#upload-preview img {
+	display: block;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	height: 100%;
+  width: auto;
+  -webkit-transform: translate(-50%,-50%);
+      -ms-transform: translate(-50%,-50%);
+          transform: translate(-50%,-50%);
+}
+
+#org-preview img {
+	display: block;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+  -webkit-transform: translate(-50%,-50%);
+      -ms-transform: translate(-50%,-50%);
+          transform: translate(-50%,-50%);
+}
+
+.prof-img img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: 100%;
+  width: auto;
+  -webkit-transform: translate(-50%,-50%);
+      -ms-transform: translate(-50%,-50%);
+          transform: translate(-50%,-50%);
+}
+
+img.org-photo#mem-photo {
+	margin-top: 0;
+}
+
+.org-img img {
+	position: absolute;
+	max-width: 200px;
+	max-height: 200px;
+  left: 50%;
+  top: 50%;
+	-webkit-transform: translate(-50%,-50%);
+      -ms-transform: translate(-50%,-50%);
+          transform: translate(-50%,-50%);
+}
+
+.prof-img img.portrait, #upload-preview img.portrait, .org-img img.portrait {
+  width: 100%;
+  height: auto;
+}
+
+
+
+/*Websites*/
+.profile-links {
+	margin-top: 5%;
+	margin-left: 5%;
+	margin-bottom: 2%;
+}
+
+.url-links {
+	display: inline-block;
+	padding-right: 5%;
+}
+
+#upload-preview, #org-preview {
+	margin-left: 5%;
+}
+
+/*.img-id {
+	max-width: 250px;
+}*/
+
+
+
+/*Member and Org profile layout*/
+.basic-info, .left-profile, .org-info, .org-left-profile {
+	background-color: white;
+	margin-bottom: 2%;
+	padding: 2%;
+	box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
+}
+
+.right-profile, .left-profile, .org-left-profile, .org-right-profile {
 	margin-top: 2%;
-	margin-left: 45%;
+}
+
+.left-profile {
+	max-width: 450px;
+}
+
+.tags-box {
+	margin-top: 5%;
+	margin-bottom: 10%;
+}
+
+.tags-box li {
+	margin-left: 3%;
+}
+
+
+
+/*Styling for collapsible sections of member profile*/
+.collapsible-header {
+	font-weight: bold;
+}
+
+.collapsible-body {
+	background-color: RGBA(254, 254, 254, 1);
+	padding: 5%;
+}
+
+.collapsible-body h3 {
+	font-size: 1.3em;
+	margin-top: 0;
+	padding-top: 2%;
+}
+
+#device-header  {
+	margin-top: 4%;
+}
+
+.collapsible-body p {
+	padding: .3em;
+}
+
+.current-orgs, .past-orgs {
+	margin-bottom: 5%;
+}
+
+
+
+dt, dd {
+	display: inline-block;
+	margin: 0.25em;
+}
+
+dt {
+	font-weight: bold;
+}
+
+dd:after {
+	margin-left: 0.5em;
+	font-size: 1.2em;
+}
+
+dl dd:last-child:after {
+	content: "";
+}
+
+
+
+/*Event and Room Booking Styling*/
+#booking_form {
+	background-color: RGBA(239, 238, 231, 1);
+	padding: 2%;
+	margin-left: 15%;
+	width: 70%;
+	min-width: 700px;
+}
+
+#booking_form td {
+	border-bottom: 0;
+}
+
+#booking_form h4 {
+	text-align: center;
+}
+
+.booking-box {
+	background-color: RGBA(239, 238, 231, 1);
+	border-radius: 2px;
+	padding: 2%;
+	min-width: 800px;
+}
+
+.public_bool {
+	width: 25%;
+}
+
+
+/*Booking create styling*/
+#thumbnail-box {
+	padding-top: 4%;
+	height: 130px;
+}
+
+.room-thumbnail {
+	max-height: 70px;
+	max-width: 70px;
+}
+
+#booking-reqs {
+	padding-left: 4%;
+	border-bottom: 1px solid grey;
+	margin-bottom: 4%;
+}
+
+#booking-date, #start-time, #end-time {
+	width: 75%;
+}
+
+.book-btn, .device-btn {
+	background: RGBA(79, 134, 135, 1);
+}
+
+#booking-reqs select.browser-default {
+	background: white;
+	border-radius: 1px;
+	margin-top: 0;
+}
+
+[type="checkbox"].filled-in:not(:checked)+label:after{
+	background-color: white;
+}
+
+[type="checkbox"]+label {
+	color: black;
+	height: 43.5px;
+}
+
+td.booking-td {
+	width: 30%;
+}
+
+#av-btn, #phone-btn {
+	vertical-align: bottom;
+	padding: 0;
+	width: 15%;
+}
+
+#av-btn {
+	padding-left: 1%;
+}
+
+#time-row {
+	text-align: center;
+}
+
+#floor-select, #seat-select {
+	vertical-align: text-top;
+	margin-top: 0;
+}
+
+select#floor {
+	min-width: 150px;
+}
+
+#room-search {
+	padding-top: 1%;
+}
+
+#room-criteria {
+	padding-top: 2%;
+	padding-bottom: 5%;
+}
+
+.book-room {
+	margin-top: 5%;
+}
+
+.book-btn, .room-show, .room-close {
 	background-color: RGBA(79, 134, 135, 1);
+}
+
+.room-show, .room-close {
+	font-size: .7em;
+	min-width: 70px;
+	padding: 0% 5%;
+}
+
+.book-btn {
+	margin-left: 15%;
+}
+
+
+/*Booking bar from create and confirm booking*/
+.cal-table, .booking-bar {
+	margin-top: 10px;
+}
+
+.booking-bar {
+	min-width: 670px;
+}
+
+.cal-table thead, .booking-bar thead {
+	border: none;
+}
+
+.cal-table th, .booking-bar th{
+	font-size: .8em;
+	text-align: left;
+	height: 10px;
+	width: 2%;
+}
+
+th.rotate{
+  height: 40px;
+  width: 2%;
+  min-width: 2%;
+  max-width: 2%;
+  position: relative;
+  vertical-align: bottom;
+  padding: 0;
+  font-size: 12px;
+  line-height: 0.8;
+}
+
+th.rotate > div {
+	position: relative;
+	top: 0px;
+	left: 20px;
+	height: 100%;
+	-ms-transform:skew(-45deg,0deg);
+	-moz-transform:skew(-45deg,0deg);
+	-webkit-transform:skew(-45deg,0deg);
+	-o-transform:skew(-45deg,0deg);
+	transform:skew(-45deg,0deg);
+}
+
+th.rotate span {
+	-ms-transform:skew(45deg,0deg) rotate(315deg);
+	-moz-transform:skew(45deg,0deg) rotate(315deg);
+	-webkit-transform:skew(45deg,0deg) rotate(315deg);
+	-o-transform:skew(45deg,0deg) rotate(315deg);
+	transform:skew(45deg,0deg) rotate(315deg);
+	position: absolute;
+	bottom: 30px;
+	left: -44px;
+	display: inline-block;
+	width: 100%;
+	width: 85px;
+	text-align: left;
+	white-space: nowrap;
+}
+
+.cal-table th:first-child, .booking-bar th:first-child {
+	width: 2%;
+}
+
+.booking-bar {
+	margin-bottom: 2%;
+}
+
+.cal-box {
+	border-bottom: none;
+	border-top: none;
+	width: 2%;
+	height: 65px;
+	border-right: 1px solid white;
+	box-sizing: border-box;
+	padding: 0;
+	border-radius: 0px 0px 0px 0px;
+	background-color: RGBA(178, 225, 203, .6);
+}
+
+.cal-table td:last-child, .booking-bar td:last-child {
+	border-right: none;
+}
+
+.cal-table .reserved, .booking-bar .reserved {
+	background-color: RGBA(217, 95, 73, .4);
+}
+
+.cal-table .searched, .booking-bar .searched {
+	background-color: RGBA(49, 39, 50, .7);
+}
+
+.cal-table td:first-child, .booking-bar td:first-child {
+	border-radius: 4px 0px 0px 4px;
+}
+
+.cal-table td:last-child, .booking-bar td:last-child {
+	border-radius: 0px 4px 4px 0px;
+}
+
+
+
+/*Directions buttons for the booking bar*/
+#start-forw, #start-back, #end-forw, #end-back {
+	border-radius: 100px;
+	width: 30px;
+	height: 30px;
+	background: RGBA(63, 146, 161, 1);
+	color: white;
+	box-shadow: none;
+	border: none;
+}
+
+#start-forw {
+	margin-left: 10%;
+}
+
+#end-forw {
+	margin-left: 15%;
+}
+
+.time-btns {
+	min-width: 300px;
+	overflow: auto;
+}
+
+#cal-error td {
+	text-align: center;
+	color: red;
+}
+
+
+/*Styling for room info slider in booking create page*/
+.slider {
+	overflow-y: hidden;
+	max-height: 300px; /* approximate max height */
+	transition-property: all;
+	transition-duration: .7s;
+	transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+	background-color: white;
+	padding-top: 1%;
+	border-radius: 2px;
+}
+
+.slider.closed {
+	max-height: 0;
+	padding-top: 0;
+}
+
+
+
+/*Calendar Page Styling*/
+
+/*TODO Check if this is being used*/
+#event_cal {
+	margin-left: 10%;
+}
+
+#calendar {
+	max-width: 900px;
+	margin-top: 2%;
+}
+
+/*TODO Is this being used?*/
+#make-event {
+	margin-top: 5%;
+	margin-left: 2%;
+	border-radius: 100px;
+	width: 90px;
+	height: 90px;
+	font-size: 1em;
+	line-height: 100%;
+	overflow: auto;
 }
 
 #event-btn-row {
@@ -1695,6 +1745,8 @@ div#slider-range {
 	font-size: 1.3em;
 }
 
+
+/*FullCalendar element Styling*/
 .fc-center h2 {
 	font-size: 1.875em;
 	font-family: 'Oswald', sans-serif;
@@ -1717,6 +1769,9 @@ div.ui-timepicker-container.ui-timepicker-standard {
 	border: none;
 }
 
+
+
+/*Styling for not_active page*/
 .letter {
 	text-align: justify;
 	text-justify: inter-word;
@@ -1727,10 +1782,14 @@ div.ui-timepicker-container.ui-timepicker-standard {
 	font-size: 1.3em;
 }
 
-/*Tav_View*/
+
+
+/*Tag_View Page Styling*/
 .tag-view td {
 	padding-bottom: 2%;
 }
+
+
 
 /*Mail Page*/
 .mail-content {
@@ -1742,6 +1801,7 @@ div.ui-timepicker-container.ui-timepicker-standard {
 }
 
 
+
 /*Mail Message*/
 #label {
 	font-size:1.2em;
@@ -1751,8 +1811,9 @@ div.ui-timepicker-container.ui-timepicker-standard {
 	font-size:1.2;
 }
 
-/* Footer */
 
+
+/* Footer */
 footer.home-footer {
 	padding: 1px;
 	padding-top: 10px;
@@ -1850,14 +1911,18 @@ footer.sticky-footer {
 	text-indent: -9999px;
 }
 
-/*Media Queries*/
 
+
+/*Media Queries*/
 @media only screen and (max-width: 1500px) {
 	#profile_form, #registration_form {
 		margin-left: 7%;
 		min-width: 900px;
 	}
 
+	.logo-img {
+		left: 37%;
+	}
 }
 
 @media only screen and (max-width: 1390px) {
@@ -1889,6 +1954,10 @@ footer.sticky-footer {
 	a#star-img.org-photo {
 		margin-left: 10%
 	}
+}
+
+@media only screen and (max-width: 1300px) {
+
 }
 
 @media only screen and (max-width: 1100px) {
@@ -1948,10 +2017,15 @@ footer.sticky-footer {
 	.org-list {
 		margin-left: 10%;
 	}
+
+	img.room-thumbnail, .thumbnail-box {
+		display: none;
+	}
 }
 
 
 @media only screen and (max-width: 990px) {
+
 	.col.s10.offset-s1 {
 		margin-top: 8%;
 	}
@@ -2012,12 +2086,16 @@ footer.sticky-footer {
  		width: 90%;
  	}
 
-	.prof-tabs, . {
+	.prof-tabs, {
 		margin-bottom: 10%;
 	}
 
 	select#id_public_profile.browser-default, select#id_public.browser-default {
 		width: 50%;
+	}
+
+	.booking-bar th.rotate span {
+		font-weight: normal;
 	}
 }
 
@@ -2046,6 +2124,10 @@ footer.sticky-footer {
 	.col.s10.offset-s1 {
 		margin-top: 10%;
 	}
+
+	.booking-box th {
+		font-weight: normal;
+	}
 }
 
 @media only screen and (max-width: 750px) {
@@ -2072,6 +2154,10 @@ footer.sticky-footer {
 
 	.right-profile {
 		margin-bottom: 20%;
+	}
+
+	.booking-box th {
+		font-size: .8em;
 	}
 }
 

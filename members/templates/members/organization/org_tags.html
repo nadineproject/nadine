@@ -1,0 +1,48 @@
+<div class='tags'>
+  <ul>
+    {% if organization.tags.all %}
+      {% for t in organization.tags.all %}
+        <li class='chip'>
+          <a class="tag-chip" href="{% url 'member:tag:view' 'organizations' t %}">{{ t }}</a>
+          {% if can_edit %}
+           (<a href="{% url 'member:tag:remove_org' organization.id t %}" style="color: RGBA(199, 121, 102, 1);"> X </a>)
+           {% endif %}
+        </li>
+      {% endfor %}
+      {% else %}
+        <p style='font-style: italic;text-align: center;'>
+          No tags yet.
+        </p>
+      {% endif %}
+  </ul>
+
+  {% if can_edit %}
+    <div class="ui-widget">
+      <form action="{% url 'member:tag:add_org' organization.id %}" method="POST">
+        <table class='tag-table'>
+          <tr>
+            <td>
+              <input id="tag_input" name="tag" placeholder="e.g. non-profit">
+            </td>
+            <td>
+              <input class='btn tag-btn' type="submit" value="Add">
+            </td>
+          </tr>
+        </table>
+        {% csrf_token %}
+      </form>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+	(function() {
+		$( "#tag_input" ).autocomplete({
+			source: "{% url 'member:json:org_tags' %}",
+			minLength: 2,
+			autoFocus: true,
+		});
+		$("#tag").focus();
+
+	})();
+</script>

@@ -1,0 +1,58 @@
+{% extends "staff/base.html" %}
+
+{% block sub-title %}Activity List{% endblock %}
+
+{% block content %}
+<h4>Activity List</h4>
+{% url 'staff:activity_list' as date_range_form_action %}
+<div class="columns clearfix date-range">
+	{% include "staff/date_range_form.html"%}
+</div>
+
+{% if daily_logs %}
+   <table>
+      <tr>
+         <th>Member</th>
+         <th>Date</th>
+         <th>Payment</th>
+         <th>Paid by</th>
+         <th>Note</th>
+      </tr>
+      {% for log in daily_logs %}
+         <tr class="{% cycle 'row-even' 'row-odd' %}">
+            <td><a href="{% url 'staff:activity:user' log.user.username %}">{{ log.user.get_full_name }}</a></td>
+            <td><a href="{% url 'staff:activity:date' log.visit_date.year log.visit_date.month log.visit_date.day %}">{{ log.visit_date|date:"M d, Y" }}</td>
+            <td>{{ log.payment }}</td>
+            <td>{{ log.paid_by }}</td>
+            <td class="log-note">{{ log.note }}</td>
+         </tr>
+      {% endfor %}
+   </table>
+{% else %}
+   <p>There are no recorded activity for this period.</p>
+{% endif %}
+
+{% endblock %}
+
+{% block extrajs %}
+<script>
+	$(document).ready(function() {
+		$('.button-collapse').sideNav();
+		$('.collapsible').collapsible();
+		$('#id_start').attr('class', 'datepicker');
+		$('#id_end').attr('class', 'datepicker');
+
+		$('.datepicker').datepicker({
+			dateFormat: 'yy-mm-dd'
+		});
+	});
+</script>
+{% endblock %}
+
+{% block extracss %}
+  <style>
+    #activity-tab {
+      background-color: RGBA(90, 122, 189, 1.00) !important;
+    }
+  </style>
+{% endblock %}

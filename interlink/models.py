@@ -307,13 +307,13 @@ class IncomingMail(models.Model):
         return User.helper.by_email(self.origin_address)
 
     @property
-    def approve_url(self): return 'https://%s%s' % (Site.objects.get_current().domain, reverse('interlink_approve', kwargs={'id': self.id}, current_app='interlink'))
+    def approve_url(self): return 'https://%s%s' % (Site.objects.get_current().domain, reverse('interlink:approve', kwargs={'id': self.id}, current_app='interlink'))
 
     @property
-    def reject_url(self): return 'https://%s%s' % (Site.objects.get_current().domain, reverse('interlink_reject', kwargs={'id': self.id}))
+    def reject_url(self): return 'https://%s%s' % (Site.objects.get_current().domain, reverse('interlink:reject', kwargs={'id': self.id}))
 
     @property
-    def inspect_url(self): return 'https://%s%s' % (Site.objects.get_current().domain, reverse('interlink_inspect', kwargs={'id': self.id}))
+    def inspect_url(self): return 'https://%s%s' % (Site.objects.get_current().domain, reverse('interlink:inspect', kwargs={'id': self.id}))
 
     def __str__(self): return '%s: %s' % (self.origin_address, self.subject)
 
@@ -466,4 +466,4 @@ class OutgoingMail(models.Model):
         ordering = ['-created']
         verbose_name_plural = 'outgoing mails'
 
-# Copyright 2011 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

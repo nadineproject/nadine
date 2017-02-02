@@ -34,8 +34,8 @@ logger = logging.getLogger(__name__)
 @login_required
 def index(request):
     if request.user.is_staff:
-        return HttpResponseRedirect(reverse('staff_todo'))
-    return HttpResponseRedirect(reverse('member_home'))
+        return HttpResponseRedirect(reverse('staff:home'))
+    return HttpResponseRedirect(reverse('member:home'))
 
 
 @csrf_protect
@@ -85,7 +85,7 @@ def email_manage(request, email_pk, action):
     if 'HTTP_REFERER' in request.META:
         return redirect(request.META['HTTP_REFERER'])
     else:
-        return redirect(reverse('member_profile', kwargs={'username': email_address.user.username}))
+        return redirect(reverse('member:profile:view', kwargs={'username': email_address.user.username}))
 
 
 @login_required
@@ -98,7 +98,7 @@ def email_add(request):
     if 'HTTP_REFERER' in request.META:
         return redirect(request.META['HTTP_REFERER'])
     else:
-        return redirect(reverse('member_profile', kwargs={'username': email_address.user.username}))
+        return redirect(reverse('member:profile:view', kwargs={'username': email_address.user.username}))
 
 
 @login_required
@@ -152,7 +152,7 @@ def email_verify(request, email_pk):
             elif 'HTTP_REFERER' in request.META:
                 next_url = request.META['HTTP_REFERER']
             else:
-                next_url = reverse('member_profile', kwargs={'username': email_address.user.username})
+                next_url = reverse('member:profile:view', kwargs={'username': email_address.user.username})
             return HttpResponseRedirect(next_url)
         else:
             messages.error(request, "Invalid Key")
@@ -160,4 +160,4 @@ def email_verify(request, email_pk):
     return render(request, "email_verify.html", {'email':email_address.email})
 
 
-# Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

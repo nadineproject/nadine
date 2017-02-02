@@ -12,7 +12,7 @@
   </tr>
 {% for i in inboxes %}
     <tr>
-      <td><a href="{% url 'comlink_inbox' i.address %}">{{ i.address }}</a></td>
+      <td><a href="{% url 'comlink:inbox' i.address %}">{{ i.address }}</a></td>
       <td style="text-align:center;">{{ i.messages }}</td>
     </tr>
 {% endfor %}

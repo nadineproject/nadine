@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 @staff_member_required
-def index(request):
+def home(request):
     keymasters = Keymaster.objects.filter(is_enabled=True)
     twoMinutesAgo = timezone.now() - timedelta(minutes=2)
     logs = DoorEvent.objects.all().order_by('timestamp').reverse()[:11]
@@ -38,7 +38,7 @@ def index(request):
 
     context = {'keymasters': keymasters, 'twoMinutesAgo': twoMinutesAgo,
          'event_logs': logs}
-    return render(request, 'keymaster/index.html', context)
+    return render(request, 'keymaster/home.html', context)
 
 
 @staff_member_required
@@ -122,7 +122,7 @@ def add_key(request):
     if door_code and 'add_door_code' in request.POST:
         door_code.save()
         email.announce_new_key(user)
-        return HttpResponseRedirect(reverse('doors_keys', kwargs={'username': user.username}))
+        return HttpResponseRedirect(reverse('doors:keys', kwargs={'username': user.username}))
 
     # Pull a list of active members for our autocomplete
     active_members = User.helper.active_members()

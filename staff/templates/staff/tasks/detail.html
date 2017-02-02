@@ -1,0 +1,24 @@
+{% extends "staff/tasks/base.html" %}
+
+{% block sub-title %}TODO{% endblock %}
+{% block content %}
+
+<h4>TODO: {{ description }}</h4>
+
+{% if messages %}
+<div class="messages">
+	{% for message in messages %}
+		<div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+	{% endfor %}
+</div>
+{% endif %}
+
+{% with True as member and False as description %}
+	{% if alerts %}
+		{% include "staff/tasks/detail_table.html" %}
+	{% else %}
+	<p class='empty-msg'>Nothing to do!  Yay!</p>
+	{% endif %}
+{% endwith %}
+
+{% endblock %}

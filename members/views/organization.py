@@ -32,13 +32,16 @@ def org_list(request):
             search_terms = search_form.cleaned_data['terms']
             search_results = Organization.objects.search(search_terms)
             if len(search_results) == 1:
-                return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': search_results[0].id}))
+                return HttpResponseRedirect(reverse('member:org:view', kwargs={'org_id': search_results[0].id}))
     else:
         search_form = OrganizationSearchForm()
 
-    context = {'organizations': orgs, 'search_results': search_results,
-        'search_form': search_form, 'search_terms': search_terms, }
-    return render(request, 'members/org_list.html', context)
+    context = {'organizations': orgs,
+               'search_results': search_results,
+               'search_form': search_form,
+               'search_terms': search_terms,
+               }
+    return render(request, 'members/organization/org_list.html', context)
 
 
 @login_required
@@ -48,7 +51,7 @@ def org_view(request, org_id):
     can_edit = org.can_edit(request.user) or request.user.is_staff
 
     members = org.organizationmember_set.all().order_by('start_date')
-    counts = { 'total': members.count(), 'active': 0, 'inactive': 0 }
+    counts = {'total': members.count(), 'active': 0, 'inactive': 0}
     for m in members:
         if m.is_active():
             counts['active'] = counts['active'] + 1
@@ -57,18 +60,18 @@ def org_view(request, org_id):
 
     show_all = 'show_all' in request.GET or counts['active'] == 0
     context = {'organization': org,
-        'can_edit':can_edit,
-        'members': members,
-        'counts': counts,
-        'show_all': show_all,
-    }
-    return render(request, 'members/org_view.html', context)
+               'can_edit': can_edit,
+               'members': members,
+               'counts': counts,
+               'show_all': show_all,
+               }
+    return render(request, 'members/organization/org_view.html', context)
 
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def org_add(request):
-    if not 'org' in request.POST and 'username' in request.POST:
+    if 'org' not in request.POST and 'username' in request.POST:
         return HttpResponseForbidden("Forbidden")
 
     user = get_object_or_404(User, username=request.POST['username'])
@@ -76,13 +79,13 @@ def org_add(request):
     org_name = request.POST.get('org', '').strip()
     existing_org = Organization.objects.filter(name__iexact=org_name).first()
     if existing_org:
-        return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': existing_org.id}))
+        return HttpResponseRedirect(reverse('member:org:view', kwargs={'org_id': existing_org.id}))
         # messages.add_message(request, messages.ERROR, "Organization '%s' already exists!" % org_name)
-        # return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
+        # return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': user.username}))
 
     org = Organization.objects.create(name=org_name, lead=user, created_by=request.user)
     OrganizationMember.objects.create(organization=org, user=user, start_date=timezone.now(), admin=True)
-    return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
+    return HttpResponseRedirect(reverse('member:org:view', kwargs={'org_id': org.id}))
 
 
 @login_required
@@ -122,17 +125,21 @@ def org_edit(request, org_id):
                             print("Could not save website: %s" % str(e))
 
                     form.save()
-                    return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
+                    return HttpResponseRedirect(reverse('member:org:view', kwargs={'org_id': org.id}))
                 else:
-                    page_message = 'There was an error saving your websites. Please make sure they have a valid URL and URL type.'
+                    page_message = 'Please make sure the websites have a valid URL and URL type.'
         except Exception as e:
             messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
     else:
         form = OrganizationForm(instance=org)
         org_link_formset = OrgFormSet(initial=link_data)
 
-    context = {'organization': org, 'form':form, 'org_link_formset': org_link_formset, 'page_message': page_message}
-    return render(request, 'members/org_edit.html', context)
+    context = {'organization': org,
+               'form': form,
+               'org_link_formset': org_link_formset,
+               'page_message': page_message
+               }
+    return render(request, 'members/organization/org_edit.html', context)
 
 
 @login_required
@@ -141,7 +148,7 @@ def org_member(request, org_id):
     org = get_object_or_404(Organization, id=org_id)
     if not (not org.locked or request.user.is_staff or org.can_edit(request.user)):
         messages.add_message(request, messages.ERROR, "You do not have permission to add yourself to this organization")
-        return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.username}))
+        return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': request.username}))
 
     # We require a POST and we require an action
     if not request.method == "POST" or 'action' not in request.POST:
@@ -167,25 +174,30 @@ def org_member(request, org_id):
         if 'edit' == action:
             form = OrganizationMemberForm(instance=org_member)
         if 'add' == action:
-            initial_data={ 'username':new_username,
-                'start_date': timezone.now()
-            }
+            initial_data = {'username': new_username,
+                            'start_date': timezone.now()
+                            }
 
             form = OrganizationMemberForm(initial=initial_data)
         if 'save' == action:
             form = OrganizationMemberForm(request.POST, request.FILES)
             if form.is_valid():
                 form.save()
-                return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
+                return HttpResponseRedirect(reverse('member:org:view', kwargs={'org_id': org.id}))
             else:
                 print form
     except Exception as e:
         messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
 
-    context = {'organization': org, 'member':org_member, 'username':new_username,
-        'full_name':full_name, 'form':form, 'action':action,
-    }
-    return render(request, 'members/org_member.html', context)
+    context = {'organization': org,
+               'member': org_member,
+               'username': new_username,
+               'full_name': full_name,
+               'form': form,
+               'action': action,
+               }
+    return render(request, 'members/organization/org_member.html', context)
+
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
@@ -197,15 +209,15 @@ def org_edit_photo(request, org_id):
         form = OrganizationForm(request.POST, request.FILES)
         org.photo = request.FILES.get('photo', None)
 
-        org.save();
+        org.save()
 
-        return HttpResponseRedirect(reverse('member_org_view', kwargs={'org_id': org.id}))
+        return HttpResponseRedirect(reverse('member:org:view', kwargs={'org_id': org.id}))
 
     else:
         form = OrganizationForm(request.POST, request.FILES)
 
-    context = { 'organization': org }
-    return render(request, 'members/org_edit_photo.html', context)
+    context = {'organization': org}
+    return render(request, 'members/organization/org_edit_photo.html', context)
 
 
-# Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

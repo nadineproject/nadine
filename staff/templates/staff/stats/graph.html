@@ -1,0 +1,127 @@
+{% extends "staff/stats/base.html" %}
+{% load static %}
+
+{% block sub-title %}Stats | Members{% endblock %}
+
+{% block sub-head %}
+  <link rel="stylesheet" href="{% static 'staff/c3/c3.min.css' %}" />
+  <script src="{% static 'staff/c3/date.min.js' %}"></script>
+  <script src="{% static 'staff/c3/d3.min.js' %}" charset="utf-8"></script>
+  <script src="{% static 'staff/c3/c3.min.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+
+<h4>{{ title }}</h4>
+
+<div class="columns clearfix date-range">
+	<form class="date-range-form" action="." method="POST">
+		Graph:
+		<select name="graph">
+			<option value="members" {% ifequal graph "members" %}SELECTED{% endifequal %}>Members by Day</option>
+			<option value="income" {% ifequal graph "income" %}SELECTED{% endifequal %}>Monthly Income</a>
+			<!-- <option value="amv" {% ifequal graph "amv" %}SELECTED{% endifequal %}>Average Member Value</a> -->
+			<!-- <option value="churn" {% ifequal graph "churn" %}SELECTED{% endifequal %}>Membership Churn</a> -->
+		</select>
+		From {% for field in date_range_form %} {% ifequal field.name "end" %}to {% endifequal %}{{ field }}{% endfor %}
+		<input type="submit" value="Update">
+	{% csrf_token %}
+	</form>
+</div>
+
+<div>min = {{min}}, max = {{max}}, avg={{avg}}</div>
+<div id="chart"></div>
+
+  <script>
+    $(function() {
+      var json;
+	  var startDate = new Date('{{ start }}');
+      var endDate = new Date('{{ end }}');
+
+      $('#id_start').datepicker({ dateFormat: "yy-mm-dd" });
+      $('#id_end').datepicker({ dateFormat: "yy-mm-dd" });
+
+      json = getChartData(startDate, endDate);
+	  console.log(json);
+      renderChart(json);
+    });
+  </script>
+
+  <script>
+    var calcMMM = function(data) {
+      var max;
+      var min;
+      var count;
+
+      var total = data.reduce(function(prev, curr, index) {
+        if (index === 0) {
+          max = curr;
+          min = curr;
+        } else {
+          if (curr > max) {
+            max = curr;
+          }
+          if (curr < min) {
+            min = curr;
+          }
+        }
+        count = index;
+        return prev + curr;
+      });
+      return {
+        min: min,
+        max: max,
+        mean: Math.round(total/count)
+      }
+    }
+
+    var getChartData = function(startDate, endDate) {
+		console.log("startDate=" + startDate);
+		console.log("endDate=" + endDate);
+      var data = [{% for day in days %}{{day.value}},{% endfor %}];
+      startDate.add({days: -1});
+      var jsonData = data.map(function(item, index) {
+        startDate.add({days: 1});
+        return {
+          date: startDate.toString('yyyy-MM-dd'),
+          dailyMembers: item
+        }
+      });
+      return jsonData;
+    }
+
+    var renderChart = function(chartData) {
+      var chart = c3.generate({
+        size: {
+          width: 800
+        },
+        bindTo: '#chart',
+        data: {
+          json: chartData,
+          keys: {
+              x: 'date',
+              value: ['dailyMembers']
+          },
+          type: 'line'
+        },
+        axis: {
+          x: {
+            type: 'timeseries',
+            tick: {
+              format: '%Y-%m-%d'
+            }
+          }
+        },
+        grid: {
+          y: {
+            lines: [
+              {value: {{min}}, text: 'min'},
+              {value: {{max}}, text: 'max'},
+              {value: {{avg}}, text: 'avg'}
+            ]
+          }
+        }
+      });
+    }
+  </script>
+{% endblock %}

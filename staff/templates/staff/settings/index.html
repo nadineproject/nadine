@@ -1,0 +1,56 @@
+{% extends "staff/settings/base.html" %}
+{% load integrated_systems %}
+{% load social_links %}
+
+{% block content %}
+  <h4>Global Settings</h4>
+  <p>
+    Global settings must be changed by the Nadine Admins as it requires a system restart.
+  </p>
+
+  <h5>Site Settings</h5>
+  <ul>
+    <li>SITE_NAME = {{ site.name }}</li>
+    <li>SITE_DOMAIN = {{ site.domain }}</li>
+  </ul>
+
+  <h5>Integrated Systems</h5>
+  {% load_integrations as integrations %}
+  <ul>
+    <li>Mailgun = {{ integrations.mailgun }}</li>
+    <li>Mailchimp = {{ integrations.mailchimp }}</li>
+    <li>Google Analytics = {{ integrations.google }}</li>
+    <li>USAePay = {{ integrations.usaepay }}</li>
+    <li>Xero = {{ integrations.xero }}</li>
+    <li>Slack = {{ integrations.slack }}</li>
+    <li>HID Doors = {{ integrations.hid }}</li>
+  </ul>
+
+  <h5>Social URLS</h5>
+  {% load_social_urls as social %}
+  <ul>
+    <li>FACEBOOK_URL = {{ social.facebook }}</li>
+    <li>TWITTER_URL = {{ social.twitter }}</li>
+    <li>YELP_URL = {{ social.yelp }}</li>
+    <li>INSTAGRAM_URL = {{ social.instagram }}</li>
+  </ul>
+
+  <h5>Email Settings</h5>
+  <ul>
+    <li>From Address = {{ settings.EMAIL_ADDRESS }}</li>
+    <li>Team Address = {{ settings.TEAM_EMAIL_ADDRESS }}</li>
+    <li>Billing Address = {{ settings.BILLING_EMAIL_ADDRESS }}</li>
+    <li>
+      Nadine Admins =
+      {% for name, email in settings.ADMINS %}
+        {{ email }}{% if not forloop.last %}, {% endif %}
+      {% endfor %}
+    <li>
+  </ul>
+
+  <h5>Your Browser</h5>
+  <ul>
+    <li>User Agent = {{ request.META.HTTP_USER_AGENT}}
+    <li>IP Address = {{ ip }}
+  </ul>
+{% endblock %}

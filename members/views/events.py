@@ -22,10 +22,13 @@ from members.views.core import is_active_member
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def events_google(request, location_slug=None):
-    return render(request, 'members/events_google.html', {'settings': settings})
+    return render(request, 'members/events/events_google.html', {'settings': settings})
 
 
 def quarter_hours(hour, minutes):
+    if len(hour) < 2:
+        hour = '0' + hour
+
     if int(minutes) < 15:
         minutes = '00'
     elif int(minutes) < 30:
@@ -40,6 +43,7 @@ def quarter_hours(hour, minutes):
 
     return hour, minutes
 
+
 def coerce_times(start, end, date):
     if len(start) > 5:
         start = start.split(" ")
@@ -49,7 +53,7 @@ def coerce_times(start, end, date):
                 hour = int(mil_start[0]) + 12
             else:
                 hour = mil_start[0]
-            start_hour, start_minutes = quarter_hours(hour, mil_start[1])
+            start_hour, start_minutes = quarter_hours(str(hour), mil_start[1])
             start = str(hour) + ':' + mil_start[1]
         else:
             mil_start = start[0].split(":")
@@ -65,9 +69,9 @@ def coerce_times(start, end, date):
             mil_end = end[0].split(":")
             if int(mil_end[0]) < 12:
                 hour = int(mil_end[0]) + 12
-            else :
+            else:
                 hour = mil_end[0]
-            end_hour, end_minutes = quarter_hours(hour, mil_end[1])
+            end_hour, end_minutes = quarter_hours(str(hour), mil_end[1])
             end = str(end_hour) + ':' + end_minutes
         else:
             mil_end = end[0].split(":")
@@ -85,6 +89,7 @@ def coerce_times(start, end, date):
 
     return start_ts, end_ts, start, end
 
+
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def create_booking(request):
@@ -96,11 +101,16 @@ def create_booking(request):
     date = request.GET.get('date', str(timezone.now().date()))
     start = request.GET.get('start', str(datetime.now().hour) + ':' + str(datetime.now().minute))
     end = request.GET.get('end', str(datetime.now().hour + 2) + ':' + str(datetime.now().minute))
+    all_day = request.GET.get('all_day', None)
+
+    if all_day:
+        start = settings.OPEN_TIME
+        end = settings.CLOSE_TIME
 
     # Turn our date, start, and end strings into timestamps
     start_ts, end_ts, start, end = coerce_times(start, end, date)
 
-    #Make auto date for start and end if not otherwise given
+    # Make auto date for start and end if not otherwise given
     room_dict = {}
     rooms = Room.objects.available(start=start_ts, end=end_ts, has_av=has_av, has_phone=has_phone, floor=floor, seats=seats)
 
@@ -126,12 +136,21 @@ def create_booking(request):
         end = request.POST.get('end')
         date = request.POST.get('date')
 
-        return HttpResponseRedirect(reverse('member_confirm_booking', kwargs={'room': room, 'start': start, 'end': end, 'date': date}))
+        return HttpResponseRedirect(reverse('member:event:confirm_booking', kwargs={'room': room, 'start': start, 'end': end, 'date': date}))
 
-    context = {'rooms': rooms, 'start':start, 'end':end, 'date': date,
-        'has_av':has_av, 'floor': floor, 'has_phone': has_phone,
-        'room_dict': room_dict}
-    return render(request, 'members/booking_create.html', context)
+    context = {'rooms': rooms,
+               'start': start,
+               'end': end,
+               'date': date,
+               'has_av': has_av,
+               'floor': floor,
+               'seats': seats,
+               'all_day': all_day,
+               'has_phone': has_phone,
+               'room_dict': room_dict
+               }
+    return render(request, 'members/events/booking_create.html', context)
+
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
@@ -180,7 +199,7 @@ def confirm_booking(request, room, start, end, date):
             try:
                 event.save()
 
-                return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
+                return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': user.username}))
 
             except Exception as e:
                 page_message = str(e)
@@ -190,10 +209,16 @@ def confirm_booking(request, room, start, end, date):
     else:
         booking_form = EventForm()
 
-    context = {'booking_form':booking_form, 'start':start, 'end':end,
-        'room': room, 'date': date, 'page_message': page_message,
-        'event_dict': event_dict}
-    return render(request, 'members/booking_confirm.html', context)
+    context = {'booking_form': booking_form,
+               'start': start,
+               'end': end,
+               'room': room,
+               'date': date,
+               'page_message': page_message,
+               'event_dict': event_dict
+               }
+    return render(request, 'members/events/booking_confirm.html', context)
+
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
@@ -212,7 +237,7 @@ def calendar(request):
         date = request.POST.get('date')
 
         start_ts, end_ts, start, end = coerce_times(start, end, date)
-        if start_ts < end_ts :
+        if start_ts < end_ts:
             description = request.POST.get('description', '')
             charge = request.POST.get('charge', 0)
             is_public = True
@@ -220,18 +245,18 @@ def calendar(request):
             event = Event(user=user, start_ts=start_ts, end_ts=end_ts, description=description, charge=charge, is_public=is_public)
             event.save()
 
-            return HttpResponseRedirect(reverse('member_calendar'))
+            return HttpResponseRedirect(reverse('member:event:calendar'))
         else:
             messages.add_message(request, messages.ERROR, "Did not save your event. Double check that the event start is before the end time. Thank you.")
 
-    template = 'members/calendar.html'
+    template = 'members/events/calendar.html'
     context = {'data': data, 'CALENDAR_DICT': settings.CALENDAR_DICT}
     if hasattr(settings, 'GOOGLE_CALENDAR_ID'):
         context['feed_url'] = "https://calendar.google.com/calendar/ical/%s/public/basic.ics" % settings.GOOGLE_CALENDAR_ID
         context['GOOGLE_CALENDAR_ID'] = settings.GOOGLE_CALENDAR_ID
         context['GOOGLE_API_KEY'] = settings.GOOGLE_API_KEY
-        template = 'members/calendar_google.html'
+        template = 'members/events/calendar_google.html'
     return render(request, template, context)
 
 
-# Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

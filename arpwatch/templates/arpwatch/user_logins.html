@@ -1,24 +1,16 @@
-{% extends "staff/staff_base.html" %}
-
-{% block sub-title %}Logs | {% endblock %}
-
-{% block style %}
-nav #logs-tab { background: #FBD850; color: black; }
-{% endblock %}
+{% extends "arpwatch/base.html" %}
 
 {% block content %}
-{% include "arpwatch/logs_menu.frag" %}
-
 <div>
-	<div style="size:large; float:right;"><strong>{{ logs|length }} Logins</strong></div>
-	<h2>User Logins - {{ day|date:"M d, Y" }}</h2>
+	<div id='logs-length'><strong>{{ logs|length }} Logins</strong></div>
+	<h4>User Logins - {{ day|date:"M d, Y" }}</h4>
 </div>
 
-<h4 align="center">
-	<a href="{% url 'arp_user_logs' previous_day.year previous_day.month previous_day.day %}">&laquo; Prev</a>
-	[ <a href="{% url 'arp_user' %}">Today</a> ]
-	<a href="{% url 'arp_user_logs' next_day.year next_day.month next_day.day %}">Next &raquo;</a>
-</h4>
+<h5 align="center">
+	<a href="{% url 'arp:user_logs' previous_day.year previous_day.month previous_day.day %}">&laquo; Prev</a>
+	[ <a href="{% url 'arp:user' %}">Today</a> ]
+	<a href="{% url 'arp:user_logs' next_day.year next_day.month next_day.day %}">Next &raquo;</a>
+</h5>
 
 <table border=1>
 	<tr>

@@ -1,0 +1,52 @@
+{% extends "staff/stats/base.html" %}
+
+{% block sub-head %}
+	<script src="{{ STATIC_URL }}RGraph/libraries/RGraph.common.core.js" ></script>
+	<script src="{{ STATIC_URL }}RGraph/libraries/RGraph.common.dynamic.js"></script>
+	<script src="{{ STATIC_URL }}RGraph/libraries/RGraph.common.tooltips.js" ></script>
+	<script src="{{ STATIC_URL }}RGraph/libraries/RGraph.pie.js" ></script>
+{% endblock %}
+
+{% block sub-title %}Stats | Gender{% endblock %}
+
+{% block content %}
+
+<h4>Gender Balance -
+	{% if active_only %}
+		Active Members Only
+	{% else %}
+		All Members
+	{% endif %}
+</h4>
+
+<div id="stats">
+	<span>Male: {{ counts.male }} ({{percentages.male}}%)</span>
+	<span>Female: {{ counts.female }} ({{percentages.female}}%)</span>
+	<span>Other: {{ counts.other }} ({{percentages.other}}%)</span>
+	<span>Unknown: {{ counts.unknown }} ({{percentages.unknown}}%)</span>
+	<span>Total: {{  counts.total }}</span>
+</div>
+
+<canvas id="cvs" width="500" height="400">[No canvas support]</canvas>
+
+<script>
+	window.onload = function ()
+	{
+    var pie = new RGraph.Pie('cvs', [{{counts.male}},{{counts.female}},{{counts.other}},{{counts.unknown}}]);
+    pie.Set('chart.labels', ['Male','Female','Other', 'Unknown']);
+    pie.Set('chart.colors', ['#6666ff','#ff4444','#99ff99','#aaaaaa']);
+    pie.Draw();
+	}
+</script>
+
+<form action="." method="POST">
+	{% if active_only %}
+		<input type=submit name="AllMembers" value="View All Members">
+	{% else %}
+		<input type=submit name="ActiveOnly" value="View Active Members Only">
+	{% endif %}
+	{% csrf_token %}
+</form>
+
+</div>
+{% endblock %}

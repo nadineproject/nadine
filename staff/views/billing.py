@@ -30,13 +30,13 @@ def transactions(request):
     date_range_form = DateRangeForm({START_DATE_PARAM: start, END_DATE_PARAM: end})
     transactions = Transaction.objects.filter(transaction_date__range=(start, end)).order_by('-transaction_date')
     context = {"transactions": transactions, 'date_range_form': date_range_form, 'page_message': page_message}
-    return render(request, 'staff/transactions.html', context)
+    return render(request, 'staff/billing/transactions.html', context)
 
 
 @staff_member_required
 def transaction(request, id):
     transaction = get_object_or_404(Transaction, pk=id)
-    return render(request, 'staff/transaction.html', {"transaction": transaction})
+    return render(request, 'staff/billing/transaction.html', {"transaction": transaction})
 
 
 def run_billing(request):
@@ -49,7 +49,7 @@ def run_billing(request):
             page_message = 'At your request, I have run <a href="%s">the bills</a>.' % (reverse('staff_bills', args=[], kwargs={}),)
     logs = BillingLog.objects.all()[:10]
     context = {'run_billing_form': run_billing_form, 'page_message': page_message, "billing_logs": logs}
-    return render(request, 'staff/run_billing.html', context)
+    return render(request, 'staff/billing/run_billing.html', context)
 
 
 @staff_member_required
@@ -71,7 +71,7 @@ def bills(request):
                 transaction.save()
                 for bill_id in bill_ids:
                     transaction.bills.add(users_bills[bill_id])
-                transaction_url = reverse('staff_transaction', args=[], kwargs={'id': transaction.id})
+                transaction_url = reverse('staff:billing:transaction', args=[], kwargs={'id': transaction.id})
                 page_message = 'Created a <a href="%s">transaction for %s</a>' % (transaction_url, user.get_full_name())
             elif action == "mark_in_progress":
                 for bill_id in bill_ids:
@@ -110,7 +110,7 @@ def bills(request):
         'page_message': page_message,
         'invalid_members': invalids,
     }
-    return render(request, 'staff/bills.html', context)
+    return render(request, 'staff/billing/bills.html', context)
 
 
 @staff_member_required
@@ -147,7 +147,7 @@ def bill_list(request):
     total_amount = bills.aggregate(s=Sum('amount'))['s']
     context = {'bills': bills, 'total_amount': total_amount,
         'date_range_form': date_range_form, 'start_date': start_date, 'end_date': end_date}
-    return render(request, 'staff/bill_list.html', context)
+    return render(request, 'staff/billing/bill_list.html', context)
 
 
 @staff_member_required
@@ -173,4 +173,21 @@ def toggle_billing_flag(request, username):
 def bill(request, id):
     bill = get_object_or_404(Bill, pk=id)
     context = {"bill": bill, 'new_member_deposit': settings.NEW_MEMBER_DEPOSIT}
-    return render(request, 'staff/bill.html', context)
+    return render(request, 'staff/billing/bill.html', context)
+
+
+@staff_member_required
+def user_bills(request, username):
+    user = get_object_or_404(User, username=username)
+    bills = user.bill_set.all()
+    return render(request, 'staff/billing/user_bills.html', {'user':user, 'bills':bills})
+
+
+@staff_member_required
+def user_transactions(request, username):
+    user = get_object_or_404(User, username=username)
+    transactions = user.transaction_set.all()
+    return render(request, 'staff/billing/user_transactions.html', {'user':user, 'transactions':transactions})
+
+
+# Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

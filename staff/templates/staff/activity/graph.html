@@ -1,0 +1,64 @@
+{% extends "staff/activity/base.html" %}
+
+{% block content %}
+
+<h4>Activity</h4>
+<div class="columns clearfix date-range">
+	{% include "staff/date_range_form.html"%}
+</div>
+
+<div id="color-key">
+  <h5>Color key:</h5>
+  <b id="has-desk-key">members with desks</b> <b id="daily-logs-key">part-time / drop-ins</b> <b id="membership-key">total members</b>
+</div>
+
+<table id="activity-table">
+ <tr>
+  <th>Date</th>
+  <th>Occupancy</th>
+ </tr>
+{% for day in days %}
+ <tr>
+  <td><a href="{% url 'staff:activity:date' day.date.year day.date.month day.date.day %}">{{ day.date|date:"M d, Y" }}</td>
+  <td>
+		<div class="membership-bar" style="width: {{ day.membership_size }}px;">{{ day.membership }}</div>
+		<div class="has-desk-bar" style="width: {{ day.has_desk_size }}px;">{{ day.has_desk }}</div>
+		<div class="daily-logs-bar" style="width: {{ day.daily_logs_size }}px;">{% ifnotequal day.daily_logs 0 %}{{ day.daily_logs }}{% endifnotequal %}</div>
+		<div class="daily-logs-number">{{ day.occupancy }}</div>
+  </td>
+ </tr>
+{% endfor %}
+</table>
+
+<h4>Member Activity Chart</h4>
+<p>Hover over the columns below to see the date and members/drop-ins:</p>
+
+<div id="horizontal-graph">
+{% for day in days %}
+	<div class="graph-column membership-column">
+		<div class='blank-div' style="height: {{ day.membership_size_negative }}px;">&nbsp;</div>
+		<div class='hover-div'>{{ day.date|date:"M d, Y" }}: {{ day.membership }}/{{ day.daily_logs }}</div>
+	</div>
+	<div class="graph-column daily-logs-column">
+		<div class='blank-div' style="height: {{ day.daily_logs_size_negative }}px;">&nbsp;</div>
+		<div class='hover-div'>{{ day.date|date:"M d, Y" }}: {{ day.membership }}/{{ day.daily_log }}</div>
+	</div>
+{% endfor %}
+</div>
+
+{% endblock %}
+
+{% block extrajs %}
+<script>
+	$(document).ready(function() {
+		$('.button-collapse').sideNav();
+		$('.collapsible').collapsible();
+		$('#id_start').attr('class', 'datepicker');
+		$('#id_end').attr('class', 'datepicker');
+
+		$('.datepicker').datepicker({
+			dateFormat: 'yy-mm-dd'
+		});
+	});
+</script>
+{% endblock %}

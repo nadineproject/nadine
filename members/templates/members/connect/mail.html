@@ -1,0 +1,88 @@
+{% extends "members/base.html" %}
+
+{% block sub-title %}Mail | {% endblock %}
+
+{% block style %}{% endblock %}
+
+{%block sub-head %}
+	<script>
+		$(function () {
+			jQuery('#tabs').tabs();
+		});
+
+	function subscribe(mlID){
+		$('#id_subscribe').val(true);
+		$('#id_mailing_list_id').val(mlID);
+		$('#mailing-list-subscription-form').submit();
+	}
+
+	function unsubscribe(mlID){
+		$('#id_subscribe').val(false);
+		$('#id_mailing_list_id').val(mlID);
+		$('#mailing-list-subscription-form').submit();
+	}
+	</script>
+{% endblock %}
+
+{% block content %}
+<h3 class='oswald centered'>Mailing lists</h3>
+
+<div id="tabs">
+
+<ul class='tabs'>
+	{% for mailing_list, is_subscriber in user.mailing_list_memberships %}
+		<li class='tab'><a href="#tabs-{{forloop.counter}}">{{ mailing_list.name }}</a></li>
+	{% endfor%}
+</ul>
+
+{% for mailing_list, is_subscriber in user.mailing_list_memberships %}
+<div id="tabs-{{forloop.counter}}" class="plan-section">
+<ul>
+	<li class='mail-content'>
+		<h4 class='oswald'>
+			{{ mailing_list.name }}
+			{% if not mailing_list.moderator_controlled %} - {{ mailing_list.email_address}}
+    			{% if is_subscriber %}
+    			(<a target="_self" href="." onclick="unsubscribe({{ mailing_list.id }}); return false;">unsubscribe</a>)
+    			{% else %}
+        			{% if request.user.profile.is_active or request.user.is_staff %}
+        			    ( <a target="_self" href="." onclick="subscribe({{mailing_list.id}}); return false;">subscribe</a> )
+        			{% endif %}
+    			{% endif %}
+    		{% endif %}
+		</h4>
+		<div class="list_desc">{{ mailing_list.description }}</div>
+
+		<h5 class='oswald'>Recent Messages</h5>
+		<div class="list_mail" id="recents-{{ mailing_list.id }}">
+			<table class="msg_table">
+				<tr>
+					<th>Sent</th>
+					<th>Member</th>
+					<th>Subject</th>
+				</tr>
+				{% for msg in mailing_list.incoming_mail %}
+				<tr>
+					<td nowrap>{{ msg.sent_time }}</td>
+					{% if msg.get_user %}
+						<td nowrap><a target="_self" href="{% url 'member:profile:view' msg.get_user.username %}">{{ msg.get_user.get_full_name }}</a></td>
+					{% else %}
+						<td nowrap>{{ msg.origin_address }}</td>
+					{% endif %}
+					<td><a target="_self" href="{% url 'member:connect:view_mail' msg.id %}">{{ msg.clean_subject }}</a></td>
+				</tr>
+				{% endfor %}
+			</table>
+		</div>
+	</li>
+</ul>
+</div>
+{% endfor %}
+</div>
+
+{% if not user.mailing_list_memberships %}
+<h4 class='oswald'>There are no mailing lists configured for this site.</h4>
+{% endif %}
+
+<form action="." method='post' id="mailing-list-subscription-form">{{ mailing_list_subscription_form }}{% csrf_token %}</form>
+{% endblock %}

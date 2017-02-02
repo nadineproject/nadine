@@ -1,0 +1,19 @@
+{% extends "interlink/base.html" %}
+
+{% block sub-title %}Interlink | {% endblock %}
+
+{% block content %}
+
+<h4>Mailing Lists</h4>
+
+<ul>
+{% for l in lists %}
+	<li>
+		<strong>{{ l }}</strong>:
+		<a href="{% url 'interlink:messages' l.id %}">messages</a> |
+		<a href="{% url 'interlink:subscribers' l.id %}">subscribers</a>
+	</li>
+{% endfor %}
+</ul>
+
+{% endblock %}

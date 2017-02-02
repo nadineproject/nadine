@@ -1,0 +1,24 @@
+{% extends "staff/base.html" %}
+{% load static %}
+
+{% block sub-title %}Logs{% endblock %}
+
+{% block pagestyle %}
+	<link rel='stylesheet' href="{% static 'staff/css/arpwatch.css' %}" />
+{% endblock %}
+
+{% block submenu %}
+	<a href="{% url 'arp:devices_today' %}">Device Logs</a> |
+	<a href="{% url 'arp:user' %}">User Logins</a>
+{% endblock %}
+
+{% block content %}
+{% endblock %}
+
+{% block navcss %}
+<style>
+	#logs-tab {
+		color: RGBA(90, 122, 189, 1.00) !important;
+	}
+</style>
+{% endblock %}

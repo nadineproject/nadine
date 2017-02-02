@@ -1,0 +1,30 @@
+{% load imagetags %}
+{% load list_tags %}
+
+<div class="user-card">
+    {% if user.profile.photo %}
+       <a class="photo" href="{% url 'member:profile:view' user.username %}">
+         <img class='user-img' src="{{ user.profile.photo.url }}" />
+       </a>
+    {% else %}
+       <a class="photo star-img" href="{% url 'member:profile:view' user.username %}">&#9733;</a>
+    {% endif %}
+    <a href="{% url 'member:profile:view' user.username %}">{{ user.get_full_name }}</a>
+</div>
+
+<script>
+// TODO speed this up! Maybe move to backend?
+  // $(document).ready(function() {
+  //   var pics = $('.user-img').toArray();
+  //
+  //   for(var i = 0; i < pics.length; i ++) {
+  //     if ($(pics[i]).prop('clientWidth') < $(pics[i]).prop('clientHeight')) {
+  //       $(pics[i]).addClass('portrait');
+  //     } else {
+  //       if ($(pics[i]).hasClass('portrait')) {
+  //         $(pics[i]).removeClass('portrait');
+  //       }
+  //     }
+  //   }
+  // });
+</script>

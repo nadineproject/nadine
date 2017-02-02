@@ -1,0 +1,18 @@
+{% extends "members/base.html" %}
+
+{% block content %}
+	<h3 class='oswald' style='text-align:center;'>Active Membership Required</h3>
+	<div class="letter">
+		<p>We're sorry, you are not currently an active member.  </p>
+
+		<p>Certain features in Nadine require an active membership to access.  If you are not a member,
+		or your membership has expired, you will have limited access to this system. You can view your membership and your history by going to
+		<a href="{% url 'member:profile:redirect' %}">your profile</a>. If you have any questions feel free to send an email to
+		<a href="mailto:staff@officenomads.com">staff@officenomads.com</a> or just stop by the front desk.</p>
+
+		<p>
+			Sincerely,<br>
+			The {{ site.name }} Team
+		</p>
+	</div>
+{% endblock %}

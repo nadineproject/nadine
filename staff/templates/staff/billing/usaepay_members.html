@@ -1,0 +1,35 @@
+{% extends "staff/billing/base.html" %}
+
+{% block style %}
+#content td { white-space:nowrap; }
+{% endblock %}
+
+{% block sub-title %}USAePay Transactions{% endblock %}
+
+{% block content %}
+
+<h4>Members with Auto-Billing Enabled</h4>
+
+{% if error %}
+	<div class='error'>{{ error }}</div>
+{% endif %}
+
+<table>
+	<tr>
+		<th>Member</th>
+		<th>Customer #</th>
+		<th>Next Bill</th>
+		<th></th>
+	</tr>
+
+	{% for u in members %}
+		<tr class="{% cycle 'row-even' 'row-odd' %}">
+			<td><a href="{% url 'staff:user:detail' u.username %}">{{ u.username }}</a></td>
+			<td><a href="https://secure.usaepay.com/console/billing_edit?id={{ u.customer_number }}" target="new">{{ u.customer_number }}</a></td>
+			<td>{{ u.next | slice:":10"}}</td>
+			<td></td>
+		</tr>
+	{% endfor %}
+</table>
+
+{% endblock %}

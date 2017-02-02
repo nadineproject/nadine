@@ -1,0 +1,83 @@
+ {% load static %}
+
+ <h3 class='oswald' style='text-align: center;'>Edit Your Profile Image:</h3>
+
+ <form id="profile_image_form" action="{% url 'member:profile:edit_photo' user.username %}" method="POST" enctype="multipart/form-data">
+   <input type='hidden' name='username' value='{{ user.username }}'  />
+   {{ form.cropped_image_data }}
+
+   <div id="form-errors">
+    {{ form.photo.errors|safe }}
+    {{ form.username.errors }}
+   </div>
+
+   <div id="img-cropper-wrapper">
+     {{ form.photo }}
+   </div>
+
+   <div id="image-preview-wrapper">
+     {% if user.profile.photo %}
+       <img class='user-img' id="image-preview" src="{{ user.profile.photo.url }}">
+     {% else %}
+       <img id="image-preview" src="{% static 'img/noun_160064_cc.png' %}">
+     {% endif %}
+   </div>
+   <table>
+     <tr class='btn-row'>
+       <td><button type='submit' class='btn pic-btn'>Save</button></td>
+       <td>
+         <a class='modal-btn' id='cancel-event'>Cancel</a>
+       </td>
+     </tr>
+   </table>
+   {% csrf_token %}
+ </form>
+
+ <script>
+ (function() {
+   function showCropper() {
+     $("#image-preview").cropper({
+       aspectRatio: 1/1,
+       zoomable: false,
+       rotatable: false,
+       scalable: false,
+       guides: false,
+       dragCrop: false,
+     });
+   }
+
+   function showImage(input) {
+     if (input.files && input.files[0]) {
+       var reader = new FileReader();
+
+       reader.onload = function (e) {
+         $('#image-preview').fadeOut(300, function() {
+           $(this).attr('src',e.target.result);
+         }).fadeIn(400, showCropper);
+       }
+       reader.readAsDataURL(input.files[0]);
+     }
+   }
+
+   $('.pic-btn').attr('disabled', 'disabled');
+
+   $("#id_photo").change(function() {
+     $('.pic-btn').attr('disabled', false);
+     $("#image-preview").cropper('destroy');
+     if ($("#id_photo").val()) {
+       showImage(this);
+     }
+   });
+
+   $("#profile_image_form").submit(function(){
+     var img = $("#image-preview").cropper('getCroppedCanvas').toDataURL().match(/data:image\/(png|jpeg);base64,(.*)$/)[2]
+     // add the cropped image data to the form, then submit.
+     $("#id_cropped_image_data").val(img);
+     return true;
+   });
+
+   $('.modal-btn').on('click', function() {
+     $('#picModal').css('display', 'none');
+   });
+ })();
+ </script>

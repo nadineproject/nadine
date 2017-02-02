@@ -128,7 +128,7 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'urls'
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -149,9 +149,7 @@ INSTALLED_APPS = (
     'taggit',
     'djcelery',
     'doors.keymaster',
-    #'django_extensions',
-    #'debug_toolbar',
-)
+]
 
 #
 # Celery initialization
@@ -182,20 +180,20 @@ JSIGNATURE_RESET_BUTTON = False
 
 # USAePay Settings
 # Use API v1.4 Doc/Literal WSDL
-USA_EPAY_URL = "https://www.usaepay.com/soap/gate/YOUR_URL_CODE/usaepay.wsdl"
-USA_EPAY_KEY = "YOUR_USAEPAY_KEY"
-USA_EPAY_PIN = "YOUR_USAEPAY_PIN"
+#USA_EPAY_URL = "https://www.usaepay.com/soap/gate/YOUR_URL_CODE/usaepay.wsdl"
+#USA_EPAY_KEY = "YOUR_USAEPAY_KEY"
+#USA_EPAY_PIN = "YOUR_USAEPAY_PIN"
 # Used for adding billing profiles
-USA_EPAY_WEB_KEY = "YOUR_USAEPAY_KEY"
+#USA_EPAY_WEB_KEY = "YOUR_USAEPAY_KEY"
 
 # Comlink Settings
 MAILGUN_UPLOAD_TO = "attachments/"
 MAILGUN_VERIFY_INCOMING = True
 
 # Mailgun Settings
-MAILGUN_API_KEY = "YOUR-MAILGUN-API-KEY"
-MAILGUN_DOMAIN = "YOUR-MAILGUN-DOMAIN"
-MAILGUN_DEBUG = False
+#MAILGUN_API_KEY = "YOUR-MAILGUN-API-KEY"
+#MAILGUN_DOMAIN = "YOUR-MAILGUN-DOMAIN"
+#MAILGUN_DEBUG = False
 
 # Celery Settings
 CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
@@ -214,7 +212,7 @@ CELERY_ALWAYS_EAGER = False
 
 # MAILCHIMP_API_KEY="YourMailchimpKey"
 # MAILCHIMP_NEWSLETTER_KEY="YourNewsletter"
-MAILCHIMP_WEBHOOK_KEY = "nadine"
+#MAILCHIMP_WEBHOOK_KEY = "nadine"
 
 # Allows for the login page to include or not include the option for nonmembers to register and make a user account.
 ALLOW_ONLINE_REGISTRATION = False
@@ -306,4 +304,4 @@ if os.path.isfile('themes/active/theme_settings.py'):
     from theme_settings import *
 
 
-# Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

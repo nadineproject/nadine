@@ -1,22 +1,20 @@
-{% extends "staff/staff_base.html" %}
+{% extends "interlink/base.html" %}
 
 {% block sub-title %}Moderation List | {% endblock %}
 
 {% block style %}
-nav #lists-tab { background: #FBD850; color: black; }
 #content td, #content th { text-align: left; padding-right: 2em; }
 #content td:first-child, #content th:first-child { width: 15em; }
-#content h3 { text-align: center; }
+#content h5 { text-align: center; }
 {% endblock %}
 
 {% block content%}
-{% include "interlink/list_menu.frag" %}
 
-<h2>Moderation List:</h2>
+<h4>Moderation List:</h4>
 
 {% if not request.user.mail_awaiting_moderation %}
-	<h3>You have no more email to moderate.</h3>
-	<h3>Go, team!</h3>
+	<h5>You have no more email to moderate.</h5>
+	<h5>Go, team!</h5>
 {% else %}
 	<table>
 		<tr>
@@ -27,7 +25,7 @@ nav #lists-tab { background: #FBD850; color: black; }
 		</tr>
 	{% for incoming_mail in request.user.mail_awaiting_moderation %}
 		<tr>
-			<td><a href="{% url 'interlink_inspect' incoming_mail.id %}">{{ incoming_mail.sent_time }}</a></td>
+			<td><a href="{% url 'interlink:inspect' incoming_mail.id %}">{{ incoming_mail.sent_time }}</a></td>
 			<td>{{ incoming_mail.origin_address }}</td>
 			<td>{{ incoming_mail.subject }}</td>
 			<td>{% include "interlink/incoming_mail_controls.frag" %}</td>

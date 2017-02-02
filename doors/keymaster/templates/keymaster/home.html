@@ -1,0 +1,91 @@
+{% extends "keymaster/base.html" %}
+
+{% block content %}
+
+{% if not keymasters %}
+	<h3>No Keymasters!</h3>
+{% endif %}
+
+{% for keymaster in keymasters %}
+	<h4>{{ keymaster.description }}</h4>
+	{% if keymaster.is_syncing %}
+		<h5 style="color:red;">Full sync in progress.  Logs will be delayed until completed.</h5>
+	{% endif %}
+
+	{% include "keymaster/log_table.html" %}
+	<div style="margin: 1em 3em 0; text-align:right;">
+		<!-- [ <a href="{% url 'doors:logs' %}">more logs</a> ] -->
+	</div>
+
+	<h5>Gatekeeper Health</h5>
+	<table class='responsive-table'>
+		<thead>
+			<tr>
+				<th></th>
+				<th>Last Access</th>
+				<th>Success</th>
+				<th>Full Sync</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>
+					{% if keymaster.success_ts < twoMinutesAgo %}
+						<span class="ui-state-error">INACTIVE</span>
+					{% endif %}
+				</td>
+				<td>{{ keymaster.access_ts }}</td>
+				<td>{{ keymaster.success_ts }}</td>
+				<td>{{ keymaster.sync_ts }}</td>
+				<td style="text-align:right;">
+					<form method="POST" action="." style="display:inline;">
+						<input type="hidden" name="keymaster_id" value="{{ keymaster.id }}">
+						<input name="action" type="submit" value="Force Sync"/>
+						{% csrf_token %}
+					</form>
+					<form method="POST" action="." style="display:inline;">
+						<input type="hidden" name="keymaster_id" value="{{ keymaster.id }}">
+						<input name="action" type="submit" value="Clear Logs"/>
+						{% csrf_token %}
+					</form>
+
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<table class='responsive-table'>
+		<thead class='responsive-header'>
+			<tr>
+				<th>
+					Timestamp
+				</th>
+				<th>
+					Message
+				</th>
+				<th>
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for l in keymaster.unresolved_logs %}
+				<tr class="{% cycle 'row-even' 'row-odd' %}">
+					<td nowrap>{{ l.timestamp }}</td>
+					<td>{{ l.message }}</td>
+					<td>
+						<form method="POST" action=".">
+							<input type="hidden" name="keymaster_id" value="{{ keymaster.id }}">
+							<input type="hidden" name="log_id" value="{{ l.id }}">
+							<input id='clear-btn' name="action" type="submit" value="Clear" />
+							{% csrf_token %}
+						</form>
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+
+{% endfor %}
+
+
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "staff/billing/base.html" %}
+
+{% block sub-title %}USAePay Void Authorization{% endblock %}
+
+{% block content %}
+
+<h4>USAePay Void Authorization</h4>
+
+{% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+
+{% if not transaction %}
+    No Transaction!
+{% else %}
+    <h5>Transaction Details</h5>
+    <div>
+        <strong>Date: </strong> {{ transaction.date_time }}<br>
+        <strong>User: </strong> {{ transaction.username }}<br>
+        <strong>Description: </strong> {{ transaction.description}}<br>
+        <strong>Amount: </strong> ${{ transaction.amount }}<br>
+    </div>
+
+    <h5>Are you sure?</h5>
+    <div>
+        <form action="." method="POST">
+            <input type="hidden" name="transaction_id" value="{{ transaction.transaction_id }}" />
+            <input type="hidden" name="username" value="{{ transaction.username }}" />
+            <input type="submit" name="confirmed" value="Void Transaction"/>
+            {% csrf_token %}
+        </form>
+    </div>
+{% endif %}
+
+{% endblock %}

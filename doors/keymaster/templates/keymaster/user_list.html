@@ -1,15 +1,8 @@
-{% extends "staff/staff_base.html" %}
-
-{% block sub-title %} Doors | {% endblock %}
-
-{% block style %}
-nav #doors-tab { background: #FBD850; color: black; }
-{% endblock %}
+{% extends "keymaster/base.html" %}
 
 {% block content %}
-{% include "keymaster/doors_menu.html" %}
 
-<h2>Users with Keys</h2>
+<h4>Users with Keys</h4>
 
 {% if messages %}
 	<div class="messages">
@@ -30,7 +23,7 @@ nav #doors-tab { background: #FBD850; color: black; }
 	{% for key in codes %}
 		<tr>
 			<td>
-				<a href="{% url 'doors_keys' key.user.username %}">{{ key.user }}</a>
+				<a href="{% url 'doors:keys' key.user.username %}">{{ key.user }}</a>
 			</td>
 			<!--<td>{{ key.code }}</td>-->
 			<td>

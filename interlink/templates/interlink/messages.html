@@ -1,21 +1,27 @@
-{% extends "staff/staff_base.html" %}
+{% extends "interlink/base.html" %}
 
 {% block sub-title %}{{ mailing_list.name }} Log | {% endblock %}
 
 {% block style %}
-nav #lists-tab { background: #FBD850; color: black; }
-#content td, #content th { text-align: left; padding-right: 2em; }
-#content td:first-child, #content th:first-child { width: 15em; }
-.last-attempt { color: #F44; }
+.incoming-table td, .incoming-table th {
+	text-align: left;
+}
+
+.incoming-table td:first-child, .incoming-table th:first-child {
+	width: 15em;
+}
+
+.last-attempt {
+	color: #F44;
+}
 {% endblock %}
 
 {% block content%}
-{% include "interlink/list_menu.frag" %}  
 
-<h2>{{ mailing_list.name }} Log:</h2>
+<h4>{{ mailing_list.name }} Log:</h4>
 
-<h3>Incoming Mail:</h3>
-<table>
+<h5>Incoming Mail:</h5>
+<table class='incoming-table'>
 	<tr>
 		<th>Sent Time</th>
 		<th>Origin</th>
@@ -30,31 +36,35 @@ nav #lists-tab { background: #FBD850; color: black; }
 {% endfor %}
 </table>
 
-<h3>Outgoing Mail:</h3>
-<table>
-	<tr>
-		<th>Sent Time</th>
-		<th>Origin</th>
-		<th>Subject</th>
-		<th>Moderators only?</th>
-	</tr>
-{% for outgoing_mail in mailing_list.outgoing_mails.all|dictsortreversed:"sent"|slice:"0:15" %}
-	<tr>
-		<td>
-			{% if outgoing_mail.sent %}
-				{{ outgoing_mail.sent }}
-			{% else %}
-				{% if outgoing_mail.last_attempt %}
-					<span class="last-attempt">{{ outgoing_mail.last_attempt}}</span><br/>
-					{{ outgoing_mail.attempts }} attempt{{ outgoing_mail.attempts|pluralize }}
-				{% endif %}
-			{% endif %}
-		</td>
-		<td>{{ outgoing_mail.original_mail.origin_address }}</td>
-		<td>{{ outgoing_mail.subject }}</td>
-		<td>{{ outgoing_mail.moderators_only }}</td>
-	</tr>
-{% endfor %}
+<h5>Outgoing Mail:</h5>
+<table class='responsive-table outgoing-table'>
+	<thead>
+		<tr>
+			<th>Sent Time</th>
+			<th>Origin</th>
+			<th>Subject</th>
+			<th>Moderators only?</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for outgoing_mail in mailing_list.outgoing_mails.all|dictsortreversed:"sent"|slice:"0:15" %}
+			<tr class="{% cycle 'row-even' 'row-odd' %}">
+				<td>
+					{% if outgoing_mail.sent %}
+						{{ outgoing_mail.sent }}
+					{% else %}
+						{% if outgoing_mail.last_attempt %}
+							<span class="last-attempt">{{ outgoing_mail.last_attempt}}</span><br/>
+							{{ outgoing_mail.attempts }} attempt{{ outgoing_mail.attempts|pluralize }}
+						{% endif %}
+					{% endif %}
+				</td>
+				<td>{{ outgoing_mail.original_mail.origin_address }}</td>
+				<td>{{ outgoing_mail.subject }}</td>
+				<td>{{ outgoing_mail.moderators_only }}</td>
+			</tr>
+		{% endfor %}
+	</tbody>
 </table>
 
 {% endblock %}

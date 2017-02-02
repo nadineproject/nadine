@@ -1,0 +1,34 @@
+{% extends "staff/stats/base.html" %}
+
+{% block sub-title %}Stats | History{% endblock %}
+
+{% block content %}
+
+<h4>Stats - Monthly Member History:</h4>
+
+<div class="columns clearfix date-range">
+  {% include "staff/date_range_form.html"%}
+</div>
+
+<table class="monthly-stats">
+  <tr>
+    <th></th>
+    <th>Plans Started</th>
+    <th>Plans Ended</th>
+    <th>Plans at Month's End</th>
+  </tr>
+{% for stat in monthly_stats %}
+   {% ifchanged stat.start_date.year %}
+      <tr class="year-heading"><th colspan=4>{{ stat.start_date|date:"Y" }}</th></tr>{% endifchanged %}
+  <tr class="monthly-stat">
+    <th>{{ stat.start_date|date:"M" }}</th>
+    <td><div class="started-bar" style="width: {{ stat.started }}px;">{{ stat.started }}</div></td>
+    <td><div class="ended-bar" style="width: {{ stat.ended }}px;">{{ stat.ended }}</div></td>
+    <td>
+       <div class="total-bar" style="width: {{ stat.monthly_total }}px;">{{ stat.monthly_total }}</div>
+    </td>
+  </tr>
+{% endfor %}
+</table>
+
+{% endblock %}

@@ -20,6 +20,7 @@ from nadine.models.usage import CoworkingDay
 from nadine.models.payment import Transaction
 from nadine.models.alerts import MemberAlert
 from nadine.models.organization import Organization, OrganizationMember
+from nadine.models.membership import Membership
 from nadine.forms import EditProfileForm, ProfileImageForm, LinkForm, BaseLinkFormSet
 from nadine.utils import network
 from nadine.utils.payment_api import PaymentAPI
@@ -30,7 +31,7 @@ from members.views.core import is_active_member
 
 @login_required
 def profile_redirect(request):
-    return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
+    return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': request.user.username}))
 
 
 @login_required
@@ -45,34 +46,40 @@ def profile(request, username):
     if request.user.is_staff:
         ALLOW_PHOTO_UPLOAD = True
 
-    context = {'user': user, 'emergency_contact': emergency_contact,
-        'settings': settings, 'ALLOW_PHOTO_UPLOAD': ALLOW_PHOTO_UPLOAD,
-        'can_edit': can_edit, 'current_org_memberships': current_org_memberships, 'past_org_memberships': past_org_memberships
-    }
-    return render(request, 'members/profile.html', context)
+    context = {'user': user,
+               'emergency_contact': emergency_contact,
+               'settings': settings,
+               'ALLOW_PHOTO_UPLOAD': ALLOW_PHOTO_UPLOAD,
+               'can_edit': can_edit,
+               'current_org_memberships': current_org_memberships, 'past_org_memberships': past_org_memberships
+               }
+    return render(request, 'members/profile/profile.html', context)
 
 
 @login_required
 def profile_private(request, username):
     user = get_object_or_404(User, username=username)
     context = {'user': user}
-    return render(request, 'members/profile_private.html', context)
+    return render(request, 'members/profile/profile_private.html', context)
 
 
 @login_required
 def profile_membership(request, username):
     user = get_object_or_404(User, username=username)
-    memberships = user.membership_set.all().reverse()
+    # memberships = user.membership_set.all().reverse()
+    memberships = Membership.objects.filter(user=user).reverse()
 
-    context = {'user': user, 'memberships': memberships }
-    return render(request, 'members/profile_membership.html', context)
+    context = {'user': user,
+               'memberships': memberships
+               }
+    return render(request, 'members/profile/profile_membership.html', context)
 
 
 @login_required
 def profile_documents(request, username):
     user = get_object_or_404(User, username=username)
     context = {'user': user}
-    return render(request, 'members/profile_documents.html', context)
+    return render(request, 'members/profile/profile_documents.html', context)
 
 
 @login_required
@@ -84,9 +91,9 @@ def user_activity_json(request, username):
         response_data['is_active'] = True
         response_data['allowance'] = active_membership.get_allowance()
     activity_this_month = user.profile.activity_this_month()
-    #response_data['activity_this_month'] = serializers.serialize('json', activity_this_month)
+    # response_data['activity_this_month'] = serializers.serialize('json', activity_this_month)
     response_data['usage_this_month'] = len(activity_this_month)
-    #response_data['coworkingdays'] = serializers.serialize('json', user.coworkingday_set.all())
+    # response_data['coworkingdays'] = serializers.serialize('json', user.coworkingday_set.all())
     return JsonResponse(response_data)
 
 
@@ -100,8 +107,13 @@ def profile_activity(request, username):
         is_active = True
         allowance = active_membership.get_allowance()
     activity = user.profile.activity_this_month()
-    context = {'user': user, 'is_active': is_active, 'activity':activity, 'allowance':allowance}
-    return render(request, 'members/profile_activity.html', context)
+    context = {'user': user,
+               'is_active': is_active,
+               'activity': activity,
+               'allowance': allowance
+               }
+    return render(request, 'members/profile/profile_activity.html', context)
+
 
 @login_required
 def profile_billing(request, username):
@@ -110,9 +122,13 @@ def profile_billing(request, username):
     active_membership = user.profile.active_membership()
     bills = user.bill_set.filter(bill_date__gte=six_months_ago)
     payments = user.transaction_set.prefetch_related('bills').filter(transaction_date__gte=six_months_ago)
-    context = {'user':user, 'active_membership':active_membership,
-        'bills':bills, 'payments':payments, 'settings':settings}
-    return render(request, 'members/profile_billing.html', context)
+    context = {'user': user,
+               'active_membership': active_membership,
+               'bills': bills,
+               'payments': payments,
+               'settings': settings
+               }
+    return render(request, 'members/profile/profile_billing.html', context)
 
 
 @login_required
@@ -121,7 +137,7 @@ def edit_profile(request, username):
     user = get_object_or_404(User, username=username)
     if not user == request.user:
         if not request.user.is_staff:
-            return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
+            return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': request.user.username}))
 
     LinkFormSet = formset_factory(LinkForm, formset=BaseLinkFormSet)
 
@@ -145,7 +161,7 @@ def edit_profile(request, username):
                             user.set_password(pwd)
                             user.save()
 
-                            return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
+                            return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': user.username}))
                         else:
                             page_message = 'Your password must be at least 8 characters long.'
                     else:
@@ -166,7 +182,7 @@ def edit_profile(request, username):
                                 messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
                         profile_form.save()
 
-                        return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
+                        return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': user.username}))
                 else:
                     page_message = 'The entered passwords do not match. Please try again.'
             else:
@@ -175,7 +191,10 @@ def edit_profile(request, username):
         link_formset = LinkFormSet(initial=link_data)
         profile = user.profile
         emergency_contact = user.get_emergency_contact()
-        profile_form = EditProfileForm(initial={'username': user.username, 'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email,
+        profile_form = EditProfileForm(initial={'username': user.username,
+                                                'first_name': user.first_name,
+                                                'last_name': user.last_name,
+                                                'email': user.email,
                                                 'phone': profile.phone, 'phone2': profile.phone2,
                                                 'address1': profile.address1, 'address2': profile.address2, 'city': profile.city, 'state': profile.state, 'zipcode': profile.zipcode,
                                                 'url_personal': profile.url_personal, 'url_professional': profile.url_professional,
@@ -187,10 +206,10 @@ def edit_profile(request, username):
                                                 'has_kids': profile.has_kids, 'self_employed': profile.self_employed,
                                                 'emergency_name': emergency_contact.name, 'emergency_relationship': emergency_contact.relationship,
                                                 'emergency_phone': emergency_contact.phone, 'emergency_email': emergency_contact.email,
-                                            })
+                                                })
 
     context = {'user': user, 'profile_form': profile_form, 'page_message': page_message, 'link_formset': link_formset}
-    return render(request, 'members/profile_edit.html', context)
+    return render(request, 'members/profile/profile_edit.html', context)
 
 
 @login_required
@@ -198,23 +217,23 @@ def receipt(request, username, id):
     user = get_object_or_404(User, username=username)
     if not user == request.user:
         if not request.user.is_staff:
-            return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
+            return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': request.user.username}))
 
     transaction = get_object_or_404(Transaction, id=id)
     if not user == transaction.user:
         if not request.user.is_staff:
-            return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
+            return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': request.user.username}))
     bills = transaction.bills.all()
 
     context = {'user': user, 'transaction': transaction, 'bills': bills, 'settings': settings}
-    return render(request, 'members/receipt.html', context)
+    return render(request, 'members/profile/receipt.html', context)
 
 
 @login_required
 def user_devices(request, username):
     user = get_object_or_404(User, username=username)
     if not user == request.user and not request.user.is_staff:
-        return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
+        return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': request.user.username}))
 
     error = None
     if request.method == 'POST':
@@ -229,15 +248,20 @@ def user_devices(request, username):
         device_name = device_name.strip()[:32]
         device.device_name = device_name
         device.save()
-        return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
+        return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': request.user.username}))
 
     devices = user.userdevice_set.all()
     ip = network.get_addr(request)
     this_device = arp.device_by_ip(ip)
 
-    context = {'user': user, 'devices': devices, 'this_device': this_device,
-        'ip': ip, 'error': error, 'settings': settings}
-    return render(request, 'members/profile_devices.html', context)
+    context = {'user': user,
+               'devices': devices,
+               'this_device': this_device,
+               'ip': ip,
+               'error': error,
+               'settings': settings
+               }
+    return render(request, 'members/profile/profile_devices.html', context)
 
 
 @login_required
@@ -247,7 +271,7 @@ def disable_billing(request, username):
         api = PaymentAPI()
         api.disable_recurring(username)
         email.announce_billing_disable(user)
-    return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
+    return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': user.username}))
 
 
 @login_required
@@ -258,18 +282,19 @@ def file_view(request, disposition, username, file_name):
     file_upload = FileUpload.objects.filter(user__username=username, name=file_name).first()
     if not file_upload:
         raise Http404
-    if disposition == None or not (disposition == "inline" or disposition == "attachment"):
+    if disposition is None or not (disposition == "inline" or disposition == "attachment"):
         disposition = "inline"
     response = HttpResponse(file_upload.file, content_type=file_upload.content_type)
     response['Content-Disposition'] = '%s; filename="%s"' % (disposition, file_upload.name)
     return response
 
+
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def edit_pic(request, username):
-    user=get_object_or_404(User, username=username)
+    user = get_object_or_404(User, username=username)
     if not user == request.user and not request.user.is_staff:
-        return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
+        return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': request.user.username}))
     if request.method == 'POST':
         profile_form = EditProfileForm(request.POST, request.FILES)
         profile = get_object_or_404(UserProfile, user=user)
@@ -277,7 +302,7 @@ def edit_pic(request, username):
 
         profile.save()
 
-        return HttpResponseRedirect(reverse('member_profile', kwargs={'username': user.username}))
+        return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': user.username}))
     else:
         profile_form = EditProfileForm()
 
@@ -286,22 +311,22 @@ def edit_pic(request, username):
         ALLOW_PHOTO_UPLOAD = True
 
     context = {'ALLOW_PHOTO_UPLOAD': ALLOW_PHOTO_UPLOAD, 'user': user}
-    return render(request, 'members/edit_pic.html', context)
+    return render(request, 'members/profile/edit_pic.html', context)
 
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def edit_photo(request, username):
-    user=get_object_or_404(User, username=username)
+    user = get_object_or_404(User, username=username)
     if not user == request.user and not request.user.is_staff:
-        return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
+        return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': request.user.username}))
 
     if request.method == 'POST':
         form = ProfileImageForm(request.POST, request.FILES)
         try:
             if form.is_valid():
                 form.save()
-                return HttpResponseRedirect(reverse('member_profile', kwargs={'username': request.user.username}))
+                return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': request.user.username}))
             else:
                 print form
         except Exception as e:
@@ -310,6 +335,6 @@ def edit_photo(request, username):
         form = ProfileImageForm()
 
     context = {'user': user, 'form': form}
-    return render(request, 'members/profile_image_edit.html', context)
+    return render(request, 'members/profile/profile_image_edit.html', context)
 
-# Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

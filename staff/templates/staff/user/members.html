@@ -1,0 +1,28 @@
+{% extends "staff/user/base.html" %}
+
+{% block sub-title %}Members{% endblock %}
+
+
+{% block content %}
+
+<h4>Member List [<i>{{total_members}} total</i> ]</h4>
+
+<div>
+	<form id="group_form">
+		<label for='group'>View:</label>
+		<div class='input-field'>
+			<select class='browser-default group' name="group" OnChange="location.href=group_form.group.options[selectedIndex].value">
+			 {% for k, v in group_list %}
+				 <option value="{% url 'staff:user:member_group' k %}" {% if k == group %} SELECTED {% endif %}>
+					 {{ v }}
+				 </option>
+			 {% endfor %}
+		 </select>
+		</div>
+	</form>
+</div>
+
+<h5 id='group-header'>{{ group_name }}: <em>{{ member_count }} member{{ member_count|pluralize }}</em></h5>
+	{% include "staff/user/user_list_frag.html" %}
+
+{% endblock %}

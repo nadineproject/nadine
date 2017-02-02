@@ -1,0 +1,29 @@
+{% extends "staff/billing/base.html" %}
+
+{% block sub-title %}Transactions{% endblock %}
+
+{% block content %}
+
+<h4>Transactions:</h4>
+
+{% if page_message%}<p id="page-message">{{ page_message }}</p>{% endif %}
+
+{% if not transactions %}
+<p>There are no transactions!</p>
+{% endif%}
+
+<div class="columns">
+{% include "staff/date_range_form.html"%}
+</div>
+
+<table id="transaction-list">
+	{% for transaction in transactions %}
+		<tr class="{% cycle 'row-even' 'row-odd' %}">
+			<td><a href="{% url 'staff:billing:transaction' transaction.id %}">{{ transaction.transaction_date | date:"Y-m-d" }}</a></td>
+			<td><a href="{% url 'staff:user:detail' transaction.user.username %}">{{ transaction.user.get_full_name }}</a></td>
+			<td>${{ transaction.amount }}</td>
+		</tr>
+	{% endfor %}
+</table>
+
+{% endblock %}

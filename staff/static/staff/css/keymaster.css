@@ -1,0 +1,33 @@
+.potential-key-form {
+	display: inline;
+}
+
+.key-form {
+	margin-left: 2%;
+}
+
+.key-form strong {
+	font-weight: bold;
+}
+
+.key-form input {
+	display: inline;
+	vertical-align: baseline;
+	padding-left: 2%;
+}
+
+.key-form #key-code, .key-form #username {
+	width: 25%;
+}
+
+.key-form #username
+
+#key-btn {
+	margin-left: 2%;
+}
+
+@media only screen and (max-width: 599px) {
+	#clear-btn {
+		text-align: left;
+	}
+}

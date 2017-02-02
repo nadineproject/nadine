@@ -1,4 +1,4 @@
-{% extends "members/u_base.html" %}
+{% extends "members/base.html" %}
 
 {% block sub-title %}Login | {% endblock %}
 
@@ -15,7 +15,7 @@
 			{% endif %}
 			<div>
 				<form id='login_form'  method="POST" action=".">
-					<h1 class='oswald' id='login_header' align='center'>Login</h1>
+					<h2 class='oswald' id='login_header' align='center'>Login</h2>
 					<table>
 						<tr>
 							<th>Email</th>
@@ -29,7 +29,7 @@
 						</tr>
 					</table>
 				<div class='row'>
-					<button class="btn waves-effect waves-light" id='login-btn' type="submit" value="Login" />Login</button>
+					<button class="btn waves-effect waves-light" id='loginonly-btn' type="submit" value="Login" />Login</button>
 					<input type="hidden" name="next" value="{{ next }}" />
 					<a id='reg_link' href='.'>Register</a>
 				</div>
@@ -47,7 +47,7 @@
 			{% endif %}
 			<div style="margin-left:2em;">
 			  <form id='registration_form' name='registration_form' action='../member/register/' method='POST'>
-			    <h1>Register</h1>
+			    <h2>Register</h2>
 			    <table>
 						<tr>
 							<th>First Name:</th>
@@ -80,7 +80,7 @@
 		{% endif %}
 		<div>
 			<form id='login_form'  method="post" action=".">
-				<h1 class='oswald' id='login_header'>Login</h1>
+				<h2 class='oswald' id='login_header'>Login</h2>
 				<table>
 					<tr>
 						<th class='cap-label'>Email</th>

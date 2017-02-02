@@ -1,0 +1,96 @@
+{% extends "staff/billing/base.html" %}
+<!-- TODO review this page for CSS redesign -->
+{% block style %}
+#content td { white-space:nowrap; }
+{% endblock %}
+
+{% block sub-title %}USAePay Customers{% endblock %}
+
+{% block content %}
+
+<h4>USAePay Customers - {{ username }}</h4>
+
+{% if error %}
+	<div class='error'>{{ error }}</div>
+{% endif %}
+
+<table>
+	<tr>
+		<th>Created</th>
+		<th>Customer #</th>
+		<th>Next Bill</th>
+		<th>Auto-Billing</th>
+		<th></th>
+	</tr>
+
+	{% for cust in customers %}
+		<tr class="{% cycle 'row-even' 'row-odd' %}">
+			<td>{{ cust.getCreated | slice:":10"}}</td>
+			<td><a href="https://secure.usaepay.com/console/billing_edit?id={{ cust.getCustNum }}" target="new">{{ cust.getCustNum }}</a></td>
+			{% if cust.isEnabled %}
+			<td>{{ cust.getNext | slice:":10"}}</td>
+				<td><strong class='authorized'>Enabled</strong></td>
+			{% else %}
+				<td colspan=2></td>
+			{% endif %}
+			<td></td>
+		</tr>
+	{% endfor %}
+
+	<tr>
+		<td colspan=3></td>
+		<td>
+			<form method="POST" action=".">
+				<input type="submit" name="disable_all" value="Disable All">
+				{% csrf_token %}
+			</form>
+		</td>
+		<td></td>
+</table>
+
+<div id="all-together-input">
+  Address: <input type="text" name="address_1" />
+  Address cont.: <input type="text" name="address_2" />
+  Zip: <input type="text" name="mZip" />
+  Credit Card Number: <input type="text" name="cc" />
+  cvv2: <input type="text" name="cvc" />
+  Exp Date: <input type="text" name="expdate" />
+  <input type="button" id="btn-process-payment" value="Submit" />
+</div>
+
+<script type="text/javascript" src="https://sandbox.usaepay.com/tokenize/jquery.ueform.js"></script>
+
+<script>
+  $('#btn-process-payment')
+    .ueForm({
+      event       : 'click',
+      container   : '#all-together-input',
+      indefinite  : true,
+      //duration    : 1800, // 30 minutes
+      name_map    : {
+        address  : ['address_1', 'address_2'],
+        zip      : 'zip',
+        ccnum    : 'cc',
+        ccv      : 'cvc',
+        expdate  : 'expdate'
+      },
+      form_error  : function ( errors ) {
+        var error_text = '';
+        $.each( errors, function( field, isError ){
+          if ( isError )
+            error_text += field + ', ';
+        })
+        error_text = error_text.slice( 0, -2 ); // Remove the trailing comma and space
+        alert('Form Error: Incorrect input for ' + error_text + '.');
+      },
+      error       : function ( code, text ) {
+        alert('Error (' + code + '): ' + text);
+      }
+    })
+    .click(function(e){
+      console.log(e)
+    });
+</script>
+
+
+{% endblock %}

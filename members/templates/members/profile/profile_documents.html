@@ -1,0 +1,13 @@
+{% if user.profile.has_file_uploads %}
+    <table>
+    {% for f in user.profile.file_uploads %}
+        <tr>
+            <td>{{ f.uploadTS }}</td>
+            <!--<td>{{ f.document_type }}</td>-->
+            <td>
+                <a target="_self" href="{% url 'member:profile:file' f.user 'inline' f.name     %}">{{ f.name }}</a>
+            </td>
+        <tr>
+    {% endfor %}
+    </table>
+{% endif %}

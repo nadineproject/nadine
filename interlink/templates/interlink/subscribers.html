@@ -1,21 +1,18 @@
-{% extends "staff/staff_base.html" %}
+{% extends "interlink/base.html" %}
 
 {% block sub-title %}Subscribers to '{{ mailing_list.name }}' | {% endblock %}
 
 {% block style %}
-nav #lists-tab { background: #FBD850; color: black; }
 #content td, #content th { text-align: left; padding-right: 2em; }
 #content td:first-child, #content th:first-child { width: 15em; }
 .last-attempt { color: #F44; }
 {% endblock %}
 
-
 {% block content%}
-{% include "interlink/list_menu.frag" %}
 
 <div>
 	<div style="size:large; float:right;"><strong>{{ mailing_list.subscribers.all|length }} Subscribers</strong></div>
-	<h2>Subscribers to <i>{{ mailing_list.name }}</i></h2>
+	<h4>Subscribers to <i>{{ mailing_list.name }}</i></h4>
 </div>
 
 <table>
@@ -30,16 +27,16 @@ nav #lists-tab { background: #FBD850; color: black; }
 		<td>{{ subscriber.first_name }} {{ subscriber.last_name }}</td>
 		<td>{{ subscriber.profile.last_membership.start_date }}</td>
 		<td>{{ subscriber.profile.last_membership.end_date | default:'' }}</td>
-		<td><a href="{%url 'interlink_unsubscribe' mailing_list.id subscriber.username%}">unsubscribe</a></td>
+		<td><a href="{%url 'interlink:unsubscribe' mailing_list.id subscriber.username%}">unsubscribe</a></td>
 	</tr>
 {% endfor %}
 </table>
 
 <div>
 	<div style="size:large; float:right;"><strong>{{ not_subscribed|length }} Members</strong></div>
-	<h2>Active Members Not Subscribed</h2>
+	<h4>Active Members Not Subscribed</h4>
 </div>
-<h3></h3>
+<h5></h5>
 <table>
 	<tr>
 		<th>Name</th>
@@ -52,7 +49,7 @@ nav #lists-tab { background: #FBD850; color: black; }
 		<td>{{ subscriber.first_name }} {{ subscriber.last_name }}</td>
 		<td>{{ subscriber.profile.last_membership.start_date }}</td>
 		<td>{{ subscriber.profile.last_membership.end_date | default:''}}</td>
-		<td><a href="{%url 'interlink_subscribe' mailing_list.id subscriber.username %}">subscribe</a></td>
+		<td><a href="{%url 'interlink:subscribe' mailing_list.id subscriber.username %}">subscribe</a></td>
 	</tr>
 {% endfor %}
 </table>

@@ -1,0 +1,197 @@
+/*Styling for all staff/activity pages*/
+
+h4 {
+  border-bottom: 1px dotted;
+}
+
+input.datepicker {
+  text-align: center;
+  width: 150px;
+}
+
+#activity-tab {
+  color: RGBA(90, 122, 189, 1.00) !important;
+}
+
+#activity-dates {
+	margin-left: 20%;
+	font-size: 2em;
+}
+
+#activity-table th:first-child {
+  width: 80px;
+}
+
+#alert-a {
+  /*margin-left: 85%;*/
+  margin-top: 3%;
+	width: 40%;
+}
+
+#color-key {
+  margin: 2em 0;
+}
+
+#color-key b {
+  margin-right: 1em;
+  padding: 0px 5px;
+}
+
+#content table {
+  width: 100%;
+}
+
+#daily-logs-key {
+  background-color: #99F;
+}
+
+#has-desk-key {
+  background-color: #F99;
+}
+
+#horizontal-graph {
+  margin: 1em 0;
+}
+
+#membership-key {
+  background-color: #9F9;
+}
+
+#quick-links {
+  text-align: right;
+  margin-bottom: 20px;
+}
+
+
+.blank-div {
+  margin: 0px;
+  padding: 0px;
+  background-color: #FFF;
+}
+
+.daily-logs-bar {
+  margin: 5px 0px;
+  background-color: #99F;
+  padding-left: 5px;
+  display:inline-block;
+}
+
+.daily-logs-column {
+  background-color: #99F;
+}
+
+.daily-logs-number {
+  display: inline-block;
+}
+
+.day-header {
+	border-bottom: 1px dotted;
+}
+
+.day-header h5, .day-header #activity-dates {
+	display: inline;
+}
+
+.graph-column:hover .hover-div {
+  display: block;
+}
+
+.graph-column {
+  width: 4px;
+  margin: 0 0 20px 0;
+  padding: 0px;
+  display: inline-block;
+  height: 200px;
+  position: relative;
+}
+
+.hover-div {
+  position: absolute;
+  top: {{graph_size}}px;
+  display: none;
+  width: 200px;
+  z-index: 2;
+  background-color: #FFF;
+}
+
+.log-note {
+  width: 100px;
+}
+
+.membership-column {
+  background-color: #9F9;
+}
+
+.membership-bar {
+  float: right;
+  margin: 5px 0px;
+  background-color: #9F9;
+  padding-left: 5px;
+}
+
+.has-desk-bar {
+  margin: 5px 0px;
+  background-color: #F99;
+  padding-right: 5px;
+  display:inline-block;
+  text-align: right;
+}
+
+.records-count {
+  font-weight: bold;
+  text-align: right;
+  margin-top: 5%;
+}
+
+
+
+@media only screen and (max-width: 900px) {
+  #activity-dates {
+    margin-left: 10%;
+    width: 40%;
+  }
+}
+
+
+@media only screen and (max-width: 750px) {
+	#activity-dates:before {
+		content: ' ';
+		display: block;
+	}
+
+	#activity-dates a:first-child {
+		margin-left: 25%;
+	}
+}
+
+@media only screen and (max-width: 700px) {
+  #alert-a {
+    margin-left: 75%;
+  }
+}
+
+@media only screen and (max-width: 599px) {
+  #dis-date {
+		display: none;
+	}
+}
+
+@media only screen and (max-width: 480px) {
+	.graph-column {
+		width: 5px;
+		float: left;
+		margin-bottom: 10%;
+	}
+}
+
+@media only screen and (max-width: 450px) {
+  #alert-a {
+    margin-left: 65%;
+  }
+}
+
+@media only screen and (max-width: 350px) {
+  #activity-dates a:first-child {
+		margin-left: 15%;
+	}
+}

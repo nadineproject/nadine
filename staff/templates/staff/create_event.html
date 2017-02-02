@@ -1,10 +1,10 @@
-{% extends "staff/staff_base.html" %}
+{% extends "staff/base.html" %}
 
 {% block sub-title %}Create Event | {% endblock %}
 
 
 {% block content %}
-  <h1>Create Event</h1>
+  <h4>Create Event</h4>
   <form name='event_form' action='./create' method='POST'>
     {% csrf_token %}
     <table id='event_form'>

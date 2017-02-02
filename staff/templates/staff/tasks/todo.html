@@ -1,0 +1,114 @@
+{% extends "staff/tasks/base.html" %}
+
+{% block sub-title %}TODO{% endblock %}
+
+{% block content %}
+
+{% if not_signed_in %}
+<h4>Forgot to sign in?</h4>
+<div id="activity_list">
+	<table>
+		<tr>
+			<th>Day</th>
+			<th class='left'>Member</th>
+			<th>Were they here?</th>
+			<th></th>
+		</tr>
+
+		<script type="text/javascript">
+			function yes(i) {
+				name = $('#member_name' + i).val()
+				if (confirm("Are you sure you want to mark this activity for " + name + " as billable?")) {
+					$('#payment' + i).val('Bill');
+					$('#nsi_form' + i).submit();
+				} else {
+					return false;
+				}
+			}
+			function no(i) {
+				name = $('#member_name' + i).val()
+				var note = prompt("Waiving activity for " + name + "? Please enter a note:");
+				$('#note' + i).val(note)
+				if ($('#note' + i).val().length == 0) {
+					alert("Note is required if day is marked as WAIVED.");
+					return false;
+				} else {
+					$('#payment' + i).val('Waive');
+					$('#nsi_form' + i).submit();
+				}
+			}
+		</script>
+
+		{% for row in not_signed_in %}
+			<form class='inline' id="nsi_form{{ forloop.counter }}" enctype="multipart/form-data" method='POST' action="{% url 'staff:activity:date' row.day.year row.day.month row.day.day %}">
+			<input type="hidden" name="visit_date" value="{{row.day|date:'Y-m-d'}}">
+			<input type="hidden" name="username" value="{{row.user.username}}">
+			<input type="hidden" id="member_name{{ forloop.counter }}" value="{{row.user.get_full_name}}">
+			<input type="hidden" id="payment{{ forloop.counter }}" name="payment"/>
+			<input type="hidden" id="note{{forloop.counter}}" name="note" size="64"/>
+
+			<tr class="{% cycle 'row-even' 'row-odd' %}">
+				<td>
+					<a href="{% url 'staff:activity:date' row.day.year row.day.month row.day.day %}">{{ row.day|date:"l, M dS" }}</a>
+				</td>
+				<td class='left'>
+					<a href="{% url 'staff:user:detail' row.user.username %}">{{ row.user.get_full_name }}</a>
+				</td>
+				<td class='centered'>
+						<button id="yes{{forloop.counter}}" onClick="return yes({{ forloop.counter }});">Yes - Mark as BILLABLE</button>
+						<button id="no{{forloop.counter}}" onClick="return no({{ forloop.counter }});">No - Mark as WAIVED</button>
+				</td>
+				<td>
+					{% if row.day == today %}
+						<!-- <a href="">send email</a> | -->
+					{% endif %}
+					<a href="{% url 'staff:activity:user' row.user %}">user activity</a>
+				</td>
+			</tr>
+
+			{% csrf_token %}
+			</form>
+		{% endfor %}
+	</table>
+</div>
+{% endif %}
+
+
+<div>
+{% with assigned_alerts as alerts and True as member and True as description %}
+	{% if alerts %}
+		<h4>Assigned Alerts</h4>
+		{% include "staff/tasks/detail_table.html" %}
+	{% endif %}
+{% endwith %}
+</div>
+
+<p id='alert-a'>
+	{% if showall %}
+		[ <a href="?">Trim Alert Lists</a> ]
+	{% else %}
+		[ <a href="?showall">Show All Alerts</a> ]
+	{% endif %}
+</p>
+
+<h4>TODO:</h4>
+<table>
+	<tr>
+		<th>Action Required</th>
+		<th>Count</th>
+		<th></th>
+	</tr>
+	{% for key, description, count in member_alerts %}
+		{% if showall or count > 0 %}
+		<tr class="{% cycle 'row-even' 'row-odd' %}">
+			<td align="left">
+				<a href="{% url 'staff:tasks:detail' key %}">{{ description }}</a>
+			</td>
+			<td>{{ count }}</td>
+			<td></td>
+		</tr>
+		{% endif %}
+	{% endfor %}
+</table>
+
+{% endblock %}

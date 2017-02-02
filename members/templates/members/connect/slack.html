@@ -1,0 +1,27 @@
+{% extends "members/base.html" %}
+
+{% block content %}
+	<h3 class='oswald' style='text-align:center;'>Slack Team</h3>
+	{% if messages %}
+		<div class="messages">
+			{% for message in messages %}
+				<div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+			{% endfor %}
+		</div>
+	{% else %}
+		<p>
+			We have a slack team set up for all members.  You can request an invitation here and then
+			you will be sent an email giving you 	instructions on how to finish the registration process.  You can use slack
+			either through the website below or using the various <a href="https://slack.com/apps">desktop and mobile apps</a>.
+			But first you need to request an invite and join the team.  We still have the old school
+			<a href="{% url 'member:connect:chat' %}">irc chat</a> if you prefer that form of communication.
+		</p>
+		<div style="text-align: center">
+			<form action="." method="POST">
+				<input class='btn' type="submit" value="Request Invite"/>
+				{% csrf_token %}
+			</form>
+			<h4>Team Location: <a href="{{ team_url }}">{{ team_url }}</a></h4>
+		</div>
+	{% endif %}
+{% endblock %}

@@ -1,24 +1,17 @@
-{% extends "staff/staff_base.html" %}
-
-{% block sub-title %}Logs | {% endblock %}
-
-{% block style %}
-nav #logs-tab { background: #FBD850; color: black; }
-{% endblock %}
+{% extends "arpwatch/base.html" %}
 
 {% block content %}
-{% include "arpwatch/logs_menu.frag" %}
 
 <div>
 	<div style="size:large; float:right;"><strong>{{ device_logs|length }} Logs</strong></div>
-	<h2>Device Logs - {{ day|date:"M d, Y" }}</h2>
+	<h4>Device Logs - {{ day|date:"M d, Y" }}</h4>
 </div>
 
-<h4 align="center">
-	<a href="{% url 'arp_device_logs' previous_day.year previous_day.month previous_day.day %}">&laquo; Prev</a>
-	[ <a href="{% url 'arp_devices_today' %}">Today</a> ]
-	<a href="{% url 'arp_device_logs' next_day.year next_day.month next_day.day %}">Next &raquo;</a>
-</h4>
+<h5 align="center">
+	<a href="{% url 'arp:device_logs' previous_day.year previous_day.month previous_day.day %}">&laquo; Prev</a>
+	[ <a href="{% url 'arp:devices_today' %}">Today</a> ]
+	<a href="{% url 'arp:device_logs' next_day.year next_day.month next_day.day %}">Next &raquo;</a>
+</h5>
 
 <table border=1>
 	<tr>
@@ -30,7 +23,7 @@ nav #logs-tab { background: #FBD850; color: black; }
 	</tr>
 	{% for l in device_logs %}
 		<tr>
-			<td><a href="{% url 'arp_device' l.device.id %}">{{ l.device }}</a></td>
+			<td><a href="{% url 'arp:device' l.device.id %}">{{ l.device }}</a></td>
 			<td>{{ l.start|date:"h:i a" }}</td>
 			<td>{{ l.end|date:"h:i a" }}</td>
 			<td>{{ l.diff }}</td>

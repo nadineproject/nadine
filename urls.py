@@ -15,21 +15,22 @@ admin.autodiscover()
 favicon_view = RedirectView.as_view(url='/static/img/favicon.ico', permanent=True)
 
 urlpatterns = [
+    url(r'^$', views.index, name='site_index'),
+
+    url(r'^favicon\.ico$', favicon_view),
     url(r'^robots\.txt$', lambda r: HttpResponse("User-agent: *\nDisallow: /", content_type="text/plain")),
     url(r'^cache\.manifest$', lambda r: HttpResponse(get_manifest(), content_type="text/plain")),
-    url(r'^favicon\.ico$', favicon_view),
-
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^staff/', include('staff.urls')),
-    url(r'^member/', include('members.urls')),
-    url(r'^interlink/', include('interlink.urls')),
-    url(r'^doors/', include('doors.keymaster.urls')),
-    url(r'^logs/', include('arpwatch.urls')),
-    url(r'^tablet/', include('tablet.urls')),
-
+    url(r'^accounts/profile/$', lambda r: redirect('/')),
     url(r'^login/$', login, {'template_name': 'login.html'}, name='login'),
     url(r'^logout/$', logout_then_login, name="logout"),
-    url(r'^accounts/profile/$', lambda r: redirect('/')),
+
+    url(r'^staff/', include('staff.urls', namespace='staff')),
+    url(r'^member/', include('members.urls', namespace='member')),
+    url(r'^tablet/', include('tablet.urls', namespace='tablet')),
+    url(r'^interlink/', include('interlink.urls', namespace='interlink')),
+    url(r'^doors/', include('doors.keymaster.urls', namespace='doors')),
+    url(r'^logs/', include('arpwatch.urls', namespace='arp')),
+    url('^comlink/', include('comlink.urls', namespace='comlink')),
 
     url(r'^email/add/$', views.email_add, name='email_add'),
     url(r'^email/manage/(?P<email_pk>\d+)/(?P<action>.+)/$', views.email_manage, name='email_manage'),
@@ -40,10 +41,8 @@ urlpatterns = [
     url(r'^reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$', password_reset_confirm, {'template_name': 'password_reset_confirm.html'}, 'password_reset_confirm'),
     url(r'^reset/complete/$', password_reset_complete, {'template_name': 'password_reset_complete.html'}, 'password_reset_complete'),
 
-    # Comlink URLS
-    url('^comlink/', include('comlink.urls')),
-
-    url(r'^$', views.index, name='site_index'),
+    url(r'^admin/login/$', login, {'template_name': 'login.html'}, name='login'),
+    url(r'^admin/', include(admin.site.urls)),
 ]
 
 if settings.DEBUG:
@@ -56,4 +55,4 @@ def get_manifest():
     return "CACHE MANIFEST\n#Time: %s\nCACHE:\nFALLBACK:\nNETWORK:\n*" % time.time()
 
 
-# Copyright 2016 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
