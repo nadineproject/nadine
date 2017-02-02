@@ -45,7 +45,7 @@ feedparser
 #django-tastypie==0.12.2
 
 # For the documentation:
-# sphinx_rtd_theme
-# sphinx
-# recommonmark
-# pycodestyle
+sphinx==1.5.2
+sphinx-rtd-theme==0.1.9
+recommonmark==0.4.0
+pycodestyle==2.3.0
