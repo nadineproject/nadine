@@ -33,7 +33,7 @@
                 <a href="{% url 'staff:billing:user_payment' t.username %}"><input type="button" value="U"></a>
                 <a href="{% url 'staff:billing:xero' t.username %}"><input type="button" value="X"></a>
                 {% ifequal "Authorized" t.status %}
-                    <form class='inline-form' action="{% url 'staff:payment_void' %}" method="POST">
+                    <form class='inline-form' action="{% url 'staff:billing:payment_void' %}" method="POST">
                         <input type="hidden" name="transaction_id" value="{{ t.transaction_id }}" />
                         <input type="submit" value="Void"/>
                         {% csrf_token %}

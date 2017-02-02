@@ -113,7 +113,7 @@ def usaepay_user(request, username):
 @staff_member_required
 def usaepay_transactions_today(request):
     today = timezone.localtime(timezone.now())
-    return HttpResponseRedirect(reverse('staff_charges', args=[], kwargs={'year': today.year, 'month': today.month, 'day': today.day}))
+    return HttpResponseRedirect(reverse('staff:billing:charges', args=[], kwargs={'year': today.year, 'month': today.month, 'day': today.day}))
 
 
 @staff_member_required
