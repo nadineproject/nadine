@@ -41,6 +41,7 @@ urlpatterns = [
     url(r'^reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$', password_reset_confirm, {'template_name': 'password_reset_confirm.html'}, 'password_reset_confirm'),
     url(r'^reset/complete/$', password_reset_complete, {'template_name': 'password_reset_complete.html'}, 'password_reset_complete'),
 
+    url(r'^admin/login/$', login, {'template_name': 'login.html'}, name='login'),
     url(r'^admin/', include(admin.site.urls)),
 ]
 

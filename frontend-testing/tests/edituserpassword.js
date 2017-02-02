@@ -1,17 +1,20 @@
 // This tests to make sure the password update in Edit Profile form works well
 
-var url = 'http://127.0.0.1:8000';
-
+var x = require('casper').selectXPath;
+var url = 'http://127.0.0.1:8000/member/profile/';
 username = casper.cli.get('username');
 password = casper.cli.get('password');
+
+casper.options.viewportSize = {width: 1100, height: 616};
 
 // print out all the messages in the headless browser context
 casper.on("page.error", function(msg, trace) {
     this.echo("Page Error: " + msg, "ERROR");
+    this.capture('img/password-error.png');
 });
 
-casper.test.begin('Can update password in member edit page', 9, function suite(test) {
-  casper.start(url + '/member/edit/' + username + '/', function() {
+casper.test.begin('Can update password in member edit page', 10, function suite(test) {
+  casper.start(url + username + '/edit/', function() {
     test.assertTitle("Login | Office Nomads", "Login page title is the one expected");
     test.assertExists('form[method="post"]', "login form is found");
     this.fill("form[method='post']", {
@@ -29,7 +32,7 @@ casper.test.begin('Can update password in member edit page', 9, function suite(t
 
   casper.then(function() {
     test.assertTitle("Edit Profile | Office Nomads", "Edit Profile title is correct");
-    test.assertUrlMatch('/member/edit/' + username + '/', "Edit profile url correct");
+    test.assertUrlMatch('/member/profile/' + username + '/edit/', "Edit profile url correct");
   });
 
   casper.then(function() {
@@ -41,7 +44,7 @@ casper.test.begin('Can update password in member edit page', 9, function suite(t
   });
 
   casper.then(function() {
-    test.assertUrlMatch('/member/edit/' + username + '/', "Still on edit profile since passwords did not match");
+    test.assertUrlMatch('/member/profile/' + username + '/edit/', "Still on edit profile since passwords did not match");
   });
 
   casper.then(function() {
@@ -53,7 +56,7 @@ casper.test.begin('Can update password in member edit page', 9, function suite(t
   });
 
   casper.then(function() {
-    test.assertUrlMatch('/member/edit/' + username + '/', "Still on edit profile since passwords did not match due to extra whitespace in one element");
+    test.assertUrlMatch('/member/profile/' + username + '/edit/', "Still on edit profile since passwords did not match due to extra whitespace in one element");
   });
 
   casper.then(function() {
@@ -65,7 +68,7 @@ casper.test.begin('Can update password in member edit page', 9, function suite(t
   });
 
   casper.then(function() {
-    test.assertUrlMatch('/member/edit/' + username + '/', "Still on edit profile since passwords are less than 8 characters");
+    test.assertUrlMatch('/member/profile/' + username + '/edit/', "Still on edit profile since passwords are less than 8 characters");
   });
 
   casper.then(function() {
@@ -77,7 +80,7 @@ casper.test.begin('Can update password in member edit page', 9, function suite(t
   });
 
   casper.then(function() {
-    test.assertUrlMatch('/member/edit/' + username + '/', "Still on edit profile since passwords are not matched by case");
+    test.assertUrlMatch('/member/profile/' + username + '/edit/', "Still on edit profile since passwords are not matched by case");
   });
 
   casper.then(function() {
@@ -96,6 +99,13 @@ casper.test.begin('Can update password in member edit page', 9, function suite(t
   casper.then(function() {
     test.assertUrlMatch('/member/profile/' + username + '/', "Redirect to profile page when password update works.");
   });
+
+  casper.then(function() {
+    test.assertVisible('.logout-a');
+    this.evaluate(function() {
+      document.getElementsByClassName('logout-a')[0].click();
+    })
+  })
 
   casper.run(function() {
     test.done();

@@ -39,19 +39,19 @@
 
 {% if amex %}
 	{% with "AMEX" as name and amex as transactions and totals.amex_total as total %}
-		{% include "staff/charges_table.frag" %}
+		{% include "staff/billing/charges_table.frag" %}
 	{% endwith %}
 {% endif %}
 
 {% if visamc %}
 	{% with "VISA/MC" as name and visamc as transactions and totals.visamc_total as total %}
-		{% include "staff/charges_table.frag" %}
+		{% include "staff/billing/charges_table.frag" %}
 	{% endwith %}
 {% endif %}
 
 {% if ACH %}
 	{% with "ACH" as name and ach as transactions and totals.ach_total as total %}
-		{% include "staff/charges_table.frag" %}
+		{% include "staff/billing/charges_table.frag" %}
 	{% endwith %}
 {% endif %}
 

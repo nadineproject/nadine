@@ -4,6 +4,10 @@ table th {
   width: 100px;
 }
 
+#stats-tab {
+  color: RGBA(90, 122, 189, 1.00) !important;
+}
+
 #content table {
   width: auto;
   margin-bottom: 40px;

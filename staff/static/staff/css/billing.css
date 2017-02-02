@@ -19,6 +19,10 @@
   background-color: #F99;
 }
 
+#billing-tab {
+  color: RGBA(90, 122, 189, 1.00) !important;
+}
+
 #bill-list li span {
   color: black;
 }

@@ -220,6 +220,7 @@ table tr.row-even td { background: #eee; }
 .columns.date-range .c2 { width: 30%;}
 
 /*Repeated style classes for text-align and colors*/
+.messages {text-align: center; font-weight: bold; padding: 1%;}
 .row-even { background-color: #EEE; }
 .error { color: red; }
 .inline-form {display: inline;}
@@ -266,7 +267,7 @@ table tr.row-even td { background: #eee; }
 }
 
 @media only screen and (max-width: 900px) {
-	h5 {margin-left: 2%;}
+	h5, p {margin-left: 2%;}
 }
 
 @media only screen and (max-width: 650px) {
@@ -296,5 +297,8 @@ table tr.row-even td { background: #eee; }
 }
 
 @media only screen and (max-width: 350px) {
+  h4 {font-size: 2em;}
+  #site-search-form div {margin-left: 20%;}
+  .member-photo {padding-left: 20%;}
 	#footer, #footer a {font-size: 1em; }
 }

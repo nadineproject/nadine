@@ -67,6 +67,10 @@ textarea.bcc-textarea {
   text-align: left;
 }
 
+#member-tab {
+  color: RGBA(90, 122, 189, 1.00) !important;
+}
+
 .page-message {
   font-size: 1.5em;
   color: #933;
