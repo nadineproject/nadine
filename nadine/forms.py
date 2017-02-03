@@ -25,6 +25,7 @@ from nadine.models.usage import PAYMENT_CHOICES, CoworkingDay
 from nadine.models.resource import Room
 from nadine.models.organization import Organization, OrganizationMember
 from nadine.utils.payment_api import PaymentAPI
+from members.models import HelpText
 
 logger = logging.getLogger(__name__)
 
@@ -478,6 +479,26 @@ class MembershipForm(forms.Form):
             email.send_new_membership(membership.user)
 
         return membership
+
+
+class HelpTextForm(forms.Form):
+    title = forms.CharField(max_length=128, label='Help Text Title', required=True, widget=forms.TextInput(attrs={'autocapitalize': "words", "placeholder":"e.g. Welcome Info"}))
+    template = forms.CharField(widget=forms.Textarea(attrs={'placeholder':'<h1>Hello World</h1>'}), required=True)
+    slug = forms.CharField(widget=forms.TextInput(attrs={"placeholder":"Single Word Title e.g. 'hello'"}), max_length=16, required=True)
+    order = forms.IntegerField(required=True, widget=forms.HiddenInput)
+
+    def save(self):
+        if not self.is_valid():
+            raise Exception('The form must be valid in order to save')
+        title = self.cleaned_data['title']
+        template = self.cleaned_data['template']
+        slug = self.cleaned_data['slug']
+        order = self.cleaned_data['order']
+
+        help_text = HelpText(title=title, template=template, slug=slug, order=order)
+        help_text.save()
+
+        return help_text
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

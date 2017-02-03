@@ -1,0 +1,48 @@
+table td {
+  border-bottom: none;
+  vertical-align: middle;
+}
+
+.helptext-form {
+  margin: 2%;
+}
+
+.help-btn {
+  margin-top: 2%;
+  margin-left: 45%;
+}
+
+.other-helps {
+  margin-top: 2%;
+}
+
+.td-title {
+  width: 15%;
+}
+
+#id_title, #id_slug, #id_order, #id_template {
+  padding-left: 2%;
+}
+
+#id_title, #id_slug, #id_order {
+  width: 40%;
+}
+
+#id_template {
+  height: 90%;
+}
+
+#settings-tab {
+  color: RGBA(90, 122, 189, 1.00) !important;
+}
+
+#template_help {
+  margin-left: 15%;
+  width: 85%;
+  background: RGBA(208, 208, 208, 1.00);
+  display: none;
+}
+
+#template_help tr td {
+  padding: 2%;
+}

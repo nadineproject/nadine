@@ -1,0 +1,77 @@
+{% extends "staff/settings/base.html" %}
+
+{% block content %}
+<h4>Add New Help Text</h4>
+
+<div class='other-helps'>
+  <form class='text-selection' method='GET' action='.'>
+    <select id='help-input' class='browser-default' name='selected_help'>
+        <option value='Select One' selected disabled="True">Select One</option>
+      {% for help in helps %}
+        <option value='{{ help.title }}'>{{ help.title }}</option>
+      {% endfor %}
+    </select>
+    <input class='btn' type='submit' value='Select' />
+  </form>
+</div>
+
+<div class='helptext-form'>
+  <form method='POST' action='.'>
+    <table>
+      <tr>
+        <td class='td-title'><strong>Title</strong></td>
+        <td>
+          {{ helptext_form.title}}
+        </td>
+      </tr>
+      <tr>
+        <td class='td-title'><strong>Template</strong> (<a onclick="$('#template_help').toggle();">?</a>)</td>
+        <td>
+          {{ helptext_form.template }}
+        </td>
+      </tr>
+    </table>
+    <table id='template_help'>
+      <tr>
+        <td>
+          <strong>Template</strong>
+          <p>
+            The template is that which will be entered in the help text page template. This small portion of the template must be written in HTML so as to be displayed correctly. For formating help, please review <a href='https://developer.mozilla.org/en-US/docs/Learn/HTML/Introduction_to_HTML'>HTML documentation on the Mozilla Developer Network.</a>
+          </p>
+        </td>
+      </tr>
+    </table>
+    <table>
+      <tr>
+        <td class='td-title'><strong>Slug</strong></td>
+        <td>
+          {{ helptext_form.slug }}
+        </td>
+      </tr>
+      <tr class='order-row'>
+        <td class='td-title'></td>
+        <td>
+          {{ helptext_form.order }}
+        </td>
+      </tr>
+    </table>
+    {% csrf_token %}
+    <button type='submit' class='btn help-btn'>Submit</button>
+  </form>
+</div>
+
+<script>
+  $(document).ready(function() {
+    var orderNumber = '{{ latest_order }}';
+    $('#id_order').val(orderNumber);
+
+    if('{{ selected }}') {
+      //How can we have them update the template? Currently getting an error
+      $('#id_title').val('{{ selected.title }}');
+      $('#what').val('{{ selected.template }}');
+      $('#id_slug').val('{{ selected.slug }}');
+      $('#id_order').val('{{ selected.order}}');
+    }
+  });
+</script>
+{% endblock %}
