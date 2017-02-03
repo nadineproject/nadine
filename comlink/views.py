@@ -90,6 +90,7 @@ class Incoming(View):
         logger.info("Incoming email")
         logger.debug("POST: %s" % request.POST)
         if self.verify:
+            logger.debug("Verifying Signature")
             verified = self.verify_signature(request.POST.get('token', ''),
                                              request.POST.get('timestamp', ''),
                                              request.POST.get('signature', ''))
@@ -102,6 +103,7 @@ class Incoming(View):
             email = form.save()
         except DroppedMailException:
             # This is because we got a ListID or something. It's OK.
+            logger.debug("Quietly dropping the message")
             return HttpResponse("OK")
 
         # Try to link the sender to a user
