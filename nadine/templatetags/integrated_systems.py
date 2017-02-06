@@ -23,8 +23,10 @@ class IntegrationsNode(template.Node):
             'mailgun': hasattr(settings, 'MAILGUN_API_KEY'),
             'google': hasattr(settings, 'GOOGLE_API_KEY'),
             'slack': hasattr(settings, 'SLACK_API_TOKEN'),
-            'hid': hasattr(settings, 'HID_ENCRYPTION_KEY'),
             'mailchimp': hasattr(settings, 'MAILCHIMP_API_KEY'),
+            'doors': 'doors.keymaster' in settings.INSTALLED_APPS,
+            'arp': 'arpwatch' in settings.INSTALLED_APPS,
+            'interlink': 'interlink' in settings.INSTALLED_APPS,
         }
         context[self.var_name] = integrations
         return ''
