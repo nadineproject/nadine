@@ -72,6 +72,8 @@
 <div id='preview'></div>
 <script>
   $(document).ready(function() {
+    $('.button-collapse').sideNav();
+    $('.collapsible').collapsible();
     $('#id_order').val('{{ latest_order }}');
 
     if('{{ selected }}' != 'None') {
