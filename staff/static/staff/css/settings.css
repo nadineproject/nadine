@@ -68,3 +68,8 @@ table td {
 #template_help tr td {
   padding: 2%;
 }
+
+#update-btn {
+  display: none;
+  margin-left: 4%;
+}

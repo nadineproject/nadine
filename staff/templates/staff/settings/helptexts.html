@@ -37,31 +37,27 @@
           {{ helptext_form.title}}
         </td>
       </tr>
-      {% if selected %}
-        <tr>
-          <td class='td-title'><strong>Template</strong> (<a onclick="$('#template_help').toggle();">?</a>)</td>
-            <input name='id' id='text-id' type='hidden' value='{{ selected.id }}' />
-            <td>
-              <textarea name='template' id='template-content' rows='30'>
+      <tr>
+        <td class='td-title'><strong>Template</strong> (<a onclick="$('#template_help').toggle();">?</a>)</td>
+          <input name='id' id='text-id' type='hidden' value='{{ selected.id }}' />
+          <td>
+            {% if selected %}
+              <textarea name='template' id='id_template' rows='30'>
                 {{ selected.template|safe }}
               </textarea>
-              <button id='preview-btn' class='btn'>Preview</button>
-            </td>
-        </tr>
-        <tr class='preview-tr'>
-          <td><strong>Preview</strong></td>
-          <td>
-            <div id='preview'></div>
+            {% else %}
+                {{ helptext_form.template }}
+            {% endif %}
+            <button id='preview-btn' class='btn'>Preview</button>
+            <button id='update-btn' class='btn'>Update Preview</button>
           </td>
-        </tr>
-      {% else %}
-        <tr>
-          <td class='td-title'><strong>Template</strong> (<a onclick="$('#template_help').toggle();">?</a>)</td>
-          <td>
-            {{ helptext_form.template }}
-          </td>
-        </tr>
-      {% endif %}
+      </tr>
+      <tr class='preview-tr'>
+        <td><strong>Preview</strong></td>
+        <td>
+          <div id='preview'></div>
+        </td>
+      </tr>
     </table>
     <table id='template_help'>
       <tr>
@@ -99,13 +95,18 @@
     }
 
     $('#preview-btn').on('click', function(e) {
-      var content = $('#template-content').val()
       e.preventDefault();
+      var content = $('#id_template').val()
       $('#preview').html(content);
       $('#preview').css('border', '1px solid black');
       $('.preview-tr').toggle();
+      $('#update-btn').toggle();
     })
-
+    $('#update-btn').on('click', function(e) {
+      e.preventDefault();
+      var content = $('#id_template').val()
+      $('#preview').html(content)
+    })
   });
 </script>
 {% endblock %}
