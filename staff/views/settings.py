@@ -23,22 +23,32 @@ def index(request):
 
 @staff_member_required
 def helptexts(request):
+    helps = HelpText.objects.all()
+    latest = HelpText.objects.filter().order_by('-order')[0]
+    latest_order = latest.order + 1
     selected = None
     selected_help = request.GET.get('selected_help', None)
     if selected_help:
-        selected= HelpText.objects.get(title=selected_help)
-
-    helps = HelpText.objects.all()
-    latest = HelpText.objects.filter().order_by('id')[0]
-    latest_order = latest.order + 1
+        selected = HelpText.objects.get(title=selected_help)
 
     if request.method == "POST":
         # Check to see if existing help text and update it or make new one
-        helptext_form = HelpTextForm(request.POST)
-        if helptext_form.is_valid():
-            helptext_form.save()
+        to_update = request.POST.get('id', None)
+        if to_update:
+            updated = HelpText.objects.get(id=to_update)
+            updated.title = request.POST['title']
+            updated.slug = request.POST['slug']
+            updated.template = request.POST['template']
+            updated.save()
+
             return HttpResponseRedirect(reverse('staff:settings:index'))
+        else:
+            helptext_form = HelpTextForm(request.POST)
+            if helptext_form.is_valid():
+                helptext_form.save()
+                return HttpResponseRedirect(reverse('staff:settings:index'))
     else:
         helptext_form = HelpTextForm()
+
     context = {'latest_order': latest_order, 'helps': helps, 'helptext_form': helptext_form, 'selected': selected}
     return render(request, 'staff/settings/helptexts.html', context)

@@ -3,7 +3,7 @@ table td {
   vertical-align: middle;
 }
 
-.helptext-form {
+.helptext-form, .other-helps {
   margin: 2%;
 }
 
@@ -18,6 +18,20 @@ table td {
 
 .td-title {
   width: 15%;
+}
+
+#template-content {
+  height: 300px;
+}
+
+.text-selection input {
+  display: inline-block;
+  margin-left: 2%;
+}
+
+#help-input {
+  width: 30%;
+  display: inline-block;
 }
 
 #id_title, #id_slug, #id_order, #id_template {

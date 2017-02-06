@@ -1,23 +1,29 @@
 {% extends "staff/settings/base.html" %}
 
 {% block content %}
-<h4>Add New Help Text</h4>
+<h4>Add and Update Help Texts</h4>
 
 <div class='other-helps'>
   <form class='text-selection' method='GET' action='.'>
-    <select id='help-input' class='browser-default' name='selected_help'>
+    <select id='help-input' name='selected_help'>
         <option value='Select One' selected disabled="True">Select One</option>
       {% for help in helps %}
         <option value='{{ help.title }}'>{{ help.title }}</option>
       {% endfor %}
     </select>
-    <input class='btn' type='submit' value='Select' />
+    <input style='display: inline-block;' class='btn' type='submit' value='Select' />
   </form>
 </div>
 
 <div class='helptext-form'>
   <form method='POST' action='.'>
     <table>
+      <tr class='order-row'>
+        <td class='td-title'></td>
+        <td>
+          {{ helptext_form.order }}
+        </td>
+      </tr>
       <tr>
         <td class='td-title'><strong>Title</strong></td>
         <td>
@@ -26,9 +32,19 @@
       </tr>
       <tr>
         <td class='td-title'><strong>Template</strong> (<a onclick="$('#template_help').toggle();">?</a>)</td>
+        {% if selected %}
+          <input name='id' id='text-id' type='hidden' value='{{ selected.id }}' />
+          <td>
+            <textarea name='template' id='template-content' rows='30'>
+              {{ selected.template|safe }}
+            </textarea>
+            <button id='preview-btn' class='btn'>Preview</button>
+          </td>
+        {% else %}
         <td>
           {{ helptext_form.template }}
         </td>
+        {% endif %}
       </tr>
     </table>
     <table id='template_help'>
@@ -48,30 +64,29 @@
           {{ helptext_form.slug }}
         </td>
       </tr>
-      <tr class='order-row'>
-        <td class='td-title'></td>
-        <td>
-          {{ helptext_form.order }}
-        </td>
-      </tr>
     </table>
     {% csrf_token %}
     <button type='submit' class='btn help-btn'>Submit</button>
   </form>
 </div>
-
+<div id='preview'></div>
 <script>
   $(document).ready(function() {
-    var orderNumber = '{{ latest_order }}';
-    $('#id_order').val(orderNumber);
+    $('#id_order').val('{{ latest_order }}');
 
-    if('{{ selected }}') {
+    if('{{ selected }}' != 'None') {
       //How can we have them update the template? Currently getting an error
       $('#id_title').val('{{ selected.title }}');
-      $('#what').val('{{ selected.template }}');
       $('#id_slug').val('{{ selected.slug }}');
       $('#id_order').val('{{ selected.order}}');
     }
+
+    $('#preview-btn').on('click', function(e) {
+      var content = $('#template-content').val()
+      e.preventDefault();
+      $('#preview').html(content);
+    })
+
   });
 </script>
 {% endblock %}
