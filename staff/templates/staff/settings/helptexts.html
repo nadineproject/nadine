@@ -4,15 +4,22 @@
 <h4>Add and Update Help Texts</h4>
 
 <div class='other-helps'>
-  <form class='text-selection' method='GET' action='.'>
-    <select id='help-input' name='selected_help'>
-        <option value='Select One' selected disabled="True">Select One</option>
-      {% for help in helps %}
-        <option value='{{ help.title }}'>{{ help.title }}</option>
-      {% endfor %}
-    </select>
-    <input style='display: inline-block;' class='btn' type='submit' value='Select' />
-  </form>
+  <table>
+    <tr>
+      <td class='td-title'></td>
+      <td>
+        <form class='text-selection' method='GET' action='.'>
+          <select id='help-input' name='selected_help'>
+              <option value='Select One' selected disabled="True">Select One</option>
+            {% for help in helps %}
+              <option value='{{ help.title }}'>{{ help.title }}</option>
+            {% endfor %}
+          </select>
+          <input style='display: inline-block;' class='btn' type='submit' value='Select' />
+        </form>
+      </td>
+    </tr>
+  </table>
 </div>
 
 <div class='helptext-form'>
@@ -30,22 +37,31 @@
           {{ helptext_form.title}}
         </td>
       </tr>
-      <tr>
-        <td class='td-title'><strong>Template</strong> (<a onclick="$('#template_help').toggle();">?</a>)</td>
-        {% if selected %}
-          <input name='id' id='text-id' type='hidden' value='{{ selected.id }}' />
+      {% if selected %}
+        <tr>
+          <td class='td-title'><strong>Template</strong> (<a onclick="$('#template_help').toggle();">?</a>)</td>
+            <input name='id' id='text-id' type='hidden' value='{{ selected.id }}' />
+            <td>
+              <textarea name='template' id='template-content' rows='30'>
+                {{ selected.template|safe }}
+              </textarea>
+              <button id='preview-btn' class='btn'>Preview</button>
+            </td>
+        </tr>
+        <tr class='preview-tr'>
+          <td><strong>Preview</strong></td>
           <td>
-            <textarea name='template' id='template-content' rows='30'>
-              {{ selected.template|safe }}
-            </textarea>
-            <button id='preview-btn' class='btn'>Preview</button>
+            <div id='preview'></div>
           </td>
-        {% else %}
-        <td>
-          {{ helptext_form.template }}
-        </td>
-        {% endif %}
-      </tr>
+        </tr>
+      {% else %}
+        <tr>
+          <td class='td-title'><strong>Template</strong> (<a onclick="$('#template_help').toggle();">?</a>)</td>
+          <td>
+            {{ helptext_form.template }}
+          </td>
+        </tr>
+      {% endif %}
     </table>
     <table id='template_help'>
       <tr>
@@ -69,7 +85,6 @@
     <button type='submit' class='btn help-btn'>Submit</button>
   </form>
 </div>
-<div id='preview'></div>
 <script>
   $(document).ready(function() {
     $('.button-collapse').sideNav();
@@ -87,6 +102,8 @@
       var content = $('#template-content').val()
       e.preventDefault();
       $('#preview').html(content);
+      $('#preview').css('border', '1px solid black');
+      $('.preview-tr').toggle();
     })
 
   });

@@ -16,12 +16,12 @@ table td {
   margin-top: 2%;
 }
 
-.td-title {
-  width: 15%;
+.preview-tr {
+  display: none;
 }
 
-#template-content {
-  height: 300px;
+.td-title {
+  width: 15%;
 }
 
 .text-selection input {
@@ -46,8 +46,16 @@ table td {
   height: 90%;
 }
 
+#preview {
+  padding: 1%;
+}
+
 #settings-tab {
   color: RGBA(90, 122, 189, 1.00) !important;
+}
+
+#template-content {
+  height: 300px;
 }
 
 #template_help {
