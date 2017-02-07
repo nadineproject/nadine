@@ -484,7 +484,7 @@ class MembershipForm(forms.Form):
 class HelpTextForm(forms.Form):
     title = forms.CharField(max_length=128, label='Help Text Title', required=True, widget=forms.TextInput(attrs={'autocapitalize': "words", "placeholder":"e.g. Welcome Info"}))
     template = forms.CharField(widget=forms.Textarea(attrs={'placeholder':'<h1>Hello World</h1>'}), required=True)
-    slug = forms.CharField(widget=forms.TextInput(attrs={"placeholder":"Single Word Title e.g. 'hello'"}), max_length=16, required=True)
+    slug = forms.CharField(widget=forms.TextInput(attrs={"placeholder":"Single Word for URL e.g. 'hello'"}), max_length=16, required=True)
     order = forms.IntegerField(required=True, widget=forms.HiddenInput)
 
     def save(self):

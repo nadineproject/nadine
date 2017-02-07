@@ -37,7 +37,8 @@ def helptexts(request):
         if to_update:
             updated = HelpText.objects.get(id=to_update)
             updated.title = request.POST['title']
-            updated.slug = request.POST['slug']
+            slug = request.POST['slug'].strip()
+            updated.slug = slug.replace(" ", "_")
             updated.template = request.POST['template']
             updated.save()
 

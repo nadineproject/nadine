@@ -48,8 +48,6 @@
             {% else %}
                 {{ helptext_form.template }}
             {% endif %}
-            <button id='preview-btn' class='btn'>Preview</button>
-            <button id='update-btn' class='btn'>Update</button>
           </td>
       </tr>
       <tr class='preview-tr'>
@@ -71,7 +69,7 @@
     </table>
     <table>
       <tr>
-        <td class='td-title'><strong>Slug</strong></td>
+        <td class='td-title'><strong>URL Slug</strong></td>
         <td>
           {{ helptext_form.slug }}
         </td>
@@ -87,26 +85,17 @@
     $('.collapsible').collapsible();
     $('#id_order').val('{{ latest_order }}');
 
+    CKEDITOR.replace('id_template', {
+      filebrowserUploadUrl: '/media/help/',
+      filebrowserBrowseUrl: '/media/'
+    });
+
     if('{{ selected }}' != 'None') {
       //How can we have them update the template? Currently getting an error
       $('#id_title').val('{{ selected.title }}');
       $('#id_slug').val('{{ selected.slug }}');
       $('#id_order').val('{{ selected.order}}');
     }
-
-    $('#preview-btn').on('click', function(e) {
-      e.preventDefault();
-      var content = $('#id_template').val()
-      $('#preview').html(content);
-      $('#preview').css('border', '1px solid black');
-      $('.preview-tr').toggle();
-      $('#update-btn').toggle();
-    })
-    $('#update-btn').on('click', function(e) {
-      e.preventDefault();
-      var content = $('#id_template').val()
-      $('#preview').html(content)
-    })
   });
 </script>
 {% endblock %}
