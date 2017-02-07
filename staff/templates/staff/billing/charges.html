@@ -8,15 +8,15 @@
 
 {% block content %}
 
-<h4>
-	Daily Charges - {{ date|date:"l, M dS" }}
-	<span class='right'>
-	<a href="{% url 'staff:billing:charges' previous_date.year previous_date.month previous_date.day %}">&larr;</a>
-	<!-- <a href="{% url 'staff:billing:charges_today' %}">&bull;</a> -->
-	<input type='date' name='date' class='datepicker' value="{{ date|date:'Y-m-d' }}" style='font-size:.6em; text-align:center; width:150px;'/>
-	<a href="{% url 'staff:billing:charges' next_date.year next_date.month next_date.day %}">&rarr;</a>
+<h5>
+	Daily Charges <span id='dis-date'>- {{ date|date:"l, M dS" }}</span>
+	<span id='activity-dates'>
+		<a href="{% url 'staff:billing:charges' previous_date.year previous_date.month previous_date.day %}">&larr;</a>
+		<!-- <a href="{% url 'staff:billing:charges_today' %}">&bull;</a> -->
+		<input type='date' name='date' class='datepicker' value="{{ date|date:'Y-m-d' }}"/>
+		<a href="{% url 'staff:billing:charges' next_date.year next_date.month next_date.day %}">&rarr;</a>
 	</span>
-</h4>
+</h5>
 
 {% if messages %}
   <div class="messages">
