@@ -10,7 +10,7 @@
       <td>
         <form class='text-selection' method='GET' action='.'>
           <select id='help-input' name='selected_help'>
-              <option value='Select One' selected disabled="True">Select One</option>
+              <option value='Select One' selected disabled="True">Select One to Update</option>
             {% for help in helps %}
               <option value='{{ help.title }}'>{{ help.title }}</option>
             {% endfor %}
@@ -42,7 +42,7 @@
           <input name='id' id='text-id' type='hidden' value='{{ selected.id }}' />
           <td>
             {% if selected %}
-              <textarea name='template' id='id_template' rows='30'>
+              <textarea name='template' id='id_template' rows='20'>
                 {{ selected.template|safe }}
               </textarea>
             {% else %}
