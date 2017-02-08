@@ -21,6 +21,7 @@ def index(request):
     context = {'settings':settings, 'ip': ip, 'request':request}
     return render(request, 'staff/settings/index.html', context)
 
+
 @staff_member_required
 def helptexts(request):
     helps = HelpText.objects.all()
