@@ -40,7 +40,7 @@
                     </form>
                 {% endifequal %}
                 {% if t.open_bill_amount %}
-                    <form class='inline-form' action="{% url 'staff:bills_paid' t.username %}" method="POST">
+                    <form class='inline-form' action="{% url 'staff:billing:bills_paid' t.username %}" method="POST">
                         <input type="hidden" name="next" value="{{request.path}}" />
                         <input type="submit" value="Paid"/>
                         {% csrf_token %}

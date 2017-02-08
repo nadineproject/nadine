@@ -4,63 +4,45 @@
   text-align:right;
 }
 
-.error {
-  text-align: center;
-  font-size: 150%;
-  color: red;
-}
-
-.bill-deets {
-	width: 300px;
-	display: inline-block;
-}
-
-.bl-failure {
-  background-color: #F99;
-}
-
-#billing-tab {
-  color: RGBA(90, 122, 189, 1.00) !important;
-}
-
-#bill-list li span {
-  color: black;
-}
-
-#billing-logs-table th:first-child, #billing-logs-table td:first-child { width: 40%; }
-
-#content table {
-  width: 100%;
-}
-
-#content table td:last-child {
-  text-align: center;
-}
-
-#id_amount {
-	width: 40% !important;
-	vertical-align: baseline;
-	padding-left: 3%;
-}
-
-#set_paid {
-	margin-left: 5%;
-}
-
-#bill-list li {
-  margin-bottom: 20px;
-}
-
-#bill-list h4 {
-  font-weight: normal;
-}
-
 .authorized {
   color: green;
 }
 
-.open-bill {
-  color: red;
+.bill-details {
+  margin: 10px 40px 20px 40px;
+}
+
+.bill-detail-table td {
+  border: none;
+  text-align: inherit;
+  vertical-align: baseline;
+  padding: 0;
+}
+
+.bill-detail-table #bill-deets {
+  width: 30%;
+}
+
+.bill-detail-table #amount-td {
+  width: 20%;
+}
+
+.bill-detail-table #amount-td input {
+  width: 50%;
+  padding-left: 2%;
+  margin-bottom: 0;
+}
+
+.bill-detail-table td:last-child {
+  text-align: left !important;
+}
+
+.bill-detail-toggle {
+  text-decoration: none;
+}
+
+.bill-info {
+  margin-left: 40px;
 }
 
 .bill-list-fees {
@@ -80,28 +62,79 @@
   border-bottom: 0px;
 }
 
-.bill-type h6, .bill-type p {
+.bill-type h5, .bill-type p {
   margin-left: 2%
 }
 
-.bill-type h6 {
+.bill-type h5 {
   margin-top: 2%;
+}
+
+.bill-username, .bill-deets #id_amount {
+  display: inline-block;
+}
+
+.bl-failure {
+  background-color: #F99;
+}
+
+.error {
+  text-align: center;
+  font-size: 150%;
+  color: red;
+}
+
+.open-bill {
+  color: red;
 }
 
 .pay-bill-form input[type=text] {
   width: 8em;
 }
 
-.bill-details {
-  margin: 10px 40px 20px 40px;
+#bill-list h4 {
+  font-weight: normal;
 }
 
-.bill-detail-toggle {
-  text-decoration: none;
+#bill-list li {
+  margin-bottom: 20px;
 }
 
-.bill-info {
-  margin-left: 40px;
+#bill-list li span {
+  color: black;
+}
+
+#bill-row #set_paid {
+  margin-left: 0;
+}
+
+
+#bill-row {
+  margin-bottom: 0;
+}
+
+#billing-tab {
+  color: RGBA(90, 122, 189, 1.00) !important;
+}
+
+#billing-logs-table th:first-child, #billing-logs-table td:first-child { width: 40%; }
+
+#content table {
+  width: 100%;
+}
+
+#content table td:last-child {
+  text-align: center;
+}
+
+#id_amount {
+	width: 30%;
+	vertical-align: baseline;
+	padding-left: 3%;
+}
+
+#set_paid {
+	margin-left: 5%;
 }
 
 @media only screen and (max-width: 700px) {
@@ -113,7 +146,7 @@
 }
 
 @media only screen and (max-width: 599px) {
-  .bill-row {
+  #bill-row {
 		margin-bottom: 0;
 	}
 }

@@ -3,8 +3,11 @@
 	<tr>
 		<th>Date:</th>
 		<td>
-			<a href="{% url 'staff:billing:bill' bill.id %}">{{ bill.bill_date|date:"m/d/y" }}</a>
-			{% if show_member_name %}for <a href="{% url 'staff:user:detail' bill.user.username %}">{{ bill.user.get_full_name }}</a>{% endif %}
+			<a href="{% url 'staff:billing:bill' bill.id %}">
+			{{ bill.bill_date|date:"m/d/y" }}</a>
+			{% if show_member_name %}
+				for <a href="{% url 'staff:user:detail' bill.user.username %}">{{ bill.user.get_full_name }}</a>
+			{% endif %}
 		</td>
 	</tr>
 	<tr><th>Status:</th>
