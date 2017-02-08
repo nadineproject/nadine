@@ -60,7 +60,7 @@
     <table id='template_help'>
       <tr>
         <td>
-          <strong>Template</strong>
+          <strong>Template Help</strong>
           <p>
             The template is that which will be entered in the help text page template. This editor will help you make sure it is styled just right. It is important to note, the title of the template will appear on the help page as a 'Heading 1' so make sure everything is smaller than that.
           </p>
@@ -69,9 +69,19 @@
     </table>
     <table>
       <tr>
-        <td class='td-title'><strong>URL Slug</strong></td>
+        <td class='td-title'><strong>URL Slug</strong>(<a onclick="$('#slug_help').toggle();">?</a>)</td>
         <td>
           {{ helptext_form.slug }}
+        </td>
+      </tr>
+    </table>
+    <table id='slug_help'>
+      <tr>
+        <td>
+          <strong>What is a 'slug'?</strong>
+          <p>
+            The slug is the exact address for the help text post. In this case, you'll be able to find your help text at /member/help/YOUR_SLUG/. Make sure to not include any whitespaces.
+          </p>
         </td>
       </tr>
     </table>

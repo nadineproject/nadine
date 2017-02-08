@@ -58,7 +58,7 @@ table td {
   height: 200px;
 }
 
-#template_help {
+#template_help, #slug_help {
   margin-left: 15%;
   width: 85%;
   background: RGBA(208, 208, 208, 1.00);

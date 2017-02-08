@@ -32,7 +32,6 @@ def helptexts(request):
         selected = HelpText.objects.get(title=selected_help)
 
     if request.method == "POST":
-        # Check to see if existing help text and update it or make new one
         to_update = request.POST.get('id', None)
         if to_update:
             updated = HelpText.objects.get(id=to_update)
@@ -45,6 +44,7 @@ def helptexts(request):
             return HttpResponseRedirect(reverse('staff:settings:index'))
         else:
             helptext_form = HelpTextForm(request.POST)
+            helptext_form.slug = helptext_form.slug.strip().replace(" ", "_")
             if helptext_form.is_valid():
                 helptext_form.save()
                 return HttpResponseRedirect(reverse('staff:settings:index'))
