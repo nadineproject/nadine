@@ -2,34 +2,40 @@
 {% load list_tags %}
 {% for bill_date, users in bills.items %}
   <div class='bill-type'>
-    <h6><strong>{{ bill_date }}</strong></h6>
+    <h5><strong>{{ bill_date }}</strong></h5>
     <ul id="bill-list">
     {% for u in users %}
       <li style="color:{% valid_billing_color u %};"><span>
         <form class="pay-bill-form" action="." method="post">
-          <div>
-            <div class='row bill-row'>
-              <div class='bill-deets'>
+          <table class='bill-detail-table'>
+            <tr id='bill-row'>
+              <td id='bill-deets'>
                 <a class="bill-detail-toggle" id="bill-details-toggle-{{u.id}}" href="." onclick="toggleBillDetails('{{u.id}}'); return false;">[+]</a>&nbsp;
-                <strong><a href="{% url 'staff:user:detail' u.username %}">{{ u.get_full_name }}</a></strong>:
+                <span class='bill-username'>
+                  <strong><a href="{% url 'staff:user:detail' u.username %}">{{ u.get_full_name }}</a></strong>:
+                </span>
+              </td>
+              <td id='amount-td'>
                 {% for field in u.profile.pay_bills_form %}
                   {% ifequal field.name 'amount' %}${{ field }}{% endifequal %}
                   {% ifequal field.name 'username' %}{{ field }}{% endifequal %}
                 {% endfor %}
-              </div>
-              <button id='set_paid' name="action" value="set_paid">Set Paid</button>
-            </div>
-          </div>
+              </td>
+              <td>
+                <button id='set_paid' name="action" value="set_paid">Set Paid</button>
+              </td>
+            </tr>
+          </table>
 
           <div class="bill-details" id="bill-details-{{u.id}}">
 
             {% for bill in u.profile.open_bills %}
-              <h5>
+              <h6>
                 <input name="bill_id" value="{{ bill.id }}" type="checkbox" checked="checked" />
                 <a href="{% url 'staff:billing:bill' bill.id %}">Bill on {{ bill.bill_date|date:"m/d" }}</a>
                 {% if bill.paid_by %}for <a href="{% url 'staff:user:detail' bill.user.username %}">{{ bill.user.get_full_name }}</a>{% endif %}
                 / Amount: ${{ bill.amount }}
-              </h5>
+              </h6>
 
               {% if bill.membership %}
               <div class="bill-info">

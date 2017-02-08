@@ -56,7 +56,7 @@ textarea.bcc-textarea {
 }
 
 #id_start_date, #id_end_date {
-  width: 20%;
+  width: 40%;
   display: inline-block;
   vertical-align: baseline;
   padding-left: 2%;
@@ -315,7 +315,6 @@ textarea.bcc-textarea {
   #id_start_date, #id_end_date {
     width: 30%;
   }
-
 
   h4 {
     font-size: 2.5em;
