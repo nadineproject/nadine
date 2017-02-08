@@ -85,11 +85,6 @@
     $('.collapsible').collapsible();
     $('#id_order').val('{{ latest_order }}');
 
-    CKEDITOR.replace('id_template', {
-      filebrowserUploadUrl: '/media/help/',
-      filebrowserBrowseUrl: '/media/'
-    });
-
     if('{{ selected }}' != 'None') {
       //How can we have them update the template? Currently getting an error
       $('#id_title').val('{{ selected.title }}');
