@@ -220,6 +220,8 @@ table tr.row-even td { background: #eee; }
 .columns.date-range .c2 { width: 30%;}
 
 /*Repeated style classes for text-align and colors*/
+.day-header {border-bottom: 1px dotted !important;}
+.day-header h5, .day-header #activity-dates {display: inline;}
 .messages {text-align: center; font-weight: bold; padding: 1%;}
 .row-even { background-color: #EEE; }
 .error { color: red; }
@@ -268,6 +270,12 @@ table tr.row-even td { background: #eee; }
 
 @media only screen and (max-width: 900px) {
 	h5, p {margin-left: 2%;}
+  #activity-dates {margin-left: 10%; width: 40%;}
+}
+
+@media only screen and (max-width: 750px) {
+	#activity-dates:before {content: ' ';display: block;}
+	#activity-dates a:first-child {margin-left: 25%;}
 }
 
 @media only screen and (max-width: 650px) {
@@ -283,6 +291,7 @@ table tr.row-even td { background: #eee; }
 	h5 {font-size: 1.5em;}
 	.responsive-table thead {margin-top: 1%;}
   .responsive-header { display: inline;}
+  #dis-date {display: none;}
   #site-search-form {float: none !important; display: inline;}
   #site-search-form div {margin-left: 15%;}
 	#site-search-form #id_terms {width: 50%;}
@@ -298,6 +307,7 @@ table tr.row-even td { background: #eee; }
 
 @media only screen and (max-width: 350px) {
   h4 {font-size: 2em;}
+  #activity-dates a:first-child {margin-left: 15%;}
   #site-search-form div {margin-left: 20%;}
   .member-photo {padding-left: 20%;}
 	#footer, #footer a {font-size: 1em; }

@@ -78,14 +78,6 @@
   background-color: #F99;
 }
 
-.day-header {
-	border-bottom: 1px dotted;
-}
-
-.day-header h5, .day-header #activity-dates {
-	display: inline;
-}
-
 .error {
   text-align: center;
   font-size: 150%;
@@ -145,24 +137,6 @@
 	margin-left: 5%;
 }
 
-@media only screen and (max-width: 900px) {
-  #activity-dates {
-    margin-left: 10%;
-    width: 40%;
-  }
-}
-
-@media only screen and (max-width: 750px) {
-	#activity-dates:before {
-		content: ' ';
-		display: block;
-	}
-
-	#activity-dates a:first-child {
-		margin-left: 25%;
-	}
-}
-
 @media only screen and (max-width: 700px) {
   #id_amount {
     width: 20% !important;
@@ -175,10 +149,6 @@
   #bill-row {
 		margin-bottom: 0;
 	}
-
-  #dis-date {
-		display: none;
-	}
 }
 
 @media only screen and (max-width: 450px) {
@@ -190,11 +160,5 @@
 		width: 25% !important;
 		vertical-align: baseline;
 		padding-left: 2%;
-	}
-}
-
-@media only screen and (max-width: 350px) {
-  #activity-dates a:first-child {
-		margin-left: 15%;
 	}
 }

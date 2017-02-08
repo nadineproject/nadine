@@ -84,14 +84,6 @@ input.datepicker {
   display: inline-block;
 }
 
-.day-header {
-	border-bottom: 1px dotted;
-}
-
-.day-header h5, .day-header #activity-dates {
-	display: inline;
-}
-
 .graph-column:hover .hover-div {
   display: block;
 }
@@ -144,38 +136,11 @@ input.datepicker {
 }
 
 
-
-@media only screen and (max-width: 900px) {
-  #activity-dates {
-    margin-left: 10%;
-    width: 40%;
-  }
-}
-
-
-@media only screen and (max-width: 750px) {
-	#activity-dates:before {
-		content: ' ';
-		display: block;
-	}
-
-	#activity-dates a:first-child {
-		margin-left: 25%;
-	}
-}
-
 @media only screen and (max-width: 700px) {
   #alert-a {
     margin-left: 75%;
   }
 }
-
-@media only screen and (max-width: 599px) {
-  #dis-date {
-		display: none;
-	}
-}
-
 @media only screen and (max-width: 480px) {
 	.graph-column {
 		width: 5px;
@@ -188,10 +153,4 @@ input.datepicker {
   #alert-a {
     margin-left: 65%;
   }
-}
-
-@media only screen and (max-width: 350px) {
-  #activity-dates a:first-child {
-		margin-left: 15%;
-	}
 }
