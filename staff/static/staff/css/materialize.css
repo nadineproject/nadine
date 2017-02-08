@@ -6136,12 +6136,12 @@ textarea.materialize-textarea {
 
 /* Radio Buttons
    ========================================================================== */
-[type="radio"]:not(:checked),
+/*[type="radio"]:not(:checked),
 [type="radio"]:checked {
   position: absolute;
   left: -9999px;
   opacity: 0;
-}
+}*/
 
 [type="radio"]:not(:checked) + label,
 [type="radio"]:checked + label {
@@ -6270,9 +6270,9 @@ form p:last-child {
 /* Remove default checkbox */
 [type="checkbox"]:not(:checked),
 [type="checkbox"]:checked {
-  position: absolute;
+  /*position: absolute;
   left: -9999px;
-  opacity: 0;
+  opacity: 0;*/
 }
 
 [type="checkbox"] {
@@ -6546,7 +6546,7 @@ input[type=checkbox]:not(:disabled).tabbed:focus ~ .lever::after {
 /* Select Field
    ========================================================================== */
 select {
-  display: block;
+  /*display: none;*/
 }
 
 select.browser-default {

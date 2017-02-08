@@ -10,15 +10,13 @@
 
 <form class='user-report' action="." method="POST">
 	<div>
-		<span><strong>Report: </strong>{{ form.report }}</span>
+		<span class='report'><strong>Report: </strong>{{ form.report }}</span>
+		<span class='report-active'><strong>Active Only: </strong>{{ form.active_only }}</span>
+		<span class='report-order'><strong>Order By: </strong>{{ form.order_by }}</span>
 	</div>
 	<div>
-		<span><strong>Start: </strong>{{ form.start_date }}</span>
-		<span><strong>End: </strong>{{ form.end_date }}</span>
-	</div>
-	<div>
-		<span><strong>Active Only: </strong>{{ form.active_only }}</span>
-		<span><strong>Order By: </strong>{{ form.order_by }}</span>
+		<span class='report-start'><strong>Start: </strong>{{ form.start_date }}</span>
+		<span class='report-end'><strong>End: </strong>{{ form.end_date }}</span>
 		<input id='report-btn' type="submit" value="View Report" />
 	</div>
 	{% csrf_token %}
@@ -69,4 +67,24 @@
 	{% endfor %}
 </table>
 
+{% endblock %}
+
+
+{% block extrajs %}
+	<script>
+		$(document).ready(function() {
+			$('.button-collapse').sideNav();
+			$('.collapsible').collapsible();
+
+			$('#id_start_date').addClass('datepicker');
+			$('#id_end_date').addClass('datepicker');
+
+			$('.datepicker').datepicker({
+				dateFormat: 'yy-mm-dd',
+				onSelect: function(ui, e) {
+					changeDate(ui);
+				}
+			});
+		});
+	</script>
 {% endblock %}
