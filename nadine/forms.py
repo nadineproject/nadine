@@ -515,7 +515,6 @@ class MOTDForm(forms.Form):
         delay_ms = self.cleaned_data['delay_ms']
 
         motd = MOTD(start_ts=start_ts, end_ts=end_ts, message=message, delay_ms=delay_ms)
-        motd.clean()
         motd.save()
 
         return motd

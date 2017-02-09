@@ -40,7 +40,7 @@ table td {
   margin-left: 2%;
 }
 
-#help-input {
+#help-input, #motd-input {
   width: 30%;
   display: inline-block;
 }

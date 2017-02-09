@@ -3,6 +3,23 @@
 {% block content %}
   <h4>Message of the Day</h4>
   <br />
+  <div class='previous-motds'>
+    <table>
+      <tr>
+        <td>
+          <form class='text-selection' method='GET' action='.'>
+            <select id='motd-input' name='selected_motd'>
+                <option value='Select One' selected disabled="True">Select One to Update</option>
+              {% for motd in prev_motd %}
+                <option value='{{ motd.id }}'>{{ motd.start_ts }} - {{ motd.end_ts }}</option>
+              {% endfor %}
+            </select>
+            <input style='display: inline-block;' class='btn' type='submit' value='Select' />
+          </form>
+        </td>
+      </tr>
+    </table>
+  </div>
   <form method='POST' action='.'>
     <table>
       <tr class='motd-date-row'>
@@ -15,8 +32,14 @@
       </tr>
     </table>
     <div class='template-div'>
-      <textarea name='message' id='motd_template' rows='20'>
+      {% if selected %}
+        <textarea name='message' id='id_message' rows='20'>
+          {{ selected.message|safe }}
+        </textarea>
+      {% else %}
+      <textarea name='message' id='id_message' rows='20'>
       </textarea>
+      {% endif %}
     </div>
     {{ motd_form.delay_ms }}
     <br />
@@ -30,16 +53,21 @@
     $(document).ready(function() {
       $('.button-collapse').sideNav();
       $('.collapsible').collapsible();
+      CKEDITOR.replace('id_message');
 
       $('#id_start_ts').addClass('datepicker');
       $('#id_end_ts').addClass('datepicker');
-      $('#id_delay_ms').val('{{ delay }}')
+      $('#id_delay_ms').val('{{ delay }}');
 
       $('.datepicker').datepicker({
         dateFormat: 'yy-mm-dd',
       })
 
-      CKEDITOR.replace('motd_template');
+      if('{{ selected }}' != 'None') {
+        $('#id_start_ts').val("{{ selected.start_ts|date:'Y-m-d' }}");
+        $('#id_end_ts').val("{{ selected.end_ts|date:'Y-m-d' }}");
+        $('#id_messge').val('{{ selected.message }}');
+      }
     });
   </script>
 {% endblock %}
