@@ -1,3 +1,5 @@
+{% load integrated_systems %}
+
 <h5>{{ name }}</h5>
 <table>
     <tr class="row-even">
@@ -7,7 +9,9 @@
         <th>Status</th>
         <th>Charge</th>
         <th>Bill</th>
-        <th>Invoice</th>
+        {% if integrations.xero %}
+          <th>Invoice</th>
+        {% endif %}
         <th>Action</th>
     </tr>
 
@@ -24,14 +28,18 @@
             <td>
                 {% if t.open_bill_amount %} ${{ t.open_bill_amount|floatformat:2 }} {% endif %}
             </td>
-            <td>
-                {% for i in t.xero_invoices %}
-                    <a href="https://go.xero.com/AccountsReceivable/View.aspx?InvoiceID={{ i.InvoiceID }}" target="_new">{{ i.InvoiceNumber }}</a><br>
-                {% endfor %}
-            </td>
+            {% if integrations.xero %}
+              <td>
+                  {% for i in t.xero_invoices %}
+                      <a href="https://go.xero.com/AccountsReceivable/View.aspx?InvoiceID={{ i.InvoiceID }}" target="_new">{{ i.InvoiceNumber }}</a><br>
+                  {% endfor %}
+              </td>
+            {% endif %}
             <td sclass='centered'>
                 <a href="{% url 'staff:billing:user_payment' t.username %}"><input type="button" value="U"></a>
-                <a href="{% url 'staff:billing:xero' t.username %}"><input type="button" value="X"></a>
+                {% if integrations.xero %}
+                  <a href="{% url 'staff:billing:xero' t.username %}"><input type="button" value="X"></a>
+                {% endif %}
                 {% ifequal "Authorized" t.status %}
                     <form class='inline-form' action="{% url 'staff:billing:payment_void' %}" method="POST">
                         <input type="hidden" name="transaction_id" value="{{ t.transaction_id }}" />

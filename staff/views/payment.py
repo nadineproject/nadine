@@ -126,7 +126,14 @@ def usaepay_transactions(request, year, month, day):
     settled_checks = []
     other_transactions = []
     totals = {'amex_total':0, 'visamc_total':0, 'ach_total':0, 'total':0}
-    open_xero_invoices = XeroAPI().get_open_invoices_by_user()
+
+    open_xero_invoices = {}
+    try:
+        open_xero_invoices = XeroAPI().get_open_invoices_by_user()
+    except Exception:
+        # Xero not integrated
+        pass
+    
     try:
         api = PaymentAPI()
 
@@ -144,6 +151,7 @@ def usaepay_transactions(request, year, month, day):
             # Pull the member and the amount they owe
             u = User.objects.filter(username = t['username']).first()
             if u:
+                t['user'] = u
                 # TODO - change to User
                 t['member'] = u.profile
                 t['open_bill_amount'] = u.profile.open_bill_amount()

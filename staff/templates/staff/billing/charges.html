@@ -1,4 +1,6 @@
 {% extends "staff/billing/base.html" %}
+{% load integrated_systems %}
+
 <!-- TODO finish the CSS styling review of this page -->
 {% block style %}
 #content td { white-space:nowrap; }
@@ -29,7 +31,9 @@
 
 <p>
     <div style="float:right;">
-        <a href="https://go.xero.com/AccountsReceivable/Search.aspx?invoiceStatus=INVOICESTATUS%2fAUTHORISED" target="new">Xero Invoices</a> |
+        {% if integrations.xero %}
+          <a href="https://go.xero.com/AccountsReceivable/Search.aspx?invoiceStatus=INVOICESTATUS%2fAUTHORISED" target="new">Xero Invoices</a> |
+        {% endif %}
         <a href="https://secure.usaepay.com/console/batch" target="new">USAePay</a>
         {% if open_batch %}
           | <a href="?close_batch" onClick="return confirm('Are you sure?');">Close Batch</a>
@@ -40,19 +44,19 @@
 
 {% if amex %}
 	{% with "AMEX" as name and amex as transactions and totals.amex_total as total %}
-		{% include "staff/billing/charges_table.frag" %}
+		{% include "staff/billing/charges_table_frag.html" %}
 	{% endwith %}
 {% endif %}
 
 {% if visamc %}
 	{% with "VISA/MC" as name and visamc as transactions and totals.visamc_total as total %}
-		{% include "staff/billing/charges_table.frag" %}
+		{% include "staff/billing/charges_table_frag.html" %}
 	{% endwith %}
 {% endif %}
 
 {% if ACH %}
 	{% with "ACH" as name and ach as transactions and totals.ach_total as total %}
-		{% include "staff/billing/charges_table.frag" %}
+		{% include "staff/billing/charges_table_frag.html" %}
 	{% endwith %}
 {% endif %}
 
@@ -113,7 +117,9 @@
 			<td>${{ t.amount|floatformat:2 }}</td>
 			<td style="text-align:center;">
 				<a href="{% url 'staff:billing:user_payment' t.username %}"><input type="button" value="U"></a>
-				<a href="{% url 'staff:billing:xero' t.username %}"><input type="button" value="X"></a>
+				{% if integrations.xero %}
+					<a href="{% url 'staff:billing:xero' t.username %}"><input type="button" value="X"></a>
+				{% endif %}
 			</td>
 		</tr>
 	{% endfor %}
