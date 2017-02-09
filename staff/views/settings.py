@@ -83,12 +83,13 @@ def motd(request):
         end_ts = times_timeszones(request.POST.get('end_ts'))
 
         if to_update:
-            updated = MOTD.objects.get(id=to_update)
-            updated.start_ts = start_ts
-            updated.end_ts = end_ts
-            updated.message = request.POST['message']
-            updated.save()
-            return HttpResponseRedirect(reverse('staff:settings:index'))
+            motd_form = MOTD.objects.get(id=to_update)
+
+            # updated.start_ts = start_ts
+            # updated.end_ts = end_ts
+            # updated.message = request.POST['message']
+            # updated.save()
+            # return HttpResponseRedirect(reverse('staff:settings:index'))
         else:
             motd_form = MOTDForm(request.POST)
 
@@ -99,9 +100,9 @@ def motd(request):
                 motd_form.start_ts = start_ts
                 motd_form.end_ts = end_ts
                 motd_form.message = request.POST['message']
-                if motd_form.is_valid():
-                    motd_form.save()
-                    return HttpResponseRedirect(reverse('staff:settings:index'))
+                # if motd_form.is_valid():
+                motd_form.save()
+                return HttpResponseRedirect(reverse('staff:settings:index'))
     else:
         motd_form = MOTDForm()
     context = {'prev_motd': prev_motd, 'motd_form': motd_form, 'delay': delay, 'selected': selected, 'message': message}
