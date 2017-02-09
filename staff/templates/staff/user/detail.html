@@ -336,7 +336,7 @@ function gotoEmailReset(emailAddress){
         {% if user.profile.has_valid_billing %}
             <input type="submit" value="Flag Invalid Billing Profile">
         {% else %}
-            <inputtype="submit" value="Clear Invalid Billing Flag">
+            <input type="submit" value="Clear Invalid Billing Flag">
         {% endif %}
         {% csrf_token %}
       </form>
