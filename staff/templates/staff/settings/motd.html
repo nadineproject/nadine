@@ -2,6 +2,11 @@
 
 {% block content %}
   <h4>Message of the Day</h4>
+  {% if message %}
+    <div class='error'>
+      {{ message }}
+    </div>
+  {% endif %}
   <br />
   <div class='previous-motds'>
     <table>
@@ -59,6 +64,7 @@
       $('#id_start_ts').addClass('datepicker');
       $('#id_end_ts').addClass('datepicker');
       $('#id_delay_ms').val('{{ delay }}');
+      $('input').attr('required', true);
 
       $('.datepicker').datepicker({
         dateFormat: 'yy-mm-dd',

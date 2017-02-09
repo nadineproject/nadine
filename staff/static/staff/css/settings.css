@@ -3,6 +3,12 @@ table td {
   vertical-align: middle;
 }
 
+.error {
+  text-align: center;
+  font-weight: bold;
+  margin-top: 2%;
+}
+
 .helptext-form, .other-helps {
   margin: 2%;
 }
