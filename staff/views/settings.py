@@ -18,6 +18,12 @@ from nadine.forms import HelpTextForm, MOTDForm
 from nadine.settings import MOTD_TIMEOUT
 from members.models import HelpText, MOTD
 
+def times_timeszones(date):
+    with_time = date + ' 00:00'
+    time_dt = datetime.strptime(with_time, "%Y-%m-%d %H:%M")
+    final = timezone.make_aware(time_dt, timezone.get_current_timezone())
+
+    return final
 
 @staff_member_required
 def index(request):
@@ -70,22 +76,20 @@ def motd(request):
 
     if request.method == 'POST':
         to_update = request.POST.get('id', None)
-        start_ts = request.POST.get('start_ts') + ' 00:00'
-        end_ts = request.POST.get('end_ts') + ' 00:00'
-        start_dt = datetime.strptime(start_ts, "%Y-%m-%d %H:%M")
-        end_dt = datetime.strptime(end_ts, "%Y-%m-%d %H:%M")
+        start = times_timeszones(request.POST.get('start_ts'))
+        end = times_timeszones(request.POST.get('end_ts'))
 
         if to_update:
             updated = MOTD.objects.get(id=to_update)
-            updated.start_ts = timezone.make_aware(start_dt, timezone.get_current_timezone())
-            updated.end_ts = timezone.make_aware(end_dt, timezone.get_current_timezone())
+            updated.start_ts = start
+            updated.end_ts = end
             updated.message = request.POST['message']
             updated.save()
             return HttpResponseRedirect(reverse('staff:settings:index'))
         else:
             motd_form = MOTDForm(request.POST)
-            motd_form.start_ts = timezone.make_aware(start_dt, timezone.get_current_timezone())
-            motd_form.end_ts = timezone.make_aware(end_dt, timezone.get_current_timezone())
+            motd_form.start_ts = start
+            motd_form.end_ts = end
             motd_form.message = request.POST['message']
             if motd_form.is_valid():
                 motd_form.save()
