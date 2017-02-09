@@ -32,6 +32,7 @@
       </tr>
     </table>
     <div class='template-div'>
+      <input name='id' id='text-id' type='hidden' value='{{ selected.id }}' />
       {% if selected %}
         <textarea name='message' id='id_message' rows='20'>
           {{ selected.message|safe }}

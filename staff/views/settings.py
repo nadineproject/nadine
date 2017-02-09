@@ -69,28 +69,26 @@ def motd(request):
         selected = MOTD.objects.get(id=selected_motd)
 
     if request.method == 'POST':
+        to_update = request.POST.get('id', None)
         start_ts = request.POST.get('start_ts') + ' 00:00'
         end_ts = request.POST.get('end_ts') + ' 00:00'
         start_dt = datetime.strptime(start_ts, "%Y-%m-%d %H:%M")
         end_dt = datetime.strptime(end_ts, "%Y-%m-%d %H:%M")
 
-        if selected_motd:
-            updated = MOTD.objects.get(id=selected_motd)
+        if to_update:
+            updated = MOTD.objects.get(id=to_update)
             updated.start_ts = timezone.make_aware(start_dt, timezone.get_current_timezone())
             updated.end_ts = timezone.make_aware(end_dt, timezone.get_current_timezone())
             updated.message = request.POST['message']
             updated.save()
-
             return HttpResponseRedirect(reverse('staff:settings:index'))
         else:
             motd_form = MOTDForm(request.POST)
-            print motd_form
             motd_form.start_ts = timezone.make_aware(start_dt, timezone.get_current_timezone())
             motd_form.end_ts = timezone.make_aware(end_dt, timezone.get_current_timezone())
             motd_form.message = request.POST['message']
             if motd_form.is_valid():
                 motd_form.save()
-
                 return HttpResponseRedirect(reverse('staff:settings:index'))
     else:
         motd_form = MOTDForm()
