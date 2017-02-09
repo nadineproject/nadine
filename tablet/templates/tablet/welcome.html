@@ -19,11 +19,16 @@
 	{% endif %}
 	<div style="font-size:150%;">
 		{% autoescape off %}
-			{{ motd.message }}
+			{% if motd %}
+			<div style='text-align:center;'>
+				<p><strong>Message of the Day</strong></p>
+				{{ motd.message }}
+			</div>
+			{% endif %}
 		{% endautoescape %}
-		<p style="padding-left:3em;">
-			-- The Office Nomads Team
-		</p>
+		<!-- <p style="padding-left:3em;">
+			 The Office Nomads Team
+		</p> -->
 	</div>
 
 

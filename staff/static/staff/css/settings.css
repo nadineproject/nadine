@@ -12,6 +12,13 @@ table td {
   margin-left: 45%;
 }
 
+.motd-dates input{
+  display: inline-block;
+  width: 40%;
+  padding-left: 2%;
+  margin-bottom: 0
+}
+
 .other-helps {
   margin-top: 2%;
 }
@@ -22,6 +29,10 @@ table td {
 
 .td-title {
   width: 15%;
+}
+
+.template-div {
+  margin-top: 2%;
 }
 
 .text-selection input {

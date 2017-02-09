@@ -1,0 +1,45 @@
+{% extends "staff/settings/base.html" %}
+
+{% block content %}
+  <h4>Message of the Day</h4>
+  <br />
+  <form method='POST' action='.'>
+    <table>
+      <tr class='motd-date-row'>
+        <td class='motd-dates'>
+          <strong>Start Date:</strong> {{ motd_form.start_ts }}
+        </td>
+        <td class='motd-dates'>
+          <strong>End Date:</strong> {{ motd_form.end_ts }}
+        </td>
+      </tr>
+    </table>
+    <div class='template-div'>
+      <textarea name='message' id='motd_template' rows='20'>
+      </textarea>
+    </div>
+    {{ motd_form.delay_ms }}
+    <br />
+    <input type='submit' class='btn' value='Post' />
+    {% csrf_token %}
+  </form>
+{% endblock %}
+
+{% block extrajs %}
+  <script>
+    $(document).ready(function() {
+      $('.button-collapse').sideNav();
+      $('.collapsible').collapsible();
+
+      $('#id_start_ts').addClass('datepicker');
+      $('#id_end_ts').addClass('datepicker');
+      $('#id_delay_ms').val('{{ delay }}')
+
+      $('.datepicker').datepicker({
+        dateFormat: 'yy-mm-dd',
+      })
+
+      CKEDITOR.replace('motd_template');
+    });
+  </script>
+{% endblock %}

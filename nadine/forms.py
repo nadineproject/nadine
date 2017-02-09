@@ -25,7 +25,7 @@ from nadine.models.usage import PAYMENT_CHOICES, CoworkingDay
 from nadine.models.resource import Room
 from nadine.models.organization import Organization, OrganizationMember
 from nadine.utils.payment_api import PaymentAPI
-from members.models import HelpText
+from members.models import HelpText, MOTD
 
 logger = logging.getLogger(__name__)
 
@@ -499,6 +499,26 @@ class HelpTextForm(forms.Form):
         help_text.save()
 
         return help_text
+
+class MOTDForm(forms.Form):
+    start_ts = forms.DateField(initial=datetime.date.today, required=True)
+    end_ts = forms.DateField(required=True)
+    message = forms.CharField(required=True)
+    delay_ms = forms.IntegerField(required=True, widget=forms.HiddenInput)
+
+    def save(self):
+        if not self.is_valid():
+            raise Exception('The form must be valid in order to save')
+        start_ts = self.cleaned_data['start_ts']
+        end_ts = self.cleaned_data['end_ts']
+        message = self.cleaned_data['message']
+        delay_ms = self.cleaned_data['delay_ms']
+
+        motd = MOTD(start_ts=start_ts, end_ts=end_ts, message=message, delay_ms=delay_ms)
+        motd.clean()
+        motd.save()
+
+        return motd
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

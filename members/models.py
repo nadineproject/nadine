@@ -39,8 +39,9 @@ class MOTD(models.Model):
 
     def clean(self):
         if MOTD.objects.filter(start_ts__lte=self.start_ts, end_ts__gte=self.end_ts).count() != 0:
-            raise ValidationError("MOTD exists for this date range")
-
+            raise ValidationError({
+                'time_error': ValidationError(("MOTD exists for this date range"), code='invalid')
+            })
     def __str__(self):
         return self.message
 
