@@ -16,14 +16,14 @@ class PaymentAPI(object):
 
     def __init__(self, v=4):
         if v == 2:
-            self.url = settings.USA_EPAY_URL_1_2
+            self.url = settings.USA_EPAY_SOAP_1_2
         elif v == 3:
-            self.url = settings.USA_EPAY_URL_1_3
+            self.url = settings.USA_EPAY_SOAP_1_3
         elif v == 6:
-            self.url = settings.USA_EPAY_URL_1_6
+            self.url = settings.USA_EPAY_SOAP_1_6
         else:
-            self.url = settings.USA_EPAY_URL_1_4
-        self.entry_point = USAEPAY_SOAP_API(self.url, settings.USA_EPAY_KEY, settings.USA_EPAY_PIN)
+            self.url = settings.USA_EPAY_SOAP_1_4
+        self.entry_point = USAEPAY_SOAP_API(self.url, settings.USA_EPAY_SOAP_KEY, settings.USA_EPAY_SOAP_PIN)
 
     def switch_api_ver(self, version):
         self.__init__(v=version)

@@ -46,7 +46,7 @@ def run_billing(request):
         run_billing_form = RunBillingForm(request.POST)
         if run_billing_form.is_valid():
             billing.run_billing()
-            page_message = 'At your request, I have run <a href="%s">the bills</a>.' % (reverse('staff_bills', args=[], kwargs={}),)
+            page_message = 'At your request, I have run <a href="%s">the bills</a>.' % (reverse('staff:billing:bills', args=[], kwargs={}),)
     logs = BillingLog.objects.all()[:10]
     context = {'run_billing_form': run_billing_form, 'page_message': page_message, "billing_logs": logs}
     return render(request, 'staff/billing/run_billing.html', context)
@@ -130,7 +130,7 @@ def bills_pay_all(request, username):
         if 'next' in request.POST:
             next_url = request.POST.get("next")
         else:
-            next_url = reverse('staff_bills')
+            next_url = reverse('staff:billing:bills')
 
     return HttpResponseRedirect(next_url)
 
@@ -166,7 +166,7 @@ def toggle_billing_flag(request, username):
 
     if 'back' in request.POST:
         return HttpResponseRedirect(request.POST.get('back'))
-    return HttpResponseRedirect(reverse('staff_bills'))
+    return HttpResponseRedirect(reverse('staff:billing:bills'))
 
 
 @staff_member_required

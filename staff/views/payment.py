@@ -209,7 +209,7 @@ def usaepay_void(request):
                 username = request.POST.get('username')
                 api.void_transaction(username, transaction_id)
                 messages.add_message(request, messages.INFO, "Transaction for %s voided" % username)
-                return HttpResponseRedirect(reverse('staff_charges_today'))
+                return HttpResponseRedirect(reverse('staff:billing:charges_today'))
     except Exception as e:
         messages.add_message(request, messages.ERROR, e)
     return render(request, 'staff/billing/usaepay_void.html', {'transaction':transaction})

@@ -343,7 +343,7 @@ function gotoEmailReset(emailAddress){
     </div>
     {% if integrations.usaepay %}
     <div class='epay-link'>
-        [ <a href="https://secure.usaepay.com/interface/epayform/{{ settings.USA_EPAY_WEB_KEY }}/?UMdescription=Office%20Nomads%20Billing%20Authorization&UMcustid={{ user.username }}&UMcommand=AuthOnly&UMamount=1.00&UMaddcustomer=yes&UMschedule=disabled">payment link</a> ]
+        [ <a href="{{ settings.USA_EPAY_FORM }}{{ settings.USA_EPAY_FORM_KEY }}/?UMdescription=Office%20Nomads%20Billing%20Authorization&UMcustid={{ user.username }}&UMcommand=AuthOnly&UMamount=1.00&UMaddcustomer=yes&UMschedule=disabled">payment link</a> ]
     </div>
     {% endif %}
 
