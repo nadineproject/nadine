@@ -93,6 +93,10 @@ input.datepicker {
   color: red;
 }
 
+.other-table {
+  padding-bottom: 5%;
+}
+
 .other-table th {
   vertical-align: baseline;
 }
