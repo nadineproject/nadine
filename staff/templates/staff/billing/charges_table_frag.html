@@ -1,18 +1,18 @@
 {% load integrated_systems %}
 
 <h5>{{ name }}</h5>
-<table>
+<table class='charges-table responsive-table'>
     <tr class="row-even">
         <th>Member</th>
-        <th>Description</th>
+        <th id='desc-th'>Description</th>
         <!--<th>Type</th>-->
-        <th>Status</th>
-        <th>Charge</th>
+        <th id='status-th'>Status</th>
+        <th id='charge-th'>Charge</th>
         <th>Bill</th>
         {% if integrations.xero %}
-          <th>Invoice</th>
+          <th id='invoice-th'>Invoice</th>
         {% endif %}
-        <th>Action</th>
+        <th id='action-th'>Action</th>
     </tr>
 
     {% for t in transactions %}
@@ -61,7 +61,7 @@
     <tr class="row-even">
         <td><strong>{{ transactions|length }} Transactions</strong></td>
         <td></td>
-        <td class="right"><strong>Total</strong></td>
+        <td><strong>Total</strong></td>
         <td>${{total|floatformat:2}}</td>
         <td colspan="3"></td>
     </tr>

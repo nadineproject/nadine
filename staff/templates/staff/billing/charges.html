@@ -29,18 +29,16 @@
   </div>
 {% endif %}
 
-<p>
-    <div style="float:right;">
-        {% if integrations.xero %}
-          <a href="https://go.xero.com/AccountsReceivable/Search.aspx?invoiceStatus=INVOICESTATUS%2fAUTHORISED" target="new">Xero Invoices</a> |
-        {% endif %}
-        <a href="https://secure.usaepay.com/console/batch" target="new">USAePay</a>
-        {% if open_batch %}
-          | <a href="?close_batch" onClick="return confirm('Are you sure?');">Close Batch</a>
-        {% endif %}
-    </div>
-    Total {{totals.total_count}} Transactions: ${{totals.total|floatformat:2}}
-</p>
+<div class='transactions-sum'>
+	<span>Total {{totals.total_count}} Transactions: ${{totals.total|floatformat:2}}</span>
+    {% if integrations.xero %}
+      <a id='xero-link' href="https://go.xero.com/AccountsReceivable/Search.aspx?invoiceStatus=INVOICESTATUS%2fAUTHORISED" target="new">Xero Invoices</a> |
+    {% endif %}
+    <a href="https://secure.usaepay.com/console/batch" target="new">USAePay</a>
+    {% if open_batch %}
+      | <a href="?close_batch" onClick="return confirm('Are you sure?');">Close Batch</a>
+    {% endif %}
+</div>
 
 {% if amex %}
 	{% with "AMEX" as name and amex as transactions and totals.amex_total as total %}
@@ -85,16 +83,16 @@
 
 {% if other_transactions %}
 <h5>Other Transactions</h5>
-<table>
+<table class='other-table responsive-table'>
 	<tr>
 		<th>Member</th>
-		<th>Description</th>
-		<th>Card</th>
-		<th>Type</th>
-		<th>Status</th>
-		<th>Note</th>
-		<th>Amount</th>
-		<th>Action</th>
+		<th id='desc-th'>Description</th>
+		<th id='card-th'>Card</th>
+		<th id='type-th'>Type</th>
+		<th id='status-th'>Status</th>
+		<th id='note-th'>Note</th>
+		<th id='amount-th'>Amount</th>
+		<th id='action-th'>Action</th>
 	</tr>
 
 	{% for t in other_transactions %}
