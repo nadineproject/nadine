@@ -13,6 +13,7 @@
 
    <div style='max-height: 800px;' id="img-cropper-wrapper">
      {{ form.photo }}
+     <button class='btn rotate-btn'><img src="{% static 'img/rotate.png' %}" /></button>
    </div>
 
    <div style='max-height: 800px;' id="image-preview-wrapper">
@@ -25,11 +26,11 @@
    <table>
      <tr class='btn-row'>
        <td><button type='submit' class='btn pic-btn'>Save</button></td>
-       <td style='padding-top:5%;'>
-         <a class='modal-btn' id='cancel-event'>Cancel</a>
-       </td>
        <td>
-         <button class='btn rotate-btn'><img src="{% static 'img/rotate.png' %}" /></button>
+
+       </td>
+       <td style='padding-top:3%;'>
+         <a class='modal-btn' id='cancel-event'>Cancel</a>
        </td>
      </tr>
    </table>

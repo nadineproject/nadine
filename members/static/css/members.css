@@ -421,11 +421,12 @@ table td {
 }
 
 .rotate-btn {
-	margin-top: 5%;
-	margin-left: 5%;
+	margin-left: 30%;
 	border-radius: 100px;
-	padding-left: 10%;
-	padding-right: 10%;
+	padding-left: 7px;
+	padding-right: 7px;
+	vertical-align: middle;
+	display: inline-block;
 	background-color: RGBA(96, 131, 157, 1.00);
 }
 
@@ -1136,6 +1137,10 @@ a.photo.star-img  {
 
 #pic_target h3 {
 		margin-top: 5%;
+}
+
+#profile_image_form input {
+	width: 50%;
 }
 
 #image-preview.user-img {
