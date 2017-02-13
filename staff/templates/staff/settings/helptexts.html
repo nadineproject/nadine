@@ -2,7 +2,11 @@
 
 {% block content %}
 <h4>Add or Update Help Texts</h4>
-
+{% if message %}
+  <div class='error'>
+    {{ message }}
+  </div>
+{% endif %}
 <div class='other-helps'>
   <table>
     <tr>
@@ -90,7 +94,12 @@
       </tr>
     </table>
     {% csrf_token %}
-    <button type='submit' class='btn help-btn'>Submit</button>
+    {% if selected %}
+      <button style='display:inline-block;' type='submit' class='btn help-btn'>Update {{ selected.title }}</button>
+      <button id='cancel' class='btn help-btn'>Cancel</button>
+    {% else %}
+      <button type='submit' class='btn help-btn'>Add New Help Text</button>
+    {% endif %}
   </form>
 </div>
 <script>
@@ -98,6 +107,7 @@
     $('.button-collapse').sideNav();
     $('.collapsible').collapsible();
     $('#id_order').val('{{ latest_order }}');
+    $('input').attr('required', true);
 
     CKEDITOR.replace('id_template');
 
@@ -108,6 +118,11 @@
       $('#id_slug').val('{{ selected.slug }}');
       $('#id_order').val('{{ selected.order}}');
     }
+
+    $('#cancel').on('click', function(e) {
+      e.preventDefault();
+      window.location.replace("{% url 'staff:settings:helptexts' %}");
+    })
   });
 </script>
 {% endblock %}

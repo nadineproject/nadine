@@ -49,7 +49,12 @@
     </div>
     {{ motd_form.delay_ms }}
     <br />
-    <input type='submit' class='btn' value='Post' />
+    {% if selected %}
+      <input type='submit' class='btn' value='Update Message for {{ selected.start_ts|date:"m-d-Y" }} to {{ selected.end_ts|date:"m-d-Y" }}' />
+      <button id='cancel' class='btn help-btn'>Cancel</button>
+    {% else %}
+      <input type='submit' class='btn' value='Post New Message' />
+    {% endif %}
     {% csrf_token %}
   </form>
 {% endblock %}
@@ -71,10 +76,16 @@
       })
 
       if('{{ selected }}' != 'None') {
+        $('#motd-input').val("{{ selected.id }}")
         $('#id_start_ts').val("{{ selected.start_ts|date:'Y-m-d' }}");
         $('#id_end_ts').val("{{ selected.end_ts|date:'Y-m-d' }}");
         $('#id_messge').val('{{ selected.message }}');
       }
+
+      $('#cancel').on('click', function(e) {
+        e.preventDefault();
+        window.location.replace("{% url 'staff:settings:helptexts' %}");
+      })
     });
   </script>
 {% endblock %}
