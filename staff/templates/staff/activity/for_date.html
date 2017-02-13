@@ -79,11 +79,13 @@
 				}
 			});
 
-			$('.datepicker').focusout(function(e) {
-				e.preventDefault();
-				var input = $('.datepicker').val();
-				changeDate(input);
-			})
+			if($('#content').width() < 700) {
+				$('.datepicker').focusout(function(e) {
+					e.preventDefault();
+					var input = $('.datepicker').val();
+					changeDate(input);
+				})
+			}
 		})();
 	</script>
 {% endblock %}

@@ -13,11 +13,6 @@ input.datepicker {
   color: RGBA(90, 122, 189, 1.00) !important;
 }
 
-#activity-dates {
-	margin-left: 20%;
-	font-size: 2em;
-}
-
 #activity-table th:first-child {
   width: 80px;
 }

@@ -26,7 +26,7 @@ def create_event(request):
         event_form = EventForm(request.POST)
         if event_form.is_valid():
             event_form.save()
-            return HttpResponseRedirect(reverse('staff_todo'))
+            return HttpResponseRedirect(reverse('staff:tasks'))
     else:
         event_form = EventForm()
     return render(request, 'staff/create_event.html', {'event_form': event_form})

@@ -58,7 +58,7 @@ class UsaepayTestCase(SimpleTestCase):
 
     def get_client(self):
         if not self._client:
-            url = settings.USA_EPAY_URL
+            url = settings.USA_EPAY_SOAP_1_4
             self._client = Client(url)
         return self._client
 
@@ -78,14 +78,15 @@ class UsaepayTestCase(SimpleTestCase):
         return self._token
 
     def test_soap(self):
-        if not hasattr(settings, 'USA_EPAY_KEY'):
+        if not hasattr(settings, 'USA_EPAY_SOAP_KEY'):
             return
 
-        key = settings.USA_EPAY_KEY
-        pin = settings.USA_EPAY_PIN
+        key = settings.USA_EPAY_SOAP_KEY
+        pin = settings.USA_EPAY_SOAP_PIN
 
         client = self.get_client()
         token = self.get_token(key, pin)
+        # TODO - This should not be hardcoded
         username = "jacob"
         cust_num = client.service.searchCustomerID(token, username);
 

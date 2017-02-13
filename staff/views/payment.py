@@ -126,7 +126,14 @@ def usaepay_transactions(request, year, month, day):
     settled_checks = []
     other_transactions = []
     totals = {'amex_total':0, 'visamc_total':0, 'ach_total':0, 'total':0}
-    open_xero_invoices = XeroAPI().get_open_invoices_by_user()
+
+    open_xero_invoices = {}
+    try:
+        open_xero_invoices = XeroAPI().get_open_invoices_by_user()
+    except Exception:
+        # Xero not integrated
+        pass
+    
     try:
         api = PaymentAPI()
 
@@ -144,6 +151,7 @@ def usaepay_transactions(request, year, month, day):
             # Pull the member and the amount they owe
             u = User.objects.filter(username = t['username']).first()
             if u:
+                t['user'] = u
                 # TODO - change to User
                 t['member'] = u.profile
                 t['open_bill_amount'] = u.profile.open_bill_amount()
@@ -209,7 +217,7 @@ def usaepay_void(request):
                 username = request.POST.get('username')
                 api.void_transaction(username, transaction_id)
                 messages.add_message(request, messages.INFO, "Transaction for %s voided" % username)
-                return HttpResponseRedirect(reverse('staff_charges_today'))
+                return HttpResponseRedirect(reverse('staff:billing:charges_today'))
     except Exception as e:
         messages.add_message(request, messages.ERROR, e)
     return render(request, 'staff/billing/usaepay_void.html', {'transaction':transaction})
