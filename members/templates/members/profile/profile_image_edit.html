@@ -25,8 +25,11 @@
    <table>
      <tr class='btn-row'>
        <td><button type='submit' class='btn pic-btn'>Save</button></td>
-       <td>
+       <td style='padding-top:5%;'>
          <a class='modal-btn' id='cancel-event'>Cancel</a>
+       </td>
+       <td>
+         <button class='btn rotate-btn'><img src="{% static 'img/rotate.png' %}" /></button>
        </td>
      </tr>
    </table>
@@ -39,7 +42,7 @@
      $("#image-preview").cropper({
        aspectRatio: 1/1,
        zoomable: false,
-       rotatable: false,
+       rotatable: true,
        scalable: false,
        guides: false,
        dragCrop: false,
@@ -68,6 +71,20 @@
        showImage(this);
      }
    });
+
+   $('.rotate-btn').click(function(e){
+     e.preventDefault();
+     $('#image-preview').cropper({
+       aspectRatio: 1/1,
+       zoomable: false,
+       rotatable: true,
+       scalable: false,
+       guides: false,
+       dragCrop: false,
+     })
+     $('#image-preview').cropper('rotate', 90);
+     $('.pic-btn').attr('disabled', false);
+    });
 
    $("#profile_image_form").submit(function(){
      var img = $("#image-preview").cropper('getCroppedCanvas').toDataURL().match(/data:image\/(png|jpeg);base64,(.*)$/)[2]

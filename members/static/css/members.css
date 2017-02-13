@@ -420,6 +420,19 @@ table td {
 	margin-top: 5%;
 }
 
+.rotate-btn {
+	margin-top: 5%;
+	margin-left: 5%;
+	border-radius: 100px;
+	padding-left: 10%;
+	padding-right: 10%;
+	background-color: RGBA(96, 131, 157, 1.00);
+}
+
+.rotate-btn img {
+	vertical-align: middle;
+}
+
 .edit-btn {
 	height: 40px;
 }
