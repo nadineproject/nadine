@@ -1,7 +1,7 @@
 {% extends "staff/settings/base.html" %}
 
 {% block content %}
-  <h4>Message of the Day</h4>
+  <h4>Add or Update a Message of the Day</h4>
   {% if message %}
     <div class='error'>
       {{ message }}
@@ -14,7 +14,7 @@
         <td>
           <form class='text-selection' method='GET' action='.'>
             <select id='motd-input' name='selected_motd'>
-                <option value='Select One' selected disabled="True">Select One to Update</option>
+                <option value='Select One' selected disabled="True">To Update, Select A Time Period Here</option>
               {% for motd in prev_motd %}
                 <option value='{{ motd.id }}'>{{ motd.start_ts }} - {{ motd.end_ts }}</option>
               {% endfor %}

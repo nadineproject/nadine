@@ -1,7 +1,7 @@
 {% extends "staff/settings/base.html" %}
 
 {% block content %}
-<h4>Add and Update Help Texts</h4>
+<h4>Add or Update Help Texts</h4>
 
 <div class='other-helps'>
   <table>
@@ -10,7 +10,7 @@
       <td>
         <form class='text-selection' method='GET' action='.'>
           <select id='help-input' name='selected_help'>
-              <option value='Select One' selected disabled="True">Select One to Update</option>
+              <option value='Select One' selected disabled="True">To Update, Select One Here</option>
             {% for help in helps %}
               <option value='{{ help.title }}'>{{ help.title }}</option>
             {% endfor %}
@@ -37,6 +37,26 @@
           {{ helptext_form.title}}
         </td>
       </tr>
+    </table>
+    <table id='template_help'>
+      <tr>
+        <td>
+          <strong>Template Help</strong>
+          <p>
+            This is the meat of your help text! With this editor you can style the information just as you would in any editing application. Bold, special characters, tables, etc all work in this editor. Two things to note:
+          </p>
+          <ul>
+            <li>
+              - All Nadine links entered have to follow the style with "url path:to:page" sandwiched between a set of curly braces and percentage signs "{%".
+            </li>
+            <li>
+              - The title of the text will appear as a Heading 1 (h1) so please make sure that all text is Heading 2 and smaller.
+            </li>
+          </ul>
+        </td>
+      </tr>
+    </table>
+    <table>
       <tr>
         <td class='td-title'><strong>Template</strong> (<a onclick="$('#template_help').toggle();">?</a>)</td>
           <input name='id' id='text-id' type='hidden' value='{{ selected.id }}' />
@@ -50,19 +70,13 @@
             {% endif %}
           </td>
       </tr>
-      <tr class='preview-tr'>
-        <td><strong>Preview</strong></td>
-        <td>
-          <div id='preview'></div>
-        </td>
-      </tr>
     </table>
-    <table id='template_help'>
+    <table id='slug_help'>
       <tr>
         <td>
-          <strong>Template Help</strong>
+          <strong>What is a 'slug'?</strong>
           <p>
-            The template is that which will be entered in the help text page template. This editor will help you make sure it is styled just right. It is important to note, the title of the template will appear on the help page as a 'Heading 1' so make sure everything is smaller than that.
+            The slug is the exact address for the help text post. In this case, you'll be able to find your help text at /member/help/YOUR_SLUG/. Make sure to not include any whitespaces.
           </p>
         </td>
       </tr>
@@ -72,16 +86,6 @@
         <td class='td-title'><strong>URL Slug</strong>(<a onclick="$('#slug_help').toggle();">?</a>)</td>
         <td>
           {{ helptext_form.slug }}
-        </td>
-      </tr>
-    </table>
-    <table id='slug_help'>
-      <tr>
-        <td>
-          <strong>What is a 'slug'?</strong>
-          <p>
-            The slug is the exact address for the help text post. In this case, you'll be able to find your help text at /member/help/YOUR_SLUG/. Make sure to not include any whitespaces.
-          </p>
         </td>
       </tr>
     </table>
@@ -100,6 +104,7 @@
     if('{{ selected }}' != 'None') {
       //How can we have them update the template? Currently getting an error
       $('#id_title').val('{{ selected.title }}');
+      $('#help-input').val('{{ selected.title }}')
       $('#id_slug').val('{{ selected.slug }}');
       $('#id_order').val('{{ selected.order}}');
     }
