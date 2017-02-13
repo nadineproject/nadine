@@ -11,15 +11,15 @@
     {{ form.username.errors }}
    </div>
 
-   <div id="img-cropper-wrapper">
+   <div style='max-height: 800px;' id="img-cropper-wrapper">
      {{ form.photo }}
    </div>
 
-   <div id="image-preview-wrapper">
+   <div style='max-height: 800px;' id="image-preview-wrapper">
      {% if user.profile.photo %}
-       <img class='user-img' id="image-preview" src="{{ user.profile.photo.url }}">
+       <img style='max-height: 350px;' class='user-img' id="image-preview" src="{{ user.profile.photo.url }}">
      {% else %}
-       <img id="image-preview" src="{% static 'img/noun_160064_cc.png' %}">
+       <img style='max-height: 350px;' id="image-preview" src="{% static 'img/noun_160064_cc.png' %}">
      {% endif %}
    </div>
    <table>
