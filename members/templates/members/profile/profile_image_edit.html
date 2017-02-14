@@ -11,21 +11,25 @@
     {{ form.username.errors }}
    </div>
 
-   <div id="img-cropper-wrapper">
+   <div style='max-height: 800px;' id="img-cropper-wrapper">
      {{ form.photo }}
+     <button class='btn rotate-btn'><img src="{% static 'img/rotate.png' %}" /></button>
    </div>
 
-   <div id="image-preview-wrapper">
+   <div style='max-height: 800px;' id="image-preview-wrapper">
      {% if user.profile.photo %}
-       <img class='user-img' id="image-preview" src="{{ user.profile.photo.url }}">
+       <img style='max-height: 350px;' class='user-img' id="image-preview" src="{{ user.profile.photo.url }}">
      {% else %}
-       <img id="image-preview" src="{% static 'img/noun_160064_cc.png' %}">
+       <img style='max-height: 350px;' id="image-preview" src="{% static 'img/noun_160064_cc.png' %}">
      {% endif %}
    </div>
    <table>
      <tr class='btn-row'>
        <td><button type='submit' class='btn pic-btn'>Save</button></td>
        <td>
+
+       </td>
+       <td style='padding-top:3%;'>
          <a class='modal-btn' id='cancel-event'>Cancel</a>
        </td>
      </tr>
@@ -39,7 +43,7 @@
      $("#image-preview").cropper({
        aspectRatio: 1/1,
        zoomable: false,
-       rotatable: false,
+       rotatable: true,
        scalable: false,
        guides: false,
        dragCrop: false,
@@ -68,6 +72,20 @@
        showImage(this);
      }
    });
+
+   $('.rotate-btn').click(function(e){
+     e.preventDefault();
+     $('#image-preview').cropper({
+       aspectRatio: 1/1,
+       zoomable: false,
+       rotatable: true,
+       scalable: false,
+       guides: false,
+       dragCrop: false,
+     })
+     $('#image-preview').cropper('rotate', 90);
+     $('.pic-btn').attr('disabled', false);
+    });
 
    $("#profile_image_form").submit(function(){
      var img = $("#image-preview").cropper('getCroppedCanvas').toDataURL().match(/data:image\/(png|jpeg);base64,(.*)$/)[2]
