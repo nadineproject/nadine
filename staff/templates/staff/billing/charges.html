@@ -1,6 +1,4 @@
 {% extends "staff/billing/base.html" %}
-{% load integrated_systems %}
-
 <!-- TODO finish the CSS styling review of this page -->
 {% block style %}
 #content td { white-space:nowrap; }
@@ -29,16 +27,16 @@
   </div>
 {% endif %}
 
-<div class='transactions-sum'>
-	<span>Total {{totals.total_count}} Transactions: ${{totals.total|floatformat:2}}</span>
-    {% if integrations.xero %}
-      <a id='xero-link' href="https://go.xero.com/AccountsReceivable/Search.aspx?invoiceStatus=INVOICESTATUS%2fAUTHORISED" target="new">Xero Invoices</a> |
-    {% endif %}
-    <a href="https://secure.usaepay.com/console/batch" target="new">USAePay</a>
-    {% if open_batch %}
-      | <a href="?close_batch" onClick="return confirm('Are you sure?');">Close Batch</a>
-    {% endif %}
-</div>
+<p>
+    <div style="float:right;">
+        <a href="https://go.xero.com/AccountsReceivable/Search.aspx?invoiceStatus=INVOICESTATUS%2fAUTHORISED" target="new">Xero Invoices</a> |
+        <a href="https://secure.usaepay.com/console/batch" target="new">USAePay</a>
+        {% if open_batch %}
+          | <a href="?close_batch" onClick="return confirm('Are you sure?');">Close Batch</a>
+        {% endif %}
+    </div>
+    Total {{totals.total_count}} Transactions: ${{totals.total|floatformat:2}}
+</p>
 
 {% if amex %}
 	{% with "AMEX" as name and amex as transactions and totals.amex_total as total %}
@@ -48,13 +46,13 @@
 
 {% if visamc %}
 	{% with "VISA/MC" as name and visamc as transactions and totals.visamc_total as total %}
-		{% include "staff/billing/charges_table_frag.html" %}
+		{% include "staff/billing/charges_table_frag.html"" %}
 	{% endwith %}
 {% endif %}
 
 {% if ACH %}
 	{% with "ACH" as name and ach as transactions and totals.ach_total as total %}
-		{% include "staff/billing/charges_table_frag.html" %}
+		{% include "staff/billing/charges_table_frag.html"" %}
 	{% endwith %}
 {% endif %}
 
@@ -83,16 +81,16 @@
 
 {% if other_transactions %}
 <h5>Other Transactions</h5>
-<table class='other-table responsive-table'>
+<table>
 	<tr>
 		<th>Member</th>
-		<th id='desc-th'>Description</th>
-		<th id='card-th'>Card</th>
-		<th id='type-th'>Type</th>
-		<th id='status-th'>Status</th>
-		<th id='note-th'>Note</th>
-		<th id='amount-th'>Amount</th>
-		<th id='action-th'>Action</th>
+		<th>Description</th>
+		<th>Card</th>
+		<th>Type</th>
+		<th>Status</th>
+		<th>Note</th>
+		<th>Amount</th>
+		<th>Action</th>
 	</tr>
 
 	{% for t in other_transactions %}
@@ -115,9 +113,7 @@
 			<td>${{ t.amount|floatformat:2 }}</td>
 			<td style="text-align:center;">
 				<a href="{% url 'staff:billing:user_payment' t.username %}"><input type="button" value="U"></a>
-				{% if integrations.xero %}
-					<a href="{% url 'staff:billing:xero' t.username %}"><input type="button" value="X"></a>
-				{% endif %}
+				<a href="{% url 'staff:billing:xero' t.username %}"><input type="button" value="X"></a>
 			</td>
 		</tr>
 	{% endfor %}
@@ -127,32 +123,32 @@
 {% endblock %}
 
 {% block extrajs %}
-	<script>
-		function changeDate(input) {
-			var date = input.split('-');
-			var url = "{% url 'staff:billing:charges' 2016 12 14 %}".replace(/14/, date[2]).replace(/12/, date[1]).replace(/2016/, date[0]);
+<script>
+	function changeDate(input) {
+		var date = input.split('-');
+		var url = "{% url 'staff:billing:charges' 2016 12 14 %}".replace(/14/, date[2]).replace(/12/, date[1]).replace(/2016/, date[0]);
 
-			window.location.href = url;
-		}
+		window.location.href = url;
+	}
 
-		$(document).ready(function(){
-			$('.button-collapse').sideNav();
-			$('.collapsible').collapsible();
+	$(document).ready(function(){
+		$('.button-collapse').sideNav();
+		$('.collapsible').collapsible();
 
-			$('.datepicker').datepicker({
-				dateFormat: 'yy-mm-dd',
-				onSelect: function(ui, e) {
-					changeDate(ui)
-				}
-			});
-
-			if($('#content').width() < 700) {
-				$('.datepicker').focusout(function(e) {
-					e.preventDefault();
-					var input = $('.datepicker').val();
-					changeDate(input);
-				})
+		$('.datepicker').datepicker({
+			dateFormat: 'yy-mm-dd',
+			onSelect: function(ui, e) {
+				changeDate(ui)
 			}
-		})
-	</script>
+		});
+
+		if($('#content').width() < 700) {
+			$('.datepicker').focusout(function(e) {
+				e.preventDefault();
+				var input = $('.datepicker').val();
+				changeDate(input);
+			})
+		}
+	})
+</script>
 {% endblock %}

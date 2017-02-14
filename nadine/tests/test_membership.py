@@ -23,6 +23,7 @@ def print_user_data(user):
             print("    Drop-in: %s" % dropin)
 
 
+# Currently failing if you do not have a Slack API key - AKS 2/6/17
 class MembershipTestCase(TestCase):
 
     def setUp(self):

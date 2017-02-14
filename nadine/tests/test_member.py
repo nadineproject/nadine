@@ -9,6 +9,7 @@ from django.utils import timezone
 from nadine.models import *
 
 
+# Currently failing if you do not have a Slack API token - AKS 2/7/17
 class MemberTestCase(TestCase):
 
     def setUp(self):

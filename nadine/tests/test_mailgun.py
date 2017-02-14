@@ -26,8 +26,8 @@ class MailgunTestCase(SimpleTestCase):
         to_list = mailgun_data["to"]
         self.assertEqual(1, len(to_list))
         self.assertEqual("to@example.com", to_list[0])
-        self.assertFalse("cc" in mailgun_data)
-        self.assertFalse("bcc" in mailgun_data)
+        self.assertEqual(mailgun_data['cc'], [])
+        self.assertEqual(mailgun_data['bcc'], [])
 
     def test_bcc(self):
         mailgun_data = {"from": "from@example.com",
@@ -42,7 +42,7 @@ class MailgunTestCase(SimpleTestCase):
         self.assertTrue("bcc@example.com" in bcc_list)
         self.assertFalse("to@example.com" in bcc_list)
         self.assertFalse("from@example.com" in bcc_list)
-        self.assertFalse("cc" in mailgun_data)
+        self.assertEqual(mailgun_data['cc'], [])
 
     def test_cc(self):
         mailgun_data = {"from": "from@example.com",
@@ -57,18 +57,17 @@ class MailgunTestCase(SimpleTestCase):
         self.assertTrue("cc@example.com" in cc_list)
         self.assertFalse("to@example.com" in cc_list)
         self.assertFalse("from@example.com" in cc_list)
-        self.assertFalse("bcc" in mailgun_data)
+        self.assertEqual(mailgun_data['bcc'], [])
 
     def test_multiple_to(self):
         mailgun_data = {"from": "from@example.com",
-            "to": ["to@example.com", "from@example.com", "cc@example.com", "bcc@example.com", "to2@example.com"],
-            "cc": ["cc@example.com", "to@example.com", "from@example.com"],
-            "bcc": ["bcc@example.com", "to@example.com", "from@example.com"],
+            "to": ["to@example.com", "from@example.com", "to2@example.com"],
+            "cc": ["cc@example.com"],
+            "bcc": ["bcc@example.com"],
             "subject": "subject",
             "text": "This is text content",
         }
         mailgun.clean_mailgun_data(mailgun_data)
-
         self.assertEqual(1, len(mailgun_data["cc"]))
         self.assertTrue("cc@example.com" in mailgun_data["cc"])
 

@@ -539,9 +539,9 @@ function gotoEmailReset(emailAddress){
                   </tr>
               {% endfor %}
             {% endif %}
-        <form action="." method=POST>
+        <form class='special_form' action="." method=POST>
             <tr>
-                <td><select class='browser-default' name="month">
+                <td><select name="month">
                     <option></option>
                     <option>1</option>
                     <option>2</option>
@@ -556,7 +556,7 @@ function gotoEmailReset(emailAddress){
                     <option>11</option>
                     <option>12</option>
                 </select></td>
-                <td><select class='browser-default' name="day">
+                <td><select name="day">
                     <option></option>
                     <option>1</option>
                     <option>2</option>

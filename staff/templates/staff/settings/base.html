@@ -1,11 +1,8 @@
 {% extends "staff/base.html" %}
+{% load static %}
 
 {% block sub-title %}Settings{% endblock %}
 
-{% block navcss %}
-  <style>
-    #settings-tab {
-      color: RGBA(90, 122, 189, 1.00) !important;
-    }
-  </style>
+{% block pagestyle %}
+  <link rel='stylesheet' href="{% static 'staff/css/settings.css' %}" />
 {% endblock %}

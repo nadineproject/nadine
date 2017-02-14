@@ -241,6 +241,10 @@ textarea.bcc-textarea {
 	font-weight: bold;
 }
 
+.special_form {
+  margin-bottom: 15%;
+}
+
 .tabs .tab a {
 	text-decoration: none;
 	color: RGBA(28, 164, 230, 1.00);

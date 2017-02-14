@@ -1,0 +1,91 @@
+{% extends "staff/settings/base.html" %}
+
+{% block content %}
+  <h4>Add or Update a Message of the Day</h4>
+  {% if message %}
+    <div class='error'>
+      {{ message }}
+    </div>
+  {% endif %}
+  <br />
+  <div class='previous-motds'>
+    <table>
+      <tr>
+        <td>
+          <form class='text-selection' method='GET' action='.'>
+            <select id='motd-input' name='selected_motd'>
+                <option value='Select One' selected disabled="True">To Update, Select A Time Period Here</option>
+              {% for motd in prev_motd %}
+                <option value='{{ motd.id }}'>{{ motd.start_ts }} - {{ motd.end_ts }}</option>
+              {% endfor %}
+            </select>
+            <input style='display: inline-block;' class='btn' type='submit' value='Select' />
+          </form>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <form method='POST' action='.'>
+    <table>
+      <tr class='motd-date-row'>
+        <td class='motd-dates'>
+          <strong>Start Date:</strong> {{ motd_form.start_ts }}
+        </td>
+        <td class='motd-dates'>
+          <strong>End Date:</strong> {{ motd_form.end_ts }}
+        </td>
+      </tr>
+    </table>
+    <div class='template-div'>
+      <input name='id' id='text-id' type='hidden' value='{{ selected.id }}' />
+      {% if selected %}
+        <textarea name='message' id='id_message' rows='20'>
+          {{ selected.message|safe }}
+        </textarea>
+      {% else %}
+      <textarea name='message' id='id_message' rows='20'>
+      </textarea>
+      {% endif %}
+    </div>
+    {{ motd_form.delay_ms }}
+    <br />
+    {% if selected %}
+      <input type='submit' class='btn' value='Update Message for {{ selected.start_ts|date:"m-d-Y" }} to {{ selected.end_ts|date:"m-d-Y" }}' />
+      <button id='cancel' class='btn help-btn'>Cancel</button>
+    {% else %}
+      <input type='submit' class='btn' value='Post New Message' />
+    {% endif %}
+    {% csrf_token %}
+  </form>
+{% endblock %}
+
+{% block extrajs %}
+  <script>
+    $(document).ready(function() {
+      $('.button-collapse').sideNav();
+      $('.collapsible').collapsible();
+      CKEDITOR.replace('id_message');
+
+      $('#id_start_ts').addClass('datepicker');
+      $('#id_end_ts').addClass('datepicker');
+      $('#id_delay_ms').val('{{ delay }}');
+      $('input').attr('required', true);
+
+      $('.datepicker').datepicker({
+        dateFormat: 'yy-mm-dd',
+      })
+
+      if('{{ selected }}' != 'None') {
+        $('#motd-input').val("{{ selected.id }}")
+        $('#id_start_ts').val("{{ selected.start_ts|date:'Y-m-d' }}");
+        $('#id_end_ts').val("{{ selected.end_ts|date:'Y-m-d' }}");
+        $('#id_messge').val('{{ selected.message }}');
+      }
+
+      $('#cancel').on('click', function(e) {
+        e.preventDefault();
+        window.location.replace("{% url 'staff:settings:helptexts' %}");
+      })
+    });
+  </script>
+{% endblock %}

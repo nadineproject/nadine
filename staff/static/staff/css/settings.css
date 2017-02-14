@@ -1,0 +1,96 @@
+table td {
+  border-bottom: none;
+  vertical-align: middle;
+}
+
+.error {
+  text-align: center;
+  font-weight: bold;
+  margin-top: 2%;
+}
+
+.helptext-form, .other-helps {
+  margin: 2%;
+}
+
+.help-btn {
+  margin-top: 2%;
+  margin-left: 20%;
+}
+
+.motd-dates input{
+  display: inline-block;
+  width: 40%;
+  padding-left: 2%;
+  margin-bottom: 0
+}
+
+.other-helps {
+  margin-top: 2%;
+}
+
+.preview-tr {
+  display: none;
+}
+
+.td-title {
+  width: 15%;
+}
+
+.template-div {
+  margin-top: 2%;
+}
+
+.text-selection input {
+  display: inline-block;
+  margin-left: 2%;
+}
+
+#help-input, #motd-input {
+  width: 30%;
+  display: inline-block;
+}
+
+#id_title, #id_slug, #id_order, #id_template {
+  padding-left: 2%;
+}
+
+#id_title, #id_slug, #id_order {
+  width: 40%;
+}
+
+#id_template {
+  height: 90%;
+}
+
+#preview {
+  padding: 1%;
+}
+
+#settings-tab {
+  color: RGBA(90, 122, 189, 1.00) !important;
+}
+
+#slug_help {
+  margin-top: 4%;
+}
+
+#template-content {
+  height: 200px;
+}
+
+#template_help, #slug_help {
+  margin-left: 16%;
+  width: 83%;
+  background: RGBA(248, 248, 248, 1.00);
+  display: none;
+}
+
+#template_help tr td {
+  padding: 2%;
+}
+
+#update-btn {
+  display: none;
+  margin-left: 4%;
+}
