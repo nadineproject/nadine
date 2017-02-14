@@ -179,12 +179,15 @@ JSIGNATURE_COLOR = "30F"
 JSIGNATURE_RESET_BUTTON = False
 
 # USAePay Settings
-# Use API v1.4 Doc/Literal WSDL
-#USA_EPAY_URL = "https://www.usaepay.com/soap/gate/YOUR_URL_CODE/usaepay.wsdl"
-#USA_EPAY_KEY = "YOUR_USAEPAY_KEY"
-#USA_EPAY_PIN = "YOUR_USAEPAY_PIN"
+# Use API Doc/Literal WSDL
+# USA_EPAY_GATE = "https://www.usaepay.com/gate.php"
+# USA_EPAY_FORM = "https://www.usaepay.com/interface/epayform/"
 # Used for adding billing profiles
-#USA_EPAY_WEB_KEY = "YOUR_USAEPAY_KEY"
+# USA_EPAY_FORM_KEY="YOUR_KEY"
+# USA_EPAY_SOAP_1_2 = "https://www.usaepay.com/soap/gate/YOUR_CODE/usaepay.wsdl"
+# USA_EPAY_SOAP_1_4 = "https://www.usaepay.com/soap/gate/YOUR_CODE/usaepay.wsdl"
+# USA_EPAY_SOAP_KEY = "YOUR_KEY"
+# USA_EPAY_SOAP_PIN = "YOUR_PIN"
 
 # Comlink Settings
 MAILGUN_UPLOAD_TO = "attachments/"

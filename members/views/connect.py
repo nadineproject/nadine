@@ -33,7 +33,7 @@ def connect(request, username):
         email.send_contact_request(user, target)
         message = "Email Sent"
     context = {'target': target, 'user': user, 'page_message': message, 'settings': settings}
-    return render(request, 'members/connect.html', context)
+    return render(request, 'members/connect/connect.html', context)
 
 
 @login_required

@@ -1,9 +1,9 @@
 /*Styling for the billing templates of the Nadine Staff App*/
 input.datepicker {
   text-align: center;
-  width: 150px;
+  max-width: 150px;
+  padding-left: 4%;
 }
-
 
 .amount {
   text-align:right;
@@ -33,7 +33,7 @@ input.datepicker {
 }
 
 .bill-detail-table #amount-td input {
-  width: 50%;
+  width: 60%;
   padding-left: 2%;
   margin-bottom: 0;
 }
@@ -93,8 +93,20 @@ input.datepicker {
   color: red;
 }
 
+.other-table {
+  padding-bottom: 5%;
+}
+
+.other-table th {
+  vertical-align: baseline;
+}
+
 .pay-bill-form input[type=text] {
   width: 8em;
+}
+
+.transactions-sum span {
+  display: inline-block;
 }
 
 #bill-list h4 {
@@ -142,11 +154,25 @@ input.datepicker {
 	margin-left: 5%;
 }
 
+#xero-link {
+  margin-left: 55%;
+}
+
+@media only screen and (max-width: 885px) {
+  #xero-link {
+    margin-left: 40%;
+  }
+}
+
 @media only screen and (max-width: 700px) {
   #id_amount {
     width: 20% !important;
     vertical-align: baseline;
     padding-left: 1%;
+  }
+
+  #xero-link {
+    margin-left: 30%;
   }
 }
 
@@ -154,6 +180,27 @@ input.datepicker {
   #bill-row {
 		margin-bottom: 0;
 	}
+
+  #card-th, #note-th, #action-th {
+    margin-top: 4%;
+  }
+
+  #desc-th, #type-th, #amount-th, #charge-th {
+    margin-top: 8%;
+  }
+
+  #xero-link {
+    margin-left: 2%;
+  }
+
+  .other-table {
+    padding-bottom: 10%;
+  }
+
+  .transactions-sum span {
+    display: block;
+    margin-left: 2%;
+  }
 }
 
 @media only screen and (max-width: 450px) {

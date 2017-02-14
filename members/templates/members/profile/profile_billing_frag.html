@@ -10,10 +10,10 @@ Current Profile:
 {% endif %}
 </div>
 
-{% if settings.USA_EPAY_WEB_KEY %}
+{% if settings.USA_EPAY_FORM_KEY %}
 	<div style="margin-left: 2em">
-		<form action="https://www.usaepay.com/interface/epayform/">
-			<input type="hidden" name="UMkey" value="{{ settings.USA_EPAY_WEB_KEY }}">
+		<form action="{{ settings.USA_EPAY_FORM }}">
+			<input type="hidden" name="UMkey" value="{{ settings.USA_EPAY_FORM_KEY }}">
 			<input type="hidden" name="UMdescription" value="Office Nomads Billing Authorization">
 			<input type="hidden" name="UMcustid" value="{{ user.username }}">
 			<input type="hidden" name="UMcommand" value="AuthOnly">

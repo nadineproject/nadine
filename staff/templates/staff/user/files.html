@@ -23,6 +23,7 @@
 		<tr>
 			<th>Uploaded</th>
 			<th class='right'>File Name</th>
+			<!-- <th>Document Type</th> -->
 			<th>Content Type</th>
 			<th>Size</th>
 			<th>Uploaded By</th>
@@ -32,6 +33,7 @@
 			<tr class="{% cycle 'row-even' 'row-odd' %}">
 				<td nowrap>{{ f.uploadTS }}</td>
 				<td class='right'><a href="{% get_media_prefix %}{{ f.file.name }}">{{ f.name }}</a></td>
+				<!-- <td class='doc_type'>{{ f.document_type }}</td> -->
 				<td>{{ f.content_type }}</td>
 				<td>{{ f.file.size | filesizeformat }}</td>
 				<td>{{ f.uploaded_by }}</td>
@@ -51,7 +53,7 @@
 <h5>Upload File</h5>
 <form role="form" method="POST" enctype="multipart/form-data" action=".">
 	<input type="hidden" name="user" value="{{ user.username }}"/>
-	<select name="doc_type">
+	<select id='doc_type' name="doc_type">
 		<option>None</option>
 		{% for dt_val, dt_desc in doc_types %}
 			<option value="{{dt_val}}">{{dt_desc}}</option>

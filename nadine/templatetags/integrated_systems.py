@@ -18,7 +18,7 @@ class IntegrationsNode(template.Node):
 
     def render(self, context):
         integrations = {
-            'usaepay': hasattr(settings, 'USA_EPAY_KEY'),
+            'usaepay': hasattr(settings, 'USA_EPAY_SOAP_KEY'),
             'xero': hasattr(settings, 'XERO_CONSUMER_KEY'),
             'mailgun': hasattr(settings, 'MAILGUN_API_KEY'),
             'google': hasattr(settings, 'GOOGLE_API_KEY'),

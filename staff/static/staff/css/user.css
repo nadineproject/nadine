@@ -29,6 +29,10 @@ textarea.bcc-textarea {
   text-align: left;
 }
 
+#doc_type {
+  width: 30%;
+}
+
 #group_form {
 	margin-left: 2%;
 }

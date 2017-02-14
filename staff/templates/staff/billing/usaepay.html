@@ -213,11 +213,11 @@
 <div id="add_profile_div">
   <h5>Create New Billing Profile</h5>
 
-  <form name="ccform" action="https://www.usaepay.com/gate.php" method="POST"
+  <form name="ccform" action="{{ settings.USA_EPAY_GATE }}" method="POST"
   onSubmit="return validateForm()">
 
-  <input type="hidden" name="UMkey" value="{{ settings.USA_EPAY_KEY }}">
-  <input type="hidden" name="UMredir" value="https://apps.officenomads.com{% url 'staff:billing:user_payment' user.username %}">
+  <input type="hidden" name="UMkey" value="{{ settings.USA_EPAY_FORM_KEY }}">
+  <input type="hidden" name="UMredir" value="http://{{ site.domain }}{% url 'staff:billing:user_payment' user.username %}">
   <input type="hidden" name="UMdescription" value="Office Nomads Billing Authorization">
   <input type="hidden" name="UMcustid" value="{{ user.username }}">
   <input type="hidden" name="UMcommand" value="AuthOnly">
