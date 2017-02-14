@@ -13,7 +13,6 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 
 from nadine.models.core import Website, URLType
-from nadine.models.membership import Membership
 
 from taggit.managers import TaggableManager
 
@@ -29,6 +28,7 @@ class OrganizationManager(models.Manager):
         if not on_date:
             on_date = timezone.now().date()
         org_ids = []
+        from nadine.models.membership import Membership
         for m in Membership.objects.active_memberships(on_date):
             for o in m.user.profile.active_organizations():
                 org_ids.append(o.id)

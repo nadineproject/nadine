@@ -29,6 +29,7 @@ from django.contrib.sites.models import Site
 from monthdelta import MonthDelta, monthmod
 
 from resource import Resource
+from organization import Organization
 
 logger = logging.getLogger(__name__)
 
@@ -142,6 +143,11 @@ class IndividualMembership(Membership2):
     def __str__(self):
         return '%s: %s' % (self.user, self.allowances.all())
 
+
+class OrganizationMembership(Membership2):
+    organization = models.ForeignKey(Organization, related_name="membership")
+
+
 class MembershipPackage(models.Model):
     name = models.CharField(max_length=64)
     allowances = models.ManyToManyField('DefaultAllowance')
@@ -198,6 +204,18 @@ class MembershipManager(models.Manager):
         return self.filter(start_date__gte=today)
 
 
+class SecurityDeposit(models.Model):
+    user = models.ForeignKey(User)
+    received_date = models.DateField()
+    returned_date = models.DateField(blank=True, null=True)
+    amount = models.PositiveSmallIntegerField(default=0)
+    note = models.CharField(max_length=128, blank=True, null=True)
+
+
+################################################################################
+# Deprecated Models
+################################################################################
+
 class Membership(models.Model):
 
     """A membership level which is billed monthly"""
@@ -213,7 +231,6 @@ class Membership(models.Model):
     has_key = models.BooleanField(default=False)
     has_mail = models.BooleanField(default=False)
     paid_by = models.ForeignKey(User, null=True, blank=True, related_name="guest_membership")
-
 
     @property
     def guest_of(self):
@@ -284,14 +301,6 @@ class Membership(models.Model):
         verbose_name = "Membership"
         verbose_name_plural = "Memberships"
         ordering = ['start_date']
-
-
-class SecurityDeposit(models.Model):
-    user = models.ForeignKey(User)
-    received_date = models.DateField()
-    returned_date = models.DateField(blank=True, null=True)
-    amount = models.PositiveSmallIntegerField(default=0)
-    note = models.CharField(max_length=128, blank=True, null=True)
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
