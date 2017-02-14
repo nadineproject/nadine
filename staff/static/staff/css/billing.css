@@ -83,10 +83,24 @@ input.datepicker {
   background-color: #F99;
 }
 
+.cvv-title {
+  width: 6%;
+  vertical-align: middle;
+}
+
 .error {
   text-align: center;
   font-size: 150%;
   color: red;
+}
+
+.input-title {
+  width: 25%;
+  vertical-align: middle;
+}
+
+.input-td {
+  width: 20%;
 }
 
 .open-bill {
@@ -109,6 +123,23 @@ input.datepicker {
   display: inline-block;
 }
 
+.useapay_create, #useapay2_create, .useapay3_create {
+  margin-left: 5%;
+}
+
+.useapay_create td, #useapay2_create td, .useapay3_create td {
+  border-bottom: none;
+  text-align: left !important;
+}
+
+.useapay_create input, .useapay3_create input {
+  width: 40%;
+}
+
+/*.useapay3_create .input-title {
+  width: 5%;
+}*/
+
 #bill-list h4 {
   font-weight: normal;
 }
@@ -124,7 +155,6 @@ input.datepicker {
 #bill-row #set_paid {
   margin-left: 0;
 }
-
 
 #bill-row {
   margin-bottom: 0;
@@ -144,6 +174,14 @@ input.datepicker {
   text-align: center;
 }
 
+#exp_td {
+  width: 10% !important;
+}
+
+#exp_input {
+  width: 20%;
+}
+
 #id_amount {
 	width: 30%;
 	vertical-align: baseline;
@@ -152,6 +190,14 @@ input.datepicker {
 
 #set_paid {
 	margin-left: 5%;
+}
+
+#useapay2_create input {
+  width: 20%;
+}
+
+#useapay2_create .input-title {
+  width: 10%;
 }
 
 #xero-link {

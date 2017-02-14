@@ -216,81 +216,77 @@
   <form name="ccform" action="{{ settings.USA_EPAY_GATE }}" method="POST"
   onSubmit="return validateForm()">
 
-  <input type="hidden" name="UMkey" value="{{ settings.USA_EPAY_FORM_KEY }}">
-  <input type="hidden" name="UMredir" value="http://{{ site.domain }}{% url 'staff:billing:user_payment' user.username %}">
-  <input type="hidden" name="UMdescription" value="Office Nomads Billing Authorization">
-  <input type="hidden" name="UMcustid" value="{{ user.username }}">
-  <input type="hidden" name="UMcommand" value="AuthOnly">
-  <input type="hidden" name="UMamount" value="1.00">
-  <input type="hidden" name="UMinvoice" value="1617">
-  <input type="hidden" name="UMaddcustomer" value="yes">
-  <input type="hidden" name="UMschedule" value="disabled">
-  <input type="hidden" name="UMsoftware" value="nadine">
-  <input type="hidden" name="UMcustreceipt" value="yes">
-  <input type="hidden" name="UMcardpresent" value="true">
-  <input type="hidden" name="UMbillphone" value="{{ user.profile.phone }}">
-  <input type="hidden" name="UMname" value="{{ user.get_full_name }}">
-  <input type="hidden" name="UMemail" value="{{ user.email }}">
-  <input type="hidden" name="username" value="{{ user.username }}">
-  <input type="hidden" name="auth" value="{{ user.profile.usaepay_auth }}">
-  <!--<input type="hidden" name="UMtestmode" value="true">-->
+    <input type="hidden" name="UMkey" value="{{ settings.USA_EPAY_FORM_KEY }}">
+    <input type="hidden" name="UMredir" value="http://{{ site.domain }}{% url 'staff:billing:user_payment' user.username %}">
+    <input type="hidden" name="UMdescription" value="Office Nomads Billing Authorization">
+    <input type="hidden" name="UMcustid" value="{{ user.username }}">
+    <input type="hidden" name="UMcommand" value="AuthOnly">
+    <input type="hidden" name="UMamount" value="1.00">
+    <input type="hidden" name="UMinvoice" value="1617">
+    <input type="hidden" name="UMaddcustomer" value="yes">
+    <input type="hidden" name="UMschedule" value="disabled">
+    <input type="hidden" name="UMsoftware" value="nadine">
+    <input type="hidden" name="UMcustreceipt" value="yes">
+    <input type="hidden" name="UMcardpresent" value="true">
+    <input type="hidden" name="UMbillphone" value="{{ user.profile.phone }}">
+    <input type="hidden" name="UMname" value="{{ user.get_full_name }}">
+    <input type="hidden" name="UMemail" value="{{ user.email }}">
+    <input type="hidden" name="username" value="{{ user.username }}">
+    <input type="hidden" name="auth" value="{{ user.profile.usaepay_auth }}">
+    <!--<input type="hidden" name="UMtestmode" value="true">-->
 
-  <table border=1 width="80%">
+    <table class='useapay_create' border=1 width="80%">
+      <tr>
+        <td class='input-title'><strong>First Name:</strong></td>
+        <td><input type="text" name="UMbillfname" size="40" value="{{ user.first_name }}"></td>
+      </tr>
+      <tr>
+        <td class='input-title'><strong>Last Name:</strong></td>
+        <td><input type="text" name="UMbilllname" size="40" value="{{ user.last_name }}"></td>
+      </tr>
+      <tr>
+        <td class='input-title'><strong>Company:</strong></td>
+        <td><input type="text" name="UMbillcompany" size="40" value=""></td>
+      </tr>
+      <tr>
+        <td class='input-title'><strong>Address:</strong> (<i>blank for international</a>)</td>
+        <td><input type="text" name="UMstreet" size="40" value="{{ user.profile.address1 }}"></td>
+      </tr>
+      <tr>
+        <td class='input-title'><strong>Zip:</strong></td>
+        <td><input type="text" name="UMzip" size="9" maxlength="5" value="{{ user.profile.zipcode }}"></td>
+      </tr>
 
-  <tr>
-    <td>First Name:</td>
-    <td><input type="text" name="UMbillfname" size="40" value="{{ user.first_name }}"></td>
-  </tr>
-  <tr>
-    <td>Last Name:</td>
-    <td><input type="text" name="UMbilllname" size="40" value="{{ user.last_name }}"></td>
-  </tr>
-  <tr>
-    <td>Company:</td>
-    <td><input type="text" name="UMbillcompany" size="40" value=""></td>
-  </tr>
-  <tr>
-    <td>Address: (<i>blank for international</a>)</td>
-    <td><input type="text" name="UMstreet" size="40" value="{{ user.profile.address1 }}"></td>
-  </tr>
-  <tr>
-    <td>Zip:</td>
-    <td><input type="text" name="UMzip" size="9" maxlength="5" value="{{ user.profile.zipcode }}"></td>
-  </tr>
-
-  <tr>
-    <td>Card Number:</td>
-    <td><input type="text" name="UMcard" size="40"></td>
-  </tr>
-  <tr>
-    <td>Expiration: (<i>MM/YY</i>)</td>
-    <td>
-      <input type="text" name="UMexpirM" size="2" maxlength="2">/
-      <input type="text" name="UMexpirY" size="2" maxlength="2">
-      <input type="hidden" name="UMexpir" value="">
-    </td>
-  </tr>
-  <tr>
-    <td>CVV:</td>
-    <td><input type="text" name="UMcvv" size="4"></td>
-  </tr>
-
-    <tr>
-      <td><strong>ACH</strong> - Routing Number:</td>
-      <td><input type="text" name="UMrouting" size="30"></td>
-    </tr>
-    <tr>
-      <td><strong>ACH</strong> - Account Number:</td>
-      <td><input type="text" name="UMaccount" size="30"></td>
-    </tr>
-
-    <tr>
-      <td colspan="2" style="text-align: center;">
-        <input type="submit" value="Create New Billing Profile">
-      </td>
-    </tr>
-
-  </table>
+      <tr>
+        <td class='input-title'><strong>Card Number:</strong></td>
+        <td><input type="text" name="UMcard" size="40"></td>
+      </tr>
+    </table>
+    <table id='useapay2_create'>
+      <tr>
+        <td class='input-title'><strong>Expiration:</strong> (<i>MM/YY</i>)</td>
+        <td id='exp_td'>
+          <input id='exp_input' type="text" name="UMexpirM" size="2" maxlength="2">/
+          <input id='exp_input' type="text" name="UMexpirY" size="2" maxlength="2">
+          <input type="hidden" name="UMexpir" value="">
+        </td>
+        <td class='cvv-title'><strong>CVV:</strong></td>
+        <td class='input-td'><input class='cvv' type="text" name="UMcvv" size="4"></td>
+      </tr>
+    </table>
+    <table class='useapay3_create'>
+      <tr>
+        <td class='input-title'><strong>ACH</strong> - Routing Number:</td>
+        <td><input type="text" name="UMrouting" size="30"></td>
+      </tr>
+      <tr>
+        <td class='input-title'><strong>ACH</strong> - Account Number:</td>
+        <td><input type="text" name="UMaccount" size="30"></td>
+      </tr>
+    </table>
+    <div style="text-align: center;">
+      <input type="submit" value="Create New Billing Profile">
+    </div>
   </form>
 </div>
 
