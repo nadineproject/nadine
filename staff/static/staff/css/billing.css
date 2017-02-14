@@ -84,7 +84,7 @@ input.datepicker {
 }
 
 .cvv-title {
-  width: 6%;
+  width: 5%;
   vertical-align: middle;
 }
 
@@ -135,10 +135,6 @@ input.datepicker {
 .useapay_create input, .useapay3_create input {
   width: 40%;
 }
-
-/*.useapay3_create .input-title {
-  width: 5%;
-}*/
 
 #bill-list h4 {
   font-weight: normal;
