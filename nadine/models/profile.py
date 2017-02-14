@@ -7,6 +7,7 @@ import traceback
 import operator
 import logging
 import hashlib
+import pytz
 from random import random
 from datetime import datetime, time, date, timedelta
 from dateutil.relativedelta import relativedelta
@@ -36,6 +37,7 @@ from django.dispatch import receiver
 from django.db.models.signals import pre_save, post_save
 from PIL import Image
 
+from nadine.settings import TIME_ZONE
 from nadine.utils.payment_api import PaymentAPI
 from nadine.utils.slack_api import SlackAPI
 from nadine.models.core import GENDER_CHOICES, HowHeard, Industry, Neighborhood, Website, URLType
@@ -77,7 +79,7 @@ class UserQueryHelper():
 
     def here_today(self, day=None):
         if not day:
-            day = timezone.now().date()
+            day = datetime.now(pytz.timezone(TIME_ZONE)).date()
 
         # The members who are on the network
         from arpwatch.arp import users_for_day_query
