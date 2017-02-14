@@ -1,5 +1,6 @@
 import time
 import logging
+import pytz
 from datetime import datetime, timedelta, date
 
 from django.conf import settings
@@ -19,6 +20,7 @@ from doors.keymaster.models import Keymaster, Door, DoorCode, DoorEvent
 from doors.core import EncryptedConnection, Messages, DoorEventTypes
 from nadine.utils import network
 from nadine import email
+from nadine.settings import TIME_ZONE
 
 logger = logging.getLogger(__name__)
 
@@ -69,7 +71,7 @@ def user_keys(request, username):
     keys = DoorCode.objects.filter(user=user)
     logs = DoorEvent.objects.filter(user=user).order_by("timestamp").reverse()
 
-    tenMinutesAgo = timezone.now() - timedelta(minutes=10)
+    tenMinutesAgo = datetime.now(pytz.timezone(TIME_ZONE)) - timedelta(minutes=10)
     potential_key = DoorEvent.objects.filter(timestamp__gte=tenMinutesAgo, event_type=DoorEventTypes.UNRECOGNIZED).order_by("timestamp").reverse().first()
 
     if 'code_id' in request.POST and request.POST.get('action') == "Delete":
