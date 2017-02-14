@@ -7,7 +7,7 @@ from django.contrib.auth.admin import UserAdmin
 from nadine.models import *
 
 # Also include our user admin goodies
-from .admin_user import *
+from .user import *
 
 # Register the objects with the admin interface
 admin.site.register(Neighborhood)
