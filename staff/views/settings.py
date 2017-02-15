@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from slugify import slugify
 
 from django.utils import timezone
 from django.shortcuts import render, get_object_or_404
@@ -49,8 +50,8 @@ def helptexts(request):
         if to_update:
             updated = HelpText.objects.get(id=to_update)
             updated.title = request.POST['title']
-            slug = request.POST['slug'].strip().lower()
-            updated.slug = slug.replace(" ", "_")
+            slug = request.POST['slug']
+            updated.slug = slugify(slug)
             updated.template = request.POST['template']
             updated.save()
 
@@ -58,11 +59,14 @@ def helptexts(request):
 
         else:
             helptext_form = HelpTextForm(request.POST)
-            helptext_form.slug = request.POST['slug'].strip().lower().replace(" ", "_")
+            slug = slugify(request.POST['slug'])
+            title = request.POST['title']
+            template = request.POST['template']
+            order = request.POST['order']
+            helptext_form = HelpText(title=title, template=template, slug=slug, order=order)
+            helptext_form.save()
 
-            if helptext_form.is_valid():
-                helptext_form.save()
-                return HttpResponseRedirect(reverse('staff:tasks:todo'))
+            return HttpResponseRedirect(reverse('staff:tasks:todo'))
     else:
         helptext_form = HelpTextForm()
 

@@ -16,6 +16,7 @@ requests==2.12.3
 cryptography==1.6
 suds-jurko==0.6
 gunicorn
+python-slugify==1.2.1
 
 # For document signing
 # Newer versions may not work so be cautious when upgrading
