@@ -5176,7 +5176,7 @@ button.btn-floating {
 
 .dropdown-content li {
   clear: both;
-  color: rgba(0, 0, 0, 0.87);
+  color: rgba(0, 0, 0, 0.7);
   cursor: pointer;
   min-height: 50px;
   line-height: 1.5rem;
