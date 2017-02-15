@@ -15,11 +15,6 @@ function toggleDetails(neighborhoodID){
 		$(neighborhood_toggle_selector).html('[+]');
 	}
 }
-
-function initPage(){
-	$(".neighborhood-details").hide();
-}
-$(document).ready(function() { initPage(); });
 </script>
 {% endblock %}
 
@@ -60,7 +55,7 @@ $(document).ready(function() { initPage(); });
 	            {% endifnotequal %}
 	         </td>
 	         <td>{{ hood.name }}</td>
-	         <td>{{ hood.count }} {% ifnotequal hood.perc 0 %} ({{hood.perc}}%) {% endifnotequal %}</td>
+	         <td id='count-td'>{{ hood.count }} {% ifnotequal hood.perc 0 %} ({{hood.perc}}%) {% endifnotequal %}</td>
 	      </tr>
 	      <tr>
 	         <td colspan="3">

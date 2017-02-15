@@ -18,6 +18,10 @@ table th {
   /*width: 50px;*/
 }
 
+#count-td {
+  text-align: center;
+}
+
 canvas#cvs {
 	width: 500px;
 	height: 400px;
@@ -42,10 +46,15 @@ canvas#cvs {
 #input-start {
   width: 20%;
   padding-left: 2%;
+  padding-top: 2%;
 }
 
-input#avg-only {
-  margin-left: 5%;
+#input-form label {
+  margin-left: 3%;
+}
+
+#input-submit {
+  margin-left: 2%;
 }
 
 #stats span {
@@ -55,6 +64,15 @@ input#avg-only {
 
 .c3-tooltip-container {
   width: 200px;
+}
+
+.ended-bar {
+  padding: 0 1em;
+  background-color: #F99;
+}
+
+.member-table {
+  margin-bottom: 0 !important;
 }
 
 .monthly-stats {
@@ -74,14 +92,17 @@ input#avg-only {
   width: 100px;
 }
 
-.year-heading th {
-  padding: 1.5em 0;
-  font-size: 1.2em;
+.neighborhood-details {
+  margin: 8px;
+  display: none;
 }
 
-.ended-bar {
-  padding: 0 1em;
-  background-color: #F99;
+.neighborhood_table {
+  /*font-size: 16px;*/
+}
+
+.note-cell {
+  width: 160px;
 }
 
 .started-bar {
@@ -89,27 +110,19 @@ input#avg-only {
   background-color: #9F9;
 }
 
+.titles {
+  margin: 10px 0;
+}
+
 .total-bar {
   padding: 0 1em;
   background-color: #99F;
 }
 
-.titles {
-  margin: 10px 0;
+.year-heading th {
+  padding: 1.5em 0;
+  font-size: 1.2em;
 }
-
-.neighborhood-details {
-  margin: 8px;
-}
-
-.neighborhood_table {
-  font-size: 16px;
-}
-
-.note-cell {
-  width: 160px;
-}
-
 @media only screen and (max-width: 550px) {
   canvas#cvs {
 		width: 400px;

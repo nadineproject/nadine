@@ -231,6 +231,7 @@ table tr.row-even td { background: #eee; }
 .centered {text-align: center !important;}
 .left {text-align: left !important;}
 .error-td {color: red;}
+
 #activity-dates {margin-left: 20%; font-size: 2em;}
 
 /*Styling for input for date start and end for form repeated on many pages*/
