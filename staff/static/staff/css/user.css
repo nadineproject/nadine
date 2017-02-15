@@ -103,6 +103,10 @@ textarea.bcc-textarea {
   margin-bottom: 20px;
 }
 
+#quick-links .chip {
+  color: RGBA(28, 164, 230, 1.00);
+}
+
 #rate-td {
 	width: 45%;
 }
@@ -148,6 +152,16 @@ textarea.bcc-textarea {
 
 .email-form {
   margin-top: 2em;
+}
+
+.email-form select {
+  width: 30%;
+  display: inline-block;
+}
+
+.email-form input {
+  margin-left: 2%;
+  font-weight: bold;
 }
 
 .emergency_contact {
