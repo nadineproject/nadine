@@ -126,7 +126,6 @@
 {% endblock %}
 
 {% block extrajs %}
-<<<<<<< HEAD
 <script>
 	function changeDate(input) {
 		var date = input.split('-');
@@ -155,34 +154,4 @@
 		}
 	})
 </script>
-=======
-	<script>
-		function changeDate(input) {
-			var date = input.split('-');
-			var url = "{% url 'staff:billing:charges' 2016 12 14 %}".replace(/14/, date[2]).replace(/12/, date[1]).replace(/2016/, date[0]);
-
-			window.location.href = url;
-		}
-
-		$(document).ready(function(){
-			$('.button-collapse').sideNav();
-			$('.collapsible').collapsible();
-
-			$('.datepicker').datepicker({
-				dateFormat: 'yy-mm-dd',
-				onSelect: function(ui, e) {
-					changeDate(ui)
-				}
-			});
-
-			if($('#content').width() < 700) {
-				$('.datepicker').focusout(function(e) {
-					e.preventDefault();
-					var input = $('.datepicker').val();
-					changeDate(input);
-				})
-			}
-		})
-	</script>
->>>>>>> master
 {% endblock %}
