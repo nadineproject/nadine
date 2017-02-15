@@ -6,8 +6,12 @@ from django.contrib.auth.admin import UserAdmin
 
 from nadine.models import *
 
-# Also include our user admin goodies
-from .user import *
+from nadine.admin.core import StyledAdmin
+
+from user import *
+from organization import *
+from billing import *
+
 
 # Register the objects with the admin interface
 admin.site.register(Neighborhood)
@@ -18,53 +22,7 @@ admin.site.register(Room)
 admin.site.register(Event)
 
 
-class StyledAdmin(admin.ModelAdmin):
 
-    class Media:
-        css = {"all": ('local-admin.css', )}
-
-
-class OrgMemberInline(admin.TabularInline):
-    model = OrganizationMember
-    raw_id_fields = ('user', )
-    extra = 1
-class OrgNoteInline(admin.TabularInline):
-    model = OrganizationNote
-    readonly_fields = ('created_by', 'created_ts', )
-    extra = 1
-class OrganizationAdmin(StyledAdmin):
-    inlines = [OrgMemberInline, OrgNoteInline]
-    search_fields = ('name', )
-    readonly_fields = ('created_by', 'created_ts', )
-    raw_id_fields = ('lead', )
-    exclude = ('websites', )
-    def save_formset(self, request, form, formset, change):
-        instances = formset.save(commit=False)
-        for obj in formset.deleted_objects:
-            obj.delete()
-        for instance in instances:
-            instance.created_by = request.user
-            instance.save()
-admin.site.register(Organization, OrganizationAdmin)
-
-
-class TransactionAdmin(StyledAdmin):
-    list_display = ('transaction_date', 'user', 'amount')
-    search_fields = ('user__first_name', 'user__last_name', 'amount')
-    raw_id_fields = ('bills', 'user')
-admin.site.register(Transaction, TransactionAdmin)
-
-
-class BillAdmin(StyledAdmin):
-    list_display = ('bill_date', 'user', 'amount')
-    search_fields = ('user__first_name', 'user__last_name')
-    raw_id_fields = ('membership', 'dropins', 'guest_dropins')
-admin.site.register(Bill, BillAdmin)
-
-
-class BillingLogAdmin(StyledAdmin):
-    list_display = ('started', 'ended', 'note', 'successful')
-admin.site.register(BillingLog, BillingLogAdmin)
 
 class CoworkingDayAdmin(StyledAdmin):
     list_display = ('visit_date', 'user', 'paid_by', 'created_ts')
