@@ -170,12 +170,6 @@ input.datepicker {
   text-align: center;
 }
 
-#enable-cb {
-  position: inherit !important;
-  left: inherit !important;
-  opacity: 1 !important;
-}
-
 #exp_td {
   width: 10% !important;
 }

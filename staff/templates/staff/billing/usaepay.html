@@ -180,7 +180,7 @@
           </tr>
           <tr>
             <td style="text-align:center; padding-top: 2%;">
-              <input id='enable-cb' name="enabled" type="checkbox" {% if customer.Enabled %} CHECKED {% endif %} />
+              <input class='enable-cb' name="enabled" type="checkbox" {% if customer.Enabled %} CHECKED {% endif %} />
             </td>
             <td>
               <input id="next_date_{{ customer.CustNum }}" name="next_date" size="10"/>
@@ -194,7 +194,7 @@
             <td>
               <input name="amount" size="5" />
             </td>
-            <td>
+            <td style='padding-top: 2%;'>
               <input type="submit" value="Save Changes">
             </td>
           </tr>

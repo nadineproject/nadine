@@ -233,6 +233,7 @@ table tr.row-even td { background: #eee; }
 .centered {text-align: center !important;}
 .left {text-align: left !important;}
 .error-td {color: red;}
+.enable-cb {position: inherit !important; left: inherit !important; opacity: 1 !important; }
 
 #activity-dates {margin-left: 20%; font-size: 2em;}
 
