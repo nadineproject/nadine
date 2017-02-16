@@ -9,9 +9,9 @@ import django.db.models.deletion
 
 def forward(apps, schema_editor):
     User = apps.get_model(settings.AUTH_USER_MODEL)
-    Membership = apps.get_model("nadine", "Membership")
+    OldMembership = apps.get_model("nadine", "OldMembership")
     MembershipPlan = apps.get_model("nadine", "MembershipPlan")
-    Membership2 = apps.get_model("nadine", "Membership2")
+    Membership = apps.get_model("nadine", "Membership")
     IndividualMembership = apps.get_model("nadine", "IndividualMembership")
     MembershipPackage = apps.get_model("nadine", "MembershipPackage")
     DefaultAllowance = apps.get_model("nadine", "DefaultAllowance")
@@ -40,7 +40,7 @@ def forward(apps, schema_editor):
 
     print("    Migrating Memberships...")
     for user in User.objects.all():
-        old_memberships = Membership.objects.filter(user=user).order_by('start_date')
+        old_memberships = OldMembership.objects.filter(user=user).order_by('start_date')
         if old_memberships:
             new_membership = IndividualMembership.objects.create(user=user)
             for m in old_memberships:
@@ -100,7 +100,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('nadine', '0026_bill_in_progress'),
+        ('nadine', '0027_old_membership'),
     ]
 
     operations = [
@@ -114,7 +114,7 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='Membership2',
+            name='Membership',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
             ],
@@ -153,29 +153,24 @@ class Migration(migrations.Migration):
                 ('resource', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='nadine.Resource')),
             ],
         ),
-        migrations.AlterField(
-            model_name='membership',
-            name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL),
-        ),
         migrations.CreateModel(
             name='IndividualMembership',
             fields=[
-                ('membership2_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='nadine.Membership2')),
+                ('membership_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='nadine.Membership')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='membership', to=settings.AUTH_USER_MODEL)),
             ],
-            bases=('nadine.membership2',),
+            bases=('nadine.membership',),
         ),
         migrations.CreateModel(
             name='OrganizationMembership',
             fields=[
-                ('membership2_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='nadine.Membership2')),
+                ('membership_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='nadine.Membership')),
                 ('organization', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='membership', to='nadine.Organization')),
             ],
-            bases=('nadine.membership2',),
+            bases=('nadine.membership',),
         ),
         migrations.AddField(
-            model_name='membership2',
+            model_name='membership',
             name='allowances',
             field=models.ManyToManyField(to='nadine.ResourceAllowance'),
         ),
@@ -184,19 +179,7 @@ class Migration(migrations.Migration):
             name='resource',
             field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='nadine.Resource'),
         ),
+
+        # Convert all the old memberships to new ones
         migrations.RunPython(forward, reverse),
-        # migrations.RenameModel(
-        #     old_name='Membership2',
-        #     new_name='Membership',
-        # ),
-        # migrations.RenameField(
-        #     model_name='individualmembership',
-        #     old_name='membership2_ptr',
-        #     new_name='membership_ptr',
-        # ),
-        # migrations.RenameField(
-        #     model_name='organizationmembership',
-        #     old_name='membership2_ptr',
-        #     new_name='membership_ptr',
-        # ),
-]
+    ]

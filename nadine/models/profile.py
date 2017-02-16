@@ -41,7 +41,8 @@ from nadine.settings import TIME_ZONE
 from nadine.utils.payment_api import PaymentAPI
 from nadine.utils.slack_api import SlackAPI
 from nadine.models.core import GENDER_CHOICES, HowHeard, Industry, Neighborhood, Website, URLType
-from nadine.models.membership import Membership, MembershipPlan, SecurityDeposit
+from nadine.models.membership import Membership, SecurityDeposit
+from nadine.models.membership import OldMembership, MembershipPlan
 from nadine.models.usage import CoworkingDay
 from nadine.models.payment import Bill
 from nadine.models.organization import Organization
@@ -74,7 +75,8 @@ def user_file_upload_path(instance, filename):
 class UserQueryHelper():
 
     def active_members(self):
-        active_members = Q(id__in=Membership.objects.active_memberships().values('user'))
+        # TODO - convert
+        active_members = Q(id__in=OldMembership.objects.active_memberships().values('user'))
         return User.objects.select_related('profile').filter(active_members).order_by('first_name')
 
     def here_today(self, day=None):
@@ -361,14 +363,14 @@ class UserProfile(models.Model):
         return bills[0]
 
     def membership_history(self):
-        return Membership.objects.filter(user=self.user).order_by('-start_date', 'end_date')
+        return OldMembership.objects.filter(user=self.user).order_by('-start_date', 'end_date')
 
     def membership_on_date(self, day):
-        return Membership.objects.filter(user=self.user, start_date__lte=day).filter(Q(end_date__isnull=True) | Q(end_date__gte=day)).first()
+        return OldMembership.objects.filter(user=self.user, start_date__lte=day).filter(Q(end_date__isnull=True) | Q(end_date__gte=day)).first()
 
     def last_membership(self):
         """Returns the latest membership, even if it has an end date, or None if none exists"""
-        memberships = Membership.objects.filter(user=self.user).order_by('-start_date', 'end_date')[0:]
+        memberships = OldMembership.objects.filter(user=self.user).order_by('-start_date', 'end_date')[0:]
         if memberships == None or len(memberships) == 0:
             return None
         return memberships[0]
@@ -412,8 +414,8 @@ class UserProfile(models.Model):
         return self.activity().filter(payment='Bill').count()
 
     def first_visit(self):
-        if Membership.objects.filter(user=self.user).count() > 0:
-            return Membership.objects.filter(user=self.user).order_by('start_date')[0].start_date
+        if OldMembership.objects.filter(user=self.user).count() > 0:
+            return OldMembership.objects.filter(user=self.user).order_by('start_date')[0].start_date
         else:
             if CoworkingDay.objects.filter(user=self.user).count() > 0:
                 return CoworkingDay.objects.filter(user=self.user).order_by('visit_date')[0].visit_date
@@ -519,8 +521,8 @@ class UserProfile(models.Model):
         if CoworkingDay.objects.filter(user=self.user).count() > 0:
             return CoworkingDay.objects.filter(user=self.user).latest('visit_date').visit_date
         else:
-            if Membership.objects.filter(user=self.user, end_date__isnull=False).count() > 0:
-                return Membership.objects.filter(user=self.user, end_date__isnull=False).latest('end_date').end_date
+            if OldMembership.objects.filter(user=self.user, end_date__isnull=False).count() > 0:
+                return OldMembership.objects.filter(user=self.user, end_date__isnull=False).latest('end_date').end_date
             else:
                 return None
 
@@ -560,7 +562,7 @@ class UserProfile(models.Model):
 
     def guests(self):
         guests = []
-        for membership in Membership.objects.filter(paid_by=self.user):
+        for membership in OldMembership.objects.filter(paid_by=self.user):
             if membership.is_active():
                 guests.append(membership.user)
         return guests

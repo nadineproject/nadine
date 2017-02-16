@@ -34,10 +34,12 @@ class CoworkingDayAdmin(StyledAdmin):
 admin.site.register(CoworkingDay, CoworkingDayAdmin)
 
 
-class MembershipAdmin(StyledAdmin):
+class OldMembershipAdmin(StyledAdmin):
     list_display = ('user', 'start_date', 'end_date')
     search_fields = ('user__first_name', 'user__last_name')
-admin.site.register(Membership, MembershipAdmin)
+admin.site.register(OldMembership, OldMembershipAdmin)
+# TODO - create a NEW membership admin
+admin.site.register(Membership)
 
 
 class SentEmailLogAdmin(StyledAdmin):

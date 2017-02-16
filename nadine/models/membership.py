@@ -88,29 +88,7 @@ class MemberGroups():
             return None
 
 
-class MembershipPlan(models.Model):
-
-    """Options for monthly membership"""
-    name = models.CharField(max_length=16)
-    description = models.CharField(max_length=128, blank=True, null=True)
-    monthly_rate = models.IntegerField(default=0)
-    daily_rate = models.IntegerField(default=0)
-    dropin_allowance = models.IntegerField(default=0)
-    has_desk = models.NullBooleanField(default=False)
-    enabled = models.BooleanField(default=True)
-
-    def __str__(self): return self.name
-
-    def get_admin_url(self):
-        return urlresolvers.reverse('admin:nadine_membershipplan_change', args=[self.id])
-
-    class Meta:
-        app_label = 'nadine'
-        verbose_name = "Membership Plan"
-        verbose_name_plural = "Membership Plans"
-
-
-class MembershipManager2(models.Manager):
+class MembershipManager(models.Manager):
 
     # def create_with_plan(self, user, start_date, end_date, membership_plan, rate=-1, paid_by=None):
     #     if rate < 0:
@@ -131,20 +109,34 @@ class MembershipManager2(models.Manager):
         today = timezone.now().date()
         return self.filter(allowances__start_date__gte=today)
 
+    def active_members(self, target_date=None):
+        if not target_date:
+            target_date = timezone.now().date()
+        # TODO - complete
+        return None
 
-class Membership2(models.Model):
-    objects = MembershipManager2()
+
+class Membership(models.Model):
+    objects = MembershipManager()
     allowances = models.ManyToManyField('ResourceAllowance')
 
+    def active_allowances(self, target_date=None):
+        if not target_date:
+            target_date = timezone.now().date()
+        current = Q(start_date__lte=target_date)
+        unending = Q(end_date__isnull=True)
+        future_ending = Q(end_date__gte=target_date)
+        return self.allowances.filter().filter(current & (unending | future_ending)).distinct()
 
-class IndividualMembership(Membership2):
+
+class IndividualMembership(Membership):
     user = models.ForeignKey(User, related_name="membership")
 
     def __str__(self):
         return '%s: %s' % (self.user, self.allowances.all())
 
 
-class OrganizationMembership(Membership2):
+class OrganizationMembership(Membership):
     organization = models.ForeignKey(Organization, related_name="membership")
 
 
@@ -182,7 +174,42 @@ class ResourceAllowance(models.Model):
         return "%s: at %s/month" % (self.resource, self.monthly_rate)
 
 
-class MembershipManager(models.Manager):
+class SecurityDeposit(models.Model):
+    user = models.ForeignKey(User)
+    received_date = models.DateField()
+    returned_date = models.DateField(blank=True, null=True)
+    amount = models.PositiveSmallIntegerField(default=0)
+    note = models.CharField(max_length=128, blank=True, null=True)
+
+
+################################################################################
+# Deprecated Models TODO - remove
+################################################################################
+
+
+class MembershipPlan(models.Model):
+
+    """Options for monthly membership"""
+    name = models.CharField(max_length=16)
+    description = models.CharField(max_length=128, blank=True, null=True)
+    monthly_rate = models.IntegerField(default=0)
+    daily_rate = models.IntegerField(default=0)
+    dropin_allowance = models.IntegerField(default=0)
+    has_desk = models.NullBooleanField(default=False)
+    enabled = models.BooleanField(default=True)
+
+    def __str__(self): return self.name
+
+    def get_admin_url(self):
+        return urlresolvers.reverse('admin:nadine_membershipplan_change', args=[self.id])
+
+    class Meta:
+        app_label = 'nadine'
+        verbose_name = "Membership Plan"
+        verbose_name_plural = "Membership Plans"
+
+
+class OldMembershipManager(models.Manager):
 
     def create_with_plan(self, user, start_date, end_date, membership_plan, rate=-1, paid_by=None):
         if rate < 0:
@@ -204,22 +231,10 @@ class MembershipManager(models.Manager):
         return self.filter(start_date__gte=today)
 
 
-class SecurityDeposit(models.Model):
-    user = models.ForeignKey(User)
-    received_date = models.DateField()
-    returned_date = models.DateField(blank=True, null=True)
-    amount = models.PositiveSmallIntegerField(default=0)
-    note = models.CharField(max_length=128, blank=True, null=True)
-
-
-################################################################################
-# Deprecated Models
-################################################################################
-
-class Membership(models.Model):
+class OldMembership(models.Model):
 
     """A membership level which is billed monthly"""
-    objects = MembershipManager()
+    objects = OldMembershipManager()
     user = models.ForeignKey(User, related_name="+")
     membership_plan = models.ForeignKey(MembershipPlan, null=True)
     start_date = models.DateField(db_index=True)
@@ -239,13 +254,13 @@ class Membership(models.Model):
         return None
 
     def save(self, *args, **kwargs):
-        if Membership.objects.active_memberships(self.start_date).exclude(pk=self.pk).filter(user=self.user).count() != 0:
+        if OldMembership.objects.active_memberships(self.start_date).exclude(pk=self.pk).filter(user=self.user).count() != 0:
             raise Exception('Already have a Membership for that start date')
-        if self.end_date and Membership.objects.active_memberships(self.end_date).exclude(pk=self.pk).filter(user=self.user).count() != 0:
+        if self.end_date and OldMembership.objects.active_memberships(self.end_date).exclude(pk=self.pk).filter(user=self.user).count() != 0:
             raise Exception('Already have a Membership for that end date')
         if self.end_date and self.start_date > self.end_date:
             raise Exception('A Membership cannot start after it ends')
-        super(Membership, self).save(*args, **kwargs)
+        super(OldMembership, self).save(*args, **kwargs)
 
     def is_active(self, on_date=None):
         if not on_date:
@@ -268,7 +283,7 @@ class Membership(models.Model):
 
     def is_change(self):
         # If there is a membership ending the day before this one began then this one is a change
-        return Membership.objects.filter(user=self.user, end_date=self.start_date - timedelta(days=1)).count() > 0
+        return OldMembership.objects.filter(user=self.user, end_date=self.start_date - timedelta(days=1)).count() > 0
 
     def prev_billing_date(self, test_date=None):
         if not test_date:
@@ -298,8 +313,8 @@ class Membership(models.Model):
 
     class Meta:
         app_label = 'nadine'
-        verbose_name = "Membership"
-        verbose_name_plural = "Memberships"
+        verbose_name = "OldMembership"
+        verbose_name_plural = "OldMemberships"
         ordering = ['start_date']
 
 

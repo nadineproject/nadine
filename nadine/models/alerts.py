@@ -16,6 +16,7 @@ from django.utils import timezone
 
 from nadine.models.profile import UserProfile, FileUpload
 from nadine.models.membership import Membership
+from nadine.models.membership import OldMembership
 from nadine.utils import mailgun
 
 logger = logging.getLogger(__name__)
@@ -125,7 +126,8 @@ class MemberAlertManager(models.Manager):
         all_alerts = user.profile.alerts_by_key(include_resolved=True)
         existing_files = user.profile.files_by_type()
         # existing_memberships = user.membership_set.all().order_by('start_date')
-        existing_memberships = Membership.objects.filter(user=user).order_by('start_date')
+        # TODO - Convert to NEW
+        existing_memberships = OldMembership.objects.filter(user=user).order_by('start_date')
         new_membership = existing_memberships.last()
 
         # Member Information

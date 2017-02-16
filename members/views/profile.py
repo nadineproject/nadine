@@ -67,7 +67,7 @@ def profile_private(request, username):
 def profile_membership(request, username):
     user = get_object_or_404(User, username=username)
     # memberships = user.membership_set.all().reverse()
-    memberships = Membership.objects.filter(user=user).reverse()
+    memberships = OldMembership.objects.filter(user=user).reverse()
 
     context = {'user': user,
                'memberships': memberships

@@ -40,7 +40,7 @@ def regular_checkins():
     # if they are still active and this was their first membership
     two_months_ago = timezone.localtime(timezone.now()) - timedelta(days=60)
     for membership in Membership.objects.filter(start_date=two_months_ago):
-        if Membership.objects.filter(user=membership.user, start_date__lt=two_months_ago).count() == 0:
+        if OldMembership.objects.filter(user=membership.user, start_date__lt=two_months_ago).count() == 0:
             if membership.user.profile.is_active():
                 email.send_member_survey(membership.user)
 
@@ -60,7 +60,7 @@ def regular_checkins():
     # Announce to the team when a new user is nearing the end of their first month
     #almost_a_month_ago = timezone.localtime(timezone.now()) - timedelta(days=21)
     # for membership in Membership.objects.filter(start_date=almost_a_month_ago):
-    #	if Membership.objects.filter(user=membership.user, start_date__lt=almost_a_month_ago).count() == 0:
+    #	if OldMembership.objects.filter(user=membership.user, start_date__lt=almost_a_month_ago).count() == 0:
     #		if membership.user.profile.is_active():
     #			email.announce_member_checkin(membership.user)
 

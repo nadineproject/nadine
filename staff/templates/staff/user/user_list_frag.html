@@ -25,11 +25,7 @@
 		    {% if integrations.xero %}
 					<a href="{% url 'staff:billing:xero' user.username %}">xero</a> |
 				{% endif %}
-				{% if user.profile.is_active %}
-					<a href="{% url 'staff:user:membership' user.profile.active_membership.id %}">membership</a>
-				{% else %}
-					<a href="{% url 'staff:user:add_membership' user.username %}">membership</a>
-				{% endif %}
+				<a href="{% url 'staff:user:membership' user.username %}">membership</a>
 			</td>
 			<td class='centered'>
 				{% if user.profile.guests %}

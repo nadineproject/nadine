@@ -12,13 +12,15 @@ urlpatterns = [
      url(r'^search/$', user.member_search, name='search'),
      url(r'^user_reports/$', user.view_user_reports, name='user_reports'),
      url(r'^slack_users/$', user.slack_users, name='slack_users'),
-     url(r'^membership/(?P<membership_id>\d+)/$', user.membership, name='membership'),
-     url(r'^add_membership/(?P<username>[^/]+)/$', user.add_membership, name='add_membership'),
+     url(r'^membership/(?P<username>[^/]+)/$', user.membership, name='membership'),
 
+     url(r'^files/(?P<username>[^/]+)/$', user.files, name='files'),
      url(r'^detail/(?P<username>[^/]+)/$', user.detail, name='detail'),
 
-     url(r'^memberships/(?P<username>[^/]+)/$', user.membership, name='memberships'),
-     url(r'^files/(?P<username>[^/]+)/$', user.files, name='files'),
+     # TODO - remove
+     url(r'^old/membership/(?P<membership_id>\d+)/$', user.old_membership, name='old_membership'),
+     url(r'^old/add_membership/(?P<username>[^/]+)/$', user.old_add_membership, name='old_add_membership'),
+     url(r'^old/memberships/(?P<username>[^/]+)/$', user.old_membership, name='old_memberships'),
 
      # TODO remove
      # url(r'^signins/(?P<username>[^/]+)/$', member.signins, name='user_signins'),

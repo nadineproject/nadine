@@ -6,6 +6,7 @@ import datetime
 import json
 
 from nadine.models.membership import Membership
+from nadine.models.membership import OldMembership
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand, CommandError
 from collections import OrderedDict
@@ -47,7 +48,7 @@ class Command(BaseCommand):
             for tag in user.profile.tags.all():
                 data['tags'].append(str(tag))
             data['memberships'] = []
-            for m in Membership.objects.filter(user=user).order_by('start_date'):
+            for m in OldMembership.objects.filter(user=user).order_by('start_date'):
                 m_data = OrderedDict()
                 m_data['plan'] = m.membership_plan.name
                 m_data['start_date'] = m.start_date

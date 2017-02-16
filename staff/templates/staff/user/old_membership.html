@@ -14,10 +14,10 @@
 {% block content %}
 
 <script>
-  $(function() {
-    $('#id_start_date').datepicker({ dateFormat: "yy-mm-dd" });
-    $('#id_end_date').datepicker({ dateFormat: "yy-mm-dd" });
-  });
+    $(function() {
+        $('#id_start_date').datepicker({ dateFormat: "yy-mm-dd" });
+        $('#id_end_date').datepicker({ dateFormat: "yy-mm-dd" });
+    });
 </script>
 
 <script type="text/javascript">
@@ -53,41 +53,17 @@ $(document).ready(function() {
 })
 </script>
 
-<h4>Membership for <a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a></h4>
+<h4>{% if membership %} Update {% else %} Add {% endif %} Membership for <a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a></h4>
 
 {% if messages %}
-  <div class="page-message">
-    {% for message in messages %}
-      <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
-    {% endfor %}
-  </div>
+<div class="page-message">
+	{% for message in messages %}
+		<div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+	{% endfor %}
+</div>
 {% endif %}
 
-<h5>Resource Allowances</h5>
-<table>
-  <tr>
-    <th>Resource</th>
-    <th>Allowance</th>
-    <th>Start Date</th>
-    <th>End Date</th>
-    <th>Monthly</th>
-    <th>Overage</th>
-    <th>Paid By</th>
-  </tr>
-  {% for a in allowances %}
-    <tr>
-      <td>{{ a.resource }}</td>
-      <td>{{ a.allowance }}</td>
-      <td>{{ a.start_date }}</td>
-      <td>{{ a.end_date |default:"-" }}</td>
-      <td>${{ a.monthly_rate }}/month</td>
-      <td>${{ a.overage_rate }}</td>
-      <td>{{ a.paid_by|default:"" }}</td>
-    </tr>
-  {% endfor %}
-</table>
 
-<!--
 <div id="membership_form">
 	<form name="membership_form" enctype="multipart/form-data" action='.' method='post'>
 		{% if membership %}{{ membership_form.membership_id }}{% endif %}
@@ -209,7 +185,7 @@ $(document).ready(function() {
 	   {% csrf_token %}
 	</form>
 </div>
--->
+
 <div id="membership_list">
 </div>
 {% endblock %}
