@@ -222,6 +222,14 @@ textarea.bcc-textarea {
   margin: 0px 10px;
 }
 
+.membership_form {
+  margin: 2%;
+}
+
+.membership_form .btn {
+  margin-left: 40%;
+}
+
 .membership_form table tr td {
   vertical-align: middle;
 }
@@ -359,6 +367,10 @@ textarea.bcc-textarea {
   #end-td {
 		width: 2%;
 	}
+
+  .membership_form .btn {
+    margin-left: 30%;
+  }
 }
 
 @media only screen and (max-width: 350px) {

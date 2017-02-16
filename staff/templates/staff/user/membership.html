@@ -182,8 +182,8 @@ $(document).ready(function() {
 				<td class='notes'>{{ membership_form.note }}</td>
 				<td>{{ membership_form.note.errors }}</td>
 			</tr>
-	      <tr><td></td><td><input type="submit" value="Submit" /></td></tr>
 	   </table>
+     <input class='btn' type="submit" value="Submit" />
 	   {% csrf_token %}
 	</form>
 </div>
