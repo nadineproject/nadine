@@ -4137,7 +4137,7 @@ nav ul a.btn, nav ul a.btn-large, nav ul a.btn-large, nav ul a.btn-flat, nav ul 
 }
 
 nav ul a:hover {
-  /*background-color: rgba(0, 0, 0, 0.1);*/
+  /*background-color: rgba(0, 0, 0, 0.0);*/
 }
 
 nav ul.left {
@@ -5186,7 +5186,7 @@ button.btn-floating {
 }
 
 .dropdown-content li:hover, .dropdown-content li.active, .dropdown-content li.selected {
-  background-color: RGBA(76, 76, 76, 1.00);
+  /*background-color: RGBA(76, 76, 76, 1.00);*/
 }
 
 .dropdown-content li.active.selected {
