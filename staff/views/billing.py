@@ -143,7 +143,7 @@ def bill_list(request):
     start_date = date(year=starteo.tm_year, month=starteo.tm_mon, day=starteo.tm_mday)
     endeo = timeo.strptime(end, "%Y-%m-%d")
     end_date = date(year=endeo.tm_year, month=endeo.tm_mon, day=endeo.tm_mday)
-    bills = Bill.objects.filter(bill_date__range=(start_date, end_date), amount__gt=0).order_by('bill_date').reverse()
+    bills = OldBill.objects.filter(bill_date__range=(start_date, end_date), amount__gt=0).order_by('bill_date').reverse()
     total_amount = bills.aggregate(s=Sum('amount'))['s']
     context = {'bills': bills, 'total_amount': total_amount,
         'date_range_form': date_range_form, 'start_date': start_date, 'end_date': end_date}
@@ -171,7 +171,7 @@ def toggle_billing_flag(request, username):
 
 @staff_member_required
 def bill(request, id):
-    bill = get_object_or_404(Bill, pk=id)
+    bill = get_object_or_404(OldBill, pk=id)
     context = {"bill": bill, 'new_member_deposit': settings.NEW_MEMBER_DEPOSIT}
     return render(request, 'staff/billing/bill.html', context)
 

@@ -44,7 +44,7 @@ from nadine.models.core import GENDER_CHOICES, HowHeard, Industry, Neighborhood,
 from nadine.models.membership import Membership, SecurityDeposit
 from nadine.models.membership import OldMembership, MembershipPlan
 from nadine.models.usage import CoworkingDay
-from nadine.models.payment import Bill
+from nadine.models.payment import OldBill
 from nadine.models.organization import Organization
 from nadine import email
 
@@ -329,11 +329,11 @@ class UserProfile(models.Model):
 
     def all_bills(self):
         """Returns all of the open bills, both for this user and any bills for other members which are marked to be paid by this member."""
-        return Bill.objects.filter(models.Q(user=self.user) | models.Q(paid_by=self.user)).order_by('-bill_date')
+        return OldBill.objects.filter(models.Q(user=self.user) | models.Q(paid_by=self.user)).order_by('-bill_date')
 
     def open_bills(self):
         """Returns all of the open bills, both for this user and any bills for other members which are marked to be paid by this member."""
-        return Bill.objects.filter(models.Q(user=self.user) | models.Q(paid_by=self.user)).filter(transactions=None).order_by('bill_date')
+        return OldBill.objects.filter(models.Q(user=self.user) | models.Q(paid_by=self.user)).filter(transactions=None).order_by('bill_date')
 
     def open_bill_amount(self):
         total = 0
@@ -343,7 +343,7 @@ class UserProfile(models.Model):
 
     def open_bills_amount(self):
         """Returns the amount of all of the open bills, both for this member and any bills for other members which are marked to be paid by this member."""
-        return Bill.objects.filter(models.Q(user=self.user) | models.Q(paid_by=self.user)).filter(transactions=None).aggregate(models.Sum('amount'))['amount__sum']
+        return OldBill.objects.filter(models.Q(user=self.user) | models.Q(paid_by=self.user)).filter(transactions=None).aggregate(models.Sum('amount'))['amount__sum']
 
     def open_xero_invoices(self):
         from nadine.utils.xero_api import XeroAPI
@@ -357,7 +357,7 @@ class UserProfile(models.Model):
     def last_bill(self):
         """Returns the latest Bill, or None if the member has not been billed.
         NOTE: This does not (and should not) return bills which are for other members but which are to be paid by this member."""
-        bills = Bill.objects.filter(user=self.user)
+        bills = OldBill.objects.filter(user=self.user)
         if len(bills) == 0:
             return None
         return bills[0]
@@ -631,8 +631,8 @@ class UserProfile(models.Model):
         return total_days
 
     def average_bill(self):
-        from nadine.models.payment import Bill
-        bills = Bill.objects.filter(user=self.user)
+        from nadine.models.payment import OldBill
+        bills = OldBill.objects.filter(user=self.user)
         if bills:
             bill_totals = 0
             for b in bills:

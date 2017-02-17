@@ -11,6 +11,7 @@ from nadine.admin.core import StyledAdmin
 from user import *
 from organization import *
 from billing import *
+from old_billing import *
 
 
 # Register the objects with the admin interface

@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from nadine.admin.core import StyledAdmin
-from nadine.models.payment import Transaction, Bill, BillingLog
+from nadine.models.payment import Transaction, OldBill, BillingLog
 
 
 class TransactionAdmin(StyledAdmin):
@@ -11,11 +11,11 @@ class TransactionAdmin(StyledAdmin):
 admin.site.register(Transaction, TransactionAdmin)
 
 
-class BillAdmin(StyledAdmin):
+class OldBillAdmin(StyledAdmin):
     list_display = ('bill_date', 'user', 'amount')
     search_fields = ('user__first_name', 'user__last_name')
     raw_id_fields = ('membership', 'dropins', 'guest_dropins')
-admin.site.register(Bill, BillAdmin)
+admin.site.register(OldBill, OldBillAdmin)
 
 
 class BillingLogAdmin(StyledAdmin):

@@ -15,7 +15,7 @@ from nadine.models import *
 def print_user_data(user):
     print
     print("Profile: %s" % user.profile)
-    for bill in Bill.objects.filter(user=user):
+    for bill in OldBill.objects.filter(user=user):
         print("  Bill: %s" % bill)
         print("    Membership: %s" % bill.membership)
         for dropin in bill.dropins.all():

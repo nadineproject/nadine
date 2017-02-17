@@ -39,11 +39,11 @@ class BillingLog(models.Model):
         return datetime.date(self.ended)
 
 
-class Bill(models.Model):
+class OldBill(models.Model):
 
     """A record of what fees a Member owes."""
     bill_date = models.DateField(blank=False, null=False)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, related_name="old_bill")
     amount = models.DecimalField(max_digits=7, decimal_places=2)
     # TODO - convert to NEW membership
     membership = models.ForeignKey('OldMembership', blank=True, null=True)
@@ -66,7 +66,7 @@ class Bill(models.Model):
         get_latest_by = 'bill_date'
 
     def __str__(self):
-        return 'Bill %s [%s]: %s - $%s' % (self.id, self.bill_date, self.user, self.amount)
+        return 'Old Bill %s [%s]: %s - $%s' % (self.id, self.bill_date, self.user, self.amount)
 
     def get_admin_url(self):
         return urlresolvers.reverse('admin:nadine_bill_change', args=[self.id])
@@ -79,7 +79,7 @@ class Transaction(models.Model):
     user = models.ForeignKey(User)
     TRANSACTION_STATUS_CHOICES = (('open', 'Open'), ('closed', 'Closed'))
     status = models.CharField(max_length=10, choices=TRANSACTION_STATUS_CHOICES, blank=False, null=False, default='open')
-    bills = models.ManyToManyField(Bill, related_name='transactions')
+    bills = models.ManyToManyField(OldBill, related_name='transactions')
     amount = models.DecimalField(max_digits=7, decimal_places=2)
     note = models.TextField(blank=True, null=True)
 

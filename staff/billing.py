@@ -10,7 +10,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 
 from nadine.models.membership import Membership
-from nadine.models.payment import Bill, BillingLog, Transaction
+from nadine.models.payment import OldBill, BillingLog, Transaction
 from nadine.models.usage import CoworkingDay
 
 logger = logging.getLogger(__name__)
@@ -197,7 +197,7 @@ def run_billing(bill_time=None):
                         monthly_fee = 0
                     billable_dropin_count = max(0, len(bill_dropins) + len(bill_guest_dropins) - day.membership.dropin_allowance)
                     bill_amount = monthly_fee + (billable_dropin_count * day.membership.daily_rate)
-                    day.bill = Bill(bill_date=day.date, amount=bill_amount, user=user, paid_by=day.membership.paid_by, membership=day.membership)
+                    day.bill = OldBill(bill_date=day.date, amount=bill_amount, user=user, paid_by=day.membership.paid_by, membership=day.membership)
                     #logger.debug('saving bill: %s - %s - %s' % (day.bill, day, billable_dropin_count))
                     day.bill.save()
                     bill_count += 1
@@ -220,7 +220,7 @@ def run_billing(bill_time=None):
                 if time_to_bill_guests or time_to_bill_dropins:
                     bill_amount = (len(bill_dropins) + len(guest_bill_dropins)) * settings.NON_MEMBER_DROPIN_FEE
                     last_day = run.days[len(run.days) - 1]
-                    last_day.bill = Bill(bill_date=last_day.date, amount=bill_amount, user=user)
+                    last_day.bill = OldBill(bill_date=last_day.date, amount=bill_amount, user=user)
                     last_day.bill.save()
                     bill_count += 1
                     last_day.bill.dropins = [dropin.id for dropin in bill_dropins]

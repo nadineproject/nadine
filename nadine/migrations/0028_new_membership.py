@@ -151,6 +151,7 @@ class Migration(migrations.Migration):
                 ('default', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='nadine.DefaultAllowance')),
                 ('paid_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
                 ('resource', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='nadine.Resource')),
+                ('description', models.TextField(blank=True, null=True)),
             ],
         ),
         migrations.CreateModel(

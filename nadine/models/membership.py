@@ -177,6 +177,7 @@ class ResourceAllowance(models.Model):
     created_ts = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name="+", null=True)
     resource = models.ForeignKey(Resource, null=True)
+    description = models.TextField(blank=True, null=True)
     allowance = models.IntegerField(default=0)
     start_date = models.DateField(db_index=True)
     end_date = models.DateField(blank=True, null=True, db_index=True)
@@ -188,6 +189,11 @@ class ResourceAllowance(models.Model):
 
     def __str__(self):
         return "%s: at %s/month" % (self.resource, self.monthly_rate)
+
+    def is_active(self, target_date=None):
+        if not target_date:
+            target_date = timezone.now().date()
+        return self.start_date <= target_date and (self.end_date is None or self.end_date >= target_date)
 
 
 class SecurityDeposit(models.Model):
