@@ -95,7 +95,7 @@ class User_Report:
         return User.objects.filter(membership__in=ended_memberships)
 
     def invalid_billing(self):
-        return User.objects.filter(profile__valid_billing=False, date_joined__gte=self.start_date, date_joined__lte=self.end_date)
+        return User.objects.filter(profile__valid_billing=False)
 
     def no_device(self):
         devices = UserDevice.objects.filter(user__isnull=False)

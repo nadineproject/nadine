@@ -65,7 +65,7 @@ $(document).ready(function() {
 
 
 <div id="membership_form">
-	<form name="membership_form" enctype="multipart/form-data" action='.' method='post'>
+	<form class='membership_form' name="membership_form" enctype="multipart/form-data" action='.' method='post'>
 		{% if membership %}{{ membership_form.membership_id }}{% endif %}
 		{{ membership_form.username }}
 		<table id="membership">
@@ -96,12 +96,14 @@ $(document).ready(function() {
         <td class='right-title' id='end-td'>End Date</td>
 				<td class='date-input'>{{ membership_form.end_date }} <span id='last-today'>[ <a id="end_last">last</a> | <a id="end_today">today</a> ]</span></td>
       </tr>
+      {% if membership_form.start_date.errors or membership_form.end_date.errors %}
       <tr class="row-odd">
 				<td>{{ membership_form.start_date.errors }}</td>
         <td></td>
 				<td>{{ membership_form.end_date.errors }}</td>
         <td></td>
 			</tr>
+      {% endif %}
 			<tr class="row-even">
 				<td class='left-title' nowrap>Monthly Rate</td>
 				<td class='mem-input'>
@@ -180,8 +182,8 @@ $(document).ready(function() {
 				<td class='notes'>{{ membership_form.note }}</td>
 				<td>{{ membership_form.note.errors }}</td>
 			</tr>
-	      <tr><td></td><td><input type="submit" value="Submit" /></td></tr>
 	   </table>
+     <input class='btn' type="submit" value="Submit" />
 	   {% csrf_token %}
 	</form>
 </div>

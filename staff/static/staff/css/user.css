@@ -103,6 +103,10 @@ textarea.bcc-textarea {
   margin-bottom: 20px;
 }
 
+#quick-links .chip {
+  color: RGBA(28, 164, 230, 1.00);
+}
+
 #rate-td {
 	width: 45%;
 }
@@ -148,6 +152,16 @@ textarea.bcc-textarea {
 
 .email-form {
   margin-top: 2em;
+}
+
+.email-form select {
+  width: 30%;
+  display: inline-block;
+}
+
+.email-form input {
+  margin-left: 2%;
+  font-weight: bold;
 }
 
 .emergency_contact {
@@ -206,6 +220,22 @@ textarea.bcc-textarea {
   width: 170px;
   text-align: center;
   margin: 0px 10px;
+}
+
+.membership_form {
+  margin: 2%;
+}
+
+.membership_form .btn {
+  margin-left: 40%;
+}
+
+.membership_form table tr td {
+  vertical-align: middle;
+}
+
+.membership_form .date-input {
+  padding-left: 1%;
 }
 
 .notes {
@@ -337,6 +367,10 @@ textarea.bcc-textarea {
   #end-td {
 		width: 2%;
 	}
+
+  .membership_form .btn {
+    margin-left: 30%;
+  }
 }
 
 @media only screen and (max-width: 350px) {

@@ -18,7 +18,7 @@
 		Start: <input id='input-start' class='datepicker' name="start_date" value="{{ start_date|date:'m-Y' }}"/>
 		<input id='avg-only' name="average_only" type="checkbox" {% if average_only %} CHECKED {% endif %} />
 		<label for='avg-only'>Average Only</label>
-		<input type="submit" value="Refresh">
+		<input id='input-submit' type="submit" value="Refresh">
 		{% csrf_token %}
 	</form>
 </div>

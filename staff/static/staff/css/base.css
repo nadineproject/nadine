@@ -19,6 +19,7 @@ time, mark, audio, video {
   /*font-size:100%;*/
   vertical-align:baseline;
   background:transparent;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 article, aside, details, figcaption, figure,
@@ -150,26 +151,26 @@ button {  width: auto; overflow: visible; }
 #branding { padding: 0; max-height: 40px; line-height: 35px; font-size: 1.2em; color:black; background: #5a7abd;}
 #branding a { color:black;  padding: 0.5em; padding-top: 0;}
 
-#navcontainer { background-color: RGBA(0, 0, 0, .70); font-size: 1.2em; min-width: 100%; display: inline-block;
+#navcontainer { background-color: RGBA(0, 0, 0, .7); font-size: 1.2em; min-width: 100%; display: inline-block;
 }
 
 nav { color: white; margin: 0 auto; box-shadow: none !important;}
-nav:before { position: absolute; top: 2.7em; left: 0; width: 100%; height: 30px; content: ""; z-index: -1;}
-nav a, nav a:active, nav a:visited { display: inline-block; color: white; }
-nav ul { list-style:none; }
+nav:before { position: absolute; top: 2.7em; left: 0; width: 100%; height: 30px; content: ""; z-index: -1; box-shadow: none !important;}
+nav a, nav a:active, nav a:visited { display: inline-block; color: white; box-shadow: none !important;}
+/*nav li {box-shadow: none !important;}*/
+nav ul { list-style:none; box-shadow: none !important;}
 
 /*Navbar dropdown stylings*/
-.dropdown-content { border-radius: 1px;}
-.dropdown-content a {background-color: RGBA(76, 76, 76, 1.00);}
+.dropdown-content { border-bottom-right-radius: 1px; border-bottom-left-radius: 1px;}
+.dropdown-content li a {background-color: RGBA(0, 0, 0, .7);}
 .dropdown-content a {font-size: 1.1em !important;}
 
 /*Specific sizing for dropdowns with longer page names*/
-#dropdown4 {min-width: 130px;}
-#dropdown5 {min-width: 140px;}
-/* Settings Tab */
-#dropdown9 {min-width: 240px;}
-#dropdown1 li a, #dropdown4 li a, #dropdown5 li a, #dropdown7 li a, #dropdown8 li a, #dropdown9 li a {width: 100%;}
-
+#dropdown1, #dropdown2, #dropdown4, #dropdown5, #dropdown9 {min-width: 170px;}
+#dropdown3  {min-width: 150px;}
+#dropdown6, #dropdown7 {min-width: 140px;}
+#dropdown8 { min-width: 130px;}
+#dropdown1 li a, #dropdown2 li a,#dropdown3 li a, #dropdown4 li a, #dropdown5 li a, #dropdown6 li a, #dropdown7 li a, #dropdown8 li a, #dropdown9 li a {width: 100%;}
 
 /*Mobile Nav Stylings*/
 #nav-mobile { margin: 0; padding: 0; list-style-type: none; text-align: left; box-shadow: none;}
@@ -231,6 +232,8 @@ table tr.row-even td { background: #eee; }
 .centered {text-align: center !important;}
 .left {text-align: left !important;}
 .error-td {color: red;}
+.enable-cb {position: inherit !important; left: inherit !important; opacity: 1 !important; }
+
 #activity-dates {margin-left: 20%; font-size: 2em;}
 
 /*Styling for input for date start and end for form repeated on many pages*/

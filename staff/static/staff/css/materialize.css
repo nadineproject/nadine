@@ -4137,7 +4137,7 @@ nav ul a.btn, nav ul a.btn-large, nav ul a.btn-large, nav ul a.btn-flat, nav ul 
 }
 
 nav ul a:hover {
-  /*background-color: rgba(0, 0, 0, 0.1);*/
+  /*background-color: rgba(0, 0, 0, 0.0);*/
 }
 
 nav ul.left {
@@ -5176,7 +5176,7 @@ button.btn-floating {
 
 .dropdown-content li {
   clear: both;
-  color: rgba(0, 0, 0, 0.87);
+  color: rgba(0, 0, 0, 0.7);
   cursor: pointer;
   min-height: 50px;
   line-height: 1.5rem;
@@ -5186,7 +5186,7 @@ button.btn-floating {
 }
 
 .dropdown-content li:hover, .dropdown-content li.active, .dropdown-content li.selected {
-  background-color: RGBA(76, 76, 76, 1.00);
+  /*background-color: RGBA(76, 76, 76, 1.00);*/
 }
 
 .dropdown-content li.active.selected {
@@ -6554,12 +6554,15 @@ select.browser-default {
 }
 
 select {
-  background-color: rgba(255, 255, 255, 0.9);
+  background: rgba(255,255,255,0.9) url("../img/icon-select.png") no-repeat 97% 50%;
   width: 100%;
   padding: 5px;
   border: 1px solid #f2f2f2;
   border-radius: 2px;
   height: 3rem;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 }
 
 .select-label {

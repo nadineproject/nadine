@@ -401,7 +401,7 @@ class UserProfile(models.Model):
 
         activity = []
         for h in [self.user] + self.guests():
-            for l in CoworkingDay.objects.filter(user=h, payment='Bill', visit_date__gte=month_start):
+            for l in CoworkingDay.objects.filter(user=h, payment='Bill', visit_date__gte=month_start).exclude(paid_by__isnull=False):
                 activity.append(l)
         for l in CoworkingDay.objects.filter(paid_by=self.user, payment='Bill', visit_date__gte=month_start):
             activity.append(l)

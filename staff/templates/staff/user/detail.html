@@ -258,8 +258,8 @@ function gotoEmailReset(emailAddress){
 <div id="tabs-2">
     <div id="quick-links">
         <strong>More Info:</strong>
-        <a href="{% url 'staff:billing:user_bills' user.username %}">bills</a> |
-        <a href="{% url 'staff:billing:user_transactions' user.username %}">transactions</a>
+        <a class='chip' href="{% url 'staff:billing:user_bills' user.username %}">bills</a> |
+        <a class='chip' href="{% url 'staff:billing:user_transactions' user.username %}">transactions</a>
     </div>
     <!-- Billing Profile -->
     <h5>Billing Profile</h5>
@@ -337,7 +337,7 @@ function gotoEmailReset(emailAddress){
     <!-- Email Logs -->
     <div id="quick-links">
         <strong>Actions:</strong>
-        <a href="{% url 'password_reset' %}?email={{ user.email }}">password reset</a>
+        <a class='chip' href="{% url 'password_reset' %}?email={{ user.email }}">password reset</a>
     </div>
     <h5>Email Logs</h5>
     <div>
@@ -357,8 +357,8 @@ function gotoEmailReset(emailAddress){
         {% else %}
             <p>No email logs.</p>
         {% endif %}
-        <div class='email-form'>
-            <form action="." method="POST">
+        <div>
+            <form class='email-form' action="." method="POST">
                 <strong>Manually Send Email: </strong>
                 <select name="message_key">
                     {% for key in email_keys %}

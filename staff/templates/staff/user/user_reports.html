@@ -11,7 +11,7 @@
 <form class='user-report' action="." method="POST">
 	<div>
 		<span class='report'><strong>Report: </strong>{{ form.report }}</span>
-		<span class='report-active'><strong>Active Only: </strong>{{ form.active_only }}</span>
+		<span class='report-active'><strong>Active Only</strong>  {{ form.active_only }}</span>
 		<span class='report-order'><strong>Order By: </strong>{{ form.order_by }}</span>
 	</div>
 	<div>
@@ -78,6 +78,7 @@
 
 			$('#id_start_date').addClass('datepicker');
 			$('#id_end_date').addClass('datepicker');
+			$('#id_active_only').addClass('enable-cb');
 
 			$('.datepicker').datepicker({
 				dateFormat: 'yy-mm-dd',

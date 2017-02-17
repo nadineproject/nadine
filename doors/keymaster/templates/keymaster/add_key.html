@@ -47,18 +47,19 @@
 
 {% block extrajs %}
 	<script>
-	$(function() {
+	(function(){
 		$('.button-collapse').sideNav();
 		$('.collapsible').collapsible();
 
-	  var availableUsers = [
-	    {% for u in active_members %}
-	       "{{ u.username }}",
-	    {% endfor %}
-	  ];
-	  $( "#username" ).autocomplete({
-	    source: availableUsers
-	  });
-	});
+		var availableUsers = [
+			{% for u in active_members %}
+				 "{{ u.username }}",
+			{% endfor %}
+		];
+
+		$("#username").autocomplete({
+			source: availableUsers
+		});
+	})();
 	</script>
 {% endblock %}

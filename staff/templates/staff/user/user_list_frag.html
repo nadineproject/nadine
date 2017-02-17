@@ -33,6 +33,7 @@
 				{% endif %}
 			</td>
 		</tr>
+		{% if user.profile.guests %}
 		<tr class='guest-row' id="guest-details-{{user.id}}">
 			<td colspan="5"><table class="guest-detail">
 				{% for guest in user.profile.guests %}
@@ -51,5 +52,6 @@
 				{% endfor %}
 			</table></td>
 		</tr>
+		{% endif %}
 	{% endfor %}
 </table>
