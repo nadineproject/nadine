@@ -157,7 +157,7 @@ class Migration(migrations.Migration):
             name='IndividualMembership',
             fields=[
                 ('membership_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='nadine.Membership')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='membership', to=settings.AUTH_USER_MODEL)),
+                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='membership', to=settings.AUTH_USER_MODEL)),
             ],
             bases=('nadine.membership',),
         ),
@@ -165,7 +165,7 @@ class Migration(migrations.Migration):
             name='OrganizationMembership',
             fields=[
                 ('membership_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='nadine.Membership')),
-                ('organization', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='membership', to='nadine.Organization')),
+                ('organization', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='membership', to='nadine.Organization')),
             ],
             bases=('nadine.membership',),
         ),

@@ -110,10 +110,20 @@ class MembershipManager(models.Manager):
         return self.filter(allowances__start_date__gte=today)
 
     def active_members(self, target_date=None):
-        if not target_date:
-            target_date = timezone.now().date()
-        # TODO - complete
-        return None
+        members = []
+        for membership in self.active_memberships(target_date):
+            if membership.individualmembership:
+                members.append(membership.individualmembership.user)
+            elif membership.organizationmembership:
+                org = membership.organizationmembership.organization
+                members.extend(org.members())
+        return members
+
+    def for_user(self, username, target_date=None):
+        user = User.objects.get(username=username)
+        individual = Q(individualmembership__user = user)
+        organization  = Q(organizationmembership__organization__organizationmember__user = user)
+        return Membership.objects.filter(individual or organization)
 
 
 class Membership(models.Model):
@@ -128,16 +138,22 @@ class Membership(models.Model):
         future_ending = Q(end_date__gte=target_date)
         return self.allowances.filter().filter(current & (unending | future_ending)).distinct()
 
+    def monthly_rate(self, target_date=None):
+        rate = 0
+        for a in self.active_allowances(target_date):
+            rate = rate + a.monthly_rate
+        return rate
+
 
 class IndividualMembership(Membership):
-    user = models.ForeignKey(User, related_name="membership")
+    user = models.OneToOneField(User, related_name="membership")
 
     def __str__(self):
         return '%s: %s' % (self.user, self.allowances.all())
 
 
 class OrganizationMembership(Membership):
-    organization = models.ForeignKey(Organization, related_name="membership")
+    organization = models.OneToOneField(Organization, related_name="membership")
 
 
 class MembershipPackage(models.Model):

@@ -63,8 +63,7 @@ function gotoEmailReset(emailAddress){
     {% endif %}
     <a href="{% url 'admin:auth_user_change' user.id %}">admin</a> |
     <a href="{% url 'member:profile:view' user.username %}">view profile</a> |
-    <a href="{% url 'member:profile:edit' user.username %}">edit profile</a> |
-    <a href="{% url 'staff:user:membership' user.username %}">membership</a>
+    <a href="{% url 'member:profile:edit' user.username %}">edit profile</a>
     </a>
   </div>
 </div>
@@ -251,68 +250,9 @@ function gotoEmailReset(emailAddress){
     </div>
 </div>
 
+<!-- Memberships -->
 <div id="tabs-1">
-    <!-- Memberships -->
-    <h5>Memberships</h5>
-    <table>
-        <tr>
-            <th>Plan</th>
-            <th>Rate</th>
-            <th>Start Date</th>
-            <th>End Date</th>
-            <th>Desk</th>
-            <th>Key</th>
-            <th>Mail</th>
-            <th>Action</th>
-        </tr>
-
-        {% for membership in memberships %}
-            <tr class="{% cycle 'row-even' 'row-odd' %}">
-                <td nowrap>
-                    {{ membership.membership_plan }}
-                    {% if membership.paid_by %}
-                     (<a href="{% url 'staff:user:detail' membership.paid_by.username %}">{{ membership.paid_by.username }}</a>)
-                    {% endif %}
-                </td>
-                <td>${{ membership.monthly_rate }}</td>
-                <td><a href="{{ membership.get_admin_url }}">{{ membership.start_date }}</a></td>
-                <td>{% if membership.end_date %}{{ membership.end_date }}{% endif %}</td>
-                <td>{% if membership.has_desk %}&check;{% endif %}</td>
-                <td>{% if membership.has_key %}&check;{% endif %}</td>
-                <td>{% if membership.has_mail %}&check;{% endif %}</td>
-                <td class='centered'>
-                    {% if membership == user.profile.last_membership %}
-                        [<a href="{% url 'staff:user:membership' membership.id %}">edit</a>]
-                    {% endif %}
-                &nbsp;</td>
-            </tr>
-        {% endfor %}
-
-        <tr class="{% cycle 'row-even' 'row-odd' %}">
-            <td colspan="7">&nbsp;</td>
-            <td>[<a href="{% url 'staff:user:membership' user.username %}">edit membership</a>]</td>
-        </tr>
-    </table>
-
-    <!-- Active Guest Memberships -->
-    {% if user.profile.guests %}
-        <h5>Active Guests:</h5>
-            <table>
-                <tr>
-                    <th>Name</th>
-                    <th>Membership</th>
-                    <th>First Visit</th>
-                </tr>
-
-                {% for guest in user.profile.guests %}
-                    <tr class="{% cycle 'row-even' 'row-odd' %}">
-                        <td nowrap><a href="{% url 'staff:user:detail' guest.username %}">{{ guest.get_full_name }}</a></td>
-                        <td>{{ guest.profile.active_membership.membership_plan }}</td>
-                        <td class='centered'>{{ guest.profile.first_visit }}</td>
-                    </tr>
-                {% endfor %}
-            </table>
-    {% endif %}
+  {% include "staff/user/detail_membership.html" %}
 </div>
 
 <div id="tabs-2">
