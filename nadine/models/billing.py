@@ -1,5 +1,6 @@
 import logging
 from datetime import timedelta, date
+from decimal import Decimal
 
 from django.db import models
 from django.db.models import Q, Sum
@@ -28,7 +29,7 @@ class UserBill(models.Model):
         return self.payments.filter(paid_amount__gt=0)
 
     def total_paid(self):
-        payments = self.payments.all()
+        payments = self.payment_set.all()
         if not payments:
             return 0
         paid = Decimal(0)
@@ -43,8 +44,7 @@ class UserBill(models.Model):
         # Bill amount comes from generated bill line items
         amount = 0
         for line_item in self.line_items.all():
-            if not line_item.fee or not line_item.paid_by_house:
-                amount = amount + line_item.amount
+            amount = amount + line_item.amount
         return amount
 
     def is_paid(self):

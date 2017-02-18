@@ -53,12 +53,14 @@ def forward(apps, schema_editor):
 
         # Transactions -> Payments
         for t in o.transactions.all():
-            Payment.objects.create(
+            p = Payment.objects.create(
                 bill = bill,
                 user = user,
-                payment_date = t.transaction_date,
                 paid_amount = t.amount,
             )
+            p.payment_date = t.transaction_date
+            p.save()
+
 
             # Move transaction notes to bill comments
             if t.note:
