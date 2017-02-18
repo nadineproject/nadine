@@ -42,11 +42,16 @@ def forward(apps, schema_editor):
     for user in User.objects.all():
         old_memberships = OldMembership.objects.filter(user=user).order_by('start_date')
         if old_memberships:
-            new_membership = IndividualMembership.objects.create(user=user)
+            last_membership = old_memberships.last()
+            new_membership = IndividualMembership.objects.create(
+                user=user,
+                bill_day = last_membership.start_date.day
+            )
             for m in old_memberships:
                 # package = MembershipPackage.objects.get(name=m.membership_plan.name)
                 # day_default = package.allowances.filter(resource=DAY).first()
-                day_allowance = ResourceAllowance.objects.create(resource=DAY,
+                day_allowance = ResourceAllowance.objects.create(
+                    resource=DAY,
                     start_date = m.start_date,
                     end_date = m.end_date,
                     monthly_rate = m.monthly_rate,
@@ -57,7 +62,8 @@ def forward(apps, schema_editor):
                 )
                 new_membership.allowances.add(day_allowance)
                 if m.has_desk:
-                    desk_allowance = ResourceAllowance.objects.create(resource=DESK,
+                    desk_allowance = ResourceAllowance.objects.create(
+                        resource=DESK,
                         start_date = m.start_date,
                         end_date = m.end_date,
                         monthly_rate = 0,
@@ -68,7 +74,8 @@ def forward(apps, schema_editor):
                     )
                     new_membership.allowances.add(desk_allowance)
                 if m.has_mail:
-                    mail_allowance = ResourceAllowance.objects.create(resource=MAIL,
+                    mail_allowance = ResourceAllowance.objects.create(
+                        resource=MAIL,
                         start_date = m.start_date,
                         end_date = m.end_date,
                         monthly_rate = 0,
@@ -79,7 +86,8 @@ def forward(apps, schema_editor):
                     )
                     new_membership.allowances.add(mail_allowance)
                 if m.has_key:
-                    key_allowance = ResourceAllowance.objects.create(resource=KEY,
+                    key_allowance = ResourceAllowance.objects.create(
+                        resource=KEY,
                         start_date = m.start_date,
                         end_date = m.end_date,
                         monthly_rate = 0,
@@ -117,6 +125,7 @@ class Migration(migrations.Migration):
             name='Membership',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('bill_day', models.SmallIntegerField(default=0)),
             ],
         ),
         migrations.CreateModel(
@@ -146,7 +155,6 @@ class Migration(migrations.Migration):
                 ('end_date', models.DateField(blank=True, db_index=True, null=True)),
                 ('monthly_rate', models.DecimalField(decimal_places=2, max_digits=9)),
                 ('overage_rate', models.DecimalField(decimal_places=2, max_digits=9)),
-                ('bill_day', models.SmallIntegerField(default=0)),
                 ('created_by', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL)),
                 ('default', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='nadine.DefaultAllowance')),
                 ('paid_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
