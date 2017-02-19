@@ -7,6 +7,7 @@ import traceback
 import operator
 import logging
 import hashlib
+import calendar
 from random import random
 from datetime import datetime, time, date, timedelta
 from dateutil.relativedelta import relativedelta
@@ -169,26 +170,37 @@ class Membership(models.Model):
         Returns (None, None) if the membership is not active.'''
         if not target_date:
             target_date = localtime(now()).date()
+        # print("target_date=%s" % target_date)
 
         # Return None if they were not active on this date
         if not self.is_active(target_date):
             return (None, None)
 
-        # The period starts on the bill_ay of the month we're operating in.
+        # The period starts on the bill_day of the month we're operating in.
         if target_date.day == self.bill_day:
             period_start = target_date
         else:
             month = target_date.month
             year = target_date.year
             if target_date.day < self.bill_day:
-                if target_date.day == 1:
+                # Go back one month
+                month = target_date.month - 1
+                if month == 0:
+                    # In January go back one year too
                     month = 12
                     year = target_date.year - 1
-                else:
-                    month = target_date.month - 1
+
+                # Make sure we are creating a valid date with these
+                month_start, month_end = calendar.monthrange(year, month)
+                if month_end < self.bill_day:
+                    # We went too far, but now we know what to do
+                    period_start = date(year, target_date.month, 1)
+                    period_end = date(year, target_date.month, self.bill_day - 1)
+                    return (period_start, period_end)
+
+            # print("year=%d, month=%s, day=%s" % (year, month, day))
             period_start = date(year, month, self.bill_day)
 
-        # The period ends one month later
         period_end = period_start + relativedelta(months=1)
         if period_end.day == period_start.day:
             period_end = period_end - timedelta(days=1)
@@ -199,7 +211,7 @@ class Membership(models.Model):
         period = self.get_period(target_date=target_date)
         return period and period[1] == target_date
 
-    def get_next_period_start(self, target_date=None):
+    def next_period_start(self, target_date=None):
         if not target_date:
             target_date = localtime(now()).date()
 
@@ -240,7 +252,7 @@ class Membership(models.Model):
     #         b = self.get_bill_for_date(d)
     #         if b:
     #             bills.append(b)
-    #         d = self.get_next_period_start(d)
+    #         d = self.next_period_start(d)
     #         if not d:
     #             break
     #     return bills
@@ -354,7 +366,7 @@ class Membership(models.Model):
         period_start = target_date
         while period_start and (period_start < today) and (period_start < end_date):
             self.generate_bill(target_date=period_start)
-            period_start = self.get_next_period_start(period_start)
+            period_start = self.next_period_start(period_start)
 
     # Ported from modernomad
     # def last_paid(self, include_partial=False):
@@ -412,7 +424,7 @@ class Membership(models.Model):
     #     num_expected = 0
     #     while period_start and (period_start < today) and (period_start < self.end_date):
     #         num_expected += 1
-    #         period_start = self.get_next_period_start(period_start)
+    #         period_start = self.next_period_start(period_start)
     #     return num_expected
 
 

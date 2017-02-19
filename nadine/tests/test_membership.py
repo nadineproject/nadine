@@ -102,9 +102,9 @@ class MembershipTestCase(TestCase):
         )
 
 
-    ########## ########## ########## ########## ########## ##########
+    ############################################################
     # Helper Methods
-    ########## ########## ########## ########## ########## ##########
+    ############################################################
 
     def create_membership(self, bill_day=0, start=None, end=None, resource=None, monthly_rate=100, overage_rate=20):
         if not start:
@@ -132,9 +132,23 @@ class MembershipTestCase(TestCase):
         # print("start: %s, end: %s, got: %s" % (period_start, period_end, pe))
         self.assertEquals(pe, period_end)
 
-    ########## ########## ########## ########## ########## ##########
+    def next_period_start_test(self, start, number):
+        last_start = start
+        m = self.create_membership(start=start)
+        # print("Created Membership: start_date = %s, bill_day = %s" % (start, m.bill_day))
+        for i in range(0, number):
+            test_date = start + relativedelta(months=i) + timedelta(days=1)
+            # print("  Test(%d): %s" % (i, test_date))
+            this_start, this_end = m.get_period(test_date)
+            next_start = m.next_period_start(last_start)
+            # print("   This period: %s to %s, Next: %s" % (this_start, this_end, next_start))
+            self.assertEqual(next_start, this_end + timedelta(days=1))
+            self.assertEqual(last_start, this_start)
+            last_start = next_start
+
+    ############################################################
     # Tests
-    ########## ########## ########## ########## ########## ##########
+    ############################################################
 
     def test_inactive_period(self):
         # Today is outside the date range for this membership
@@ -155,17 +169,60 @@ class MembershipTestCase(TestCase):
         self.period_boundary_test(date(2015, 11, 1), date(2015, 11, 30))
         self.period_boundary_test(date(2015, 12, 1), date(2015, 12, 31))
 
+    def test_get_period_leap(self):
         # Leap year!
         self.period_boundary_test(date(2016, 2, 1), date(2016, 2, 29))
+        self.period_boundary_test(date(2016, 3, 1), date(2016, 3, 31))
 
+    def test_get_period_days(self):
         # Test Day bounderies
         for i in range(2, 31):
             self.period_boundary_test(date(2015, 7, i), date(2015, 8, i-1))
 
+    def test_get_period_31st(self):
         # Test when the next following month has fewer days
         self.period_boundary_test(date(2015, 1, 29), date(2015, 2, 28))
         self.period_boundary_test(date(2015, 1, 30), date(2015, 2, 28))
         self.period_boundary_test(date(2015, 1, 31), date(2015, 2, 28))
+        self.period_boundary_test(date(2016, 3, 31), date(2016, 4, 30))
+        self.period_boundary_test(date(2017, 5, 31), date(2017, 6, 30))
+
+    def test_get_period_bug(self):
+        # Found this bug when I was testing so I created a special test for it --JLS
+        m = self.create_membership(start=date(2017, 1, 28))
+        ps, pe = m.get_period(date(2017, 3, 1))
+        self.assertEqual(ps, date(2017, 2, 28))
+        self.assertEqual(pe, date(2017, 3, 27))
+
+    def test_get_period_bug2(self):
+        # Another bug I found when testing --JLS
+        # Membership = 1/31/17, Bill Day = 31st
+        m = self.create_membership(start=date(2017, 1, 31))
+        #  First Period: 1/31/17 - 2/28/17
+        #  Next Period: 3/1/17 - 3/30/17
+        ps, pe = m.get_period(date(2017, 3, 2))
+        self.assertEqual(ps, date(2017, 3, 1))
+        self.assertEqual(pe, date(2017, 3, 30))
+        #  Period: 3/31/17 - 4/30/17
+        ps, pe = m.get_period(date(2017, 4, 2))
+        self.assertEqual(ps, date(2017, 3, 31))
+        self.assertEqual(pe, date(2017, 4, 30))
+        #  Period: 5/1/17 - 5/30/17
+        ps, pe = m.get_period(date(2017, 5, 2))
+        self.assertEqual(ps, date(2017, 5, 1))
+        self.assertEqual(pe, date(2017, 5, 30))
+        #  Period: 5/31/17 - 6/30/17
+        ps, pe = m.get_period(date(2017, 6, 2))
+        self.assertEqual(ps, date(2017, 5, 31))
+        self.assertEqual(pe, date(2017, 6, 30))
+        #  Period: 7/1/17 - 7/30/17
+        ps, pe = m.get_period(date(2017, 7, 2))
+        self.assertEqual(ps, date(2017, 7, 1))
+        self.assertEqual(pe, date(2017, 7, 30))
+        #  Period: 7/31/17 - 8/30/17
+        ps, pe = m.get_period(date(2017, 8, 2))
+        self.assertEqual(ps, date(2017, 7, 31))
+        self.assertEqual(pe, date(2017, 8, 30))
 
     def test_is_period_boundary(self):
         m = self.create_membership(start=date(2016,1,1), end=date(2016,5,31))
@@ -176,24 +233,33 @@ class MembershipTestCase(TestCase):
         self.assertFalse(m.is_period_boundary(target_date=date(2016, 4, 15)))
         self.assertTrue(m.is_period_boundary(target_date=date(2016, 4, 30)))
 
-    def get_next_period_start(self):
-        # Active Memberships (started today)
-        self.assertEqual(self.membership1.get_next_period_start(), one_month_from_now)
-        self.assertEqual(self.membership2.get_next_period_start(), one_month_from_now)
+    def test_next_period_start_active(self):
+        self.assertEqual(self.membership1.next_period_start(), one_month_from_now)
+        self.assertEqual(self.membership2.next_period_start(), one_month_from_now)
 
-        # Inactive memberships
-        self.assertEqual(self.membership4.get_next_period_start(), None)
-        self.assertEqual(self.membership5.get_next_period_start(), None)
-        self.assertEqual(self.membership6.get_next_period_start(), None)
-        self.assertEqual(self.membership7.get_next_period_start(), None)
-        self.assertEqual(self.membership8.get_next_period_start(), None)
-        self.assertEqual(self.membership9.get_next_period_start(), None)
+    def test_next_period_start_inactive(self):
+        self.assertEqual(self.membership4.next_period_start(), None)
+        self.assertEqual(self.membership5.next_period_start(), None)
+        self.assertEqual(self.membership6.next_period_start(), None)
+        self.assertEqual(self.membership7.next_period_start(), None)
+        self.assertEqual(self.membership8.next_period_start(), None)
+        self.assertEqual(self.membership9.next_period_start(), None)
 
-        # Future membership
-        self.assertEqual(self.membership3.get_next_period_start(), one_month_from_now)
-        next_start = self.membership10.get_next_period_start()
+    def test_next_period_start_future(self):
+        self.assertEqual(self.membership3.next_period_start(), one_month_from_now)
+        next_start = self.membership10.next_period_start()
         self.assertEqual(next_start.month, 3)
         self.assertEqual(next_start.day, 1)
+
+    def test_next_period_start(self):
+        # Start a membership on each day of the month and make sure the next
+        # five years have valid period ranges and the right next_period_start
+        # for i in range(1, 31):
+            # self.next_period_start_test(date(2016, 1, i), 60)
+        self.next_period_start_test(date(2016,1,1), 24)
+        self.next_period_start_test(date(2016,1,10), 24)
+        self.next_period_start_test(date(2017,1,28), 24)
+        self.next_period_start_test(date(2016,1,31), 24)
 
     def test_active_memberships(self):
         active_memberships = Membership.objects.active_memberships()
