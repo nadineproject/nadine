@@ -10,6 +10,7 @@ import hashlib
 from random import random
 from datetime import datetime, time, date, timedelta
 from dateutil.relativedelta import relativedelta
+from decimal import Decimal
 
 from django.db import models
 from django.db.models import Q
@@ -187,8 +188,10 @@ class Membership(models.Model):
                     month = target_date.month - 1
             period_start = date(year, month, self.bill_day)
 
-        # The period ends one month later, minus one day
-        period_end = period_start + relativedelta(months=1) - timedelta(days=1)
+        # The period ends one month later
+        period_end = period_start + relativedelta(months=1)
+        if period_end.day == period_start.day:
+            period_end = period_end - timedelta(days=1)
 
         return (period_start, period_end)
 
@@ -315,21 +318,25 @@ class Membership(models.Model):
             for item in bill.line_items.all():
                 item.delete()
 
-        line_items = []
+        monthly_line_items = []
+        activity_line_items = []
         # First line items are the monthly allowances.
         for a in self.active_allowances(target_date):
             desc, price = a.generate_line_item(period_start, period_end)
             line_item = BillLineItem(bill=bill, description=desc, amount=price)
-            line_items.append(line_item)
-
-        # Now calculate the activity for the previous month
+            monthly_line_items.append(line_item)
+            # Now calculate the activity for the previous month
 
         # Save this beautiful bill
         bill.save()
-        for item in line_items:
+        for item in monthly_line_items:
             item.save()
-        self.bills.add(bill)
-        self.save()
+        for item in activity_line_items:
+            item.save()
+
+        # Is this neccessary? -JLS
+        # self.bills.add(bill)
+        # self.save()
 
         return line_items
 
@@ -458,25 +465,28 @@ class ResourceAllowance(models.Model):
             target_date = localtime(now()).date()
         return self.start_date <= target_date and (self.end_date is None or self.end_date >= target_date)
 
-    def generate_line_item(self, period_start, period_end):
-        prorated = False
-        if self.end_date and self.end_date < period_end:
-            prorated = True
-            original_period_end = period_end
-            period_end = self.end_date
+    def prorate_for_period(self, period_start, period_end):
+        prorate_start = period_start
+        prorate_end = period_end
 
+        if self.end_date and self.end_date < period_end:
+            prorate_end = self.end_date
+        if self.start_date > period_start:
+            prorate_start = self.start_date
+
+        period_days = (period_end - period_start).days
+        prorate_days = (prorate_end - prorate_start).days
+
+        return Decimal(prorate_days) / period_days
+
+    def generate_line_item(self, period_start, period_end):
         # Generate our description
         desc = str(resource) + " "
         if self.description:
             desc += self.description + " "
         desc += "(%s to %s)" % (self.description, period_start, period_end)
 
-        if prorated:
-            period_days = Decimal((period_end - period_start).days)
-            original_period_days = (original_period_end - period_start).days
-            amount = (period_days/original_period_days) * self.monthly_rate
-        else:
-            amount = self.monthly_rate
+        amount = self.prorate_for_period(period_start, period_end) * self.monthly_rate
 
         return (description, amount)
 

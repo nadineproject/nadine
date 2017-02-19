@@ -168,10 +168,6 @@ class MembershipTestCase(TestCase):
         self.period_boundary_test(date(2015, 1, 31), date(2015, 2, 28))
 
     def test_is_period_boundary(self):
-        self.assertEqual(self.membership3.is_period_boundary(), False)
-        self.assertEqual(self.membership6.is_period_boundary(), False)
-        self.assertEqual(self.membership7.is_period_boundary(), True)
-
         m = self.create_membership(start=date(2016,1,1), end=date(2016,5,31))
         self.assertFalse(m.is_period_boundary(target_date=date(2016, 2, 15)))
         self.assertTrue(m.is_period_boundary(target_date=date(2016, 2, 29)))
@@ -226,20 +222,31 @@ class MembershipTestCase(TestCase):
         self.assertFalse(self.membership6.in_future())
         self.assertTrue(self.membership10.in_future())
 
-    def test_generate_bill(self):
-        # Assume that if we generate a bill we will have a bill
-        self.assertEquals(0, self.membership1.bills.count())
-        self.membership1.generate_bill(target_date=today)
-        self.assertEquals(1, self.membership1.bills.count())
+    def test_prorated(self):
+        # We know there is only one
+        r = self.membership8.allowances.first()
+        # The first month was a full period so no prorate
+        ps, pe = self.membership8.get_period(r.start_date)
+        self.assertEqual(1, r.prorate_for_period(ps, pe))
+        # The last month was partial so it was prorated
+        ps, pe = self.membership8.get_period(r.end_date)
+        self.assertTrue(1 > r.prorate_for_period(ps, pe))
 
-        bill = self.membership1.bills.first()
-        self.assertEquals(self.membership1.monthly_rate, bill.amount())
-
-        ps, pe = self.membership1.get_period(target_date=today)
-        self.assertEquals(ps, bill.period_start)
-        self.assertEquals(pe, bill.period_end)
-
-    def test_generate_all_bills(self):
-        self.assertEquals(0, self.membership6.bills.count())
-        self.membership6.generate_all_bills()
-        self.assertEquals(12, self.membership6.bills.count())
+    # TODO
+    # def test_generate_bill(self):
+    #     # Assume that if we generate a bill we will have a bill
+    #     self.assertEquals(0, self.membership1.bills.count())
+    #     self.membership1.generate_bill(target_date=today)
+    #     self.assertEquals(1, self.membership1.bills.count())
+    #
+    #     bill = self.membership1.bills.first()
+    #     self.assertEquals(self.membership1.monthly_rate, bill.amount())
+    #
+    #     ps, pe = self.membership1.get_period(target_date=today)
+    #     self.assertEquals(ps, bill.period_start)
+    #     self.assertEquals(pe, bill.period_end)
+    #
+    # def test_generate_all_bills(self):
+    #     self.assertEquals(0, self.membership6.bills.count())
+    #     self.membership6.generate_all_bills()
+    #     self.assertEquals(12, self.membership6.bills.count())
