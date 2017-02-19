@@ -15,7 +15,7 @@ from django.conf import settings
 from django.utils import timezone
 
 from nadine.models.profile import UserProfile, FileUpload
-from nadine.models.membership import Membership
+from nadine.models.membership import Membership, IndividualMembership
 from nadine.models.membership import OldMembership
 from nadine.utils import mailgun
 
@@ -319,4 +319,4 @@ def membership_callback(sender, **kwargs):
         window_start = timezone.now() - timedelta(days=5)
         if membership.end_date and membership.end_date < window_start.date():
             MemberAlert.objects.trigger_exiting_membership(membership.user)
-post_save.connect(membership_callback, sender=Membership)
+post_save.connect(membership_callback, sender=IndividualMembership)

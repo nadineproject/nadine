@@ -125,7 +125,7 @@ class Migration(migrations.Migration):
             name='Membership',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('bill_day', models.SmallIntegerField(default=0)),
+                ('bill_day', models.SmallIntegerField(default=1)),
             ],
         ),
         migrations.CreateModel(
@@ -156,7 +156,7 @@ class Migration(migrations.Migration):
                 ('monthly_rate', models.DecimalField(decimal_places=2, max_digits=9)),
                 ('overage_rate', models.DecimalField(decimal_places=2, max_digits=9)),
                 ('created_by', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('default', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='nadine.DefaultAllowance')),
+                ('default', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='nadine.DefaultAllowance', null=True, blank=True)),
                 ('paid_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
                 ('resource', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='nadine.Resource')),
                 ('description', models.TextField(blank=True, null=True)),

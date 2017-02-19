@@ -1,76 +1,245 @@
 import traceback
 from datetime import datetime, timedelta, date
+from dateutil.relativedelta import relativedelta
+from django.core.urlresolvers import reverse
 
-from django.test import TestCase
-from django.core import management
-from django.contrib.auth.models import User
-from django.conf import settings
+from django.test import TestCase, RequestFactory, Client
 from django.utils import timezone
-import staff.billing as billing
-from interlink.models import MailingList
-from staff.views.stats import beginning_of_next_month, first_days_in_months
-from nadine.models import *
+from django.utils.timezone import localtime, now
+from django.contrib.auth.models import User
 
+from nadine.models.membership import Membership, ResourceAllowance
+from nadine.models.resource import Resource
 
-def print_user_data(user):
-    print
-    print("User: %s" % user)
-    print("Profile: %s" % user.profile)
-    for bill in Bill.objects.filter(user=user):
-        print("  Bill: %s" % bill)
-        print("    Membership: %s" % bill.membership)
-        for dropin in bill.dropins.all():
-            print("    Drop-in: %s" % dropin)
+today = localtime(now()).date()
+yesterday = today - timedelta(days=1)
+tomorrow = today + timedelta(days=1)
+one_month_from_now = today + relativedelta(months=1)
+one_month_ago = today - relativedelta(months=1)
 
-
-# Currently failing if you do not have a Slack API key - AKS 2/6/17
 class MembershipTestCase(TestCase):
 
     def setUp(self):
-        self.residentPlan = MembershipPlan.objects.create(name="Resident", monthly_rate=475, dropin_allowance=5, daily_rate=20, has_desk=True)
         self.user1 = User.objects.create(username='member_one', first_name='Member', last_name='One')
-        self.user2 = User.objects.create(username='member_two', first_name='Member', last_name='Two')
-        self.user3 = User.objects.create(username='member_three', first_name='Member', last_name='Three')
-        self.user4 = User.objects.create(username='member_four', first_name='Member', last_name='Four')
-        self.user5 = User.objects.create(username='member_five', first_name='Member', last_name='Five')
-        self.user6 = User.objects.create(username='member_six', first_name='Member', last_name='Six')
 
-    def test_membership(self):
-        orig_membership = Membership.objects.create(user=self.user1, membership_plan=self.residentPlan, start_date=date(2008, 2, 10))
-        self.assertTrue(orig_membership.is_anniversary_day(date(2010, 4, 10)))
-        self.assertTrue(orig_membership.is_active())
-        orig_membership.end_date = orig_membership.start_date + timedelta(days=31)
-        orig_membership.save()
-        self.assertFalse(orig_membership.is_active())
-        new_membership = Membership(start_date=orig_membership.end_date, user=orig_membership.user, membership_plan=orig_membership.membership_plan)
-        self.assertRaises(Exception, new_membership.save)  # the start date is the same as the previous plan's end date, which is an error
-        new_membership.start_date = orig_membership.end_date + timedelta(days=1)
-        new_membership.save()
-        new_membership.end_date = new_membership.start_date + timedelta(days=64)
-        new_membership.start_date = new_membership.end_date + timedelta(days=12)
-        self.assertRaises(Exception, new_membership.save)  # the start date can't be the same or later than the end date
+        # Not sure what this is --JLS
+        # self.admin = User.objects.create_superuser(username='admin', email="blah@blah.com", password="secret")
+        #self.client = Client()
+        # success = self.client.login(username=self.admin.username, password="secret")
 
-    def test_date_methods(self):
-        test_date = date(2013, 3, 15)
-        # Billing day was yesterday
-        m1 = Membership.objects.create(user=self.user1, membership_plan=self.residentPlan, start_date=date(2012, 6, 14))
-        self.assertEqual(m1.prev_billing_date(test_date), date(2013, 3, 14))
-        self.assertEqual(m1.next_billing_date(test_date), date(2013, 4, 14))
-        # Billing day is today
-        m2 = Membership.objects.create(user=self.user2, membership_plan=self.residentPlan, start_date=date(2012, 6, 15))
-        self.assertEqual(m2.prev_billing_date(test_date), date(2013, 3, 15))
-        self.assertEqual(m2.next_billing_date(test_date), date(2013, 4, 15))
-        # Billing day is tomorrow
-        m3 = Membership.objects.create(user=self.user3, membership_plan=self.residentPlan, start_date=date(2012, 6, 16))
-        self.assertEqual(m3.prev_billing_date(test_date), date(2013, 2, 16))
-        self.assertEqual(m3.next_billing_date(test_date), date(2013, 3, 16))
-        # Make sure it works with the end of the months that have 28, 30, and 31 days
-        m4 = Membership.objects.create(user=self.user4, membership_plan=self.residentPlan, start_date=date(2012, 3, 31))
-        self.assertEqual(m4.prev_billing_date(test_date), date(2013, 2, 28))
-        # What about leap years?
-        test_date = date(2012, 3, 15)
-        m5 = Membership.objects.create(user=self.user5, membership_plan=self.residentPlan, start_date=date(2011, 3, 31))
-        self.assertEqual(m5.prev_billing_date(test_date), date(2012, 2, 29))
+        # Resources
+        self.RESOURCE_DAY = Resource.objects.create(name="Coworking Day")
+
+        # today = localtime(now()).date()
+        # one_month_from_now = today + relativedelta(months=1) - timedelta(days=1)
+
+        # Starts today and no end
+        self.membership1 = self.create_membership(
+            start = today,
+            monthly_rate = 100,
+        )
+
+        # Starts today and ends in a month
+        self.membership2 = self.create_membership(
+            start = today,
+            end = one_month_from_now,
+            monthly_rate = 200.00,
+        )
+
+        # Starts in a month
+        self.membership3 = self.create_membership(
+            start = one_month_from_now,
+            monthly_rate = 300.00,
+        )
+
+        # Started a month ago and ends today
+        self.membership4 = self.create_membership(
+            start = one_month_ago,
+            end = today,
+            monthly_rate = 400.00,
+        )
+
+        # Ended yesterday
+        self.membership5 = self.create_membership(
+            start = one_month_ago,
+            end = yesterday,
+            monthly_rate = 500.00,
+        )
+
+        # All last year
+        self.membership6 = self.create_membership(
+            start = date(year=today.year-1, month=1, day=1),
+            end = date(year=today.year-1, month=12, day=31),
+            monthly_rate = 600.00,
+        )
+
+        # Start and end on the same day of the month, last year for 8 months
+        self.membership7 = self.create_membership(
+            start = date(year=today.year-1, month=2, day=1),
+            end =  date(year=today.year-1, month=10, day=1),
+            monthly_rate = 700.00,
+        )
+
+        # Pro rated end
+        self.membership8 = self.create_membership(
+            start = date(year=today.year-1, month=2, day=1),
+            end =  date(year=today.year-1, month=10, day=18),
+            monthly_rate = 800.00,
+        )
+
+        # One period in the past
+        self.membership9 = self.create_membership(
+            start = date(year=today.year-1, month=2, day=1),
+            end =  date(year=today.year-1, month=3, day=1),
+            monthly_rate = 900.00,
+        )
+
+        # One period in the future
+        self.membership10 = self.create_membership(
+            start = date(year=today.year+1, month=3, day=1),
+            end =  date(year=today.year+1, month=3, day=31),
+            monthly_rate = 1000.00,
+        )
 
 
-# Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+    ########## ########## ########## ########## ########## ##########
+    # Helper Methods
+    ########## ########## ########## ########## ########## ##########
+
+    def create_membership(self, bill_day=0, start=None, end=None, resource=None, monthly_rate=100, overage_rate=20):
+        if not start:
+            start = today
+        if bill_day == 0:
+            bill_day = start.day
+        if not resource:
+            resource = self.RESOURCE_DAY
+        membership = Membership.objects.create(bill_day=bill_day)
+        membership.allowances.add(
+            ResourceAllowance.objects.create(
+                resource = resource,
+                start_date = start,
+                end_date = end,
+                monthly_rate = monthly_rate,
+                overage_rate = overage_rate,
+            )
+        )
+        return membership
+
+    def period_boundary_test(self, period_start, period_end):
+        # For a given period start, test the period_end is equal to the given period_end
+        m = self.create_membership(start=period_start)
+        ps, pe = m.get_period(target_date=period_start)
+        # print("start: %s, end: %s, got: %s" % (period_start, period_end, pe))
+        self.assertEquals(pe, period_end)
+
+    ########## ########## ########## ########## ########## ##########
+    # Tests
+    ########## ########## ########## ########## ########## ##########
+
+    def test_inactive_period(self):
+        # Today is outside the date range for this membership
+        self.assertEquals((None, None), self.membership3.get_period(target_date=today))
+
+    def test_get_period(self):
+        # Test month bounderies
+        self.period_boundary_test(date(2015, 1, 1), date(2015, 1, 31))
+        self.period_boundary_test(date(2015, 2, 1), date(2015, 2, 28))
+        self.period_boundary_test(date(2015, 3, 1), date(2015, 3, 31))
+        self.period_boundary_test(date(2015, 4, 1), date(2015, 4, 30))
+        self.period_boundary_test(date(2015, 5, 1), date(2015, 5, 31))
+        self.period_boundary_test(date(2015, 6, 1), date(2015, 6, 30))
+        self.period_boundary_test(date(2015, 7, 1), date(2015, 7, 31))
+        self.period_boundary_test(date(2015, 8, 1), date(2015, 8, 31))
+        self.period_boundary_test(date(2015, 9, 1), date(2015, 9, 30))
+        self.period_boundary_test(date(2015, 10, 1), date(2015, 10, 31))
+        self.period_boundary_test(date(2015, 11, 1), date(2015, 11, 30))
+        self.period_boundary_test(date(2015, 12, 1), date(2015, 12, 31))
+
+        # Leap year!
+        self.period_boundary_test(date(2016, 2, 1), date(2016, 2, 29))
+
+        # Test Day bounderies
+        for i in range(2, 31):
+            self.period_boundary_test(date(2015, 7, i), date(2015, 8, i-1))
+
+        # Test when the next following month has fewer days
+        self.period_boundary_test(date(2015, 1, 29), date(2015, 2, 28))
+        self.period_boundary_test(date(2015, 1, 30), date(2015, 2, 28))
+        self.period_boundary_test(date(2015, 1, 31), date(2015, 2, 28))
+
+    def test_is_period_boundary(self):
+        self.assertEqual(self.membership3.is_period_boundary(), False)
+        self.assertEqual(self.membership6.is_period_boundary(), False)
+        self.assertEqual(self.membership7.is_period_boundary(), True)
+
+        m = self.create_membership(start=date(2016,1,1), end=date(2016,5,31))
+        self.assertFalse(m.is_period_boundary(target_date=date(2016, 2, 15)))
+        self.assertTrue(m.is_period_boundary(target_date=date(2016, 2, 29)))
+        self.assertFalse(m.is_period_boundary(target_date=date(2016, 3, 15)))
+        self.assertTrue(m.is_period_boundary(target_date=date(2016, 3, 31)))
+        self.assertFalse(m.is_period_boundary(target_date=date(2016, 4, 15)))
+        self.assertTrue(m.is_period_boundary(target_date=date(2016, 4, 30)))
+
+    def get_next_period_start(self):
+        # Active Memberships (started today)
+        self.assertEqual(self.membership1.get_next_period_start(), one_month_from_now)
+        self.assertEqual(self.membership2.get_next_period_start(), one_month_from_now)
+
+        # Inactive memberships
+        self.assertEqual(self.membership4.get_next_period_start(), None)
+        self.assertEqual(self.membership5.get_next_period_start(), None)
+        self.assertEqual(self.membership6.get_next_period_start(), None)
+        self.assertEqual(self.membership7.get_next_period_start(), None)
+        self.assertEqual(self.membership8.get_next_period_start(), None)
+        self.assertEqual(self.membership9.get_next_period_start(), None)
+
+        # Future membership
+        self.assertEqual(self.membership3.get_next_period_start(), one_month_from_now)
+        next_start = self.membership10.get_next_period_start()
+        self.assertEqual(next_start.month, 3)
+        self.assertEqual(next_start.day, 1)
+
+    def test_active_memberships(self):
+        active_memberships = Membership.objects.active_memberships()
+        self.assertTrue(self.membership1 in active_memberships)
+        self.assertTrue(self.membership2 in active_memberships)
+        self.assertFalse(self.membership3 in active_memberships)
+        self.assertTrue(self.membership4 in active_memberships)
+        self.assertFalse(self.membership5 in active_memberships)
+        self.assertFalse(self.membership6 in active_memberships)
+
+    def test_is_active(self):
+        self.assertTrue(self.membership1.is_active())
+        self.assertTrue(self.membership2.is_active())
+        self.assertFalse(self.membership3.is_active())
+        self.assertTrue(self.membership4.is_active())
+        self.assertFalse(self.membership5.is_active())
+        self.assertFalse(self.membership6.is_active())
+        self.assertFalse(self.membership7.is_active())
+
+    def test_in_future(self):
+        self.assertFalse(self.membership1.in_future())
+        self.assertFalse(self.membership2.in_future())
+        self.assertTrue(self.membership3.in_future())
+        self.assertFalse(self.membership4.in_future())
+        self.assertFalse(self.membership5.in_future())
+        self.assertFalse(self.membership6.in_future())
+        self.assertTrue(self.membership10.in_future())
+
+    def test_generate_bill(self):
+        # Assume that if we generate a bill we will have a bill
+        self.assertEquals(0, self.membership1.bills.count())
+        self.membership1.generate_bill(target_date=today)
+        self.assertEquals(1, self.membership1.bills.count())
+
+        bill = self.membership1.bills.first()
+        self.assertEquals(self.membership1.monthly_rate, bill.amount())
+
+        ps, pe = self.membership1.get_period(target_date=today)
+        self.assertEquals(ps, bill.period_start)
+        self.assertEquals(pe, bill.period_end)
+
+    def test_generate_all_bills(self):
+        self.assertEquals(0, self.membership6.bills.count())
+        self.membership6.generate_all_bills()
+        self.assertEquals(12, self.membership6.bills.count())
