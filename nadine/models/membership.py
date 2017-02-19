@@ -187,10 +187,8 @@ class Membership(models.Model):
                     month = target_date.month - 1
             period_start = date(year, month, self.bill_day)
 
-        # The period ends one month later
-        period_end = period_start + relativedelta(months=1)
-        if period_end.day == period_start.day:
-            period_end = period_end - timedelta(days=1)
+        # The period ends one month later, minus one day
+        period_end = period_start + relativedelta(months=1) - timedelta(days=1)
 
         return (period_start, period_end)
 
@@ -217,6 +215,7 @@ class Membership(models.Model):
 
         return next_period_start
 
+    # Brought over from modernomad but not ported yet
     # def total_periods(self, target_date=None):
     #     ''' returns total periods between subscription start date and target
     #     date.'''
@@ -291,17 +290,8 @@ class Membership(models.Model):
         logger.debug(' ')
         logger.debug('in generate_bill for target_date = %s and get_period = (%s, %s)' % (target_date, period_start, period_end))
 
-        # a subscription's last cycle could be a pro rated one. check to see if
-        # the subscription end date is before the period end; if so, change the
-        # period end to be the subscription end date.
-        prorated = False
-        if self.end_date and self.end_date < period_end:
-            prorated = True
-            original_period_end = period_end
-            period_end = self.end_date
-
         try:
-            bill = SubscriptionBill.objects.get(period_start=period_start, subscription=self)
+            bill = UserBill.objects.get(period_start=period_start)
             logger.debug('Found existing bill #%d for period start %s' % (bill.id, period_start.strftime("%B %d %Y")))
             # if the bill already exists but we're updating it to be prorated,
             # we need to change the period end also.
@@ -314,10 +304,10 @@ class Membership(models.Model):
                 return list(bill.line_items)
         except Exception, e:
             logger.debug("Generating new bill item")
-            bill = SubscriptionBill.objects.create(period_start=period_start, period_end=period_end)
+            bill = UserBill.objects.create(period_start=period_start, period_end=period_end)
 
         # Save any custom line items before clearing out the old items
-        logger.debug("working with bill %d (%s)" % (bill.id, bill.period_start.strftime("%B %d %Y")))
+        logger.debug("Working with bill %d (%s)" % (bill.id, bill.period_start.strftime("%B %d %Y")))
         custom_items = list(bill.line_items.filter(custom=True))
         if delete_old_items:
             if bill.total_paid() > 0:
@@ -326,36 +316,13 @@ class Membership(models.Model):
                 item.delete()
 
         line_items = []
-        # First line item is the subscription itself.
-        desc = "%s (%s to %s)" % (self.description, period_start, period_end)
-        if prorated:
-            period_days = Decimal((period_end - period_start).days)
-            original_period_days = (original_period_end - period_start).days
-            price = (period_days/original_period_days)*self.price
-        else:
-            price = self.price
+        # First line items are the monthly allowances.
+        for a in self.active_allowances(target_date):
+            desc, price = a.generate_line_item(period_start, period_end)
+            line_item = BillLineItem(bill=bill, description=desc, amount=price)
+            line_items.append(line_item)
 
-        line_item = BillLineItem(bill=bill, description=desc, amount=price, paid_by_house=False)
-        line_items.append(line_item)
-
-        # Incorporate any custom fees or discounts. As well, track the
-        # effective resource charge to be used in calculation of percentage-based
-        # fees
-        effective_bill_charge = price
-        for item in custom_items:
-            line_items.append(item)
-            effective_bill_charge += item.amount  # may be negative
-            logger.debug(item.amount)
-        logger.debug('effective room charge after discounts: %d' % effective_bill_charge)
-
-        # For now we are going to assume that all fees (of any kind) that are marked as "paid by house"
-        # will be applied to subscriptions as well -- JLS
-        for location_fee in LocationFee.objects.filter(location=self.location, fee__paid_by_house=True):
-            desc = "%s (%s%c)" % (location_fee.fee.description, (location_fee.fee.percentage * 100), '%')
-            amount = float(effective_bill_charge) * location_fee.fee.percentage
-            logger.debug('Fee %s for %d' % (desc, amount))
-            fee_line_item = BillLineItem(bill=bill, description=desc, amount=amount, paid_by_house=True, fee=location_fee.fee)
-            line_items.append(fee_line_item)
+        # Now calculate the activity for the previous month
 
         # Save this beautiful bill
         bill.save()
@@ -490,6 +457,28 @@ class ResourceAllowance(models.Model):
         if not target_date:
             target_date = localtime(now()).date()
         return self.start_date <= target_date and (self.end_date is None or self.end_date >= target_date)
+
+    def generate_line_item(self, period_start, period_end):
+        prorated = False
+        if self.end_date and self.end_date < period_end:
+            prorated = True
+            original_period_end = period_end
+            period_end = self.end_date
+
+        # Generate our description
+        desc = str(resource) + " "
+        if self.description:
+            desc += self.description + " "
+        desc += "(%s to %s)" % (self.description, period_start, period_end)
+
+        if prorated:
+            period_days = Decimal((period_end - period_start).days)
+            original_period_days = (original_period_end - period_start).days
+            amount = (period_days/original_period_days) * self.monthly_rate
+        else:
+            amount = self.monthly_rate
+
+        return (description, amount)
 
 
 class SecurityDeposit(models.Model):
