@@ -223,7 +223,6 @@ class MembershipTestCase(TestCase):
         self.assertTrue(self.membership10.in_future())
 
     def test_prorated(self):
-        # We know there is only one
         r = self.membership8.allowances.first()
         # The first month was a full period so no prorate
         ps, pe = self.membership8.get_period(r.start_date)

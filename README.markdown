@@ -1,15 +1,14 @@
 # Nadine
 
-This is the Django web project which runs behinds the scenes of coworking spaces.
+Nadine is an open source software project designed and built for use at Office Nomads to help handle daily operations of the space from both the staff and member sides of the house. Nadine has been in continuous use and development since 2007. We are working hard to make Nadine easier to install, configure, deploy, and update.
 
-Most of the action is in the staff application, where you'll find a member tracking and billing system.
+More here:  http://nadineproject.org
 
 ## [Read The Full Documentation Here](http://nadine.readthedocs.io/en/master/)
 
-
 ## License & Copyright
 
-Copyright 2017 Office Nomads LLC ([http://www.officenomads.com/](http://www.officenomads.com/)) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
+Copyright 2017 Office Nomads LLC ([http://www.officenomads.com/](http://www.officenomads.com/)) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this software except in compliance with the License.
 
 You may obtain a copy of the License at [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
