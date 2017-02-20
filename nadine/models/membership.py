@@ -289,13 +289,6 @@ class Membership(models.Model):
     #
 
     def generate_bill(self, delete_old_items=True, target_date=None):
-        ''' used to generate or regenerate a bill for the given target date, or
-        today.  the reason old line items are generally deleted is that we want
-        to make sure that a) the line item descriptions are correct, since they
-        are simply strings generated from the line items themselves, and b)
-        because if any fees have changed, then percentage based derivative fees
-        will also change. '''
-
         if not target_date:
             target_date = localtime(now()).date()
 
@@ -308,9 +301,8 @@ class Membership(models.Model):
         try:
             bill = UserBill.objects.get(period_start=period_start)
             logger.debug('Found existing bill #%d for period start %s' % (bill.id, period_start.strftime("%B %d %Y")))
-            # if the bill already exists but we're updating it to be prorated,
-            # we need to change the period end also.
-            if prorated and bill.period_end != period_end:
+            # if the bill already exists but the end date is different, we need to prorate
+            if bill.period_end != period_end:
                 bill.period_end = period_end
                 bill.save()
             # If we already have a bill and we don't want to clear out the old data
@@ -324,31 +316,28 @@ class Membership(models.Model):
         # Save any custom line items before clearing out the old items
         logger.debug("Working with bill %d (%s)" % (bill.id, bill.period_start.strftime("%B %d %Y")))
         custom_items = list(bill.line_items.filter(custom=True))
+
+        # Clear out old items if that's what we are doing here
         if delete_old_items:
             if bill.total_paid() > 0:
                 logger.debug("Warning: modifying a bill with payments on it.")
             for item in bill.line_items.all():
                 item.delete()
 
-        monthly_line_items = []
-        activity_line_items = []
-        # First line items are the monthly allowances.
+        # Generate our new line items
+        monthly_items = []
+        activity_items = []
         for a in self.active_allowances(target_date):
-            desc, price = a.generate_line_item(period_start, period_end)
-            line_item = BillLineItem(bill=bill, description=desc, amount=price)
-            monthly_line_items.append(line_item)
-            # Now calculate the activity for the previous month
+            monthly_items.extend(a.monthly_line_items(bill))
+            activity_items.extend(a.activity_line_items(bill))
+
+        # Add them all up (in this specific order)
+        line_items = monthly_items.extend(activity_items).extend(custom_items)
 
         # Save this beautiful bill
         bill.save()
-        for item in monthly_line_items:
+        for item in line_items:
             item.save()
-        for item in activity_line_items:
-            item.save()
-
-        # Is this neccessary? -JLS
-        # self.bills.add(bill)
-        # self.save()
 
         return line_items
 
@@ -491,16 +480,23 @@ class ResourceAllowance(models.Model):
 
         return Decimal(prorate_days) / period_days
 
-    def generate_line_item(self, period_start, period_end):
-        # Generate our description
-        desc = str(resource) + " "
+    def amount_for_period(self, period_start, period_end):
+        return self.prorate_for_period(period_start, period_end) * self.monthly_rate
+
+    def monthly_line_item(self, bill):
+        desc = "Monthly " + str(resource) + " "
         if self.description:
             desc += self.description + " "
-        desc += "(%s to %s)" % (self.description, period_start, period_end)
+        desc += "(%s to %s)" % (bill.period_start, bill.period_end)
+        amount = a.amount_for_period(bill.period_start, bill.period_end)
+        line_item = BillLineItem(bill=bill, description=desc, amount=price)
+        return line_item
 
-        amount = self.prorate_for_period(period_start, period_end) * self.monthly_rate
-
-        return (description, amount)
+    def activity_line_item(self, bill):
+        desc = "Activity " + str(resource) + " "
+        start = bill.period_start - timedelta(days=1)
+        # TODO - complete --JLS
+        return []
 
 
 class SecurityDeposit(models.Model):
