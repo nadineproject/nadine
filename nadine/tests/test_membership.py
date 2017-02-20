@@ -256,10 +256,10 @@ class MembershipTestCase(TestCase):
         # five years have valid period ranges and the right next_period_start
         # for i in range(1, 31):
             # self.next_period_start_test(date(2016, 1, i), 60)
-        self.next_period_start_test(date(2016,1,1), 24)
-        self.next_period_start_test(date(2016,1,10), 24)
-        self.next_period_start_test(date(2017,1,28), 24)
-        self.next_period_start_test(date(2016,1,31), 24)
+        self.next_period_start_test(date(2016,1,1), 60)
+        self.next_period_start_test(date(2016,1,10), 60)
+        self.next_period_start_test(date(2017,1,28), 60)
+        self.next_period_start_test(date(2016,1,31), 60)
 
     def test_active_memberships(self):
         active_memberships = Membership.objects.active_memberships()
