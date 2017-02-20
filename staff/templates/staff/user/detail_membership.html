@@ -12,7 +12,7 @@
     <!-- <th>Paid By</th> -->
     <th></th>
   </tr>
-  {% for a in user.membership.active_allowances %}
+  {% for a in user.membership.active_subscriptions %}
     <tr>
       <td>{{ a.resource }}</td>
       <td>{{ a.allowance }}</td>

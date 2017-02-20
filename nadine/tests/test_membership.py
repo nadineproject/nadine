@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.utils.timezone import localtime, now
 from django.contrib.auth.models import User
 
-from nadine.models.membership import Membership, ResourceAllowance
+from nadine.models.membership import Membership, ResourceSubscription
 from nadine.models.resource import Resource
 
 today = localtime(now()).date()
@@ -28,7 +28,7 @@ class MembershipTestCase(TestCase):
         # success = self.client.login(username=self.admin.username, password="secret")
 
         # Resources
-        self.RESOURCE_DAY = Resource.objects.create(name="Coworking Day")
+        self.RESOURCE = Resource.objects.create(name="Test Resource")
 
         # today = localtime(now()).date()
         # one_month_from_now = today + relativedelta(months=1) - timedelta(days=1)
@@ -102,9 +102,10 @@ class MembershipTestCase(TestCase):
         )
 
 
-    ############################################################
+    ############################################################################
     # Helper Methods
-    ############################################################
+    ############################################################################
+
 
     def create_membership(self, bill_day=0, start=None, end=None, resource=None, monthly_rate=100, overage_rate=20):
         if not start:
@@ -112,10 +113,10 @@ class MembershipTestCase(TestCase):
         if bill_day == 0:
             bill_day = start.day
         if not resource:
-            resource = self.RESOURCE_DAY
+            resource = self.RESOURCE
         membership = Membership.objects.create(bill_day=bill_day)
-        membership.allowances.add(
-            ResourceAllowance.objects.create(
+        membership.subscriptions.add(
+            ResourceSubscription.objects.create(
                 resource = resource,
                 start_date = start,
                 end_date = end,
@@ -146,9 +147,11 @@ class MembershipTestCase(TestCase):
             self.assertEqual(last_start, this_start)
             last_start = next_start
 
-    ############################################################
+
+    ############################################################################
     # Tests
-    ############################################################
+    ############################################################################
+
 
     def test_inactive_period(self):
         # Today is outside the date range for this membership
@@ -289,7 +292,7 @@ class MembershipTestCase(TestCase):
         self.assertTrue(self.membership10.in_future())
 
     def test_prorated(self):
-        r = self.membership8.allowances.first()
+        r = self.membership8.subscriptions.first()
         # The first month was a full period so no prorate
         ps, pe = self.membership8.get_period(r.start_date)
         self.assertEqual(1, r.prorate_for_period(ps, pe))

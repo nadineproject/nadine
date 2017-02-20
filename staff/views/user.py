@@ -32,7 +32,7 @@ def detail(request, username):
     user = get_object_or_404(User, username=username)
     emergency_contact = user.get_emergency_contact()
     # memberships = OldMembership.objects.filter(user=user).order_by('start_date').reverse()
-    # allowances = user.membership.first().active_allowances()
+    # subscriptions = user.membership.first().active_subscriptions()
     # membership = user.
     email_logs = SentEmailLog.objects.filter(user=user).order_by('created').reverse()
 
@@ -237,10 +237,10 @@ def files(request, username):
 @staff_member_required
 def membership(request, username):
     user = get_object_or_404(User, username=username)
-    allowances = user.membership.first().active_allowances()
+    subscriptions = user.membership.first().active_subscriptions()
     context = {
         'user':user,
-        'allowances':allowances,
+        'subscriptions':subscriptions,
     }
     return render(request, 'staff/user/membership.html', context)
 

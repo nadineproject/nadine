@@ -1,8 +1,9 @@
 from __future__ import unicode_literals
 
 import os, uuid
-from datetime import datetime, timedelta, date
 import importlib
+from datetime import datetime, timedelta, date
+from abc import ABCMeta, abstractmethod
 
 from django.db import models
 from django.conf import settings
@@ -17,45 +18,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class Resource(models.Model):
-    name = models.CharField(max_length=64, unique=True)
-    tracker_class = models.CharField(max_length=64, null=True, blank=True)
-    # default_monthly_rate = models.DecimalField(decimal_places=2, max_digits=9)
-    # default_overage_rate = models.DecimalField(decimal_places=2, max_digits=9)
-
-    def __str__(self): return self.name
-
-    def get_tracker(self):
-        try:
-            mod_index = self.tracker_class.rfind(".")
-            module_name = self.tracker_class[0:mod_index]
-            class_name = self.tracker_class[mod_index+1:]
-            print("Loading Class:  module_name='%s', class_name='%s'" % (module_name, class_name))
-            m = importlib.import_module(module_name)
-            loaded_class = getattr(m, class_name)
-            return loaded_class(self)
-        except Exception as e:
-            raise Exception("Could not load tracker class", e)
-
-    # TODO - Make sure tracker_class has a '.' in it when it's saved
-    # and that the value given is of type ResourceTracker
-    # def save():
-    #     pass
-
-
-class ResourceTracker():
-
-    def __init__(self, resource):
-        self.resource = resource
-
-    def test(self):
-        print("Testing! %s" % self.resource.name)
-
-
-class CoworkingDayTracker(ResourceTracker):
-    pass
-
-
 def room_img_upload_to(instance, filename):
     # rename file to a unique string
     ext = filename.split('.')[-1]
@@ -66,6 +28,7 @@ def room_img_upload_to(instance, filename):
     if not os.path.exists(upload_abs_path):
         os.makedirs(upload_abs_path)
     return os.path.join(upload_path, filename)
+
 
 class RoomManager(models.Manager):
 
@@ -93,6 +56,7 @@ class RoomManager(models.Manager):
         rooms = rooms.exclude(straddling| sandwich | overlap)
 
         return rooms
+
 
 class Room(models.Model):
     name = models.CharField(max_length=64)
@@ -186,6 +150,63 @@ class Room(models.Model):
                     block['reserved'] = True
 
         return calendar
+
+
+class Resource(models.Model):
+    name = models.CharField(max_length=64, unique=True)
+    tracker_class = models.CharField(max_length=64, null=True, blank=True)
+
+    def __str__(self): return self.name
+
+    def is_trackable(self):
+        return self.tracker_class is not None
+
+    def get_tracker(self):
+        if not self.tracker_class:
+            return None
+
+        try:
+            mod_index = self.tracker_class.rfind(".")
+            module_name = self.tracker_class[0:mod_index]
+            class_name = self.tracker_class[mod_index+1:]
+            logger.info("Loading Class:  module_name='%s', class_name='%s'" % (module_name, class_name))
+            m = importlib.import_module(module_name)
+            loaded_class = getattr(m, class_name)
+            instance = loaded_class(self)
+            if not isinstance(instance, ResourceTrackerABC):
+                raise Exception("Tracker class not an instance of ResourceTrackerABC")
+            return instance
+        except Exception as e:
+            raise Exception("Could not load tracker class", e)
+
+    def save(self, *args, **kwargs):
+        # Try and get a tracker of this class and raise an Exception if it's invalid
+        self.get_tracker()
+        super(Resource, self).save(*args, **kwargs)
+
+
+################################################################################
+# Resource Trackers
+################################################################################
+
+
+class ResourceTrackerABC:
+    __metaclass__ = ABCMeta
+
+    def __init__(self, resource):
+        self.resource = resource
+
+    @abstractmethod
+    def get_activity(self, period_start, period_end):
+        pass
+
+
+class CoworkingDayTracker(ResourceTrackerABC):
+
+    def get_activity(self, period_start, period_end):
+        from nadine.models.billing import CoworkingDayLineItem
+        # TODO: Get all the activity
+        return [CoworkingDayLineItem()]
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

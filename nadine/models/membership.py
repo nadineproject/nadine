@@ -102,9 +102,9 @@ class MembershipManager(models.Manager):
     def active_memberships(self, target_date=None):
         if not target_date:
             target_date = localtime(now()).date()
-        current = Q(allowances__start_date__lte=target_date)
-        unending = Q(allowances__end_date__isnull=True)
-        future_ending = Q(allowances__end_date__gte=target_date)
+        current = Q(subscriptions__start_date__lte=target_date)
+        unending = Q(subscriptions__end_date__isnull=True)
+        future_ending = Q(subscriptions__end_date__gte=target_date)
         return self.filter(current & (unending | future_ending)).distinct()
 
     def ready_for_billing(self, target_date=None):
@@ -120,7 +120,7 @@ class MembershipManager(models.Manager):
     def future_memberships(self, target_date=None):
         if not target_date:
             target_date = localtime(now()).date()
-        return self.filter(allowances__start_date__gt=target_date)
+        return self.filter(subscriptions__start_date__gt=target_date)
 
     def active_members(self, target_date=None):
         members = []
@@ -142,18 +142,18 @@ class MembershipManager(models.Manager):
 class Membership(models.Model):
     objects = MembershipManager()
     bill_day = models.SmallIntegerField(default=1)
-    allowances = models.ManyToManyField('ResourceAllowance')
+    subscriptions = models.ManyToManyField('ResourceSubscription')
 
-    def active_allowances(self, target_date=None):
+    def active_subscriptions(self, target_date=None):
         if not target_date:
             target_date = localtime(now()).date()
         current = Q(start_date__lte=target_date)
         unending = Q(end_date__isnull=True)
         future_ending = Q(end_date__gte=target_date)
-        return self.allowances.filter().filter(current & (unending | future_ending)).distinct()
+        return self.subscriptions.filter().filter(current & (unending | future_ending)).distinct()
 
     def is_active(self, target_date=None):
-        return self.active_allowances(target_date).count() > 0
+        return self.active_subscriptions(target_date).count() > 0
 
     def in_future(self, target_date=None):
         return self in Membership.objects.future_memberships(target_date)
@@ -161,7 +161,7 @@ class Membership(models.Model):
     def monthly_rate(self, target_date=None):
         rate = 0
         # This should be done with some form of SUM query --JLS
-        for a in self.active_allowances(target_date):
+        for a in self.active_subscriptions(target_date):
             rate = rate + a.monthly_rate
         return rate
 
@@ -223,10 +223,10 @@ class Membership(models.Model):
                 next_period_start = None
         else:
             # If this starts in the future then the next period starts then
-            future_allowances = self.allowances.filter(start_date__gt=target_date)
-            for a in future_allowances:
-                if not next_period_start or a.start_date < next_period_start:
-                    next_period_start = a.start_date
+            future_subscriptions = self.subscriptions.filter(start_date__gt=target_date)
+            for s in future_subscriptions:
+                if not next_period_start or s.start_date < next_period_start:
+                    next_period_start = s.start_date
 
         return next_period_start
 
@@ -327,9 +327,10 @@ class Membership(models.Model):
         # Generate our new line items
         monthly_items = []
         activity_items = []
-        for a in self.active_allowances(target_date):
-            monthly_items.extend(a.monthly_line_items(bill))
-            activity_items.extend(a.activity_line_items(bill))
+        for s in self.active_subscriptions(target_date):
+            monthly_items.extend(s.monthly_line_items(bill))
+            if s.resource.is_trackable():
+                activity_items.extend(s.activity_line_items(bill))
 
         # Add them all up (in this specific order)
         line_items = monthly_items.extend(activity_items).extend(custom_items)
@@ -421,21 +422,25 @@ class IndividualMembership(Membership):
     user = models.OneToOneField(User, related_name="membership")
 
     def __str__(self):
-        return '%s: %s' % (self.user, self.allowances.all())
+        return '%s: %s' % (self.user, self.subscriptions.all())
 
 
 class OrganizationMembership(Membership):
     organization = models.OneToOneField(Organization, related_name="membership")
 
+    def __str__(self):
+        return '%s: %s' % (self.organization, self.subscriptions.all())
+
 
 class MembershipPackage(models.Model):
     name = models.CharField(max_length=64)
-    allowances = models.ManyToManyField('DefaultAllowance')
+    defaults = models.ManyToManyField('SubscriptionDefault')
 
-    def __str__(self): return self.name
+    def __str__(self):
+        return 'MembershipPackage: %s' % self.name
 
 
-class DefaultAllowance(models.Model):
+class SubscriptionDefault(models.Model):
     resource = models.ForeignKey(Resource, null=True)
     allowance = models.IntegerField(default=0)
     monthly_rate = models.DecimalField(decimal_places=2, max_digits=9)
@@ -445,7 +450,7 @@ class DefaultAllowance(models.Model):
         return "%d %s at %s/month" % (self.allowance, self.resource, self.monthly_rate)
 
 
-class ResourceAllowance(models.Model):
+class ResourceSubscription(models.Model):
     created_ts = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name="+", null=True)
     resource = models.ForeignKey(Resource, null=True)
@@ -455,7 +460,7 @@ class ResourceAllowance(models.Model):
     end_date = models.DateField(blank=True, null=True, db_index=True)
     monthly_rate = models.DecimalField(decimal_places=2, max_digits=9)
     overage_rate = models.DecimalField(decimal_places=2, max_digits=9)
-    default = models.ForeignKey(DefaultAllowance, null=True, blank=True)
+    default = models.ForeignKey(SubscriptionDefault, null=True, blank=True)
     paid_by = models.ForeignKey(User, null=True, blank=True)
 
     def __str__(self):
@@ -480,15 +485,12 @@ class ResourceAllowance(models.Model):
 
         return Decimal(prorate_days) / period_days
 
-    def amount_for_period(self, period_start, period_end):
-        return self.prorate_for_period(period_start, period_end) * self.monthly_rate
-
     def monthly_line_item(self, bill):
         desc = "Monthly " + str(resource) + " "
         if self.description:
             desc += self.description + " "
         desc += "(%s to %s)" % (bill.period_start, bill.period_end)
-        amount = a.amount_for_period(bill.period_start, bill.period_end)
+        amount = self.prorate_for_period(period_start, period_end) * self.monthly_rate
         line_item = BillLineItem(bill=bill, description=desc, amount=price)
         return line_item
 

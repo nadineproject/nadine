@@ -18,7 +18,6 @@ def forward(apps, schema_editor):
     BillLineItem = apps.get_model("nadine", "BillLineItem")
     CoworkingDayLineItem = apps.get_model("nadine", "CoworkingDayLineItem")
     Payment = apps.get_model("nadine", "Payment")
-    print
 
     print("    Migrating Old Bills...")
     for o in OldBill.objects.all():

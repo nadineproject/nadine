@@ -12,7 +12,7 @@
       <th>Overage Rate</th>
     </tr>
     {% for package in packages %}
-        {% for a in package.allowances.all %}
+        {% for a in package.subscriptions.all %}
           <tr>
             <td>
               {% ifchanged %}
