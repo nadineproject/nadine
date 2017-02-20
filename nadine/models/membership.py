@@ -462,7 +462,7 @@ class ResourceSubscription(models.Model):
     created_by = models.ForeignKey(User, related_name="+", null=True)
     resource = models.ForeignKey(Resource)
     membership = models.ForeignKey(Membership, related_name="subscriptions")
-    description = models.TextField(blank=True, null=True)
+    description = models.CharField(max_length=64, blank=True, null=True)
     allowance = models.IntegerField(default=0)
     start_date = models.DateField(db_index=True)
     end_date = models.DateField(blank=True, null=True, db_index=True)

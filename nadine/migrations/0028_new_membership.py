@@ -167,7 +167,7 @@ class Migration(migrations.Migration):
                 ('created_by', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL)),
                 ('default', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='nadine.SubscriptionDefault', null=True, blank=True)),
                 ('paid_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-                ('description', models.TextField(blank=True, null=True)),
+                ('description', models.CharField(max_length=64, blank=True, null=True)),
                 ('resource', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='nadine.Resource')),
                 ('membership', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='nadine.Membership')),
             ],
