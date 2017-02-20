@@ -172,6 +172,14 @@ class Membership(models.Model):
             rate = rate + a.monthly_rate
         return rate
 
+    def bill_day_str(self):
+        # From http://stackoverflow.com/questions/739241/date-ordinal-output
+        if 4 <= self.bill_day <= 20 or 24 <= self.bill_day <= 30:
+            suffix = "th"
+        else:
+            suffix = ["st", "nd", "rd"][self.bill_day % 10 - 1]
+        return "%d%s" % (self.bill_day, suffix)
+
     def get_period(self, target_date=None):
         ''' Get period associated with a certain date.
         Returns (None, None) if the membership is not active.'''

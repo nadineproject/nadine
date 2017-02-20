@@ -1,6 +1,17 @@
 {% load static %}
 
-<h5>Resource Allowances (<a href="">+</a>)</h5>
+<table>
+  <tr>
+    <th>Billing Day</th>
+    <th>Next Bill</th>
+  </tr>
+  <tr>
+    <td>{{ membership.bill_day_str }}</td>
+    <td>{{ membership.next_period_start }}</td>
+  </tr>
+</table>
+
+<h5>Subscriptions (<a href="">+</a>)</h5>
 <table>
   <tr>
     <th>Resource</th>
@@ -9,24 +20,24 @@
     <th>End Date</th>
     <th>Overage</th>
     <th>Monthly</th>
-    <!-- <th>Paid By</th> -->
+    <th>Paid By</th>
     <th></th>
   </tr>
-  {% for a in user.membership.active_subscriptions %}
+  {% for s in membership.active_subscriptions %}
     <tr>
-      <td>{{ a.resource }}</td>
-      <td>{{ a.allowance }}</td>
-      <td>{{ a.start_date }}</td>
-      <td>{{ a.end_date |default:"-" }}</td>
-      <td>${{ a.overage_rate }}</td>
-      <td>${{ a.monthly_rate }}/month</td>
-      <!-- <td>{{ a.paid_by|default:"" }}</td> -->
+      <td>{{ s.resource }}</td>
+      <td>{{ s.allowance }}</td>
+      <td>{{ s.start_date }}</td>
+      <td>{{ s.end_date |default:"-" }}</td>
+      <td>${{ s.overage_rate }}</td>
+      <td>${{ s.monthly_rate }}/month</td>
+      <td>{{ s.paid_by|default:"" }}</td>
       <td><a href="">Edit</a></td>
     </tr>
   {% endfor %}
   <tr>
     <td colspan="5">Total:</td>
-    <td>5<td>
+    <td>${{ membership.monthly_rate }}/month<td>
   </tr>
 </table>
 

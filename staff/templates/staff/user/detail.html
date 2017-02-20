@@ -252,7 +252,9 @@ function gotoEmailReset(emailAddress){
 
 <!-- Memberships -->
 <div id="tabs-1">
-  {% include "staff/user/detail_membership.html" %}
+  {% with user.membership as membership %}
+    {% include "staff/user/detail_membership.html" %}
+  {% endwith %}
 </div>
 
 <div id="tabs-2">
