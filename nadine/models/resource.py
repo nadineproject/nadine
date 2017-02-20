@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 import os, uuid
 from datetime import datetime, timedelta, date
+import importlib
 
 from django.db import models
 from django.conf import settings
@@ -17,11 +18,42 @@ logger = logging.getLogger(__name__)
 
 
 class Resource(models.Model):
-    name = models.CharField(max_length=64)
+    name = models.CharField(max_length=64, unique=True)
+    tracker_class = models.CharField(max_length=64, null=True, blank=True)
     # default_monthly_rate = models.DecimalField(decimal_places=2, max_digits=9)
     # default_overage_rate = models.DecimalField(decimal_places=2, max_digits=9)
 
     def __str__(self): return self.name
+
+    def get_tracker(self):
+        try:
+            mod_index = self.tracker_class.rfind(".")
+            module_name = self.tracker_class[0:mod_index]
+            class_name = self.tracker_class[mod_index+1:]
+            print("Loading Class:  module_name='%s', class_name='%s'" % (module_name, class_name))
+            m = importlib.import_module(module_name)
+            loaded_class = getattr(m, class_name)
+            return loaded_class(self)
+        except Exception as e:
+            raise Exception("Could not load tracker class", e)
+
+    # TODO - Make sure tracker_class has a '.' in it when it's saved
+    # and that the value given is of type ResourceTracker
+    # def save():
+    #     pass
+
+
+class ResourceTracker():
+
+    def __init__(self, resource):
+        self.resource = resource
+
+    def test(self):
+        print("Testing! %s" % self.resource.name)
+
+
+class CoworkingDayTracker(ResourceTracker):
+    pass
 
 
 def room_img_upload_to(instance, filename):

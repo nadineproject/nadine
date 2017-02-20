@@ -21,6 +21,7 @@ admin.site.register(HowHeard)
 admin.site.register(MembershipPlan)
 admin.site.register(Room)
 admin.site.register(Event)
+admin.site.register(Resource)
 
 
 

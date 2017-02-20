@@ -20,7 +20,7 @@ def forward(apps, schema_editor):
     print
 
     print("    Creating Resources and Defaults...")
-    DAY = Resource.objects.create(name="Coworking Day")
+    DAY = Resource.objects.create(name="Coworking Day", tracker_class="nadine.models.resource.CoworkingDayTracker" )
     DESK = Resource.objects.create(name="Dedicated Desk")
     MAIL = Resource.objects.create(name="Mail Service")
     KEY = Resource.objects.create(name="Key")
@@ -140,7 +140,8 @@ class Migration(migrations.Migration):
             name='Resource',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=64)),
+                ('name', models.CharField(max_length=64, unique=True)),
+                ('tracker_class', models.CharField(max_length=64, blank=True, null=True)),
                 # ('default_monthly_rate', models.DecimalField(decimal_places=2, max_digits=9)),
                 # ('default_overage_rate', models.DecimalField(decimal_places=2, max_digits=9)),
             ],
