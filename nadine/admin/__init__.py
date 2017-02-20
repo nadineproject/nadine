@@ -11,6 +11,7 @@ from nadine.admin.core import StyledAdmin
 from user import *
 from organization import *
 from billing import *
+from membership import *
 from old_billing import *
 
 
@@ -24,7 +25,6 @@ admin.site.register(Event)
 admin.site.register(Resource)
 
 
-
 class CoworkingDayAdmin(StyledAdmin):
     list_display = ('visit_date', 'user', 'paid_by', 'created_ts')
     search_fields = ('user__first_name', 'user__last_name', 'paid_by__first_name', 'paid_by__last_name')
@@ -35,22 +35,9 @@ class CoworkingDayAdmin(StyledAdmin):
 admin.site.register(CoworkingDay, CoworkingDayAdmin)
 
 
-class OldMembershipAdmin(StyledAdmin):
-    list_display = ('user', 'start_date', 'end_date')
-    search_fields = ('user__first_name', 'user__last_name')
-admin.site.register(OldMembership, OldMembershipAdmin)
-# TODO - create a NEW membership admin
-admin.site.register(Membership)
-
-
 class SentEmailLogAdmin(StyledAdmin):
     list_display = ('created', 'recipient', 'subject', 'note', 'success')
 admin.site.register(SentEmailLog, SentEmailLogAdmin)
-
-
-class SecurityDepositAdmin(StyledAdmin):
-    list_display = ('user', 'received_date', 'returned_date', 'amount', 'note')
-admin.site.register(SecurityDeposit, SecurityDepositAdmin)
 
 
 class SpecialDayAdmin(StyledAdmin):

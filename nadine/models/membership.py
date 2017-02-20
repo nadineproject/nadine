@@ -142,7 +142,14 @@ class MembershipManager(models.Manager):
 class Membership(models.Model):
     objects = MembershipManager()
     bill_day = models.SmallIntegerField(default=1)
-    subscriptions = models.ManyToManyField('ResourceSubscription')
+    # subscriptions = models.ManyToManyField('ResourceSubscription')
+
+    def who(self):
+        if self.individualmembership:
+            return self.individualmembership.user.get_full_name()
+        elif self.organizationmembership:
+            return self.organizationmembership.organization.name
+        return None
 
     def active_subscriptions(self, target_date=None):
         if not target_date:
@@ -453,7 +460,8 @@ class SubscriptionDefault(models.Model):
 class ResourceSubscription(models.Model):
     created_ts = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name="+", null=True)
-    resource = models.ForeignKey(Resource, null=True)
+    resource = models.ForeignKey(Resource)
+    membership = models.ForeignKey(Membership, related_name="subscriptions")
     description = models.TextField(blank=True, null=True)
     allowance = models.IntegerField(default=0)
     start_date = models.DateField(db_index=True)

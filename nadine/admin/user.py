@@ -45,14 +45,6 @@ class XeroContactInline(admin.TabularInline):
 
 
 class UserWithProfileAdmin(UserAdmin):
-
-    # TODO - this was in the list display.  Is it neccessary? 
-    # def membership(self):
-    #     active_membership = self.profile.active_membership()
-    #     if active_membership:
-    #         return active_membership.membership_plan
-    #     return ""
-
     inlines = [EmailAddressInline, UserProfileInline, EmergencyContactInline, XeroContactInline]
     list_display = ('username', 'email', 'date_joined', 'last_login')
     ordering = ('-date_joined', 'username')

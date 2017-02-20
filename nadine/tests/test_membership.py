@@ -115,14 +115,13 @@ class MembershipTestCase(TestCase):
         if not resource:
             resource = self.RESOURCE
         membership = Membership.objects.create(bill_day=bill_day)
-        membership.subscriptions.add(
-            ResourceSubscription.objects.create(
-                resource = resource,
-                start_date = start,
-                end_date = end,
-                monthly_rate = monthly_rate,
-                overage_rate = overage_rate,
-            )
+        ResourceSubscription.objects.create(
+            membership = membership,
+            resource = resource,
+            start_date = start,
+            end_date = end,
+            monthly_rate = monthly_rate,
+            overage_rate = overage_rate,
         )
         return membership
 
