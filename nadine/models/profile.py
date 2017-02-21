@@ -900,9 +900,12 @@ post_save.connect(profile_save_callback, sender=UserProfile)
 
 def user_save_callback(sender, **kwargs):
     user = kwargs['instance']
-    # Make certain we have a Member record
+    # Make certain we have a Profile and IndividualMembership
     if not UserProfile.objects.filter(user=user).count() > 0:
         UserProfile.objects.create(user=user)
+    from nadine.models.membership import IndividualMembership
+    if not IndividualMembership.objects.filter(user=user).count() > 0:
+        IndividualMembership.objects.create(user=user)
 post_save.connect(user_save_callback, sender=User)
 
 
