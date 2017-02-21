@@ -19,24 +19,33 @@ def forward(apps, schema_editor):
     Resource = apps.get_model("nadine", "Resource")
     print
 
-    print("    Creating Resources and Defaults...")
+    print("    Creating Resources...")
     DAY = Resource.objects.create(name="Coworking Day", tracker_class="nadine.models.resource.CoworkingDayTracker" )
+    ROOM = Resource.objects.create(name="Room Booking", tracker_class="nadine.models.resource.RoomBookingTracker" )
     DESK = Resource.objects.create(name="Dedicated Desk")
     MAIL = Resource.objects.create(name="Mail Service")
     KEY = Resource.objects.create(name="Key")
-    DAY_DEFAULT = SubscriptionDefault.objects.create(resource=DAY, allowance=0, monthly_rate=0, overage_rate=0)
-    DESK_DEFAULT = SubscriptionDefault.objects.create(resource=DESK, allowance=0, monthly_rate=0, overage_rate=0)
-    MAIL_DEFAULT = SubscriptionDefault.objects.create(resource=MAIL, allowance=0, monthly_rate=0, overage_rate=0)
-    KEY_DEFAULT = SubscriptionDefault.objects.create(resource=KEY, allowance=0, monthly_rate=0, overage_rate=0)
 
     print("    Migrating Membership Plans to Packages...")
+    PACKAGE_MAP = {}
     for plan in MembershipPlan.objects.all():
         package = MembershipPackage.objects.create(name=plan.name)
-        day_default = SubscriptionDefault.objects.create(resource=DAY, allowance=plan.dropin_allowance, monthly_rate=plan.monthly_rate, overage_rate=plan.daily_rate)
-        package.defaults.add(day_default)
+        SubscriptionDefault.objects.create(
+            package = package,
+            resource = DAY,
+            allowance = plan.dropin_allowance,
+            monthly_rate = plan.monthly_rate,
+            overage_rate=plan.daily_rate
+        )
         if plan.has_desk:
-            desk_default = SubscriptionDefault.objects.create(resource=DESK, allowance=1, monthly_rate=0, overage_rate=0)
-            package.defaults.add(desk_default)
+            SubscriptionDefault.objects.create(
+                package = package,
+                resource = DESK,
+                allowance = 1,
+                monthly_rate = 0,
+                overage_rate = 0
+            )
+        PACKAGE_MAP[plan] = package
 
     print("    Migrating Memberships...")
     for user in User.objects.all():
@@ -44,12 +53,15 @@ def forward(apps, schema_editor):
         if old_memberships:
             last_membership = old_memberships.last()
             new_membership = IndividualMembership.objects.create(
-                user=user,
+                user = user,
                 bill_day = last_membership.start_date.day
             )
             for m in old_memberships:
+                package = PACKAGE_MAP[m.membership_plan]
+                day_default = SubscriptionDefault.objects.filter(package=package, resource=DAY).first()
+                desk_default = SubscriptionDefault.objects.filter(package=package, resource=DESK).first()
                 if m.has_desk:
-                    desk_subscription = ResourceSubscription.objects.create(
+                    ResourceSubscription.objects.create(
                         membership = new_membership,
                         resource = DESK,
                         start_date = m.start_date,
@@ -58,9 +70,9 @@ def forward(apps, schema_editor):
                         allowance = 1,
                         overage_rate = 0,
                         paid_by = m.paid_by,
-                        default = DESK_DEFAULT,
+                        default = desk_default,
                     )
-                    day_subscription = ResourceSubscription.objects.create(
+                    ResourceSubscription.objects.create(
                         membership = new_membership,
                         resource = DAY,
                         start_date = m.start_date,
@@ -69,10 +81,10 @@ def forward(apps, schema_editor):
                         allowance = m.dropin_allowance,
                         overage_rate = m.daily_rate,
                         paid_by = m.paid_by,
-                        default = DAY_DEFAULT,
+                        default = day_default,
                     )
                 else:
-                    day_subscription = ResourceSubscription.objects.create(
+                    ResourceSubscription.objects.create(
                         membership = new_membership,
                         resource = DAY,
                         start_date = m.start_date,
@@ -81,10 +93,10 @@ def forward(apps, schema_editor):
                         allowance = m.dropin_allowance,
                         overage_rate = m.daily_rate,
                         paid_by = m.paid_by,
-                        default = DAY_DEFAULT,
+                        default = day_default,
                     )
                 if m.has_mail:
-                    mail_subscription = ResourceSubscription.objects.create(
+                    ResourceSubscription.objects.create(
                         membership = new_membership,
                         resource = MAIL,
                         start_date = m.start_date,
@@ -93,10 +105,9 @@ def forward(apps, schema_editor):
                         allowance = 1,
                         overage_rate = 0,
                         paid_by = m.paid_by,
-                        default = MAIL_DEFAULT,
                     )
                 if m.has_key:
-                    key_subscription = ResourceSubscription.objects.create(
+                    ResourceSubscription.objects.create(
                         membership = new_membership,
                         resource = KEY,
                         start_date = m.start_date,
@@ -105,9 +116,7 @@ def forward(apps, schema_editor):
                         allowance = 1,
                         overage_rate = 0,
                         paid_by = m.paid_by,
-                        default = KEY_DEFAULT,
                     )
-                new_membership.save()
 
 
 def reverse(apps, schema_editor):
@@ -123,15 +132,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='SubscriptionDefault',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('allowance', models.IntegerField(default=0)),
-                ('monthly_rate', models.DecimalField(decimal_places=2, max_digits=9)),
-                ('overage_rate', models.DecimalField(decimal_places=2, max_digits=9)),
-            ],
-        ),
-        migrations.CreateModel(
             name='Membership',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -143,7 +143,6 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=64)),
-                ('defaults', models.ManyToManyField(to='nadine.SubscriptionDefault')),
             ],
         ),
         migrations.CreateModel(
@@ -151,25 +150,18 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=64, unique=True)),
-                ('tracker_class', models.CharField(max_length=64, blank=True, null=True)),
+                ('tracker_class', models.CharField(blank=True, max_length=64, null=True)),
             ],
         ),
         migrations.CreateModel(
-            name='ResourceSubscription',
+            name='SubscriptionDefault',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_ts', models.DateTimeField(auto_now_add=True)),
                 ('allowance', models.IntegerField(default=0)),
-                ('start_date', models.DateField(db_index=True)),
-                ('end_date', models.DateField(blank=True, db_index=True, null=True)),
                 ('monthly_rate', models.DecimalField(decimal_places=2, max_digits=9)),
                 ('overage_rate', models.DecimalField(decimal_places=2, max_digits=9)),
-                ('created_by', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('default', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='nadine.SubscriptionDefault', null=True, blank=True)),
-                ('paid_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-                ('description', models.CharField(max_length=64, blank=True, null=True)),
-                ('resource', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='nadine.Resource')),
-                ('membership', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='nadine.Membership')),
+                ('package', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='defaults', to='nadine.MembershipPackage')),
+                ('resource', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='nadine.Resource')),
             ],
         ),
         migrations.CreateModel(
@@ -188,15 +180,39 @@ class Migration(migrations.Migration):
             ],
             bases=('nadine.membership',),
         ),
-        migrations.AddField(
-            model_name='membership',
-            name='subscriptions',
-            field=models.ManyToManyField(to='nadine.ResourceSubscription'),
+        migrations.CreateModel(
+            name='ResourceSubscription',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('created_ts', models.DateTimeField(auto_now_add=True)),
+                ('description', models.CharField(blank=True, max_length=64, null=True)),
+                ('allowance', models.IntegerField(default=0)),
+                ('start_date', models.DateField(db_index=True)),
+                ('end_date', models.DateField(blank=True, db_index=True, null=True)),
+                ('monthly_rate', models.DecimalField(decimal_places=2, max_digits=9)),
+                ('overage_rate', models.DecimalField(decimal_places=2, max_digits=9)),
+                ('created_by', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL)),
+            ],
         ),
         migrations.AddField(
-            model_name='subscriptiondefault',
+            model_name='resourcesubscription',
+            name='default',
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='nadine.SubscriptionDefault'),
+        ),
+        migrations.AddField(
+            model_name='resourcesubscription',
+            name='membership',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='subscriptions', to='nadine.Membership'),
+        ),
+        migrations.AddField(
+            model_name='resourcesubscription',
+            name='paid_by',
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+        ),
+        migrations.AddField(
+            model_name='resourcesubscription',
             name='resource',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='nadine.Resource'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='nadine.Resource'),
         ),
 
         # Convert all the old memberships to new ones

@@ -92,13 +92,6 @@ class MemberGroups():
 
 class MembershipManager(models.Manager):
 
-    # def create_with_plan(self, user, start_date, end_date, membership_plan, rate=-1, paid_by=None):
-    #     if rate < 0:
-    #         rate = membership_plan.monthly_rate
-    #     self.create(user=user, start_date=start_date, end_date=end_date, membership_plan=membership_plan,
-    #                 monthly_rate=rate, daily_rate=membership_plan.daily_rate, dropin_allowance=membership_plan.dropin_allowance,
-    #                 has_desk=membership_plan.has_desk, paid_by=paid_by)
-
     def active_memberships(self, target_date=None):
         if not target_date:
             target_date = localtime(now()).date()
@@ -142,7 +135,34 @@ class MembershipManager(models.Manager):
 class Membership(models.Model):
     objects = MembershipManager()
     bill_day = models.SmallIntegerField(default=1)
-    # subscriptions = models.ManyToManyField('ResourceSubscription')
+    # subscriptions = FK on ResourceSubscription
+
+    def end(self, end_date):
+        for s in self.subscriptions.all():
+            if not s.end_date or s.end_date > end_date:
+                s.end_date = end_date
+                s.save()
+
+    def set_to_package(self, package, start_date=None, end_date=None, paid_by=None, bypass_check=False):
+        if not start_date:
+            start_date = localtime(now()).date()
+
+        if not bypass_check:
+            if self.is_active(start_date):
+                raise Exception("Trying to set an active membership to new package!  End the current membership before changing to new package.")
+
+        for default in package.defaults.all():
+            ResourceSubscription.objects.create(
+                membership = self,
+                start_date = start_date,
+                end_date = end_date,
+                paid_by = paid_by,
+                default = default,
+                resource = default.resource,
+                monthly_rate = default.monthly_rate,
+                overage_rate = default.overage_rate,
+                allowance = default.allowance,
+            )
 
     def who(self):
         if self.individualmembership:
@@ -245,64 +265,6 @@ class Membership(models.Model):
 
         return next_period_start
 
-    # Brought over from modernomad but not ported yet
-    # def total_periods(self, target_date=None):
-    #     ''' returns total periods between subscription start date and target
-    #     date.'''
-    #     if not target_date:
-    #         target_date = localtime(now()).date()
-    #
-    #     if self.start_date > target_date:
-    #         return 0
-    #     if self.end_date and self.end_date < target_date:
-    #         target_date = self.end_date
-    #
-    #     rd = relativedelta(target_date + timedelta(days=1), self.start_date)
-    #     return rd.months + (12 * rd.years)
-    #
-    # def bills_between(self, start, end):
-    #     d = start
-    #     bills = []
-    #     while d < end:
-    #         b = self.get_bill_for_date(d)
-    #         if b:
-    #             bills.append(b)
-    #         d = self.next_period_start(d)
-    #         if not d:
-    #             break
-    #     return bills
-    #
-    # def get_bill_for_date(self, date):
-    #     result = SubscriptionBill.objects.filter(subscription=self, period_start__lte=date, period_end__gte=date)
-    #     logger.debug('subscription %d: get_bill_for_date %s' % (self.id, date))
-    #     logger.debug('bill object(s):')
-    #     logger.debug(result)
-    #     if result.count():
-    #         if result.count() > 1:
-    #             logger.debug("Warning! Multiple bills found for one date. This shouldn't happen")
-    #             raise Exception('Error: multiple bills for one date:')
-    #         return result[0]
-    #     else:
-    #         return None
-    #
-    # def days_between(self, start, end):
-    #     ''' return the number of days of this subscription that occur between start and end dates'''
-    #     days = 0
-    #     if not self.end_date:
-    #         # set the end date to be the end date passed in so we can work with
-    #         # a date object, but do NOT save.
-    #         self.end_date = end
-    #     if self.start_date >= start and self.end_date <= end:
-    #         days = (self.end_date - self.start_date).days
-    #     elif self.start_date <= start and self.end_date >= end:
-    #         days = (end - start).days
-    #     elif self.start_date < start:
-    #         days = (self.end_date - start).days
-    #     elif self.end_date > end:
-    #         days = (end - self.start_date).days
-    #     return days
-    #
-
     def generate_bill(self, delete_old_items=True, target_date=None):
         if not target_date:
             target_date = localtime(now()).date()
@@ -373,7 +335,90 @@ class Membership(models.Model):
             self.generate_bill(target_date=period_start)
             period_start = self.next_period_start(period_start)
 
-    # Ported from modernomad
+    def matches_default(self, target_date=None):
+        return self.matching_package(target_date) is not None
+
+    def matching_package(self, target_date=None):
+        subscriptions = self.active_subscriptions(target_date)
+
+        matching_package = None
+        for s in subscriptions:
+            if not s.default:
+                # No defaults = no match
+                return None
+            this_package = s.default.package
+            if matching_package and matching_package != this_package:
+                # Multiple packages = no match
+                return None
+            matching_package = this_package
+            if not s.matches_default():
+                # Varying from default = no match
+                return None
+
+        # Finally check to make sure they have the same number of subscriptions
+        if matching_package and matching_package.defaults.count() != subscriptions.count():
+            return None
+
+        return matching_package
+
+
+    # Brought over from modernomad but not ported yet
+    # def total_periods(self, target_date=None):
+    #     ''' returns total periods between subscription start date and target
+    #     date.'''
+    #     if not target_date:
+    #         target_date = localtime(now()).date()
+    #
+    #     if self.start_date > target_date:
+    #         return 0
+    #     if self.end_date and self.end_date < target_date:
+    #         target_date = self.end_date
+    #
+    #     rd = relativedelta(target_date + timedelta(days=1), self.start_date)
+    #     return rd.months + (12 * rd.years)
+    #
+    # def bills_between(self, start, end):
+    #     d = start
+    #     bills = []
+    #     while d < end:
+    #         b = self.get_bill_for_date(d)
+    #         if b:
+    #             bills.append(b)
+    #         d = self.next_period_start(d)
+    #         if not d:
+    #             break
+    #     return bills
+    #
+    # def get_bill_for_date(self, date):
+    #     result = SubscriptionBill.objects.filter(subscription=self, period_start__lte=date, period_end__gte=date)
+    #     logger.debug('subscription %d: get_bill_for_date %s' % (self.id, date))
+    #     logger.debug('bill object(s):')
+    #     logger.debug(result)
+    #     if result.count():
+    #         if result.count() > 1:
+    #             logger.debug("Warning! Multiple bills found for one date. This shouldn't happen")
+    #             raise Exception('Error: multiple bills for one date:')
+    #         return result[0]
+    #     else:
+    #         return None
+    #
+    # def days_between(self, start, end):
+    #     ''' return the number of days of this subscription that occur between start and end dates'''
+    #     days = 0
+    #     if not self.end_date:
+    #         # set the end date to be the end date passed in so we can work with
+    #         # a date object, but do NOT save.
+    #         self.end_date = end
+    #     if self.start_date >= start and self.end_date <= end:
+    #         days = (self.end_date - self.start_date).days
+    #     elif self.start_date <= start and self.end_date >= end:
+    #         days = (end - start).days
+    #     elif self.start_date < start:
+    #         days = (self.end_date - start).days
+    #     elif self.end_date > end:
+    #         days = (end - self.start_date).days
+    #     return days
+    #
     # def last_paid(self, include_partial=False):
     #     ''' returns the end date of the last period with payments, unless no
     #     bills have been paid in which case it returns the start date of the
@@ -449,13 +494,20 @@ class OrganizationMembership(Membership):
 
 class MembershipPackage(models.Model):
     name = models.CharField(max_length=64)
-    defaults = models.ManyToManyField('SubscriptionDefault')
+
+    def monthly_rate(self):
+        rate = 0
+        # This should be done with some form of SUM query --JLS
+        for d in self.defaults.all():
+            rate = rate + d.monthly_rate
+        return rate
 
     def __str__(self):
         return 'MembershipPackage: %s' % self.name
 
 
 class SubscriptionDefault(models.Model):
+    package = models.ForeignKey(MembershipPackage, related_name="defaults")
     resource = models.ForeignKey(Resource, null=True)
     allowance = models.IntegerField(default=0)
     monthly_rate = models.DecimalField(decimal_places=2, max_digits=9)
@@ -515,6 +567,14 @@ class ResourceSubscription(models.Model):
         start = bill.period_start - timedelta(days=1)
         # TODO - complete --JLS
         return []
+
+    def matches_default(self):
+        return (
+            self.default and
+            self.allowance == self.default.allowance and
+            self.monthly_rate == self.default.monthly_rate and
+            self.overage_rate == self.default.overage_rate
+        )
 
 
 class SecurityDeposit(models.Model):

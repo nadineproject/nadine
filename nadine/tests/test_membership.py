@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.utils.timezone import localtime, now
 from django.contrib.auth.models import User
 
-from nadine.models.membership import Membership, ResourceSubscription
+from nadine.models.membership import *
 from nadine.models.resource import Resource
 
 today = localtime(now()).date()
@@ -28,10 +28,17 @@ class MembershipTestCase(TestCase):
         # success = self.client.login(username=self.admin.username, password="secret")
 
         # Resources
-        self.RESOURCE = Resource.objects.create(name="Test Resource")
+        self.test_resource = Resource.objects.create(name="Test Resource")
 
-        # today = localtime(now()).date()
-        # one_month_from_now = today + relativedelta(months=1) - timedelta(days=1)
+        # Membership package
+        self.test_package = MembershipPackage.objects.create(name="Test Package")
+        self.default_subscription = SubscriptionDefault.objects.create(
+            package = self.test_package,
+            resource = self.test_resource,
+            allowance = 10,
+            monthly_rate = 100,
+            overage_rate = 20,
+        )
 
         # Starts today and no end
         self.membership1 = self.create_membership(
@@ -113,7 +120,7 @@ class MembershipTestCase(TestCase):
         if bill_day == 0:
             bill_day = start.day
         if not resource:
-            resource = self.RESOURCE
+            resource = self.test_resource
         membership = Membership.objects.create(bill_day=bill_day)
         ResourceSubscription.objects.create(
             membership = membership,
@@ -125,12 +132,14 @@ class MembershipTestCase(TestCase):
         )
         return membership
 
+
     def period_boundary_test(self, period_start, period_end):
         # For a given period start, test the period_end is equal to the given period_end
         m = self.create_membership(start=period_start)
         ps, pe = m.get_period(target_date=period_start)
         # print("start: %s, end: %s, got: %s" % (period_start, period_end, pe))
         self.assertEquals(pe, period_end)
+
 
     def next_period_start_test(self, start, number):
         last_start = start
@@ -317,3 +326,23 @@ class MembershipTestCase(TestCase):
     #     self.assertEquals(0, self.membership6.bills.count())
     #     self.membership6.generate_all_bills()
     #     self.assertEquals(12, self.membership6.bills.count())
+
+    def test_package_monthly_rate(self):
+        self.assertEqual(self.test_package.monthly_rate(), self.default_subscription.monthly_rate)
+
+    def test_set_to_package(self):
+        user = User.objects.create(username='test_user1', first_name='Test', last_name='User')
+        membership = user.membership
+
+        membership.end(yesterday)
+        self.assertFalse(membership.matches_default())
+        self.assertEqual(None, membership.matching_package())
+        self.assertEqual(0, membership.monthly_rate())
+
+        membership.set_to_package(self.test_package, today)
+        self.assertEqual(membership.monthly_rate(), self.test_package.monthly_rate())
+        self.assertTrue(membership.matches_default())
+        self.assertEqual(membership.matching_package(), self.test_package)
+
+
+# Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
