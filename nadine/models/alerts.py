@@ -308,6 +308,7 @@ class MemberAlert(models.Model):
         app_label = 'nadine'
 
 
+# TODO - convert to ResourceSubscription
 def membership_callback(sender, **kwargs):
     #print("membership_callback")
     membership = kwargs['instance']
@@ -319,4 +320,4 @@ def membership_callback(sender, **kwargs):
         window_start = timezone.now() - timedelta(days=5)
         if membership.end_date and membership.end_date < window_start.date():
             MemberAlert.objects.trigger_exiting_membership(membership.user)
-post_save.connect(membership_callback, sender=IndividualMembership)
+post_save.connect(membership_callback, sender=OldMembership)
