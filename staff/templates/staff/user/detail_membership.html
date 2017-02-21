@@ -1,13 +1,16 @@
 {% load static %}
 
+<h5>Details</h5>
 <table>
   <tr>
     <th>Billing Day</th>
     <th>Next Bill</th>
+    <th>Package</th>
   </tr>
   <tr>
     <td>{{ membership.bill_day_str }}</td>
     <td>{{ membership.next_period_start }}</td>
+    <td>{{ membership.matching_package|default:"Custom" }}</td>
   </tr>
 </table>
 

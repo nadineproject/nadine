@@ -503,7 +503,7 @@ class MembershipPackage(models.Model):
         return rate
 
     def __str__(self):
-        return 'MembershipPackage: %s' % self.name
+        return self.name
 
 
 class SubscriptionDefault(models.Model):
