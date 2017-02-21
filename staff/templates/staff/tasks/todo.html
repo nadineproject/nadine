@@ -10,7 +10,7 @@
 	<table>
 		<tr>
 			<th>Day</th>
-			<th class='left'>Member</th>
+			<th class='centered'>Member</th>
 			<th>Were they here?</th>
 			<th></th>
 		</tr>
@@ -51,7 +51,7 @@
 				<td>
 					<a href="{% url 'staff:activity:date' row.day.year row.day.month row.day.day %}">{{ row.day|date:"l, M dS" }}</a>
 				</td>
-				<td class='left'>
+				<td class='centered'>
 					<a href="{% url 'staff:user:detail' row.user.username %}">{{ row.user.get_full_name }}</a>
 				</td>
 				<td class='centered'>
