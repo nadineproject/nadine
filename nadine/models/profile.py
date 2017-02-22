@@ -188,9 +188,8 @@ class UserQueryHelper():
         active_invalids = self.active_members().filter(profile__valid_billing=False)
         return active_invalids.exclude(freeloaders).exclude(guests)
 
-    def members_by_plan(self, plan):
-        memberships = Membership.objects.active_memberships().filter(membership_plan__name=plan)
-        return User.objects.filter(id__in=memberships.values('user')).order_by('first_name')
+    def members_by_package(self, package_name):
+        return Membership.objects.active_members(package_name=package_name)
 
     def members_with_desks(self):
         memberships = Membership.objects.active_memberships().filter(has_desk=True)

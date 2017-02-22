@@ -61,11 +61,10 @@ class MemberGroups():
     @staticmethod
     def get_member_groups():
         group_list = []
-        for plan in MembershipPlan.objects.filter(enabled=True).order_by('name'):
-            plan_name = plan.name
-            plan_users = User.helper.members_by_plan(plan_name)
-            if plan_users.count() > 0:
-                group_list.append((plan_name, "%s Members" % plan_name))
+        for package in MembershipPackage.objects.filter(enabled=True).order_by('name'):
+            package_name = package.name
+            if len(Membership.objects.active_members(package_name=package_name)) > 0:
+                group_list.append((package_name, "%s Members" % package_name))
         for g, d in sorted(MemberGroups.GROUP_DICT.items(), key=operator.itemgetter(0)):
             group_list.append((g, d))
         return group_list
@@ -73,7 +72,7 @@ class MemberGroups():
     @staticmethod
     def get_members(group):
         if group == MemberGroups.ALL:
-            return User.helper.active_members()
+            return Membership.objects.active_members()
         elif group == MemberGroups.HAS_DESK:
             return User.helper.members_with_desks()
         elif group == MemberGroups.HAS_KEY:
@@ -94,6 +93,7 @@ class MemberGroups():
 
 class MembershipPackage(models.Model):
     name = models.CharField(max_length=64)
+    enabled = models.BooleanField(default=True)
 
     def monthly_rate(self):
         rate = SubscriptionDefault.objects.filter(package=self).aggregate(Sum('monthly_rate'))['monthly_rate__sum']
@@ -121,13 +121,16 @@ class SubscriptionDefault(models.Model):
 
 class MembershipManager(models.Manager):
 
-    def active_memberships(self, target_date=None):
+    def active_memberships(self, target_date=None, package_name=None):
         if not target_date:
             target_date = localtime(now()).date()
         current = Q(subscriptions__start_date__lte=target_date)
         unending = Q(subscriptions__end_date__isnull=True)
         future_ending = Q(subscriptions__end_date__gte=target_date)
-        return self.filter(current & (unending | future_ending)).distinct()
+        membership_query = self.filter(current & (unending | future_ending)).distinct()
+        if package_name:
+            membership_query = membership_query.filter(package__name=package_name)
+        return membership_query
 
     def ready_for_billing(self, target_date=None):
         if not target_date:
@@ -144,9 +147,9 @@ class MembershipManager(models.Manager):
             target_date = localtime(now()).date()
         return self.filter(subscriptions__start_date__gt=target_date)
 
-    def active_members(self, target_date=None):
+    def active_members(self, target_date=None, package_name=None):
         members = []
-        for membership in self.active_memberships(target_date):
+        for membership in self.active_memberships(target_date, package_name):
             if membership.individualmembership:
                 members.append(membership.individualmembership.user)
             elif membership.organizationmembership:
