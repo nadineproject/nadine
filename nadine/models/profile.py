@@ -526,13 +526,17 @@ class UserProfile(models.Model):
                 return None
 
     def membership_type(self):
-        active_membership = self.active_membership()
-        if active_membership:
-            return active_membership.membership_plan
-        else:
-            last_monthly = self.last_membership()
-            if last_monthly:
-                return "Ex" + str(last_monthly.membership_plan)
+        membership_type = ""
+        # Grab the first one.  This will be the individual membership even if they have an org membership
+        membership = Membership.objects.for_user(self.user.username).first()
+        if not membership.is_active():
+            membership_type += "Ex "
+        if hasattr(membership, 'organizationmembership'):
+            membership_type += "Org "
+        if membership.package:
+            membership_type += membership.package.name
+        if len(membership_type) > 0:
+            return membership_type
 
         # Now check daily logs
         drop_ins = CoworkingDay.objects.filter(user=self.user).count()
