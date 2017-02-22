@@ -14,8 +14,8 @@ from django.conf import settings
 
 from monthdelta import MonthDelta, monthmod
 
-from nadine.forms import MembershipForm, MembershipPackageForm
-from nadine.models import Membership, MemberNote, MembershipPlan, SentEmailLog, FileUpload, SpecialDay
+from nadine.forms import MembershipForm
+from nadine.models import Membership, MemberNote, MembershipPackage, SentEmailLog, FileUpload, SpecialDay
 from nadine.models.membership import OldMembership, Membership, MembershipPlan, MemberGroups, SecurityDeposit
 from nadine.forms import MemberSearchForm, MembershipForm, EventForm
 from nadine.utils.slack_api import SlackAPI
@@ -78,9 +78,9 @@ def detail(request, username):
 @staff_member_required
 def members(request, group=None):
     if not group:
-        first_plan = MembershipPlan.objects.all().order_by('name').first()
-        if first_plan:
-            group = first_plan.name
+        first_package = MembershipPackage.objects.filter(enabled=True).order_by('name').first()
+        if first_package:
+            group = first_package.name
 
     users = MemberGroups.get_members(group)
     if users:
@@ -88,7 +88,7 @@ def members(request, group=None):
         group_name = MemberGroups.GROUP_DICT[group]
     else:
         # Assume the group is a membership plan
-        users = User.helper.members_by_plan(group)
+        users = User.helper.members_by_package(group)
         member_count = len(users)
         group_name = "%s Members" % group
 
@@ -116,7 +116,7 @@ def bcc_tool(request, group=None):
         users = MemberGroups.get_members(group)
     else:
         group_name = "%s Members" % group
-        users = User.helper.members_by_plan(group)
+        users = User.helper.members_by_package(group)
     group_list = MemberGroups.get_member_groups()
     context = {'group': group, 'group_name': group_name, 'group_list': group_list, 'users': users}
     return render(request, 'staff/user/bcc_tool.html', context)
