@@ -598,10 +598,6 @@ class UserProfile(models.Model):
             pass
         return False
 
-    # TODO - Remove
-    def deposits(self):
-        return SecurityDeposit.objects.filter(user=self.user)
-
     def __str__(self): return '%s %s' % (smart_str(self.user.first_name), smart_str(self.user.last_name))
 
     def auto_bill_enabled(self):

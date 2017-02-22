@@ -295,7 +295,7 @@ function gotoEmailReset(emailAddress){
                 <th>Note</th>
                 <th>Action</th>
             </tr>
-            {% for deposit in user.profile.deposits %}
+            {% for deposit in user.securitydeposit_set.all %}
                 <tr class="{% cycle 'row-even' 'row-odd' %}">
                     <td>{{ deposit.received_date }}</td>
                     <td>{% if deposit.returned_date %}{{ deposit.returned_date }}{% endif %}</td>
