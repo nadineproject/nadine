@@ -20,6 +20,7 @@ from django.core import urlresolvers
 from django.core.files.base import ContentFile
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
+from django.db.models import Sum
 from django.conf import settings
 from django.utils.encoding import smart_str
 from django_localflavor_us.models import USStateField, PhoneNumberField
@@ -27,6 +28,7 @@ from django.utils.timezone import localtime, now
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
+
 
 from monthdelta import MonthDelta, monthmod
 
@@ -94,10 +96,9 @@ class MembershipPackage(models.Model):
     name = models.CharField(max_length=64)
 
     def monthly_rate(self):
-        rate = 0
-        # This should be done with some form of SUM query --JLS
-        for d in self.defaults.all():
-            rate = rate + d.monthly_rate
+        rate = SubscriptionDefault.objects.filter(package=self).aggregate(Sum('monthly_rate'))['monthly_rate__sum']
+        if not rate:
+            rate = 0
         return rate
 
     def __str__(self):
@@ -216,10 +217,9 @@ class Membership(models.Model):
         return self in Membership.objects.future_memberships(target_date)
 
     def monthly_rate(self, target_date=None):
-        rate = 0
-        # This should be done with some form of SUM query --JLS
-        for a in self.active_subscriptions(target_date):
-            rate = rate + a.monthly_rate
+        rate = self.active_subscriptions().aggregate(Sum('monthly_rate'))['monthly_rate__sum']
+        if not rate:
+            rate = 0
         return rate
 
     def bill_day_str(self):
