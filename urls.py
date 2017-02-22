@@ -42,7 +42,9 @@ urlpatterns = [
     url(r'^reset/complete/$', password_reset_complete, {'template_name': 'password_reset_complete.html'}, 'password_reset_complete'),
 
     url(r'^admin/login/$', login, {'template_name': 'login.html'}, name='login'),
+    url(r'^admin/doc/', include('django.contrib.admindocs.urls')), 
     url(r'^admin/', include(admin.site.urls)),
+
 ]
 
 if settings.DEBUG:

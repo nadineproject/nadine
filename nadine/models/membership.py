@@ -20,6 +20,7 @@ from django.core import urlresolvers
 from django.core.files.base import ContentFile
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
+from django.db.models import Sum
 from django.conf import settings
 from django.utils.encoding import smart_str
 from django_localflavor_us.models import USStateField, PhoneNumberField
@@ -27,6 +28,7 @@ from django.utils.timezone import localtime, now
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
+
 
 from monthdelta import MonthDelta, monthmod
 
@@ -94,10 +96,9 @@ class MembershipPackage(models.Model):
     name = models.CharField(max_length=64)
 
     def monthly_rate(self):
-        rate = 0
-        # This should be done with some form of SUM query --JLS
-        for d in self.defaults.all():
-            rate = rate + d.monthly_rate
+        rate = SubscriptionDefault.objects.filter(package=self).aggregate(Sum('monthly_rate'))['monthly_rate__sum']
+        if not rate:
+            rate = 0
         return rate
 
     def __str__(self):
@@ -163,10 +164,18 @@ class Membership(models.Model):
     package = models.ForeignKey(MembershipPackage, null=True, blank=True)
     # subscriptions = FK on ResourceSubscription
 
-    def end(self, end_date):
+    @property
+    def who(self):
+        if self.individualmembership:
+            return self.individualmembership.user.get_full_name()
+        elif self.organizationmembership:
+            return self.organizationmembership.organization.name
+        return None
+
+    def end(self, on_date):
         for s in self.subscriptions.all():
-            if not s.end_date or s.end_date > end_date:
-                s.end_date = end_date
+            if not s.end_date or s.end_date > on_date:
+                s.end_date = on_date
                 s.save()
 
     def set_to_package(self, package, start_date=None, end_date=None, paid_by=None, bypass_check=False):
@@ -194,12 +203,28 @@ class Membership(models.Model):
                 allowance = default.allowance,
             )
 
-    def who(self):
-        if self.individualmembership:
-            return self.individualmembership.user.get_full_name()
-        elif self.organizationmembership:
-            return self.organizationmembership.organization.name
-        return None
+    def matches_package(self, target_date=None):
+        ''' Calculates if the subscriptions match the package'''
+        if not self.package:
+            return False
+
+        subscriptions = self.active_subscriptions(target_date)
+        if self.package.defaults.count() != subscriptions.count():
+            return False
+
+        matching_package = None
+        for s in subscriptions:
+            matches = SubscriptionDefault.objects.filter(
+                package = self.package,
+                resource = s.resource,
+                allowance = s.allowance,
+                monthly_rate = s.monthly_rate,
+                overage_rate = s.overage_rate
+            ).count() == 1
+            if not matches:
+                return False
+
+        return True
 
     def active_subscriptions(self, target_date=None):
         if not target_date:
@@ -216,10 +241,9 @@ class Membership(models.Model):
         return self in Membership.objects.future_memberships(target_date)
 
     def monthly_rate(self, target_date=None):
-        rate = 0
-        # This should be done with some form of SUM query --JLS
-        for a in self.active_subscriptions(target_date):
-            rate = rate + a.monthly_rate
+        rate = self.active_subscriptions(target_date).aggregate(Sum('monthly_rate'))['monthly_rate__sum']
+        if not rate:
+            rate = 0
         return rate
 
     def bill_day_str(self):
@@ -364,30 +388,6 @@ class Membership(models.Model):
         while period_start and (period_start < today) and (period_start < end_date):
             self.generate_bill(target_date=period_start)
             period_start = self.next_period_start(period_start)
-
-    def matches_package(self, target_date=None):
-        ''' Calculates if the subscriptions match the package'''
-        if not self.package:
-            return False
-
-        subscriptions = self.active_subscriptions(target_date)
-        if self.package.defaults.count() != subscriptions.count():
-            return False
-
-        matching_package = None
-        for s in subscriptions:
-            matches = SubscriptionDefault.objects.filter(
-                package = self.package,
-                resource = s.resource,
-                allowance = s.allowance,
-                monthly_rate = s.monthly_rate,
-                overage_rate = s.overage_rate
-            ).count() == 1
-            if not matches:
-                return False
-
-        return True
-
 
     # Brought over from modernomad but not ported yet
     # def total_periods(self, target_date=None):

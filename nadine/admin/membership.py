@@ -11,9 +11,6 @@ class SubscriptionInline(admin.TabularInline):
 
 class MembershipAdmin(StyledAdmin):
 
-    def who(self):
-        return self.who()
-
     def active_subscriptions(self):
         return self.active_subscriptions().count()
 
@@ -21,7 +18,7 @@ class MembershipAdmin(StyledAdmin):
         return self.next_period_start()
 
     inlines = [SubscriptionInline, ]
-    list_display = ('id', who, 'bill_day', next_bill, active_subscriptions)
+    list_display = ('id', 'who', 'bill_day', next_bill, active_subscriptions)
     fields = ['bill_day']
     list_select_related = ('individualmembership', 'organizationmembership')
     search_fields = ('individualmembership__user__username', 'organizationmembership__organization__name')

@@ -37,6 +37,7 @@ from recommonmark.parser import CommonMarkParser
 extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
+    'autoapi.extension',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -149,6 +150,13 @@ man_pages = [
     (master_doc, 'nadine', u'Nadine Documentation',
      [author], 1)
 ]
+
+
+# -- Options AutoAPI output -----------------------------------------------
+
+# Document Python Code
+autoapi_type = 'python'
+autoapi_dirs = ['../nadine/models/billing.py', '../nadine/models/membership.py']
 
 
 # -- Options for Texinfo output -------------------------------------------
