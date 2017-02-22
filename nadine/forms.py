@@ -20,7 +20,7 @@ from localflavor.ca.ca_provinces import PROVINCE_CHOICES
 from nadine import email
 from nadine.models.core import HowHeard, Industry, Neighborhood, URLType, GENDER_CHOICES
 from nadine.models.profile import UserProfile, MemberNote, user_photo_path
-from nadine.models.membership import Membership, MembershipPlan
+from nadine.models.membership import Membership, MembershipPlan, MembershipPackage
 from nadine.models.usage import PAYMENT_CHOICES, CoworkingDay
 from nadine.models.resource import Room
 from nadine.models.organization import Organization, OrganizationMember
@@ -479,6 +479,41 @@ class MembershipForm(forms.Form):
             email.send_new_membership(membership.user)
 
         return membership
+
+
+class MembershipPackageForm(forms.Form):
+    username = forms.CharField(required=True, widget=forms.HiddenInput)
+    package = forms.ModelChoiceField(queryset=MembershipPackage.objects.all(), required=True)
+    # resource = forms.ModelChoiceField(queryset=Membership.objects.all(), required=True)
+    allowance = forms.IntegerField(required=True)
+    start_date = forms.DateField(required=True)
+    end_date = forms.DateField(required=False)
+    bill_day = forms.DateField(required=True)
+    monthly_rate = forms.IntegerField(required=True)
+    overage_rate = forms.IntegerField(required=False)
+    paid_by = forms.CharField(max_length=128, required=True)
+
+    def save(self):
+        if not self.is_valid():
+            raise Exception('The form must be valid in order to save')
+        username = self.cleaned_data['username']
+        package = self.cleanded_data['package']
+        resource = self.cleaned_data['resource']
+        allowance = self.cleaned_data['allowance']
+        start_date = self.cleaned_data['start_date']
+        end_date = self.cleaned_data['end_date']
+        bill_day = self.cleaned_data['bill_day']
+        monthly_rate = self.cleaned_data['monthly_rate']
+        overage_rate = self.cleaned_data['overage_rate']
+        paid_by = self.cleaned_data['paid_by']
+
+        user = User.objects.get(username=username)
+        user.membership = package
+        sub = ResourceSubscription(resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=paid_by)
+
+        sub.save()
+
+        return sub
 
 
 class HelpTextForm(forms.Form):

@@ -14,7 +14,7 @@
   </tr>
 </table>
 
-<h5>Subscriptions (<a href="">+</a>)</h5>
+<h5>Subscriptions (<a class='edit-sub'>+</a>)</h5>
 <table class='sub-table'>
   <tr class='row-even'>
     <th>Resource</th>
@@ -44,6 +44,38 @@
   </tr>
 </table>
 
+<div id='subModal' class='modal'>
+  <div class='modal-content'>
+    <div class='modal-body'>
+      <h5>Update Membership</h5>
+      <div class='container'>
+        <div class='row'>
+          <form action='.' method='POST'>
+            <table>
+              <tr>
+                <td>
+                  <strong>Current Package</strong>
+                </td>
+                <td>
+                  {{ membership.package }}
+                </td>
+                <td>
+                  <a class='chip'>Change</a> | <a class='chip'>End</a>
+                </td>
+              </tr>
+              <tr>
+
+              </tr>
+            </table>
+          </form>
+
+          <button class='btn' style='display:inline-block; margin-right: 5%;'>Update</button><span class='cancel'>Cancel</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Active Guest Memberships -->
 <!-- TODO This is the old way... needs to be ported to the new way -->
 <!--
@@ -66,3 +98,17 @@
     </table>
 {% endif %}
 -->
+
+<script>
+  $(document).ready(function() {
+    $('.edit-sub').on('click', function(e) {
+      e.preventDefault();
+      $('#subModal').css('display', 'block');
+    });
+
+    $('.cancel').on('click', function(e) {
+      e.preventDefault();
+      $('#subModal').css('display', 'none');
+    })
+  });
+</script>

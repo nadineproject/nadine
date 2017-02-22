@@ -16,7 +16,7 @@ function gotoEmailReset(emailAddress){
             success: function(data) { },
             error: function(request, status, error) { }
         });
-    }catch(e) {
+    } catch(e) {
         alert(e);
     }
 }
@@ -24,11 +24,7 @@ function gotoEmailReset(emailAddress){
 <script>
     $(function () {
         jQuery('#tabs').tabs();
-    });
-</script>
 
-<script>
-    $(function() {
         var availableDays = ["Birthday", "Anniversary", "Child's Birthday"];
         $( "#specialdays" ).autocomplete({
             source: availableDays
