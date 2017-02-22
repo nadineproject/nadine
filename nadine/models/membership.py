@@ -217,7 +217,7 @@ class Membership(models.Model):
         return self in Membership.objects.future_memberships(target_date)
 
     def monthly_rate(self, target_date=None):
-        rate = self.active_subscriptions().aggregate(Sum('monthly_rate'))['monthly_rate__sum']
+        rate = self.active_subscriptions(target_date).aggregate(Sum('monthly_rate'))['monthly_rate__sum']
         if not rate:
             rate = 0
         return rate
