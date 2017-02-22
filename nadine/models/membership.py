@@ -90,6 +90,31 @@ class MemberGroups():
             return None
 
 
+class MembershipPackage(models.Model):
+    name = models.CharField(max_length=64)
+
+    def monthly_rate(self):
+        rate = 0
+        # This should be done with some form of SUM query --JLS
+        for d in self.defaults.all():
+            rate = rate + d.monthly_rate
+        return rate
+
+    def __str__(self):
+        return self.name
+
+
+class SubscriptionDefault(models.Model):
+    package = models.ForeignKey(MembershipPackage, related_name="defaults")
+    resource = models.ForeignKey(Resource, null=True)
+    allowance = models.IntegerField(default=0)
+    monthly_rate = models.DecimalField(decimal_places=2, max_digits=9)
+    overage_rate = models.DecimalField(decimal_places=2, max_digits=9)
+
+    def __str__(self):
+        return "%d %s at %s/month" % (self.allowance, self.resource, self.monthly_rate)
+
+
 class MembershipManager(models.Manager):
 
     def active_memberships(self, target_date=None):
@@ -135,6 +160,7 @@ class MembershipManager(models.Manager):
 class Membership(models.Model):
     objects = MembershipManager()
     bill_day = models.SmallIntegerField(default=1)
+    package = models.ForeignKey(MembershipPackage, null=True, blank=True)
     # subscriptions = FK on ResourceSubscription
 
     def end(self, end_date):
@@ -151,13 +177,17 @@ class Membership(models.Model):
             if self.is_active(start_date):
                 raise Exception("Trying to set an active membership to new package!  End the current membership before changing to new package.")
 
+        # Save the package
+        self.package = package
+        self.save()
+
+        # Add subscriptions for each of the defaults
         for default in package.defaults.all():
             ResourceSubscription.objects.create(
                 membership = self,
                 start_date = start_date,
                 end_date = end_date,
                 paid_by = paid_by,
-                default = default,
                 resource = default.resource,
                 monthly_rate = default.monthly_rate,
                 overage_rate = default.overage_rate,
@@ -335,31 +365,28 @@ class Membership(models.Model):
             self.generate_bill(target_date=period_start)
             period_start = self.next_period_start(period_start)
 
-    def matches_default(self, target_date=None):
-        return self.matching_package(target_date) is not None
+    def matches_package(self, target_date=None):
+        ''' Calculates if the subscriptions match the package'''
+        if not self.package:
+            return False
 
-    def matching_package(self, target_date=None):
         subscriptions = self.active_subscriptions(target_date)
+        if self.package.defaults.count() != subscriptions.count():
+            return False
 
         matching_package = None
         for s in subscriptions:
-            if not s.default:
-                # No defaults = no match
-                return None
-            this_package = s.default.package
-            if matching_package and matching_package != this_package:
-                # Multiple packages = no match
-                return None
-            matching_package = this_package
-            if not s.matches_default():
-                # Varying from default = no match
-                return None
+            matches = SubscriptionDefault.objects.filter(
+                package = self.package,
+                resource = s.resource,
+                allowance = s.allowance,
+                monthly_rate = s.monthly_rate,
+                overage_rate = s.overage_rate
+            ).count() == 1
+            if not matches:
+                return False
 
-        # Finally check to make sure they have the same number of subscriptions
-        if matching_package and matching_package.defaults.count() != subscriptions.count():
-            return None
-
-        return matching_package
+        return True
 
 
     # Brought over from modernomad but not ported yet
@@ -492,31 +519,6 @@ class OrganizationMembership(Membership):
         return '%s: %s' % (self.organization, self.subscriptions.all())
 
 
-class MembershipPackage(models.Model):
-    name = models.CharField(max_length=64)
-
-    def monthly_rate(self):
-        rate = 0
-        # This should be done with some form of SUM query --JLS
-        for d in self.defaults.all():
-            rate = rate + d.monthly_rate
-        return rate
-
-    def __str__(self):
-        return self.name
-
-
-class SubscriptionDefault(models.Model):
-    package = models.ForeignKey(MembershipPackage, related_name="defaults")
-    resource = models.ForeignKey(Resource, null=True)
-    allowance = models.IntegerField(default=0)
-    monthly_rate = models.DecimalField(decimal_places=2, max_digits=9)
-    overage_rate = models.DecimalField(decimal_places=2, max_digits=9)
-
-    def __str__(self):
-        return "%d %s at %s/month" % (self.allowance, self.resource, self.monthly_rate)
-
-
 class ResourceSubscription(models.Model):
     created_ts = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name="+", null=True)
@@ -528,7 +530,7 @@ class ResourceSubscription(models.Model):
     end_date = models.DateField(blank=True, null=True, db_index=True)
     monthly_rate = models.DecimalField(decimal_places=2, max_digits=9)
     overage_rate = models.DecimalField(decimal_places=2, max_digits=9)
-    default = models.ForeignKey(SubscriptionDefault, null=True, blank=True)
+    # default = models.ForeignKey(SubscriptionDefault, null=True, blank=True)
     paid_by = models.ForeignKey(User, null=True, blank=True)
 
     def __str__(self):
@@ -567,14 +569,6 @@ class ResourceSubscription(models.Model):
         start = bill.period_start - timedelta(days=1)
         # TODO - complete --JLS
         return []
-
-    def matches_default(self):
-        return (
-            self.default and
-            self.allowance == self.default.allowance and
-            self.monthly_rate == self.default.monthly_rate and
-            self.overage_rate == self.default.overage_rate
-        )
 
 
 class SecurityDeposit(models.Model):

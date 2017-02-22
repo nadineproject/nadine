@@ -57,9 +57,18 @@ def forward(apps, schema_editor):
                 bill_day = last_membership.start_date.day
             )
             for m in old_memberships:
+                # Pull the membership package for the old membership plan
                 package = PACKAGE_MAP[m.membership_plan]
-                day_default = SubscriptionDefault.objects.filter(package=package, resource=DAY).first()
-                desk_default = SubscriptionDefault.objects.filter(package=package, resource=DESK).first()
+
+                # Pull the defaults from the package
+                # day_default = SubscriptionDefault.objects.filter(package=package, resource=DAY).first()
+                # desk_default = SubscriptionDefault.objects.filter(package=package, resource=DESK).first()
+
+                # Set the package on our new membership.
+                new_membership.package = package
+                new_membership.save()
+
+                # Create ResourceSubscriptions based on the parameters of the old membership
                 if m.has_desk:
                     ResourceSubscription.objects.create(
                         membership = new_membership,
@@ -70,7 +79,6 @@ def forward(apps, schema_editor):
                         allowance = 1,
                         overage_rate = 0,
                         paid_by = m.paid_by,
-                        default = desk_default,
                     )
                     ResourceSubscription.objects.create(
                         membership = new_membership,
@@ -81,7 +89,6 @@ def forward(apps, schema_editor):
                         allowance = m.dropin_allowance,
                         overage_rate = m.daily_rate,
                         paid_by = m.paid_by,
-                        default = day_default,
                     )
                 else:
                     ResourceSubscription.objects.create(
@@ -93,7 +100,6 @@ def forward(apps, schema_editor):
                         allowance = m.dropin_allowance,
                         overage_rate = m.daily_rate,
                         paid_by = m.paid_by,
-                        default = day_default,
                     )
                 if m.has_mail:
                     ResourceSubscription.objects.create(
@@ -131,18 +137,20 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.CreateModel(
-            name='Membership',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('bill_day', models.SmallIntegerField(default=1)),
-            ],
-        ),
+
         migrations.CreateModel(
             name='MembershipPackage',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=64)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Membership',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('bill_day', models.SmallIntegerField(default=1)),
+                ('package', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='nadine.MembershipPackage')),
             ],
         ),
         migrations.CreateModel(
@@ -194,11 +202,11 @@ class Migration(migrations.Migration):
                 ('created_by', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL)),
             ],
         ),
-        migrations.AddField(
-            model_name='resourcesubscription',
-            name='default',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='nadine.SubscriptionDefault'),
-        ),
+        # migrations.AddField(
+        #     model_name='membership',
+        #     name='package',
+        #     field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='nadine.MembershipPackage'),
+        # ),
         migrations.AddField(
             model_name='resourcesubscription',
             name='membership',
