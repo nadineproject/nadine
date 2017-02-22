@@ -92,12 +92,6 @@ textarea.bcc-textarea {
   color: RGBA(90, 122, 189, 1.00) !important;
 }
 
-.page-message {
-  font-size: 1.5em;
-  color: #933;
-  margin: 20px 0px;
-}
-
 #quick-links {
   text-align: right;
   margin-bottom: 20px;
@@ -212,6 +206,15 @@ textarea.bcc-textarea {
   width: 160px;
 }
 
+.mem-details-table {
+  margin-left: 2%;
+  width: 50%;
+}
+
+.mem-details-table th, .mem-details-table td, .sub-table th, .sub-table td {
+  text-align: left !important;
+}
+
 .mem-input span {
   margin-right: 2em;
 }
@@ -244,6 +247,12 @@ textarea.bcc-textarea {
   text-align: left;
 }
 
+.page-message {
+  font-size: 1.5em;
+  color: #933;
+  margin: 20px 0px;
+}
+
 .report select {
   width: 30%;
   display: inline-block;
@@ -273,6 +282,10 @@ textarea.bcc-textarea {
 
 .special_form {
   margin-bottom: 15%;
+}
+
+.sub-table {
+  margin-left: 2%;
 }
 
 .tabs .tab a {

@@ -1,8 +1,8 @@
 {% load static %}
 
 <h5>Details</h5>
-<table>
-  <tr>
+<table class='mem-details-table'>
+  <tr class='row-even'>
     <th>Billing Day</th>
     <th>Next Bill</th>
     <th>Package</th>
@@ -15,8 +15,8 @@
 </table>
 
 <h5>Subscriptions (<a href="">+</a>)</h5>
-<table>
-  <tr>
+<table class='sub-table'>
+  <tr class='row-even'>
     <th>Resource</th>
     <th>Allowance</th>
     <th>Start Date</th>
@@ -39,7 +39,7 @@
     </tr>
   {% endfor %}
   <tr>
-    <td colspan="5">Total:</td>
+    <td colspan="5"><strong>Total:</strong></td>
     <td>${{ membership.monthly_rate }}/month<td>
   </tr>
 </table>
