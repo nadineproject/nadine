@@ -14,7 +14,7 @@ from django.conf import settings
 
 from monthdelta import MonthDelta, monthmod
 
-from nadine.forms import MembershipForm
+from nadine.forms import MembershipForm, MembershipPackageForm
 from nadine.models import Membership, MemberNote, MembershipPlan, SentEmailLog, FileUpload, SpecialDay
 from nadine.models.membership import OldMembership, Membership, MembershipPlan, MemberGroups, SecurityDeposit
 from nadine.forms import MemberSearchForm, MembershipForm, EventForm
@@ -51,9 +51,14 @@ def detail(request, username):
                 year = None
             desc = request.POST.get('description')
             SpecialDay.objects.create(user=user, month=month, day=day, year=year, description=desc)
+        elif 'allowance' in request.POST:
+            package_form = MembershipPackageForm(request.POST)
+            if package_form.is_valid():
+                package_form.save()
         else:
             print(request.POST)
-
+    else:
+        package_form = MembershipPackageForm()
     staff_members = User.objects.filter(is_staff=True).order_by('id').reverse()
 
     email_keys = email.valid_message_keys()

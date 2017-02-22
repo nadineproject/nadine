@@ -20,7 +20,7 @@ from localflavor.ca.ca_provinces import PROVINCE_CHOICES
 from nadine import email
 from nadine.models.core import HowHeard, Industry, Neighborhood, URLType, GENDER_CHOICES
 from nadine.models.profile import UserProfile, MemberNote, user_photo_path
-from nadine.models.membership import Membership, MembershipPlan, MembershipPackage
+from nadine.models.membership import Membership, MembershipPlan, MembershipPackage, ResourceSubscription
 from nadine.models.usage import PAYMENT_CHOICES, CoworkingDay
 from nadine.models.resource import Room
 from nadine.models.organization import Organization, OrganizationMember
@@ -508,8 +508,8 @@ class MembershipPackageForm(forms.Form):
         paid_by = self.cleaned_data['paid_by']
 
         user = User.objects.get(username=username)
-        user.membership = package
-        sub = ResourceSubscription(resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=paid_by)
+        user.membership = MembershipPackage(name=package, bill_day=bill_day)
+        sub = ResourceSubscription(resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=paid_by, membership=user.membership)
 
         sub.save()
 
