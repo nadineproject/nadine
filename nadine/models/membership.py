@@ -113,7 +113,10 @@ class SubscriptionDefault(models.Model):
     overage_rate = models.DecimalField(decimal_places=2, max_digits=9)
 
     def __str__(self):
-        return "%d %s at %s/month" % (self.allowance, self.resource, self.monthly_rate)
+        sfx = ""
+        if self.allowance > 1:
+            sfx = "s"
+        return "%d %s%s at %s/month" % (self.allowance, self.resource, sfx, self.monthly_rate)
 
 
 class MembershipManager(models.Manager):
@@ -172,11 +175,21 @@ class Membership(models.Model):
             return self.organizationmembership.organization.name
         return None
 
-    def end(self, on_date):
-        for s in self.subscriptions.all():
-            if not s.end_date or s.end_date > on_date:
-                s.end_date = on_date
-                s.save()
+    @property
+    def active_now():
+        return self.is_active()
+
+    def end_all(self, target_date=None):
+        '''End all the active subscriptions.  Defaults to yesterday.'''
+        if not target_date:
+            target_date = localtime(now()).date() - timedelta(days=1)
+        for s in self.active_subscriptions():
+            s.end_date = target_date
+            s.save()
+
+    def end_at_period_end(self):
+        ps, pe = self.get_period()
+        self.end_all(pe)
 
     def set_to_package(self, package, start_date=None, end_date=None, paid_by=None, bypass_check=False):
         if not start_date:
@@ -534,12 +547,18 @@ class ResourceSubscription(models.Model):
     paid_by = models.ForeignKey(User, null=True, blank=True)
 
     def __str__(self):
-        return "%s: at %s/month" % (self.resource, self.monthly_rate)
+        sfx = ""
+        if self.allowance > 1:
+            sfx = "s"
+        desc = ""
+        if self.description:
+            desc = "(%s)" % self.description
+        return "%d %s%s %s at $%s/month" % (self.allowance, self.resource, sfx, desc, self.monthly_rate)
 
     def is_active(self, target_date=None):
         if not target_date:
             target_date = localtime(now()).date()
-        return self.start_date <= target_date and (self.end_date is None or self.end_date >= target_date)
+        return self.start_date and self.start_date <= target_date and (self.end_date is None or self.end_date >= target_date)
 
     def prorate_for_period(self, period_start, period_end):
         prorate_start = period_start
