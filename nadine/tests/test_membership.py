@@ -335,14 +335,13 @@ class MembershipTestCase(TestCase):
         membership = user.membership
 
         membership.end(yesterday)
-        self.assertFalse(membership.matches_default())
-        self.assertEqual(None, membership.matching_package())
+        self.assertFalse(membership.matches_package())
         self.assertEqual(0, membership.monthly_rate())
 
         membership.set_to_package(self.test_package, today)
+        self.assertEqual(membership.package, self.test_package)
         self.assertEqual(membership.monthly_rate(), self.test_package.monthly_rate())
-        self.assertTrue(membership.matches_default())
-        self.assertEqual(membership.matching_package(), self.test_package)
+        self.assertTrue(membership.matches_package())
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
