@@ -138,6 +138,10 @@ textarea.bcc-textarea {
   margin-left: 20%;
 }
 
+.allowance {
+  width: 5% !important;
+}
+
 .bill_day {
   width: 20%;
 }
@@ -286,6 +290,10 @@ textarea.bcc-textarea {
   margin: 20px 0px;
 }
 
+.rate {
+  width: 10% !important;
+}
+
 .report select {
   width: 30%;
   display: inline-block;
@@ -315,6 +323,10 @@ textarea.bcc-textarea {
 
 .special_form {
   margin-bottom: 15%;
+}
+
+.sub-input {
+  width: 15%;
 }
 
 .sub-table {

@@ -78,64 +78,34 @@
   <form action='.' method='POST'>
     <table class='sub-table'>
       {% if subscriptions %}
-        <tr class='row-even'>
-          <th>Resource</th>
-          <th>Allowance</th>
-          <th>Start Date</th>
-          <th>End Date</th>
-          <th>Monthly Rate</th>
-          <th>Overage Rate</th>
-          <th>Paid By</th>
-          <th></th>
-        </tr>
-        {{ sub_formset.management_form }}
-        {% for sub_form in sub_formset %}
-        <div class='link-formset row'>
-      		<table class='col s10'>
-      			<tr class='row subs'>
-      				<td class='sub-input'>{{ sub_form.resource }}</td>
-      				<td class='sub-input'>{{ sub_form.allowance  }}</td>
-              <td class='sub-input'>{{ sub_form.start_date  }}</td>
-              <td class='sub-input'>{{ sub_form.end_date  }}</td>
-              <td class='sub-input'>{{ sub_form.monthly_rate  }}</td>
-              <td class='sub-input'>{{ sub_form.overage_rate  }}</td>
-              <td class='sub-input'>{{ sub_form.paid_by  }}</td>
-      			</tr>
-      			<div class='row'>
-      				<p>{{ sub_form.username }}</p>
-              <p>{{ sub_form.created_by }}</p>
-      			</div>
-      		</div>
-      	</div>
+      <tr class='row-even'>
+        <th>Resource</th>
+        <th class='allowance'>Allowance</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th class='rate'>Monthly Rate</th>
+        <th class='rate'>Overage Rate</th>
+        <th>Paid By</th>
+        <th></th>
+      </tr>
+      {{ sub_formset.management_form }}
+      {% for sub_form in sub_formset %}
+			<tr class='link-formset subs'>
+				<td class='sub-input'>{{ sub_form.resource }}</td>
+				<td class='sub-input allowance'>{{ sub_form.allowance  }}</td>
+        <td class='sub-input'>{{ sub_form.start_date  }}</td>
+        <td class='sub-input'>{{ sub_form.end_date  }}</td>
+        <td class='sub-input rate'>{{ sub_form.monthly_rate  }}</td>
+        <td class='sub-input rate'>{{ sub_form.overage_rate  }}</td>
+        <td class='sub-input'>{{ sub_form.paid_by  }}</td>
+			</tr>
+      <div class='row'>
+        <p>{{ sub_form.username }}</p>
+        <p>{{ sub_form.created_by }}</p>
+      </div>
       {% endfor %}
-        <!-- {% for sub in subscriptions %}
-        <tr>
-          <td>
-            {{ package_form.resource|default:sub.resource }}
-          </td>
-          <td>
-            {{ package_form.allowance|default:sub.allowance }}
-          </td>
-          <td>
-            {{ package_form.start_date }}
-          </td>
-          <td>
-            {{ package_form.end_date }}
-          </td>
-          <td>
-            {{ package_form.monthly_rate|default:sub.monthly_rate }}
-          </td>
-          <td>
-            {{ package_form.overage_rate|default:sub.overage_rate }}
-          </td>
-          <td>
-            {{ package_form.paid_by }}
-          </td>
-          <td><a class='edit-sub-item'>Edit</a></td>
-        </tr>
-        {% endfor %} -->
-      {% endif %}
     </table>
+    {% endif %}
     {% csrf_token %}
     <button class='btn' type='submit' style='display:inline-block; margin-right: 5%; margin-left:40%; margin-top: 2%;'>Update</button><span class='cancel' style='margin-top:2%;'>Cancel</span>
   </form>
@@ -171,9 +141,8 @@
   $(document).ready(function() {
     $('#update-package').hide()
     $('#start').hide();
-    $('#id_start_date').addClass('datepicker');
-    $('#id_end_date').addClass('datepicker');
-    $('#id_start_date').val('{{ user.membership.next_period_start|date:"Y-m-d" }}')
+    $('.start_date').addClass('datepicker');
+    $('.end_date').addClass('datepicker');
     let package = '{{ package }}';
 
     $('.link-formset').formset({
@@ -181,10 +150,10 @@
       deleteText: 'Remove'
     })
 
-    $('.delete-row').addClass('btn-floating btn-large btn url-btn');
+    // $('.delete-row').addClass('btn-floating btn-large btn');
 
 		$('.add-row').on('click', function(e) {
-			$('.delete-row').addClass('btn-floating btn-large btn url-btn');
+			$('.delete-row').addClass('btn-floating btn-large btn');
 		});
 
     if( package != 'None') {
