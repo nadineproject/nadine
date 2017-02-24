@@ -11,6 +11,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.conf import settings
+from django.forms.formsets import formset_factory
 
 from monthdelta import MonthDelta, monthmod
 
@@ -237,13 +238,13 @@ def files(request, username):
 def membership(request, username):
     user = get_object_or_404(User, username=username)
     subscriptions = None
+    sub_data = None
+    SubFormSet = formset_factory(SubForm, formset=BaseSubFormSet)
     # subscriptions = user.membership.first().active_subscriptions()
     package = request.GET.get('package', None)
     if package:
         subscriptions = SubscriptionDefault.objects.filter(package=package)
         sub_data=[{'resource': s.resource, 'allowance':s.allowance, 'start_date':user.membership.next_period_start, 'end_date': None, 'monthly_rate': s.monthly_rate, 'overage_rate': s.overage_rate, 'paid_by': None} for s in subscriptions]
-    # Make formset for subscriptions
-    SubFormSet = formset_factory(SubForm, formset=BaseSubFormSet)
 
     if request.method == 'POST':
         package_form = MembershipPackageForm(request.POST)
@@ -258,6 +259,7 @@ def membership(request, username):
         'subscriptions':subscriptions,
         'package_form': package_form,
         'package': package,
+        'sub_formset': sub_formset
     }
     return render(request, 'staff/user/membership.html', context)
 

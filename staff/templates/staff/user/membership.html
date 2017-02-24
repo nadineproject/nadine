@@ -88,28 +88,27 @@
           <th>Paid By</th>
           <th></th>
         </tr>
-        {{ link_formset.management_form }}
-        {% for link_form in link_formset %}
+        {{ sub_formset.management_form }}
+        {% for sub_form in sub_formset %}
         <div class='link-formset row'>
       		<table class='col s10'>
       			<tr class='row subs'>
-      				<td class='sub-input'>{{ link_form.resou }}</td>
-      				<td class='sub-input'>{{ link_form.allowance  }}</td>
-              <td class='sub-input'>{{ link_form.start_date  }}</td>
-              <td class='sub-input'>{{ link_form.end_date  }}</td>
-              <td class='sub-input'>{{ link_form.monthly_rate  }}</td>
-              <td class='sub-input'>{{ link_form.overage_rate  }}</td>
-              <td class='sub-input'>{{ link_form.paid_by  }}</td>
+      				<td class='sub-input'>{{ sub_form.resource }}</td>
+      				<td class='sub-input'>{{ sub_form.allowance  }}</td>
+              <td class='sub-input'>{{ sub_form.start_date  }}</td>
+              <td class='sub-input'>{{ sub_form.end_date  }}</td>
+              <td class='sub-input'>{{ sub_form.monthly_rate  }}</td>
+              <td class='sub-input'>{{ sub_form.overage_rate  }}</td>
+              <td class='sub-input'>{{ sub_form.paid_by  }}</td>
       			</tr>
       			<div class='row'>
-      				<p>{{ link_form.username }}</p>
-      				<p>{{ link_form.url.errors }}</p>
-              <p>{{ link_form.url_type.errors }}</p>
+      				<p>{{ sub_form.username }}</p>
+              <p>{{ sub_form.created_by }}</p>
       			</div>
       		</div>
       	</div>
       {% endfor %}
-        {% for sub in subscriptions %}
+        <!-- {% for sub in subscriptions %}
         <tr>
           <td>
             {{ package_form.resource|default:sub.resource }}
@@ -134,7 +133,7 @@
           </td>
           <td><a class='edit-sub-item'>Edit</a></td>
         </tr>
-        {% endfor %}
+        {% endfor %} -->
       {% endif %}
     </table>
     {% csrf_token %}
@@ -176,6 +175,17 @@
     $('#id_end_date').addClass('datepicker');
     $('#id_start_date').val('{{ user.membership.next_period_start|date:"Y-m-d" }}')
     let package = '{{ package }}';
+
+    $('.link-formset').formset({
+      addText:'Add Another',
+      deleteText: 'Remove'
+    })
+
+    $('.delete-row').addClass('btn-floating btn-large btn url-btn');
+
+		$('.add-row').on('click', function(e) {
+			$('.delete-row').addClass('btn-floating btn-large btn url-btn');
+		});
 
     if( package != 'None') {
       $('#update-package').show();

@@ -22,7 +22,7 @@ from nadine.models.core import HowHeard, Industry, Neighborhood, URLType, GENDER
 from nadine.models.profile import UserProfile, MemberNote, user_photo_path
 from nadine.models.membership import Membership, MembershipPlan, MembershipPackage, ResourceSubscription
 from nadine.models.usage import PAYMENT_CHOICES, CoworkingDay
-from nadine.models.resource import Room
+from nadine.models.resource import Room, Resource
 from nadine.models.organization import Organization, OrganizationMember
 from nadine.utils.payment_api import PaymentAPI
 from members.models import HelpText, MOTD
@@ -511,7 +511,8 @@ class BaseSubFormSet(BaseFormSet):
 
 class SubForm(forms.Form):
     username = forms.CharField(required=True, widget=forms.HiddenInput)
-    # resource = forms.ModelChoiceField(queryset=Membership.objects.all(), required=True)
+    resource = forms.ModelChoiceField(queryset=Resource.objects.all(), required=True)
+    created_by = forms.CharField(required=True, widget=forms.HiddenInput)
     allowance = forms.IntegerField(required=True)
     start_date = forms.DateField(required=True)
     end_date = forms.DateField(required=False)
