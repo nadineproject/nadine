@@ -150,9 +150,9 @@ class MembershipManager(models.Manager):
     def active_members(self, target_date=None, package_name=None):
         members = []
         for membership in self.active_memberships(target_date, package_name):
-            if membership.individualmembership:
+            if hasattr(membership, 'individualmembership'):
                 members.append(membership.individualmembership.user)
-            elif membership.organizationmembership:
+            elif hasattr(membership, 'organizationmembership'):
                 org = membership.organizationmembership.organization
                 members.extend(org.members())
         return members
