@@ -1,0 +1,212 @@
+{% extends "staff/user/base.html" %}
+
+{% block content %}
+<h5>Current Package Details</h5>
+<table class='mem-details-table'>
+  <tr class='row-even'>
+    <th>Billing Day</th>
+    <th>Next Bill</th>
+    <th>Package</th>
+    <th></th>
+  </tr>
+  <tr>
+    <td>{{ user.membership.bill_day_str }}</td>
+    <td>{{ user.membership.next_period_start }}</td>
+    <form>
+      <td id='package'>
+        {{ user.membership.package }}
+      </td>
+      <td id='change'>
+        <a id='change' class='chip'>Change</a>
+         | <a id='end' class='chip'>End</a>
+      </td>
+    </form>
+  </tr>
+</table>
+
+<div class='curr-sub'>
+  <h5>Subscriptions</h5>
+  <table class='sub-table'>
+    <tr class='row-even'>
+      <th>Resource</th>
+      <th>Allowance</th>
+      <th>Start Date</th>
+      <th>End Date</th>
+      <th>Overage</th>
+      <th>Monthly</th>
+      <th>Paid By</th>
+      <th></th>
+    </tr>
+    {% for s in user.membership.active_subscriptions %}
+      <tr>
+        <td>{{ s.resource }}</td>
+        <td>{{ s.allowance }}</td>
+        <td>{{ s.start_date }}</td>
+        <td>{{ s.end_date |default:"-" }}</td>
+        <td>${{ s.overage_rate }}</td>
+        <td>${{ s.monthly_rate }}/month</td>
+        <td>{{ s.paid_by|default:"" }}</td>
+        <td><a href="">Edit</a></td>
+      </tr>
+    {% endfor %}
+    <tr>
+      <td colspan="5"><strong>Total:</strong></td>
+      <td>${{ membership.monthly_rate }}/month<td>
+    </tr>
+  </table>
+</div>
+
+<div id='update-package'>
+  <h5>Update Membership</h5>
+  <form>
+    <table class='sub-table'>
+      <tr>
+        <td id='package-head'>
+          <strong>New Package: </strong>
+        </td>
+        <td id='new-package'>
+          {{ package_form.package }}
+        </td>
+        <td id='change'>
+        </td>
+        <td id='start'>
+          <button class='btn' onclick="$.get('.')" style='display:inline-block;'>Start</button>
+        </td>
+      </tr>
+    </table>
+  </form>
+  <form action='.' method='POST'>
+    <table class='sub-table'>
+      {% if subscriptions %}
+        <tr class='row-even'>
+          <th>Resource</th>
+          <th>Allowance</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th>Monthly Rate</th>
+          <th>Overage Rate</th>
+          <th>Paid By</th>
+          <th></th>
+        </tr>
+        {{ link_formset.management_form }}
+        {% for link_form in link_formset %}
+        <div class='link-formset row'>
+      		<table class='col s10'>
+      			<tr class='row subs'>
+      				<td class='sub-input'>{{ link_form.resou }}</td>
+      				<td class='sub-input'>{{ link_form.allowance  }}</td>
+              <td class='sub-input'>{{ link_form.start_date  }}</td>
+              <td class='sub-input'>{{ link_form.end_date  }}</td>
+              <td class='sub-input'>{{ link_form.monthly_rate  }}</td>
+              <td class='sub-input'>{{ link_form.overage_rate  }}</td>
+              <td class='sub-input'>{{ link_form.paid_by  }}</td>
+      			</tr>
+      			<div class='row'>
+      				<p>{{ link_form.username }}</p>
+      				<p>{{ link_form.url.errors }}</p>
+              <p>{{ link_form.url_type.errors }}</p>
+      			</div>
+      		</div>
+      	</div>
+      {% endfor %}
+        {% for sub in subscriptions %}
+        <tr>
+          <td>
+            {{ package_form.resource|default:sub.resource }}
+          </td>
+          <td>
+            {{ package_form.allowance|default:sub.allowance }}
+          </td>
+          <td>
+            {{ package_form.start_date }}
+          </td>
+          <td>
+            {{ package_form.end_date }}
+          </td>
+          <td>
+            {{ package_form.monthly_rate|default:sub.monthly_rate }}
+          </td>
+          <td>
+            {{ package_form.overage_rate|default:sub.overage_rate }}
+          </td>
+          <td>
+            {{ package_form.paid_by }}
+          </td>
+          <td><a class='edit-sub-item'>Edit</a></td>
+        </tr>
+        {% endfor %}
+      {% endif %}
+    </table>
+    {% csrf_token %}
+    <button class='btn' type='submit' style='display:inline-block; margin-right: 5%; margin-left:40%; margin-top: 2%;'>Update</button><span class='cancel' style='margin-top:2%;'>Cancel</span>
+  </form>
+
+</div>
+
+<!-- Active Guest Memberships -->
+<!-- TODO This is the old way... needs to be ported to the new way -->
+<!--
+{% if user.profile.guests %}
+  <h5>Active Guests:</h5>
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>Membership</th>
+        <th>First Visit</th>
+      </tr>
+
+      {% for guest in user.profile.guests %}
+        <tr class="{% cycle 'row-even' 'row-odd' %}">
+          <td nowrap><a href="{% url 'staff:user:detail' guest.username %}">{{ guest.get_full_name }}</a></td>
+          <td>{{ guest.profile.active_membership.membership_plan }}</td>
+          <td class='centered'>{{ guest.profile.first_visit }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+{% endif %}
+-->
+{% endblock %}
+
+{% block extrajs %}
+<script>
+  $(document).ready(function() {
+    $('#update-package').hide()
+    $('#start').hide();
+    $('#id_start_date').addClass('datepicker');
+    $('#id_end_date').addClass('datepicker');
+    $('#id_start_date').val('{{ user.membership.next_period_start|date:"Y-m-d" }}')
+    let package = '{{ package }}';
+
+    if( package != 'None') {
+      $('#update-package').show();
+      $('.curr-sub').hide();
+      $('#change').hide();
+    }
+
+    $('#change').on('click', function(e) {
+      e.preventDefault();
+      $('#update-package').show();
+      $('.curr-sub').hide();
+    })
+
+    $('.datepicker').datepicker({
+      dateFormat: 'yy-mm-dd',
+    });
+
+    $('#id_package').on('change', function() {
+      $('#start').show();
+      $.get("{% url 'staff:user:detail' user.username %}");
+    })
+
+    $('#edit-sub-item').on('click', function(e) {
+      e.preventDefault();
+      //Know which row & turn those items into form items.
+    })
+
+    $('.cancel').on('click', function(e) {
+      e.preventDefault();
+      window.location.replace("{% url 'staff:user:membership' user.username %}");
+    })
+  });
+</script>
+{% endblock %}

@@ -44,37 +44,83 @@
   </tr>
 </table>
 
-<div id='subModal' class='modal'>
+<!-- <div id='subModal' class='modal'>
   <div class='modal-content'>
-    <div class='modal-body'>
+    <div class='modal-body'> -->
       <h5>Update Membership</h5>
       <div class='container'>
         <div class='row'>
-          <form action='.' method='POST'>
+          <form action='.'>
             <table>
               <tr>
                 <td>
-                  <strong>Current Package</strong>
+                  <strong>Current Package: </strong>
                 </td>
-                <td>
+                <td id='package'>
                   {{ membership.package }}
                 </td>
-                <td>
-                  <a class='chip'>Change</a> | <a class='chip'>End</a>
+                <td id='new-package'>
+                  {{ package_form.package }}
                 </td>
-              </tr>
-              <tr>
+                <td id='change'>
+                  <a id='change' class='chip'>Change</a>
+                   | <a id='end' class='chip'>End</a>
+                </td>
+                <td id='start'>
+                  <button class='btn' onclick="$.get('.')" style='display:inline-block;'>Start</button>
+                  <div class='fill'>
 
+                  </div>
+                </td>
               </tr>
             </table>
           </form>
-
-          <button class='btn' style='display:inline-block; margin-right: 5%;'>Update</button><span class='cancel'>Cancel</span>
+          <form>
+            <table>
+              {% if subscriptions %}
+                <tr>
+                  <th>Resource</th>
+                  <th>Allowance</th>
+                  <th>Start Date</th>
+                  <th>End Date</th>
+                  <th>Monthly Rate</th>
+                  <th>Overage Rate</th>
+                  <th>Paid By</th>
+                </tr>
+                {% for sub in subscriptions %}
+                <tr>
+                  <td>
+                    {{ sub.resource }}
+                  </td>
+                  <td>
+                    {{ sub.allowance }}
+                  </td>
+                  <td>
+                    {{ sub.start_date }}
+                  </td>
+                  <td>
+                    {{ sub.end_date }}
+                  </td>
+                  <td>
+                    {{ sub.monthly_rate }}
+                  </td>
+                  <td>
+                    {{ sub.overage_rate}}
+                  </td>
+                  <td>
+                    {{ sub.paid_by }}
+                  </td>
+                </tr>
+                {% endfor %}
+              {% endif %}
+            </table>
+            <button class='btn' type='submit' style='display:inline-block; margin-right: 5%;'>Update</button><span class='cancel'>Cancel</span>
+          </form>
         </div>
       </div>
-    </div>
+    <!-- </div>
   </div>
-</div>
+</div> -->
 
 <!-- Active Guest Memberships -->
 <!-- TODO This is the old way... needs to be ported to the new way -->
@@ -101,6 +147,9 @@
 
 <script>
   $(document).ready(function() {
+    $('#new-package').hide();
+    $('#start').hide();
+
     $('.edit-sub').on('click', function(e) {
       e.preventDefault();
       $('#subModal').css('display', 'block');
@@ -109,6 +158,21 @@
     $('.cancel').on('click', function(e) {
       e.preventDefault();
       $('#subModal').css('display', 'none');
+      $('#new-package').hide();
+      $('#package').show();
+    })
+
+    $('#change').on('click', function(e) {
+      e.preventDefault();
+      $('#package').hide();
+      $('#new-package').show();
+    })
+
+    $('#id_package').on('change', function() {
+      $('#change').hide();
+      $('#start').show();
+
+      $.get("{% url 'staff:user:detail' user.username %}");
     })
   });
 </script>

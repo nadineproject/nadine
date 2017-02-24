@@ -480,10 +480,37 @@ class MembershipForm(forms.Form):
 
         return membership
 
+class BaseSubFormSet(BaseFormSet):
+    def clean(self):
+        if any(self.errors):
+            return
 
-class MembershipPackageForm(forms.Form):
+        subs = []
+
+        for form in self.forms:
+            if form.cleaned_data:
+                username = form.cleaned_data['username']
+                resource = form.cleaned_data['resource']
+                allowance = form.cleaned_data['allowance']
+                start_date = form.cleaned_data['start_date']
+                end_date = form.cleaned_data['end_date']
+                monthly_rate = form.cleaned_data['monthly_rate']
+                overage_rate = form.cleaned_data['overage_rate']
+                paid_by = form.cleaned_data['paid_by']
+
+                if resource and allowance and start_date and monthly_rate:
+                    subs.append(resource)
+                if not resource:
+                    raise forms.ValidationError(message='Please include resource name', code='missing_resource')
+                if not allowance:
+                    raise forms.ValidationError(message='A maximum allowance is required', code='missing_allowance')
+                if not start_date:
+                    raise forms.ValidationError(message='A start date is required', code='missing_start_date')
+                if not monthly_rate:
+                    raise form.ValidationError(message='A monthly rate is required', code='missing_monthly_rate')
+
+class SubForm(forms.Form):
     username = forms.CharField(required=True, widget=forms.HiddenInput)
-    package = forms.ModelChoiceField(queryset=MembershipPackage.objects.all(), required=True)
     # resource = forms.ModelChoiceField(queryset=Membership.objects.all(), required=True)
     allowance = forms.IntegerField(required=True)
     start_date = forms.DateField(required=True)
@@ -497,7 +524,6 @@ class MembershipPackageForm(forms.Form):
         if not self.is_valid():
             raise Exception('The form must be valid in order to save')
         username = self.cleaned_data['username']
-        package = self.cleanded_data['package']
         resource = self.cleaned_data['resource']
         allowance = self.cleaned_data['allowance']
         start_date = self.cleaned_data['start_date']
@@ -507,13 +533,29 @@ class MembershipPackageForm(forms.Form):
         overage_rate = self.cleaned_data['overage_rate']
         paid_by = self.cleaned_data['paid_by']
 
-        user = User.objects.get(username=username)
-        user.membership = MembershipPackage(name=package, bill_day=bill_day)
         sub = ResourceSubscription(resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=paid_by, membership=user.membership)
 
         sub.save()
 
         return sub
+
+class MembershipPackageForm(forms.Form):
+    username = forms.CharField(required=True, widget=forms.HiddenInput)
+    package = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), label='Choose a Package', queryset=MembershipPackage.objects.all(), required=True)
+
+
+    def save(self):
+        if not self.is_valid():
+            raise Exception('The form must be valid in order to save')
+        username = self.cleaned_data['username']
+        package = self.cleanded_data['package']
+
+        user = User.objects.get(username=username)
+        membership = Membership(name=package, bill_day=bill_day)
+
+        membership.save()
+
+        return membership
 
 
 class HelpTextForm(forms.Form):

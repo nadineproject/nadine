@@ -14,9 +14,9 @@ from django.conf import settings
 
 from monthdelta import MonthDelta, monthmod
 
-from nadine.forms import MembershipForm
-from nadine.models import Membership, MemberNote, MembershipPackage, SentEmailLog, FileUpload, SpecialDay
-from nadine.models.membership import OldMembership, Membership, MembershipPlan, MemberGroups, SecurityDeposit
+from nadine.forms import MembershipForm, MembershipPackageForm, SubForm, BaseSubFormSet
+from nadine.models import Membership, MemberNote, MembershipPlan, SentEmailLog, FileUpload, SpecialDay
+from nadine.models.membership import OldMembership, Membership, MembershipPlan, MemberGroups, MembershipPackage, SecurityDeposit, SubscriptionDefault
 from nadine.forms import MemberSearchForm, MembershipForm, EventForm
 from nadine.utils.slack_api import SlackAPI
 from nadine.utils import network
@@ -51,16 +51,10 @@ def detail(request, username):
                 year = None
             desc = request.POST.get('description')
             SpecialDay.objects.create(user=user, month=month, day=day, year=year, description=desc)
-        elif 'allowance' in request.POST:
-            package_form = MembershipPackageForm(request.POST)
-            if package_form.is_valid():
-                package_form.save()
         else:
             print(request.POST)
-    else:
-        package_form = MembershipPackageForm()
-    staff_members = User.objects.filter(is_staff=True).order_by('id').reverse()
 
+    staff_members = User.objects.filter(is_staff=True).order_by('id').reverse()
     email_keys = email.valid_message_keys()
     email_keys.remove("all")
 
@@ -242,10 +236,28 @@ def files(request, username):
 @staff_member_required
 def membership(request, username):
     user = get_object_or_404(User, username=username)
-    subscriptions = user.membership.first().active_subscriptions()
+    subscriptions = None
+    # subscriptions = user.membership.first().active_subscriptions()
+    package = request.GET.get('package', None)
+    if package:
+        subscriptions = SubscriptionDefault.objects.filter(package=package)
+        sub_data=[{'resource': s.resource, 'allowance':s.allowance, 'start_date':user.membership.next_period_start, 'end_date': None, 'monthly_rate': s.monthly_rate, 'overage_rate': s.overage_rate, 'paid_by': None} for s in subscriptions]
+    # Make formset for subscriptions
+    SubFormSet = formset_factory(SubForm, formset=BaseSubFormSet)
+
+    if request.method == 'POST':
+        package_form = MembershipPackageForm(request.POST)
+        sub_formset = SubFormSet(request.POST)
+        if package_form.is_valid():
+            package_form.save()
+    else:
+        package_form = MembershipPackageForm()
+        sub_formset = SubFormSet(initial=sub_data)
     context = {
-        'user':user,
+        'user': user,
         'subscriptions':subscriptions,
+        'package_form': package_form,
+        'package': package,
     }
     return render(request, 'staff/user/membership.html', context)
 

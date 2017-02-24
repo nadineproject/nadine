@@ -20,6 +20,11 @@ textarea.bcc-textarea {
 	height: 6rem;
 }
 
+#current-package {
+  margin-top: 2%;
+  font-size: 13px;
+}
+
 #deposit_table {
   text-align:right;
   background: #FBD850;
@@ -59,6 +64,10 @@ textarea.bcc-textarea {
   padding-left: 2%;
 }
 
+#id_package {
+  width: 30%;
+}
+
 #id_start_date, #id_end_date {
   width: 40%;
   display: inline-block;
@@ -76,6 +85,10 @@ textarea.bcc-textarea {
   margin-top: 1.4em;
 }
 
+#member-tab {
+  color: RGBA(90, 122, 189, 1.00) !important;
+}
+
 #onboard-form, #exit-form {
   width: 400px;
 }
@@ -88,8 +101,12 @@ textarea.bcc-textarea {
   text-align: left;
 }
 
-#member-tab {
-  color: RGBA(90, 122, 189, 1.00) !important;
+#package {
+  width: 20%;
+}
+
+#package-head {
+  width: 20%;
 }
 
 #quick-links {
@@ -119,6 +136,18 @@ textarea.bcc-textarea {
 #subject-th {
   text-align: left !important;
   margin-left: 20%;
+}
+
+.bill_day {
+  width: 20%;
+}
+
+.cancel {
+  margin-left: 5%;
+}
+
+.chip {
+  color: RGBA(28, 164, 230, 1.00);
 }
 
 .date-input, .mem-input {
@@ -208,7 +237,7 @@ textarea.bcc-textarea {
 
 .mem-details-table {
   margin-left: 2%;
-  width: 50%;
+  width: 80%;
 }
 
 .mem-details-table th, .mem-details-table td, .sub-table th, .sub-table td {
@@ -241,45 +270,8 @@ textarea.bcc-textarea {
   padding-left: 1%;
 }
 
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgb(0,0,0);
-  background-color: rgba(0,0,0,0.4);
-  max-height: 100%;
-}
-
-.modal-content {
-  position: relative;
-  background-color: #fefefe;
-  margin: auto;
-	margin-top: 10%;
-  padding: 0;
-  border: 1px solid #888;
-	border-radius: 3px;
-	height: 50%;
-  width: 50%;
-  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
-  -webkit-animation-name: animatetop;
-  -webkit-animation-duration: 0.4s;
-  animation-name: animatetop;
-  animation-duration: 0.4s
-}
-
-.modal-content .modal-body{
-	padding-top: 5%;
-	height: 100%;
-	padding: 3%;
-}
-
-.modal-body form {
-  font-size: 13px;
+.new-package {
+  width: 80%;
 }
 
 .notes {
