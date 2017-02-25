@@ -55,7 +55,6 @@
     </tr>
   </table>
 </div>
-
 <div id='update-package'>
   <h5>Update Membership</h5>
   <form>
@@ -90,7 +89,7 @@
       </tr>
       {{ sub_formset.management_form }}
       {% for sub_form in sub_formset %}
-			<tr class='link-formset subs'>
+			<tr class='sub-formset subs'>
 				<td class='sub-input'>{{ sub_form.resource }}</td>
 				<td class='sub-input allowance'>{{ sub_form.allowance  }}</td>
         <td class='sub-input'>{{ sub_form.start_date  }}</td>
@@ -98,6 +97,7 @@
         <td class='sub-input rate'>{{ sub_form.monthly_rate  }}</td>
         <td class='sub-input rate'>{{ sub_form.overage_rate  }}</td>
         <td class='sub-input'>{{ sub_form.paid_by  }}</td>
+        <td><a class="delete-row" href="javascript:void(0)">Remove</a></td>
 			</tr>
       <div class='row'>
         <p>{{ sub_form.username }}</p>
@@ -143,14 +143,14 @@
     $('#start').hide();
     $('.start_date').addClass('datepicker');
     $('.end_date').addClass('datepicker');
-    let package = '{{ package }}';
+    var package = '{{ package }}';
 
-    $('.link-formset').formset({
+    $('.sub-formset').formset({
       addText:'Add Another',
       deleteText: 'Remove'
     })
 
-    // $('.delete-row').addClass('btn-floating btn-large btn');
+    $('.delete-row').addClass('btn-floating btn-large btn');
 
 		$('.add-row').on('click', function(e) {
 			$('.delete-row').addClass('btn-floating btn-large btn');

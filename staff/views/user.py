@@ -244,9 +244,10 @@ def membership(request, username):
     package = request.GET.get('package', None)
     if package:
         subscriptions = SubscriptionDefault.objects.filter(package=package)
-        sub_data=[{'resource': s.resource, 'allowance':s.allowance, 'start_date':user.membership.next_period_start, 'end_date': None, 'monthly_rate': s.monthly_rate, 'overage_rate': s.overage_rate, 'paid_by': None} for s in subscriptions]
+        sub_data=[{'resource': s.resource, 'allowance':s.allowance, 'start_date':user.membership.next_period_start, 'end_date': None, 'username': user.username, 'created_by': request.user, 'monthly_rate': s.monthly_rate, 'overage_rate': s.overage_rate, 'paid_by': None} for s in subscriptions]
 
     if request.method == 'POST':
+        # print request.POST['resource']
         package_form = MembershipPackageForm(request.POST)
         sub_formset = SubFormSet(request.POST)
         if package_form.is_valid():
@@ -259,7 +260,7 @@ def membership(request, username):
         'subscriptions':subscriptions,
         'package_form': package_form,
         'package': package,
-        'sub_formset': sub_formset
+        'sub_formset': sub_formset,
     }
     return render(request, 'staff/user/membership.html', context)
 

@@ -146,6 +146,10 @@ textarea.bcc-textarea {
   width: 20%;
 }
 
+.btn-floating {
+  font-size: .8em;
+}
+
 .cancel {
   margin-left: 5%;
 }
