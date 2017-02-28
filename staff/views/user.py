@@ -270,7 +270,8 @@ def membership(request, username):
                     with transaction.atomic:
                         # package_form.save()
                         #once new membership/subscriptions saved, end old membership/subscriptions
-                        #user.membership.end_all()
+                        # end_target = start_date-timedelta(days=1)
+                        #user.membership.end_all(end_target)
                         # ResourceSubscription.objects.bulk_create(new_subs)
                         #Save the new subscriptions
                         messages.success(request, "You have updated the subscriptions")
