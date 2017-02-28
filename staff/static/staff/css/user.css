@@ -329,6 +329,10 @@ textarea.bcc-textarea {
   margin-bottom: 15%;
 }
 
+.sub-formset tr.dynamic-form {
+  margin-left: 0;
+}
+
 .sub-input {
   width: 15%;
 }

@@ -88,7 +88,8 @@
         <th></th>
       </tr>
       {{ sub_formset.management_form }}
-      {% for sub_form in sub_formset %}			<tr class='sub-formset subs'>
+      {% for sub_form in sub_formset %}
+      <tr class='sub-formset subs'>
 				<td class='sub-input'>{{ sub_form.resource }}</td>
 				<td class='sub-input allowance'>{{ sub_form.allowance  }}</td>
         <td class='sub-input'>{{ sub_form.start_date  }}</td>
@@ -154,6 +155,11 @@
     })
 
     $('.delete-row').addClass('btn-floating btn-large btn');
+    
+    $('.delete-row').on('click', function(e) {
+      e.preventDefault();
+      $(this).closest('tr').remove();
+    })
 
 		$('.add-row').on('click', function(e) {
 			$('.delete-row').addClass('btn-floating btn-large btn');
