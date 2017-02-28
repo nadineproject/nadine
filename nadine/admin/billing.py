@@ -16,7 +16,7 @@ class UserBillAdmin(StyledAdmin):
     search_fields = ('user__username', 'user__first_name')
     readonly_fields = ('generated_on', )
     fields = ('user', 'generated_on', 'period_start', 'period_end')
-    ordering = ['period_start', ]
+    ordering = ['-period_start', ]
 
 
 class PaymentAdmin(StyledAdmin):
