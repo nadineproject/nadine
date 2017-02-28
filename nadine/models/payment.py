@@ -45,7 +45,6 @@ class OldBill(models.Model):
     bill_date = models.DateField(blank=False, null=False)
     user = models.ForeignKey(User, related_name="old_bill")
     amount = models.DecimalField(max_digits=7, decimal_places=2)
-    # TODO - convert to NEW membership
     membership = models.ForeignKey('OldMembership', blank=True, null=True)
     dropins = models.ManyToManyField('CoworkingDay', related_name='bills')
     guest_dropins = models.ManyToManyField('CoworkingDay', related_name='guest_bills')

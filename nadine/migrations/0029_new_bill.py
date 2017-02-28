@@ -18,9 +18,10 @@ def forward(apps, schema_editor):
     BillLineItem = apps.get_model("nadine", "BillLineItem")
     CoworkingDayLineItem = apps.get_model("nadine", "CoworkingDayLineItem")
     Payment = apps.get_model("nadine", "Payment")
+    print
 
     print("    Migrating Old Bills...")
-    for o in OldBill.objects.all():
+    for o in OldBill.objects.all().order_by('bill_date').reverse():
         # OldBill -> UserBill
         if o.paid_by:
             user = o.paid_by
@@ -33,6 +34,9 @@ def forward(apps, schema_editor):
             period_start = start,
             period_end = end,
         )
+        if o.membership:
+            bill.membership = o.membership.new_membership
+            bill.save()
 
         # We'll just create one line item for these old bills
         line_item = CoworkingDayLineItem.objects.create(
@@ -79,10 +83,11 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('nadine', '0029_old_bill'),
+        ('nadine', '0028_new_membership'),
     ]
 
     operations = [
+        # Create our new models
         migrations.CreateModel(
             name='BillLineItem',
             fields=[
@@ -139,6 +144,11 @@ class Migration(migrations.Migration):
             model_name='billlineitem',
             name='bill',
             field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='line_items', to='nadine.UserBill'),
+        ),
+        migrations.AddField(
+            model_name='userbill',
+            name='membership',
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='bills', to='nadine.Membership'),
         ),
 
         # Convert all the old bills to new ones

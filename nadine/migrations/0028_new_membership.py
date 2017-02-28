@@ -29,7 +29,7 @@ def forward(apps, schema_editor):
     print("    Migrating Membership Plans to Packages...")
     PACKAGE_MAP = {}
     for plan in MembershipPlan.objects.all():
-        package = MembershipPackage.objects.create(name=plan.name)
+        package = MembershipPackage.objects.create(name=plan.name, enabled=plan.enabled)
         SubscriptionDefault.objects.create(
             package = package,
             resource = DAY,
@@ -48,25 +48,21 @@ def forward(apps, schema_editor):
         PACKAGE_MAP[plan] = package
 
     print("    Migrating Memberships...")
-    for user in User.objects.all():
+    for user in User.objects.all().order_by('id'):
+        new_membership = IndividualMembership.objects.create(user = user)
         old_memberships = OldMembership.objects.filter(user=user).order_by('start_date')
         if old_memberships:
+            # Set the bill_day and package based on the last membership found
             last_membership = old_memberships.last()
-            new_membership = IndividualMembership.objects.create(
-                user = user,
-                bill_day = last_membership.start_date.day
-            )
+            last_package = PACKAGE_MAP[last_membership.membership_plan]
+            new_membership.bill_day = last_membership.start_date.day
+            new_membership.package = last_package
+            new_membership.save()
+
             for m in old_memberships:
-                # Pull the membership package for the old membership plan
-                package = PACKAGE_MAP[m.membership_plan]
-
-                # Pull the defaults from the package
-                # day_default = SubscriptionDefault.objects.filter(package=package, resource=DAY).first()
-                # desk_default = SubscriptionDefault.objects.filter(package=package, resource=DESK).first()
-
-                # Set the package on our new membership.
-                new_membership.package = package
-                new_membership.save()
+                # Create a link from the old to the new
+                m.new_membership = new_membership
+                m.save()
 
                 # Create ResourceSubscriptions based on the parameters of the old membership
                 if m.has_desk:
@@ -133,7 +129,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('nadine', '0027_old_membership'),
+        ('nadine', '0027_old_models'),
     ]
 
     operations = [
@@ -202,11 +198,6 @@ class Migration(migrations.Migration):
                 ('created_by', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL)),
             ],
         ),
-        # migrations.AddField(
-        #     model_name='membership',
-        #     name='package',
-        #     field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='nadine.MembershipPackage'),
-        # ),
         migrations.AddField(
             model_name='resourcesubscription',
             name='membership',
@@ -222,7 +213,18 @@ class Migration(migrations.Migration):
             name='resource',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='nadine.Resource'),
         ),
+        migrations.AddField(
+            model_name='membershippackage',
+            name='enabled',
+            field=models.BooleanField(default=True),
+        ),
+        migrations.AddField(
+            model_name='oldmembership',
+            name='new_membership',
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='nadine.Membership'),
+        ),
 
         # Convert all the old memberships to new ones
         migrations.RunPython(forward, reverse),
+
     ]

@@ -16,9 +16,9 @@ logger = logging.getLogger(__name__)
 class UserBill(models.Model):
     generated_on = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(User, related_name="bill")
+    membership = models.ForeignKey(Membership, related_name="bills", null=True, blank=True)
     period_start = models.DateField()
     period_end = models.DateField()
-    # membership = models.ForeignKey(Membership, null=True)
     comment = models.TextField(blank=True, null=True)
     in_progress = models.BooleanField(default=False, blank=False, null=False)
 

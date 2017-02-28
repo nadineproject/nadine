@@ -44,6 +44,8 @@ class MembershipAdmin(StyledAdmin):
     def next_bill(self):
         return self.next_period_start()
 
+    def bills(self):
+        return self.bills.count()
 
     def end_membership_yesterday(self, request, queryset):
         for m in queryset:
@@ -69,21 +71,22 @@ class MembershipAdmin(StyledAdmin):
             except Exception as e:
                 self.message_user(request, e)
 
-    def generate_all_bills(self, request, queryset):
-        for res in queryset:
-            try:
-                res.generate_all_bills()
-                self.message_user(request, "bill generation complete")
-            except Exception as e:
-                self.message_user(request, e)
+    # def generate_all_bills(self, request, queryset):
+    #     for res in queryset:
+    #         try:
+    #             res.generate_all_bills()
+    #             self.message_user(request, "bill generation complete")
+    #         except Exception as e:
+    #             self.message_user(request, e)
 
     inlines = [SubscriptionInline, ]
-    list_display = ('id', 'who', 'bill_day', next_bill, active_subscriptions)
+    list_display = ('id', 'who', 'bill_day', next_bill, active_subscriptions, bills)
     readonly_fields = ['who']
     fields = ['who', 'bill_day', 'package']
     list_select_related = ('individualmembership', 'organizationmembership')
     search_fields = ('individualmembership__user__username', 'organizationmembership__organization__name')
-    actions= ['end_membership_yesterday', 'end_membership_at_period_end', 'generate_bill', 'generate_all_bills']
+    # actions= ['end_membership_yesterday', 'end_membership_at_period_end', 'generate_bill', 'generate_all_bills']
+    actions= ['end_membership_yesterday', 'end_membership_at_period_end', 'generate_bill']
 
 admin.site.register(Membership, MembershipAdmin)
 
