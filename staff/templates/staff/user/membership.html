@@ -97,15 +97,22 @@
         <td class='sub-input rate'>{{ sub_form.monthly_rate  }}</td>
         <td class='sub-input rate'>{{ sub_form.overage_rate }}</td>
         <td class='sub-input'>{{ sub_form.paid_by  }}</td>
-        <td><a class="delete-row" href="javascript:void(0)">Remove</a></td>
+        <td>
+          <a class="delete-row" href="javascript:void(0)">Remove</a>
+          <input type='hidden' name='package' value="{{ package }}" />
+          <input type='hidden' name='username' value="{{ user.username }}" />
+          {{ sub_form.username}}
+          {{ sub_form.created_by}}
+          <input type='hidden' name='created_by' value="{{ request.user }}" />
+        </td>
 			</tr>
-      <div class='row'>
+      <!-- <div class='row'>
         <input type='hidden' name='package' value="{{ package }}" />
         <input type='hidden' name='username' value="{{ user.username }}" />
         {{ sub_form.username}}
         {{ sub_form.created_by}}
         <input type='hidden' name='created_by' value="{{ request.user }}" />
-      </div>
+      </div> -->
       {% endfor %}
     </table>
     {% endif %}
@@ -155,7 +162,7 @@
     })
 
     $('.delete-row').addClass('btn-floating btn-large btn');
-    
+
     $('.delete-row').on('click', function(e) {
       e.preventDefault();
       $(this).closest('tr').remove();
@@ -180,7 +187,6 @@
 
     $('.datepicker').datepicker({
       dateFormat: 'yy-mm-dd',
-      // defaultDate:
     });
 
     $('#id_package').on('change', function() {
