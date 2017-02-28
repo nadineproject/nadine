@@ -88,20 +88,22 @@
         <th></th>
       </tr>
       {{ sub_formset.management_form }}
-      {% for sub_form in sub_formset %}
-			<tr class='sub-formset subs'>
+      {% for sub_form in sub_formset %}			<tr class='sub-formset subs'>
 				<td class='sub-input'>{{ sub_form.resource }}</td>
 				<td class='sub-input allowance'>{{ sub_form.allowance  }}</td>
         <td class='sub-input'>{{ sub_form.start_date  }}</td>
         <td class='sub-input'>{{ sub_form.end_date  }}</td>
         <td class='sub-input rate'>{{ sub_form.monthly_rate  }}</td>
-        <td class='sub-input rate'>{{ sub_form.overage_rate  }}</td>
+        <td class='sub-input rate'>{{ sub_form.overage_rate }}</td>
         <td class='sub-input'>{{ sub_form.paid_by  }}</td>
         <td><a class="delete-row" href="javascript:void(0)">Remove</a></td>
 			</tr>
       <div class='row'>
-        <p>{{ sub_form.username }}</p>
-        <p>{{ sub_form.created_by }}</p>
+        <input type='hidden' name='package' value="{{ package }}" />
+        <input type='hidden' name='username' value="{{ user.username }}" />
+        {{ sub_form.username}}
+        {{ sub_form.created_by}}
+        <input type='hidden' name='created_by' value="{{ request.user }}" />
       </div>
       {% endfor %}
     </table>
@@ -144,6 +146,7 @@
     $('.start_date').addClass('datepicker');
     $('.end_date').addClass('datepicker');
     var package = '{{ package }}';
+    $('#id_created_by').val('{{ request.user }}');
 
     $('.sub-formset').formset({
       addText:'Add Another',
@@ -158,6 +161,7 @@
 
     if( package != 'None') {
       $('#update-package').show();
+      $('#new-package').val('{{ package }}');
       $('.curr-sub').hide();
       $('#change').hide();
     }
@@ -170,6 +174,7 @@
 
     $('.datepicker').datepicker({
       dateFormat: 'yy-mm-dd',
+      // defaultDate:
     });
 
     $('#id_package').on('change', function() {

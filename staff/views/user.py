@@ -3,6 +3,7 @@ from datetime import date, datetime, timedelta
 
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.db import IntegrityError, transaction
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
@@ -15,9 +16,9 @@ from django.forms.formsets import formset_factory
 
 from monthdelta import MonthDelta, monthmod
 
-from nadine.forms import MembershipForm, MembershipPackageForm, SubForm, BaseSubFormSet
+from nadine.forms import MembershipForm, MembershipPackageForm, SubForm
 from nadine.models import Membership, MemberNote, MembershipPlan, SentEmailLog, FileUpload, SpecialDay
-from nadine.models.membership import OldMembership, Membership, MembershipPlan, MemberGroups, MembershipPackage, SecurityDeposit, SubscriptionDefault
+from nadine.models.membership import OldMembership, Membership, MembershipPlan, MemberGroups, MembershipPackage, SecurityDeposit, SubscriptionDefault, ResourceSubscription
 from nadine.forms import MemberSearchForm, MembershipForm, EventForm
 from nadine.utils.slack_api import SlackAPI
 from nadine.utils import network
@@ -239,19 +240,44 @@ def membership(request, username):
     user = get_object_or_404(User, username=username)
     subscriptions = None
     sub_data = None
-    SubFormSet = formset_factory(SubForm, formset=BaseSubFormSet)
+    SubFormSet = formset_factory(SubForm)
     # subscriptions = user.membership.first().active_subscriptions()
     package = request.GET.get('package', None)
     if package:
         subscriptions = SubscriptionDefault.objects.filter(package=package)
-        sub_data=[{'resource': s.resource, 'allowance':s.allowance, 'start_date':user.membership.next_period_start, 'end_date': None, 'username': user.username, 'created_by': request.user, 'monthly_rate': s.monthly_rate, 'overage_rate': s.overage_rate, 'paid_by': None} for s in subscriptions]
+        sub_data=[{'resource': s.resource, 'allowance':s.allowance, 'start_date':timezone.now().date(), 'end_date': None, 'username': user.username, 'created_by': request.user, 'monthly_rate': s.monthly_rate, 'overage_rate': s.overage_rate, 'paid_by': None} for s in subscriptions]
 
     if request.method == 'POST':
-        # print request.POST['resource']
         package_form = MembershipPackageForm(request.POST)
         sub_formset = SubFormSet(request.POST)
         if package_form.is_valid():
-            package_form.save()
+            if sub_formset.is_valid():
+                new_subs = []
+
+                for sub_form in sub_formset:
+                    username = sub_form.cleaned_data['username']
+                    resource = sub_form.cleaned_data['resource']
+                    allowance = sub_form.cleaned_data['allowance']
+                    start_date = sub_form.cleaned_data['start_date']
+                    end_date = sub_form.cleaned_data['end_date']
+                    monthly_rate = sub_form.cleaned_data['monthly_rate']
+                    overage_rate = sub_form.cleaned_data['overage_rate']
+                    paid_by = sub_form.cleaned_data['paid_by']
+
+                    if resource and username and start_date and allowance and monthly_rate:
+                        new_subs.append(ResourceSubscription(created_ts=timezone.now(), created_by=request.user, resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=None))
+                try:
+                    with transaction.atomic:
+                        # package_form.save()
+                        #once new membership/subscriptions saved, end old membership/subscriptions
+                        #user.membership.end_all()
+                        # ResourceSubscription.objects.bulk_create(new_subs)
+                        #Save the new subscriptions
+                        messages.success(request, "You have updated the subscriptions")
+
+                except IntegrityError:
+                    messages.error(request, 'There was an error updating the subscriptions')
+                    return render(request, 'staff/user/membership.html', context)
     else:
         package_form = MembershipPackageForm()
         sub_formset = SubFormSet(initial=sub_data)
