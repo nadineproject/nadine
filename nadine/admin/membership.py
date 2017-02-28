@@ -5,7 +5,7 @@ from django.utils.timezone import localtime, now
 
 from nadine.admin.core import StyledAdmin
 from nadine.models.membership import Membership, ResourceSubscription, SecurityDeposit
-
+from nadine.models.billing import UserBill
 
 class ActiveFilter(admin.SimpleListFilter):
     title = "is_active"
