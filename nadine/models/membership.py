@@ -389,23 +389,23 @@ class Membership(models.Model):
 
         return line_items
 
-    def generate_all_bills(self, target_date=None):
-        today = localtime(now()).date()
-
-        if not target_date:
-            target_date = self.start_date
-
-        if self.end_date and self.end_date < today:
-            end_date = self.end_date
-        else:
-            end_date = today
-
-        period_start = target_date
-        while period_start and (period_start < today) and (period_start < end_date):
-            self.generate_bill(target_date=period_start)
-            period_start = self.next_period_start(period_start)
-
     # Brought over from modernomad but not ported yet
+    # def generate_all_bills(self, target_date=None):
+    #     today = localtime(now()).date()
+    #
+    #     if not target_date:
+    #         target_date = self.start_date
+    #
+    #     if self.end_date and self.end_date < today:
+    #         end_date = self.end_date
+    #     else:
+    #         end_date = today
+    #
+    #     period_start = target_date
+    #     while period_start and (period_start < today) and (period_start < end_date):
+    #         self.generate_bill(target_date=period_start)
+    #         period_start = self.next_period_start(period_start)
+    #
     # def total_periods(self, target_date=None):
     #     ''' returns total periods between subscription start date and target
     #     date.'''
@@ -665,6 +665,7 @@ class OldMembership(models.Model):
     has_key = models.BooleanField(default=False)
     has_mail = models.BooleanField(default=False)
     paid_by = models.ForeignKey(User, null=True, blank=True, related_name="guest_membership")
+    new_membership = models.ForeignKey(Membership, null=True, blank=True)
 
     @property
     def guest_of(self):

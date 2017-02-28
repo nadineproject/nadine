@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        # Rename the old membership model
+        # Rename the old Membership model
         migrations.RenameModel(
             old_name='Membership',
             new_name='OldMembership',
@@ -34,4 +34,16 @@ class Migration(migrations.Migration):
             name='membership',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='nadine.OldMembership'),
         ),
+
+        # Rename old Bill model
+        migrations.RenameModel(
+            old_name='Bill',
+            new_name='OldBill',
+        ),
+        migrations.AlterField(
+            model_name='oldbill',
+            name='user',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='old_bill', to=settings.AUTH_USER_MODEL),
+        ),
+
     ]

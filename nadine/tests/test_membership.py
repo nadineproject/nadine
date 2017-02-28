@@ -162,8 +162,11 @@ class MembershipTestCase(TestCase):
 
 
     def test_inactive_period(self):
-        # Today is outside the date range for this membership
+        self.assertEquals((None, None), self.membership1.get_period(target_date=yesterday))
+        self.assertEquals((None, None), self.membership2.get_period(target_date=yesterday))
         self.assertEquals((None, None), self.membership3.get_period(target_date=today))
+        self.assertEquals((None, None), self.membership4.get_period(target_date=tomorrow))
+        self.assertEquals((None, None), self.membership5.get_period(target_date=tomorrow))
 
     def test_get_period(self):
         # Test month bounderies
@@ -308,6 +311,31 @@ class MembershipTestCase(TestCase):
         ps, pe = self.membership8.get_period(r.end_date)
         self.assertTrue(1 > r.prorate_for_period(ps, pe))
 
+    def test_bill_day_str(self):
+        membership = self.user1.membership
+        membership.bill_day = 1
+        self.assertEquals("1st", membership.bill_day_str())
+        membership.bill_day = 2
+        self.assertEquals("2nd", membership.bill_day_str())
+        membership.bill_day = 3
+        self.assertEquals("3rd", membership.bill_day_str())
+        membership.bill_day = 5
+        self.assertEquals("5th", membership.bill_day_str())
+        membership.bill_day = 11
+        self.assertEquals("11th", membership.bill_day_str())
+        membership.bill_day = 21
+        self.assertEquals("21st", membership.bill_day_str())
+        membership.bill_day = 22
+        self.assertEquals("22nd", membership.bill_day_str())
+        membership.bill_day = 23
+        self.assertEquals("23rd", membership.bill_day_str())
+        membership.bill_day = 25
+        self.assertEquals("25th", membership.bill_day_str())
+        membership.bill_day = 30
+        self.assertEquals("30th", membership.bill_day_str())
+        membership.bill_day = 31
+        self.assertEquals("31st", membership.bill_day_str())
+
     # TODO
     # def test_generate_bill(self):
     #     # Assume that if we generate a bill we will have a bill
@@ -321,27 +349,44 @@ class MembershipTestCase(TestCase):
     #     ps, pe = self.membership1.get_period(target_date=today)
     #     self.assertEquals(ps, bill.period_start)
     #     self.assertEquals(pe, bill.period_end)
-    #
+
+    # TODO
     # def test_generate_all_bills(self):
     #     self.assertEquals(0, self.membership6.bills.count())
     #     self.membership6.generate_all_bills()
     #     self.assertEquals(12, self.membership6.bills.count())
 
     def test_package_monthly_rate(self):
+        # Only 1 subscription so the totals should match
         self.assertEqual(self.test_package.monthly_rate(), self.default_subscription.monthly_rate)
 
     def test_set_to_package(self):
         user = User.objects.create(username='test_user1', first_name='Test', last_name='User')
         membership = user.membership
 
-        membership.end(yesterday)
+        # If this ended yesterday, the rate should be $0 today
+        membership.end_all(yesterday)
         self.assertFalse(membership.matches_package())
         self.assertEqual(0, membership.monthly_rate())
 
+        # Set this membership to our Test Package
         membership.set_to_package(self.test_package, today)
         self.assertEqual(membership.package, self.test_package)
         self.assertEqual(membership.monthly_rate(), self.test_package.monthly_rate())
         self.assertTrue(membership.matches_package())
+
+        # Add a new subscription and the package should still be the same
+        # but matches_package will no longer be true
+        ResourceSubscription.objects.create(
+            membership = membership,
+            resource = self.test_resource,
+            start_date = today,
+            monthly_rate = 100.00,
+            overage_rate = 0,
+        )
+        self.assertFalse(membership.matches_package())
+        self.assertEqual(membership.package, self.test_package)
+        self.assertTrue(membership.monthly_rate(), self.test_package.monthly_rate() + 100)
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
