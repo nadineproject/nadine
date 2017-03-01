@@ -240,6 +240,7 @@ def membership(request, username):
     user = get_object_or_404(User, username=username)
     subscriptions = None
     sub_data = None
+    active_members = User.helper.active_members()
     SubFormSet = formset_factory(SubForm)
     # subscriptions = user.membership.first().active_subscriptions()
     package = request.GET.get('package', None)
@@ -290,6 +291,7 @@ def membership(request, username):
         'package': package,
         'bill_day': bill_day,
         'sub_formset': sub_formset,
+        'active_members': active_members,
     }
     return render(request, 'staff/user/membership.html', context)
 

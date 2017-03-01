@@ -522,7 +522,7 @@ class SubForm(forms.Form):
     end_date = forms.DateField(widget=forms.TextInput(attrs={'class': 'start_date'}), required=False)
     monthly_rate = forms.IntegerField(required=True)
     overage_rate = forms.IntegerField(required=False)
-    paid_by = forms.CharField(max_length=128, required=False)
+    paid_by = forms.CharField(widget=forms.TextInput(attrs={'class': 'paying_user'}), max_length=128, required=False)
 
     def save(self):
         if not self.is_valid():
