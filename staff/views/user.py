@@ -265,7 +265,8 @@ def membership(request, username):
                         end_date = sub_form.cleaned_data.get('end_date', None)
                         monthly_rate = sub_form.cleaned_data.get('monthly_rate', None)
                         overage_rate = sub_form.cleaned_data.get('overage_rate', None)
-                        paid_by = sub_form.cleaned_data.get('paid_by', None)
+                        paid_by_username = sub_form.cleaned_data.get('paid_by', None)
+                        paid_by = User.objects.filter(username=paid_by_username)
 
                         if resource and username and start_date and allowance and monthly_rate:
                             new_subs.append(ResourceSubscription(created_ts=timezone.now(), created_by=request.user, resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=None, membership=membership))
