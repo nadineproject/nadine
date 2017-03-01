@@ -29,9 +29,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
 
-
-from monthdelta import MonthDelta, monthmod
-
 from resource import Resource
 from organization import Organization
 
@@ -178,6 +175,16 @@ class Membership(models.Model):
             return self.organizationmembership.organization.name
         return None
 
+    # @property
+    # def payer(self):
+    #     if self.paid_by:
+    #         return self.paid_by
+    #     elif self.individualmembership:
+    #         return self.individualmembership.user
+    #     elif self.organizationmembership:
+    #         return self.organizationmembership.organization.lead
+    #     return None
+
     @property
     def active_now():
         return self.is_active()
@@ -249,6 +256,14 @@ class Membership(models.Model):
         unending = Q(end_date__isnull=True)
         future_ending = Q(end_date__gte=target_date)
         return self.subscriptions.filter().filter(current & (unending | future_ending)).distinct()
+
+    def active_subscriptions_by_payer(self, target_date=None):
+        subscriptions = {}
+        for s in self.active_subscriptions(target_date):
+            if not hasattr(s.payer, subscription):
+                subscriptions[s.payer] = []
+            subscriptions[s.payer].append(s)
+        return subscriptions
 
     def is_active(self, target_date=None):
         return self.active_subscriptions(target_date).count() > 0
@@ -346,7 +361,8 @@ class Membership(models.Model):
         logger.debug('in generate_bill for target_date = %s and get_period = (%s, %s)' % (target_date, period_start, period_end))
 
         try:
-            bill = UserBill.objects.get(period_start=period_start)
+            from billing import UserBill
+            bill = UserBill.objects.get(membership=self, period_start=period_start)
             logger.debug('Found existing bill #%d for period start %s' % (bill.id, period_start.strftime("%B %d %Y")))
             # if the bill already exists but the end date is different, we need to prorate
             if bill.period_end != period_end:
@@ -357,8 +373,15 @@ class Membership(models.Model):
             if not delete_old_items:
                 return list(bill.line_items)
         except Exception, e:
-            logger.debug("Generating new bill item")
-            bill = UserBill.objects.create(period_start=period_start, period_end=period_end)
+            pass
+
+        logger.debug("Generating new bill item")
+        bill = UserBill.objects.create(
+            user = self.payer,
+            membership = self,
+            period_start = period_start,
+            period_end = period_end
+        )
 
         # Save any custom line items before clearing out the old items
         logger.debug("Working with bill %d (%s)" % (bill.id, bill.period_start.strftime("%B %d %Y")))
@@ -558,6 +581,16 @@ class ResourceSubscription(models.Model):
             desc = "(%s)" % self.description
         return "%d %s%s %s at $%s/month" % (self.allowance, self.resource, sfx, desc, self.monthly_rate)
 
+    @property
+    def payer(self):
+        if self.paid_by:
+            return self.paid_by
+        if hasattr(self.membership, 'individualmembership'):
+            return self.membership.individualmembership.user
+        if hasattr(self.membership, 'organizationmembership'):
+            return self.membership.organizationmembership.organization.lead
+        return None
+
     def is_active(self, target_date=None):
         if not target_date:
             target_date = localtime(now()).date()
@@ -714,7 +747,7 @@ class OldMembership(models.Model):
     def next_billing_date(self, test_date=None):
         if not test_date:
             test_date = date.today()
-        return self.prev_billing_date(test_date) + MonthDelta(1)
+        return self.prev_billing_date(test_date) + relativedelta(months=1)
 
     def get_allowance(self):
         if self.paid_by:

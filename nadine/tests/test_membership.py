@@ -336,19 +336,18 @@ class MembershipTestCase(TestCase):
         membership.bill_day = 31
         self.assertEquals("31st", membership.bill_day_str())
 
-    # TODO
-    # def test_generate_bill(self):
-    #     # Assume that if we generate a bill we will have a bill
-    #     self.assertEquals(0, self.membership1.bills.count())
-    #     self.membership1.generate_bill(target_date=today)
-    #     self.assertEquals(1, self.membership1.bills.count())
-    #
-    #     bill = self.membership1.bills.first()
-    #     self.assertEquals(self.membership1.monthly_rate, bill.amount())
-    #
-    #     ps, pe = self.membership1.get_period(target_date=today)
-    #     self.assertEquals(ps, bill.period_start)
-    #     self.assertEquals(pe, bill.period_end)
+    def test_generate_bill(self):
+        # Assume that if we generate a bill we will have a bill
+        self.assertEquals(0, self.membership1.bills.count())
+        self.membership1.generate_bill(target_date=today)
+        self.assertEquals(1, self.membership1.bills.count())
+
+        bill = self.membership1.bills.first()
+        self.assertEquals(self.membership1.monthly_rate, bill.amount())
+
+        ps, pe = self.membership1.get_period(target_date=today)
+        self.assertEquals(ps, bill.period_start)
+        self.assertEquals(pe, bill.period_end)
 
     # TODO
     # def test_generate_all_bills(self):
