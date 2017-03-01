@@ -66,6 +66,12 @@
         <td id='new-package'>
           {{ package_form.package }}
         </td>
+        <td id='bd-head'>
+          <strong>Billing Day:</strong>
+        </td>
+        <td id='new-bill-day'>
+          {{ package_form.bill_day }}
+        </td>
         <td id='change'>
         </td>
         <td id='start'>
@@ -155,6 +161,7 @@
     $('.end_date').addClass('datepicker');
     var package = '{{ package }}';
     $('#id_created_by').val('{{ request.user }}');
+    $('#id_bill_day').val('{{ bill_day }}');
 
     $('.sub-formset').formset({
       addText:'Add Another',
@@ -175,6 +182,7 @@
     if( package != 'None') {
       $('#update-package').show();
       $('#new-package').val('{{ package }}');
+      $('#id_bill_day').val('{{ bill_day }}');
       $('.curr-sub').hide();
       $('#change').hide();
     }

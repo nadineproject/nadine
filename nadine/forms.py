@@ -551,16 +551,14 @@ class SubForm(forms.Form):
 class MembershipPackageForm(forms.Form):
     username = forms.CharField(required=True, widget=forms.HiddenInput)
     package = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), label='Choose a Package', queryset=MembershipPackage.objects.all(), required=True)
+    bill_day = forms.IntegerField(min_value=1, max_value=31, required=True)
 
     def save(self):
         if not self.is_valid():
             raise Exception('The form must be valid in order to save')
-        username = self.cleaned_data['username']
-        package = self.cleanded_data['package']
-
-        user = User.objects.get(username=username)
+        package = self.cleaned_data['package']
+        bill_day = self.cleaned_data['bill_day']
         membership = Membership(name=package, bill_day=bill_day)
-
         membership.save()
 
         return membership
