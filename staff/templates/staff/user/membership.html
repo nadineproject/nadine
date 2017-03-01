@@ -198,6 +198,11 @@
       $('#id_bill_day').val('{{ bill_day }}');
       $('.curr-sub').hide();
       $('#change').hide();
+      $('#id_package > option').each(function() {
+        if($(this).val() == '{{ package }}') {
+          $(this).attr('selected', 'selected');
+        }
+      })
     }
 
     $('#change').on('click', function(e) {
