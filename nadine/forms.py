@@ -20,7 +20,7 @@ from localflavor.ca.ca_provinces import PROVINCE_CHOICES
 from nadine import email
 from nadine.models.core import HowHeard, Industry, Neighborhood, URLType, GENDER_CHOICES
 from nadine.models.profile import UserProfile, MemberNote, user_photo_path
-from nadine.models.membership import Membership, MembershipPlan, MembershipPackage, ResourceSubscription
+from nadine.models.membership import Membership, MembershipPlan, MembershipPackage, ResourceSubscription, IndividualMembership
 from nadine.models.usage import PAYMENT_CHOICES, CoworkingDay
 from nadine.models.resource import Room, Resource
 from nadine.models.organization import Organization, OrganizationMember
@@ -558,8 +558,14 @@ class MembershipPackageForm(forms.Form):
             raise Exception('The form must be valid in order to save')
         package = self.cleaned_data['package']
         bill_day = self.cleaned_data['bill_day']
-        membership = Membership(name=package, bill_day=bill_day)
+        username = self.cleaned_data['username']
+        user = User.objects.get(username=username)
+        membership = Membership()
+        membership.package = package
+        membership.bill_day = bill_day
         membership.save()
+        user.membership = IndividualMembership(membership)
+        user.save()
 
         return membership
 

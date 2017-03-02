@@ -104,21 +104,15 @@
         <td class='sub-input rate'>{{ sub_form.overage_rate }}</td>
         <td class='sub-input'>{{ sub_form.paid_by  }}</td>
         <td>
-          <a class="delete-row" href="javascript:void(0)">Remove</a>
+          <a class="delete-row">Remove</a>
           <input type='hidden' name='package' value="{{ package }}" />
+          <input type='hidden' name='bill_day' value="{{ bill_day }}" />
           <input type='hidden' name='username' value="{{ user.username }}" />
           {{ sub_form.username}}
           {{ sub_form.created_by}}
           <input type='hidden' name='created_by' value="{{ request.user }}" />
         </td>
 			</tr>
-      <!-- <div class='row'>
-        <input type='hidden' name='package' value="{{ package }}" />
-        <input type='hidden' name='username' value="{{ user.username }}" />
-        {{ sub_form.username}}
-        {{ sub_form.created_by}}
-        <input type='hidden' name='created_by' value="{{ request.user }}" />
-      </div> -->
       {% endfor %}
     </table>
     {% endif %}
@@ -171,15 +165,19 @@
 
     $('#update-package').hide()
     $('#start').hide();
-    $('.start_date').addClass('datepicker');
-    $('.end_date').addClass('datepicker');
     $('#id_created_by').val('{{ request.user }}');
     $('#id_bill_day').val('{{ bill_day }}');
+    $('.start_date').addClass('datepicker');
+    $('.end_date').addClass('datepicker');
+    //Changes form numbers. Maybe not best approach
+    $('.subs').last().remove();
 
     $('.sub-formset').formset({
       addText:'Add Another',
       deleteText: 'Remove'
     })
+
+    
 
     $('.delete-row').addClass('btn-floating btn-large btn');
 
