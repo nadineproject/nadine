@@ -560,12 +560,14 @@ class MembershipPackageForm(forms.Form):
         bill_day = self.cleaned_data['bill_day']
         username = self.cleaned_data['username']
         user = User.objects.get(username=username)
-        membership = Membership()
+        if user.membership:
+            membership = user.membership
+        else:
+            membership = Membership()
         membership.package = package
         membership.bill_day = bill_day
+        membership.user = user
         membership.save()
-        user.membership = IndividualMembership(membership)
-        user.save()
 
         return membership
 

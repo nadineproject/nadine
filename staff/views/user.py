@@ -1,4 +1,5 @@
 import os
+import pytz
 from datetime import date, datetime, timedelta
 
 from django.contrib.auth.models import User
@@ -21,6 +22,7 @@ from nadine.models import Membership, MemberNote, MembershipPlan, SentEmailLog, 
 from nadine.models.membership import OldMembership, Membership, MembershipPlan, MemberGroups, MembershipPackage, SecurityDeposit, SubscriptionDefault, ResourceSubscription
 from nadine.forms import MemberSearchForm, MembershipForm, EventForm
 from nadine.utils.slack_api import SlackAPI
+from nadine.settings import TIME_ZONE
 from nadine.utils import network
 from nadine import email
 
@@ -238,12 +240,12 @@ def files(request, username):
 @staff_member_required
 def membership(request, username):
     user = get_object_or_404(User, username=username)
+    print user.membership.package
     subscriptions = None
     sub_data = None
     start = None
     active_members = User.helper.active_members()
     SubFormSet = formset_factory(SubForm)
-    # subscriptions = user.membership.first().active_subscriptions()
     package = request.GET.get('package', None)
     bill_day = request.GET.get('bill_day', user.membership.bill_day)
 
@@ -281,6 +283,15 @@ def membership(request, username):
 
             except IntegrityError:
                 messages.error(request, 'There was an error updating the subscriptions')
+                context = {
+                    'user': user,
+                    'subscriptions':subscriptions,
+                    'package_form': package_form,
+                    'package': package,
+                    'bill_day': bill_day,
+                    'sub_formset': sub_formset,
+                    'active_members': active_members,
+                }
                 return render(request, 'staff/user/membership.html', context)
     else:
         package_form = MembershipPackageForm()
