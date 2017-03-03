@@ -20,7 +20,7 @@ from localflavor.ca.ca_provinces import PROVINCE_CHOICES
 from nadine import email
 from nadine.models.core import HowHeard, Industry, Neighborhood, URLType, GENDER_CHOICES
 from nadine.models.profile import UserProfile, MemberNote, user_photo_path
-from nadine.models.membership import Membership, MembershipPlan, MembershipPackage, ResourceSubscription
+from nadine.models.membership import Membership, MembershipPlan, MembershipPackage, ResourceSubscription, IndividualMembership
 from nadine.models.usage import PAYMENT_CHOICES, CoworkingDay
 from nadine.models.resource import Room, Resource
 from nadine.models.organization import Organization, OrganizationMember
@@ -522,7 +522,7 @@ class SubForm(forms.Form):
     end_date = forms.DateField(widget=forms.TextInput(attrs={'class': 'start_date'}), required=False)
     monthly_rate = forms.IntegerField(required=True)
     overage_rate = forms.IntegerField(required=False)
-    paid_by = forms.CharField(max_length=128, required=False)
+    paid_by = forms.CharField(widget=forms.TextInput(attrs={'class': 'paying_user'}), max_length=128, required=False)
 
     def save(self):
         if not self.is_valid():
@@ -551,16 +551,22 @@ class SubForm(forms.Form):
 class MembershipPackageForm(forms.Form):
     username = forms.CharField(required=True, widget=forms.HiddenInput)
     package = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), label='Choose a Package', queryset=MembershipPackage.objects.all(), required=True)
+    bill_day = forms.IntegerField(min_value=1, max_value=31, required=True)
 
     def save(self):
         if not self.is_valid():
             raise Exception('The form must be valid in order to save')
+        package = self.cleaned_data['package']
+        bill_day = self.cleaned_data['bill_day']
         username = self.cleaned_data['username']
-        package = self.cleanded_data['package']
-
         user = User.objects.get(username=username)
-        membership = Membership(name=package, bill_day=bill_day)
-
+        if user.membership:
+            membership = user.membership
+        else:
+            membership = Membership()
+        membership.package = package
+        membership.bill_day = bill_day
+        membership.user = user
         membership.save()
 
         return membership

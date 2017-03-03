@@ -35,7 +35,7 @@
       <th>Overage</th>
       <th>Monthly</th>
       <th>Paid By</th>
-      <th></th>
+      <!-- <th></th> -->
     </tr>
     {% for s in user.membership.active_subscriptions %}
       <tr>
@@ -46,7 +46,7 @@
         <td>${{ s.overage_rate }}</td>
         <td>${{ s.monthly_rate }}/month</td>
         <td>{{ s.paid_by|default:"" }}</td>
-        <td><a href="">Edit</a></td>
+        <!-- <td><a href="">Edit</a></td> -->
       </tr>
     {% endfor %}
     <tr>
@@ -65,6 +65,12 @@
         </td>
         <td id='new-package'>
           {{ package_form.package }}
+        </td>
+        <td id='bd-head'>
+          <strong>Billing Day:</strong>
+        </td>
+        <td id='new-bill-day'>
+          {{ package_form.bill_day }}
         </td>
         <td id='change'>
         </td>
@@ -88,7 +94,8 @@
         <th></th>
       </tr>
       {{ sub_formset.management_form }}
-      {% for sub_form in sub_formset %}			<tr class='sub-formset subs'>
+      {% for sub_form in sub_formset %}
+      <tr class='sub-formset subs'>
 				<td class='sub-input'>{{ sub_form.resource }}</td>
 				<td class='sub-input allowance'>{{ sub_form.allowance  }}</td>
         <td class='sub-input'>{{ sub_form.start_date  }}</td>
@@ -96,15 +103,16 @@
         <td class='sub-input rate'>{{ sub_form.monthly_rate  }}</td>
         <td class='sub-input rate'>{{ sub_form.overage_rate }}</td>
         <td class='sub-input'>{{ sub_form.paid_by  }}</td>
-        <td><a class="delete-row" href="javascript:void(0)">Remove</a></td>
+        <td>
+          <a class="delete-row">Remove</a>
+          <input type='hidden' name='package' value="{{ package }}" />
+          <input type='hidden' name='bill_day' value="{{ bill_day }}" />
+          <input type='hidden' name='username' value="{{ user.username }}" />
+          {{ sub_form.username}}
+          {{ sub_form.created_by}}
+          <input type='hidden' name='created_by' value="{{ request.user }}" />
+        </td>
 			</tr>
-      <div class='row'>
-        <input type='hidden' name='package' value="{{ package }}" />
-        <input type='hidden' name='username' value="{{ user.username }}" />
-        {{ sub_form.username}}
-        {{ sub_form.created_by}}
-        <input type='hidden' name='created_by' value="{{ request.user }}" />
-      </div>
       {% endfor %}
     </table>
     {% endif %}
@@ -140,30 +148,67 @@
 
 {% block extrajs %}
 <script>
+  (function() {
+    var availableUsers = [
+			{% for u in active_members %}
+				 "{{ u.username }}",
+			{% endfor %}
+		];
+
+    $(".paying_user").autocomplete({
+			source: availableUsers
+		});
+  })();
+
   $(document).ready(function() {
+    var package = '{{ package }}';
     $('#update-package').hide()
     $('#start').hide();
+    $('#id_created_by').val('{{ request.user }}');
+    $('#id_bill_day').val('{{ bill_day }}');
     $('.start_date').addClass('datepicker');
     $('.end_date').addClass('datepicker');
-    var package = '{{ package }}';
-    $('#id_created_by').val('{{ request.user }}');
 
     $('.sub-formset').formset({
       addText:'Add Another',
       deleteText: 'Remove'
     })
 
+    $('.datepicker').datepicker({
+      dateFormat: 'yy-mm-dd',
+    });
+
     $('.delete-row').addClass('btn-floating btn-large btn');
+
+    $('.delete-row').on('click', function(e) {
+      e.preventDefault();
+      $(this).closest('tr').remove();
+    })
 
 		$('.add-row').on('click', function(e) {
 			$('.delete-row').addClass('btn-floating btn-large btn');
+
+      $('.datepicker').datepicker({
+        dateFormat: 'yy-mm-dd',
+      });
+
+      $('.delete-row').on('click', function(e) {
+        e.preventDefault();
+        $(this).closest('tr').remove();
+      })
 		});
 
     if( package != 'None') {
       $('#update-package').show();
       $('#new-package').val('{{ package }}');
+      $('#id_bill_day').val('{{ bill_day }}');
       $('.curr-sub').hide();
       $('#change').hide();
+      $('#id_package > option').each(function() {
+        if($(this).val() == '{{ package }}') {
+          $(this).attr('selected', 'selected');
+        }
+      })
     }
 
     $('#change').on('click', function(e) {
@@ -171,11 +216,6 @@
       $('#update-package').show();
       $('.curr-sub').hide();
     })
-
-    $('.datepicker').datepicker({
-      dateFormat: 'yy-mm-dd',
-      // defaultDate:
-    });
 
     $('#id_package').on('change', function() {
       $('#start').show();
@@ -187,10 +227,12 @@
       //Know which row & turn those items into form items.
     })
 
+
     $('.cancel').on('click', function(e) {
       e.preventDefault();
       window.location.replace("{% url 'staff:user:membership' user.username %}");
     })
   });
+
 </script>
 {% endblock %}

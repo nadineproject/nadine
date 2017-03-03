@@ -20,6 +20,11 @@ textarea.bcc-textarea {
 	height: 6rem;
 }
 
+#bd-head, #package-head  {
+  width: 15% !important;
+  vertical-align: middle;
+}
+
 #current-package {
   margin-top: 2%;
   font-size: 13px;
@@ -54,6 +59,11 @@ textarea.bcc-textarea {
   vertical-align: baseline;
 }
 
+input#id_bill_day {
+  width: 20%;
+  padding-left: 1%;
+}
+
 #id_membership_plan {
 	width: 40%;
 }
@@ -65,7 +75,7 @@ textarea.bcc-textarea {
 }
 
 #id_package {
-  width: 30%;
+  width: 70%;
 }
 
 #id_start_date, #id_end_date {
@@ -89,6 +99,10 @@ textarea.bcc-textarea {
   color: RGBA(90, 122, 189, 1.00) !important;
 }
 
+#new-package {
+  width: 20%;
+}
+
 #onboard-form, #exit-form {
   width: 400px;
 }
@@ -102,10 +116,6 @@ textarea.bcc-textarea {
 }
 
 #package {
-  width: 20%;
-}
-
-#package-head {
   width: 20%;
 }
 
@@ -327,6 +337,10 @@ textarea.bcc-textarea {
 
 .special_form {
   margin-bottom: 15%;
+}
+
+.sub-formset tr.dynamic-form {
+  margin-left: 0;
 }
 
 .sub-input {

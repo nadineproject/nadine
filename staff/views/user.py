@@ -1,4 +1,5 @@
 import os
+import pytz
 from datetime import date, datetime, timedelta
 
 from django.contrib.auth.models import User
@@ -21,6 +22,7 @@ from nadine.models import Membership, MemberNote, MembershipPlan, SentEmailLog, 
 from nadine.models.membership import OldMembership, Membership, MembershipPlan, MemberGroups, MembershipPackage, SecurityDeposit, SubscriptionDefault, ResourceSubscription
 from nadine.forms import MemberSearchForm, MembershipForm, EventForm
 from nadine.utils.slack_api import SlackAPI
+from nadine.settings import TIME_ZONE
 from nadine.utils import network
 from nadine import email
 
@@ -240,9 +242,12 @@ def membership(request, username):
     user = get_object_or_404(User, username=username)
     subscriptions = None
     sub_data = None
+    start = None
+    active_members = User.helper.active_members()
     SubFormSet = formset_factory(SubForm)
-    # subscriptions = user.membership.first().active_subscriptions()
     package = request.GET.get('package', None)
+    bill_day = request.GET.get('bill_day', user.membership.bill_day)
+
     if package:
         subscriptions = SubscriptionDefault.objects.filter(package=package)
         sub_data=[{'resource': s.resource, 'allowance':s.allowance, 'start_date':timezone.now().date(), 'end_date': None, 'username': user.username, 'created_by': request.user, 'monthly_rate': s.monthly_rate, 'overage_rate': s.overage_rate, 'paid_by': None} for s in subscriptions]
@@ -250,35 +255,34 @@ def membership(request, username):
     if request.method == 'POST':
         package_form = MembershipPackageForm(request.POST)
         sub_formset = SubFormSet(request.POST)
-        if package_form.is_valid():
-            if sub_formset.is_valid():
-                new_subs = []
+        if sub_formset.is_valid():
+            try:
+                with transaction.atomic():
+                    new_subs = []
+                    membership = package_form.save()
+                    for sub_form in sub_formset:
+                        resource = sub_form.cleaned_data.get('resource', None)
+                        allowance = sub_form.cleaned_data.get('allowance', None)
+                        start_date = sub_form.cleaned_data.get('start_date', None)
+                        if start_date:
+                            start = start_date
+                        end_date = sub_form.cleaned_data.get('end_date', None)
+                        monthly_rate = sub_form.cleaned_data.get('monthly_rate', None)
+                        overage_rate = sub_form.cleaned_data.get('overage_rate', None)
+                        paid_by_username = sub_form.cleaned_data.get('paid_by', None)
+                        paid_by = User.objects.filter(username=paid_by_username)
 
-                for sub_form in sub_formset:
-                    username = sub_form.cleaned_data['username']
-                    resource = sub_form.cleaned_data['resource']
-                    allowance = sub_form.cleaned_data['allowance']
-                    start_date = sub_form.cleaned_data['start_date']
-                    end_date = sub_form.cleaned_data['end_date']
-                    monthly_rate = sub_form.cleaned_data['monthly_rate']
-                    overage_rate = sub_form.cleaned_data['overage_rate']
-                    paid_by = sub_form.cleaned_data['paid_by']
+                        if resource and start_date:
+                            new_subs.append(ResourceSubscription(created_ts=timezone.now(), created_by=request.user, resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=None, membership=membership))
 
-                    if resource and username and start_date and allowance and monthly_rate:
-                        new_subs.append(ResourceSubscription(created_ts=timezone.now(), created_by=request.user, resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=None))
-                try:
-                    with transaction.atomic:
-                        # package_form.save()
-                        #once new membership/subscriptions saved, end old membership/subscriptions
-                        # end_target = start_date-timedelta(days=1)
-                        #user.membership.end_all(end_target)
-                        # ResourceSubscription.objects.bulk_create(new_subs)
-                        #Save the new subscriptions
-                        messages.success(request, "You have updated the subscriptions")
+                    end_target = start - timedelta(days=1)
+                    user.membership.end_all(end_target)
+                    ResourceSubscription.objects.bulk_create(new_subs)
+                    messages.success(request, "You have updated the subscriptions")
+                    return HttpResponseRedirect(reverse('staff:user:detail', kwargs={'username': username}))
 
-                except IntegrityError:
-                    messages.error(request, 'There was an error updating the subscriptions')
-                    return render(request, 'staff/user/membership.html', context)
+            except IntegrityError:
+                messages.error(request, 'There was an error updating the subscriptions')
     else:
         package_form = MembershipPackageForm()
         sub_formset = SubFormSet(initial=sub_data)
@@ -287,7 +291,9 @@ def membership(request, username):
         'subscriptions':subscriptions,
         'package_form': package_form,
         'package': package,
+        'bill_day': bill_day,
         'sub_formset': sub_formset,
+        'active_members': active_members,
     }
     return render(request, 'staff/user/membership.html', context)
 
