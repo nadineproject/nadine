@@ -240,7 +240,6 @@ def files(request, username):
 @staff_member_required
 def membership(request, username):
     user = get_object_or_404(User, username=username)
-    print user.membership.package
     subscriptions = None
     sub_data = None
     start = None
@@ -280,19 +279,10 @@ def membership(request, username):
                     user.membership.end_all(end_target)
                     ResourceSubscription.objects.bulk_create(new_subs)
                     messages.success(request, "You have updated the subscriptions")
+                    return HttpResponseRedirect(reverse('staff:user:detail', kwargs={'username': username}))
 
             except IntegrityError:
                 messages.error(request, 'There was an error updating the subscriptions')
-                context = {
-                    'user': user,
-                    'subscriptions':subscriptions,
-                    'package_form': package_form,
-                    'package': package,
-                    'bill_day': bill_day,
-                    'sub_formset': sub_formset,
-                    'active_members': active_members,
-                }
-                return render(request, 'staff/user/membership.html', context)
     else:
         package_form = MembershipPackageForm()
         sub_formset = SubFormSet(initial=sub_data)

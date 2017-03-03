@@ -35,7 +35,7 @@
       <th>Overage</th>
       <th>Monthly</th>
       <th>Paid By</th>
-      <th></th>
+      <!-- <th></th> -->
     </tr>
     {% for s in user.membership.active_subscriptions %}
       <tr>
@@ -46,7 +46,7 @@
         <td>${{ s.overage_rate }}</td>
         <td>${{ s.monthly_rate }}/month</td>
         <td>{{ s.paid_by|default:"" }}</td>
-        <td><a href="">Edit</a></td>
+        <!-- <td><a href="">Edit</a></td> -->
       </tr>
     {% endfor %}
     <tr>
@@ -170,14 +170,14 @@
     $('.start_date').addClass('datepicker');
     $('.end_date').addClass('datepicker');
     //Changes form numbers. Maybe not best approach
-    $('.subs').last().remove();
+    // $('.subs').last().remove();
 
     $('.sub-formset').formset({
       addText:'Add Another',
       deleteText: 'Remove'
     })
 
-    
+
 
     $('.delete-row').addClass('btn-floating btn-large btn');
 
