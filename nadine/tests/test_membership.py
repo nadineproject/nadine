@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 
 from nadine.models.membership import *
 from nadine.models.resource import Resource
+from nadine.models.organization import Organization
 
 today = localtime(now()).date()
 yesterday = today - timedelta(days=1)
@@ -21,6 +22,8 @@ class MembershipTestCase(TestCase):
 
     def setUp(self):
         self.user1 = User.objects.create(username='member_one', first_name='Member', last_name='One')
+        self.user2 = User.objects.create(username='member_two', first_name='Member', last_name='Two')
+        self.user3 = User.objects.create(username='member_three', first_name='Member', last_name='Three')
 
         # Not sure what this is --JLS
         # self.admin = User.objects.create_superuser(username='admin', email="blah@blah.com", password="secret")
@@ -386,6 +389,27 @@ class MembershipTestCase(TestCase):
         self.assertFalse(membership.matches_package())
         self.assertEqual(membership.package, self.test_package)
         self.assertTrue(membership.monthly_rate(), self.test_package.monthly_rate() + 100)
+
+    def test_subscription_payer(self):
+        # Start with an OrganizationMembership
+        org = Organization.objects.create(lead=self.user3, name="User3 Org", created_by=self.user3)
+        org_membership = OrganizationMembership.objects.create(organization=org)
+        subscription = ResourceSubscription.objects.create(
+            membership = org_membership,
+            resource = self.test_resource,
+            start_date = today,
+            monthly_rate = 100.00,
+            overage_rate = 0,
+        )
+        self.assertEqual(self.user3, subscription.payer)
+
+        # Now test an IndividualMembership
+        subscription.membership = self.user2.membership
+        self.assertEqual(self.user2, subscription.payer)
+
+        # And finally mark this as paid_by someone else
+        subscription.paid_by = self.user1
+        self.assertEqual(self.user1, subscription.payer)
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
