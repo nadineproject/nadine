@@ -162,22 +162,21 @@
 
   $(document).ready(function() {
     var package = '{{ package }}';
-
     $('#update-package').hide()
     $('#start').hide();
     $('#id_created_by').val('{{ request.user }}');
     $('#id_bill_day').val('{{ bill_day }}');
     $('.start_date').addClass('datepicker');
     $('.end_date').addClass('datepicker');
-    //Changes form numbers. Maybe not best approach
-    // $('.subs').last().remove();
 
     $('.sub-formset').formset({
       addText:'Add Another',
       deleteText: 'Remove'
     })
 
-
+    $('.datepicker').datepicker({
+      dateFormat: 'yy-mm-dd',
+    });
 
     $('.delete-row').addClass('btn-floating btn-large btn');
 
@@ -188,6 +187,15 @@
 
 		$('.add-row').on('click', function(e) {
 			$('.delete-row').addClass('btn-floating btn-large btn');
+
+      $('.datepicker').datepicker({
+        dateFormat: 'yy-mm-dd',
+      });
+
+      $('.delete-row').on('click', function(e) {
+        e.preventDefault();
+        $(this).closest('tr').remove();
+      })
 		});
 
     if( package != 'None') {
@@ -208,10 +216,6 @@
       $('#update-package').show();
       $('.curr-sub').hide();
     })
-
-    $('.datepicker').datepicker({
-      dateFormat: 'yy-mm-dd',
-    });
 
     $('#id_package').on('change', function() {
       $('#start').show();
