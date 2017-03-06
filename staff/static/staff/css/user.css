@@ -30,6 +30,11 @@ textarea.bcc-textarea {
   font-size: 13px;
 }
 
+#date-end {
+  width: 25%;
+  margin-left: 5%;
+}
+
 #deposit_table {
   text-align:right;
   background: #FBD850;
@@ -41,6 +46,18 @@ textarea.bcc-textarea {
 
 #doc_type {
   width: 30%;
+}
+
+#end-header {
+  /*width:20%;*/
+}
+
+#end-package td {
+  width:20%;
+}
+
+#end-package select{
+  /*width:30%;*/
 }
 
 #group_form {
@@ -141,6 +158,10 @@ input#id_bill_day {
   float: right;
   width: 180px;
   min-height: 200px;
+}
+
+#select-end-td {
+  /*width: 30%;*/
 }
 
 #subject-th {
