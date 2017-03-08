@@ -13,6 +13,8 @@ urlpatterns = [
      url(r'^user_reports/$', user.view_user_reports, name='user_reports'),
      url(r'^slack_users/$', user.slack_users, name='slack_users'),
      url(r'^membership/(?P<username>[^/]+)/$', user.membership, name='membership'),
+     url(r'^organizations/$', user.org_list, name='organizations'),
+     url(r'^organization/(?P<org_id>\d+)$', user.org_view, name='organization'),
 
      url(r'^files/(?P<username>[^/]+)/$', user.files, name='files'),
      url(r'^detail/(?P<username>[^/]+)/$', user.detail, name='detail'),
