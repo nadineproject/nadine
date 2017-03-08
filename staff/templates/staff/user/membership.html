@@ -17,9 +17,9 @@
         {{ entity.membership.package }}
       </td>
       <td>
-        <a id='change' class='chip'>Change</a>
-        | <a id='update' class='chip'>Update</a>
-        | <a id='end' class='chip'>End</a>
+        <a id='change' class='chip'>New Package</a>
+        | <a id='update' class='chip'>Update Current Subscriptions</a>
+        | <a id='end' class='chip'>End Current Package</a>
       </td>
     </form>
   </tr>
@@ -58,13 +58,8 @@
 <div id='update-package'>
   <h5>Update Current Subscriptions</h5>
   <form action='.' method='POST'>
-    <table class='sub-table'>
-      <tr>
-        <td>
-          <input name='update' type='hidden' value='update' />
-        </td>
-      </tr>
-      <tr class='row-even'>
+    <table class='up-table'>
+      <tr class='up-table-th'>
         <th>Resource</th>
         <th class='allowance'>Allowance</th>
         <th>Start Date</th>
@@ -75,29 +70,62 @@
         <th></th>
       </tr>
       {% for r in entity.membership.active_subscriptions %}
-      <tr class='subs'>
+      <tr class="{% cycle 'row-even' 'row-odd' %} subs">
         <form action='.' method='POST'>
           <input name='id' value='{{ r.id }}' type='hidden' />
-         <td class='up-input resource'><strong>{{ r.resource }}</strong></td>
-         <td class='up-input allowance'><input type='number' value='{{ r.allowance }}' name='allowance' min='0' readonly /></td>
+          <input name='update' type='hidden' value='update' />
+          <td class='up-input resource'><strong>{{ r.resource }}</strong></td>
+          <td class='up-input allowance'><input type='number' value='{{ r.allowance }}' name='allowance' min='0' readonly /></td>
           <td class='up-input'><input type='date' name='start_date' value='{{ r.start_date|date:"Y-m-d" }}' readonly  /></td>
-          <td class='up-input'><input name='end_date' type='date' value='{{ r.end_date|date:"Y-m-d" }}' readonly  /></td>
+          <td class='up-input'><input class='end_date-{{ r.id }}' name='end_date' type='date' value='{{ r.end_date|date:"Y-m-d" }}' readonly  /></td>
           <td class='up-input rate monthly_rate'><input type='number' name='monthly_rate' min='0' value='{{ r.monthly_rate }}' readonly /></td>
           <td class='up-input rate'><input type='number' name='overage_rate' value='{{ r.overage_rate }}' readonly /></td>
           <td class='up-input'><input type='text' name='paid_by ' class='paying_user' value='{{ r.paid_by }}' readonly /></td>
-          <td class='edit-tr'>
-            <a class='edit-a'>Edit</a>
-            <!-- |<a class='delete'>End</a> -->
+          <td class='edit-td'>
+            <a class='edit-a btn-floating' id='edit-{{ r.id }}'><strong>Edit</strong></a>
+            {% if r.end_date %} {% else %}
+            | <a class='delete btn-floating' id='delete-{{ r.id }}'><strong>End</strong></a>
+            {% endif %}
             {% csrf_token %}
-            <button type='submit'>Submit</button>
+            <button class='update-submit' id='submit-{{ r.id }}' type='submit'>Submit</button>
           </td>
         </form>
 			</tr>
       {% endfor %}
+      <tr class="{% cycle 'row-odd' 'row-even' %}">
+        <form class='add-form' action='.' method='POST'>
+          <input type='hidden' value='add-sub' name='add' />
+          <input type='hidden' value='{{ entity.username }}' name='username' />
+          <input type='hidden' value='{{ request.user }}' name='created_by'/>
+          <td class='resource'>
+            {{ add_form.resource }}
+          </td>
+          <td class='allowance'>
+            {{ add_form.allowance }}
+          </td>
+          <td class='add_date'>
+            {{ add_form.start_date }}
+          </td>
+          <td class='add_date'>
+            {{ add_form.end_date }}
+          </td>
+          <td class='rate monthly_rate'>
+            {{ add_form.monthly_rate }}
+          </td>
+          <td class='rate'>
+            {{ add_form.overage_rate }}
+          </td>
+          <td>
+            {{ add_form.paid_by }}
+          </td>
+          <td>
+            {% csrf_token %}
+            <button class='add-submit btn-floating' type='submit'><strong>Add</strong></button>
+          </td>
+        </form>
+      </tr>
     </table>
     {% csrf_token %}
-    <input type='hidden' name='update' value='update' />
-    <!-- <button class='btn' type='submit' style='display:inline-block; margin-right: 5%; margin-left:40%; margin-top: 2%;'>Update</button><span class='cancel' style='margin-top:2%;'>Cancel</span> -->
   </form>
 </div>
 
@@ -240,6 +268,22 @@
     $(".paying_user").autocomplete({
 			source: availableUsers
 		});
+
+    function formatDate() {
+      var d = new Date();
+      var month = '' + (d.getMonth() + 1);
+      var day = '' + d.getDate();
+      var year = d.getFullYear();
+
+      if (month.length < 2) {
+        month = '0' + month;
+      }
+      if (day.length < 2) {
+        day = '0' + day;
+      }
+
+      return [year, month, day].join('-');
+    }
   })();
 
   $(document).ready(function() {
@@ -248,6 +292,7 @@
     $('#update-package').hide();
     $('#end-package').hide();
     $('#date-end').hide();
+    $('.update-submit').hide()
     $('#id_created_by').val('{{ request.user }}');
     $('#id_bill_day').val('{{ bill_day }}');
     $('.start_date').addClass('datepicker');
@@ -312,7 +357,6 @@
       $('#change-package').show();
       $('#end-package').hide();
       $('#update-package').hide();
-      // $('.curr-sub').hide();
     })
 
     $('#update').on('click', function(e) {
@@ -323,18 +367,35 @@
       $('.curr-sub').hide();
     })
 
+    $('.edit-a').on('click', function(e) {
+      e.preventDefault();
+      var temp = $(this)[0].id
+      var actId = temp.split('-')[1];
+      $(this).parent().siblings().children().removeAttr('readonly');
+      $(this).parent().siblings().css('background-color', 'RGBA(195, 195, 195, .10)');
+      $(this).parent().css('background-color', 'RGBA(195, 195, 195, .10)');
+
+      $('#submit-' + actId).show();
+      $('.delete').hide();
+    })
+
+    $('.delete').on('click', function(e) {
+      $('#submit-' + actId).show();
+      $('.edit-a').hide();
+
+      var temp = $(this)[0].id
+      var actId = temp.split('-')[1];
+      var today = formatDate()
+      $('.end_date-'+ actId).addClass('datepicker');
+      $('.end_date-'+ actId).removeAttr('readonly');
+      $('.end_date-'+ actId).val(today)
+    })
+
     $('#end').on('click', function(e) {
       e.preventDefault();
       $('#end-package').show();
       $('#update-package').hide();
       $('#change-package').hide();
-    })
-
-    $('.edit-a').on('click', function(e) {
-      e.preventDefault();
-      $(this).parent().siblings().children().removeAttr('readonly');
-      $(this).parent().siblings().css('background-color', 'RGBA(195, 195, 195, .10)');
-      $(this).parent().css('background-color', 'RGBA(195, 195, 195, .10)');
     })
 
     $('#id_package').on('change', function() {

@@ -296,10 +296,14 @@ def membership(request, username):
             s.paid_by = request.POST.get('paid_by', None)
             s.save()
             return HttpResponseRedirect(reverse('staff:user:detail', kwargs={'username': username}))
+        elif 'add' in request.POST:
+            add_form = SubForm(request.POST)
+            if add_form.is_valid():
+                add_form.save()
+                return HttpResponseRedirect(reverse('staff:user:detail', kwargs={'username': username}))
         else:
             package_form = MembershipPackageForm(request.POST)
             sub_formset = SubFormSet(request.POST)
-            print package_form
             if sub_formset.is_valid():
                 try:
                     with transaction.atomic():
@@ -321,7 +325,6 @@ def membership(request, username):
 
                             if resource and start_date:
                                 new_subs.append(ResourceSubscription(created_ts=timezone.now(), created_by=request.user, resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=paid_by, membership=membership))
-                        print(new_subs)
                         end_target = start - timedelta(days=1)
                         user.membership.end_all(end_target)
                         ResourceSubscription.objects.bulk_create(new_subs)
@@ -335,10 +338,12 @@ def membership(request, username):
     else:
         package_form = MembershipPackageForm()
         sub_formset = SubFormSet(initial=sub_data)
+        add_form = SubForm()
     context = {
         'entity': user,
         'subscriptions':subscriptions,
         'package_form': package_form,
+        'add_form': add_form,
         'package': package,
         'bill_day': bill_day,
         'sub_formset': sub_formset,
