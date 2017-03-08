@@ -36,7 +36,6 @@
       <th>Overage</th>
       <th>Monthly</th>
       <th>Paid By</th>
-      <!-- <th></th> -->
     </tr>
     {% for s in entity.membership.active_subscriptions %}
       <tr>
@@ -47,7 +46,6 @@
         <td>${{ s.overage_rate }}</td>
         <td>${{ s.monthly_rate }}/month</td>
         <td>{{ s.paid_by|default:"" }}</td>
-        <!-- <td><a href="">Edit</a></td> -->
       </tr>
     {% endfor %}
     <tr>
@@ -59,6 +57,40 @@
 
 <div id='update-package'>
   <h5>Update Current Subscriptions</h5>
+  <form action='.' method='POST'>
+    <table class='sub-table'>
+      <tr>
+        <td>
+          <input name='update' type='hidden' value='update' />
+        </td>
+      </tr>
+      <tr class='row-even'>
+        <th>Resource</th>
+        <th class='allowance'>Allowance</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th class='rate'>Monthly Rate</th>
+        <th class='rate'>Overage Rate</th>
+        <th>Paid By</th>
+        <th></th>
+      </tr>
+      {% for r in entity.membership.active_subscriptions %}
+      <tr class='subs'>
+				<td class='up-input resource'><strong>{{ r.resource }}</strong></td>
+				<td class='up-input allowance'><input type='number' value='{{ r.allowance }}' name='allowance-{{r.id}}' min='0' readonly /></td>
+        <td class='up-input'><input type='date' value='{{ r.start_date|date:"Y-m-d" }}' readonly  /></td>
+        <td class='up-input'><input name='end_date-{{r.id}}' type='date' value='{{ r.end_date|date:"Y-m-d" }}' readonly  /></td>
+        <td class='up-input rate monthly_rate'><input type='number' name='monthly_rate-{{r.id}}' min='0' value='{{ r.monthly_rate }}' readonly /></td>
+        <td class='up-input rate'><input type='number' name='overage_rate-{{r.id}}' value='{{ r.overage_rate }}' readonly /></td>
+        <td class='up-input'><input type='text' name='paid_by-{{r.id}}' class='paying_user' value='{{ r.paid_by }}' readonly /></td>
+        <td class='edit-tr'><a class='edit-a'>Edit</a></td>
+			</tr>
+      {% endfor %}
+    </table>
+    {% csrf_token %}
+    <input type='hidden' name='update' value='update' />
+    <button class='btn' type='submit' style='display:inline-block; margin-right: 5%; margin-left:40%; margin-top: 2%;'>Update</button><span class='cancel' style='margin-top:2%;'>Cancel</span>
+  </form>
 </div>
 
 <div id='end-package'>
@@ -94,7 +126,7 @@
 
 
 <div id='change-package'>
-  <h5>Update Membership</h5>
+  <h5>Change Membership</h5>
   <form>
     <table class='sub-table'>
       <tr>
@@ -110,7 +142,7 @@
         <td id='new-bill-day'>
           {{ package_form.bill_day }}
         </td>
-        <td id='change'>
+        <td>
         </td>
         <td id='start'>
           <button class='btn' onclick="$.get('.')" style='display:inline-block;'>Start</button>
@@ -143,10 +175,10 @@
         <td class='sub-input'>{{ sub_form.paid_by  }}</td>
         <td>
           <a class="delete-row">Remove</a>
-          <input type='hidden' name='package' value="{{ package }}" />
-          <input type='hidden' name='bill_day' value="{{ bill_day }}" />
+          <input type='hidden' class='chosen_package' name='package' value="{{ package }}" />
+          <input type='hidden' class='ur_bill_Day' name='bill_day' value="{{ bill_day }}" />
           {% if entity.username %}
-            <input type='hidden' name='username' value="{{ entity.username }}" />
+            <input type='hidden' class='thr_username' name='username' value="{{ entity.username }}" />
             {{ sub_form.username}}
           {% else %}
             <input type='hidden' name='org' value='{{ org }}' />
@@ -208,11 +240,12 @@
     $('#update-package').hide();
     $('#end-package').hide();
     $('#date-end').hide();
-    $('#start').hide();
     $('#id_created_by').val('{{ request.user }}');
     $('#id_bill_day').val('{{ bill_day }}');
     $('.start_date').addClass('datepicker');
     $('.end_date').addClass('datepicker');
+    $('.username_td').val('{{ entity.username }}');
+    $('.created_by_td').val('{{ request.user }}');
 
     $('.sub-formset').formset({
       addText:'Add Another',
@@ -238,6 +271,11 @@
 
 		$('.add-row').on('click', function(e) {
 			$('.delete-row').addClass('btn-floating btn-large btn');
+      $('.username_td').val('{{ entity.username }}');
+      $('.created_by_td').val('{{ request.user }}');
+      $('.ur_bill_day').val('{{ bill_day }}');
+      $('.chosen_package').val('{{ package }}');
+      $('.thr_username').val('{{ entity.username }}')
 
       $('.datepicker').datepicker({
         dateFormat: 'yy-mm-dd',
@@ -254,7 +292,6 @@
       $('#new-package').val('{{ package }}');
       $('#id_bill_day').val('{{ bill_day }}');
       $('.curr-sub').hide();
-      $('#change').hide();
       $('#id_package > option').each(function() {
         if($(this).val() == '{{ package }}') {
           $(this).attr('selected', 'selected');
@@ -267,7 +304,7 @@
       $('#change-package').show();
       $('#end-package').hide();
       $('#update-package').hide();
-      $('.curr-sub').hide();
+      // $('.curr-sub').hide();
     })
 
     $('#update').on('click', function(e) {
@@ -285,8 +322,14 @@
       $('#change-package').hide();
     })
 
+    $('.edit-a').on('click', function(e) {
+      e.preventDefault();
+      $(this).parent().siblings().children().removeAttr('readonly');
+      $(this).parent().siblings().css('background-color', 'RGBA(195, 195, 195, .10)');
+      $(this).parent().css('background-color', 'RGBA(195, 195, 195, .10)');
+    })
+
     $('#id_package').on('change', function() {
-      $('#start').show();
       $.get("{% url 'staff:user:detail' entity.username %}");
     })
 

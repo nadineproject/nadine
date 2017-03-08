@@ -264,10 +264,12 @@ def membership(request, username):
                 user.membership.end_all(end_target)
             return HttpResponseRedirect(reverse('staff:user:detail', kwargs={'username': username}))
         elif 'update' in request.POST:
-            print('updating!')
+            print request.POST
+            return HttpResponseRedirect(reverse('staff:user:detail', kwargs={'username': username}))
         else:
             package_form = MembershipPackageForm(request.POST)
             sub_formset = SubFormSet(request.POST)
+            print package_form
             if sub_formset.is_valid():
                 try:
                     with transaction.atomic():
@@ -289,6 +291,7 @@ def membership(request, username):
 
                             if resource and start_date:
                                 new_subs.append(ResourceSubscription(created_ts=timezone.now(), created_by=request.user, resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=paid_by, membership=membership))
+                        print(new_subs)
                         end_target = start - timedelta(days=1)
                         user.membership.end_all(end_target)
                         ResourceSubscription.objects.bulk_create(new_subs)
@@ -297,6 +300,8 @@ def membership(request, username):
 
                 except IntegrityError:
                     messages.error(request, 'There was an error updating the subscriptions')
+            else:
+                print sub_formset.errors
     else:
         package_form = MembershipPackageForm()
         sub_formset = SubFormSet(initial=sub_data)

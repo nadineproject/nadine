@@ -212,6 +212,10 @@ input#id_bill_day {
   padding-left: 5%;
 }
 
+.edit-tr {
+  padding-top: 2%;
+}
+
 .email-form {
   margin-top: 2em;
 }
@@ -346,6 +350,10 @@ input#id_bill_day {
 
 .report-order {
   margin-left: 5%;
+}
+
+.resource {
+  padding-top: 2%;
 }
 
 .responsive-table #alerts-th {

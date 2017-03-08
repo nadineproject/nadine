@@ -513,20 +513,21 @@ class MembershipForm(forms.Form):
 #                     raise form.ValidationError(message='A monthly rate is required', code='missing_monthly_rate')
 
 class SubForm(forms.Form):
-    username = forms.CharField(required=True, widget=forms.HiddenInput)
+    username = forms.CharField(required=False, widget=forms.HiddenInput({'class':'username_td'}))
     created_ts = forms.DateField(required=False, widget=forms.HiddenInput)
-    created_by = forms.CharField(required=True, widget=forms.HiddenInput)
-    resource = forms.ModelChoiceField(queryset=Resource.objects.all(), required=True)
-    allowance = forms.IntegerField(required=True)
-    start_date = forms.DateField(widget=forms.TextInput(attrs={'class': 'start_date'}), required=True)
+    created_by = forms.CharField(required=False, widget=forms.HiddenInput({'class':'created_by_td'}))
+    resource = forms.ModelChoiceField(queryset=Resource.objects.all(), required=False)
+    allowance = forms.IntegerField(required=False)
+    start_date = forms.DateField(widget=forms.TextInput(attrs={'class': 'start_date'}), required=False)
     end_date = forms.DateField(widget=forms.TextInput(attrs={'class': 'start_date'}), required=False)
-    monthly_rate = forms.IntegerField(required=True)
+    monthly_rate = forms.IntegerField(required=False)
     overage_rate = forms.IntegerField(required=False)
     paid_by = forms.CharField(widget=forms.TextInput(attrs={'class': 'paying_user'}), max_length=128, required=False)
 
     def save(self):
         if not self.is_valid():
             raise Exception('The form must be valid in order to save')
+
         username = self.cleaned_data['username']
 
         if self.cleaned_data['created_ts']:
