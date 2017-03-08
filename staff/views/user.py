@@ -274,41 +274,69 @@ def membership(request, username):
         sub_data=[{'resource': s.resource, 'allowance':s.allowance, 'start_date':timezone.now().date(), 'end_date': None, 'username': user.username, 'created_by': request.user, 'monthly_rate': s.monthly_rate, 'overage_rate': s.overage_rate, 'paid_by': None} for s in subscriptions]
 
     if request.method == 'POST':
-        package_form = MembershipPackageForm(request.POST)
-        sub_formset = SubFormSet(request.POST)
-        if sub_formset.is_valid():
-            try:
-                with transaction.atomic():
-                    new_subs = []
-                    membership = package_form.save()
-                    for sub_form in sub_formset:
-                        resource = sub_form.cleaned_data.get('resource', None)
-                        allowance = sub_form.cleaned_data.get('allowance', None)
-                        start_date = sub_form.cleaned_data.get('start_date', None)
-                        if start_date:
-                            start = start_date
-                        end_date = sub_form.cleaned_data.get('end_date', None)
-                        monthly_rate = sub_form.cleaned_data.get('monthly_rate', None)
-                        overage_rate = sub_form.cleaned_data.get('overage_rate', None)
-                        paid_by_username = sub_form.cleaned_data.get('paid_by', None)
-                        paid_by = User.objects.filter(username=paid_by_username)
+        if 'ending' in request.POST:
+            if request.POST['ending'] == 'today':
+                end_target = datetime.now(pytz.timezone(TIME_ZONE)).date()
+                user.membership.end_all(end_target)
+            elif request.POST['ending'] == 'eop':
+                user.membership.end_at_period_end()
+            else:
+                end_target = request.POST['date-end']
+                user.membership.end_all(end_target)
+            return HttpResponseRedirect(reverse('staff:user:detail', kwargs={'username': username}))
+        elif 'update' in request.POST:
+            s_id = request.POST['id']
+            s = ResourceSubscription.objects.get(id=s_id)
+            s.allowance = request.POST['allowance']
+            s.start_date = request.POST['start_date']
+            if request.POST['end_date']:
+                s.end_date = request.POST['end_date']
+            s.monthly_rate = request.POST.get('monthly_rate', 0)
+            s.overage_rate = request.POST.get('overage_rate', 0)
+            s.paid_by = request.POST.get('paid_by', None)
+            s.save()
+            return HttpResponseRedirect(reverse('staff:user:detail', kwargs={'username': username}))
+        else:
+            package_form = MembershipPackageForm(request.POST)
+            sub_formset = SubFormSet(request.POST)
+            print package_form
+            if sub_formset.is_valid():
+                try:
+                    with transaction.atomic():
+                        new_subs = []
+                        membership = package_form.save()
+                        for sub_form in sub_formset:
+                            paid_by = None
+                            resource = sub_form.cleaned_data.get('resource', None)
+                            allowance = sub_form.cleaned_data.get('allowance', None)
+                            start_date = sub_form.cleaned_data.get('start_date', None)
+                            if start_date:
+                                start = start_date
+                            end_date = sub_form.cleaned_data.get('end_date', None)
+                            monthly_rate = sub_form.cleaned_data.get('monthly_rate', None)
+                            overage_rate = sub_form.cleaned_data.get('overage_rate', None)
+                            paid_by_username = sub_form.cleaned_data.get('paid_by', None)
+                            if paid_by_username:
+                                paid_by = User.objects.get(username=paid_by_username)
 
-                        if resource and start_date:
-                            new_subs.append(ResourceSubscription(created_ts=timezone.now(), created_by=request.user, resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=None, membership=membership))
+                            if resource and start_date:
+                                new_subs.append(ResourceSubscription(created_ts=timezone.now(), created_by=request.user, resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=paid_by, membership=membership))
+                        print(new_subs)
+                        end_target = start - timedelta(days=1)
+                        user.membership.end_all(end_target)
+                        ResourceSubscription.objects.bulk_create(new_subs)
+                        messages.success(request, "You have updated the subscriptions")
+                        return HttpResponseRedirect(reverse('staff:user:detail', kwargs={'username': username}))
 
-                    end_target = start - timedelta(days=1)
-                    user.membership.end_all(end_target)
-                    ResourceSubscription.objects.bulk_create(new_subs)
-                    messages.success(request, "You have updated the subscriptions")
-                    return HttpResponseRedirect(reverse('staff:user:detail', kwargs={'username': username}))
-
-            except IntegrityError:
-                messages.error(request, 'There was an error updating the subscriptions')
+                except IntegrityError:
+                    messages.error(request, 'There was an error updating the subscriptions')
+            else:
+                print sub_formset.errors
     else:
         package_form = MembershipPackageForm()
         sub_formset = SubFormSet(initial=sub_data)
     context = {
-        'user': user,
+        'entity': user,
         'subscriptions':subscriptions,
         'package_form': package_form,
         'package': package,
