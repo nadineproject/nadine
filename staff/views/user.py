@@ -264,7 +264,16 @@ def membership(request, username):
                 user.membership.end_all(end_target)
             return HttpResponseRedirect(reverse('staff:user:detail', kwargs={'username': username}))
         elif 'update' in request.POST:
-            print request.POST
+            s_id = request.POST['id']
+            s = ResourceSubscription.objects.get(id=s_id)
+            s.allowance = request.POST['allowance']
+            s.start_date = request.POST['start_date']
+            if request.POST['end_date']:
+                s.end_date = request.POST['end_date']
+            s.monthly_rate = request.POST.get('monthly_rate', 0)
+            s.overage_rate = request.POST.get('overage_rate', 0)
+            s.paid_by = request.POST.get('paid_by', None)
+            s.save()
             return HttpResponseRedirect(reverse('staff:user:detail', kwargs={'username': username}))
         else:
             package_form = MembershipPackageForm(request.POST)

@@ -76,20 +76,28 @@
       </tr>
       {% for r in entity.membership.active_subscriptions %}
       <tr class='subs'>
-				<td class='up-input resource'><strong>{{ r.resource }}</strong></td>
-				<td class='up-input allowance'><input type='number' value='{{ r.allowance }}' name='allowance-{{r.id}}' min='0' readonly /></td>
-        <td class='up-input'><input type='date' value='{{ r.start_date|date:"Y-m-d" }}' readonly  /></td>
-        <td class='up-input'><input name='end_date-{{r.id}}' type='date' value='{{ r.end_date|date:"Y-m-d" }}' readonly  /></td>
-        <td class='up-input rate monthly_rate'><input type='number' name='monthly_rate-{{r.id}}' min='0' value='{{ r.monthly_rate }}' readonly /></td>
-        <td class='up-input rate'><input type='number' name='overage_rate-{{r.id}}' value='{{ r.overage_rate }}' readonly /></td>
-        <td class='up-input'><input type='text' name='paid_by-{{r.id}}' class='paying_user' value='{{ r.paid_by }}' readonly /></td>
-        <td class='edit-tr'><a class='edit-a'>Edit</a></td>
+        <form action='.' method='POST'>
+          <input name='id' value='{{ r.id }}' type='hidden' />
+         <td class='up-input resource'><strong>{{ r.resource }}</strong></td>
+         <td class='up-input allowance'><input type='number' value='{{ r.allowance }}' name='allowance' min='0' readonly /></td>
+          <td class='up-input'><input type='date' name='start_date' value='{{ r.start_date|date:"Y-m-d" }}' readonly  /></td>
+          <td class='up-input'><input name='end_date' type='date' value='{{ r.end_date|date:"Y-m-d" }}' readonly  /></td>
+          <td class='up-input rate monthly_rate'><input type='number' name='monthly_rate' min='0' value='{{ r.monthly_rate }}' readonly /></td>
+          <td class='up-input rate'><input type='number' name='overage_rate' value='{{ r.overage_rate }}' readonly /></td>
+          <td class='up-input'><input type='text' name='paid_by ' class='paying_user' value='{{ r.paid_by }}' readonly /></td>
+          <td class='edit-tr'>
+            <a class='edit-a'>Edit</a>
+            <!-- |<a class='delete'>End</a> -->
+            {% csrf_token %}
+            <button type='submit'>Submit</button>
+          </td>
+        </form>
 			</tr>
       {% endfor %}
     </table>
     {% csrf_token %}
     <input type='hidden' name='update' value='update' />
-    <button class='btn' type='submit' style='display:inline-block; margin-right: 5%; margin-left:40%; margin-top: 2%;'>Update</button><span class='cancel' style='margin-top:2%;'>Cancel</span>
+    <!-- <button class='btn' type='submit' style='display:inline-block; margin-right: 5%; margin-left:40%; margin-top: 2%;'>Update</button><span class='cancel' style='margin-top:2%;'>Cancel</span> -->
   </form>
 </div>
 
