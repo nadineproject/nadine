@@ -169,8 +169,24 @@ input#id_bill_day {
   margin-left: 20%;
 }
 
+.add_date #id_start_date, .add_date #id_end_date {
+  width: 100%;
+}
+
+td.up-input.resource {
+  width: 15% !important;
+}
+
+.add-submit strong {
+  font-size: 1.3em;
+}
+
 .allowance {
-  width: 5% !important;
+  width: 2% !important;
+}
+
+.allowance input {
+  text-align: center;
 }
 
 .bill_day {
@@ -202,6 +218,10 @@ input#id_bill_day {
 	margin-left: 3%;
 }
 
+.delete {
+  background-color: RGBA(158, 89, 88, 1.00);
+}
+
 .detail-header {
   margin-top: 0;
   border-bottom: none;
@@ -212,8 +232,18 @@ input#id_bill_day {
   padding-left: 5%;
 }
 
-.edit-tr {
+.edit-a {
+  background-color: RGBA(16, 91, 99, .80);
+}
+
+.edit-a, .delete {
+  font-size: 1em;
+  text-align: center;
+}
+
+.edit-td {
   padding-top: 2%;
+  width: 12%;
 }
 
 .email-form {
@@ -280,10 +310,9 @@ input#id_bill_day {
 
 .mem-details-table {
   margin-left: 2%;
-  width: 80%;
 }
 
-.mem-details-table th, .mem-details-table td, .sub-table th, .sub-table td {
+.mem-details-table th, .mem-details-table td, .sub-table th, .sub-table td, .up-table th {
   text-align: left !important;
 }
 
@@ -391,6 +420,19 @@ input#id_bill_day {
 
 .tabs .indicator {
 	background-color: RGBA(34, 83, 120, 1.00);
+}
+
+.up-table {
+  margin-top: 2%;
+}
+
+.up-table-th {
+  background-color: RGBA(76, 76, 76, 1.00);
+  color: white;
+}
+
+.up-table-th th {
+  border-radius: 0px;
 }
 
 .user-report {

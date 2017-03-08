@@ -529,19 +529,23 @@ class SubForm(forms.Form):
             raise Exception('The form must be valid in order to save')
 
         username = self.cleaned_data['username']
-
+        user = User.objects.get(username=username)
         if self.cleaned_data['created_ts']:
             created_ts = self.cleaned_data['created_ts']
         else:
             created_ts = timezone.now()
-        created_by = self.cleaned_data['created_by']
+        created_by_user = self.cleaned_data['created_by']
+        created_by = User.objects.get(username=created_by_user)
         resource = self.cleaned_data['resource']
         allowance = self.cleaned_data['allowance']
         start_date = self.cleaned_data['start_date']
         end_date = self.cleaned_data['end_date']
         monthly_rate = self.cleaned_data['monthly_rate']
         overage_rate = self.cleaned_data['overage_rate']
-        paid_by = self.cleaned_data['paid_by']
+        if self.cleaned_data['paid_by']:
+            paid_by = self.cleaned_data['paid_by']
+        else:
+            paid_by = None
 
         sub = ResourceSubscription(created_ts=created_ts, created_by=created_by, resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=paid_by, membership=user.membership)
         sub.save()
