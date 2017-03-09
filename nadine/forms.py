@@ -480,38 +480,6 @@ class MembershipForm(forms.Form):
 
         return membership
 
-#Not sure if want to do custom validation on subscription formsets or not
-# class BaseSubFormSet(BaseFormSet):
-#     def clean(self):
-#         if any(self.errors):
-#             return
-#
-#         subs = []
-#
-#         for form in self.forms:
-#             if form.cleaned_data:
-#                 username = form.cleaned_data['username']
-#                 resource = form.cleaned_data['resource']
-#                 allowance = form.cleaned_data['allowance']
-#                 start_date = form.cleaned_data['start_date']
-#                 end_date = form.cleaned_data['end_date']
-#                 bill_day = form.cleaned_data['bill_day']
-#                 monthly_rate = form.cleaned_data['monthly_rate']
-#                 overage_rate = form.cleaned_data['overage_rate']
-#                 paid_by = form.cleaned_data['paid_by']
-#                 created_by = form.cleaned_data['created_by']
-#
-#                 if resource and allowance and start_date and monthly_rate:
-#                     subs.append(resource)
-#                 if not resource:
-#                     raise forms.ValidationError(message='Please include resource name', code='missing_resource')
-#                 if not allowance:
-#                     raise forms.ValidationError(message='A maximum allowance is required', code='missing_allowance')
-#                 if not start_date:
-#                     raise forms.ValidationError(message='A start date is required', code='missing_start_date')
-#                 if not monthly_rate:
-#                     raise form.ValidationError(message='A monthly rate is required', code='missing_monthly_rate')
-
 class SubForm(forms.Form):
     username = forms.CharField(required=False, widget=forms.HiddenInput({'class':'username_td'}))
     created_ts = forms.DateField(required=False, widget=forms.HiddenInput)
