@@ -268,22 +268,6 @@
     $(".paying_user").autocomplete({
 			source: availableUsers
 		});
-
-    function formatDate() {
-      var d = new Date();
-      var month = '' + (d.getMonth() + 1);
-      var day = '' + d.getDate();
-      var year = d.getFullYear();
-
-      if (month.length < 2) {
-        month = '0' + month;
-      }
-      if (day.length < 2) {
-        day = '0' + day;
-      }
-
-      return [year, month, day].join('-');
-    }
   })();
 
   $(document).ready(function() {
@@ -376,20 +360,38 @@
       $(this).parent().css('background-color', 'RGBA(195, 195, 195, .10)');
 
       $('#submit-' + actId).show();
-      $('.delete').hide();
+      $('#delete-' + actId).hide();
+      $('#edit-' + actId).hide();
     })
 
     $('.delete').on('click', function(e) {
-      $('#submit-' + actId).show();
-      $('.edit-a').hide();
-
       var temp = $(this)[0].id
       var actId = temp.split('-')[1];
+      $('#submit-' + actId).show();
+      $('#delete-' + actId).hide();
+      $('#edit-' + actId).hide();
+
       var today = formatDate()
       $('.end_date-'+ actId).addClass('datepicker');
       $('.end_date-'+ actId).removeAttr('readonly');
       $('.end_date-'+ actId).val(today)
     })
+
+    function formatDate() {
+      var d = new Date();
+      var month = '' + (d.getMonth() + 1);
+      var day = '' + d.getDate();
+      var year = d.getFullYear();
+
+      if (month.length < 2) {
+        month = '0' + month;
+      }
+      if (day.length < 2) {
+        day = '0' + day;
+      }
+
+      return [year, month, day].join('-');
+    }
 
     $('#end').on('click', function(e) {
       e.preventDefault();

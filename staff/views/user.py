@@ -270,6 +270,8 @@ def membership(request, username):
             s.start_date = request.POST['start_date']
             if request.POST['end_date']:
                 s.end_date = request.POST['end_date']
+            else:
+                s.end_date = None
             s.monthly_rate = request.POST.get('monthly_rate', 0)
             s.overage_rate = request.POST.get('overage_rate', 0)
             s.paid_by = request.POST.get('paid_by', None)
