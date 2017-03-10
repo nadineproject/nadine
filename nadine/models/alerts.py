@@ -12,7 +12,7 @@ from django.core.files.base import ContentFile
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.conf import settings
-from django.utils import timezone
+from django.utils.timezone import localtime, now
 
 from nadine.models.profile import UserProfile, FileUpload
 from nadine.models.membership import Membership, IndividualMembership
@@ -48,11 +48,11 @@ class MemberAlertManager(models.Manager):
 
     def trigger_periodic_check(self):
         # Check for exiting members in the coming week
-        exit_date = timezone.now() + timedelta(days=5)
+        exit_date = localtime(now()) + timedelta(days=5)
         exiting_members = User.helper.exiting_members(exit_date)
         for u in exiting_members:
             # Only trigger exiting membership if no exit alerts were created in the last week
-            start = timezone.now() - timedelta(days=5)
+            start = localtime(now()) - timedelta(days=5)
             if MemberAlert.objects.filter(user=u, key__in=MemberAlert.PERSISTENT_ALERTS, created_ts__gte=start).count() == 0:
                 self.trigger_exiting_membership(u, exit_date)
 
@@ -76,7 +76,7 @@ class MemberAlertManager(models.Manager):
 
     def trigger_exiting_membership(self, user, day=None):
         if day == None:
-            day = timezone.now()
+            day = localtime(now())
 
         new_alerts = False
         open_alerts = user.profile.alerts_by_key(include_resolved=False)
@@ -279,14 +279,14 @@ class MemberAlert(models.Model):
         return None
 
     def resolve(self, user, note=None):
-        self.resolved_ts = timezone.now()
+        self.resolved_ts = localtime(now())
         self.resolved_by = user
         if note:
             self.note = note
         self.save()
 
     def mute(self, user, note=None):
-        self.muted_ts = timezone.now()
+        self.muted_ts = localtime(now())
         self.muted_by = user
         if note:
             self.note = note
@@ -316,8 +316,9 @@ def membership_callback(sender, **kwargs):
     if created:
         MemberAlert.objects.trigger_new_membership(membership.user)
     else:
-        # If this membership is older then a week we'll go straight to exiting member logic
-        window_start = timezone.now() - timedelta(days=5)
+        # If this membership is older then a week
+        # we'll go straight to exiting member logic
+        window_start = localtime(now()) - timedelta(days=5)
         if membership.end_date and membership.end_date < window_start.date():
             MemberAlert.objects.trigger_exiting_membership(membership.user)
 post_save.connect(membership_callback, sender=OldMembership)
