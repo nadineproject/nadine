@@ -80,11 +80,12 @@
           <td class='up-input'><input class='end_date-{{ r.id }}' name='end_date' type='date' value='{{ r.end_date|date:"Y-m-d" }}' readonly  /></td>
           <td class='up-input rate monthly_rate'><input type='number' name='monthly_rate' min='0' value='{{ r.monthly_rate }}' readonly /></td>
           <td class='up-input rate'><input type='number' name='overage_rate' value='{{ r.overage_rate }}' readonly /></td>
-          <td class='up-input'><input type='text' name='paid_by ' class='paying_user' value='{{ r.paid_by }}' readonly /></td>
+          <td class='up-input'><input type='text' name='paid_by' class='paying_user' value='{{ r.paid_by }}' readonly /></td>
           <td class='edit-td'>
             <a class='edit-a btn-floating' id='edit-{{ r.id }}'><strong>Edit</strong></a>
             {% if r.end_date %} {% else %}
-            | <a class='delete btn-floating' id='delete-{{ r.id }}'><strong>End</strong></a>
+            |
+            <a class='delete btn-floating' id='delete-{{ r.id }}'><strong> End</strong></a>
             {% endif %}
             {% csrf_token %}
             <button class='update-submit' id='submit-{{ r.id }}' type='submit'>Submit</button>
@@ -160,7 +161,6 @@
   </form>
 </div>
 
-
 <div id='change-package'>
   <h5>Change Membership</h5>
   <form>
@@ -178,6 +178,7 @@
         <td id='new-bill-day'>
           {{ package_form.bill_day }}
         </td>
+        {{ package_form.username }}
         <td>
         </td>
         <td id='start'>
@@ -212,7 +213,7 @@
         <td>
           <a class="delete-row">Remove</a>
           <input type='hidden' class='chosen_package' name='package' value="{{ package }}" />
-          <input type='hidden' class='ur_bill_Day' name='bill_day' value="{{ bill_day }}" />
+          <input type='hidden' class='ur_bill_day' name='bill_day' value="{{ bill_day }}" />
           {% if entity.username %}
             <input type='hidden' class='thr_username' name='username' value="{{ entity.username }}" />
             {{ sub_form.username}}
@@ -221,7 +222,7 @@
             {{ sub_form.org }}
           {% endif %}
           {{ sub_form.created_by}}
-          <input type='hidden' name='created_by' value="{{ request.user }}" />
+          <!-- <input type='hidden' name='created_by' value="{{ request.user }}" /> -->
         </td>
 			</tr>
       {% endfor %}
@@ -268,22 +269,6 @@
     $(".paying_user").autocomplete({
 			source: availableUsers
 		});
-
-    function formatDate() {
-      var d = new Date();
-      var month = '' + (d.getMonth() + 1);
-      var day = '' + d.getDate();
-      var year = d.getFullYear();
-
-      if (month.length < 2) {
-        month = '0' + month;
-      }
-      if (day.length < 2) {
-        day = '0' + day;
-      }
-
-      return [year, month, day].join('-');
-    }
   })();
 
   $(document).ready(function() {
@@ -295,9 +280,10 @@
     $('.update-submit').hide()
     $('#id_created_by').val('{{ request.user }}');
     $('#id_bill_day').val('{{ bill_day }}');
+    $('#id_username').val('{{ entity.username }}')
     $('.start_date').addClass('datepicker');
     $('.end_date').addClass('datepicker');
-    $('.username_td').val('{{ entity.username }}');
+    // $('.username_td').val('{{ entity.username }}');
     $('.created_by_td').val('{{ request.user }}');
 
     $('.sub-formset').formset({
@@ -376,20 +362,38 @@
       $(this).parent().css('background-color', 'RGBA(195, 195, 195, .10)');
 
       $('#submit-' + actId).show();
-      $('.delete').hide();
+      $('#delete-' + actId).hide();
+      $('#edit-' + actId).hide();
     })
 
     $('.delete').on('click', function(e) {
-      $('#submit-' + actId).show();
-      $('.edit-a').hide();
-
       var temp = $(this)[0].id
       var actId = temp.split('-')[1];
+      $('#submit-' + actId).show();
+      $('#delete-' + actId).hide();
+      $('#edit-' + actId).hide();
+
       var today = formatDate()
       $('.end_date-'+ actId).addClass('datepicker');
       $('.end_date-'+ actId).removeAttr('readonly');
       $('.end_date-'+ actId).val(today)
     })
+
+    function formatDate() {
+      var d = new Date();
+      var month = '' + (d.getMonth() + 1);
+      var day = '' + d.getDate();
+      var year = d.getFullYear();
+
+      if (month.length < 2) {
+        month = '0' + month;
+      }
+      if (day.length < 2) {
+        day = '0' + day;
+      }
+
+      return [year, month, day].join('-');
+    }
 
     $('#end').on('click', function(e) {
       e.preventDefault();
