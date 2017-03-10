@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<h4>Organization List [<i>{{ organizations | size }} total</i> ]</h4>
+<h4>Organization List [<i>{{ organizations|length }} total</i> ]</h4>
 
 <table class="member-table">
   <tr>
@@ -16,7 +16,7 @@
 
   {% for org in organizations %}
     <tr>
-      <td>org.name</td>
+      <td><a href="{% url 'staff:user:organization' org.id %}">{{ org.name }}</a></td>
       <td></td>
       <td></td>
       <td></td>

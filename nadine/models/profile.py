@@ -18,11 +18,10 @@ from django.contrib import admin
 from django.core import urlresolvers
 from django.core.files.base import ContentFile
 from django.contrib.auth.models import User
-from django.db.models.signals import post_save
 from django.conf import settings
 from django.utils.encoding import smart_str
 from django_localflavor_us.models import USStateField, PhoneNumberField
-from django.utils import timezone
+from django.utils.timezone import localtime, now
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
@@ -81,7 +80,7 @@ class UserQueryHelper():
 
     def here_today(self, day=None):
         if not day:
-            day = datetime.now(pytz.timezone(TIME_ZONE)).date()
+            day = localtime(now()).date()
 
         # The members who are on the network
         from arpwatch.arp import users_for_day_query
@@ -99,7 +98,7 @@ class UserQueryHelper():
 
     def not_signed_in(self, day=None):
         if not day:
-            day = timezone.now().date()
+            day = localtime(now()).date()
 
         signed_in = []
         for l in CoworkingDay.objects.filter(visit_date=day):
@@ -114,10 +113,10 @@ class UserQueryHelper():
 
     def not_signed_in_since(self, day=None):
         if not day:
-            day = timezone.now().date()
+            day = localtime(now()).date()
         not_signed_in = []
 
-        d = timezone.now().date()
+        d = localtime(now()).date()
         while day <= d:
             not_signed_in.extend(self.not_signed_in(d))
             d = d - timedelta(days=1)
@@ -126,7 +125,7 @@ class UserQueryHelper():
 
     def exiting_members(self, day=None):
         if day == None:
-            day = timezone.now()
+            day = localtime(now())
         next_day = day + timedelta(days=1)
 
         # Exiting members are here today and gone tomorrow.  Pull up all the active
@@ -157,7 +156,7 @@ class UserQueryHelper():
         return expired_users
 
     def stale_member_date(self):
-        three_months_ago = timezone.now() - MonthDelta(3)
+        three_months_ago = localtime(now()) - MonthDelta(3)
         return three_months_ago
 
     def stale_members(self):
@@ -310,20 +309,20 @@ class UserProfile(models.Model):
                 t = URLType.objects.get(name=url_type)
                 self.websites.create(url_type=t, url=url_value)
 
-    def active_organization_memberships(self, on_date=None):
-        if not on_date:
-            on_date = timezone.now().date()
+    def active_organization_memberships(self, target_date=None):
+        if not target_date:
+            target_date = localtime(now()).date()
         future = Q(end_date__isnull=True)
-        unending = Q(end_date__gte=on_date)
-        return self.user.organizationmember_set.filter(start_date__lte=on_date).filter(future | unending)
+        unending = Q(end_date__gte=target_date)
+        return self.user.organizationmember_set.filter(start_date__lte=target_date).filter(future | unending)
 
-    def past_organization_memberships(self, on_date=None):
-        if not on_date:
-            on_date = timezone.now().date()
-        return self.user.organizationmember_set.filter(end_date__lte=on_date)
+    def past_organization_memberships(self, target_date=None):
+        if not target_date:
+            target_date = localtime(now()).date()
+        return self.user.organizationmember_set.filter(end_date__lte=target_date)
 
-    def active_organizations(self, on_date=None):
-        active = self.active_organization_memberships(on_date)
+    def active_organizations(self, target_date=None):
+        active = self.active_organization_memberships(target_date)
         return Organization.objects.filter(id__in=active.values('organization'))
 
     def all_bills(self):
@@ -431,7 +430,7 @@ class UserProfile(models.Model):
         return self.user.emailaddress_set.filter(is_primary=False)
 
     def duration(self):
-        return relativedelta(timezone.now().date(), self.first_visit())
+        return relativedelta(localtime(now()).date(), self.first_visit())
 
     def duration_str(self, include_days=False):
         retval = ""
@@ -514,7 +513,7 @@ class UserProfile(models.Model):
         first = self.first_visit()
         if first == None:
             return None
-        return timezone.localtime(timezone.now()) - datetime.combine(first, time(0, 0, 0))
+        return localtime(now()) - datetime.combine(first, time(0, 0, 0))
 
     def last_visit(self):
         if CoworkingDay.objects.filter(user=self.user).count() > 0:
@@ -553,7 +552,7 @@ class UserProfile(models.Model):
 
     def has_desk(self, target_date=None):
         if not target_date:
-            target_date = timezone.now().date()
+            target_date = localtime(now()).date()
         m = self.membership_on_date(target_date)
         return m and m.has_desk
 
@@ -623,7 +622,7 @@ class UserProfile(models.Model):
         for membership in self.membership_history():
             end = membership.end_date
             if not end:
-                end = timezone.now().date()
+                end = localtime(now()).date()
             diff = end - membership.start_date
             days = diff.days
             total_days = total_days + days
@@ -939,7 +938,7 @@ post_save.connect(sync_primary_callback, sender=User)
 
 def emergency_callback_save_callback(sender, **kwargs):
     contact = kwargs['instance']
-    contact.last_updated = timezone.now()
+    contact.last_updated = localtime(now())
 pre_save.connect(emergency_callback_save_callback, sender=EmergencyContact)
 
 
