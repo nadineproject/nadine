@@ -14,7 +14,7 @@ from django.contrib import messages
 from django.conf import settings
 from django.utils import timezone
 
-from nadine.models.membership import MembershipPackage
+from nadine.models.membership import MembershipPackage, SubscriptionDefault
 from nadine.utils import network
 from nadine.forms import HelpTextForm, MOTDForm
 from nadine.settings import MOTD_TIMEOUT
@@ -37,7 +37,7 @@ def index(request):
 
 @staff_member_required
 def membership_packages(request):
-    packages = MembershipPackage.objects.all().order_by('name')
+    packages = SubscriptionDefault.objects.all().order_by('package')
     context = {'packages':packages}
     return render(request, 'staff/settings/membership_packages.html', context)
 

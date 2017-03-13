@@ -1,7 +1,7 @@
 {% extends "staff/settings/base.html" %}
 
 {% block content %}
-  <h1>Membership Packages</h1>
+  <h4>Membership Packages</h4>
 
   <table>
     <tr>
@@ -12,19 +12,17 @@
       <th>Overage Rate</th>
     </tr>
     {% for package in packages %}
-        {% for a in package.subscriptions.all %}
-          <tr>
-            <td>
-              {% ifchanged %}
-                {{ package.name }}
-              {% endifchanged %}
-            </td>
-            <td>{{ a.resource.name }}</td>
-            <td>{{ a.allowance }}</td>
-            <td>{{ a.monthly_rate }}</td>
-            <td>{{ a.overage_rate }}</td>
-          </tr>
-        {% endfor %}
+      <tr class="{% cycle 'row-even' 'row-odd' %}">
+        <td>
+          {% ifchanged %}
+            {{ package.package }}
+          {% endifchanged %}
+        </td>
+        <td>{{ package.resource }}</td>
+        <td>{{ package.allowance }}</td>
+        <td>{{ package.monthly_rate }}</td>
+        <td style='text-align: center;'>{{ package.overage_rate }}</td>
+      </tr>
     {% empty %}
       <tr>
         <td colspan="5"><i>No Membership Packages</i></td>
