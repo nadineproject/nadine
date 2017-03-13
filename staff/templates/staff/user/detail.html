@@ -59,7 +59,8 @@ function gotoEmailReset(emailAddress){
     {% endif %}
     <a href="{% url 'admin:auth_user_change' user.id %}">admin</a> |
     <a href="{% url 'member:profile:view' user.username %}">view profile</a> |
-    <a href="{% url 'member:profile:edit' user.username %}">edit profile</a>
+    <a href="{% url 'member:profile:edit' user.username %}">edit profile</a> | 
+    <a href="{% url 'staff:user:membership' user.username %}">update membership</a>
     </a>
   </div>
 </div>

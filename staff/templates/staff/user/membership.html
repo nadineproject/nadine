@@ -93,7 +93,7 @@
         </form>
 			</tr>
       {% endfor %}
-      <tr class="{% cycle 'row-odd' 'row-even' %}">
+      <tr class="{% cycle 'row-even' 'row-odd' %}">
         <form class='add-form' action='.' method='POST'>
           <input type='hidden' value='add-sub' name='add' />
           <input type='hidden' value='{{ entity.username }}' name='username' />
@@ -229,7 +229,7 @@
     </table>
     {% endif %}
     {% csrf_token %}
-    <button class='btn' type='submit' style='display:inline-block; margin-right: 5%; margin-left:40%; margin-top: 2%;'>Update</button><span class='cancel' style='margin-top:2%;'>Cancel</span>
+    <button class='btn' type='submit' style='display:inline-block; margin-right: 5%; margin-left:40%;'>Update</button><span class='cancel'>Cancel</span>
   </form>
 </div>
 
@@ -343,6 +343,7 @@
       $('#change-package').show();
       $('#end-package').hide();
       $('#update-package').hide();
+      $('.curr-sub').hide();
     })
 
     $('#update').on('click', function(e) {
@@ -403,6 +404,7 @@
     })
 
     $('#id_package').on('change', function() {
+      package = $(this).val()
       $.get("{% url 'staff:user:detail' entity.username %}");
     })
 

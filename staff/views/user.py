@@ -268,11 +268,13 @@ def membership(request, username):
             s = ResourceSubscription.objects.get(id=s_id)
             s.allowance = request.POST['allowance']
             s.start_date = request.POST['start_date']
-            s.end_date = request.POST.get('end_date', None)
+            if request.POST['end_date']:
+                s.end_date = request.POST['end_date']
             s.monthly_rate = request.POST.get('monthly_rate', 0)
             s.overage_rate = request.POST.get('overage_rate', 0)
-            paid_by_username = request.POST['paid_by']
-            s.paid_by = User.objects.get(username=paid_by_username)
+            if request.POST['paid_by'] != 'None':
+                paid_by_username = request.POST['paid_by']
+                s.paid_by = User.objects.get(username=paid_by_username)
             s.save()
             return HttpResponseRedirect(reverse('staff:user:detail', kwargs={'username': username}))
         elif 'add' in request.POST:
@@ -282,7 +284,6 @@ def membership(request, username):
                 return HttpResponseRedirect(reverse('staff:user:detail', kwargs={'username': username}))
         else:
             package_form = MembershipPackageForm(request.POST)
-            print package_form
             sub_formset = SubFormSet(request.POST)
             if sub_formset.is_valid():
                 try:
