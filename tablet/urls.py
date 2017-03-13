@@ -5,9 +5,10 @@ from django.views.generic import RedirectView
 from . import views
 
 urlpatterns = [
-    url(r'^$', lambda r: redirect('tablet:members'), name="home"),
+    url(r'^$', lambda r: redirect('tablet:motd'), name="home"),
 
     url(r'^members/$', views.members, name='members'),
+    url(r'^motd/$', views.motd, name='motd'),
     url(r'^here_today/$', views.here_today, name='here_today'),
     url(r'^visitors/$', views.visitors, name='visitors'),
     url(r'^search/$', views.search, name='search'),

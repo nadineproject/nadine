@@ -28,6 +28,9 @@ from easy_pdf.rendering import render_to_pdf, render_to_pdf_response
 
 logger = logging.getLogger(__name__)
 
+def motd(request):
+    message = MOTD.objects.for_today()
+    return render(request, 'tablet/motd.html', {'message': message})
 
 def members(request):
     members = None

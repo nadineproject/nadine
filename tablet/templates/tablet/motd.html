@@ -1,0 +1,13 @@
+{% extends "tablet/t_base.html" %}
+{% load imagetags %}
+
+{% block content %}
+  {% autoescape off %}
+    {% if message %}
+    <div style='text-align:center; font-size: 150%;'>
+      <p><strong>Message of the Day</strong></p>
+      {{ message.message }}
+    </div>
+    {% endif %}
+  {% endautoescape %}
+{% endblock %}
