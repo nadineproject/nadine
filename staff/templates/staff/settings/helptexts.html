@@ -10,7 +10,9 @@
 <div class='other-helps'>
   <table>
     <tr>
-      <td class='td-title'></td>
+      <td class='motd-update'>
+        <strong>To Update an Existing Help Text:</strong>
+      </td>
       <td>
         <form class='text-selection' method='GET' action='.'>
           <select id='help-input' name='selected_help'>
@@ -19,13 +21,19 @@
               <option value='{{ help.title }}'>{{ help.title }}</option>
             {% endfor %}
           </select>
-          <input style='display: inline-block;' class='btn' type='submit' value='Select' />
+          <input style='display: inline-block;' class='btn' type='submit' value='Start Updating' />
         </form>
       </td>
     </tr>
   </table>
 </div>
-
+<table class='alt-message'>
+  <tr>
+    <td class='border-td'><hr /></td>
+    <td><strong id='new-message-td'>Or Create a Help Text</strong></td>
+    <td class='border-td'><hr /></td>
+  </tr>
+</table>
 <div class='helptext-form'>
   <form method='POST' action='.'>
     <table>
@@ -95,7 +103,7 @@
     </table>
     {% csrf_token %}
     {% if selected %}
-      <button style='display:inline-block;' type='submit' class='btn help-btn'>Update {{ selected.title }}</button>
+      <button style='display:inline-block;' type='submit' class='btn help-btn'>Update '{{ selected.title }}'</button>
       <button id='cancel' class='btn help-btn'>Cancel</button>
     {% else %}
       <button type='submit' class='btn help-btn'>Add New Help Text</button>
@@ -112,6 +120,7 @@
     CKEDITOR.replace('id_template');
 
     if('{{ selected }}' != 'None') {
+      $('#new-message-td').text('Start Updating!')
       //How can we have them update the template? Currently getting an error
       $('#id_title').val('{{ selected.title }}');
       $('#help-input').val('{{ selected.title }}')
