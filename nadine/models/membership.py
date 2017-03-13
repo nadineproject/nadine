@@ -169,9 +169,9 @@ class Membership(models.Model):
 
     @property
     def who(self):
-        if self.individualmembership:
+        if self.is_individual:
             return self.individualmembership.user.get_full_name()
-        elif self.organizationmembership:
+        elif self.is_organization:
             return self.organizationmembership.organization.name
         return None
 
@@ -186,8 +186,16 @@ class Membership(models.Model):
     #     return None
 
     @property
-    def active_now():
+    def active_now(self):
         return self.is_active()
+
+    @property
+    def is_individual(self):
+        return hasattr(self, 'individualmembership')
+
+    @property
+    def is_organization(self):
+        return hasattr(self, 'organizationmembership')
 
     def end_all(self, target_date=None):
         '''End all the active subscriptions.  Defaults to yesterday.'''

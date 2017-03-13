@@ -9,8 +9,9 @@ from django.db import models
 from django.db.models import Q
 from django.core import urlresolvers
 from django.conf import settings
-from django.utils import timezone
+from django.utils.timezone import localtime, now
 from django.contrib.auth.models import User
+from django.db.models.signals import pre_save, post_save
 
 from nadine.models.core import Website, URLType
 
@@ -21,18 +22,19 @@ logger = logging.getLogger(__name__)
 
 class OrganizationManager(models.Manager):
 
-    def active_organizations(self, on_date=None):
+    def active_organizations(self, target_date=None):
         """ Organizations of all active members """
-        # TODO - This whole method will be rewritten when
-        # we change up how memberships are handled --JLS
-        if not on_date:
-            on_date = timezone.now().date()
+        if not target_date:
+            target_date = localtime(now()).date()
         org_ids = []
         from nadine.models.membership import Membership
-        for m in Membership.objects.active_memberships(on_date):
-            for o in m.user.profile.active_organizations():
-                org_ids.append(o.id)
-        return Organization.objects.filter(id__in=org_ids)
+        for m in Membership.objects.active_memberships(target_date):
+            if m.is_individual:
+                for o in m.individualmembership.user.profile.active_organizations():
+                    org_ids.append(o.id)
+            if m.is_organization:
+                org_ids.append(m.organization.id)
+        return Organization.objects.filter(id__in=org_ids).distinct()
 
     def with_tag(self, tag):
         return self.active_organizations().filter(tags__name__in=[tag])
@@ -68,35 +70,35 @@ class Organization(models.Model):
 
     objects = OrganizationManager()
 
-    def members(self, on_date=None):
-        active = self.active_memberships(on_date)
+    def members(self, target_date=None):
+        active = self.active_memberships(target_date)
         return User.objects.filter(id__in=active.values('user'))
 
-    def active_memberships(self, on_date=None):
-        if not on_date:
-            on_date = timezone.now().date()
+    def active_memberships(self, target_date=None):
+        if not target_date:
+            target_date = localtime(now()).date()
         future = Q(end_date__isnull=True)
-        unending = Q(end_date__gte=on_date)
-        return self.organizationmember_set.filter(start_date__lte=on_date).filter(future | unending)
+        unending = Q(end_date__gte=target_date)
+        return self.organizationmember_set.filter(start_date__lte=target_date).filter(future | unending)
 
-    def active_membership(self, user, on_date=None):
+    def active_membership(self, user, target_date=None):
         """ Active org membership for this user """
-        if not on_date:
-            on_date = timezone.now().date()
+        if not target_date:
+            target_date = localtime(now()).date()
         for m in self.organizationmember_set.filter(user=user):
-            if m.is_active(on_date):
+            if m.is_active(target_date):
                 return m
         return None
 
-    def has_member(self, user, on_date=None):
-        if not on_date:
-            on_date = timezone.now().date()
-        m = self.active_membership(user, on_date)
+    def has_member(self, user, target_date=None):
+        if not target_date:
+            target_date = localtime(now()).date()
+        m = self.active_membership(user, target_date)
         return m is not None
 
     def add_member(self, user, start_date=None, end_date=None):
         if not start_date:
-            start_date = timezone.now().date()
+            start_date = localtime(now()).date()
         if self.has_member(user, start_date):
             raise Exception("User already a member")
         return OrganizationMember.objects.create(organization=self, user=user,
@@ -145,12 +147,12 @@ class OrganizationMember(models.Model):
     end_date = models.DateField(null=True, blank=True)
     admin = models.BooleanField(default=False)
 
-    def is_active(self, on_date=None):
-        if not on_date:
-            on_date = timezone.now().date()
-        if self.start_date > on_date:
+    def is_active(self, target_date=None):
+        if not target_date:
+            target_date = localtime(now()).date()
+        if self.start_date > target_date:
             return False
-        return self.end_date == None or self.end_date >= on_date
+        return self.end_date == None or self.end_date >= target_date
 
     def set_admin(self, is_admin):
         self.admin = is_admin
@@ -183,6 +185,14 @@ class OrganizationNote(models.Model):
 
     class Meta:
         app_label = 'nadine'
+
+
+def org_save_callback(sender, **kwargs):
+    org = kwargs['instance']
+    from nadine.models.membership import OrganizationMembership
+    if not OrganizationMembership.objects.filter(organization=org).count() > 0:
+        OrganizationMembership.objects.create(organization=org)
+post_save.connect(org_save_callback, sender=Organization)
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

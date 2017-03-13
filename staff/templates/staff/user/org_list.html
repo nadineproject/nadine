@@ -1,0 +1,27 @@
+{% extends "staff/user/base.html" %}
+
+{% block sub-title %}Members{% endblock %}
+
+{% block content %}
+
+<h4>Organization List [<i>{{ organizations|length }} total</i> ]</h4>
+
+<table class="member-table">
+  <tr>
+    <th class='left'>Name</th>
+    <th>Billing Date</th>
+    <th>Quicklinks</th>
+    <th>Members</th>
+  </tr>
+
+  {% for org in organizations %}
+    <tr>
+      <td><a href="{% url 'staff:user:organization' org.id %}">{{ org.name }}</a></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}

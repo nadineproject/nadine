@@ -18,8 +18,10 @@ from django.forms.formsets import formset_factory
 from monthdelta import MonthDelta, monthmod
 
 from nadine.forms import MembershipForm, MembershipPackageForm, SubForm
-from nadine.models import Membership, MemberNote, MembershipPlan, SentEmailLog, FileUpload, SpecialDay
-from nadine.models.membership import OldMembership, Membership, MembershipPlan, MemberGroups, MembershipPackage, SecurityDeposit, SubscriptionDefault, ResourceSubscription
+from nadine.models.membership import OldMembership, MembershipPlan, ResourceSubscription
+from nadine.models.membership import Membership, MembershipPackage, ResourceSubscription
+from nadine.models.profile import MemberNote, SentEmailLog, FileUpload, SpecialDay
+from nadine.models.organization import Organization
 from nadine.forms import MemberSearchForm, MembershipForm, EventForm
 from nadine.utils.slack_api import SlackAPI
 from nadine.settings import TIME_ZONE
@@ -94,14 +96,33 @@ def members(request, group=None):
     total_members = User.helper.active_members().count()
     group_list = MemberGroups.get_member_groups()
 
-    context = {'group': group,
-               'group_name': group_name,
-               'users': users,
-               'member_count': member_count,
-               'group_list': group_list,
-               'total_members': total_members
-               }
+    context = {
+        'group': group,
+        'group_name': group_name,
+        'users': users,
+        'member_count': member_count,
+        'group_list': group_list,
+        'total_members': total_members
+    }
     return render(request, 'staff/user/members.html', context)
+
+
+@staff_member_required
+def org_list(request):
+    orgs = Organization.objects.active_organizations().order_by('name')
+    context = {
+        'organizations': orgs,
+    }
+    return render(request, 'staff/user/org_list.html', context)
+
+
+@staff_member_required
+def org_view(request, org_id):
+    org = get_object_or_404(Organization, id=org_id)
+    context = {
+        'organization': org,
+    }
+    return render(request, 'staff/user/org_view.html', context)
 
 
 def bcc_tool(request, group=None):

@@ -30,28 +30,28 @@ class OrganiztionTestCase(TestCase):
     def test_has_member(self):
         # Org1
         self.assertTrue(self.org1.has_member(self.user1))
-        self.assertFalse(self.org1.has_member(self.user1, on_date=yesterday))
+        self.assertFalse(self.org1.has_member(self.user1, target_date=yesterday))
         self.assertFalse(self.org1.has_member(self.user2))
         # Org2
         self.assertFalse(self.org2.has_member(self.user1))
         self.assertFalse(self.org2.has_member(self.user2))
-        self.assertTrue(self.org2.has_member(self.user2, on_date=yesterday))
-        self.assertFalse(self.org2.has_member(self.user1, on_date=yesterday))
+        self.assertTrue(self.org2.has_member(self.user2, target_date=yesterday))
+        self.assertFalse(self.org2.has_member(self.user1, target_date=yesterday))
 
     def test_is_active(self):
         # User1 is active today, but not yesterday.
         self.assertTrue(self.mem1.is_active())
-        self.assertFalse(self.mem1.is_active(on_date=yesterday))
+        self.assertFalse(self.mem1.is_active(target_date=yesterday))
         # User2 is active yesterday, but not today.
         self.assertFalse(self.mem2.is_active())
-        self.assertTrue(self.mem2.is_active(on_date=yesterday))
+        self.assertTrue(self.mem2.is_active(target_date=yesterday))
 
     def test_members(self):
         self.assertTrue(self.user1 in self.org1.members())
-        self.assertFalse(self.user1 in self.org1.members(on_date=yesterday))
+        self.assertFalse(self.user1 in self.org1.members(target_date=yesterday))
         self.assertFalse(self.user1 in self.org2.members())
         self.assertFalse(self.user2 in self.org2.members())
-        self.assertTrue(self.user2 in self.org2.members(on_date=yesterday))
+        self.assertTrue(self.user2 in self.org2.members(target_date=yesterday))
 
     def test_active_organizations(self):
         # User1
@@ -62,7 +62,7 @@ class OrganiztionTestCase(TestCase):
         # User2
         active_orgs = self.user2.profile.active_organizations()
         self.assertTrue(len(active_orgs) == 0)
-        active_orgs = self.user2.profile.active_organizations(on_date=yesterday)
+        active_orgs = self.user2.profile.active_organizations(target_date=yesterday)
         self.assertTrue(len(active_orgs) > 0)
         self.assertTrue(self.org2 in active_orgs)
 
