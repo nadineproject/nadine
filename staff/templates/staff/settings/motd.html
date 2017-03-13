@@ -11,20 +11,30 @@
   <div class='previous-motds'>
     <table>
       <tr>
+        <td class='motd-update'>
+          <strong>To Update an Existing Message of the Day:</strong>
+        </td>
         <td>
           <form class='text-selection' method='GET' action='.'>
             <select id='motd-input' name='selected_motd'>
-                <option value='Select One' selected disabled="True">To Update, Select A Time Period Here</option>
+                <option value='Select One' selected disabled="True"> Select A Time Period Here</option>
               {% for motd in prev_motd %}
                 <option value='{{ motd.id }}'>{{ motd.start_ts }} - {{ motd.end_ts }}</option>
               {% endfor %}
             </select>
-            <input style='display: inline-block;' class='btn' type='submit' value='Select' />
+            <input style='display: inline-block;' class='btn motd-btn' type='submit' value='Start Updating' />
           </form>
         </td>
       </tr>
     </table>
   </div>
+  <table class='alt-message'>
+    <tr>
+      <td class='border-td'><hr /></td>
+      <td id='new-message-td'><strong>Or Enter New Message</strong></td>
+      <td class='border-td'><hr /></td>
+    </tr>
+  </table>
   <form method='POST' action='.'>
     <table>
       <tr class='motd-date-row'>
@@ -76,7 +86,8 @@
       })
 
       if('{{ selected }}' != 'None') {
-        $('#motd-input').val("{{ selected.id }}")
+        $('#motd-input').val("{{ selected.id }}");
+        $('.alt-message').hide();
         $('#id_start_ts').val("{{ selected.start_ts|date:'Y-m-d' }}");
         $('#id_end_ts').val("{{ selected.end_ts|date:'Y-m-d' }}");
         $('#id_messge').val('{{ selected.message }}');

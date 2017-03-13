@@ -3,6 +3,16 @@ table td {
   vertical-align: middle;
 }
 
+.alt-message {
+  margin-top: 3%;
+  margin-bottom: 2%;
+}
+
+.border-td {
+  /*border-bottom: 1px solid black;*/
+  width: 40%;
+}
+
 .error {
   text-align: center;
   font-weight: bold;
@@ -18,12 +28,22 @@ table td {
   margin-left: 20%;
 }
 
+.motd-btn {
+  padding: 0% 1%;
+  font-size: .8em;
+}
+
 .motd-dates input{
   display: inline-block;
   width: 40%;
   padding-left: 2%;
   margin-bottom: 0
 }
+
+.motd-update {
+  width: 31%;
+}
+
 
 .other-helps {
   margin-top: 2%;
@@ -43,7 +63,7 @@ table td {
 
 .text-selection input {
   display: inline-block;
-  margin-left: 2%;
+  margin-left: 4%;
 }
 
 #help-input, #motd-input {
@@ -61,6 +81,11 @@ table td {
 
 #id_template {
   height: 90%;
+}
+
+#new-message-td {
+  vertical-align: sub;
+  font-size: 1.2em;
 }
 
 #preview {
