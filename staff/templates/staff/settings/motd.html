@@ -76,8 +76,6 @@
       $('.collapsible').collapsible();
       CKEDITOR.replace('id_message');
 
-      $('#id_start_ts').addClass('datepicker');
-      $('#id_end_ts').addClass('datepicker');
       $('#id_delay_ms').val('{{ delay }}');
       $('input').attr('required', true);
 
@@ -87,10 +85,17 @@
 
       if('{{ selected }}' != 'None') {
         $('#motd-input').val("{{ selected.id }}");
-        $('#new-message-td').hide();
+        $('#new-message-td').text('Update Text');
         $('#id_start_ts').val("{{ selected.start_ts|date:'Y-m-d' }}");
+        $('#id_start_ts').attr('readonly', 'true');
+        $('#id_end_ts').attr('readonly', 'true')
+        $('#id_start_ts').removeClass('datepicker').removeClass('hasDatepicker');
+        $('#id_end_ts').removeClass('datepicker').removeClass('hasDatepicker');
         $('#id_end_ts').val("{{ selected.end_ts|date:'Y-m-d' }}");
         $('#id_messge').val('{{ selected.message }}');
+      } else {
+        $('#id_start_ts').addClass('datepicker');
+        $('#id_end_ts').addClass('datepicker');
       }
 
       $('#cancel').on('click', function(e) {
