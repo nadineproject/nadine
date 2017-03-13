@@ -163,7 +163,7 @@
 
 <div id='change-package'>
   <h5>Change Membership</h5>
-  <form>
+  <form class='change-form' action='.' method='GET'>
     <table class='sub-table'>
       <tr>
         <td id='package-head'>
@@ -173,7 +173,7 @@
           {{ package_form.package }}
         </td>
         <td id='bd-head'>
-          <strong>Billing Day:</strong>
+          <strong>Monthly Billing Day:</strong>
         </td>
         <td id='new-bill-day'>
           {{ package_form.bill_day }}
@@ -181,9 +181,9 @@
         {{ package_form.username }}
         <td>
         </td>
-        <td id='start'>
-          <button class='btn' onclick="$.get('.')" style='display:inline-block;'>Start</button>
-        </td>
+        <!-- <td id='start'>
+          <button class='btn' style='display:inline-block;'>Start</button>
+        </td> -->
       </tr>
     </table>
   </form>
@@ -287,6 +287,8 @@
     $('.end_date').addClass('datepicker');
     // $('.username_td').val('{{ entity.username }}');
     $('.created_by_td').val('{{ request.user }}');
+
+    console.log('{{ package }}');
 
     $('.sub-formset').formset({
       addText:'Add Another',
@@ -406,9 +408,19 @@
     })
 
     $('#id_package').on('change', function() {
-      package = $(this).val()
-      $.get("{% url 'staff:user:detail' entity.username %}");
+      package = $(this).val();
+      $('#id_package > option').each(function() {
+        if($(this).val() == package ) {
+          $(this).attr('selected', 'selected');
+        }
+      })
+      $('.change-form').submit();
+    });
+
+    $('#id_bill_day').on('change', function() {
+      $('.change-form').submit();
     })
+
 
     $('.cancel').on('click', function(e) {
       e.preventDefault();
