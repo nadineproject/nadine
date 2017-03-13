@@ -312,6 +312,7 @@ td.up-input.resource {
 
 .mem-details-table {
   margin-left: 2%;
+  margin-top: 2%;
 }
 
 .mem-details-table th, .mem-details-table td, .sub-table th, .sub-table td, .up-table th {
@@ -399,6 +400,10 @@ td.up-input.resource {
   margin-bottom: 15%;
 }
 
+.sub-input {
+  background-color: #eee;
+}
+
 .sub-formset tr.dynamic-form {
   margin-left: 0;
 }
@@ -429,9 +434,10 @@ td.up-input.resource {
   margin-top: 2%;
 }
 
-.up-table-th {
+.up-table-th, .sub-th {
   background-color: RGBA(76, 76, 76, 1.00);
   color: white;
+  border-radius: 0px;
 }
 
 .up-table-th th {

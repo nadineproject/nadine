@@ -1,13 +1,13 @@
 {% extends "staff/user/base.html" %}
 
 {% block content %}
-<h5>Current Package Details</h5>
+<h5 style='margin-top: 0;'>Current Package Details</h5>
 <table class='mem-details-table'>
-  <tr class='row-even'>
-    <th>Billing Day</th>
-    <th>Next Bill</th>
-    <th>Package</th>
-    <th></th>
+  <tr>
+    <th class='sub-th'>Billing Day</th>
+    <th class='sub-th'>Next Bill</th>
+    <th class='sub-th'>Package</th>
+    <th class='sub-th'></th>
   </tr>
   <tr>
     <td>{{ entity.membership.bill_day_str }}</td>
@@ -28,14 +28,14 @@
 <div class='curr-sub'>
   <h5>Subscriptions</h5>
   <table class='sub-table'>
-    <tr class='row-even'>
-      <th>Resource</th>
-      <th>Allowance</th>
-      <th>Start Date</th>
-      <th>End Date</th>
-      <th>Overage</th>
-      <th>Monthly</th>
-      <th>Paid By</th>
+    <tr>
+      <th class='sub-th'>Resource</th>
+      <th class='sub-th'>Allowance</th>
+      <th class='sub-th'>Start Date</th>
+      <th class='sub-th'>End Date</th>
+      <th class='sub-th'>Overage</th>
+      <th class='sub-th'>Monthly</th>
+      <th class='sub-th'>Paid By</th>
     </tr>
     {% for s in entity.membership.active_subscriptions %}
       <tr>
@@ -50,7 +50,7 @@
     {% endfor %}
     <tr>
       <td colspan="5"><strong>Total:</strong></td>
-      <td>${{ entity.membership.monthly_rate }}/month<td>
+      <td><strong>${{ entity.membership.monthly_rate }}/month</strong><td>
     </tr>
   </table>
 </div>
@@ -190,15 +190,15 @@
   <form action='.' method='POST'>
     <table class='sub-table'>
       {% if subscriptions %}
-      <tr class='row-even'>
-        <th>Resource</th>
-        <th class='allowance'>Allowance</th>
-        <th>Start Date</th>
-        <th>End Date</th>
-        <th class='rate'>Monthly Rate</th>
-        <th class='rate'>Overage Rate</th>
-        <th>Paid By</th>
-        <th></th>
+      <tr>
+        <th class='sub-th'>Resource</th>
+        <th class='allowance sub-th'>Allowance</th>
+        <th class='sub-th'>Start Date</th>
+        <th class='sub-th'>End Date</th>
+        <th class='rate sub-th'>Monthly Rate</th>
+        <th class='rate sub-th'>Overage Rate</th>
+        <th class='sub-th'>Paid By</th>
+        <th class='sub-th'></th>
       </tr>
       {{ sub_formset.management_form }}
       {% for sub_form in sub_formset %}
@@ -210,7 +210,7 @@
         <td class='sub-input rate monthly_rate'>{{ sub_form.monthly_rate  }}</td>
         <td class='sub-input rate'>{{ sub_form.overage_rate }}</td>
         <td class='sub-input'>{{ sub_form.paid_by  }}</td>
-        <td>
+        <td class='sub-input'>
           <a class="delete-row">Remove</a>
           <input type='hidden' class='chosen_package' name='package' value="{{ package }}" />
           <input type='hidden' class='ur_bill_day' name='bill_day' value="{{ bill_day }}" />

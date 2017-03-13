@@ -83,7 +83,7 @@
         dateFormat: 'yy-mm-dd',
       })
 
-      if('{{ selected }}' != 'None') {
+      if('{{ picked }}') {
         $('#motd-input').val("{{ selected.id }}");
         $('#new-message-td').text('Update Text');
         $('#id_start_ts').val("{{ selected.start_ts|date:'Y-m-d' }}");
