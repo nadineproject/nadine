@@ -99,7 +99,6 @@ def motd(request):
 
         if to_update:
             updated = MOTD.objects.get(id=to_update)
-
             updated.start_ts = start_ts
             updated.end_ts = end_ts
             updated.message = request.POST['message']
@@ -120,7 +119,11 @@ def motd(request):
                     return HttpResponseRedirect(reverse('staff:tasks:todo'))
     else:
         motd_form = MOTDForm()
-    context = {'prev_motd': prev_motd, 'motd_form': motd_form, 'delay': delay, 'selected': selected, 'message': message}
+    context = {'prev_motd': prev_motd,
+               'motd_form': motd_form,
+               'delay': delay,
+               'selected': selected,
+               'message': message}
     return render(request, 'staff/settings/motd.html', context)
 
 

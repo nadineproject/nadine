@@ -19,7 +19,7 @@
             <select id='motd-input' name='selected_motd'>
                 <option value='Select One' selected disabled="True"> Select A Time Period Here</option>
               {% for motd in prev_motd %}
-                <option value='{{ motd.id }}'>{{ motd.start_ts }} - {{ motd.end_ts }}</option>
+                <option value='{{ motd.id }}'>{{ motd.start_ts|date:'M d, Y' }} - {{ motd.end_ts|date:'M d, Y' }}</option>
               {% endfor %}
             </select>
             <input style='display: inline-block;' class='btn motd-btn' type='submit' value='Start Updating' />
@@ -31,7 +31,7 @@
   <table class='alt-message'>
     <tr>
       <td class='border-td'><hr /></td>
-      <td id='new-message-td'><strong>Or Enter New Message</strong></td>
+      <td><strong id='new-message-td'>Or Enter New Message</strong></td>
       <td class='border-td'><hr /></td>
     </tr>
   </table>
@@ -87,7 +87,7 @@
 
       if('{{ selected }}' != 'None') {
         $('#motd-input').val("{{ selected.id }}");
-        $('.alt-message').hide();
+        $('#new-message-td').hide();
         $('#id_start_ts').val("{{ selected.start_ts|date:'Y-m-d' }}");
         $('#id_end_ts').val("{{ selected.end_ts|date:'Y-m-d' }}");
         $('#id_messge').val('{{ selected.message }}');
