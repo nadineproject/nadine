@@ -87,12 +87,10 @@ def motd(request):
     prev_motd = MOTD.objects.filter().order_by('-end_ts')
     selected = None
     message = None
-    picked = None
     delay = settings.MOTD_TIMEOUT
     selected_motd = request.GET.get('selected_motd', None)
     if selected_motd:
         selected = MOTD.objects.get(id=selected_motd)
-        picked = True
 
     if request.method == 'POST':
         to_update = request.POST.get('id', None)
@@ -123,8 +121,7 @@ def motd(request):
                'motd_form': motd_form,
                'delay': delay,
                'selected': selected,
-               'message': message,
-               'picked': picked}
+               'message': message}
     return render(request, 'staff/settings/motd.html', context)
 
 

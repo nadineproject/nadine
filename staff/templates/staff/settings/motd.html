@@ -57,8 +57,7 @@
           {{ selected.message|safe }}
         </textarea>
       {% else %}
-        <textarea name='message' id='id_message' rows='20'>
-        </textarea>
+        {{ motd_form.message }}
       {% endif %}
     </div>
     {{ motd_form.delay_ms }}
@@ -98,7 +97,7 @@
         $('#id_end_ts').val(final);
       });
 
-      if('{{ picked }}' != 'None') {
+      if('{{ selected.id }}') {
         $('#motd-input').val("{{ selected.id }}");
         $('#new-message-td').text('Update Text');
         $('#id_start_ts').val("{{ selected.start_ts|date:'Y-m-d' }}");
