@@ -25,7 +25,7 @@ urlpatterns = [
     url(r'^logout/$', logout_then_login, name="logout"),
 
     url(r'^staff/', include('staff.urls', namespace='staff')),
-    url(r'^member/', include('members.urls', namespace='member')),
+    url(r'^member/', include('member.urls', namespace='member')),
     url(r'^tablet/', include('tablet.urls', namespace='tablet')),
     url(r'^interlink/', include('interlink.urls', namespace='interlink')),
     url(r'^doors/', include('doors.keymaster.urls', namespace='doors')),
@@ -42,7 +42,7 @@ urlpatterns = [
     url(r'^reset/complete/$', password_reset_complete, {'template_name': 'password_reset_complete.html'}, 'password_reset_complete'),
 
     url(r'^admin/login/$', login, {'template_name': 'login.html'}, name='login'),
-    url(r'^admin/doc/', include('django.contrib.admindocs.urls')), 
+    url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
 
 ]

@@ -1,0 +1,226 @@
+{% extends "member/base.html" %}
+{% load imagetags %}
+{% load static %}
+
+{% block sub-title %}{{ user.get_full_name }} | {% endblock %}
+
+{% block style %}
+  body {
+    background-color: RGBA(239, 238, 231, 1);
+  }
+
+  @media only screen and (max-width: 1100px) {
+    .row .col.offset-s1.s10 {
+  		margin-left: 0;
+  	}
+
+		.row .col.s10 {
+			width: 100%;
+		}
+	}
+
+  @media only screen and (max-width: 800px) {
+
+    footer#footer.sticky-footer {
+      margin-top: 5%;
+      background: RGBA(61, 61, 61, .9);
+    	bottom: 0;
+      right: 0;
+      left: 0;
+      position: absolute;
+    }
+
+    .row {
+      margin-bottom: 0;
+    }
+  }
+
+{% endblock %}
+
+{% block content %}
+<div class='left-profile col s12 m4 l4'>
+  {% if ALLOW_PHOTO_UPLOAD and can_edit %}
+    <div class='profile-img-box' id='change-opacity'>
+  {% else %}
+    <div class='profile-img-box'>
+  {% endif %}
+    <div class='editable-photo prof-img'>
+      {% if user.profile.photo %}
+        <a href="{{ user.profile.photo.url }}"><img id='mem-photo' src="{{ user.profile.photo.url }}"></a>
+       {% else %}
+        <img id='mem-photo' src="{% static 'img/blank_person.png' %}"/>
+       {% endif %}
+    </div>
+    {% if ALLOW_PHOTO_UPLOAD and can_edit %}
+      <div class='edit-img' id='pic_tab'>
+        <img id="img-edit" alt='edit image' src="{% static 'img/camera.png' %}"/>
+        <h3>Edit Photo</h3>
+      </div>
+    {% else %}
+      <div class='locked-img'></div>
+    {% endif %}
+  </div>
+  <div class='tags-box col s12' style='margin-top:5%;'>
+    <p style='text-align:center;'> - <strong>Tags</strong> - </p>
+    {% include "member/profile/profile_tags.html" %}
+  </div>
+</div>
+
+<div id='picModal' class='modal'>
+  <div class='picModal-content'>
+    <div class='picModal-body'>
+      <div class='container' id='pic_target'>
+        {% include "member/spinner.html" %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class='right-profile col s12 m8 l8'>
+  <div class='basic-info'>
+    <div class='row'>
+      <h2 class='col s9 oswald' id='prof-name'>{{ user.get_full_name }}</h2>
+      {% if can_edit %}
+        <a class='col s1 tooltipped' data-position="bottom" data-tooltip="Edit Profile" href="{% url 'member:profile:edit' user.username %}"><img id='edit' src="{% static 'img/edit.png' %}" alt='edit-icon'/></a>
+      {% endif %}
+      {% if request.user.profile.is_manager %}
+        <a class='col s1 tooltipped' data-position="bottom" data-tooltip="Manage Member" href="{% url 'member:manage' user.username %}"><img id='manage' alt='manage-icon' src="{% static 'img/manage.png' %}" /></a>
+      {% endif %}
+      {% if request.user.is_staff %}
+        <a class='col s1 tooltipped' data-position="bottom" data-tooltip='Admin' href="{% url 'staff:members:detail' user.username %}"><img id='admin' alt='admin-icon' src="{% static 'img/admin.png' %}"/></a>
+      {% endif %}
+    </div>
+
+    <div id="public_tab">
+      {% include "member/profile/profile_public.html" %}
+    </div>
+
+    {% if user.username != request.user.username %}
+    <dl>
+        <dt>Contact:</dt>
+        <dd><a href="{% url 'member:connect:connect' user %}">Connect with this member</a></dd>
+    </dl>
+    {% endif %}
+  </div>
+
+  <div class="clearfix"></div>
+
+  {% block mem_tabs %}
+    {% if can_edit %}
+      <ul class='collapsible prof-tabs' data-collapsible="accordion">
+        <li>
+          <div class='collapsible-header' id="private_tab">Private Details</div>
+          <div class='collapsible-body' id='private_target'>
+            {% include "member/profile/profile_private.html" %}
+          </div>
+        </li>
+        <li>
+          <div class='collapsible-header' id='membership_tab'>Membership History</div>
+          <div class='collapsible-body' id='membership_target'>
+            {% include "member/spinner.html" %}
+          </div>
+        </li>
+        <li>
+          <div class='collapsible-header' id='orgs_tab'>Organizations</div>
+          <div class='collapsible-body' id='orgs_target'>
+            {% include "member/profile/profile_orgs.html" %}
+          </div>
+        </li>
+        <li>
+          <div class='collapsible-header' id='activity_tab'>Activity</div>
+          <div class='collapsible-body' id='activity_target'>
+            {% include "member/spinner.html" %}
+          </div>
+        </li>
+        <li>
+          <div class='collapsible-header' id='billing_tab'>Billing History</div>
+          <div class='collapsible-body' id='billing_target'>
+            {% include "member/spinner.html" %}
+          </div>
+        </li>
+        <li>
+          <div class='collapsible-header' id='documents_tab'>Documents</div>
+          <div class='collapsible-body' id='documents_target'>
+            {% include "member/profile/profile_documents.html" %}
+          </div>
+        </li>
+        <li>
+          <div class='collapsible-header' id='devices_tab'>Devices</div>
+          <div class='collapsible-body' id='devices_target'>
+            {% include "member/spinner.html" %}
+          </div>
+        </li>
+      </ul>
+    {% endif %}
+  {% endblock %}
+
+</div>
+
+{%block sub-extrajs %}
+    <script>
+        function load_tab(div_id, url) {
+          $.get(url, {}, function(content) {
+            div = $(div_id);
+            div.html(content);
+          });
+        }
+
+        function onclick_tab(tab, url) {
+          $(tab + "_tab").on("click", function(e) {
+              e.preventDefault();
+              load_tab(tab + "_target", url);
+          });
+        }
+
+        function get_orientation(img) {
+          if ((img.width() < img.height()) && img.width() > 1) {
+            $('#mem-photo').attr('class', 'portrait');
+          }
+        }
+
+        $(document).ready(function() {
+          $('.button-collapse').sideNav();
+          $('.tooltipped').tooltip({delay: 50});
+          $('.collapsible').collapsible();
+          $('.chips').material_chip();
+
+          var img = $('#mem-photo');
+          get_orientation(img);
+
+          onclick_tab("#membership", "{% url 'member:profile:membership' user.username %}");
+          onclick_tab("#activity", "{% url 'member:profile:activity' user.username %}");
+          onclick_tab("#billing", "{% url 'member:profile:billing' user.username %}");
+          onclick_tab("#devices", "{% url 'member:profile:devices' user.username %}");
+          onclick_tab("#pic", "{% url 'member:profile:edit_photo' user.username %}")
+
+    			$('.edit-img').on('click', function(e) {
+            e.preventDefault();
+            $('#picModal').css('display', 'block');
+          });
+
+          $('.locked-img').on('click', function(e) {
+            e.preventDefault();
+            url = $('.prof-img a').attr('href');
+            window.open(url);
+          })
+
+          $('.collapsible-header').click(function(e) {
+            e.preventDefault();
+            var target = $(this).next().attr('id');
+            var divID = '#' + target;
+            $('html, body').animate({
+                scrollTop: e.screenY
+            }, 1000);
+          })
+
+          if ($(window).width < 801) {
+            var pic = '{{ user.profile.photo }}';
+            if (pic) {
+              $('h2')
+            }
+          }
+        });
+    </script>
+{% endblock %}
+
+{% endblock %}

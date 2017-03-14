@@ -1,0 +1,66 @@
+{% extends "staff/member/base.html" %}
+{% load static %}
+
+{% block sub-title %}Files for {{ member.first_name }} {{ member.last_name }}{% endblock %}
+
+{% block style %}
+{% endblock %}
+
+{% block content %}
+
+<h4>Files for <a href="{% url 'staff:members:detail' user.username %}">{{ user.get_full_name }}</a>:</h4>
+
+{% if messages %}
+<div class='page-message'>
+	{% for message in messages %}
+		<div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+	{% endfor %}
+</div>
+{% endif %}
+
+{% if files %}
+	<table>
+		<tr>
+			<th>Uploaded</th>
+			<th class='right'>File Name</th>
+			<!-- <th>Document Type</th> -->
+			<th>Content Type</th>
+			<th>Size</th>
+			<th>Uploaded By</th>
+			<th></th>
+		</tr>
+		{% for f in files %}
+			<tr class="{% cycle 'row-even' 'row-odd' %}">
+				<td nowrap>{{ f.uploadTS }}</td>
+				<td class='right'><a href="{% get_media_prefix %}{{ f.file.name }}">{{ f.name }}</a></td>
+				<!-- <td class='doc_type'>{{ f.document_type }}</td> -->
+				<td>{{ f.content_type }}</td>
+				<td>{{ f.file.size | filesizeformat }}</td>
+				<td>{{ f.uploaded_by }}</td>
+				<td>
+					<form method="POST" action="." onSubmit="return confirm('Are you sure?');">
+						<input type="hidden" name="file_id" value="{{ f.id }}"/>
+						<input type="Submit" name="delete" value="Delete"/>
+						{% csrf_token %}
+					</form>
+				</td>
+			</tr>
+		{% endfor %}
+	</table>
+{% endif %}
+
+
+<h5>Upload File</h5>
+<form role="form" method="POST" enctype="multipart/form-data" action=".">
+	<input type="hidden" name="user" value="{{ user.username }}"/>
+	<select id='doc_type' name="doc_type">
+		<option>None</option>
+		{% for dt_val, dt_desc in doc_types %}
+			<option value="{{dt_val}}">{{dt_desc}}</option>
+		{% endfor %}
+	</select>
+	<span class="btn-file"><input name="file" type="file"></span>
+	<button class="btn-primary" type="submit">Upload</button>
+	{% csrf_token %}
+</form>
+{% endblock %}

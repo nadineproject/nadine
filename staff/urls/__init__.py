@@ -6,13 +6,18 @@ from staff.views import core
 urlpatterns = [
     url(r'^$', lambda r: redirect('staff:tasks:todo'), name="home"),
 
+    # A url file for every tab
     url(r'^tasks/', include('staff.urls.tasks', namespace="tasks")),
-    url(r'^user/', include('staff.urls.user', namespace="user")),
+    url(r'^members/', include('staff.urls.members', namespace="members")),
     url(r'^activity/', include('staff.urls.activity', namespace="activity")),
     url(r'^billing/', include('staff.urls.billing', namespace="billing")),
-    url(r'^settings/', include('staff.urls.settings', namespace="settings")),
     url(r'^stats/', include('staff.urls.stats', namespace="stats")),
+    # Logs == Arpwatch
+    # Lists == Interlink
+    # Doors = Doors
+    url(r'^settings/', include('staff.urls.settings', namespace="settings")),
 
+    # Other URLS
     url(r'^event/create$', core.create_event, name='create_event'),
 ]
 

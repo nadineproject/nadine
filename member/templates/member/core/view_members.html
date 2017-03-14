@@ -1,0 +1,108 @@
+{% extends "member/base.html" %}
+{% load imagetags %}
+{% load list_tags %}
+
+{% block sub-head %}{% endblock %}
+
+{% block content %}
+
+	<h3 class='oswald' style="vertical-align: top; text-align:center;">View Members</h3>
+
+{% block search_mems %}
+	<div class='row'>
+		<div class="col s12 m8 l8">
+			<ul class="tabs">
+				{% if search_terms %}
+					<li class="tab mem-tabs col s4 m2 l2"><a href="#tabs-1">Active Members ({{ active_members | length }})</a></li>
+					<li class="tab col s4 m2 l2"><a href="#tabs-2">Here Today ({{ here_today | length }})</a></li>
+					<li class="tab col s4 m2 l2"><a href="#tabs-3" class='active'>Search Results - {{ search_terms }}</a></li>
+				{% elif user.profile.is_manager %}
+					<li class="tab mem-tabs col s3 m2 l2"><a class='active' href="#tabs-1">Active Members ({{ active_members | length }})</a></li>
+					<li class="tab col s3 m2 l2"><a href="#tabs-2">Here Today ({{ here_today | length }})</a></li>
+					<li class="tab col s3 m2 l2"><a href="#tabs-4">Has Mail ({{ has_mail | length }})</a></li>
+					<li class="tab col s3 m2 l2"><a href="#tabs-5">Has Key ({{ has_key | length }})</a></li>
+				{% else %}
+					<li class="tab mem-tabs col s6 m2 l2"><a class='active' href="#tabs-1">Active Members ({{ active_members | length }})</a></li>
+					<li class="tab col s6 m2 l2"><a href="#tabs-2">Here Today ({{ here_today | length }})</a></li>
+				{% endif %}
+			</ul>
+		</div>
+		<form class='col s12 m4 l4' id="site-search-form" action="." method="POST" style="margin-top:6px;">
+			{% for field in search_form %}{{ field }}{% endfor %}
+			<input class='btn search-btn' type="submit" value="search"/>
+			{% csrf_token %}
+		</form>
+	</div>
+{% endblock %}
+
+	<div id="tabs-1" class="plan-section">
+		<div style="margin:auto; width:100%; text-align:center;">
+		{% for user in active_members %}
+			{% include "member/profile/user_card_frag.html" %}
+		{% endfor %}
+		</div>
+	</div>
+
+	<div id="tabs-2" class="plan-section">
+		<div style="margin:auto; width:100%; text-align:center;">
+		{% for user in here_today %}
+			{% include "member/profile/user_card_frag.html" %}
+		{% endfor %}
+		</div>
+	</div>
+
+	{% if search_terms %}
+		<div id="tabs-3" class="plan-section">
+			{% if search_results %}
+				<div style="margin:auto; width:100%; text-align:center;">
+				{% for user in search_results %}
+					{% include "member/profile/user_card_frag.html" %}
+				{% endfor %}
+				</div>
+			{% else %}
+				<h3>No members matching that query</h3>
+			{% endif %}
+		</div>
+	{% elif user.profile.is_manager %}
+		<div id="tabs-4" class="plan-section">
+			{% for user in has_mail %}
+				{% include "member/profile/user_card_frag.html" %}
+			{% endfor %}
+		</div>
+		<div id="tabs-5" class="plan-section">
+			{% for user in has_key %}
+				{% include "member/profile/user_card_frag.html" %}
+			{% endfor %}
+		</div>
+	{% endif %}
+
+{% endblock %}</div>
+
+
+{% block extrajs %}
+<script>
+	$(document).ready(function() {
+		$('.button-collapse').sideNav();
+
+		$('.tabs li').on('click', function(e) {
+			e.preventDefault();
+
+			if($('#tabs-2').height() < 699) {
+				$('footer').attr('class', 'sticky-footer');
+			} else {
+				if($('footer').hasClass('sticky-footer')) {
+					$('footer').attr('page-footer main-footer');
+				}
+			}
+		})
+
+		if($('#tabs-3').height() < 699) {
+			$('footer').attr('class', 'sticky-footer');
+		} else {
+			if($('footer').hasClass('sticky-footer')) {
+				$('footer').attr('page-footer main-footer');
+			}
+		}
+	});
+</script>
+{% endblock %}

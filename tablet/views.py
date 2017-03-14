@@ -21,7 +21,7 @@ from nadine.models.profile import FileUpload
 from nadine.models.usage import CoworkingDay
 from nadine.utils.slack_api import SlackAPI
 from nadine.forms import NewUserForm, MemberSearchForm
-from members.models import MOTD
+from member.models import MOTD
 from .forms import SignatureForm
 
 from easy_pdf.rendering import render_to_pdf, render_to_pdf_response

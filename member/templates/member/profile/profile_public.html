@@ -1,0 +1,56 @@
+{% load static %}
+
+<div id="profile">
+
+{% if user.profile.bio %}
+  <dl>
+    <dt class='bold-blue' style='margin-left:1%;'>Bio:</dt>
+    <dd>{{ user.profile.bio }}</dd>
+  </dl>
+{% endif %}
+
+<table>
+    <tr>
+        <td class='bold-blue'><strong>Membership:</strong></td>
+        <td>{{ user.profile.membership_type }}</td>
+    </tr>
+    <tr>
+        <td class='bold-blue'><strong>Member Since:</strong></td>
+        <td>{{ user.profile.first_visit }}</td>
+   </tr>
+
+    {% if org_memberships %}
+      <tr>
+        <td class='bold-blue'><strong>Organization{{ org_memberships|pluralize }}:</strong></td>
+        <td>
+          {% for org in org_memberships %}
+            <li style='display:inline-block; padding-right: 2%;'>
+              <a href="{% url 'member:org:view' org.organization.id %}">{{ org.organization.name }}</a>
+            </li>
+          {% endfor %}
+        </td>
+      </tr>
+    {% endif %}
+
+    {% if user.profile.neighborhood %}
+        <tr>
+            <td class='bold-blue'><strong>Neighborhood:</strong></td>
+            <td>{{ user.profile.neighborhood }}</td>
+        </tr>
+    {% endif %}
+
+    {% if user.profile.has_kids %}
+        <tr>
+            <td class='bold-blue'><strong>Has Kids?</strong></td>
+            <td>{{ user.profile.has_kids|yesno:"Yes,No" }}</td>
+        </tr>
+    {% endif %}
+
+</table>
+
+<!-- Website Icons -->
+{% with user.profile.websites as websites %}
+  {% include "member/websites.html" %}
+{% endwith %}
+
+</div>

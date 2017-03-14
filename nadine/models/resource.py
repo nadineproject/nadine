@@ -7,10 +7,9 @@ from abc import ABCMeta, abstractmethod
 
 from django.db import models
 from django.conf import settings
-from django.utils import timezone
 from django.db.models import Q
 from django.contrib.auth.models import User
-from django.utils import timezone
+from django.utils.timezone import localtime, now, get_current_timezone
 
 from PIL import Image
 import logging
@@ -35,7 +34,7 @@ class RoomManager(models.Manager):
     def available(self, start=None, end=None, has_av=None, has_phone=None, floor=None, seats=None):
         # Default time is now, for one hour
         if not start:
-            start = timezone.now()
+            start = localtime(now())
         if not end:
             end = start + timedelta(hours=1)
 
@@ -122,7 +121,7 @@ class Room(models.Model):
 
     def get_calendar(self, target_date=None):
         if not target_date:
-            target_date = timezone.now().date()
+            target_date = localtime(now()).date()
 
         # Start with the raw calendar
         calendar = self.get_raw_calendar()
@@ -130,7 +129,7 @@ class Room(models.Model):
         # Extract the start and end times from our target date and the raw calendar
         first_block = calendar[0]
         last_block = calendar[len(calendar) - 1]
-        tz = timezone.get_current_timezone()
+        tz = get_current_timezone()
         start = datetime(year=target_date.year, month=target_date.month, day=target_date.day, hour=int(first_block['mil_hour']), minute=int(first_block['minutes']), tzinfo=tz)
         end = datetime(year=target_date.year, month=target_date.month, day=target_date.day, hour=int(last_block['mil_hour']), minute=int(last_block['minutes']), tzinfo=tz)
         end = end + timedelta(minutes=15)
@@ -140,8 +139,8 @@ class Room(models.Model):
         # We use time integers in the form of HOURMIN (830, 1600, etc) for comparison
         events = self.event_set.filter(room=self, start_ts__gte=start, end_ts__lte=end)
         for event in events:
-            start_int = int(timezone.localtime(event.start_ts).strftime('%H%M'))
-            end_int = int(timezone.localtime(event.end_ts).strftime('%H%M'))
+            start_int = int(localtime(event.start_ts).strftime('%H%M'))
+            end_int = int(localtime(event.end_ts).strftime('%H%M'))
             for block in calendar:
                 block_int = int(block['mil_hour'] + block['minutes'])
                 #print ("%d, %d, %d" % (start_int, end_int, block_int))

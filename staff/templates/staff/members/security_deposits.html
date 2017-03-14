@@ -1,0 +1,25 @@
+{% extends "staff/member/base.html" %}
+
+{% block sub-title %}Security Deposits{% endblock %}
+
+{% block content %}
+
+<h4>Security Deposits</h4>
+<strong>Total Deposits: </strong> ${{total_deposits}}
+
+{% if inactive_deposits %}
+	<h5>Inactive Members</h5>
+	{% with inactive_deposits as deposits %}
+		{% include "staff/members/security_deposit_table.html" %}
+	{% endwith %}
+{% endif %}
+
+{% if active_deposits %}
+	<h5>Active Members</h5>
+	{% with active_deposits as deposits %}
+		{% include "staff/members/security_deposit_table.html" %}
+	{% endwith %}
+{% endif %}
+
+
+{% endblock %}

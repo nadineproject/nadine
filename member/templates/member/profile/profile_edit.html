@@ -1,0 +1,362 @@
+{% extends "member/base.html" %}
+{% load email_tags %}
+
+{% block sub-title %}Edit Profile | {% endblock %}
+
+{% block style %}
+    .help_text {
+        background:white;
+        padding: 1em;
+        display: none;
+    }
+
+    @media only screen and (max-width: 1100px) {
+      .row .col.offset-s1.s10 {
+    		margin-left: 0;
+    	}
+
+  		.row .col.s10 {
+  			width: 100%;
+  		}
+  	}
+{% endblock %}
+
+{% block content %}
+{% block reg_edit %}
+<h3 class='oswald centered'>Edit Your Profile</h3>
+
+<p align="center"><em>NOTE: Items in <strong style='color:RGBA(79, 134, 135, 1);'>green bold</strong> are viewable by all active members.</em></p>
+
+<div id="profile_form">
+  {% if page_message %}
+    <div>
+      <p style='color:red;text-align:center;'>
+        <strong> {{ page_message }} </strong>
+      </p>
+      <br />
+    </div>
+  {% endif %}
+
+  <h3>
+      Email Addresses
+      (<a onclick="$('#email_help').toggle();">?</a>)
+  </h3>
+  <table id="emails">
+    <tr id="email_help" class="help_text">
+      <td colspan="2">
+        <strong>Email Help</strong>
+        <p>You can have multiple email addresses associated with your membership.
+        These emails are used at login, and when messages are sent to various mailing
+        lists.  If you send email from an address that is not associated with a
+        membership, it will be moderated.</p>
+        <p>Your primary email address is the address we send notifications and
+        mailing list messages to.</p>
+      </td>
+    </tr>
+  </table>
+  <table id='email-table'>
+    {% for email in user.profile.all_emails %}
+    <tr>
+      <td class='pf-email'>
+        {% if email.is_primary %}
+            <em>{{ email }}</em> (Primary)
+        {% else %}
+            {{ email }}
+        {% endif %}
+      </td>
+      <td class='pf-email' nowrap style="text-align:right">
+        {% if not email.is_primary %}
+          <button class='btn waves-effect verify-email' onclick="location.href = '{{ email.get_set_primary_link }}';">Make Primary</button>
+          <button class='btn waves-effect verify-email' onclick="location.href = '{{ email.get_delete_link }}';">Delete</button>
+        {% endif %}
+        {% if not email.is_verified %}
+          <button class='btn waves-effect verify-email' onclick="location.href = '{{ email.get_send_verif_link }}';">Verify</button>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+
+    <form action="{% url 'email_add' %}" method="POST" autocomplete="off">
+      <input type="hidden" name="username" value="{{ user.username }}" />
+      <tr>
+        <td class='pf-email'>
+          <input id='email-input' name="email" placeholder="Alternate Email"/>
+        </td>
+        <td class='pf-email' style="text-align:right" nowrap>
+          <button id='add-email' class='btn waves-effect' type="submit">Add Email Address</button>
+        </td>
+      </tr>
+      {% csrf_token %}
+    </form>
+  </table>
+
+  <form name='edit' enctype="multipart/form-data" action='.' method='POST' autocomplete="off">
+    <h3>Change Password</h3>
+    <div style='text-align:left;' id='passwords'>
+      <table>
+        <tr>
+          <td class='cap-label'>Password</td>
+          <td class='cap-label'>Confirm Password</td>
+        </tr>
+        <tr id='password-row'>
+          <td><input class='pwd-input pf-input' type='password' name='password-create' id='password-create' minlength=8/></td>
+          <td><input class='pwd-input pf-input' type='password' name='password-confirm' id='password-confirm' minlength=8/></td>
+       </tr>
+      </table>
+    </div>
+
+    {{ profile_form.username }}
+    <h3 style='text-align:left;'>Contact Information</h3>
+    <div id='contact'>
+      <table>
+        <tr>
+          <td class='cap-label viewable' id='pf-first'><strong>First Name</strong></td>
+          <td class='cap-label viewable' id='pf-last'><strong>Last Name</strong></td>
+        </tr>
+        <tr>
+          <td class='pf-input'>{{ profile_form.first_name }}</td>
+          <td class='pf-input'>{{ profile_form.last_name }}</td>
+        </tr>
+        <tr>
+          <td class='pf-error'>{{ profile_form.first_name.errors }}</td>
+          <td class='pf-error'>{{ profile_form.last_name.errors }}</td>
+        </tr>
+      </table>
+{% endblock %} <!-- reg_edit -->
+
+      <table>
+        <tr>
+          <td class='cap-label' id='pf-address'>Address 1</td>
+          <td class='cap-label'>Address 2</td>
+        </tr>
+        <tr>
+          <td class='pf-input'>{{ profile_form.address1 }}</td>
+          <td class='pf-input'>{{ profile_form.address2 }}</td>
+        </tr>
+        <tr>
+          <td class='pf-error'>{{ profile_form.address1.errors }}</td>
+          <td class='pf-error'>{{ profile_form.address2.errors }}</td>
+        </tr>
+      </table>
+      <table>
+        <tr>
+          <td class='cap-label'>City</td>
+          <td class='cap-label'>State</td>
+          <td class='cap-label'>Zipcode</td>
+        </tr>
+        <tr>
+          <td class='pf-input'>{{ profile_form.city }}</td>
+          <td id='state-select'>{{ profile_form.state }}</td>
+          <td class='pf-input'>{{ profile_form.zipcode }}</td>
+        </tr>
+        <tr>
+          <td class='pf-error'>{{ profile_form.city.errors }}</td>
+          <td class='pf-error'>{{ profile_form.state.errors }}</td>
+          <td class='pf-error'>{{ profile_form.zipcode.errors }}</td>
+        </tr>
+      </table>
+      <table>
+        <tr>
+          <td class='cap-label' id='pf-phone'>Primary Phone</td>
+          <td class='cap-label'>Alternate Phone</td>
+        </tr>
+        <tr>
+          <td class='pf-input'>{{ profile_form.phone }}</td>
+          <td class='pf-input'>{{ profile_form.phone2 }}</td>
+        </tr>
+        <tr>
+          <td class='pf-error'>{{ profile_form.phone.errors }}</td>
+          <td class='pf-error'>{{ profile_form.phone2.errors }}</td>
+        </tr>
+      </table>
+    </div>
+
+    <h3 style='text-align:left;'>Profile Information</h3>
+    <div id='websites'>
+      <table>
+        <tr>
+          <td id='pf-public' nowrap>
+            Visibility
+            (<a onclick="$('#public_help').toggle();">?</a>)
+          </td>
+          <td>
+            <select class='browser-default input-field col s4' name='public_profile' id='id_public_profile'>
+              <option value="False" {% if not user.profile.public_profile %} selected="true" {% endif %}>
+                Active Members Only
+              </option>
+              <option value="True" {% if user.profile.public_profile %} selected="true" {% endif %}>
+                Open to the Public
+              </option>
+            </select>
+          </td>
+          <td>
+            {{ profile_form.public_profile.errors }}
+          </td>
+        </tr>
+        <tr id='public_help' class='help_text'>
+          <td colspan=3>
+            <strong>Profile Visibility</strong>
+            <p>By default your profile is only viewable by active members.
+            If you you make this profile public, your bio, photo, and links
+            will be visable to non-members as well. Contact information
+            is always kept private.</p>
+          </td>
+        </tr>
+      </table>
+      <table>
+        <tr>
+          <td class='cap-label viewable'><strong>Bio</strong></td>
+        </tr>
+        <tr>
+          <td class='pf-input' id='pf_bio'>{{ profile_form.bio }}</td>
+          <td>{{ profile_form.bio.errors }}</td>
+        </tr>
+      </table>
+      </div>
+
+    <table id="otherinfo">
+      <tr>
+        <td class='cap-label'>How did you hear about us?</td>
+        <td>{{ profile_form.howHeard }}</td>
+        <td>
+          {{ profile_form.howHeard.errors }}
+          {% if request.user.is_staff %}
+            [ <a href="{% url 'admin:nadine_howheard_add' %}" target="new">add</a> ]
+          {% endif %}
+        </td  >
+      </tr>
+      <tr>
+        <td class='cap-label viewable'><strong>What industry are you in?</strong></td>
+        <td>{{ profile_form.industry }}</td>
+        <td>
+          {% if request.user.is_staff %}
+            [ <a href="{% url 'admin:nadine_industry_add' %}" target="new">add</a> ]
+          {% endif %}
+          {{ profile_form.industry.errors }}
+        </td>
+      </tr>
+      <tr>
+        <td class='cap-label viewable'><strong>Neighborhood:</strong></td>
+        <td>{{ profile_form.neighborhood }}</td>
+        <td width="300px">
+          {{ profile_form.neighborhood.errors }}
+          {% if request.user.is_staff %}
+            [ <a href="{% url 'admin:nadine_neighborhood_add' %}" target="new">add</a> ]
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <td class='cap-label viewable'><strong>Do you have children?</strong></td>
+        <td>{{ profile_form.has_kids }}</td>
+        <td>{{ profile_form.has_kids.errors }}</td>
+      </tr>
+      <tr>
+        <td class='cap-label'>Are you self employed?</td>
+        <td>{{ profile_form.self_employed }}</td>
+        <td>{{ profile_form.self_employed.errors }}</td>
+      </tr>
+
+      </tr>
+      <tr>
+        <td class='cap-label'>Gender</td>
+        <td>{{ profile_form.gender }}</td>
+        <td width="300px">{{ profile_form.gender.errors }}</td>
+      </tr>
+    </table>
+
+    <h3 style='text-align:left;'>Websites</h3>
+    {{ link_formset.management_form }}
+    {% for link_form in link_formset %}
+    <div class='link-formset row'>
+  		<div class='col s10'>
+  			<div class='row urls'>
+  				<p class='pf-input url-type col s4'>{{ link_form.url_type }}</p>
+  				<p class='pf-input form-url col s6 offset-s2'>{{ link_form.url  }}</p>
+  			</div>
+  			<div class='row'>
+  				<p>{{ link_form.username }}</p>
+  				<p>{{ link_form.url.errors }}</p>
+          <p>{{ link_form.url_type.errors }}</p>
+  			</div>
+  		</div>
+  	</div>
+  {% endfor %}
+
+{% block emergency_info %}
+    <h3 style='text-align:left;'>Emergency Contact Information</h3>
+    <a name="emergency_contact"></a>
+    <div id='emergencyinfo'>
+      <table>
+        <tr>
+          <td class='cap-label'>Name</td>
+          <td class='cap-label'>Relationship</td>
+        </tr>
+        <tr>
+          <td class='pf-input'>{{ profile_form.emergency_name }}</td>
+          <td class='pf-input'>{{ profile_form.emergency_relationship }}</td>
+        </tr>
+        <tr>
+          <td>{{ profile_form.emergency_name.errors }}</td>
+          <td>{{ profile_form.emergency_relationship.errors }}</td>
+        </tr>
+        <tr>
+          <td class='cap-label'>Email</td>
+          <td class='cap-label'>Phone</td>
+        </tr>
+        <tr>
+          <td class='pf-input'>{{ profile_form.emergency_email }}</td>
+          <td class='pf-input'>{{ profile_form.emergency_phone }}</td>
+        </tr>
+        <tr>
+          <td>{{ profile_form.emergency_email.errors }}</td>
+          <td>{{ profile_form.emergency_phone.errors }}</td>
+        </tr>
+      </table>
+    </div>
+{% endblock %}
+    <button class="btn waves-effect waves-light sub-btn" type="submit" value="Update Your Profile" />Update Your Profile</button>
+    {% csrf_token %}
+  </form>
+</div>
+{% endblock %}
+
+{% block extrajs %}
+<script>
+  $(document).ready(function(){
+    $('.button-collapse').sideNav();
+
+    $("option").each(function() {
+		  $(this).text($(this).text().charAt(0).toUpperCase() + $(this).text().slice(1));
+		});
+
+    $('.link-formset').formset({
+      addText: 'Add Another',
+      deleteText: 'Remove'
+    });
+
+    $('.delete-row').addClass('btn-floating btn-large btn url-btn');
+
+		$('.add-row').on('click', function(e) {
+			$('.delete-row').addClass('btn-floating btn-large btn url-btn');
+		});
+
+    $('#password-create').on('focus', function(e) {
+      e.preventDefault();
+      $('.password-error').remove();
+    });
+
+    $('#password-confirm').on('focusout', function() {
+      var drtyPass = $('#password-confirm').val();
+      var pass = drtyPass.trim();
+
+      if(pass.length < 8) {
+        $('#password-row').after("<tr class='password-error'><td class='pf-error' id='passInput-error'>Password must be have at least 8 characters.</td><td></td></tr>");
+      }
+
+      if($('#password-confirm').val() != $('#password-create').val()) {
+        $('#password-row').after("<tr class='password-error'><td class='pf-error' id='passInput-error'>Passwords do not match.</td><td></td></tr>")
+      }
+    });
+  });
+</script>
+{% endblock %}

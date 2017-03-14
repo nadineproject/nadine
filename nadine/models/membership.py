@@ -723,39 +723,40 @@ class OldMembership(models.Model):
             raise Exception('A Membership cannot start after it ends')
         super(OldMembership, self).save(*args, **kwargs)
 
-    def is_active(self, on_date=None):
-        if not on_date:
-            on_date = date.today()
-        if self.start_date > on_date:
+    def is_active(self, target_date=None):
+        if not target_date:
+            target_date = localtime(now()).date()
+        if self.start_date > target_date:
             return False
-        return self.end_date == None or self.end_date >= on_date
+        return self.end_date == None or self.end_date >= target_date
 
-    def is_anniversary_day(self, test_date):
+    def is_anniversary_day(self, target_date):
         # Do something smarter if we're at the end of February
-        if test_date.month == 2 and test_date.day == 28:
+        if target_date.month == 2 and target_date.day == 28:
             if self.start_date.day >= 29:
                 return True
 
         # 30 days has September, April, June, and November
-        if self.start_date.day == 31 and test_date.day == 30:
-            if test_date.month in [9, 4, 6, 11]:
+        if self.start_date.day == 31 and target_date.day == 30:
+            if target_date.month in [9, 4, 6, 11]:
                 return True
-        return test_date.day == self.start_date.day
+        return target_date.day == self.start_date.day
 
     def is_change(self):
         # If there is a membership ending the day before this one began then this one is a change
         return OldMembership.objects.filter(user=self.user, end_date=self.start_date - timedelta(days=1)).count() > 0
 
-    def prev_billing_date(self, test_date=None):
-        if not test_date:
-            test_date = date.today()
-        day_difference = monthmod(self.start_date, test_date)[1]
-        return test_date - day_difference
+    def prev_billing_date(self, target_date=None):
+        from monthdelta import monthmod
+        if not target_date:
+            target_date = localtime(now()).date()
+        day_difference = monthmod(self.start_date, target_date)[1]
+        return target_date - day_difference
 
-    def next_billing_date(self, test_date=None):
-        if not test_date:
-            test_date = date.today()
-        return self.prev_billing_date(test_date) + relativedelta(months=1)
+    def next_billing_date(self, target_date=None):
+        if not target_date:
+            target_date = localtime(now()).date()
+        return self.prev_billing_date(target_date) + relativedelta(months=1)
 
     def get_allowance(self):
         if self.paid_by:

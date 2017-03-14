@@ -4,7 +4,7 @@ from decimal import Decimal
 
 from django.db import models
 from django.db.models import Q, Sum
-from django.utils import timezone
+from django.utils.timezone import localtime, now
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 

@@ -1,0 +1,166 @@
+{% extends "member/base.html" %}
+{% load imagetags %}
+
+{% block sub-title %}Organization | {% endblock %}
+
+{% block style %}
+	@media only screen and (max-width: 1100px) {
+		.row .col.offset-s1.s10 {
+			margin-left: 0;
+		}
+
+		.row .col.s10 {
+			width: 100%;
+		}
+	}
+{% endblock %}
+
+{% block content %}
+<h3 class='oswald' style='text-align: center;'>Edit {{ organization.name}}</h3>
+{% if page_message %}
+	<div>
+		<p style='color:red;text-align:center;'>
+			<strong> {{ page_message }} </strong>
+		</p>
+		<br />
+	</div>
+{% endif %}
+<form class='org-form s12 m12 l12' method="POST" action="." enctype="multipart/form-data">
+	{{ form.org_id }}
+	<table>
+		<tr>
+			<td class='org-label'>
+				Organization Name
+			</td>
+			<td>
+				{{ form.name }}
+			</td>
+		</tr>
+		<tr>
+			<td class='pf-error'>
+				{{ form.name.errors }}
+			</td>
+		</tr>
+		<tr>
+			<td class='org-label'>
+				Organization Blurb
+				(<a onclick="$('#blurb_help').toggle();">?</a>)
+			</td>
+			<td>
+				{{ form.blurb }}
+			</td>
+		</tr>
+		<tr>
+			<td class='pf-error'>
+				{{ form.blurb.errors }}
+			</td>
+		</tr>
+	</table>
+	<table>
+		<tr id='blurb_help' class='help_text' style='display:none;' >
+			<td>
+				<p>This is a short organization description which will be visible in the main organzation list. The maximum length of the blurb is 112 characters.</p>
+			</td>
+		</tr>
+	</table>
+	<table>
+		<tr>
+			<td class='org-label'>
+				Organization Bio
+			</td>
+			<td>
+				{{ form.bio }}
+			</td>
+		</tr>
+		<tr>
+			<td class='pf-error'>
+				{{ form.bio.errors }}
+			</td>
+		</tr>
+		</table>
+		<table>
+		<tr>
+			<td class='org-label'>
+				Visibility
+				(<a onclick="$('#public_help').toggle();">?</a>)
+			</td>
+			<td>
+				<select class='browser-default input-field col s4' name='public' id='id_public'>
+						<option value="False" {% if not organization.public %} selected="true" {% endif %}>
+							Active Members Only
+						</option>
+						<option value="True" {% if organization.public %} selected="true" {% endif %}>
+							Open to the Public
+						</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class='pf-error'>
+				{{ form.public.errors }}
+			</td>
+		</tr>
+	</table>
+	<table>
+		<tr id='public_help' class='help_text' style='display:none;' >
+			<td>
+				<p>By default an organization profile is only viewable by active members. If you you make this profile public, it will be visable to non-members as well.</p>
+			</td>
+		</tr>
+	</table>
+	<h5 class='oswald links-header'>Links</h5>
+	{{ org_link_formset.management_form }}
+	{% for link_form in org_link_formset %}
+	<div class='link-formset row'>
+		<div class='col s10'>
+			<div class='row'>
+				<p class='pf-input url-type col s4'>{{ link_form.url_type }}</p>
+				<p class='pf-input form-url col s6 offset-s2'>{{ link_form.url  }}</p>
+			</div>
+			<div class='row'>
+				<p>{{ link_form.org_id }}</p>
+				<p>{{ link_form.url.errors }}</p>
+			</div>
+		</div>
+	</div>
+	{% endfor %}
+	<div class='row'>
+		<input class='btn org-btn' type="submit" value="Save"/>
+		<input type="button" value="Cancel" class='btn cancel-btn' onclick="location.href='{% url 'member:org:view' organization.id %}'"/>
+		{% csrf_token %}
+	</div>
+</form>
+
+{% endblock %}
+
+{% block extrajs %}
+<script>
+	$(document).ready(function() {
+		$('.button-collapse').sideNav();
+
+		$("option").each(function() {
+		  $(this).text($(this).text().charAt(0).toUpperCase() + $(this).text().slice(1));
+		});
+
+		$('#id_blurb').on('focusout', function(){
+			var blurb = $('#id_blurb').val();
+
+			if(blurb.length > 112) {
+				$('#id_blurb').css('border', 'red solid 1px');
+			} else {
+				$('#id_blurb').css('border', 'none');
+			}
+		})
+		$('.link-formset').formset({
+			addText: 'Add Another',
+      deleteText: 'Remove'
+		});
+
+		$('.delete-row').addClass('btn-floating btn-large btn url-btn');
+
+		$('.add-row').on('click', function(e) {
+			$('.delete-row').addClass('btn-floating btn-large btn url-btn');
+		})
+	});
+</script>
+{% endblock %}

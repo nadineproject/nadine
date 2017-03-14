@@ -1,0 +1,74 @@
+{% extends "member/base.html" %}
+{% load imagetags %}
+
+{% block sub-title %}Organization | {% endblock %}
+
+{% block style %}
+@media only screen and (max-width: 1100px) {
+	.row .col.offset-s1.s10 {
+		margin-left: 0;
+	}
+
+	.row .col.s10 {
+		width: 100%;
+	}
+}
+{% endblock %}
+
+{% block content %}
+<h3 class='oswald' style='text-align:center;'>Organizations at {{ site.name }}</h3>
+<div class='ui-widget row'>
+	<form class='col s12 m7 l7 offset-m6 offset-l6' id='org-search-form' action="." method='POST'>
+		{% csrf_token %}
+		<input class='col s8' id='org-search' name='terms' type='text' placeholder="Search for an Organization" />
+		<input class='btn search-btn col s3 m2 l2' type='submit' value='Search' />
+	</form>
+</div>
+	{% if search_terms %}
+		<div class='org-list'>
+			{% if search_results %}
+				<div style="width:100%; text-align:center;" class='org-group'>
+					{% for org in search_results %}
+						{% include 'member/organization/org_card_frag.html' %}
+					{% endfor %}
+				</div>
+			{% else %}
+				<div class='row'>
+					<h3 class='org-error' style="text-align:center; font-family:'Oswald', sans-serif; margin-top:10%;">No organization matches that query</h3>
+				</div>
+			{% endif %}
+		</div>
+	{% else %}
+	<div class='org-list'>
+		{% for org in organizations %}
+			{% include 'member/organization/org_card_frag.html' %}
+		{% endfor %}
+	</div>
+	{% endif %}
+</div>
+{% endblock %}
+
+
+{% block extrajs %}
+	<script>
+		(function(){
+			$('#org-search').autocomplete({
+				source: "{% url 'member:json:org_search' %}",
+				minLength: 2,
+				autoFocus: true,
+			})
+		})();
+
+		$(document).ready(function() {
+			$('.button-collapse').sideNav();
+
+			if($('.main').height() < 699) {
+				$('footer').attr('class', 'sticky-footer');
+			} else {
+				if($('footer').hasClass('sticky-footer')) {
+					$('footer').attr('page-footer main-footer');
+				}
+			}
+		});
+	</script>
+{% endblock %}

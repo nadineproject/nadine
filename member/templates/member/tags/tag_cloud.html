@@ -1,0 +1,27 @@
+{% extends "member/base.html" %}
+{% load static %}
+
+{%block sub-head %}
+<link rel="stylesheet" type="text/css" href="{% static 'jqcloud/jqcloud-1.0.4.css' %}" />
+<script type="text/javascript" src="{% static 'jqcloud/jqcloud-1.0.4.min.js' %}"></script>
+<script type="text/javascript">
+	var word_list = [
+		{% for tag, items, count in tags %}
+			{
+				text: "{{ tag.name }}",
+				weight: {{ count }},
+				link: "{% url 'member:tag:view' type tag %}"
+			},
+		{% endfor %}
+	];
+
+  $(function() {
+    $("#tag-cloud").jQCloud(word_list, {shape: "rectangular", encodeURI:false});
+  });
+</script>
+{% endblock %}
+
+{% block content %}
+	<div style="float: right;">[ <a href="{% url 'member:tag:list' type %}">Tag List</a> ]</div>
+	<div id="tag-cloud" style="margin-left: 5%; font-size: 100%; width: 920px; height: 680px;"></div>
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends "member/base.html" %}
+
+{% block sub-title %}Events | {% endblock %}
+
+{%block sub-head %}
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/gather/css/jquery-ui-timepicker-addon.css" />
+{% endblock %}
+
+{% block style %}
+{% endblock %}
+
+{% block content %}
+<h2>Office Nomads - Add an Event</h2>
+
+<div class="col-md-8">
+
+	<form class="form-horizontal" enctype="multipart/form-data" method="post" action=".">
+		<div class="form-group">
+			<div class="col-sm-2">
+			{{ form.start.label_tag }}
+			</div>
+			<div class="col-sm-4">
+			{{ form.start.errors }}
+			{{ form.start }}
+			<div class="event-form-help-text">{{ form.start.help_text }}</div>
+			</div>
+
+			<div class="col-sm-2">
+			{{ form.end.label_tag }}
+			</div>
+			<div class="col-sm-4">
+			{{ form.end.errors }}
+			{{ form.end }}
+			<div class="event-form-help-text">{{ form.end.help_text }}</div>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<div class="col-sm-2">
+			{{ form.title.label_tag }}
+			</div>
+			<div class="col-sm-10">
+			{{ form.title.errors }}
+			{{ form.title }}
+			<div class="event-form-help-text">{{ form.title.help_text }}</div>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<div class="col-sm-2">
+			{{ form.series.label_tag }}
+			</div>
+			<div class="col-sm-10">
+			{{ form.series.errors }}
+			{{ form.series }}
+			<div class="event-form-help-text">{{ form.series.help_text }}</div>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<div class="col-sm-2">
+			{{ form.description.label_tag }}
+			</div>
+			<div class="col-sm-10">
+			{{ form.description.errors }}
+			{{ form.description }}
+			<div class="event-form-help-text">{{ form.description.help_text }}</div>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<div class="col-sm-2">
+			{{ form.where.label_tag }}
+			</div>
+			<div class="col-sm-10">
+			{{ form.where.errors }}
+			{{ form.where }}
+			<div class="event-form-help-text">{{ form.where.help_text }}</div>
+			</div>
+		</div>
+
+		<input id="submit-event" type="submit" class="btn btn-lg" value="Submit Event">
+		{% csrf_token %}
+	</form>
+</div>
+<div class="col-md-4">
+</div>
+{% endblock %}
+
+{% block extrajs %}
+<script type="text/javascript" src="{{ STATIC_URL }}/gather/js/jquery-ui-timepicker-addon.js"></script>
+<script>
+	$('#id_start').datetimepicker({
+		controlType: 'select'
+	});
+	$('#id_end').datetimepicker({
+		controlType: 'select'
+	});
+</script>
+{% endblock %}

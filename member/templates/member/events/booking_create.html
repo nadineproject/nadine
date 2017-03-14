@@ -1,0 +1,327 @@
+{% extends 'member/base.html' %}
+
+{% block sub-title %}Book a Meeting Room | {% endblock %}
+
+{% block style %}
+
+  @media only screen and (max-width: 1100px) {
+    .row .col.offset-s1.s10 {
+  		margin-left: 0;
+  	}
+
+		.row .col.s10 {
+			width: 100%;
+		}
+	}
+{% endblock %}
+
+{% block content %}
+<div class='booking-box'>
+  <h3 class='oswald' style='text-align:center; color:black;'>Book a Meeting Room</h3>
+  <br />
+  <form id='booking-reqs' action='#' method='GET'>
+    <table>
+      <tr>
+        <td class='booking-td' class='cap-label'><strong>Date</strong></td>
+        <td class='cap-label'><strong>Start Time</strong></td>
+        <td class='cap-label'><strong>End Time</strong></td>
+      </tr>
+      <tr>
+        <td class='booking-td'><input type="date" name="date" class="datepicker" id='booking-date' ></td>
+        <td><input name='start' class='timepicker' step=900 id='start-time'/></td>
+        <td><input name='end' class='timepicker' step=900 id='end-time'/></td>
+        <td>
+          <input id='day-btn' name='all_day' type='checkbox' class='filled-in' />
+          <label for='day-btn' name='all-day'>All Day Event</label>
+        </td>
+      </tr>
+    </table>
+    <div class='row' id='room-criteria'>
+      <table>
+        <tr>
+          <td>
+            <input id="av-btn" name='has_av' type="checkbox" class='filled-in' />
+            <label for="av-btn">Has A/V</label>
+          </td>
+          <td>
+            <input id='phone-btn' name="has_phone" type="checkbox" class='filled-in' />
+            <label for="phone-btn">Has Phone</label>
+          </td>
+          <td id='floor-select'>
+            <select class='browser-default input-field' name='floor' id='floor'>
+              <option value="" disabled selected>On Floor:</option>
+              <option id='floor-1' value="1">Floor 1</option>
+              <option id='floor-2' value="2">Floor 2</option>
+              <option id='floor-2' value="3">Floor 3</option>
+            </select>
+          </td>
+          <td id='seat-select'>
+            <select class='browser-default input-field' name='seats'>
+              <option value="" disabled selected>Seats:</option>
+              <option id='ppl-2' value="2">2 People</option>
+              <option id='ppl-4' value="4">4 People</option>
+              <option id='ppl-6' value="6">6 People</option>
+              <option id='ppl-10' value="10">10-20 People</option>
+              <option id='ppl-20' value="20">20+ People</option>
+            </select>
+          </td>
+          <td>
+            <button type='submit' value='Search' class='btn waves-effect book-btn '>Search</button>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </form>
+  {% if rooms %}
+    {% for room in rooms %}
+      <div class='row'>
+        {% if room.image %}
+          <div class='col s1'>
+            <h5 class='oswald' style='color:RGBA(66, 98, 113, 1.00);'>{{ room.name }}</h5>
+            <p>Floor {{room.floor}}</p>
+            <button class='btn room-show' id='{{ room.id }}'>More Info</button>
+            <button class='btn room-close'>Hide Info</button>
+          </div>
+          <div class='col s1' id='thumbnail-box'>
+            <img class='room-thumbnail' src="{{ room.image.url }}"/>
+          </div>
+        {% else %}
+        <div class='col s2'>
+          <h5 class='oswald' style='color:RGBA(66, 98, 113, 1.00);'>{{ room.name }}</h5>
+          <p>Floor {{room.floor}}</p>
+          <button class='btn room-show' id='{{ room.id }}'>More Info</button>
+          <button class='btn room-close'>Hide Info</button>
+        </div>
+        {% endif %}
+        <div class='col s8 cal-div' style='height:110px;'>
+          <table class='cal-table'>
+            <thead>
+              {% for block, times in room_dict.items %}
+                {% if room == block %}
+                  {% for time in times %}
+                    {% if forloop.last %}
+                    {% else %}
+                      {% if forloop.counter0|divisibleby:2 %}
+                        <th class="rotate"><div><span>
+                          {{ time.hour }}:{{ time.minutes }}
+                        </div></span></th>
+                      {% else %}
+                        <th></th>
+                      {% endif %}
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+              {% endfor %}
+            </thead>
+            <tr>
+              {% if room in room_dict %}
+                {% for block, times in room_dict.items %}
+                  {% if room == block %}
+                    {% for time in times %}
+                      {% if forloop.last %}
+                      {% else %}
+                        {% if time.reserved %}
+                          <td class="cal-box reserved" id="hour-{{time.mil_hour}}{{time.minutes}}">
+                          </td>
+                        {% elif time.searched %}
+                          <td class="cal-box searched" id="hour-{{time.mil_hour}}{{time.minutes}}">
+                          </td>
+                        {% else %}
+                          <td class="cal-box available" id="hour-{{time.mil_hour}}{{time.minutes}}">
+                          </td>
+                        {% endif %}
+                      {% endif %}
+                    {% endfor %}
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+            </tr>
+          </table>
+        </div>
+        <form class='col s1 book-room' action='.' method='POST'>
+          <input type='hidden' name='room' value='{{ room.name }}' />
+          <input type='hidden' name='start' value='{{ start }}'/>
+          <input type='hidden' name='end' value='{{ end }}' />
+          <input type='hidden' name='date' value='{{ date }}' />
+          <button type='submit' class='book-btn btn'>Book</button>
+          {% csrf_token %}
+        </form>
+      </div>
+      <div class='row dropdown-room slider closed' id='dropdown-{{ room.id }}'>
+        {% if room.image %}
+          <img class='col s3 m3 l3 offset-l1' src='{{ room.image.url }}'/>
+        {% endif %}
+        <div class='col s7 offset-s1'>
+          <div class='row' style='margin-bottom:0;'>
+            <h4 class='col s9 m10 l10'>{{ room.name }}</h4>
+            <button class='btn col s1 m1 l1 room-close'>X</p>
+          </div>
+          <ul>
+            <li>Seats: {{ room.seats }}</li>
+            <li>Max Capacity: {{ room.max_capacity }}</li>
+            <li>Has A/V?: {{ room.has_av }}</li>
+            <li>Has Phone: {{ room.has_phone }}</li>
+          </ul>
+          <p><strong>Description:</strong> {{ room.description }}</p>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class='row'>
+      <p style='color:red;text-align:center;padding:5%;'>
+        Sorry, there do not seem to be any rooms available that match your criteria.
+      </p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extrajs %}
+  <script>
+    $(document).ready(function() {
+  		$('.button-collapse').sideNav();
+
+      var amOrPm = ' AM';
+
+      $('#booking-date').val('{{ date }}');
+
+      $('.timepicker').timepicker({
+        timeFormat: 'h:mm p',
+        interval: 30,
+        defaultTime: '8:00',
+        startTime: '7:00',
+        dynamic: false,
+        dropdown: true,
+        scrollbar: true
+      });
+
+      //Keep data from search on screen reload
+      var phone = '{{ has_phone }}';
+      var av = '{{ has_av }}';
+      var all_day = '{{ all_day }}';
+
+      if (phone === 'None') {
+        $('#phone-btn').attr('checked', false);
+      } else {
+        $('#phone-btn').attr('checked', true);
+      }
+
+      if (av === 'None') {
+        $('#av-btn').attr('checked', false);
+      } else {
+        $('#av-btn').attr('checked', true);
+      }
+
+      if (all_day === 'None') {
+        $('#day-btn').attr('checked', false);
+      } else {
+        $('#day-btn').attr('checked', true);
+      }
+
+      var floor = '{{ floor }}';
+
+      if (floor == 1) {
+        $('#floor-1').attr('selected', 'true');
+      } else if (floor == 2) {
+        $('#floor-2').attr('selected', 'true');
+      } else if (floor == 3) {
+        $('#floor-3').attr('selected', 'true');
+      }
+
+      var seats = '{{ seats }}';
+
+      if (seats == 2) {
+        $('#ppl-2').attr('selected', 'true');
+      } else if (seats == 4) {
+        $('#ppl-4').attr('selected', 'true');
+      } else if (seats == 6) {
+        $('#ppl-6').attr('selected', 'true');
+      } else if (seats == 10) {
+        $('#ppl-10').attr('selected', 'true');
+      } else if (seats == 20){
+        $('#ppl-20').attr('selected', 'true');
+      }
+
+      $('.datepicker').pickadate({
+        selectMonths: true,
+        selectYears: 3,
+        format: 'yyyy-mm-dd'
+      });
+
+      function changeTimes(hour, minutes, amOrPm) {
+        if (minutes < 15) {
+          minutes = "00";
+        } else if (minutes < 30){
+          minutes = "15";
+        } else if (minutes < 45){
+          minutes="30"
+        } else if (minutes < 59) {
+          minutes="45"
+        } else {
+          minutes = "00";
+          hour++;
+        }
+
+        if (hour == 12){
+          amOrPm = ' PM';
+        } else if (hour == 0) {
+            hour = 12;
+        } else if (hour > 23) {
+            hour = 12;
+        } else if (hour > 12) {
+            hour = hour - 12;
+            amOrPm = ' PM';
+        } else {
+          hour = hour;
+          amOrPm = ' AM';
+        }
+        if (hour.length != 2) {
+          hour = '0' + hour;
+        }
+
+        var time = hour + ':' + minutes + amOrPm;
+
+        return time
+      }
+
+      function getStart() {
+        var start = '{{ start }}';
+        var hour = start.split(':')[0];
+        var minutes = start.split(':')[1];
+        var amOrPm = start.split(' ')[1];
+
+        var time = changeTimes(hour, minutes, amOrPm);
+
+        $('#start-time').val(time);
+      }
+
+      function getEnd() {
+        var end = '{{ end }}';
+        var hour = end.split(':')[0];
+        var minutes = end.split(':')[1];
+        var time = changeTimes(hour, minutes);
+
+        $('#end-time').val(time)
+      }
+
+      getStart();
+      getEnd();
+
+      $('.room-close').hide();
+
+      $('.room-show').on('click', function(e){
+        e.preventDefault();
+        $('#dropdown-' + this.id).removeClass('closed');
+        $('.room-close').show();
+        $('.room-show').hide();
+      })
+
+      $('.room-close').on('click', function(e){
+        e.preventDefault();
+        $('.slider').addClass('closed');
+        $('.room-close').hide();
+        $('.room-show').show();
+      })
+    });
+  </script>
+{% endblock %}

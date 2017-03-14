@@ -1,0 +1,32 @@
+{% extends "member/base.html" %}
+{% load imagetags %}
+{% load list_tags %}
+
+{% block style %}
+{% endblock %}
+
+{% block content %}
+<h2>Office Nomads - IRC Chat</h2>
+<iframe src="https://webchat.freenode.net?nick={{user.username}}&channels=%23officenomads&uio=MTE9MjU207" width="960" height="420">
+	If you can read this it's because your browser (probably Chrome) has blocked the chat client.  You can allow it.  It's OK.
+</iframe>
+
+<h2>FAQ</h2>
+
+<h3>Can I connect using another client?</h3>
+<p>Yes!  This chat client uses IRC behind the scenes and you can also connect using a number of third-party
+chat clients with the configuration settings below:</p>
+<ul style="padding-top:1em;">
+	<li><strong>Server:</strong> irc.freenode.net</li>
+	<li><strong>Channel:</strong> #officenomads</li>
+</ul>
+
+<h3>What is freenode?</h3>
+<p>From their <a href="http://freenode.net/faq.shtml">FAQ</a>:  <a href="http://freenode.net">Freenode</a> is a special-purpose, not a general-purpose, discussion network, currently implemented on Internet Relay Chat (IRC). It exists to support specific communities. It provides an interactive environment for coordination and support of peer-directed projects, including those relating to free software and open source. Our aim is to help our participants to improve their communicative and collaborative skills and to maintain a friendly, efficient environment for project coordination and technical support. For more information about the network philosophy,
+please take a look <a href="http://freenode.net/philosophy.shtml">here</a>.
+
+<h3>What's with the Captcha?!?</h3>
+<p>Since we use <a href="http://freenode.net">freenode</a>, which is a public chat service, they do now allow autoconnect
+so that bad people can't abuse the system.</p>
+
+{% endblock %}

@@ -61,7 +61,7 @@ function toggleDetails(neighborhoodID){
 	         <td colspan="3">
 	            <div class="neighborhood-details" id="neighborhood-details-{{hood.id}}">
 	               {% with hood.users as users %}
-                     {% include "staff/user/user_list_frag.html" %}
+                     {% include "staff/members/user_list_frag.html" %}
                   {% endwith %}
 	            </div>
 	         </td>

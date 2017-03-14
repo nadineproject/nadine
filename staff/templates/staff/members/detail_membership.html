@@ -1,0 +1,68 @@
+{% load static %}
+
+<h5>Details</h5>
+<table class='mem-details-table'>
+  <tr class='row-even'>
+    <th>Billing Day</th>
+    <th>Next Bill</th>
+    <th>Package</th>
+  </tr>
+  <tr>
+    <td>{{ membership.bill_day_str }}</td>
+    <td>{{ membership.next_period_start }}</td>
+    <td>{{ membership.package }}</td>
+  </tr>
+</table>
+
+<h5>Subscriptions</h5>
+<table class='sub-table'>
+  <tr class='row-even'>
+    <th>Resource</th>
+    <th>Allowance</th>
+    <th>Start Date</th>
+    <th>End Date</th>
+    <th>Overage</th>
+    <th>Monthly</th>
+    <th>Paid By</th>
+    <th></th>
+  </tr>
+  {% for s in membership.active_subscriptions %}
+    <tr>
+      <td>{{ s.resource }}</td>
+      <td>{{ s.allowance }}</td>
+      <td>{{ s.start_date }}</td>
+      <td>{{ s.end_date |default:"-" }}</td>
+      <td>${{ s.overage_rate }}</td>
+      <td>${{ s.monthly_rate }}/month</td>
+      <td>{{ s.paid_by|default:"" }}</td>
+      <td><a href="">Edit</a></td>
+    </tr>
+  {% endfor %}
+  <tr>
+    <td colspan="5"><strong>Total:</strong></td>
+    <td>${{ membership.monthly_rate }}/month<td>
+  </tr>
+</table>
+
+<!-- Active Guest Memberships -->
+<!-- TODO This is the old way... needs to be ported to the new way -->
+<!--
+{% if user.profile.guests %}
+  <h5>Active Guests:</h5>
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>Membership</th>
+        <th>First Visit</th>
+      </tr>
+
+      {% for guest in user.profile.guests %}
+        <tr class="{% cycle 'row-even' 'row-odd' %}">
+          <td nowrap><a href="{% url 'staff:members:detail' guest.username %}">{{ guest.get_full_name }}</a></td>
+          <td>{{ guest.profile.active_membership.membership_plan }}</td>
+          <td class='centered'>{{ guest.profile.first_visit }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+{% endif %}
+-->

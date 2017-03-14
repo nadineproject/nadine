@@ -1,0 +1,242 @@
+{% extends "member/base.html" %}
+{% load imagetags %}
+{% load static %}
+
+{% block sub-title %}Organization | {{ organization.name }} | {% endblock %}
+
+{% block style %}
+	body {
+		background-color: RGBA(239, 238, 231, 1);
+	}
+
+	div.profile-links {
+		margin-top: 0;
+		margin-bottom: 2%;
+		marin-left: 4%;
+	}
+
+	@media only screen and (max-width: 1100px) {
+		@media only screen and (max-width: 1100px) {
+	    .row .col.offset-s1.s10 {
+	  		margin-left: 0;
+	  	}
+
+			.row .col.s10 {
+				width: 100%;
+			}
+		}
+	}
+
+	@media only screen and (max-width: 800px) {
+    footer#footer.sticky-footer {
+      margin-top: 5%;
+      background: RGBA(61, 61, 61, .9);
+    	bottom: 0;
+      right: 0;
+      left: 0;
+      position: absolute;
+    }
+
+		.row {
+      margin-bottom: 0;
+    }
+  }
+
+{% endblock %}
+
+{% block content %}
+<div class='org-left-profile col s12 m4 l3'>
+	<div class='photo-div'>
+		<div class='profile-img-box' id='change-opacity'>
+			<div class='editable-photo org-img'>
+				{% if organization.photo %}
+					<a href="{{ organization.photo.url }}"><img class='org-photo' id='mem-photo' src="{{ organization.photo.url }}"></a>
+				{% else %}
+					<a class='org-photo' id='star-img'>&#9733;</a>
+				{% endif %}
+			</div>
+			{% if can_edit %}
+			<div class='org-img-edit' id='pic_tab'>
+				<img id="img-edit" alt='edit image' src="{% static 'img/camera.png' %}"/>
+        <h5>Edit Photo</h5>
+			</div>
+			{% endif %}
+		</div>
+	</div>
+
+	<div class='tags-box' style="margin-top:10%;">
+		<p style='text-align:center;'> - <strong>Tags</strong> - </p>
+		{% include "member/organization/org_tags.html" %}
+	</div>
+
+</div>
+<div id='picModal' class='modal'>
+  <div class='picModal-content'>
+    <div class='picModal-body'>
+      <h4>Edit Organization Picture</h4>
+      <div class='container' id='pic_target'>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class='org-right-profile col s12 m8 l9'>
+	<div class='org-info'>
+		<div class='row'>
+			<h3 class='oswald col s9' style='margin-bottom:1%;'>{{ organization.name }}</h3>
+			<div>
+				{% if organization.locked %}
+					<div class='col s1 tooltipped' data-position="bottom" data-tooltip='Locked'>
+						<img id='locked' alt='locked icon' src="{% static 'img/locked.png' %}"/>
+					</div>
+				{% endif %}
+				{% if can_edit %}
+					<a class='col s1 tooltipped' data-position="bottom" data-tooltip="Edit Details" href="{% url 'member:org:edit' organization.id %}"><img id='edit' alt='edit icon' style='height:30px;' src="{% static 'img/edit.png' %}"/></a>
+				{% endif %}
+				{% if request.user.is_staff %}
+					<a class='col s1 tooltipped' data-position="bottom" data-tooltip='Admin' href="{{ organization.admin_url }}"><img id='admin' alt='admin icon' src="{% static 'img/admin.png' %}"/></a>
+				{% endif %}
+			</div>
+		</div>
+		<div class='col s12'>
+			<p style="font-style:italic;">
+				{{ organization.blurb|default:"" }}
+			</p>
+		</div>
+		{% if organization.bio %}
+			<div class='col s12'>
+				<h5 class='oswald' style='color:black;'>Bio</h5>
+				<p style="margin:2em;">{{ organization.bio }} </p>
+			</div>
+		{% endif %}
+
+		<!-- Website Icons -->
+		{% with organization.websites as websites %}
+		<div class='col s12 links'>
+			{% include "member/websites.html" %}
+		</div>
+		{% endwith %}
+
+		<h5 class='oswald org-members col s12'>Organization Members</h5>
+		<table>
+			<tr>
+				<th>Member</th>
+				<th>Title</th>
+				<th>When</th>
+				{% if request.user.is_staff or can_edit %}
+					<th>Action</th>
+				{% endif %}
+			</tr>
+			{% for m in members %}
+				{% if show_all or m.is_active %}
+				<form id="org_mem_{{m.id}}" action="{% url 'member:org:member' organization.id %}" method="POST">
+					<input type="hidden" name="member_id" value="{{ m.id }}"/>
+					<input type="hidden" name="action" value="edit"/>
+					{% csrf_token %}
+					<tr>
+						<td>
+							{% if m.is_admin %}<strong>{% endif %}
+								{{ m.user.get_full_name }}
+							{% if m.is_admin %}</strong>{% endif %}
+							{% if m.is_lead %}
+								(<em>Lead</em>)
+							{% endif %}
+							{% if not m.is_active %}
+								(<em>Inactive</em>)
+							{% endif %}
+						</td>
+						<td>{{ m.title|default:"" }}</td>
+						<td>
+							{{ m.start_date|date:"M Y" }}
+							- {{ m.end_date|date:"M Y"|default:"current" }}
+						</td>
+						{% if request.user.is_staff or can_edit %}
+							<td>
+								<input class='btn' type="submit" value="Edit"/>
+							</td>
+						{% endif %}
+					</tr>
+				</form>
+				{% endif %}
+			{% endfor %}
+			{% if can_edit %}
+				<form id="org_mem_add" action="{% url 'member:org:member' organization.id %}" method="POST">
+					<input type="hidden" name="action" value="add"/>
+					{% csrf_token %}
+					<tr>
+						<td colspan="3"></td>
+						<td>
+							<input class='btn' type="submit" value="Add"/>
+						</td>
+					</tr>
+				</form>
+			{% endif %}
+		</table>
+
+		{% if counts.inactive > 0 %}
+			[ {% if not show_all %}
+				<a href="?show_all">Show ({{ counts.inactive }}) inactive member{{ counts.inactive|pluralize }}</a>
+			{% else %}
+				<a href="?">Hide inactive members</a>
+			{% endif %} ]
+		{% endif %}
+
+		<!-- {% if organization.notes %}
+			<h5 class='oswald' style='color:black;'>Notes</h5>
+			<ul>
+				{% for n in organization.notes %}
+					<li>{{ n.created_ts }} {{ n.created_by }}: {{ n.note }}</li>
+				{% endfor %}
+			</ul>
+		{% endif %} -->
+
+	</div>
+</div>
+
+{% block sub-extrajs %}
+<script>
+		function get_orientation(img) {
+			if ((img.width() < img.height()) && img.width() > 1) {
+				$('#mem-photo').attr('class', 'portrait');
+			}
+		}
+
+		function load_tab(div_id, url) {
+			$.get(url, {}, function(content) {
+				div = $(div_id);
+				div.html(content);
+			});
+		}
+
+		function onclick_tab(tab, url) {
+			$(tab + "_tab").on("click", function(e) {
+					e.preventDefault();
+					load_tab(tab + "_target", url);
+			});
+		}
+
+	$(document).ready(function() {
+		$('.button-collapse').sideNav();
+
+		$('.org-img-edit').on('click', function(e) {
+			e.preventDefault();
+			$('#picModal').css('display', 'block');
+		});
+
+		onclick_tab("#pic", "{% url 'member:org:edit_photo' organization.id %}");
+
+		var img = $('#mem-photo');
+		get_orientation(img);
+
+		if($('.main').width() < 990) {
+			$('footer').attr('class', 'sticky-footer');
+		} else {
+			if($('footer').hasClass('sticky-footer')) {
+				$('footer').attr('page-footer main-footer');
+			}
+		}
+	});
+</script>
+{% endblock %}
+
+{% endblock %}

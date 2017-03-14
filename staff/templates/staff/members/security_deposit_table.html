@@ -1,0 +1,22 @@
+<table>
+	<tr>
+		<th>Name</th>
+		<th>Amount</th>
+		<th>Action</th>
+		<th></th>
+	</tr>
+	{% for d in deposits %}
+	<tr class="{% cycle 'row-even' 'row-odd' %}">
+		<td nowrap ><a href="{% url 'staff:members:detail' d.username %}">{{ d.name }}</a></td>
+		<td>${{ d.amount }}</td>
+		<td>
+			<form action="." method="POST" onSubmit="return confirm('Are you sure?');">
+				<input name="deposit_id" value="{{ d.deposit_id }}" type="hidden" />
+				<input name="mark_returned" type="submit" Value="Mark Returned" />
+				{% csrf_token %}
+			</form>
+		</td>
+		<td></td>
+	</tr>
+	{% endfor %}
+</table>

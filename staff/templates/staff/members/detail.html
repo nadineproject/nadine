@@ -1,0 +1,550 @@
+{% extends "staff/member/base.html" %}
+{% load integrated_systems %}
+{% load imagetags %}
+{% load static %}
+
+{% block sub-title %}{{ user.get_full_name }}{% endblock %}
+
+{% block sub-head %}
+<script>
+function gotoEmailReset(emailAddress){
+    try {
+        $.ajax({
+            type: 'POST',
+            url: '',
+            data: ({'email':emailAddress}),
+            success: function(data) { },
+            error: function(request, status, error) { }
+        });
+    } catch(e) {
+        alert(e);
+    }
+}
+</script>
+<script>
+    $(function () {
+        jQuery('#tabs').tabs();
+
+        var availableDays = ["Birthday", "Anniversary", "Child's Birthday"];
+        $( "#specialdays" ).autocomplete({
+            source: availableDays
+        });
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+
+<div class="member-photo">
+  {% if user.profile.photo %}
+    <a href="{{ user.profile.photo.url }}"><img src="{{ user.profile.photo.url|fit_image:"170x170" }}" /></a>
+  {% else %}
+    <img src="{% static 'BlankIcon150x150.jpg' %}">
+  {% endif %}
+</div>
+
+<!-- Member Detail -->
+{% load_integrations as integrations %}
+<div class='row' id="member-detail">
+  <h4 class='detail-header'>{{ user.get_full_name }} {% if user.profile.is_active %} - <i>{{ user.profile.membership_type }}</i> {% endif %}</h4>
+  <div id="detail-links">
+    <a href="{% url 'staff:activity:user' user.username %}">activity</a> |
+    <a href="{% url 'doors:keys' user.username %}">keys</a> |
+    <a href="{% url 'staff:members:files' user.username %}">files</a> |
+    {% if integrations.usaepay %}
+      <a href="{% url 'staff:billing:user_payment' user.username %}">usaepay</a> |
+    {% endif %}
+    {% if integrations.xero %}
+      <a href="{% url 'staff:billing:xero' user.username %}">xero</a> |
+    {% endif %}
+    <a href="{% url 'admin:auth_user_change' user.id %}">admin</a> |
+    <a href="{% url 'member:profile:view' user.username %}">view profile</a> |
+    <a href="{% url 'member:profile:edit' user.username %}">edit profile</a> | 
+    <a href="{% url 'staff:members:membership' user.username %}">update membership</a>
+    </a>
+  </div>
+</div>
+
+<div class="clearfix"></div>
+
+<div>
+  <ul class='tabs'>
+    <li class='tab'><a href="#tabs-0">Details</a></li>
+    <li class='tab'><a href="#tabs-1">Membership</a></li>
+    <li class='tab'><a href="#tabs-2">Billing</a></li>
+    <li class='tab'><a href="#tabs-3">Emails</a></li>
+    <li class='tab'><a href="#tabs-4">Tasks</a></li>
+    <li class='tab'><a href="#tabs-5">Notes</a></li>
+  </ul>
+
+<div id="tabs-0">
+    <table>
+        <!-- Username -->
+        <tr>
+            <td class='detail-title'>Username</td>
+            <td>{{ user.username }}</td>
+        </tr>
+
+        <!-- Plan Start -->
+        {% if user.profile.active_membership %}
+        <tr>
+            <td class='detail-title'>Bill Date</td>
+            <td>{{ user.profile.active_membership.start_date|date:"jS" }}</td>
+        </tr>
+        {% endif %}
+
+        <!-- Stats -->
+        <tr>
+            <td class='detail-title'>First Visit</td>
+            <td>{{ user.profile.first_visit }}</td>
+        </tr>
+        <tr>
+            <td class='detail-title'>Duration</td>
+            <td>{{ user.profile.duration_str }}</td>
+        </tr>
+        <tr>
+            <td class='detail-title'>Last Visit</td>
+            <td>{{ user.profile.last_visit }}</td>
+        </tr>
+
+        <!-- organizations -->
+        {% for o in user.profile.active_organizations %}
+            <tr>
+                <td class='detail-title'>Organization</td>
+                <td>{{ o }}</td>
+            </tr>
+        {% endfor %}
+
+        <!-- Website -->
+        {% if user.profile.url_personal %}
+            <tr>
+                <td class='detail-title'>Website</td>
+                <td><a href="{{ user.profile.url_personal }}">{{ user.profile.url_personal }}</a></td>
+            </tr>
+        {% endif %}
+
+        <!-- Gender -->
+        {% if user.profile.gender %}
+            <tr>
+                <td class='detail-title'>Gender</td>
+                <td>{{ user.profile.gender }}</td>
+            </tr>
+        {% endif %}
+
+        <!-- Emails -->
+        {% for e in user.profile.all_emails %}
+            <tr>
+                <td class='detail-title'>Email Address {{forloop.counter}}</td>
+                <td>{{ e.email }}</td>
+            </tr>
+        {% endfor %}
+
+        <!-- Phone -->
+        {% if user.profile.phone %}
+            <tr>
+                <td class='detail-title'>Phone</td>
+                <td>{{ user.profile.phone }}</td>
+            </tr>
+        {% endif %}
+
+        <!-- Phone2 -->
+        {% if user.profile.phone2 %}
+            <tr>
+                <td class='detail-title'>Alternate Phone</td>
+                <td>{{ user.profile.phone2 }}</td>
+            </tr>
+        {% endif %}
+
+        <!-- Address 1-->
+        {% if user.profile.address1 %}
+            <tr>
+                <td class='detail-title'>Address 1</td>
+                <td>{{ user.profile.address1 }}</td>
+            </tr>
+        {% endif %}
+
+        <!-- Address 2-->
+        {% if user.profile.address2 %}
+            <tr>
+                <td class='detail-title'>Address 2</td>
+                <td>{{ user.profile.address2 }}</td>
+            </tr>
+        {% endif %}
+
+        <!-- City, State, Zip-->
+        {% if user.profile.city %}
+            <tr>
+                <td class='detail-title'>City</td>
+                <td>{{ user.profile.city }} {{ user.profile.state }}, {{ user.profile.zipcode }}</td>
+            </tr>
+        {% endif %}
+
+        <!-- How Heard -->
+        {% if user.profile.howHeard %}
+            <tr>
+                <td class='detail-title'>How Heard</td>
+                <td>{{ user.profile.howHeard }}</td>
+            </tr>
+        {% endif %}
+
+        <!-- Industry -->
+        {% if user.profile.industry %}
+            <tr>
+                <td class='detail-title'>Industry</td>
+                <td>{{ user.profile.industry }}</td>
+            </tr>
+        {% endif %}
+
+        <!-- Neighborhood -->
+        {% if user.profile.neighborhood %}
+            <tr>
+                <td class='detail-title'>Neighborhood</td>
+                <td>{{ user.profile.neighborhood }}</td>
+            </tr>
+        {% endif %}
+
+        <!-- Has Kids -->
+        {% if user.profile.has_kids %}
+            <tr>
+                <td class='detail-title'>Has Kids?</td>
+                <td>{{ user.profile.has_kids }}</td>
+            </tr>
+        {% endif %}
+
+        <!-- Self Employed -->
+        {% if user.profile.self_employed %}
+            <tr>
+                <td class='detail-title'>Self Employed?</td>
+                <td>{{ user.profile.self_employed }}</td>
+            </tr>
+        {% endif %}
+    </table>
+
+    <div class='emergency_contact'>
+    <strong>Emergency Contact</strong>
+    {% if not emergency_contact.name %}
+        <p>No Emergency Contact Information</p>
+    {% else %}
+        <table>
+            <tr>
+                <td class='detail-title'>Name</td>
+                <td>{{ emergency_contact.name }}</td>
+            </tr>
+            <tr>
+                <td class='detail-title'>Relationship</td>
+                <td>{{ emergency_contact.relationship }}</td>
+            </tr>
+            <tr>
+                <td class='detail-title'>Phone</td>
+                <td>{{ emergency_contact.phone }}</td>
+            </tr>
+            <tr>
+                <td class='detail-title'>E-mail</td>
+                <td>{{ emergency_contact.email }}</td>
+            </tr>
+        </table>
+    {% endif %}
+    </div>
+</div>
+
+<!-- Memberships -->
+<div id="tabs-1">
+  {% with user.membership as membership %}
+    {% include "staff/members/detail_membership.html" %}
+  {% endwith %}
+</div>
+
+<div id="tabs-2">
+    <div id="quick-links">
+        <strong>More Info:</strong>
+        <a class='chip' href="{% url 'staff:billing:user_bills' user.username %}">bills</a> |
+        <a class='chip' href="{% url 'staff:billing:user_transactions' user.username %}">transactions</a>
+    </div>
+    <!-- Billing Profile -->
+    <h5>Billing Profile</h5>
+    {% include "member/profile/profile_billing_frag.html" %}
+    <div style="margin-left: 2em; margin-top: .5em;">
+      <form method=POST action="{% url 'staff:billing:toggle_bill' user.username %}" onSubmit="return confirm('Are you sure?');">
+        <input type="hidden" name="back" value="{{ request.get_full_path }}">
+        {% if user.profile.has_valid_billing %}
+            <input type="submit" value="Flag Invalid Billing Profile">
+        {% else %}
+            <input type="submit" value="Clear Invalid Billing Flag">
+        {% endif %}
+        {% csrf_token %}
+      </form>
+    </div>
+    {% if integrations.usaepay %}
+    <div class='epay-link'>
+        [ <a href="{{ settings.USA_EPAY_FORM }}{{ settings.USA_EPAY_FORM_KEY }}/?UMdescription=Office%20Nomads%20Billing%20Authorization&UMcustid={{ user.username }}&UMcommand=AuthOnly&UMamount=1.00&UMaddcustomer=yes&UMschedule=disabled">payment link</a> ]
+    </div>
+    {% endif %}
+
+    <!-- Security Deposits -->
+    <h5>Security Deposits:</h5>
+    <div>
+      {% if user.profile.deposits %}
+        <table>
+            <tr>
+                <th>Received</th>
+                <th>Returned</th>
+                <th>Amount</th>
+                <th>Note</th>
+                <th>Action</th>
+            </tr>
+            {% for deposit in user.securitydeposit_set.all %}
+                <tr class="{% cycle 'row-even' 'row-odd' %}">
+                    <td>{{ deposit.received_date }}</td>
+                    <td>{% if deposit.returned_date %}{{ deposit.returned_date }}{% endif %}</td>
+                    <td>${{ deposit.amount }}</td>
+                    <td>{% if deposit.note %}{{ deposit.note }}{% endif %}</td>
+                    <td style="text-align:right;">{% if not deposit.returned_date %}
+                        <form action="{% url 'staff:members:deposits' %}" method="POST" onSubmit="return confirm('Are you sure?');">
+                            <input name="username" value="{{ user.username }}" type="hidden" />
+                            <input name="deposit_id" value="{{ deposit.id }}" type="hidden" />
+                            <input name="mark_returned" type="submit" Value="Mark Returned" />
+                            {% csrf_token %}
+                        </form>
+                    {% endif %}</td>
+                </tr>
+            {% endfor %}
+        </table>
+      {% endif %}
+    <table>
+      <tr>
+          <th></th>
+          <th>Amount</th>
+          <th>Note</th>
+          <th>Action</th>
+      </tr>
+      <tr>
+        <form action="{% url 'staff:members:deposits' %}" method="POST">
+          <input name="username" value="{{ user.username }}" type="hidden" />
+          <td><strong>Record New Deposit:</strong></th>
+          <td><input name="amount" placeholder='Enter Amount Here'/></td>
+          <td><input name="note" placeholder='i.e. Key deposit for two members'/></td>
+          <td class='centered'><input name="add_deposit" type="submit" Value="Record Deposit" /></td>
+      {% csrf_token %}
+    </tr>
+    </form>
+
+    </table>
+    </div>
+</div>
+
+<div id="tabs-3">
+    <!-- Email Logs -->
+    <div id="quick-links">
+        <strong>Actions:</strong>
+        <a class='chip' href="{% url 'password_reset' %}?email={{ user.email }}">password reset</a>
+    </div>
+    <h5>Email Logs</h5>
+    <div>
+        {% if email_logs %}
+            <table>
+                <tr>
+                  <th class='left'>Sent</th>
+                  <th id='subject-th'>Subject</th>
+                </tr>
+                {% for log in email_logs %}
+                    <tr {% if not log.success %} style="color:red;" {% endif %}>
+                        <td nowrap>{{ log.created }}</td>
+                        <td>{{ log.subject }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <p>No email logs.</p>
+        {% endif %}
+        <div>
+            <form class='email-form' action="." method="POST">
+                <strong>Manually Send Email: </strong>
+                <select name="message_key">
+                    {% for key in email_keys %}
+                        <option>{{ key }}</option>
+                    {% endfor %}
+                </select>
+                <input name="send_manual_email" type="submit" Value="Send" />
+                {% csrf_token %}
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="tabs-4">
+
+    {% if messages %}
+    <div class="page-message">
+        {% for message in messages %}
+            <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% with user.profile.open_alerts as alerts and True as description and False as member %}
+      {% if alerts %}
+        <h5>Action Required</h5>
+        {% include "staff/tasks/detail_table.html" %}
+      {% endif %}
+    {% endwith %}
+
+    <h5>Completed Tasks</h5>
+    <table class='responsive-table'>
+      <thead>
+        <tr>
+            <th>Created</th>
+            <th id='alerts-th'>Alert</th>
+            <th>Resolved</th>
+            <th>Resolved By</th>
+            <th>Muted</th>
+            <th>Muted By</th>
+            <th>Note</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for alert in user.profile.alerts %}
+            {% if alert.is_resolved %}
+                <tr class="{% cycle 'row-even' 'row-odd' %}">
+                    <td>{{ alert.created_ts|date:"m/d/y" }}</td>
+                    <td class='left'>{{ alert.description }}</td>
+                    <td>{{ alert.resolved_ts|date:"m/d/y" }}</td>
+                    <td>{{ alert.resolved_by|default:"" }}</td>
+                    <td>{{ alert.muted_ts|date:"m/d/y" }}</td>
+                    <td>{{ alert.muted_by|default:"" }}</td>
+                    <td>{{ alert.note|default:"" }}</td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+</div>
+
+<div id="tabs-5">
+    <h5>Notes</h5>
+    <div>
+      {% if user.profile.member_notes %}
+        <table>
+            <tr>
+                <th>Date</th>
+                <th>By</th>
+                <th class='left'>Note</th>
+                <th></th>
+            </tr>
+            {% for note in user.profile.member_notes %}
+                <tr>
+                    <td>{{ note.created|date:"M d, Y"}}</td>
+                    <td>{% if note.created_by %}{{ note.created_by }} {% endif %}</td>
+                    <td class='left'>{{ note.note }}</td>
+                    <td class='right' nowrap>[ <a href="{% url 'admin:nadine_membernote_change' note.id %}">edit</a> ]</td>
+                </tr>
+            {% endfor %}
+        <table>
+      {% endif %}
+        <table>
+          <form action="." method="POST">
+          <tr>
+              <td><input name="note" placeholder='Enter note here' /></td>
+              <td class='left'><input type="submit" name="add_note" value="Add Note"/></td>
+          </tr>
+          {% csrf_token %}
+          </form>
+        </table>
+    </div>
+
+    <h5>Special Days:</h5>
+    <div>
+        <table>
+            <tr>
+                <th>Month</th>
+                <th>Day</th>
+                <th>Year</th>
+                <th class="left">Description</th>
+                <th></th>
+            </tr>
+            {% if user.profile.special_days %}
+              {% for d in user.profile.special_days %}
+                  <tr>
+                      <td>{{ d.month }}</td>
+                      <td>{{ d.day }}</td>
+                      <td>{% if d.year %}{{ d.year }}{% endif %}</td>
+                      <td style="text-align:left;">{{ d.description }}</td>
+                      <td style="text-align:right">[ <a href="{% url 'admin:nadine_specialday_change' d.id %}">edit</a> ]</td>
+                  </tr>
+              {% endfor %}
+            {% endif %}
+        <form class='special_form' action="." method=POST>
+            <tr>
+                <td><select name="month">
+                    <option></option>
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                    <option>6</option>
+                    <option>7</option>
+                    <option>8</option>
+                    <option>9</option>
+                    <option>10</option>
+                    <option>11</option>
+                    <option>12</option>
+                </select></td>
+                <td><select name="day">
+                    <option></option>
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                    <option>6</option>
+                    <option>7</option>
+                    <option>8</option>
+                    <option>9</option>
+                    <option>10</option>
+                    <option>11</option>
+                    <option>12</option>
+                    <option>13</option>
+                    <option>14</option>
+                    <option>15</option>
+                    <option>16</option>
+                    <option>17</option>
+                    <option>18</option>
+                    <option>19</option>
+                    <option>20</option>
+                    <option>21</option>
+                    <option>22</option>
+                    <option>23</option>
+                    <option>24</option>
+                    <option>25</option>
+                    <option>26</option>
+                    <option>27</option>
+                    <option>28</option>
+                    <option>29</option>
+                    <option>30</option>
+                    <option>31</option>
+                </select></td>
+                <td><input name="year" size=4/></td>
+                <td class='left'><input id="specialdays" name="description" size="50"/></td>
+                <td class='left'><input type="submit" name="add_special_day" value="Add Special Day"/></td>
+            </tr>
+            {% csrf_token %}
+        </form>
+    </table>
+    </div>
+</div>
+
+</div>
+
+{% endblock %}
+
+
+{% block extrajs %}
+<script>
+  $(document).ready(function() {
+    $('.button-collapse').sideNav();
+		$('.collapsible').collapsible();
+
+    $('.billing-btn').attr('class', 'billing-btn');
+  });
+</script>
+{% endblock %}

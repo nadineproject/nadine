@@ -1,0 +1,39 @@
+{% extends "staff/member/base.html" %}
+
+{% block sub-title %} Slack Users{% endblock %}
+
+{% block content%}
+{% include "interlink/list_menu.frag" %}
+
+<h4>Expired Slack Users ({{ expired_users|length }})</h4>
+<ul>
+{% for u in expired_users %}
+	<li>
+		<strong>{{ u.real_name }}</strong>:
+		<a href="{{ slack_url }}admin?q={{ u.email }}" target="_new">{{ u.email }}</a>
+	</li>
+{% endfor %}
+</ul>
+
+<h4>Non Slack Users ({{ non_slack_users|length }})</h4>
+<ul>
+{% for u in non_slack_users %}
+	<li>
+		<strong><a href="{% url 'staff:members:detail' u.username %}">{{ u.get_full_name }}</a></strong>:
+		{{ m.email }}</a>
+	</li>
+{% endfor %}
+</ul>
+
+<h4>All Slack Users ({{ slack_users|length }})</h4>
+<ul>
+{% for u in slack_users %}
+	{% if not u.is_bot and u.profile.email %}
+		<li>
+			<strong>{{ u.real_name }}</strong>:
+			<a href="{{ slack_url }}admin?q={{ u.profile.email }}" target="_new">{{ u.profile.email }}</a>
+		</li>
+	{% endif %}
+{% endfor %}
+</ul>
+{% endblock %}

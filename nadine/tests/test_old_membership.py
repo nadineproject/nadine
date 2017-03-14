@@ -53,23 +53,23 @@ class MembershipTestCase(TestCase):
     def test_date_methods(self):
         test_date = date(2013, 3, 15)
         # Billing day was yesterday
-        m1 = Membership.objects.create(user=self.user1, membership_plan=self.residentPlan, start_date=date(2012, 6, 14))
+        m1 = OldMembership.objects.create(user=self.user1, membership_plan=self.residentPlan, start_date=date(2012, 6, 14))
         self.assertEqual(m1.prev_billing_date(test_date), date(2013, 3, 14))
         self.assertEqual(m1.next_billing_date(test_date), date(2013, 4, 14))
         # Billing day is today
-        m2 = Membership.objects.create(user=self.user2, membership_plan=self.residentPlan, start_date=date(2012, 6, 15))
+        m2 = OldMembership.objects.create(user=self.user2, membership_plan=self.residentPlan, start_date=date(2012, 6, 15))
         self.assertEqual(m2.prev_billing_date(test_date), date(2013, 3, 15))
         self.assertEqual(m2.next_billing_date(test_date), date(2013, 4, 15))
         # Billing day is tomorrow
-        m3 = Membership.objects.create(user=self.user3, membership_plan=self.residentPlan, start_date=date(2012, 6, 16))
+        m3 = OldMembership.objects.create(user=self.user3, membership_plan=self.residentPlan, start_date=date(2012, 6, 16))
         self.assertEqual(m3.prev_billing_date(test_date), date(2013, 2, 16))
         self.assertEqual(m3.next_billing_date(test_date), date(2013, 3, 16))
         # Make sure it works with the end of the months that have 28, 30, and 31 days
-        m4 = Membership.objects.create(user=self.user4, membership_plan=self.residentPlan, start_date=date(2012, 3, 31))
+        m4 = OldMembership.objects.create(user=self.user4, membership_plan=self.residentPlan, start_date=date(2012, 3, 31))
         self.assertEqual(m4.prev_billing_date(test_date), date(2013, 2, 28))
         # What about leap years?
         test_date = date(2012, 3, 15)
-        m5 = Membership.objects.create(user=self.user5, membership_plan=self.residentPlan, start_date=date(2011, 3, 31))
+        m5 = OldMembership.objects.create(user=self.user5, membership_plan=self.residentPlan, start_date=date(2011, 3, 31))
         self.assertEqual(m5.prev_billing_date(test_date), date(2012, 2, 29))
 
 

@@ -1,0 +1,24 @@
+{% extends "member/base.html" %}
+
+{% block style %}
+{% endblock %}
+
+{% block sub-title %}New Billing | {% endblock %}
+
+{% block content %}
+<h2>New Billing Profile - {{ username }}</h2>
+
+{% if error %}
+	<div style="text-align:center; font-size:150%; color:red">{{ error }}</div>
+{% else %}
+	<p style="padding-top:1em;">
+		Thank you very much!
+	</p>
+	<p>Your new billing profile has been approved. If you have any billing related questions
+		please stop by the front desk or send an email to <a href="mailto:billing@officenomads.com">billing@officenomads.com</a>.
+		Also, please take a moment to <a href="{% url 'member:help' 'billing' %}">review how we handle billing.</a>
+	</p>
+	<p>- <a href="mailto:staff@officenomads.com">The Office Nomads Team</a></p>
+{% endif %}
+
+{% endblock %}

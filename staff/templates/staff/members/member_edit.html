@@ -1,0 +1,50 @@
+{% extends "staff/member/base.html" %}
+
+{% block sub-title %}Member Edit{% endblock %}
+
+{% block content %}
+
+<h4>Edit Member: <a href="{% url 'staff:members:detail' user.username %}">{{ user.get_full_name }}</a></h4>
+
+{% if messages %}
+<div class="page-message">
+	{% for message in messages %}
+		<div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+	{% endfor %}
+</div>
+{% endif %}
+
+<div id="member_edit_form">
+	<form enctype="multipart/form-data" action='.' method='post'>
+	   <table id="member-edit">
+	      {% for field in edit_form %}
+            {% if field.label == 'Emergency Contact' %}
+               <tr class="row-even">
+                  <th colspan="3" class='centered'>---Emergency Contact Information ---</th>
+               </tr>
+            {% endif %}
+	         <tr class="{% cycle 'row-odd' 'row-even' %}">
+	            <td>{{ field.label_tag }}</td>
+	            <td class='left'>
+                  {{ field }}
+	              {% if field.label == 'How heard' %}<a href="{% url 'admin:nadine_howheard_add' %}" target="new">+</a>{% endif %}
+	              {% if field.label == 'Industry' %}<a href="{% url 'admin:nadine_industry_add' %}" target="new">+</a>{% endif %}
+	              {% if field.label == 'Neighborhood' %}<a href="{% url 'admin:nadine_neighborhood_add' %}" target="new">+</a>{% endif %}
+	            </td>
+	            <td>
+	               {{ field.errors }}
+	            </td>
+	         </tr>
+	      {% endfor %}
+	      <tr>
+				<td  class="row-even centered" colspan="3">
+					<button type="submit">Save Changes</button>
+					<button onclick="window.location='{% url 'staff:members:detail' user.username %}'; return false;">Cancel</button>
+				</td>
+			</tr>
+	   </table>
+	   {% csrf_token %}
+	</form>
+</div>
+
+{% endblock %}

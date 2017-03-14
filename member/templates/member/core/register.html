@@ -1,0 +1,77 @@
+{% extends "member/profile/profile_edit.html" %}
+{% load email_tags %}
+
+{% block sub-title %}Register Profile | {% endblock %}
+
+{% block reg_edit %}
+<h3 style='text-align:center;'>Registration</h3>
+
+<p align="center"><em>NOTE: Items in <strong>bold</strong> are viewable by all active members.</em></p>
+
+<div id="profile_form">
+  {% if page_message %}
+    <div>
+      <p style='color:red;text-align:center;'>
+        <strong> {{ page_message }} </strong>
+      </p>
+      <br />
+    </div>
+  {% endif %}
+  <form enctype="multipart/form-data" action='.' method='POST'>
+    <div id='registration'>
+      <table>
+        <tr class="row-even">
+          <td class='cap-label' id='pf-first'><strong>First Name</strong></td>
+          <td class='cap-label' id='pf-last'><strong>Last Name</strong></td>
+        </tr>
+        <tr class="row-odd">
+          <td class='pf-input'>{{ registration_form.first_name }}</td>
+          <td class='pf-input'>{{ registration_form.last_name }}</td>
+        </tr>
+        <tr>
+          <td class='pf-error'>{{ registration_form.first_name.errors }}</td>
+          <td class='pf-error'>{{ registration_form.last_name.errors }}</td>
+        </tr>
+      </table>
+      <table>
+        <tr>
+          <td class='cap-label'>Primary Email</td>
+        </tr>
+        <tr>
+          <td class='pf-input' id='reg-email'>{{ registration_form.email }}</td>
+        </tr>
+        <tr>
+          <td class='pf-error'>{{ registration_form.email.errors }}</td>
+        </tr>
+      </table>
+      <table>
+        <tr>
+          <td class='cap-label'>Create Password</td>
+          <td class='cap-label'>Confirm Password</td>
+        </tr>
+        <tr id='password-row'>
+          <td><input class='pwd-input pf-input' type='password' name='password-create' id='password-create' minlength=8/></td>
+          <td><input class='pwd-input pf-input' type='password' name='password-confirm' id='password-confirm' minlength=8/></td>
+       </tr>
+      </table>
+    </div>
+    <h3 style='text-align:left;'>Contact Information</h3>
+    {{ profile_form.username }}
+    <div id='contact'>
+{% endblock %}
+
+{% block upload %}
+  <table>
+    <tr class="row-odd">
+      <td id='pf-photo'><strong>Upload Photo</strong></td>
+      <td>
+        <input type='file' name='photo' style='background-color:RGBA(255, 255, 255, 0);' id="imgInp" />
+      </td>
+      <td>
+        <img id='img-id' src='' alt='profile photo' />
+      </td>
+    </tr>
+  </table>
+{% endblock %}
+
+{% block emergency_info %}{% endblock %}

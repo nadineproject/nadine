@@ -1,0 +1,48 @@
+{% extends "member/events/calendar.html" %}
+
+{% block extrajs %}
+  <script>
+  $(document).ready(function() {
+    $('.button-collapse').sideNav();
+
+    // $('#calendar').fullCalendar(options);
+
+    var $fc = $("#calendar").fullCalendar(options);
+
+    var options = {
+      googleCalendarApiKey: '{{ GOOGLE_API_KEY }}',
+      events: {
+        googleCalendarId: '{{ GOOGLE_CALENDAR_ID }}',
+        className: 'gcal-event'
+      },
+      defaultDate: moment()
+    }
+
+    function recreateFC(screenWidth) {
+      if (screenWidth < 600) {
+        options.header = {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'month,basicWeek,basicDay'
+        };
+        options.defaultView = 'listWeek';
+      } else {
+        options.header = {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'month,basicWeek,basicDay'
+        };
+        options.defaultView = 'month';
+      }
+      $fc.fullCalendar('destroy');
+      $fc.fullCalendar(options);
+    }
+
+    $(window).resize(function () {
+      recreateFC($(window).width());
+    });
+
+    recreateFC($(window).width());
+  });
+  </script>
+{% endblock %}

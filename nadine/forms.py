@@ -25,7 +25,7 @@ from nadine.models.usage import PAYMENT_CHOICES, CoworkingDay
 from nadine.models.resource import Room, Resource
 from nadine.models.organization import Organization, OrganizationMember
 from nadine.utils.payment_api import PaymentAPI
-from members.models import HelpText, MOTD
+from member.models import HelpText, MOTD
 
 logger = logging.getLogger(__name__)
 

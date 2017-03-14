@@ -1,0 +1,40 @@
+{% extends "member/base.html" %}
+
+{% block sub-title %}Notifications | {% endblock %}
+
+{% block style %}
+#notifications th:first-child {
+	text-align:left;
+}
+#notifications th, td {
+	text-align:center;
+}
+{% endblock %}
+
+{% block content %}
+<h2>User Notifications</h2>
+
+<div id="notifications">
+
+{% if notifications %}
+<table>
+	<tr>
+		<th>Created</th>
+		<th>Target</th>
+	</tr>
+
+	{% for n in notifications %}
+		<tr>
+			<td nowrap>{{ n.created }}</td>
+			<td><a href="{% url 'member:profile:view' n.target_user.username %}">{{ n.target_user.get_full_name }}</a></td>
+			<td><a href="{% url 'member:connect:del_notification' n.target_user %}">delete</a></td>
+		</tr>
+	{% endfor %}
+</table>
+{% else %}
+	You have no user notifications.
+{% endif %}
+
+</div>
+
+{% endblock %}

@@ -36,8 +36,8 @@ Suggested paths:
 * '/member/'
 * '/member/view/'
 * '/staff/'
-* '/staff/user/members/'
-* '/staff/user/detail/USERNAME'
+* '/staff/members/members/'
+* '/staff/members/detail/USERNAME'
 
 Some of the tests are checking for a lot of information so it might take a minute or so to run.
 

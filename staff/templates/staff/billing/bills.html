@@ -48,7 +48,7 @@ $(document).ready(function() {
 <table>
 	{% for u in invalid_members %}
 		<tr class="{% cycle 'row-odd' 'row-even' %}">
-			<td nowrap class='left'><li><a href="{% url 'staff:user:detail' u.username %}">{{ u.get_full_name }}</a></li></td>
+			<td nowrap class='left'><li><a href="{% url 'staff:members:detail' u.username %}">{{ u.get_full_name }}</a></li></td>
 			<td></td>
 		</tr>
 	{% endfor %}
