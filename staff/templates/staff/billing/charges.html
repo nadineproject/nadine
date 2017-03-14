@@ -46,13 +46,13 @@
 
 {% if visamc %}
 	{% with "VISA/MC" as name and visamc as transactions and totals.visamc_total as total %}
-		{% include "staff/billing/charges_table_frag.html"" %}
+		{% include "staff/billing/charges_table_frag.html" %}
 	{% endwith %}
 {% endif %}
 
 {% if ACH %}
 	{% with "ACH" as name and ach as transactions and totals.ach_total as total %}
-		{% include "staff/billing/charges_table_frag.html"" %}
+		{% include "staff/billing/charges_table_frag.html" %}
 	{% endwith %}
 {% endif %}
 

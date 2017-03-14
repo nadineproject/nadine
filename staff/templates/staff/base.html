@@ -63,7 +63,7 @@
 						{% include 'staff/tasks/nav.html' %}
 					</ul>
 				</li>
-				<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown2' id='member-tab' href="{% url 'staff:members:members' %}">Member List</a>
+				<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown2' id='member-tab' href="{% url 'staff:members:members' %}">Members</a>
 					<ul id='dropdown2' class='dropdown-content'>
 						{% include 'staff/members/nav.html' %}
 					</ul>
@@ -128,7 +128,7 @@
 				<li class='no-padding'>
 					<ul class="collapsible collapsible-accordion">
 						<li>
-							<a class='collapsible-header' id='member-tab'>Member List</a>
+							<a class='collapsible-header' id='member-tab'>Members</a>
 							<div class='collapsible-body'>
 								<ul>
 									{% include 'staff/members/nav.html' %}
