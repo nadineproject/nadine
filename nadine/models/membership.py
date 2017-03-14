@@ -133,8 +133,8 @@ class MembershipManager(models.Manager):
         if not target_date:
             target_date = localtime(now()).date()
         ready = []
-        for m in self.active_memberships():
-            (this_period_start, this_period_end) = m.get_period()
+        for m in self.active_memberships(target_date):
+            (this_period_start, this_period_end) = m.get_period(target_date)
             if this_period_start == target_date:
                 ready.append(m)
         return ready
