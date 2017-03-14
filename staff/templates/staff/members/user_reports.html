@@ -43,7 +43,7 @@
 
 	{% for user in users %}
 		<tr class="{% cycle 'row-even' 'row-odd' %}">
-			<td nowrap class='left'><a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a></td>
+			<td nowrap class='left'><a href="{% url 'staff:members:detail' user.username %}">{{ user.get_full_name }}</a></td>
 			<td>{{ user.date_joined|date:"M d, Y" }}</td>
 			{% if user.profile.has_valid_billing %}
 				<td>Valid</td>

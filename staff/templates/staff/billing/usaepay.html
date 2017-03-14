@@ -10,7 +10,7 @@
 
 {% block content %}
 
-<h4>USAePay - <a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a></h4>
+<h4>USAePay - <a href="{% url 'staff:members:detail' user.username %}">{{ user.get_full_name }}</a></h4>
 
 {% if messages %}
   <div class="messages">

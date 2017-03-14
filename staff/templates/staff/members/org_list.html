@@ -16,7 +16,7 @@
 
   {% for org in organizations %}
     <tr>
-      <td><a href="{% url 'staff:user:organization' org.id %}">{{ org.name }}</a></td>
+      <td><a href="{% url 'staff:members:organization' org.id %}">{{ org.name }}</a></td>
       <td></td>
       <td></td>
       <td></td>

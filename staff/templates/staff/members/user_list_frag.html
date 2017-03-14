@@ -12,20 +12,20 @@
 	{% for user in users %}
 		<tr class="{% cycle 'row-even' 'row-odd' %}" >
 			<td id='photo-td' class='centered'>
-				{% if user.profile.photo %}<a href="{% url 'staff:user:detail' user.username %}"><img class="member-table-photo" src="{{ user.profile.photo.url|fit_image:"48x48"}}" /></a>{% endif %}
+				{% if user.profile.photo %}<a href="{% url 'staff:members:detail' user.username %}"><img class="member-table-photo" src="{{ user.profile.photo.url|fit_image:"48x48"}}" /></a>{% endif %}
 			</td>
-			<td nowrap class='left'><a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a></td>
+			<td nowrap class='left'><a href="{% url 'staff:members:detail' user.username %}">{{ user.get_full_name }}</a></td>
 			<td>{{ user.profile.last_membership.start_date|date:"M d, Y" }}</td>
 			<td class='centered'>
 				<a href="{% url 'staff:activity:user' user.username %}">activity</a> |
-				<a href="{% url 'staff:user:files' user.username %}">files</a> |
+				<a href="{% url 'staff:members:files' user.username %}">files</a> |
 				{% if integrations.usaepay %}
 					<a href="{% url 'staff:billing:user_payment' user.username %}">usaepay</a> |
 				{% endif %}
 		    {% if integrations.xero %}
 					<a href="{% url 'staff:billing:xero' user.username %}">xero</a> |
 				{% endif %}
-				<a href="{% url 'staff:user:membership' user.username %}">membership</a>
+				<a href="{% url 'staff:members:membership' user.username %}">membership</a>
 			</td>
 			<td class='centered'>
 				{% if user.profile.guests %}
@@ -39,12 +39,12 @@
 				{% for guest in user.profile.guests %}
 					<tr class="{% cycle 'row-even' 'row-odd' %}">
 						<td>{% if guest.profile.photo %}
-							<a href="{% url 'staff:user:detail' guest.username %}">
+							<a href="{% url 'staff:members:detail' guest.username %}">
 								<img class="member-table-photo" src="{{ guest.profile.photo.url|fit_image:"48x48"}}" />
 							</a>
 						{% endif %}</td>
 						<td class='guest-info'>
-							<a href="{% url 'staff:user:detail' guest.username %}">{{ guest.get_full_name }}</a>
+							<a href="{% url 'staff:members:detail' guest.username %}">{{ guest.get_full_name }}</a>
 						</td>
 						<td class='guest-info'>{{ guest.profile.active_membership.membership_plan }}</td>
 						<td class='guest-info'>{{ guest.profile.active_membership.start_date }}</td>

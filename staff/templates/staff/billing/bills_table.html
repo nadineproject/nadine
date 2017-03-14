@@ -12,7 +12,7 @@
               <td id='bill-deets'>
                 <a class="bill-detail-toggle" id="bill-details-toggle-{{u.id}}" href="." onclick="toggleBillDetails('{{u.id}}'); return false;">[+]</a>&nbsp;
                 <span class='bill-username'>
-                  <strong><a href="{% url 'staff:user:detail' u.username %}">{{ u.get_full_name }}</a></strong>:
+                  <strong><a href="{% url 'staff:members:detail' u.username %}">{{ u.get_full_name }}</a></strong>:
                 </span>
               </td>
               <td id='amount-td'>
@@ -33,7 +33,7 @@
               <h6>
                 <input name="bill_id" value="{{ bill.id }}" type="checkbox" checked="checked" />
                 <a href="{% url 'staff:billing:bill' bill.id %}">Bill on {{ bill.bill_date|date:"m/d" }}</a>
-                {% if bill.paid_by %} for <a href="{% url 'staff:user:detail' bill.user.username %}">{{ bill.user.get_full_name }}</a>{% endif %}
+                {% if bill.paid_by %} for <a href="{% url 'staff:members:detail' bill.user.username %}">{{ bill.user.get_full_name }}</a>{% endif %}
                 : ${{ bill.amount }}
               </h6>
 
@@ -62,7 +62,7 @@
               {% if bill.guest_dropins.all %}
               <div class="bill-info">Guest Dropins ({{ bill.guest_dropins.count }}):
                 {% for dropin in bill.guest_dropins.all %}
-                  <a href="{% url 'staff:user:detail' dropin.user.username %}">{{ dropin.user.get_full_name }}</a>
+                  <a href="{% url 'staff:members:detail' dropin.user.username %}">{{ dropin.user.get_full_name }}</a>
                   on <a href="{{ dropin.get_admin_url }}">{{ dropin.visit_date|date:"m/d" }}</a>{% loop_comma %}
                 {% endfor %}
               </div>

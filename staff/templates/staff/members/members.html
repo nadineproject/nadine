@@ -13,7 +13,7 @@
 		<div class='input-field'>
 			<select class='browser-default group' name="group" OnChange="location.href=group_form.group.options[selectedIndex].value">
 			 {% for k, v in group_list %}
-				 <option value="{% url 'staff:user:member_group' k %}" {% if k == group %} SELECTED {% endif %}>
+				 <option value="{% url 'staff:members:member_group' k %}" {% if k == group %} SELECTED {% endif %}>
 					 {{ v }}
 				 </option>
 			 {% endfor %}

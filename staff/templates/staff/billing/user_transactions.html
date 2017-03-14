@@ -4,7 +4,7 @@
 {% block sub-title %}Transactions for {{ user.get_full_name }}{% endblock %}
 
 {% block content %}
-<h4>Transactions for <a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a>:</h4>
+<h4>Transactions for <a href="{% url 'staff:members:detail' user.username %}">{{ user.get_full_name }}</a>:</h4>
 {% if not transactions %}
 <p>There are no transactions!</p>
 {% endif%}

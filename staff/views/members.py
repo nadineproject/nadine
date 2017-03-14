@@ -70,7 +70,7 @@ def detail(request, username):
         'staff_members':staff_members,
         'settings': settings,
     }
-    return render(request, 'staff/user/detail.html', context)
+    return render(request, 'staff/members/detail.html', context)
 
 
 @staff_member_required
@@ -102,7 +102,7 @@ def members(request, group=None):
         'group_list': group_list,
         'total_members': total_members
     }
-    return render(request, 'staff/user/members.html', context)
+    return render(request, 'staff/members/members.html', context)
 
 
 @staff_member_required
@@ -111,7 +111,7 @@ def org_list(request):
     context = {
         'organizations': orgs,
     }
-    return render(request, 'staff/user/org_list.html', context)
+    return render(request, 'staff/members/org_list.html', context)
 
 
 @staff_member_required
@@ -120,7 +120,7 @@ def org_view(request, org_id):
     context = {
         'organization': org,
     }
-    return render(request, 'staff/user/org_view.html', context)
+    return render(request, 'staff/members/org_view.html', context)
 
 
 def bcc_tool(request, group=None):
@@ -136,7 +136,7 @@ def bcc_tool(request, group=None):
         users = User.helper.members_by_package(group)
     group_list = MemberGroups.get_member_groups()
     context = {'group': group, 'group_name': group_name, 'group_list': group_list, 'users': users}
-    return render(request, 'staff/user/bcc_tool.html', context)
+    return render(request, 'staff/members/bcc_tool.html', context)
 
 
 @staff_member_required
@@ -146,7 +146,7 @@ def export_users(request):
     else:
         users = User.objects.all()
     context = {'member_list': users}
-    return render(request, 'staff/user/memberList.csv', context)
+    return render(request, 'staff/members/memberList.csv', context)
 
 
 @staff_member_required
@@ -165,7 +165,7 @@ def security_deposits(request):
             deposit = SecurityDeposit.objects.create(user=user, received_date=today, amount=amount, note=note)
             deposit.save()
         if username:
-            return HttpResponseRedirect(reverse('staff:user:detail', kwargs={'username': username}))
+            return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}))
 
     active_deposits = []
     inactive_deposits = []
@@ -184,7 +184,7 @@ def security_deposits(request):
                'inactive_deposits': inactive_deposits,
                'total_deposits': total_deposits
                }
-    return render(request, 'staff/user/security_deposits.html', context)
+    return render(request, 'staff/members/security_deposits.html', context)
 
 
 @staff_member_required
@@ -196,11 +196,11 @@ def member_search(request):
             term = member_search_form.cleaned_data['terms']
             search_results = User.helper.search(term)
             if len(search_results) == 1:
-                return HttpResponseRedirect(reverse('staff:user:detail', kwargs={'username': search_results[0].username}))
+                return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': search_results[0].username}))
     else:
         member_search_form = MemberSearchForm()
     context = {'member_search_form': member_search_form, 'search_results': search_results, 'term': term, }
-    return render(request, 'staff/user/search.html', context)
+    return render(request, 'staff/members/search.html', context)
 
 
 @staff_member_required
@@ -212,7 +212,7 @@ def view_user_reports(request):
 
     report = user_reports.User_Report(form)
     users = report.get_users()
-    return render(request, 'staff/user/user_reports.html', {'users': users, 'form': form})
+    return render(request, 'staff/members/user_reports.html', {'users': users, 'form': form})
 
 
 @staff_member_required
@@ -226,7 +226,7 @@ def slack_users(request):
     non_slack_users = User.helper.active_members().exclude(email__in=slack_emails)
     context = {'expired_users':expired_users, 'slack_users':slack_users,
          'non_slack_users':non_slack_users, 'slack_url':settings.SLACK_TEAM_URL}
-    return render(request, 'staff/user/slack_users.html', context)
+    return render(request, 'staff/members/slack_users.html', context)
 
 
 @staff_member_required
@@ -251,7 +251,7 @@ def files(request, username):
     files = FileUpload.objects.filter(user=user)
 
     context = {'user':user, 'files': files, 'doc_types': doc_types}
-    return render(request, 'staff/user/files.html', context)
+    return render(request, 'staff/members/files.html', context)
 
 
 @staff_member_required
@@ -280,7 +280,7 @@ def membership(request, username):
             else:
                 end_target = request.POST['date-end']
                 user.membership.end_all(end_target)
-            return HttpResponseRedirect(reverse('staff:user:detail', kwargs={'username': username}))
+            return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}))
         elif 'update' in request.POST:
             s_id = request.POST['id']
             s = ResourceSubscription.objects.get(id=s_id)
@@ -294,12 +294,12 @@ def membership(request, username):
                 paid_by_username = request.POST['paid_by']
                 s.paid_by = User.objects.get(username=paid_by_username)
             s.save()
-            return HttpResponseRedirect(reverse('staff:user:detail', kwargs={'username': username}))
+            return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}))
         elif 'add' in request.POST:
             add_form = SubForm(request.POST)
             if add_form.is_valid():
                 add_form.save()
-                return HttpResponseRedirect(reverse('staff:user:detail', kwargs={'username': username}))
+                return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}))
         else:
             package_form = MembershipPackageForm(request.POST)
             sub_formset = SubFormSet(request.POST)
@@ -328,7 +328,7 @@ def membership(request, username):
                         user.membership.end_all(end_target)
                         ResourceSubscription.objects.bulk_create(new_subs)
                         messages.success(request, "You have updated the subscriptions")
-                        return HttpResponseRedirect(reverse('staff:user:detail', kwargs={'username': username}))
+                        return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}))
 
                 except IntegrityError:
                     messages.error(request, 'There was an error updating the subscriptions')
@@ -348,7 +348,7 @@ def membership(request, username):
         'sub_formset': sub_formset,
         'active_members': active_members,
     }
-    return render(request, 'staff/user/membership.html', context)
+    return render(request, 'staff/members/membership.html', context)
 
 
 ################################################################################
@@ -372,7 +372,7 @@ def old_add_membership(request, username):
           if membership_form.is_valid():
               membership_form.created_by = request.user
               membership_form.save()
-              return HttpResponseRedirect(reverse('staff:user:detail', kwargs={'username': username}))
+              return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}))
       except Exception as e:
           messages.add_message(request, messages.ERROR, e)
     else:
@@ -380,13 +380,13 @@ def old_add_membership(request, username):
 
     # Send them to the update page if we don't have an end date
     if (last_membership and not last_membership.end_date):
-      return HttpResponseRedirect(reverse('staff:user:membership', kwargs={'membership_id': last_membership.id}))
+      return HttpResponseRedirect(reverse('staff:members:membership', kwargs={'membership_id': last_membership.id}))
 
     plans = MembershipPlan.objects.filter(enabled=True).order_by('name')
     context = {'user':user, 'membership_plans': plans,
       'membership_form': membership_form, 'today': today.isoformat(),
       'last': last.isoformat()}
-    return render(request, 'staff/user/old_membership.html', context)
+    return render(request, 'staff/members/old_membership.html', context)
 
 
 @staff_member_required
@@ -398,7 +398,7 @@ def old_membership(request, membership_id):
         try:
             if membership_form.is_valid():
                 membership_form.save()
-                return HttpResponseRedirect(reverse('staff:user:detail', kwargs={'username': membership.user.username}))
+                return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': membership.user.username}))
         except Exception as e:
             messages.add_message(request, messages.ERROR, e)
     else:
@@ -413,7 +413,7 @@ def old_membership(request, membership_id):
     context = {'user': membership.user, 'membership': membership,
         'membership_plans': MembershipPlan.objects.all(), 'membership_form': membership_form,
         'today': today.isoformat(), 'last': last.isoformat()}
-    return render(request, 'staff/user/old_membership.html', context)
+    return render(request, 'staff/members/old_membership.html', context)
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

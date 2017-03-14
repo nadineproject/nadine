@@ -5,7 +5,7 @@
 {% block content %}
 {% include "staff/activity_menu.frag" %}
 
-<h4>Activity for <a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a>:</h4>
+<h4>Activity for <a href="{% url 'staff:members:detail' user.username %}">{{ user.get_full_name }}</a>:</h4>
 
 {% if member.daily_logs.all %}
 	<table>

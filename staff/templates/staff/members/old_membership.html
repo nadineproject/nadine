@@ -53,7 +53,7 @@ $(document).ready(function() {
 })
 </script>
 
-<h4>{% if membership %} Update {% else %} Add {% endif %} Membership for <a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a></h4>
+<h4>{% if membership %} Update {% else %} Add {% endif %} Membership for <a href="{% url 'staff:members:detail' user.username %}">{{ user.get_full_name }}</a></h4>
 
 {% if messages %}
 <div class="page-message">

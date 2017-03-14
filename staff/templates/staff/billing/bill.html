@@ -6,7 +6,7 @@
 
 {% block content %}
 
-<h4><a href="{% url 'staff:user:detail' bill.user.username %}">{{ bill.user.get_full_name }}</a>'s Bill:</h4>
+<h4><a href="{% url 'staff:members:detail' bill.user.username %}">{{ bill.user.get_full_name }}</a>'s Bill:</h4>
 {% include "staff/billing/bill_table.frag" %}
 
 

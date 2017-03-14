@@ -50,7 +50,7 @@ function gotoEmailReset(emailAddress){
   <div id="detail-links">
     <a href="{% url 'staff:activity:user' user.username %}">activity</a> |
     <a href="{% url 'doors:keys' user.username %}">keys</a> |
-    <a href="{% url 'staff:user:files' user.username %}">files</a> |
+    <a href="{% url 'staff:members:files' user.username %}">files</a> |
     {% if integrations.usaepay %}
       <a href="{% url 'staff:billing:user_payment' user.username %}">usaepay</a> |
     {% endif %}
@@ -60,7 +60,7 @@ function gotoEmailReset(emailAddress){
     <a href="{% url 'admin:auth_user_change' user.id %}">admin</a> |
     <a href="{% url 'member:profile:view' user.username %}">view profile</a> |
     <a href="{% url 'member:profile:edit' user.username %}">edit profile</a> | 
-    <a href="{% url 'staff:user:membership' user.username %}">update membership</a>
+    <a href="{% url 'staff:members:membership' user.username %}">update membership</a>
     </a>
   </div>
 </div>
@@ -299,7 +299,7 @@ function gotoEmailReset(emailAddress){
                     <td>${{ deposit.amount }}</td>
                     <td>{% if deposit.note %}{{ deposit.note }}{% endif %}</td>
                     <td style="text-align:right;">{% if not deposit.returned_date %}
-                        <form action="{% url 'staff:user:deposits' %}" method="POST" onSubmit="return confirm('Are you sure?');">
+                        <form action="{% url 'staff:members:deposits' %}" method="POST" onSubmit="return confirm('Are you sure?');">
                             <input name="username" value="{{ user.username }}" type="hidden" />
                             <input name="deposit_id" value="{{ deposit.id }}" type="hidden" />
                             <input name="mark_returned" type="submit" Value="Mark Returned" />
@@ -318,7 +318,7 @@ function gotoEmailReset(emailAddress){
           <th>Action</th>
       </tr>
       <tr>
-        <form action="{% url 'staff:user:deposits' %}" method="POST">
+        <form action="{% url 'staff:members:deposits' %}" method="POST">
           <input name="username" value="{{ user.username }}" type="hidden" />
           <td><strong>Record New Deposit:</strong></th>
           <td><input name="amount" placeholder='Enter Amount Here'/></td>

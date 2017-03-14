@@ -24,7 +24,7 @@
 
 	{% for u in members %}
 		<tr class="{% cycle 'row-even' 'row-odd' %}">
-			<td><a href="{% url 'staff:user:detail' u.username %}">{{ u.username }}</a></td>
+			<td><a href="{% url 'staff:members:detail' u.username %}">{{ u.username }}</a></td>
 			<td><a href="https://secure.usaepay.com/console/billing_edit?id={{ u.customer_number }}" target="new">{{ u.customer_number }}</a></td>
 			<td>{{ u.next | slice:":10"}}</td>
 			<td></td>

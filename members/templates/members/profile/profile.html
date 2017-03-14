@@ -87,7 +87,7 @@
         <a class='col s1 tooltipped' data-position="bottom" data-tooltip="Manage Member" href="{% url 'member:manage' user.username %}"><img id='manage' alt='manage-icon' src="{% static 'img/manage.png' %}" /></a>
       {% endif %}
       {% if request.user.is_staff %}
-        <a class='col s1 tooltipped' data-position="bottom" data-tooltip='Admin' href="{% url 'staff:user:detail' user.username %}"><img id='admin' alt='admin-icon' src="{% static 'img/admin.png' %}"/></a>
+        <a class='col s1 tooltipped' data-position="bottom" data-tooltip='Admin' href="{% url 'staff:members:detail' user.username %}"><img id='admin' alt='admin-icon' src="{% static 'img/admin.png' %}"/></a>
       {% endif %}
     </div>
 

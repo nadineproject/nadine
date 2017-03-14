@@ -19,7 +19,7 @@
         <input type="hidden" name="alert_id" value="{{ alert.id }}"/>
           {% if member %}
             <td nowrap>
-              <a href="{% url 'staff:user:detail' alert.user.username %}">{{ alert.user.get_full_name }}</a>
+              <a href="{% url 'staff:members:detail' alert.user.username %}">{{ alert.user.get_full_name }}</a>
             </td>
           {% endif %}
           {% if description %}

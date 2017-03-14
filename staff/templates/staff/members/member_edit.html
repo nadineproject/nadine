@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<h4>Edit Member: <a href="{% url 'staff:user:detail' user.username %}">{{ user.get_full_name }}</a></h4>
+<h4>Edit Member: <a href="{% url 'staff:members:detail' user.username %}">{{ user.get_full_name }}</a></h4>
 
 {% if messages %}
 <div class="page-message">
@@ -39,7 +39,7 @@
 	      <tr>
 				<td  class="row-even centered" colspan="3">
 					<button type="submit">Save Changes</button>
-					<button onclick="window.location='{% url 'staff:user:detail' user.username %}'; return false;">Cancel</button>
+					<button onclick="window.location='{% url 'staff:members:detail' user.username %}'; return false;">Cancel</button>
 				</td>
 			</tr>
 	   </table>
