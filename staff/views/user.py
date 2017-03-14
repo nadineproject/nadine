@@ -1,6 +1,7 @@
 import os
 import pytz
 from datetime import date, datetime, timedelta
+from dateutil.relativedelta import relativedelta
 
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -14,8 +15,6 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.conf import settings
 from django.forms.formsets import formset_factory
-
-from monthdelta import MonthDelta, monthmod
 
 from nadine.forms import MembershipForm, MembershipPackageForm, SubForm
 from nadine.models.membership import OldMembership, MembershipPlan, ResourceSubscription
@@ -367,7 +366,7 @@ def old_add_membership(request, username):
     last_membership = user.profile.last_membership()
     if last_membership and last_membership.end_date and last_membership.end_date > today - timedelta(days=10):
         start = (last_membership.end_date + timedelta(days=1))
-    last = start + MonthDelta(1) - timedelta(days=1)
+    last = start + relativedelta(months=1) - timedelta(days=1)
 
     if request.method == 'POST':
       membership_form = MembershipForm(request.POST, request.FILES)
