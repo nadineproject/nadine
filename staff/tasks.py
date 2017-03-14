@@ -10,7 +10,7 @@ from nadine.models.profile import SpecialDay
 from nadine.models.membership import Membership
 from nadine.models.usage import CoworkingDay
 from nadine.models.payment import BillingLog
-from member.models import UserNotification
+from members.models import UserNotification
 
 from arpwatch import arp
 from nadine import email
