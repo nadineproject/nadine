@@ -3,8 +3,8 @@ from __future__ import absolute_import
 from celery import shared_task
 from datetime import datetime, timedelta
 
-from django.utils import timezone
 from django.contrib.auth.models import User
+from django.utils.timezone import localtime, now
 
 from nadine.models.profile import SpecialDay
 from nadine.models.membership import Membership
@@ -25,8 +25,7 @@ def billing_task():
 
 @periodic_task(run_every=crontab(hour=1, minute=0))
 def generate_bills():
-    # TODO
-    today = timezone.localtime(timezone.now()).date()
+    today = localtime(now()).date()
         subscriptions_ready = Subscription.objects.ready_for_billing(location=l, target_date=today)
         if len(subscriptions_ready) == 0:
             logger.debug('no subscriptions are ready for billing at %s today.' % l.name)
@@ -44,7 +43,7 @@ def generate_bills():
 @shared_task
 def first_day_checkins():
     """A recurring task which sends an email to new members"""
-    now = timezone.localtime(timezone.now())
+    now = localtime(now())
     midnight = now - timedelta(seconds=now.hour * 60 * 60 + now.minute * 60 + now.second)
     free_trials = CoworkingDay.objects.filter(visit_date__range=(midnight, now), payment='Trial')
     for l in free_trials:
@@ -56,27 +55,28 @@ def regular_checkins():
     """A recurring task which sends checkin emails to members"""
     # Pull the memberships that started 60 days ago and send the coworking survey
     # if they are still active and this was their first membership
-    two_months_ago = timezone.localtime(timezone.now()) - timedelta(days=60)
+    today = localtime(now()).date()
+    two_months_ago = today - timedelta(days=60)
     for membership in Membership.objects.filter(start_date=two_months_ago):
         if OldMembership.objects.filter(user=membership.user, start_date__lt=two_months_ago).count() == 0:
             if membership.user.profile.is_active():
                 email.send_member_survey(membership.user)
 
     # Pull all the free trials from 30 days ago and send an email if they haven't been back
-    one_month_ago = timezone.localtime(timezone.now()) - timedelta(days=30)
+    one_month_ago = today - timedelta(days=30)
     for dropin in CoworkingDay.objects.filter(visit_date=one_month_ago, payment='Trial'):
         if CoworkingDay.objects.filter(user=dropin.user).count() == 1:
             if not dropin.user.profile.is_active():
                 email.send_no_return_checkin(dropin.user)
 
     # Send an exit survey to members that have been gone a week.
-    one_week_ago = timezone.localtime(timezone.now()) - timedelta(days=7)
+    one_week_ago = today - timedelta(days=7)
     for membership in Membership.objects.filter(end_date=one_week_ago):
         if not membership.user.profile.is_active():
             email.send_exit_survey(membership.user)
 
     # Announce to the team when a new user is nearing the end of their first month
-    #almost_a_month_ago = timezone.localtime(timezone.now()) - timedelta(days=21)
+    #almost_a_month_ago = today - timedelta(days=21)
     # for membership in Membership.objects.filter(start_date=almost_a_month_ago):
     #	if OldMembership.objects.filter(user=membership.user, start_date__lt=almost_a_month_ago).count() == 0:
     #		if membership.user.profile.is_active():
@@ -121,6 +121,7 @@ def anniversary_checkin():
 
 @shared_task
 def announce_special_days():
+    today = localtime(now()).date()
     for u in User.helper.active_members():
         for sd in SpecialDay.objects.filter(user=u):
             if sd.month == today.month and sd.day == today.day:
@@ -134,7 +135,7 @@ def send_notifications():
         if n.notify_user in here_today:
             if n.target_user in here_today:
                 email.send_user_notifications(n.notify_user, n.target_user)
-                n.sent_date = timezone.localtime(timezone.now())
+                n.sent_date = localtime(now())
                 n.save()
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
