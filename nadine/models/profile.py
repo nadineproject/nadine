@@ -382,9 +382,9 @@ class UserProfile(models.Model):
     def membership_for_day(self, day):
         return Membership.objects.active_memberships(target_date=day).filter(user=self.user).first()
 
-    def activity_this_month(self, test_date=None):
-        if not test_date:
-            test_date = date.today()
+    def activity_this_month(self, target_date=None):
+        if not target_date:
+            target_date = localtime(now()).date()
 
         membership = self.active_membership()
         if membership:
@@ -392,10 +392,10 @@ class UserProfile(models.Model):
                 # Return host's activity
                 host = membership.paid_by
                 return host.profile.activity_this_month()
-            month_start = membership.prev_billing_date(test_date)
+            month_start = membership.prev_billing_date(target_date)
         else:
             # Just go back one month from this date since there isn't a membership to work with
-            month_start = test_date - MonthDelta(1)
+            month_start = target_date - MonthDelta(1)
 
         activity = []
         for h in [self.user] + self.guests():
