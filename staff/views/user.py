@@ -13,7 +13,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.forms.formsets import formset_factory
 from django.core.urlresolvers import reverse
 from django.contrib import messages
-from django.utils import timezone
+from django.utils.timezone import localtime, now
 
 from nadine.forms import MembershipForm, MembershipPackageForm, SubForm
 from nadine.models.membership import OldMembership, MembershipPlan, ResourceSubscription
