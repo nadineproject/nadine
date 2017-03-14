@@ -203,8 +203,6 @@ def member_search(request):
     return render(request, 'staff/user/search.html', context)
 
 
-
-
 @staff_member_required
 def view_user_reports(request):
     if request.method == 'POST':
