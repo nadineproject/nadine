@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from django.shortcuts import redirect
 
-from members.views import json
+from member.views import json
 
 urlpatterns = [
     url(r'^user_search/$', json.user_search, name='user_search'),

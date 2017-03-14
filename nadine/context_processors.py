@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib.sites.models import Site
 from nadine.forms import MemberSearchForm
-from members.models import HelpText
+from member.models import HelpText
 
 
 def site(request):

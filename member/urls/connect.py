@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from django.shortcuts import redirect
 
-from members.views import connect
+from member.views import connect
 
 urlpatterns = [
     url(r'^notifications/$', connect.notifications, name='notifications'),

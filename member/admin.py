@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from members.models import *
+from member.models import *
 
 
 class MOTDAdmin(admin.ModelAdmin):

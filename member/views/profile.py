@@ -26,7 +26,7 @@ from nadine.utils import network
 from nadine.utils.payment_api import PaymentAPI
 from arpwatch import arp
 from arpwatch.models import ArpLog, UserDevice
-from members.views.core import is_active_member
+from member.views.core import is_active_member
 
 
 @login_required
@@ -53,14 +53,14 @@ def profile(request, username):
                'can_edit': can_edit,
                'current_org_memberships': current_org_memberships, 'past_org_memberships': past_org_memberships
                }
-    return render(request, 'members/profile/profile.html', context)
+    return render(request, 'member/profile/profile.html', context)
 
 
 @login_required
 def profile_private(request, username):
     user = get_object_or_404(User, username=username)
     context = {'user': user}
-    return render(request, 'members/profile/profile_private.html', context)
+    return render(request, 'member/profile/profile_private.html', context)
 
 
 @login_required
@@ -72,14 +72,14 @@ def profile_membership(request, username):
     context = {'user': user,
                'memberships': memberships
                }
-    return render(request, 'members/profile/profile_membership.html', context)
+    return render(request, 'member/profile/profile_membership.html', context)
 
 
 @login_required
 def profile_documents(request, username):
     user = get_object_or_404(User, username=username)
     context = {'user': user}
-    return render(request, 'members/profile/profile_documents.html', context)
+    return render(request, 'member/profile/profile_documents.html', context)
 
 
 @login_required
@@ -112,7 +112,7 @@ def profile_activity(request, username):
                'activity': activity,
                'allowance': allowance
                }
-    return render(request, 'members/profile/profile_activity.html', context)
+    return render(request, 'member/profile/profile_activity.html', context)
 
 
 @login_required
@@ -128,7 +128,7 @@ def profile_billing(request, username):
                'payments': payments,
                'settings': settings
                }
-    return render(request, 'members/profile/profile_billing.html', context)
+    return render(request, 'member/profile/profile_billing.html', context)
 
 
 @login_required
@@ -209,7 +209,7 @@ def edit_profile(request, username):
                                                 })
 
     context = {'user': user, 'profile_form': profile_form, 'page_message': page_message, 'link_formset': link_formset}
-    return render(request, 'members/profile/profile_edit.html', context)
+    return render(request, 'member/profile/profile_edit.html', context)
 
 
 @login_required
@@ -226,7 +226,7 @@ def receipt(request, username, id):
     bills = transaction.bills.all()
 
     context = {'user': user, 'transaction': transaction, 'bills': bills, 'settings': settings}
-    return render(request, 'members/profile/receipt.html', context)
+    return render(request, 'member/profile/receipt.html', context)
 
 
 @login_required
@@ -261,7 +261,7 @@ def user_devices(request, username):
                'error': error,
                'settings': settings
                }
-    return render(request, 'members/profile/profile_devices.html', context)
+    return render(request, 'member/profile/profile_devices.html', context)
 
 
 @login_required
@@ -311,7 +311,7 @@ def edit_pic(request, username):
         ALLOW_PHOTO_UPLOAD = True
 
     context = {'ALLOW_PHOTO_UPLOAD': ALLOW_PHOTO_UPLOAD, 'user': user}
-    return render(request, 'members/profile/edit_pic.html', context)
+    return render(request, 'member/profile/edit_pic.html', context)
 
 
 @login_required
@@ -335,6 +335,6 @@ def edit_photo(request, username):
         form = ProfileImageForm()
 
     context = {'user': user, 'form': form}
-    return render(request, 'members/profile/profile_image_edit.html', context)
+    return render(request, 'member/profile/profile_image_edit.html', context)
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

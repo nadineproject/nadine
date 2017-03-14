@@ -19,7 +19,7 @@ from nadine.models.usage import CoworkingDay
 # from nadine.models.payment import Transaction
 from nadine.models.alerts import MemberAlert
 from nadine.forms import MemberSearchForm, NewUserForm, EditProfileForm
-from members.models import HelpText
+from member.models import HelpText
 
 
 ######################################################################
@@ -61,13 +61,13 @@ def is_new_user(user):
 
 
 def not_active(request):
-    return render(request, 'members/core/not_active.html', {'settings': settings})
+    return render(request, 'member/core/not_active.html', {'settings': settings})
 
 
 @login_required
 def home(request):
     context = {}
-    return render(request, 'members/core/home.html', context)
+    return render(request, 'member/core/home.html', context)
 
 
 @login_required
@@ -91,7 +91,7 @@ def faq(request):
                'other_topics': other_topics,
                'settings': settings
                }
-    return render(request, 'members/core/faq.html', context)
+    return render(request, 'member/core/faq.html', context)
 
 
 @login_required
@@ -108,7 +108,7 @@ def help_topic(request, slug):
                'other_topics': other_topics,
                'settings': settings
                }
-    return render(request, 'members/core/help_topic.html', context)
+    return render(request, 'member/core/help_topic.html', context)
 
 
 @login_required
@@ -142,7 +142,7 @@ def view_members(request):
                'has_key': has_key,
                'has_mail': has_mail
                }
-    return render(request, 'members/core/view_members.html', context)
+    return render(request, 'member/core/view_members.html', context)
 
 
 @csrf_exempt
@@ -161,7 +161,7 @@ def manage_member(request, username):
     # Render the email content in to a variable to make up the page content
     text_content, html_content = mailgun.get_manage_member_content(user)
 
-    return render(request, 'members/core/manage_member.html', {'user': user, 'page_content': html_content})
+    return render(request, 'member/core/manage_member.html', {'user': user, 'page_content': html_content})
 
 
 @user_passes_test(is_new_user, login_url='member_home')
@@ -217,7 +217,7 @@ def register(request):
                'settings': settings,
                'profile_form': profile_form
                }
-    return render(request, 'members/core/register.html', context)
+    return render(request, 'member/core/register.html', context)
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

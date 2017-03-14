@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from django.shortcuts import redirect
 
-from members.views import profile
+from member.views import profile
 
 urlpatterns = [
     url(r'^$', profile.profile_redirect, name='redirect'),

@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from django.shortcuts import redirect
 
-from members.views import events
+from member.views import events
 
 urlpatterns = [
     url(r'^events/$', events.events_google, name='events'),

@@ -16,13 +16,13 @@ from nadine.models.usage import CoworkingDay, Event
 from nadine.models.resource import Room
 from nadine.forms import EventForm
 
-from members.views.core import is_active_member
+from member.views.core import is_active_member
 
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def events_google(request, location_slug=None):
-    return render(request, 'members/events/events_google.html', {'settings': settings})
+    return render(request, 'member/events/events_google.html', {'settings': settings})
 
 
 def quarter_hours(hour, minutes):
@@ -149,7 +149,7 @@ def create_booking(request):
                'has_phone': has_phone,
                'room_dict': room_dict
                }
-    return render(request, 'members/events/booking_create.html', context)
+    return render(request, 'member/events/booking_create.html', context)
 
 
 @login_required
@@ -217,7 +217,7 @@ def confirm_booking(request, room, start, end, date):
                'page_message': page_message,
                'event_dict': event_dict
                }
-    return render(request, 'members/events/booking_confirm.html', context)
+    return render(request, 'member/events/booking_confirm.html', context)
 
 
 @login_required
@@ -249,13 +249,13 @@ def calendar(request):
         else:
             messages.add_message(request, messages.ERROR, "Did not save your event. Double check that the event start is before the end time. Thank you.")
 
-    template = 'members/events/calendar.html'
+    template = 'member/events/calendar.html'
     context = {'data': data, 'CALENDAR_DICT': settings.CALENDAR_DICT}
     if hasattr(settings, 'GOOGLE_CALENDAR_ID'):
         context['feed_url'] = "https://calendar.google.com/calendar/ical/%s/public/basic.ics" % settings.GOOGLE_CALENDAR_ID
         context['GOOGLE_CALENDAR_ID'] = settings.GOOGLE_CALENDAR_ID
         context['GOOGLE_API_KEY'] = settings.GOOGLE_API_KEY
-        template = 'members/events/calendar_google.html'
+        template = 'member/events/calendar_google.html'
     return render(request, template, context)
 
 

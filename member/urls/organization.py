@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from django.shortcuts import redirect
 
-from members.views import organization
+from member.views import organization
 
 urlpatterns = [
     url(r'^$', organization.org_list, name='list'),

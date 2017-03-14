@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from django.shortcuts import redirect
 
-from members.views import tags
+from member.views import tags
 
 urlpatterns = [
     url(r'^list/(?P<type>[^/]+)/$', tags.tag_list, name='list'),

@@ -12,7 +12,7 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidde
 from nadine.models.profile import UserProfile
 from nadine.models.organization import Organization, OrganizationMember
 
-from members.views.core import is_active_member
+from member.views.core import is_active_member
 
 ######################################################################
 # Helper Functions

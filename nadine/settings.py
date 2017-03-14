@@ -139,7 +139,7 @@ INSTALLED_APPS = [
     'django.contrib.admindocs',
     'nadine',
     'staff',
-    'members',
+    'member',
     'comlink',
     'interlink',
     'arpwatch',

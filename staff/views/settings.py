@@ -18,7 +18,7 @@ from nadine.models.membership import MembershipPackage, SubscriptionDefault
 from nadine.utils import network
 from nadine.forms import HelpTextForm, MOTDForm
 from nadine.settings import MOTD_TIMEOUT
-from members.models import HelpText, MOTD
+from member.models import HelpText, MOTD
 
 
 def times_timeszones(date):
