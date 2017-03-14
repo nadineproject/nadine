@@ -57,7 +57,8 @@
           {{ selected.message|safe }}
         </textarea>
       {% else %}
-        {{ motd_form.message }}
+        <textarea name='message' id='id_message' rows='20'>
+        </textarea>
       {% endif %}
     </div>
     {{ motd_form.delay_ms }}
