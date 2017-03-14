@@ -27,18 +27,18 @@ def billing_task():
 def generate_bills():
     # TODO
     today = localtime(now()).date()
-        subscriptions_ready = Subscription.objects.ready_for_billing(location=l, target_date=today)
-        if len(subscriptions_ready) == 0:
-            logger.debug('no subscriptions are ready for billing at %s today.' % l.name)
-        for s in subscriptions_ready:
-            logger.debug('')
-            logger.debug('automatically generating bill for subscription %d' % s.id)
-            # JKS - we *could* double check to see whether there is already a
-            # bill for this date. but, i'm worried about edge cases, and the
-            # re-generation is non-destructive, so I just call generate_bill
-            # regardless. if we end up with a lot of subscriptions we'll need
-            # to revisit this)
-            s.generate_bill(target_date=today)
+    subscriptions_ready = Subscription.objects.ready_for_billing(location=l, target_date=today)
+    if len(subscriptions_ready) == 0:
+        logger.debug('no subscriptions are ready for billing at %s today.' % l.name)
+    for s in subscriptions_ready:
+        logger.debug('')
+        logger.debug('automatically generating bill for subscription %d' % s.id)
+        # JKS - we *could* double check to see whether there is already a
+        # bill for this date. but, i'm worried about edge cases, and the
+        # re-generation is non-destructive, so I just call generate_bill
+        # regardless. if we end up with a lot of subscriptions we'll need
+        # to revisit this)
+        s.generate_bill(target_date=today)
 
 
 @shared_task
