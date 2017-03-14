@@ -19,7 +19,7 @@
             <select id='motd-input' name='selected_motd'>
                 <option value='Select One' selected disabled="True"> Select A Time Period Here</option>
               {% for motd in prev_motd %}
-                <option value='{{ motd.id }}'>{{ motd.start_ts|date:'M d, Y' }} - {{ motd.end_ts|date:'M d, Y' }}</option>
+                <option value='{{ motd.id }}'>{{ motd.start_ts|date:'D M d, Y' }} - {{ motd.end_ts|date:'D M d, Y' }}</option>
               {% endfor %}
             </select>
             <input style='display: inline-block;' class='btn motd-btn' type='submit' value='Start Updating' />
@@ -39,10 +39,14 @@
     <table>
       <tr class='motd-date-row'>
         <td class='motd-dates'>
-          <strong>Start Date:</strong> {{ motd_form.start_ts }}
+          <strong>Starting:</strong> {{ motd_form.start_ts }}
+          {% if selected %}{% else %}
+          <input id='single_day' type='checkbox' name='single_day' />
+          <label for='single_day'>Just One Day</label>
+          {% endif %}
         </td>
-        <td class='motd-dates'>
-          <strong>End Date:</strong> {{ motd_form.end_ts }}
+        <td class='motd-dates end-td'>
+          <strong>Ending:</strong> {{ motd_form.end_ts }}
         </td>
       </tr>
     </table>
@@ -75,13 +79,24 @@
       $('.button-collapse').sideNav();
       $('.collapsible').collapsible();
       CKEDITOR.replace('id_message');
+      $('#id_start_ts').addClass('datepicker');
+      $('#id_end_ts').addClass('datepicker');
 
       $('#id_delay_ms').val('{{ delay }}');
-      $('input').attr('required', true);
+      $('#id_start_ts').attr('required', true);
+      $('#id_message').attr('required', true);
 
       $('.datepicker').datepicker({
         dateFormat: 'yy-mm-dd',
       })
+
+      $('#single_day').click(function() {
+        $('.end-td').hide();
+        var date = new Date($('#id_start_ts').datepicker('getDate'));
+        date.setDate(date.getDate() + 1);
+        var final = formatDate(date);
+        $('#id_end_ts').val(final);
+      });
 
       if('{{ picked }}' != 'None') {
         $('#motd-input').val("{{ selected.id }}");
@@ -104,6 +119,21 @@
         e.preventDefault();
         window.location.replace("{% url 'staff:settings:helptexts' %}");
       })
+
+      function formatDate(d) {
+        var month = '' + (d.getMonth() + 1);
+        var day = '' + d.getDate();
+        var year = d.getFullYear();
+
+        if (month.length < 2) {
+          month = '0' + month;
+        }
+        if (day.length < 2) {
+          day = '0' + day;
+        }
+
+        return [year, month, day].join('-');
+      }
     });
   </script>
 {% endblock %}

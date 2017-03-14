@@ -570,7 +570,7 @@ class HelpTextForm(forms.Form):
 
 class MOTDForm(forms.Form):
     start_ts = forms.DateField(initial=datetime.date.today, required=True)
-    end_ts = forms.DateField(required=True)
+    end_ts = forms.DateField(required=False)
     message = forms.CharField(required=True)
     delay_ms = forms.IntegerField(required=True, widget=forms.HiddenInput)
 

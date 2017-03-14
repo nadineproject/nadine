@@ -101,8 +101,6 @@ def motd(request):
 
         if to_update:
             updated = MOTD.objects.get(id=to_update)
-            updated.start_ts = start_ts
-            updated.end_ts = end_ts
             updated.message = request.POST['message']
             updated.save()
             return HttpResponseRedirect(reverse('staff:tasks:todo'))

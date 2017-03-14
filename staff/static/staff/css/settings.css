@@ -35,7 +35,7 @@ table td {
 
 .motd-dates input{
   display: inline-block;
-  width: 40%;
+  max-width: 250px;
   padding-left: 2%;
   margin-bottom: 0
 }
