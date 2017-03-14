@@ -3,18 +3,18 @@ import pytz
 from datetime import date, datetime, timedelta
 from dateutil.relativedelta import relativedelta
 
+from django.conf import settings
 from django.contrib.auth.models import User
-from django.utils import timezone
 from django.db import IntegrityError, transaction
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect
+from django.forms.formsets import formset_factory
 from django.core.urlresolvers import reverse
 from django.contrib import messages
-from django.conf import settings
-from django.forms.formsets import formset_factory
+from django.utils import timezone
 
 from nadine.forms import MembershipForm, MembershipPackageForm, SubForm
 from nadine.models.membership import OldMembership, MembershipPlan, ResourceSubscription
@@ -154,7 +154,7 @@ def export_users(request):
 def security_deposits(request):
     if request.method == 'POST':
         username = request.POST.get('username')
-        today = timezone.localtime(timezone.now())
+        today = localtime(now())
         if 'mark_returned' in request.POST:
             deposit = SecurityDeposit.objects.get(pk=request.POST.get('deposit_id'))
             deposit.returned_date = today
@@ -267,15 +267,16 @@ def membership(request, username):
     SubFormSet = formset_factory(SubForm)
     package = request.GET.get('package', None)
     bill_day = request.GET.get('bill_day', user.membership.bill_day)
+    today = localtime(now()).date()
 
     if package:
         subscriptions = SubscriptionDefault.objects.filter(package=package)
-        sub_data=[{'resource': s.resource, 'allowance':s.allowance, 'start_date':timezone.now().date(), 'end_date': None, 'username': user.username, 'created_by': request.user, 'monthly_rate': s.monthly_rate, 'overage_rate': s.overage_rate, 'paid_by': None} for s in subscriptions]
+        sub_data=[{'resource': s.resource, 'allowance':s.allowance, 'start_date':today, 'end_date': None, 'username': user.username, 'created_by': request.user, 'monthly_rate': s.monthly_rate, 'overage_rate': s.overage_rate, 'paid_by': None} for s in subscriptions]
 
     if request.method == 'POST':
         if 'ending' in request.POST:
             if request.POST['ending'] == 'today':
-                end_target = datetime.now(pytz.timezone(TIME_ZONE)).date()
+                end_target = today
                 user.membership.end_all(end_target)
             elif request.POST['ending'] == 'eop':
                 user.membership.end_at_period_end()
@@ -325,7 +326,7 @@ def membership(request, username):
                                 paid_by = User.objects.get(username=paid_by_username)
 
                             if resource and start_date:
-                                new_subs.append(ResourceSubscription(created_ts=timezone.now(), created_by=request.user, resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=paid_by, membership=membership))
+                                new_subs.append(ResourceSubscription(created_ts=localtime(now()), created_by=request.user, resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=paid_by, membership=membership))
                         end_target = start - timedelta(days=1)
                         user.membership.end_all(end_target)
                         ResourceSubscription.objects.bulk_create(new_subs)
@@ -362,7 +363,7 @@ def membership(request, username):
 def old_add_membership(request, username):
     user = get_object_or_404(User, username=username)
 
-    start = today = timezone.localtime(timezone.now()).date()
+    start = today = localtime(now()).date()
     last_membership = user.profile.last_membership()
     if last_membership and last_membership.end_date and last_membership.end_date > today - timedelta(days=10):
         start = (last_membership.end_date + timedelta(days=1))
@@ -409,7 +410,7 @@ def old_membership(request, membership_id):
                                               'daily_rate': membership.daily_rate, 'has_desk': membership.has_desk, 'has_key': membership.has_key, 'has_mail': membership.has_mail,
                                               'paid_by': membership.paid_by})
 
-    today = timezone.localtime(timezone.now()).date()
+    today = localtime(now()).date()
     last = membership.next_billing_date() - timedelta(days=1)
 
     context = {'user': membership.user, 'membership': membership,
