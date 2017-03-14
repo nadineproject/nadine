@@ -19,7 +19,7 @@ from monthdelta import MonthDelta, monthmod
 
 from nadine.forms import MembershipForm, MembershipPackageForm, SubForm
 from nadine.models.membership import OldMembership, MembershipPlan, ResourceSubscription
-from nadine.models.membership import Membership, MembershipPackage, ResourceSubscription, SubscriptionDefault
+from nadine.models.membership import MemberGroups, Membership, MembershipPackage, ResourceSubscription, SubscriptionDefault
 from nadine.models.profile import MemberNote, SentEmailLog, FileUpload, SpecialDay
 from nadine.models.organization import Organization
 from nadine.forms import MemberSearchForm, MembershipForm, EventForm
