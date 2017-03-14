@@ -65,7 +65,7 @@
 				</li>
 				<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown2' id='member-tab' href="{% url 'staff:members:members' %}">Member List</a>
 					<ul id='dropdown2' class='dropdown-content'>
-						{% include 'staff/user/nav.html' %}
+						{% include 'staff/members/nav.html' %}
 					</ul>
 				</li>
 				<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown3'  id='activity-tab' href="{% url 'staff:activity:graph' %}">Activity</a>
@@ -131,7 +131,7 @@
 							<a class='collapsible-header' id='member-tab'>Member List</a>
 							<div class='collapsible-body'>
 								<ul>
-									{% include 'staff/user/nav.html' %}
+									{% include 'staff/members/nav.html' %}
 								</ul>
 							</div>
 						</li>

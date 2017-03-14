@@ -1,4 +1,4 @@
-{% extends "staff/user/base.html" %}
+{% extends "staff/member/base.html" %}
 {% load integrated_systems %}
 {% load imagetags %}
 {% load static %}
@@ -250,7 +250,7 @@ function gotoEmailReset(emailAddress){
 <!-- Memberships -->
 <div id="tabs-1">
   {% with user.membership as membership %}
-    {% include "staff/user/detail_membership.html" %}
+    {% include "staff/members/detail_membership.html" %}
   {% endwith %}
 </div>
 
@@ -262,7 +262,7 @@ function gotoEmailReset(emailAddress){
     </div>
     <!-- Billing Profile -->
     <h5>Billing Profile</h5>
-    {% include "members/profile/profile_billing_frag.html" %}
+    {% include "member/profile/profile_billing_frag.html" %}
     <div style="margin-left: 2em; margin-top: .5em;">
       <form method=POST action="{% url 'staff:billing:toggle_bill' user.username %}" onSubmit="return confirm('Are you sure?');">
         <input type="hidden" name="back" value="{{ request.get_full_path }}">

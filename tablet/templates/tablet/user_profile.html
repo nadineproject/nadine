@@ -14,7 +14,7 @@
 		</div>
 		<div class="ui-block-b">
 			<h2>{{ user.get_full_name }}</h2>
-			{% include "members/profile/profile_public.html" %}
+			{% include "member/profile/profile_public.html" %}
 			{% if membership %}
 				<h3>Visits This Cycle:
 					<span style="font-weight:normal;">{{ user.profile.activity_this_month | length }} of {{ membership.get_allowance }}</span>

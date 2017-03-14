@@ -1,4 +1,4 @@
-{% extends "staff/user/base.html" %}
+{% extends "staff/member/base.html" %}
 
 {% block sub-title %}Security Deposits{% endblock %}
 
@@ -10,14 +10,14 @@
 {% if inactive_deposits %}
 	<h5>Inactive Members</h5>
 	{% with inactive_deposits as deposits %}
-		{% include "staff/user/security_deposit_table.html" %}
+		{% include "staff/members/security_deposit_table.html" %}
 	{% endwith %}
 {% endif %}
 
 {% if active_deposits %}
 	<h5>Active Members</h5>
 	{% with active_deposits as deposits %}
-		{% include "staff/user/security_deposit_table.html" %}
+		{% include "staff/members/security_deposit_table.html" %}
 	{% endwith %}
 {% endif %}
 

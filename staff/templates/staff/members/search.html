@@ -1,4 +1,4 @@
-{% extends "staff/user/base.html" %}
+{% extends "staff/member/base.html" %}
 
 {% block sub-title %}Member Search{% endblock %}
 
@@ -7,7 +7,7 @@
 	<h4>Search results for: {{ term }}</h4>
 	{% if search_results %}
 		{% with search_results as users %}
-			{% include "staff/user/user_list_frag.html" %}
+			{% include "staff/members/user_list_frag.html" %}
 		{% endwith %}
 	{% endif %}
 

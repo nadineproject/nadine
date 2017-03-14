@@ -1,4 +1,4 @@
-{% extends "members/base.html" %}
+{% extends "member/base.html" %}
 {% load imagetags %}
 {% load static %}
 
@@ -66,7 +66,7 @@
 
 	<div class='tags-box' style="margin-top:10%;">
 		<p style='text-align:center;'> - <strong>Tags</strong> - </p>
-		{% include "members/organization/org_tags.html" %}
+		{% include "member/organization/org_tags.html" %}
 	</div>
 
 </div>
@@ -113,7 +113,7 @@
 		<!-- Website Icons -->
 		{% with organization.websites as websites %}
 		<div class='col s12 links'>
-			{% include "members/websites.html" %}
+			{% include "member/websites.html" %}
 		</div>
 		{% endwith %}
 

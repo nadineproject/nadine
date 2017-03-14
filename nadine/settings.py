@@ -167,7 +167,7 @@ except ImportError:
 #MULTIMAIL_EMAIL_VERIFICATION_URL = "https://apps.officenomads.com/mail/verify/%(emailaddress_id)s/%(verif_key)s"
 #MULTIMAIL_FROM_EMAIL_ADDRESS = 'nadine@officenomads.com"
 EMAIL_VERIFICATION_URL = ''
-EMAIL_POST_VERIFY_URL = "/members/profile/"
+EMAIL_POST_VERIFY_URL = "/member/profile/"
 
 # JSignature Settings
 JSIGNATURE_WIDTH = 500

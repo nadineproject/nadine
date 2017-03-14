@@ -1,4 +1,4 @@
-{% extends "staff/user/base.html" %}
+{% extends "staff/member/base.html" %}
 
 {% block sub-title %}Members{% endblock %}
 
@@ -23,6 +23,6 @@
 </div>
 
 <h5 id='group-header'>{{ group_name }}: <em>{{ member_count }} member{{ member_count|pluralize }}</em></h5>
-	{% include "staff/user/user_list_frag.html" %}
+	{% include "staff/members/user_list_frag.html" %}
 
 {% endblock %}

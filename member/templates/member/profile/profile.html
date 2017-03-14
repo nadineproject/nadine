@@ -1,4 +1,4 @@
-{% extends "members/base.html" %}
+{% extends "member/base.html" %}
 {% load imagetags %}
 {% load static %}
 
@@ -62,7 +62,7 @@
   </div>
   <div class='tags-box col s12' style='margin-top:5%;'>
     <p style='text-align:center;'> - <strong>Tags</strong> - </p>
-    {% include "members/profile/profile_tags.html" %}
+    {% include "member/profile/profile_tags.html" %}
   </div>
 </div>
 
@@ -70,7 +70,7 @@
   <div class='picModal-content'>
     <div class='picModal-body'>
       <div class='container' id='pic_target'>
-        {% include "members/spinner.html" %}
+        {% include "member/spinner.html" %}
       </div>
     </div>
   </div>
@@ -92,7 +92,7 @@
     </div>
 
     <div id="public_tab">
-      {% include "members/profile/profile_public.html" %}
+      {% include "member/profile/profile_public.html" %}
     </div>
 
     {% if user.username != request.user.username %}
@@ -111,43 +111,43 @@
         <li>
           <div class='collapsible-header' id="private_tab">Private Details</div>
           <div class='collapsible-body' id='private_target'>
-            {% include "members/profile/profile_private.html" %}
+            {% include "member/profile/profile_private.html" %}
           </div>
         </li>
         <li>
           <div class='collapsible-header' id='membership_tab'>Membership History</div>
           <div class='collapsible-body' id='membership_target'>
-            {% include "members/spinner.html" %}
+            {% include "member/spinner.html" %}
           </div>
         </li>
         <li>
           <div class='collapsible-header' id='orgs_tab'>Organizations</div>
           <div class='collapsible-body' id='orgs_target'>
-            {% include "members/profile/profile_orgs.html" %}
+            {% include "member/profile/profile_orgs.html" %}
           </div>
         </li>
         <li>
           <div class='collapsible-header' id='activity_tab'>Activity</div>
           <div class='collapsible-body' id='activity_target'>
-            {% include "members/spinner.html" %}
+            {% include "member/spinner.html" %}
           </div>
         </li>
         <li>
           <div class='collapsible-header' id='billing_tab'>Billing History</div>
           <div class='collapsible-body' id='billing_target'>
-            {% include "members/spinner.html" %}
+            {% include "member/spinner.html" %}
           </div>
         </li>
         <li>
           <div class='collapsible-header' id='documents_tab'>Documents</div>
           <div class='collapsible-body' id='documents_target'>
-            {% include "members/profile/profile_documents.html" %}
+            {% include "member/profile/profile_documents.html" %}
           </div>
         </li>
         <li>
           <div class='collapsible-header' id='devices_tab'>Devices</div>
           <div class='collapsible-body' id='devices_target'>
-            {% include "members/spinner.html" %}
+            {% include "member/spinner.html" %}
           </div>
         </li>
       </ul>
