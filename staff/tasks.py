@@ -24,7 +24,8 @@ def billing_task():
 
 
 # TODO
-@periodic_task(run_every=crontab(hour=1, minute=0))
+# @periodic_task(run_every=crontab(hour=1, minute=0))
+@shared_task
 def generate_bills():
     today = localtime(now()).date()
     subscriptions_ready = Subscription.objects.ready_for_billing(location=l, target_date=today)
