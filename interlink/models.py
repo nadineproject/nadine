@@ -452,7 +452,11 @@ class OutgoingMail(models.Model):
         self.save()
 
         conn = connection or self.mailing_list.get_smtp_connection()
-        conn.send_messages([msg])
+        try:
+            conn.send_messages([msg])
+        except Exception as e:
+            logger.error("Exception sending email from: %s, to: %s" % (args['from_email'], args['to']))
+            raise e
 
         if self.original_mail and self.original_mail.state != 'moderate':
             self.original_mail.state = 'sent'
