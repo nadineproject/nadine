@@ -16,8 +16,8 @@ from django.contrib import messages
 from django.utils.timezone import localtime, now
 
 from nadine.forms import MembershipForm, MembershipPackageForm, SubForm
-from nadine.models.membership import OldMembership, MembershipPlan, ResourceSubscription
-from nadine.models.membership import MemberGroups, Membership, MembershipPackage, ResourceSubscription, SubscriptionDefault
+from nadine.models.membership import OldMembership, MembershipPlan
+from nadine.models.membership import MemberGroups, Membership, MembershipPackage, ResourceSubscription, SubscriptionDefault, SecurityDeposit
 from nadine.models.profile import MemberNote, SentEmailLog, FileUpload, SpecialDay
 from nadine.models.organization import Organization
 from nadine.forms import MemberSearchForm, MembershipForm, EventForm
