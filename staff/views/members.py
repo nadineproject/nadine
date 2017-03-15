@@ -55,6 +55,9 @@ def detail(request, username):
                 year = None
             desc = request.POST.get('description')
             SpecialDay.objects.create(user=user, month=month, day=day, year=year, description=desc)
+        elif 'gen_bill' in request.POST:
+            user.membership.generate_bills()
+            messages.add_message(request, messages.ERROR, "Bill Generated")
         else:
             print(request.POST)
 

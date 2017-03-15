@@ -3,14 +3,20 @@
 <h5>Details</h5>
 <table class='mem-details-table'>
   <tr class='row-even'>
-    <th>Billing Day</th>
-    <th>Next Bill</th>
-    <th>Package</th>
+    <th class='sub-th'>Billing Day</th>
+    <th class='sub-th'>Next Bill</th>
+    <th class='sub-th'>Package</th>
+    <th class='sub-th'></th>
   </tr>
   <tr>
     <td>{{ membership.bill_day_str }}</td>
     <td>{{ membership.next_period_start }}</td>
     <td>{{ membership.package }}</td>
+    <td>
+      <!-- Doesn't work:  Must be a POST -->
+      <a class='chip' href="?gen_bill">Regenerate Bill</a>
+      <a class='chip' href="{% url 'staff:members:membership' user.username %}">Edit Membership</a>
+    </td>
   </tr>
 </table>
 
@@ -24,7 +30,6 @@
     <th class='sub-th'>Overage</th>
     <th class='sub-th'>Monthly</th>
     <th class='sub-th'>Paid By</th>
-    <th class='sub-th'></th>
   </tr>
   {% for s in membership.active_subscriptions %}
     <tr class='{% cycle "row-odd" "row-even" %}'>
@@ -35,7 +40,6 @@
       <td>${{ s.overage_rate }}</td>
       <td>${{ s.monthly_rate }}/month</td>
       <td>{{ s.paid_by|default:"" }}</td>
-      <td><a href="{% url 'staff:members:membership' user.username %}">Edit</a></td>
     </tr>
   {% endfor %}
   <tr>

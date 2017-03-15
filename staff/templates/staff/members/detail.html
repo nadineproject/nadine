@@ -59,10 +59,12 @@ function gotoEmailReset(emailAddress){
     {% endif %}
     <a href="{% url 'admin:auth_user_change' user.id %}">admin</a> |
     <a href="{% url 'member:profile:view' user.username %}">view profile</a> |
-    <a href="{% url 'member:profile:edit' user.username %}">edit profile</a> | 
-    <a href="{% url 'staff:members:membership' user.username %}">update membership</a>
-    </a>
+    <a href="{% url 'member:profile:edit' user.username %}">edit profile</a>
   </div>
+
+	{% for message in messages %}
+		<div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+	{% endfor %}
 </div>
 
 <div class="clearfix"></div>
