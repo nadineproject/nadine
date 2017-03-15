@@ -3,7 +3,8 @@ from datetime import timedelta, date
 from decimal import Decimal
 
 from django.db import models
-from django.db.models import Q, Sum
+from django.db.models import Q, Sum, Value
+from django.db.models.functions import Coalesce
 from django.utils.timezone import localtime, now
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
@@ -25,31 +26,23 @@ class UserBill(models.Model):
     def __unicode__(self):
         return "Bill %d" % self.id
 
-    def non_refund_payments(self):
-        return self.payments.filter(paid_amount__gt=0)
-
+    @property
     def total_paid(self):
-        payments = self.payment_set.all()
-        if not payments:
-            return 0
-        paid = Decimal(0)
-        for payment in payments:
-            paid = paid + payment.paid_amount
-        return paid
+        return self.payment_set.aggregate(paid=Coalesce(Sum('paid_amount'), Value(0.00)))['paid']
 
+    @property
     def total_owed(self):
-        return self.amount() - self.total_paid()
+        return self.amount - self.total_paid
 
+    @property
     def amount(self):
-        # Bill amount comes from generated bill line items
-        amount = 0
-        for line_item in self.line_items.all():
-            amount = amount + line_item.amount
-        return amount
+        return self.line_items.aggregate(amount=Coalesce(Sum('amount'), Value(0.00)))['amount']
 
+    @property
     def is_paid(self):
-        return self.total_owed() <= 0
+        return self.total_owed <= 0
 
+    @property
     def payment_date(self):
         # Date of the last payment
         last_payment = self.payments.order_by('payment_date').reverse().first()
@@ -58,9 +51,13 @@ class UserBill(models.Model):
         else:
             return None
 
+    # Not sure if I need this -- JLS
+    # def non_refund_payments(self):
+    #     return self.payments.filter(paid_amount__gt=0)
+
     def ordered_line_items(self):
         # return bill line items with custom items last
-         # custom items, then the fees
+        # custom items, then the fees
         line_items = self.line_items.filter(custom=False)
         custom_items = self.line_items.filter(custom=True)
         return list(line_items) + list(custom_items)

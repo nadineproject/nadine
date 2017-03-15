@@ -175,16 +175,6 @@ class Membership(models.Model):
             return self.organizationmembership.organization.name
         return None
 
-    # @property
-    # def payer(self):
-    #     if self.paid_by:
-    #         return self.paid_by
-    #     elif self.individualmembership:
-    #         return self.individualmembership.user
-    #     elif self.organizationmembership:
-    #         return self.organizationmembership.organization.lead
-    #     return None
-
     @property
     def active_now(self):
         return self.is_active()
@@ -196,6 +186,15 @@ class Membership(models.Model):
     @property
     def is_organization(self):
         return hasattr(self, 'organizationmembership')
+
+    @property
+    def bill_day_str(self):
+        # From http://stackoverflow.com/questions/739241/date-ordinal-output
+        if 4 <= self.bill_day <= 20 or 24 <= self.bill_day <= 30:
+            suffix = "th"
+        else:
+            suffix = ["st", "nd", "rd"][self.bill_day % 10 - 1]
+        return "%d%s" % (self.bill_day, suffix)
 
     def end_all(self, target_date=None):
         '''End all the active subscriptions.  Defaults to yesterday.'''
@@ -284,14 +283,6 @@ class Membership(models.Model):
         if not rate:
             rate = 0
         return rate
-
-    def bill_day_str(self):
-        # From http://stackoverflow.com/questions/739241/date-ordinal-output
-        if 4 <= self.bill_day <= 20 or 24 <= self.bill_day <= 30:
-            suffix = "th"
-        else:
-            suffix = ["st", "nd", "rd"][self.bill_day % 10 - 1]
-        return "%d%s" % (self.bill_day, suffix)
 
     def get_period(self, target_date=None):
         ''' Get period associated with a certain date.
@@ -419,6 +410,18 @@ class Membership(models.Model):
 
         return line_items
 
+    def delete_unpaid_bills(self):
+        for bill in self.bills.all():
+            if bill.is_paid:
+                bill.delete()
+
+    @property
+    def has_unpaid_bills(self):
+        for bill in self.bills.all():
+            if not bill.is_paid:
+                return True
+        return False
+
     # Brought over from modernomad but not ported yet
     # def generate_all_bills(self, target_date=None):
     #     today = localtime(now()).date()
@@ -512,17 +515,6 @@ class Membership(models.Model):
     #         if b.is_paid() or (include_partial and b.total_paid() > 0):
     #             return paid_until_end
     #     return b.period_start
-    #
-    # def delete_unpaid_bills(self):
-    #     for bill in self.bills.all():
-    #         if bill.total_paid() == 0:
-    #             bill.delete()
-    #
-    # def has_unpaid_bills(self):
-    #     for bill in self.bills.all():
-    #         if not bill.is_paid():
-    #             return True
-    #     return False
     #
     # def update_for_end_date(self, new_end_date):
     #     ''' deletes and regenerates bills after a change in end date'''
