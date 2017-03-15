@@ -11,11 +11,19 @@ class Migration(migrations.Migration):
         ('member', '0002_motd'),
     ]
 
+    forwardSQL = " \
+        DROP TABLE member_motd; \
+        ALTER TABLE members_motd RENAME TO member_motd; \
+        DROP TABLE member_helptext; \
+        ALTER TABLE members_helptext RENAME TO member_helptext; \
+        DROP TABLE member_usernotification; \
+        ALTER TABLE members_usernotification RENAME TO member_usernotification; \
+    "
+
+    reverseSQL = migrations.RunSQL.noop
+
     operations = [
-        migrations.RunSQL("DROP TABLE member_motd"),
-        migrations.RunSQL("ALTER TABLE members_motd RENAME TO member_motd"),
-        migrations.RunSQL("DROP TABLE member_helptext"),
-        migrations.RunSQL("ALTER TABLE members_helptext RENAME TO member_helptext"),
-        migrations.RunSQL("DROP TABLE member_usernotification"),
-        migrations.RunSQL("ALTER TABLE members_usernotification RENAME TO member_usernotification"),
+        # Only needed if you are migrating from an earlier version of Nadine
+        # TODO - remove soon
+        # migrations.RunSQL(sql=forwardSQL, reverse_sql=reverseSQL)
     ]
