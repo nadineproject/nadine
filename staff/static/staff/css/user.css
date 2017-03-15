@@ -6,6 +6,10 @@ caption {
   margin-bottom: 10px;
 }
 
+/*input[type=date] {
+  width: 85%;
+}*/
+
 table td {
   border-bottom: none;
   text-align: inherit;
@@ -174,8 +178,20 @@ input#id_bill_day {
   width: 100%;
 }
 
+td.up-input.date {
+  max-width: 145px !important;
+}
+
 td.up-input.resource {
-  width: 15% !important;
+  width: 12% !important;
+}
+
+td.up-input.paying {
+  width: 10% !important;
+}
+
+td.up-input.rate {
+  width: 8%;
 }
 
 .add-submit strong {
@@ -220,8 +236,11 @@ td.up-input.resource {
 	margin-left: 3%;
 }
 
-.delete {
+.end-today, .end-eop, .end-select {
   background-color: RGBA(158, 89, 88, 1.00);
+  color: white;
+  font-size: .9em;
+  padding: 0 10px;
 }
 
 .detail-header {
@@ -245,7 +264,7 @@ td.up-input.resource {
 
 .edit-td {
   padding-top: 2%;
-  width: 12%;
+  width: 23%;
 }
 
 .email-form {
@@ -431,7 +450,8 @@ td.up-input.resource {
 }
 
 .up-table {
-  margin-top: 2%;
+  margin-left: 2%;
+  margin-top: 1%;
 }
 
 .up-table-th, .sub-th {
@@ -442,6 +462,10 @@ td.up-input.resource {
 
 .up-table-th th {
   border-radius: 0px;
+}
+
+.update-submit {
+  margin-left: 30%;
 }
 
 .user-report {

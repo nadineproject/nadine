@@ -45,8 +45,12 @@ def membership_packages(request):
 @staff_member_required
 def helptexts(request):
     helps = HelpText.objects.all()
-    latest = HelpText.objects.filter().order_by('-order')[0]
-    latest_order = latest.order + 1
+    if helps:
+        latest = HelpText.objects.filter().order_by('-order')[0]
+        latest_order = latest.order + 1
+    else:
+        latest = None
+        latest_order = 0
     selected = None
     message = None
     selected_help = request.GET.get('selected_help', None)

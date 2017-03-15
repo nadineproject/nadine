@@ -57,6 +57,7 @@
 
 <div id='update-package'>
   <h5>Update Current Subscriptions</h5>
+  <span class='cancel' style='margin-left: 90%;'>Cancel</span>
   <form action='.' method='POST'>
     <table class='up-table'>
       <tr class='up-table-th'>
@@ -67,7 +68,7 @@
         <th class='rate'>Monthly Rate</th>
         <th class='rate'>Overage Rate</th>
         <th>Paid By</th>
-        <th></th>
+        <th>Add / End Subscription</th>
       </tr>
       {% for r in entity.membership.active_subscriptions %}
       <tr class="{% cycle 'row-even' 'row-odd' %} subs">
@@ -76,17 +77,17 @@
           <input name='update' type='hidden' value='update' />
           <td class='up-input resource'><strong>{{ r.resource }}</strong></td>
           <td class='up-input allowance'><input type='number' value='{{ r.allowance }}' name='allowance' min='0' readonly /></td>
-          <td class='up-input'><input type='date' name='start_date' value='{{ r.start_date|date:"Y-m-d" }}' readonly  /></td>
-          <td class='up-input'><input class='end_date-{{ r.id }}' name='end_date' type='date' value='{{ r.end_date|date:"Y-m-d" }}' readonly  /></td>
+          <td class='up-input date'><input type='date' name='start_date' value='{{ r.start_date|date:"Y-m-d" }}' readonly  /></td>
+          <td class='up-input date'><input class='end_date-{{ r.id }}' name='end_date' type='date' value='{{ r.end_date|date:"Y-m-d" }}' readonly  /></td>
           <td class='up-input rate monthly_rate'><input type='number' name='monthly_rate' min='0' value='{{ r.monthly_rate }}' readonly /></td>
           <td class='up-input rate'><input type='number' name='overage_rate' value='{{ r.overage_rate }}' readonly /></td>
-          <td class='up-input'><input type='text' name='paid_by' class='paying_user' value='{{ r.paid_by }}' readonly /></td>
+          <td class='up-input paying'><input type='text' name='paid_by' class='paying_user' value='{{ r.paid_by }}' readonly /></td>
           <td class='edit-td'>
-            <a class='edit-a btn-floating' id='edit-{{ r.id }}'><strong>Edit</strong></a>
-            {% if r.end_date %} {% else %}
-            |
-            <a class='delete btn-floating' id='delete-{{ r.id }}'><strong> End</strong></a>
-            {% endif %}
+            <div class='end_a-{{ r.id }}'>
+              <a class='end-today end-sub chip' id='today-{{ r.id }}'>Today</a>
+               | <a class='end-eop end-sub chip' id='eop-{{ r.id }}'>EoBP</a>
+               | <a class='end-select end-sub chip' id='select-{{ r.id }}'>Select</a>
+            </div>
             {% csrf_token %}
             <button class='update-submit' id='submit-{{ r.id }}' type='submit'>Submit</button>
           </td>
@@ -288,8 +289,6 @@
     // $('.username_td').val('{{ entity.username }}');
     $('.created_by_td').val('{{ request.user }}');
 
-    console.log('{{ package }}');
-
     $('.sub-formset').formset({
       addText:'Add Another',
       deleteText: 'Remove'
@@ -358,34 +357,77 @@
       $('.curr-sub').hide();
     })
 
-    $('.edit-a').on('click', function(e) {
-      e.preventDefault();
-      var temp = $(this)[0].id
+    $('.end-sub').on('click', function(e) {
+      var temp = $(this)[0].id;
       var actId = temp.split('-')[1];
-      $(this).parent().siblings().children().removeAttr('readonly');
-      $(this).parent().siblings().css('background-color', 'RGBA(195, 195, 195, .10)');
-      $(this).parent().css('background-color', 'RGBA(195, 195, 195, .10)');
-
-      $('#submit-' + actId).show();
-      $('#delete-' + actId).hide();
-      $('#edit-' + actId).hide();
-    })
-
-    $('.delete').on('click', function(e) {
-      var temp = $(this)[0].id
-      var actId = temp.split('-')[1];
-      $('#submit-' + actId).show();
-      $('#delete-' + actId).hide();
-      $('#edit-' + actId).hide();
-
-      var today = formatDate()
-      $('.end_date-'+ actId).addClass('datepicker');
       $('.end_date-'+ actId).removeAttr('readonly');
-      $('.end_date-'+ actId).val(today)
+      var period = temp.split('-')[0];
+
+      if (period === 'today') {
+        var date = new Date();
+        var today = formatDate(date);
+        $('.end_date-'+ actId).val(today);
+      } else if (period === 'eop') {
+        var d = new Date();
+        var bd = '{{ bill_day }}';
+        if (d.getDate() < bd) {
+          var month = (d.getMonth() + 1);
+          var day = (bd - 1);
+        } else {
+          var month = (d.getMonth() + 2);
+          var day = (bd - 1);
+        }
+          var year = d.getFullYear();
+
+          //if January, increase year by one
+          if ( month === 1) {
+            year = year + 1;
+          }
+
+          //if date is 0, then change to correct date by checking the month
+          if (day === 0) {
+            if (month === 3) {
+              month ='0' + 2;
+              day = 28;
+            } else if (month === 1){
+              month = 12;
+              day = 31;
+            } else if (month === 5 || month === 7 || month === 10 || month === 12) {
+              var sm = [5, 7, 10, 12];
+              sm.forEach(function(i) {
+                if (i == month) {
+                  month = i - 1;
+                  day = 30;
+                }
+              })
+            } else {
+              month = month - 1;
+              day = 31;
+            }
+          }
+
+          //make sure formatting is correct
+          if (month < 10) {
+            month = '0' + month;
+          }
+          if (day < 10) {
+            day = '0' + day;
+          }
+
+          var date = [year, month, day].join('-');
+          $('.end_date-'+ actId).val(date);
+      } else if (period === 'select') {
+        $('.end_date-'+ actId).addClass('datepicker');
+        $('.datepicker').datepicker({
+          dateFormat: 'yy-mm-dd',
+        });
+        $('.end_date-' + actId).datepicker('show');
+      }
+      $('.end_a-' + actId).hide();
+      $('#submit-' + actId).show();
     })
 
-    function formatDate() {
-      var d = new Date();
+    function formatDate(d) {
       var month = '' + (d.getMonth() + 1);
       var day = '' + d.getDate();
       var year = d.getFullYear();

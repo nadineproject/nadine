@@ -11,6 +11,6 @@
 
 -Testing links:
   - of Members App:
-    casperjs test frontend_testing/tests.linktesting.js --username='YOUR_USERNAME' --password='YOUR_PASSWORD' --path='/member/'
+    casperjs test frontend-testing/tests.linktesting.js --username='YOUR_USERNAME' --password='YOUR_PASSWORD' --path='/member/'
   - of Staff application
-    casperjs test frontend_testing/tests.linktesting.js --username='YOUR_USERNAME' --password='YOUR_PASSWORD' --path='/staff/'
+    casperjs test frontend-testing/tests.linktesting.js --username='YOUR_USERNAME' --password='YOUR_PASSWORD' --path='/staff/'

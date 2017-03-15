@@ -66,6 +66,10 @@ table td {
   margin-left: 4%;
 }
 
+#cancel {
+  color: RGBA(28, 164, 230, 1.00);
+}
+
 #help-input, #motd-input {
   width: 30%;
   display: inline-block;

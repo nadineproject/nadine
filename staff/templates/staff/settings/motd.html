@@ -64,10 +64,11 @@
     {{ motd_form.delay_ms }}
     <br />
     {% if selected %}
-      <input type='submit' class='btn' value='Update Message for {{ selected.start_ts|date:"m-d-Y" }} to {{ selected.end_ts|date:"m-d-Y" }}' />
-      <button id='cancel' class='btn help-btn'>Cancel</button>
+      <input type='submit' class='btn' style='margin-left: 15%;' value='Update Message for {{ selected.start_ts|date:"m-d-Y" }} to {{ selected.end_ts|date:"m-d-Y" }}' />
+      <span id='cancel' class='help-btn'>Cancel</span>
     {% else %}
-      <input type='submit' class='btn' value='Post New Message' />
+      <input type='submit' class='btn' value='Post New Message' style='margin-left: 25%;'/>
+      <span id='cancel' class='help-btn'>Cancel</span>
     {% endif %}
     {% csrf_token %}
   </form>
@@ -91,7 +92,7 @@
       })
 
       $('#single_day').click(function() {
-        $('.end-td').hide();
+        $('.end-td').toggle();
         var date = new Date($('#id_start_ts').datepicker('getDate'));
         date.setDate(date.getDate() + 1);
         var final = formatDate(date);
@@ -117,7 +118,7 @@
 
       $('#cancel').on('click', function(e) {
         e.preventDefault();
-        window.location.replace("{% url 'staff:settings:helptexts' %}");
+        window.location.replace("{% url 'staff:settings:motd' %}");
       })
 
       function formatDate(d) {
