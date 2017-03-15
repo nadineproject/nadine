@@ -31,6 +31,7 @@ from django.contrib.sites.models import Site
 
 from resource import Resource
 from organization import Organization
+# from nadine.models import billing
 
 logger = logging.getLogger(__name__)
 
@@ -264,13 +265,25 @@ class Membership(models.Model):
         future_ending = Q(end_date__gte=target_date)
         return self.subscriptions.filter().filter(current & (unending | future_ending)).distinct()
 
-    def active_subscriptions_by_payer(self, target_date=None):
+    def subscriptions_by_payer(self, target_date=None):
+        ''' Pull the active subscriptions for given target_date and group them by payer '''
         subscriptions = {}
         for s in self.active_subscriptions(target_date):
-            if not hasattr(s.payer, subscription):
-                subscriptions[s.payer] = []
-            subscriptions[s.payer].append(s)
+            key = s.payer.username
+            if not hasattr(subscriptions, key):
+                subscriptions[key] = []
+            subscriptions[key].append(s)
         return subscriptions
+
+    def bills_by_payer(self, period_start, period_end):
+        ''' Pull the existing bills for a given period and group them by payer '''
+        bills = {}
+        from billing import UserBill
+        for b in UserBill.objects.filter(membership=self, period_start__lte=period_start, period_end__gte=period_end):
+            if hasattr(bills, b.user.username):
+                raise Exception('Error: multiple bills for one user/date')
+            bills[b.user.username] = b
+        return bills
 
     def is_active(self, target_date=None):
         return self.active_subscriptions(target_date).count() > 0
@@ -349,73 +362,111 @@ class Membership(models.Model):
 
         return next_period_start
 
-    def generate_bill(self, delete_old_items=True, target_date=None):
+    def generate_bill(self, target_date=None):
         if not target_date:
             target_date = localtime(now()).date()
 
+        # Calculate the period this bill covers
         period_start, period_end = self.get_period(target_date)
         if not period_start:
             return None
         logger.debug('in generate_bill for target_date = %s and get_period = (%s, %s)' % (target_date, period_start, period_end))
 
-        try:
-            from billing import UserBill
-            bill = UserBill.objects.get(membership=self, period_start=period_start)
-            logger.debug('Found existing bill #%d for period start %s' % (bill.id, period_start.strftime("%B %d %Y")))
-            # if the bill already exists but the end date is different, we need to prorate
-            if bill.period_end != period_end:
-                bill.period_end = period_end
-                bill.save()
-            # If we already have a bill and we don't want to clear out the old data
-            # we can stop right here and go with the existing line items.
-            if not delete_old_items:
-                return list(bill.line_items)
-        except Exception, e:
-            pass
+        # This method builds up a dictionary called new_bills
+        # by looping through the membership/subscription data 4 times.
+        # The key is the user who will pay the bill, the value is another dict
+        # new_bills = {
+        #     'payer1': {
+        #         'bill': UserBill
+        #         'subscriptions': [ ResourceSubscriptions ]
+        #         'line_items': [ BillLineItems() ]
+        #         'custom_items': [ BillLineItems(custom=True) ]
+        #     }
+        #     'payer2': {}
+        # }
+        new_bills = {}
 
-        logger.debug("Generating new bill item")
-        bill = UserBill.objects.create(
-            user = self.payer,
-            membership = self,
-            period_start = period_start,
-            period_end = period_end
-        )
+        # LOOP 1 = Pull the active subscriptions
+        for payer, subscriptions in self.subscriptions_by_payer(target_date).items():
+            new_bills[payer] = {'subscriptions': subscriptions}
 
-        # Save any custom line items before clearing out the old items
-        logger.debug("Working with bill %d (%s)" % (bill.id, bill.period_start.strftime("%B %d %Y")))
-        custom_items = list(bill.line_items.filter(custom=True))
+        # LOOP 2 = Check for existing bills & payments
+        # Pull the existing bills and check for payments
+        # Note: At this point no changes have been made in case of Exceptions
+        existing_bills = self.bills_by_payer(period_start, period_end)
+        for payer, bill in existing_bills.items():
+            logger.debug('Found existing bill #%d for payer %s and period start %s' % (bill.id, bill.user, period_start.strftime("%B %d %Y")))
+            if bill.total_paid > 0:
+                raise Exception("Attempting to generate new bill when payments are already applied!")
+            new_bills[payer]['bill'] = bill
 
-        # Clear out old items if that's what we are doing here
-        if delete_old_items:
-            if bill.total_paid() > 0:
-                logger.warn("modifying a bill with payments on it.")
-            for item in bill.line_items.all():
-                item.delete()
+        # LOOP 3 = Clean or create UserBills
+        # All clear so we can loop again and clean the existing bills
+        # or create new bills if there weren't any existing ones
+        for payer, new_bill in new_bills.items():
+            if hasattr(new_bill, 'bill'):
+                bill = new_bill['bill']
 
-        # Generate our new line items
-        monthly_items = []
-        activity_items = []
-        for s in self.active_subscriptions(target_date):
-            monthly_items.extend(s.monthly_line_items(bill))
-            if s.resource.is_trackable():
-                activity_items.extend(s.activity_line_items(bill))
+                # if the bill already exists but the end date is different, it's because we need to prorate
+                if bill.period_end != period_end:
+                    bill.period_end = period_end
+                    bill.save()
 
-        # Add them all up (in this specific order)
-        line_items = monthly_items.extend(activity_items).extend(custom_items)
+                # Save any custom line items before clearing out the old items
+                new_bill['custom_items'] = list(bill.line_items.filter(custom=True))
 
-        # Save this beautiful bill
-        bill.save()
-        for item in line_items:
-            item.save()
+                # Clean out all the existing line items
+                for item in bill.line_items.all():
+                    item.delete()
+            else:
+                # Create a new UserBill object
+                logger.debug("Generating new bill for %s" % payer)
+                user = User.objects.get(username=payer)
+                from billing import UserBill
+                bill = UserBill.objects.create(
+                    user = user,
+                    membership = self,
+                    period_start = period_start,
+                    period_end = period_end
+                )
+                new_bill['bill'] = bill
 
-        return line_items
+        # LOOP 4 = Generate Line Items
+        for new_bill in new_bills.values():
+            bill = new_bill['bill']
+            monthly_items = []
+            activity_items = []
+            for s in new_bill['subscriptions']:
+                monthly_items.append(s.monthly_line_item(bill))
+                if s.resource.is_trackable():
+                    activity_line = s.activity_line_item(bill)
+                    if activity_line:
+                        activity_items.append(activity_line)
+
+            # Add them all up (in this specific order)
+            new_bill['line_items'] = monthly_items
+            new_bill['line_items'].extend(activity_items)
+            if hasattr(new_bill, 'custom_items'):
+                new_bill['line_items'].extend(new_bill['custom_items'])
+
+        print new_bills
+
+        # LOOP 5 = Save this beautiful bill
+        for new_bill in new_bills.values():
+            bill = new_bill['bill']
+            bill.save()
+            for item in new_bill['line_items']:
+                item.save()
+
+        # We've worked so hard to build up this pretty little dictionary
+        # we might as well return it!
+        return new_bills
 
     def delete_unpaid_bills(self):
         for bill in self.bills.all():
             if bill.is_paid:
                 bill.delete()
 
-    @property
     def has_unpaid_bills(self):
         for bill in self.bills.all():
             if not bill.is_paid:
@@ -464,19 +515,6 @@ class Membership(models.Model):
     #         if not d:
     #             break
     #     return bills
-    #
-    # def get_bill_for_date(self, date):
-    #     result = SubscriptionBill.objects.filter(subscription=self, period_start__lte=date, period_end__gte=date)
-    #     logger.debug('subscription %d: get_bill_for_date %s' % (self.id, date))
-    #     logger.debug('bill object(s):')
-    #     logger.debug(result)
-    #     if result.count():
-    #         if result.count() > 1:
-    #             logger.debug("Warning! Multiple bills found for one date. This shouldn't happen")
-    #             raise Exception('Error: multiple bills for one date:')
-    #         return result[0]
-    #     else:
-    #         return None
     #
     # def days_between(self, start, end):
     #     ''' return the number of days of this subscription that occur between start and end dates'''
@@ -619,19 +657,20 @@ class ResourceSubscription(models.Model):
         return Decimal(prorate_days) / period_days
 
     def monthly_line_item(self, bill):
-        desc = "Monthly " + str(resource) + " "
+        from billing import BillLineItem
+        desc = "Monthly " + str(self.resource) + " "
         if self.description:
             desc += self.description + " "
         desc += "(%s to %s)" % (bill.period_start, bill.period_end)
-        amount = self.prorate_for_period(period_start, period_end) * self.monthly_rate
-        line_item = BillLineItem(bill=bill, description=desc, amount=price)
+        amount = self.prorate_for_period(bill.period_start, bill.period_end) * self.monthly_rate
+        line_item = BillLineItem(bill=bill, description=desc, amount=amount)
         return line_item
 
     def activity_line_item(self, bill):
-        desc = "Activity " + str(resource) + " "
+        desc = "Activity " + str(self.resource) + " "
         start = bill.period_start - timedelta(days=1)
         # TODO - complete --JLS
-        return []
+        return None
 
 
 class SecurityDeposit(models.Model):
