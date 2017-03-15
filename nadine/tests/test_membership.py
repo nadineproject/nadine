@@ -17,6 +17,7 @@ yesterday = today - timedelta(days=1)
 tomorrow = today + timedelta(days=1)
 one_month_from_now = today + relativedelta(months=1)
 one_month_ago = today - relativedelta(months=1)
+two_months_ago = today - relativedelta(months=2)
 
 class MembershipTestCase(TestCase):
 
@@ -336,15 +337,26 @@ class MembershipTestCase(TestCase):
         self.assertEquals("31st", membership.bill_day_str)
 
     def test_generate_bill(self):
+        user = User.objects.create(username='user_gen', first_name='Test', last_name='Generate')
+        membership = user.membership
+        ResourceSubscription.objects.create(
+            membership = membership,
+            resource = self.test_resource,
+            start_date = two_months_ago,
+            monthly_rate = 100.00,
+            overage_rate = 0,
+        )
+
         # Assume that if we generate a bill we will have a bill
-        self.assertEquals(0, self.membership1.bills.count())
-        self.membership1.generate_bill(target_date=today)
-        self.assertEquals(1, self.membership1.bills.count())
+        self.assertEquals(0, membership.bills.count())
+        membership.generate_bill(target_date=today)
+        self.assertEquals(1, membership.bills.count())
 
-        bill = self.membership1.bills.first()
-        self.assertEquals(self.membership1.monthly_rate, bill.amount())
+        bill = membership.bills.first()
+        self.assertEquals(user, bill.user)
+        self.assertEquals(membership.monthly_rate(), bill.amount)
 
-        ps, pe = self.membership1.get_period(target_date=today)
+        ps, pe = membership.get_period(target_date=today)
         self.assertEquals(ps, bill.period_start)
         self.assertEquals(pe, bill.period_end)
 

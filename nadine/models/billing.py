@@ -54,13 +54,19 @@ class UserBill(models.Model):
     # Not sure if I need this -- JLS
     # def non_refund_payments(self):
     #     return self.payments.filter(paid_amount__gt=0)
-
-    def ordered_line_items(self):
-        # return bill line items with custom items last
-        # custom items, then the fees
-        line_items = self.line_items.filter(custom=False)
-        custom_items = self.line_items.filter(custom=True)
-        return list(line_items) + list(custom_items)
+    #
+    # Not sure if we need this either if we create them in the right order
+    # and pull them ordering by ID
+    # def ordered_line_items(self):
+    #     # return bill line items with custom items last
+    #     # custom items, then the fees
+    #     line_items = self.line_items.filter(custom=False)
+    #     custom_items = self.line_items.filter(custom=True)
+    #     return list(line_items) + list(custom_items)
+    #
+    # def delete_non_custom_items(self):
+    #     for i in self.line_items.filter(custom=False):
+    #         i.delete()
 
 
 class BillLineItem(models.Model):
