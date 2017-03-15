@@ -16,18 +16,18 @@
 
 <h5>Subscriptions</h5>
 <table class='sub-table'>
-  <tr class='row-even'>
-    <th>Resource</th>
-    <th>Allowance</th>
-    <th>Start Date</th>
-    <th>End Date</th>
-    <th>Overage</th>
-    <th>Monthly</th>
-    <th>Paid By</th>
-    <th></th>
+  <tr>
+    <th class='sub-th'>Resource</th>
+    <th class='sub-th'>Allowance</th>
+    <th class='sub-th'>Start Date</th>
+    <th class='sub-th'>End Date</th>
+    <th class='sub-th'>Overage</th>
+    <th class='sub-th'>Monthly</th>
+    <th class='sub-th'>Paid By</th>
+    <th class='sub-th'></th>
   </tr>
   {% for s in membership.active_subscriptions %}
-    <tr>
+    <tr class='{% cycle "row-odd" "row-even" %}'>
       <td>{{ s.resource }}</td>
       <td>{{ s.allowance }}</td>
       <td>{{ s.start_date }}</td>
@@ -35,7 +35,7 @@
       <td>${{ s.overage_rate }}</td>
       <td>${{ s.monthly_rate }}/month</td>
       <td>{{ s.paid_by|default:"" }}</td>
-      <td><a href="">Edit</a></td>
+      <td><a href="{% url 'staff:members:membership' user.username %}">Edit</a></td>
     </tr>
   {% endfor %}
   <tr>
