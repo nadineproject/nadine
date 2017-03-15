@@ -108,8 +108,6 @@ def members(request, group=None):
 @staff_member_required
 def org_list(request):
     orgs = Organization.objects.active_organizations().order_by('name')
-    for org in orgs:
-        print org.members
     context = {
         'organizations': orgs,
     }
