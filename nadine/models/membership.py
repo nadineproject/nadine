@@ -404,7 +404,7 @@ class Membership(models.Model):
         # All clear so we can loop again and clean the existing bills
         # or create new bills if there weren't any existing ones
         for payer, new_bill in new_bills.items():
-            if hasattr(new_bill, 'bill'):
+            if 'bill' in new_bill:
                 bill = new_bill['bill']
 
                 # if the bill already exists but the end date is different, it's because we need to prorate
@@ -446,10 +446,8 @@ class Membership(models.Model):
             # Add them all up (in this specific order)
             new_bill['line_items'] = monthly_items
             new_bill['line_items'].extend(activity_items)
-            if hasattr(new_bill, 'custom_items'):
+            if 'custom_items' in new_bill:
                 new_bill['line_items'].extend(new_bill['custom_items'])
-
-        print new_bills
 
         # LOOP 5 = Save this beautiful bill
         for new_bill in new_bills.values():
@@ -662,7 +660,10 @@ class ResourceSubscription(models.Model):
         if self.description:
             desc += self.description + " "
         desc += "(%s to %s)" % (bill.period_start, bill.period_end)
-        amount = self.prorate_for_period(bill.period_start, bill.period_end) * self.monthly_rate
+        logger.debug("description: %s" % desc)
+        prorate = self.prorate_for_period(bill.period_start, bill.period_end)
+        logger.debug("prorate = %f" % prorate)
+        amount = prorate * self.monthly_rate
         line_item = BillLineItem(bill=bill, description=desc, amount=amount)
         return line_item
 

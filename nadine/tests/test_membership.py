@@ -337,9 +337,10 @@ class MembershipTestCase(TestCase):
         self.assertEquals("31st", membership.bill_day_str)
 
     def test_generate_bill(self):
-        user = User.objects.create(username='user_gen', first_name='Test', last_name='Generate')
-        membership = user.membership
-        ResourceSubscription.objects.create(
+        user1 = User.objects.create(username='user_gen1', first_name='Gen', last_name='One')
+        user2 = User.objects.create(username='user_gen2', first_name='Gen', last_name='Two')
+        membership = user1.membership
+        subscription = ResourceSubscription.objects.create(
             membership = membership,
             resource = self.test_resource,
             start_date = two_months_ago,
@@ -352,13 +353,28 @@ class MembershipTestCase(TestCase):
         membership.generate_bill(target_date=today)
         self.assertEquals(1, membership.bills.count())
 
+        # Check all the bill values
         bill = membership.bills.first()
-        self.assertEquals(user, bill.user)
+        self.assertEquals(user1, bill.user)
         self.assertEquals(membership.monthly_rate(), bill.amount)
-
         ps, pe = membership.get_period(target_date=today)
         self.assertEquals(ps, bill.period_start)
         self.assertEquals(pe, bill.period_end)
+
+        # Run it again and test it doesn't create another bill
+        membership.generate_bill(target_date=today)
+        self.assertEquals(1, membership.bills.count())
+        self.assertEquals(membership.monthly_rate(), bill.amount)
+
+        # Change the date and regenrate the bill
+        # TODO - seems prorating like this doesn't work --JLS
+        # subscription.start_date = today + timedelta(days=5)
+        # subscription.save()
+        # membership.generate_bill(target_date=today)
+        # self.assertEquals(1, membership.bills.count())
+        # bill = membership.bills.first()
+        # print bill.amount
+        # self.assertTrue(membership.monthly_rate() > bill.amount)
 
     # TODO
     # def test_generate_all_bills(self):
