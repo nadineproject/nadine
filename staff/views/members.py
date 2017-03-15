@@ -108,6 +108,8 @@ def members(request, group=None):
 @staff_member_required
 def org_list(request):
     orgs = Organization.objects.active_organizations().order_by('name')
+    for org in orgs:
+        print org.members
     context = {
         'organizations': orgs,
     }
@@ -294,7 +296,7 @@ def membership(request, username):
                 paid_by_username = request.POST['paid_by']
                 s.paid_by = User.objects.get(username=paid_by_username)
             s.save()
-            return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}))
+            return HttpResponseRedirect(reverse('staff:members:membership', kwargs={'username': username}))
         elif 'add' in request.POST:
             add_form = SubForm(request.POST)
             if add_form.is_valid():

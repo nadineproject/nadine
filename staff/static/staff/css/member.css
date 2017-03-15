@@ -320,6 +320,10 @@ td.up-input.rate {
 	display: inline-block !important;
 }
 
+.lead-td {
+  width: 20%;
+}
+
 .left-title {
 	width: 12%;
 	font-weight: bold;
@@ -372,6 +376,10 @@ td.up-input.rate {
 	width: 75%;
 	height: 5%;
   text-align: left;
+}
+
+.org_name_td {
+  width: 20%;
 }
 
 .page-message {

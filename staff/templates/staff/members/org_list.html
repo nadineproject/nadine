@@ -1,4 +1,5 @@
 {% extends "staff/members/base.html" %}
+{% load imagetags %}
 
 {% block sub-title %}Members{% endblock %}
 
@@ -6,20 +7,28 @@
 
 <h4>Organization List [<i>{{ organizations|length }} total</i> ]</h4>
 
-<table class="member-table">
+<table class="member-table" style='margin-bottom: 5%;'>
   <tr>
     <th class='left'>Name</th>
+    <th></th>
     <th>Billing Date</th>
     <th>Quicklinks</th>
-    <th>Members</th>
+    <th>Lead</th>
   </tr>
 
   {% for org in organizations %}
-    <tr>
-      <td><a href="{% url 'staff:members:organization' org.id %}">{{ org.name }}</a></td>
+    <tr class='{% cycle "row-even" "row-odd" %}'>
+      <td class='org_name_td'><a href="{% url 'staff:members:organization' org.id %}">{{ org.name }}</a></td>
+      <td id='photo-td' class='centered'>
+        {% if org.photo %}
+        <img class='member-table-photo' src="{{ org.photo.url|fit_image:'48x48' }}" />
+        {% endif %}
+      </td>
       <td></td>
       <td></td>
-      <td></td>
+      <td class='lead-td'>
+        <a href="{% url 'staff:members:detail' org.lead.username %}">{{ org.lead.get_full_name }}</a>
+      </td>
     </tr>
   {% endfor %}
 </table>
