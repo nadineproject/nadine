@@ -38,7 +38,7 @@
       <th class='sub-th'>Paid By</th>
     </tr>
     {% for s in entity.membership.active_subscriptions %}
-      <tr>
+      <tr class='{% cycle "row-even" "row-odd" %}'>
         <td>{{ s.resource }}</td>
         <td>{{ s.allowance }}</td>
         <td>{{ s.start_date }}</td>
@@ -129,6 +129,7 @@
     </table>
     {% csrf_token %}
   </form>
+<span style='margin-left: 3%;'>*EoBP: Ends subscription at the end of current billing period</span>
 </div>
 
 <div id='end-package'>
