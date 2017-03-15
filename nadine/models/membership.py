@@ -365,7 +365,6 @@ class Membership(models.Model):
         period_start, period_end = self.get_period(target_date)
         if not period_start:
             return None
-        logger.debug(' ')
         logger.debug('in generate_bill for target_date = %s and get_period = (%s, %s)' % (target_date, period_start, period_end))
 
         try:
@@ -398,7 +397,7 @@ class Membership(models.Model):
         # Clear out old items if that's what we are doing here
         if delete_old_items:
             if bill.total_paid() > 0:
-                logger.debug("Warning: modifying a bill with payments on it.")
+                logger.warn("modifying a bill with payments on it.")
             for item in bill.line_items.all():
                 item.delete()
 
@@ -566,7 +565,16 @@ class OrganizationMembership(Membership):
         return '%s: %s' % (self.organization, self.subscriptions.all())
 
 
+class SubscriptionManager(models.Manager):
+
+    def active_subscriptions(self, user, period_start, period_end):
+        # TODO
+        pass
+
+
 class ResourceSubscription(models.Model):
+    objects = SubscriptionManager()
+
     created_ts = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name="+", null=True)
     resource = models.ForeignKey(Resource)
