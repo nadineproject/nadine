@@ -313,27 +313,27 @@ class MembershipTestCase(TestCase):
     def test_bill_day_str(self):
         membership = self.user1.membership
         membership.bill_day = 1
-        self.assertEquals("1st", membership.bill_day_str())
+        self.assertEquals("1st", membership.bill_day_str)
         membership.bill_day = 2
-        self.assertEquals("2nd", membership.bill_day_str())
+        self.assertEquals("2nd", membership.bill_day_str)
         membership.bill_day = 3
-        self.assertEquals("3rd", membership.bill_day_str())
+        self.assertEquals("3rd", membership.bill_day_str)
         membership.bill_day = 5
-        self.assertEquals("5th", membership.bill_day_str())
+        self.assertEquals("5th", membership.bill_day_str)
         membership.bill_day = 11
-        self.assertEquals("11th", membership.bill_day_str())
+        self.assertEquals("11th", membership.bill_day_str)
         membership.bill_day = 21
-        self.assertEquals("21st", membership.bill_day_str())
+        self.assertEquals("21st", membership.bill_day_str)
         membership.bill_day = 22
-        self.assertEquals("22nd", membership.bill_day_str())
+        self.assertEquals("22nd", membership.bill_day_str)
         membership.bill_day = 23
-        self.assertEquals("23rd", membership.bill_day_str())
+        self.assertEquals("23rd", membership.bill_day_str)
         membership.bill_day = 25
-        self.assertEquals("25th", membership.bill_day_str())
+        self.assertEquals("25th", membership.bill_day_str)
         membership.bill_day = 30
-        self.assertEquals("30th", membership.bill_day_str())
+        self.assertEquals("30th", membership.bill_day_str)
         membership.bill_day = 31
-        self.assertEquals("31st", membership.bill_day_str())
+        self.assertEquals("31st", membership.bill_day_str)
 
     def test_generate_bill(self):
         # Assume that if we generate a bill we will have a bill
