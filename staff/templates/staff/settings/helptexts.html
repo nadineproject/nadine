@@ -104,7 +104,7 @@
     {% csrf_token %}
     {% if selected %}
       <button style='display:inline-block;' type='submit' class='btn help-btn'>Update '{{ selected.title }}'</button>
-      <button id='cancel' class='btn help-btn'>Cancel</button>
+      <span id='cancel' class='help-btn'>Cancel</span>
     {% else %}
       <button type='submit' class='btn help-btn'>Add New Help Text</button>
     {% endif %}

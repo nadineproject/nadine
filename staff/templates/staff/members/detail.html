@@ -63,7 +63,8 @@ function gotoEmailReset(emailAddress){
   </div>
 
 	{% for message in messages %}
-		<div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+    <!-- What if messages live in #top-content or chips? -->
+		<div style='margin-top: 5%; font-weight: bold; margin-left:' {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
 	{% endfor %}
 </div>
 

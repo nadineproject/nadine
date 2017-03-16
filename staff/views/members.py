@@ -336,6 +336,7 @@ def membership(request, username):
                     messages.error(request, 'There was an error updating the subscriptions')
             else:
                 print sub_formset.errors
+                messages.error(request, 'There was an error updating the subscriptions')
     else:
         package_form = MembershipPackageForm()
         sub_formset = SubFormSet(initial=sub_data)
