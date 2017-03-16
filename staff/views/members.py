@@ -60,7 +60,6 @@ def detail(request, username):
             messages.add_message(request, messages.ERROR, "Bill Generated")
         else:
             print(request.POST)
-
     staff_members = User.objects.filter(is_staff=True).order_by('id').reverse()
     email_keys = email.valid_message_keys()
     email_keys.remove("all")

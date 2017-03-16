@@ -1,7 +1,9 @@
 {% extends "staff/members/base.html" %}
 
 {% block content %}
-<h5 style='margin-top: 0;'>Current Package Details</h5>
+<h4>Membership for <a href="{% url 'staff:members:detail' entity.username %}">{{ entity.get_full_name }}</a></h4>
+
+<h5 style='margin-top: 5%;'>Current Package Details</h5>
 <table class='mem-details-table'>
   <tr>
     <th class='sub-th'>Billing Day</th>
@@ -57,8 +59,36 @@
 
 <div id='update-package'>
   <h5>Update Current Subscriptions</h5>
-  <span class='cancel' style='margin-left: 90%;'>Cancel</span>
   <form action='.' method='POST'>
+    <table class='end-table'>
+      <tr>
+        <td id='end-header'>
+          <strong>When do you want the changes to go in effect?</strong>
+        </td>
+        <td id='select-end-td'>
+          <select name='ending' id='select-end'>
+            <option disabled selected="true">
+              Select One
+            </option>
+            <option value='today'>
+              Today
+            </option>
+            <option value='eop'>
+              End of This Bill Period
+            </option>
+            <option value='other'>
+              Other
+            </option>
+          </select>
+        </td>
+        <td style='width:30%;'>
+          <input id='sub-end' name='date-end' class='datepicker' placeholder="Select Date" />
+        </td>
+        <td style='padding-top:2%;'>
+          <span class='cancel'>Cancel</span>
+        </td>
+      </tr>
+    </table>
     <table class='up-table'>
       <tr class='up-table-th'>
         <th>Resource</th>
@@ -78,18 +108,13 @@
           <td class='up-input resource'><strong>{{ r.resource }}</strong></td>
           <td class='up-input allowance'><input type='number' value='{{ r.allowance }}' name='allowance' min='0' readonly /></td>
           <td class='up-input date'><input type='date' name='start_date' value='{{ r.start_date|date:"Y-m-d" }}' readonly  /></td>
-          <td class='up-input date'><input class='end_date-{{ r.id }}' name='end_date' type='date' value='{{ r.end_date|date:"Y-m-d" }}' readonly  /></td>
+          <td class='up-input date'><input class='end_date-{{ r.id }} update-end' name='end_date' type='date' value='{{ r.end_date|date:"Y-m-d" }}' readonly  /></td>
           <td class='up-input rate monthly_rate'><input type='number' name='monthly_rate' min='0' value='{{ r.monthly_rate }}' readonly /></td>
           <td class='up-input rate'><input type='number' name='overage_rate' value='{{ r.overage_rate }}' readonly /></td>
           <td class='up-input paying'><input type='text' name='paid_by' class='paying_user' value='{{ r.paid_by }}' readonly /></td>
           <td class='edit-td'>
-            <div class='end_a-{{ r.id }}'>
-              <a class='end-today end-sub chip' id='today-{{ r.id }}'>Today</a>
-               | <a class='end-eop end-sub chip' id='eop-{{ r.id }}'>EoBP</a>
-               | <a class='end-select end-sub chip' id='select-{{ r.id }}'>Select</a>
-            </div>
             {% csrf_token %}
-            <button class='update-submit' id='submit-{{ r.id }}' type='submit'>Submit</button>
+            <button class='update-submit' id='submit-{{ r.id }}' type='submit'>End</button>
           </td>
         </form>
 			</tr>
@@ -129,7 +154,7 @@
     </table>
     {% csrf_token %}
   </form>
-<span style='margin-left: 3%;'>*EoBP: Ends subscription at the end of current billing period</span>
+<!-- <span style='margin-left: 3%;'>*EoBP: Ends subscription at the end of current billing period</span> -->
 </div>
 
 <div id='end-package'>
@@ -281,38 +306,68 @@
     $('#update-package').hide();
     $('#end-package').hide();
     $('#date-end').hide();
+    $('#sub-end').hide();
     $('.update-submit').hide()
     $('#id_created_by').val('{{ request.user }}');
     $('#id_bill_day').val('{{ bill_day }}');
     $('#id_username').val('{{ entity.username }}')
     $('.start_date').addClass('datepicker');
     $('.end_date').addClass('datepicker');
-    // $('.username_td').val('{{ entity.username }}');
     $('.created_by_td').val('{{ request.user }}');
-
-    $('.sub-formset').formset({
-      addText:'Add Another',
-      deleteText: 'Remove'
-    })
 
     $('.datepicker').datepicker({
       dateFormat: 'yy-mm-dd',
     });
 
-    $('.delete-row').addClass('btn-floating btn-large btn');
+  //JS for changing package
+    $('#change').on('click', function(e) {
+      e.preventDefault();
+      $('#change-package').show();
+      $('#end-package').hide();
+      $('#update-package').hide();
+      $('.curr-sub').hide();
+    })
 
+    //Formset functionality for changing membership package
+    $('.sub-formset').formset({
+      addText:'Add Another',
+      deleteText: 'Remove'
+    })
+
+    //Setting up the view if there is a selected package
+    if( package != 'None') {
+      $('#change-package').show();
+      $('#new-package').val('{{ package }}');
+      $('#id_bill_day').val('{{ bill_day }}');
+      $('.curr-sub').hide();
+      $('#id_package > option').each(function() {
+        if($(this).val() == '{{ package }}') {
+          $(this).attr('selected', 'selected');
+        }
+      })
+    }
+
+    $('.delete-row').addClass('btn-floating btn-large btn');
     $('.delete-row').on('click', function(e) {
       e.preventDefault();
       $(this).closest('tr').remove();
     })
 
-    $('#select-end').on('change', function() {
-      if($('#select-end').val() == 'other') {
-        $('#date-end').show();
-      }
+    $('#id_package').on('change', function() {
+      package = $(this).val();
+      $('#id_package > option').each(function() {
+        if($(this).val() == package ) {
+          $(this).attr('selected', 'selected');
+        }
+      })
+      $('.change-form').submit();
+    });
+
+    $('#id_bill_day').on('change', function() {
+      $('.change-form').submit();
     })
 
-		$('.add-row').on('click', function(e) {
+    $('.add-row').on('click', function(e) {
 			$('.delete-row').addClass('btn-floating btn-large btn');
       $('.username_td').val('{{ entity.username }}');
       $('.created_by_td').val('{{ request.user }}');
@@ -330,26 +385,7 @@
       })
 		});
 
-    if( package != 'None') {
-      $('#change-package').show();
-      $('#new-package').val('{{ package }}');
-      $('#id_bill_day').val('{{ bill_day }}');
-      $('.curr-sub').hide();
-      $('#id_package > option').each(function() {
-        if($(this).val() == '{{ package }}') {
-          $(this).attr('selected', 'selected');
-        }
-      })
-    }
-
-    $('#change').on('click', function(e) {
-      e.preventDefault();
-      $('#change-package').show();
-      $('#end-package').hide();
-      $('#update-package').hide();
-      $('.curr-sub').hide();
-    })
-
+  //Updating subscription functionality
     $('#update').on('click', function(e) {
       e.preventDefault();
       $('#update-package').show();
@@ -358,17 +394,26 @@
       $('.curr-sub').hide();
     })
 
-    $('.end-sub').on('click', function(e) {
-      var temp = $(this)[0].id;
-      var actId = temp.split('-')[1];
-      $('.end_date-'+ actId).removeAttr('readonly');
-      var period = temp.split('-')[0];
+    $('#sub-end').on('change', function() {
+      $('.update-end').val($('#sub-end').val());
+      $('.update-submit').show()
+    })
 
-      if (period === 'today') {
+    $('#select-end').on('change', function() {
+      var period = $('#select-end').val();
+
+      if(period == 'other') {
+        $('#sub-end').show();
+      }
+
+      if (period == 'today') {
         var date = new Date();
         var today = formatDate(date);
-        $('.end_date-'+ actId).val(today);
-      } else if (period === 'eop') {
+        $('.update-end').val(today);
+        $('.update-submit').show();
+        $('#sub-end').hide();
+      } else if (period == 'eop') {
+        $('#sub-end').hide();
         var d = new Date();
         var bd = '{{ bill_day }}';
         if (d.getDate() < bd) {
@@ -416,16 +461,9 @@
           }
 
           var date = [year, month, day].join('-');
-          $('.end_date-'+ actId).val(date);
-      } else if (period === 'select') {
-        $('.end_date-'+ actId).addClass('datepicker');
-        $('.datepicker').datepicker({
-          dateFormat: 'yy-mm-dd',
-        });
-        $('.end_date-' + actId).datepicker('show');
+          $('.update-end').val(date);
+          $('.update-submit').show()
       }
-      $('.end_a-' + actId).hide();
-      $('#submit-' + actId).show();
     })
 
     function formatDate(d) {
@@ -443,6 +481,7 @@
       return [year, month, day].join('-');
     }
 
+  //JS for ending membership package
     $('#end').on('click', function(e) {
       e.preventDefault();
       $('#end-package').show();
@@ -450,26 +489,10 @@
       $('#change-package').hide();
     })
 
-    $('#id_package').on('change', function() {
-      package = $(this).val();
-      $('#id_package > option').each(function() {
-        if($(this).val() == package ) {
-          $(this).attr('selected', 'selected');
-        }
-      })
-      $('.change-form').submit();
-    });
-
-    $('#id_bill_day').on('change', function() {
-      $('.change-form').submit();
-    })
-
-
     $('.cancel').on('click', function(e) {
       e.preventDefault();
       window.location.replace("{% url 'staff:members:membership' entity.username %}");
     })
   });
-
 </script>
 {% endblock %}
