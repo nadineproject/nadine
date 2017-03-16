@@ -57,6 +57,7 @@ textarea.bcc-textarea {
   width:40%;
   padding-top: 2%;
   font-size: 1.2em;
+  color: RGBA(140, 79, 78, 1.00);
 }
 
 #end-package td {
@@ -207,6 +208,10 @@ td.up-input.rate {
   margin-left: 30%;
 }
 
+.add-submit:hover {
+  background-color: RGBA(16, 91, 99, 1.00);
+}
+
 .add-submit strong, .update-submit strong {
   font-size: 1.3em;
 }
@@ -254,6 +259,10 @@ td.up-input.rate {
   color: white;
 }
 
+.update-submit:hover {
+  background-color: red;
+}
+
 .detail-header {
   margin-top: 0;
   border-bottom: none;
@@ -275,7 +284,7 @@ td.up-input.rate {
 
 .edit-td {
   padding-top: 2%;
-  width: 23%;
+  width: 20%;
 }
 
 .email-form {
