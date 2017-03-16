@@ -37,6 +37,7 @@ textarea.bcc-textarea {
 #date-end {
   width: 25%;
   margin-left: 5%;
+  margin-bottom: 0;
 }
 
 #deposit_table {
@@ -53,7 +54,8 @@ textarea.bcc-textarea {
 }
 
 #end-header {
-  /*width:20%;*/
+  width:40%;
+  padding-top: 2%;
 }
 
 #end-package td {
@@ -166,7 +168,13 @@ input#id_bill_day {
 }
 
 #select-end-td {
-  /*width: 30%;*/
+  width: 20%;
+}
+
+#sub-end {
+  width: 40%;
+  margin-left: 5%;
+  margin-bottom: 0;
 }
 
 #subject-th {
@@ -289,6 +297,10 @@ td.up-input.rate {
   font-style: italic;
   color:red;
   padding-left: 2em;
+}
+
+.end-table {
+  margin-left: 2%;
 }
 
 .epay-link {
