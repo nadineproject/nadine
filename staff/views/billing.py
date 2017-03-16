@@ -143,10 +143,16 @@ def bill_list(request):
     start_date = date(year=starteo.tm_year, month=starteo.tm_mon, day=starteo.tm_mday)
     endeo = timeo.strptime(end, "%Y-%m-%d")
     end_date = date(year=endeo.tm_year, month=endeo.tm_mon, day=endeo.tm_mday)
-    bills = OldBill.objects.filter(bill_date__range=(start_date, end_date), amount__gt=0).order_by('bill_date').reverse()
-    total_amount = bills.aggregate(s=Sum('amount'))['s']
-    context = {'bills': bills, 'total_amount': total_amount,
-        'date_range_form': date_range_form, 'start_date': start_date, 'end_date': end_date}
+    bills = UserBill.objects.filter(period_start__range=(start_date, end_date)).order_by('period_start').reverse()
+    # total_amount = bills.aggregate(s=Sum('amount'))['s']
+    total_amount = 100.00
+    context = {
+        'bills': bills,
+        'total_amount': total_amount,
+        'date_range_form': date_range_form,
+        'start_date': start_date,
+        'end_date': end_date
+    }
     return render(request, 'staff/billing/bill_list.html', context)
 
 
