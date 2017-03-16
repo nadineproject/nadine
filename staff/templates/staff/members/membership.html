@@ -114,7 +114,7 @@
           <td class='up-input paying'><input type='text' name='paid_by' class='paying_user' value='{{ r.paid_by }}' readonly /></td>
           <td class='edit-td'>
             {% csrf_token %}
-            <button class='update-submit' id='submit-{{ r.id }}' type='submit'>End</button>
+            <button class='update-submit btn-floating' id='submit-{{ r.id }}' type='submit'><strong>End</strong></button>
           </td>
         </form>
 			</tr>
@@ -145,7 +145,7 @@
           <td>
             {{ add_form.paid_by }}
           </td>
-          <td>
+          <td class='edit-td'>
             {% csrf_token %}
             <button class='add-submit btn-floating' type='submit'><strong>Add</strong></button>
           </td>
@@ -395,7 +395,7 @@
     })
 
     $('#sub-end').on('change', function() {
-      $('.update-end').val($('#sub-end').val());
+      $('.add_date #id_start_date').val($('#sub-end').val())
       $('.update-submit').show()
     })
 
@@ -404,12 +404,14 @@
 
       if(period == 'other') {
         $('#sub-end').show();
+        $('#sub-end').datepicker('show');
       }
 
       if (period == 'today') {
         var date = new Date();
         var today = formatDate(date);
         $('.update-end').val(today);
+        $('.add_date #id_start_date').val(today)
         $('.update-submit').show();
         $('#sub-end').hide();
       } else if (period == 'eop') {
@@ -418,9 +420,11 @@
         var bd = '{{ bill_day }}';
         if (d.getDate() < bd) {
           var month = (d.getMonth() + 1);
+          var bd_month = month;
           var day = (bd - 1);
         } else {
           var month = (d.getMonth() + 2);
+          var bd_month = month;
           var day = (bd - 1);
         }
           var year = d.getFullYear();
@@ -461,7 +465,9 @@
           }
 
           var date = [year, month, day].join('-');
+          var bd_date = [year, bd_month, bd].join('-');
           $('.update-end').val(date);
+          $('.add_date #id_start_date').val(bd_date)
           $('.update-submit').show()
       }
     })

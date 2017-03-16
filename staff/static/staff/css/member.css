@@ -203,7 +203,11 @@ td.up-input.rate {
   width: 8%;
 }
 
-.add-submit strong {
+.add-submit {
+  margin-left: 30%;
+}
+
+.add-submit strong, .update-submit strong {
   font-size: 1.3em;
 }
 
@@ -245,11 +249,9 @@ td.up-input.rate {
 	margin-left: 3%;
 }
 
-.end-today, .end-eop, .end-select {
+.update-submit {
   background-color: RGBA(158, 89, 88, 1.00);
   color: white;
-  font-size: .9em;
-  padding: 0 10px;
 }
 
 .detail-header {
