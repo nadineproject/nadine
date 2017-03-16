@@ -5,7 +5,7 @@
 {% block content %}
 
 <h4>Bill List</h4>
-{% url 'staff:bill_list' as date_range_form_action %}
+{% url 'staff:bills' as date_range_form_action %}
 <div class="columns clearfix date-range">
 	{% include "staff/date_range_form.html"%}
 </div>
@@ -13,38 +13,38 @@
 {% if bills %}
 	<table>
 		<tr>
-			<th colspan="3"></th>
-			<th colspan="2">Previous Month</th>
-			<th colspan="2"></th>
-		</tr>
-		<tr>
-			<th>Date</th>
+			<th>ID</th>
+			<th>Generated</th>
 			<th>Member</th>
+			<th>Period Start</th>
+			<th>Period End</th>
 			<th>Membership</th>
-			<th>Drop-ins</th>
-			<th>Guests</th>
+			<th>Lines</th>
 			<th class="amount">Amount</th>
-			<th>&nbsp;</th>
+			<th class="amount">Paid</th>
+			<!-- <th>&nbsp;</th> -->
 		</tr>
 
 		{% for bill in bills %}
 			<tr class="{% cycle 'row-even' 'row-odd' %}">
-				<td><a href="{% url 'staff:billing:bill' bill.id %}">{{ bill.bill_date|date:"m/d/y" }}</a></td>
+				<td><a href="{% url 'staff:billing:bill' bill.id %}">{{ bill.id }}</a></td>
+				<td>{{ bill.generated_on|date:"m/d/y" }}</a></td>
 				<td><a href="{% url 'staff:members:detail' bill.user.username %}">{{ bill.user.get_full_name }}</a></td>
-				<td>{{ bill.membership.membership_plan }}</td>
-				<td>{{ bill.dropins.all | length }}</td>
-				<td>{{ bill.guest_dropins.all | length }}</td>
+				<td>{{ bill.period_start }}</td>
+				<td>{{ bill.period_end }}</td>
+				<td>
+					{% if bill.membership %}
+						<a href="{% url 'staff:members:membership' user.username %}">{{ bill.membership.package }}</a>
+					{% else %}
+						None
+					{% endif %}
+				</td>
+				<td>{{ bill.line_items.all | length }}</td>
 				<td class="amount">${{ bill.amount }}</td>
-				<td><a href="{{ bill.get_admin_url }}">edit</a></td>
+				<td class="amount">${{ bill.total_paid }}</td>
+				<!-- <td><a href="{{ bill.get_admin_url }}">edit</a></td> -->
 			</tr>
 		{% endfor %}
-
-		<tr>
-			<th colspan="5">{{ bills|length}} Total Bills</th>
-			<th class="amount">${{total_amount}}</th>
-			<th>&nbsp;</th>
-		</tr>
-	</table>
 {% else %}
 	<p>There are no bills for this period.</p>
 {% endif %}

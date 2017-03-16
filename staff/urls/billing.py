@@ -6,14 +6,16 @@ from staff.views import core
 from staff.views import billing, payment
 
 urlpatterns = [
-    url(r'^bills/$', billing.bills, name='bills'),
-    url(r'^bill/list/$', billing.bill_list, name='bill_list'),
-    url(r'^bill/(?P<id>\d+)/$', billing.bill, name='bill'),
+    url(r'^bills/$', billing.bill_list, name='bills'),
+    url(r'^bills/outstanding/$', billing.outstanding, name='outstanding'),
+    url(r'^bill/(?P<bill_id>\d+)/$', billing.bill_view, name='bill'),
+    url(r'^pay_all/(?P<username>[^/]+)/$', billing.bills_pay_all, name='bills_paid'),
+    url(r'^toggle_billing_flag/(?P<username>[^/]+)/$', billing.toggle_billing_flag, name='toggle_bill'),
+
+    # TODO - Old and shoudl be removed
+    url(r'^run/$', billing.run_billing, name='run'),
     url(r'^transactions/$', billing.transactions, name='transactions'),
     url(r'^transaction/(?P<id>\d+)/$', billing.transaction, name='transaction'),
-    url(r'^pay_all/(?P<username>[^/]+)/$', billing.bills_pay_all, name='bills_paid'),
-    url(r'^run/$', billing.run_billing, name='run'),
-    url(r'^toggle_billing_flag/(?P<username>[^/]+)/$', billing.toggle_billing_flag, name='toggle_bill'),
 
     url(r'^bills/(?P<username>[^/]+)/$', billing.user_bills, name='user_bills'),
     url(r'^transactions/(?P<username>[^/]+)/$', billing.user_transactions, name='user_transactions'),

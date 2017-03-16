@@ -1,0 +1,55 @@
+<body>
+  <table cellspacing="0" cellpadding="0" border="0">
+      <tr>
+        <td width="600px" align="center" style="font-size:140%;">
+          <strong>RECEIPT - {% if bill.is_paid %} PAID {% else %} UNPAID {% endif %}</strong>
+        </td>
+      </tr>
+
+      <tr><td margin="0 0 1.6em 0" style="font-size:120%;">Bill for {{ bill.user.get_full_name }}</td></tr>
+      <tr><td>
+        <table border="0" cellspacing="0" cellpadding="0" border="0">
+          <tr><td width="20px"><strong>Bill Date:</strong></td><td width="150px"> {{ bill.generated_on|date:"M d, Y" }}</td></tr>
+          <tr><td width="20px"><strong>Location:</strong></td><td width="150px"> {{ site.name }}</td></tr>
+          <tr><td width="20px"><strong>Period:</strong></td><td width="150px"> {{ bill.period_start }} <i>to</i> {{ bill.period_end }}</td></tr>
+          {% if bill_url %}
+            <tr><td width="150px"><a href="{{ bill_url }}">View Online</a></td></tr>
+          {% endif %}
+        </table>
+      </td></tr>
+
+      <tr><td width="600px"><p margin="1.6em 0 1.6em 0"><hr></p></td></tr>
+
+      <tr><td width="600px">
+        <table border="0" width="400px" cellspacing="0" cellpadding="0" border="0">
+        <tr>
+            <th style="text-align: left; width:200px">Description</th>
+            <th style="text-align: right;">Amount</th>
+        </tr>
+        {% for line_item in bill.line_items.all %}
+            <tr>
+                <td>{{ line_item.description }}</td>
+                <td style="text-align: right;">${{ line_item.amount|floatformat:2 }}</td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="2" style="text-align: right;">
+                {% if bill.total_owed == 0 %}
+                    <strong>Total Paid:</strong> ${{ bill.total_paid|floatformat:2 }}
+                {% else %}
+                    <strong>Total Owed:</strong> ${{ bill.total_owed|floatformat:2 }}
+                {% endif %}
+            </td>
+        </table>
+      </td></tr>
+
+      <tr><td width="600px"><p margin="1.6em 0 1.6em 0"><hr></p></td></tr>
+
+      <tr><td width="600px">
+        <p style="margin: 1em 0 0 0;">
+          Thank you!<br/>
+          The {{ site.name }} Team<br/>
+        </p>
+    </td></tr>
+  </table>
+</body>

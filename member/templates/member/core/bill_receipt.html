@@ -1,0 +1,8 @@
+{% extends "member/base.html" %}
+
+{% block content %}
+
+<!-- The HTML is in an email template  so it matches what gets mailed out -->
+{{ receipt_html|safe }}
+
+{% endblock %}

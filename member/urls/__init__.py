@@ -8,6 +8,7 @@ urlpatterns = [
     url(r'^faq/$', core.faq, name='faq'),
     url(r'^help/(?P<slug>[^/]+)/$', core.help_topic, name='help'),
     url(r'^view/$', core.view_members, name='members'),
+    url(r'^receipt/(?P<bill_id>\d+)$', core.bill_receipt, name='receipt'),
     url(r'^register/$', core.register, name='register'),
     url(r'^manage/(?P<username>[^/]+)/$', core.manage_member, name='manage'),
     url(r'^not_active/$', core.not_active, name='not_active'),

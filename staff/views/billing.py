@@ -46,14 +46,14 @@ def run_billing(request):
         run_billing_form = RunBillingForm(request.POST)
         if run_billing_form.is_valid():
             billing.run_billing()
-            page_message = 'At your request, I have run <a href="%s">the bills</a>.' % (reverse('staff:billing:bills', args=[], kwargs={}),)
+            page_message = 'At your request, I have run <a href="%s">the bills</a>.' % (reverse('staff:billing:outstanding', args=[], kwargs={}),)
     logs = BillingLog.objects.all()[:10]
     context = {'run_billing_form': run_billing_form, 'page_message': page_message, "billing_logs": logs}
     return render(request, 'staff/billing/run_billing.html', context)
 
 
 @staff_member_required
-def bills(request):
+def outstanding(request):
     page_message = None
     if request.method == 'POST':
         action = request.POST.get("action", "Set Paid")
@@ -130,7 +130,7 @@ def bills_pay_all(request, username):
         if 'next' in request.POST:
             next_url = request.POST.get("next")
         else:
-            next_url = reverse('staff:billing:bills')
+            next_url = reverse('staff:billing:outstanding')
 
     return HttpResponseRedirect(next_url)
 
@@ -143,10 +143,16 @@ def bill_list(request):
     start_date = date(year=starteo.tm_year, month=starteo.tm_mon, day=starteo.tm_mday)
     endeo = timeo.strptime(end, "%Y-%m-%d")
     end_date = date(year=endeo.tm_year, month=endeo.tm_mon, day=endeo.tm_mday)
-    bills = OldBill.objects.filter(bill_date__range=(start_date, end_date), amount__gt=0).order_by('bill_date').reverse()
-    total_amount = bills.aggregate(s=Sum('amount'))['s']
-    context = {'bills': bills, 'total_amount': total_amount,
-        'date_range_form': date_range_form, 'start_date': start_date, 'end_date': end_date}
+    bills = UserBill.objects.filter(period_start__range=(start_date, end_date)).order_by('period_start').reverse()
+    # total_amount = bills.aggregate(s=Sum('amount'))['s']
+    total_amount = 100.00
+    context = {
+        'bills': bills,
+        'total_amount': total_amount,
+        'date_range_form': date_range_form,
+        'start_date': start_date,
+        'end_date': end_date
+    }
     return render(request, 'staff/billing/bill_list.html', context)
 
 
@@ -166,14 +172,14 @@ def toggle_billing_flag(request, username):
 
     if 'back' in request.POST:
         return HttpResponseRedirect(request.POST.get('back'))
-    return HttpResponseRedirect(reverse('staff:billing:bills'))
+    return HttpResponseRedirect(reverse('staff:billing:outstanding'))
 
 
 @staff_member_required
-def bill(request, id):
-    bill = get_object_or_404(OldBill, pk=id)
-    context = {"bill": bill, 'new_member_deposit': settings.NEW_MEMBER_DEPOSIT}
-    return render(request, 'staff/billing/bill.html', context)
+def bill_view(request, bill_id):
+    bill = get_object_or_404(UserBill, id=bill_id)
+    context = {"bill": bill}
+    return render(request, 'staff/billing/bill_view.html', context)
 
 
 @staff_member_required
