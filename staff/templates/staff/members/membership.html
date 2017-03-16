@@ -1,7 +1,9 @@
 {% extends "staff/members/base.html" %}
 
 {% block content %}
-<h5 style='margin-top: 0;'>Current Package Details</h5>
+<h4>Membership for <a href="{% url 'staff:members:detail' entity.username %}">{{ entity.get_full_name }}</a></h4>
+
+<h5 style='margin-top: 5%;'>Current Package Details</h5>
 <table class='mem-details-table'>
   <tr>
     <th class='sub-th'>Billing Day</th>
@@ -111,11 +113,6 @@
           <td class='up-input rate'><input type='number' name='overage_rate' value='{{ r.overage_rate }}' readonly /></td>
           <td class='up-input paying'><input type='text' name='paid_by' class='paying_user' value='{{ r.paid_by }}' readonly /></td>
           <td class='edit-td'>
-            <!-- <div class='end_a-{{ r.id }}'>
-              <a class='end-today end-sub chip' id='today-{{ r.id }}'>Today</a>
-               | <a class='end-eop end-sub chip' id='eop-{{ r.id }}'>EoBP</a>
-               | <a class='end-select end-sub chip' id='select-{{ r.id }}'>Select</a>
-            </div> -->
             {% csrf_token %}
             <button class='update-submit' id='submit-{{ r.id }}' type='submit'>End</button>
           </td>
@@ -316,23 +313,85 @@
     $('#id_username').val('{{ entity.username }}')
     $('.start_date').addClass('datepicker');
     $('.end_date').addClass('datepicker');
-    // $('.username_td').val('{{ entity.username }}');
     $('.created_by_td').val('{{ request.user }}');
-
-    $('.sub-formset').formset({
-      addText:'Add Another',
-      deleteText: 'Remove'
-    })
 
     $('.datepicker').datepicker({
       dateFormat: 'yy-mm-dd',
     });
 
-    $('.delete-row').addClass('btn-floating btn-large btn');
+  //JS for changing package
+    $('#change').on('click', function(e) {
+      e.preventDefault();
+      $('#change-package').show();
+      $('#end-package').hide();
+      $('#update-package').hide();
+      $('.curr-sub').hide();
+    })
 
+    //Formset functionality for changing membership package
+    $('.sub-formset').formset({
+      addText:'Add Another',
+      deleteText: 'Remove'
+    })
+
+    //Setting up the view if there is a selected package
+    if( package != 'None') {
+      $('#change-package').show();
+      $('#new-package').val('{{ package }}');
+      $('#id_bill_day').val('{{ bill_day }}');
+      $('.curr-sub').hide();
+      $('#id_package > option').each(function() {
+        if($(this).val() == '{{ package }}') {
+          $(this).attr('selected', 'selected');
+        }
+      })
+    }
+
+    $('.delete-row').addClass('btn-floating btn-large btn');
     $('.delete-row').on('click', function(e) {
       e.preventDefault();
       $(this).closest('tr').remove();
+    })
+
+    $('#id_package').on('change', function() {
+      package = $(this).val();
+      $('#id_package > option').each(function() {
+        if($(this).val() == package ) {
+          $(this).attr('selected', 'selected');
+        }
+      })
+      $('.change-form').submit();
+    });
+
+    $('#id_bill_day').on('change', function() {
+      $('.change-form').submit();
+    })
+
+    $('.add-row').on('click', function(e) {
+			$('.delete-row').addClass('btn-floating btn-large btn');
+      $('.username_td').val('{{ entity.username }}');
+      $('.created_by_td').val('{{ request.user }}');
+      $('.ur_bill_day').val('{{ bill_day }}');
+      $('.chosen_package').val('{{ package }}');
+      $('.thr_username').val('{{ entity.username }}')
+
+      $('.datepicker').datepicker({
+        dateFormat: 'yy-mm-dd',
+      });
+
+      $('.delete-row').on('click', function(e) {
+        e.preventDefault();
+        $(this).closest('tr').remove();
+      })
+		});
+
+  //Updating subscription functionality
+    $('#update').on('click', function(e) {
+      e.preventDefault();
+      $('#update-package').show();
+      $('#end-package').hide();
+      $('#change-package').hide();
+      $('.curr-sub').hide();
     })
 
     $('#sub-end').on('change', function() {
@@ -407,52 +466,6 @@
       }
     })
 
-		$('.add-row').on('click', function(e) {
-			$('.delete-row').addClass('btn-floating btn-large btn');
-      $('.username_td').val('{{ entity.username }}');
-      $('.created_by_td').val('{{ request.user }}');
-      $('.ur_bill_day').val('{{ bill_day }}');
-      $('.chosen_package').val('{{ package }}');
-      $('.thr_username').val('{{ entity.username }}')
-
-      $('.datepicker').datepicker({
-        dateFormat: 'yy-mm-dd',
-      });
-
-      $('.delete-row').on('click', function(e) {
-        e.preventDefault();
-        $(this).closest('tr').remove();
-      })
-		});
-
-    if( package != 'None') {
-      $('#change-package').show();
-      $('#new-package').val('{{ package }}');
-      $('#id_bill_day').val('{{ bill_day }}');
-      $('.curr-sub').hide();
-      $('#id_package > option').each(function() {
-        if($(this).val() == '{{ package }}') {
-          $(this).attr('selected', 'selected');
-        }
-      })
-    }
-
-    $('#change').on('click', function(e) {
-      e.preventDefault();
-      $('#change-package').show();
-      $('#end-package').hide();
-      $('#update-package').hide();
-      $('.curr-sub').hide();
-    })
-
-    $('#update').on('click', function(e) {
-      e.preventDefault();
-      $('#update-package').show();
-      $('#end-package').hide();
-      $('#change-package').hide();
-      $('.curr-sub').hide();
-    })
-
     function formatDate(d) {
       var month = '' + (d.getMonth() + 1);
       var day = '' + d.getDate();
@@ -468,6 +481,7 @@
       return [year, month, day].join('-');
     }
 
+  //JS for ending membership package
     $('#end').on('click', function(e) {
       e.preventDefault();
       $('#end-package').show();
@@ -475,26 +489,10 @@
       $('#change-package').hide();
     })
 
-    $('#id_package').on('change', function() {
-      package = $(this).val();
-      $('#id_package > option').each(function() {
-        if($(this).val() == package ) {
-          $(this).attr('selected', 'selected');
-        }
-      })
-      $('.change-form').submit();
-    });
-
-    $('#id_bill_day').on('change', function() {
-      $('.change-form').submit();
-    })
-
-
     $('.cancel').on('click', function(e) {
       e.preventDefault();
       window.location.replace("{% url 'staff:members:membership' entity.username %}");
     })
   });
-
 </script>
 {% endblock %}
