@@ -66,7 +66,7 @@
           <strong>When do you want the changes to go in effect?</strong>
         </td>
         <td id='select-end-td'>
-          <select name='ending' id='select-end'>
+          <select name='ending' id='end-input'>
             <option disabled selected="true">
               Select One
             </option>
@@ -208,9 +208,6 @@
         {{ package_form.username }}
         <td>
         </td>
-        <!-- <td id='start'>
-          <button class='btn' style='display:inline-block;'>Start</button>
-        </td> -->
       </tr>
     </table>
   </form>
@@ -399,8 +396,8 @@
       $('.update-submit').show()
     })
 
-    $('#select-end').on('change', function() {
-      var period = $('#select-end').val();
+    $('#end-input').on('change', function() {
+      var period = $('#end-input').val();
 
       if(period == 'other') {
         $('#sub-end').show();
@@ -493,6 +490,13 @@
       $('#end-package').show();
       $('#update-package').hide();
       $('#change-package').hide();
+    })
+
+    $('#select-end').change(function(){
+      if ($('#select-end').val() == 'other') {
+        $('#date-end').show();
+        $('#date-end').datepicker('show');
+      }
     })
 
     $('.cancel').on('click', function(e) {
