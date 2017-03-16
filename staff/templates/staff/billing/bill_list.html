@@ -5,7 +5,7 @@
 {% block content %}
 
 <h4>Bill List</h4>
-{% url 'staff:bill_list' as date_range_form_action %}
+{% url 'staff:bills' as date_range_form_action %}
 <div class="columns clearfix date-range">
 	{% include "staff/date_range_form.html"%}
 </div>
