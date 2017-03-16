@@ -5,16 +5,19 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.sites.models import Site
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404, HttpRequest
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from django.template import Template, Context, RequestContext
+from django.template.loader import get_template
 
 from nadine import email
 from nadine.utils import mailgun
 from nadine.models.profile import UserProfile
 from nadine.models.usage import CoworkingDay
+from nadine.models.billing import UserBill
 # from nadine.models.resource import Room
 # from nadine.models.payment import Transaction
 from nadine.models.alerts import MemberAlert
@@ -143,6 +146,33 @@ def view_members(request):
                'has_mail': has_mail
                }
     return render(request, 'member/core/view_members.html', context)
+
+
+@login_required
+def bill_receipt(request, bill_id):
+    bill = get_object_or_404(UserBill, id=bill_id)
+
+    # Only the bill's user or staff can view the receipt.
+    # If anyone else wants it the user should print it out and send it
+    if request.user != bill.user:
+        if not request.user.is_staff:
+            return HttpResponseForbidden()
+
+    # I want to render the receipt exactly like we do in the email
+    htmltext = get_template('email/receipt.html')
+    c = Context({
+        'today': timezone.localtime(timezone.now()),
+        'bill': bill,
+        'site': Site.objects.get_current(),
+        # 'bill_url': "http://" + Site.objects.get_current().domain + bill.get_absolute_url()
+    })
+    receipt_html = htmltext.render(c)
+
+    context = {
+        'receipt_html': receipt_html,
+        'bill': bill,
+    }
+    return render(request, 'member/core/bill_receipt.html', context)
 
 
 @csrf_exempt
