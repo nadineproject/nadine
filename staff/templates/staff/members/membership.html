@@ -108,13 +108,19 @@
           <td class='up-input resource'><strong>{{ r.resource }}</strong></td>
           <td class='up-input allowance'><input type='number' value='{{ r.allowance }}' name='allowance' min='0' readonly /></td>
           <td class='up-input date'><input type='date' name='start_date' value='{{ r.start_date|date:"Y-m-d" }}' readonly  /></td>
+          {% if r.end_date %}
+            <td class='up-input date'><input class='end_date-{{ r.id }}' name='end_date' type='date' value='{{ r.end_date|date:"Y-m-d" }}' readonly  /></td>
+          {% else %}
           <td class='up-input date'><input class='end_date-{{ r.id }} update-end' name='end_date' type='date' value='{{ r.end_date|date:"Y-m-d" }}' readonly  /></td>
+          {% endif %}
           <td class='up-input rate monthly_rate'><input type='number' name='monthly_rate' min='0' value='{{ r.monthly_rate }}' readonly /></td>
           <td class='up-input rate'><input type='number' name='overage_rate' value='{{ r.overage_rate }}' readonly /></td>
           <td class='up-input paying'><input type='text' name='paid_by' class='paying_user' value='{{ r.paid_by }}' readonly /></td>
           <td class='edit-td'>
+            {% if r.end_date %}{% else %}
             {% csrf_token %}
             <button class='update-submit btn-floating' id='submit-{{ r.id }}' type='submit'><strong>End</strong></button>
+            {% endif %}
           </td>
         </form>
 			</tr>
