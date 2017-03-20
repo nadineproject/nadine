@@ -9,7 +9,7 @@
 	<form action="." method="POST">
 		<input type="hidden" name="start" value="{{ user.profile.first_visit|date:"Y-m-d" }}" />
 		<input type="hidden" name="end" value="{{ user.profile.last_visit|date:"Y-m-d" }}" />
-	 	<input type="Submit" value="View All Activity ({{ user.profile.first_visit|date:"Y-m-d" }} to {{ user.profile.last_visit|date:"Y-m-d" }})" />
+	 	<input style='margin-top: 2%;' type="Submit" value="View All Activity ({{ user.profile.first_visit|date:"Y-m-d" }} to {{ user.profile.last_visit|date:"Y-m-d" }})" />
 		{% csrf_token %}
 	</form>
 	<i>* This can take some time!</i>
