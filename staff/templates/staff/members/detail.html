@@ -1,6 +1,7 @@
 {% extends "staff/members/base.html" %}
 {% load integrated_systems %}
 {% load imagetags %}
+{% load app_filters %}
 {% load static %}
 
 {% block sub-title %}{{ user.get_full_name }}{% endblock %}
@@ -65,10 +66,6 @@ function gotoEmailReset(emailAddress){
     <a href="{% url 'member:profile:view' user.username %}">view profile</a> |
     <a href="{% url 'member:profile:edit' user.username %}">edit profile</a>
   </div>
-
-	<!-- {% for message in messages %}
-		<div style='margin-top: 5%; font-weight: bold; margin-left:' {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
-	{% endfor %} -->
 </div>
 
 <div class="clearfix"></div>
@@ -84,48 +81,19 @@ function gotoEmailReset(emailAddress){
   </ul>
 
 <div id="tabs-0">
-    <table>
+    <h6>Member Details</h6>
+    <table class='detail-table'>
         <!-- Username -->
         <tr>
             <td class='detail-title'>Username</td>
-            <td>{{ user.username }}</td>
+            <td class='detail-data'>{{ user.username }}</td>
         </tr>
-
-        <!-- Plan Start -->
-        {% if user.profile.active_membership %}
-        <tr>
-            <td class='detail-title'>Bill Date</td>
-            <td>{{ user.profile.active_membership.start_date|date:"jS" }}</td>
-        </tr>
-        {% endif %}
-
-        <!-- Stats -->
-        <tr>
-            <td class='detail-title'>First Visit</td>
-            <td>{{ user.profile.first_visit }}</td>
-        </tr>
-        <tr>
-            <td class='detail-title'>Duration</td>
-            <td>{{ user.profile.duration_str }}</td>
-        </tr>
-        <tr>
-            <td class='detail-title'>Last Visit</td>
-            <td>{{ user.profile.last_visit }}</td>
-        </tr>
-
-        <!-- organizations -->
-        {% for o in user.profile.active_organizations %}
-            <tr>
-                <td class='detail-title'>Organization</td>
-                <td>{{ o }}</td>
-            </tr>
-        {% endfor %}
 
         <!-- Website -->
         {% if user.profile.url_personal %}
             <tr>
                 <td class='detail-title'>Website</td>
-                <td><a href="{{ user.profile.url_personal }}">{{ user.profile.url_personal }}</a></td>
+                <td class='detail-data'><a href="{{ user.profile.url_personal }}">{{ user.profile.url_personal }}</a></td>
             </tr>
         {% endif %}
 
@@ -133,55 +101,7 @@ function gotoEmailReset(emailAddress){
         {% if user.profile.gender %}
             <tr>
                 <td class='detail-title'>Gender</td>
-                <td>{{ user.profile.gender }}</td>
-            </tr>
-        {% endif %}
-
-        <!-- Emails -->
-        {% for e in user.profile.all_emails %}
-            <tr>
-                <td class='detail-title'>Email Address {{forloop.counter}}</td>
-                <td>{{ e.email }}</td>
-            </tr>
-        {% endfor %}
-
-        <!-- Phone -->
-        {% if user.profile.phone %}
-            <tr>
-                <td class='detail-title'>Phone</td>
-                <td>{{ user.profile.phone }}</td>
-            </tr>
-        {% endif %}
-
-        <!-- Phone2 -->
-        {% if user.profile.phone2 %}
-            <tr>
-                <td class='detail-title'>Alternate Phone</td>
-                <td>{{ user.profile.phone2 }}</td>
-            </tr>
-        {% endif %}
-
-        <!-- Address 1-->
-        {% if user.profile.address1 %}
-            <tr>
-                <td class='detail-title'>Address 1</td>
-                <td>{{ user.profile.address1 }}</td>
-            </tr>
-        {% endif %}
-
-        <!-- Address 2-->
-        {% if user.profile.address2 %}
-            <tr>
-                <td class='detail-title'>Address 2</td>
-                <td>{{ user.profile.address2 }}</td>
-            </tr>
-        {% endif %}
-
-        <!-- City, State, Zip-->
-        {% if user.profile.city %}
-            <tr>
-                <td class='detail-title'>City</td>
-                <td>{{ user.profile.city }} {{ user.profile.state }}, {{ user.profile.zipcode }}</td>
+                <td class='detail-data'>{{ user.profile.gender|gender_filter }}</td>
             </tr>
         {% endif %}
 
@@ -189,7 +109,7 @@ function gotoEmailReset(emailAddress){
         {% if user.profile.howHeard %}
             <tr>
                 <td class='detail-title'>How Heard</td>
-                <td>{{ user.profile.howHeard }}</td>
+                <td class='detail-data'>{{ user.profile.howHeard }}</td>
             </tr>
         {% endif %}
 
@@ -197,7 +117,7 @@ function gotoEmailReset(emailAddress){
         {% if user.profile.industry %}
             <tr>
                 <td class='detail-title'>Industry</td>
-                <td>{{ user.profile.industry }}</td>
+                <td class='detail-data'>{{ user.profile.industry }}</td>
             </tr>
         {% endif %}
 
@@ -205,7 +125,7 @@ function gotoEmailReset(emailAddress){
         {% if user.profile.neighborhood %}
             <tr>
                 <td class='detail-title'>Neighborhood</td>
-                <td>{{ user.profile.neighborhood }}</td>
+                <td class='detail-data'>{{ user.profile.neighborhood }}</td>
             </tr>
         {% endif %}
 
@@ -213,7 +133,7 @@ function gotoEmailReset(emailAddress){
         {% if user.profile.has_kids %}
             <tr>
                 <td class='detail-title'>Has Kids?</td>
-                <td>{{ user.profile.has_kids }}</td>
+                <td class='detail-data'>{{ user.profile.has_kids }}</td>
             </tr>
         {% endif %}
 
@@ -221,32 +141,109 @@ function gotoEmailReset(emailAddress){
         {% if user.profile.self_employed %}
             <tr>
                 <td class='detail-title'>Self Employed?</td>
-                <td>{{ user.profile.self_employed }}</td>
+                <td class='detail-data'>{{ user.profile.self_employed }}</td>
             </tr>
         {% endif %}
+
+      </table>
+      <h6>Contact Information</h6>
+      <table class='detail-table'>
+        <!-- Emails -->
+        {% for e in user.profile.all_emails %}
+            <tr>
+                <td class='detail-title'>Email Address {{forloop.counter}}</td>
+                <td class='detail-data'>{{ e.email }}</td>
+            </tr>
+        {% endfor %}
+
+        <!-- Phone -->
+        {% if user.profile.phone %}
+            <tr>
+                <td class='detail-title'>Phone</td>
+                <td class='detail-data'>{{ user.profile.phone }}</td>
+            </tr>
+        {% endif %}
+
+        <!-- Phone2 -->
+        {% if user.profile.phone2 %}
+            <tr>
+                <td class='detail-title'>Alternate Phone</td>
+                <td class='detail-data'>{{ user.profile.phone2 }}</td>
+            </tr>
+        {% endif %}
+
+        <!-- Address 1-->
+        {% if user.profile.address1 %}
+            <tr>
+                <td class='detail-title'>Address 1</td>
+                <td class='detail-data'>{{ user.profile.address1 }} {% if user.profile.address2 %}, {{ user.profile.address2 }} {% endif %}</td>
+            </tr>
+        {% endif %}
+
+        <!-- City, State, Zip-->
+        {% if user.profile.city %}
+            <tr>
+                <td class='detail-title'>City State, Zipcode</td>
+                <td class='detail-data'>{{ user.profile.city }} {{ user.profile.state }}, {{ user.profile.zipcode }}</td>
+            </tr>
+        {% endif %}
+
+      </table>
+      <h6>Coworking Details/Stats</h6>
+      <table class='detail-table'>
+        <!-- Plan Start -->
+        {% if user.profile.active_membership %}
+        <tr>
+            <td class='detail-title'>Bill Date</td>
+            <td class='detail-data'>{{ user.profile.active_membership.start_date|date:"jS" }}</td>
+        </tr>
+        {% endif %}
+        <!-- Stats -->
+        <tr>
+            <td class='detail-title'>First Visit</td>
+            <td class='detail-data'>{{ user.profile.first_visit }}</td>
+        </tr>
+        <tr>
+            <td class='detail-title'>Duration</td>
+            <td class='detail-data'>{{ user.profile.duration_str }}</td>
+        </tr>
+        <tr>
+            <td class='detail-title'>Last Visit</td>
+            <td class='detail-data'>{{ user.profile.last_visit }}</td>
+        </tr>
+
+        <!-- organizations -->
+        {% for o in user.profile.active_organizations %}
+            <tr>
+                <td class='detail-title'>Organization</td>
+                <td class='detail-data'>{{ o }}</td>
+            </tr>
+        {% endfor %}
+
+
     </table>
 
-    <div class='emergency_contact'>
-    <strong>Emergency Contact</strong>
+    <div class='emergency_contact detail-table'>
+    <h6>Emergency Contact</h6>
     {% if not emergency_contact.name %}
         <p>No Emergency Contact Information</p>
     {% else %}
         <table>
             <tr>
                 <td class='detail-title'>Name</td>
-                <td>{{ emergency_contact.name }}</td>
+                <td class='detail-data'>{{ emergency_contact.name }}</td>
             </tr>
             <tr>
                 <td class='detail-title'>Relationship</td>
-                <td>{{ emergency_contact.relationship }}</td>
+                <td class='detail-data'>{{ emergency_contact.relationship }}</td>
             </tr>
             <tr>
                 <td class='detail-title'>Phone</td>
-                <td>{{ emergency_contact.phone }}</td>
+                <td class='detail-data'>{{ emergency_contact.phone }}</td>
             </tr>
             <tr>
                 <td class='detail-title'>E-mail</td>
-                <td>{{ emergency_contact.email }}</td>
+                <td class='detail-data'>{{ emergency_contact.email }}</td>
             </tr>
         </table>
     {% endif %}

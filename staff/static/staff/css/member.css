@@ -6,6 +6,11 @@ caption {
   margin-bottom: 10px;
 }
 
+h6 {
+  margin: 2% 0 1% 0;
+  color: RGBA(16, 91, 99, 1.00);
+}
+
 /*input[type=date] {
   width: 85%;
 }*/
@@ -254,13 +259,9 @@ td.up-input.rate {
 	margin-left: 3%;
 }
 
-.update-submit {
-  background-color: RGBA(158, 89, 88, 1.00);
-  color: white;
-}
-
-.update-submit:hover {
-  background-color: red;
+.detail-table {
+  width: 60%;
+  margin-left: 2%;
 }
 
 .detail-header {
@@ -268,9 +269,17 @@ td.up-input.rate {
   border-bottom: none;
 }
 
+.detail-table tr:nth-child(2n) {
+  background-color: RGBA(224, 224, 224, 1.00);
+}
+
 .detail-title {
+  text-align: right !important;
+  width: 30%;
   font-weight: bold;
   padding-left: 5%;
+  background-color: white;
+  border-radius: 0;
 }
 
 .edit-a {
@@ -498,6 +507,16 @@ td.up-input.rate {
 
 .update-submit {
   margin-left: 30%;
+}
+
+
+.update-submit {
+  background-color: RGBA(158, 89, 88, 1.00);
+  color: white;
+}
+
+.update-submit:hover {
+  background-color: red;
 }
 
 .user-report {

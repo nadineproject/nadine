@@ -32,7 +32,7 @@
     <th class='sub-th'>Paid By</th>
   </tr>
   {% for s in membership.active_subscriptions %}
-    <tr class='{% cycle "row-odd" "row-even" %}'>
+    <tr class='{% cycle "row-even" "row-odd" %}'>
       <td>{{ s.resource }}</td>
       <td>{{ s.allowance }}</td>
       <td>{{ s.start_date }}</td>
@@ -44,7 +44,7 @@
   {% endfor %}
   <tr>
     <td colspan="5"><strong>Total:</strong></td>
-    <td>${{ membership.monthly_rate }}/month<td>
+    <td><strong>${{ membership.monthly_rate }}/month</strong><td>
   </tr>
 </table>
 
