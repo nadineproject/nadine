@@ -63,7 +63,7 @@
     <table class='end-table'>
       <tr>
         <td id='end-header'>
-          <strong class='col s1 tooltipped' data-position="bottom" data-tooltip="Select date first">When do you want the changes to go in effect?</strong>
+          <strong>When do you want the changes to go in effect?</strong>
         </td>
         <td id='select-end-td'>
           <select name='ending' id='end-input'>
@@ -302,7 +302,6 @@
   })();
 
   $(document).ready(function() {
-    $('.tooltipped').tooltip({delay: 50});
     $('.button-collapse').sideNav();
     $('.collapsible').collapsible();
     var package = '{{ package }}';
