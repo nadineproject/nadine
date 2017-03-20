@@ -32,7 +32,7 @@ function gotoEmailReset(emailAddress){
         });
 
         {% for message in messages %}
-            Materialize.toast('{{ message }}', 4000);
+            Materialize.toast('{{ message }}', 3000, '{{ message.tags }}-msg');
         {% endfor %}
     });
 </script>

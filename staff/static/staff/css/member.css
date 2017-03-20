@@ -335,6 +335,10 @@ td.up-input.rate {
   margin-top: .5em;
 }
 
+.error-msg {
+  background-color: red;
+}
+
 .guest-row {
   display: none;
 }
@@ -485,6 +489,10 @@ td.up-input.rate {
 .sub-table {
   margin-left: 2%;
   margin-bottom: 2%;
+}
+
+.success-msg {
+  background-color: green;
 }
 
 .tabs .tab a {
