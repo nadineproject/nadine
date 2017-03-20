@@ -282,6 +282,7 @@ def membership(request, username):
             else:
                 end_target = request.POST['date-end']
                 user.membership.end_all(end_target)
+            messages.success(request, "Successfully ended the membership package")
             return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}))
         elif 'update' in request.POST:
             s_id = request.POST['id']
@@ -296,11 +297,13 @@ def membership(request, username):
                 paid_by_username = request.POST['paid_by']
                 s.paid_by = User.objects.get(username=paid_by_username)
             s.save()
+            messages.success(request, "You have updated the subscriptions")
             return HttpResponseRedirect(reverse('staff:members:membership', kwargs={'username': username}))
         elif 'add' in request.POST:
             add_form = SubForm(request.POST)
             if add_form.is_valid():
                 add_form.save()
+                messages.success(request, "You have added to the subscriptions")
                 return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}))
         else:
             package_form = MembershipPackageForm(request.POST)

@@ -29,6 +29,10 @@ function gotoEmailReset(emailAddress){
         $( "#specialdays" ).autocomplete({
             source: availableDays
         });
+
+        {% for message in messages %}
+            Materialize.toast('{{ message }}', 4000);
+        {% endfor %}
     });
 </script>
 {% endblock %}
@@ -62,10 +66,9 @@ function gotoEmailReset(emailAddress){
     <a href="{% url 'member:profile:edit' user.username %}">edit profile</a>
   </div>
 
-	{% for message in messages %}
-    <!-- What if messages live in #top-content or chips? -->
+	<!-- {% for message in messages %}
 		<div style='margin-top: 5%; font-weight: bold; margin-left:' {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
-	{% endfor %}
+	{% endfor %} -->
 </div>
 
 <div class="clearfix"></div>
