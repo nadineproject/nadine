@@ -18,12 +18,12 @@
       <form action="{% url 'staff:tasks:detail' alert.key %}" method="POST">
         <input type="hidden" name="alert_id" value="{{ alert.id }}"/>
           {% if member %}
-            <td nowrap>
+            <td style='padding-top: 2%;' nowrap>
               <a href="{% url 'staff:members:detail' alert.user.username %}">{{ alert.user.get_full_name }}</a>
             </td>
           {% endif %}
           {% if description %}
-            <td nowrap>{{ alert.description }}</td>
+            <td style='padding-top: 2%;' nowrap>{{ alert.description }}</td>
           {% endif %}
           <td>
             <select class='browser-default' name="assigned_to">
