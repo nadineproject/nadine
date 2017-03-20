@@ -59,10 +59,13 @@ textarea.bcc-textarea {
 }
 
 #end-header {
-  width:40%;
+  width:50%;
   padding-top: 2%;
-  font-size: 1.2em;
-  color: RGBA(140, 79, 78, 1.00);
+  color: RGBA(200, 79, 78, .80);
+}
+
+td#end-header strong {
+  font-size: 1.4em;
 }
 
 #end-package td {
@@ -328,6 +331,7 @@ td.up-input.rate {
 
 .end-table {
   margin-left: 2%;
+  margin-bottom: 3%;
 }
 
 .epay-link {

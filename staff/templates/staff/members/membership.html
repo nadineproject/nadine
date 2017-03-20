@@ -63,7 +63,7 @@
     <table class='end-table'>
       <tr>
         <td id='end-header'>
-          <strong>When do you want the changes to go in effect?</strong>
+          <strong class='col s1 tooltipped' data-position="bottom" data-tooltip="Select date first">When do you want the changes to go in effect?</strong>
         </td>
         <td id='select-end-td'>
           <select name='ending' id='end-input'>
@@ -130,7 +130,7 @@
           <input type='hidden' value='add-sub' name='add' />
           <input type='hidden' value='{{ entity.username }}' name='username' />
           <input type='hidden' value='{{ request.user }}' name='created_by'/>
-          <td class='resource'>
+          <td class='resource add-resource'>
             {{ add_form.resource }}
           </td>
           <td class='allowance'>
@@ -302,6 +302,7 @@
   })();
 
   $(document).ready(function() {
+    $('.tooltipped').tooltip({delay: 50});
     $('.button-collapse').sideNav();
     $('.collapsible').collapsible();
     var package = '{{ package }}';
@@ -317,6 +318,9 @@
     $('.start_date').addClass('datepicker');
     $('.end_date').addClass('datepicker');
     $('.created_by_td').val('{{ request.user }}');
+    $('.add-submit').hide();
+    $('.add-resource select#id_resource').attr('disabled', 'true');
+
 
     $('.datepicker').datepicker({
       dateFormat: 'yy-mm-dd',
@@ -398,8 +402,10 @@
     })
 
     $('#sub-end').on('change', function() {
-      $('.add_date #id_start_date').val($('#sub-end').val())
-      $('.update-submit').show()
+      $('.add_date #id_start_date').val($('#sub-end').val());
+      $('.add-resource select#id_resource').removeAttr('disabled');
+      $('.add-submit').show();
+      $('.update-submit').show();
     })
 
     $('#end-input').on('change', function() {
@@ -414,8 +420,10 @@
         var date = new Date();
         var today = formatDate(date);
         $('.update-end').val(today);
+        $('.add-resource select#id_resource').removeAttr('disabled');
         $('.add_date #id_start_date').val(today)
         $('.update-submit').show();
+        $('.add-submit').show();
         $('#sub-end').hide();
       } else if (period == 'eop') {
         $('#sub-end').hide();
@@ -470,8 +478,10 @@
           var date = [year, month, day].join('-');
           var bd_date = [year, bd_month, bd].join('-');
           $('.update-end').val(date);
-          $('.add_date #id_start_date').val(bd_date)
-          $('.update-submit').show()
+          $('.add_date #id_start_date').val(bd_date);
+          $('.add-resource select#id_resource').removeAttr('disabled');
+          $('.add-submit').show();
+          $('.update-submit').show();
       }
     })
 
