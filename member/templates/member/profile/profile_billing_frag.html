@@ -1,17 +1,17 @@
-<div style="margin-left: 2em; margin-bottom: .5em;">
-Current Profile:
+<div class='detail-billing'>
+<strong>Current Profile:</strong>
 {% if user.profile.has_valid_billing %}
-	<font color=green>Valid</font>
+	<font class='valid'>Valid</font>
 	{% if user.profile.is_guest %}
 		- Guest of: {{ user.profile.is_guest }}
 	{% endif %}
 {% else %}
-	<font color=red>Invalid</font>
+	<font class='invalid'>Invalid</font>
 {% endif %}
 </div>
 
 {% if settings.USA_EPAY_FORM_KEY %}
-	<div style="margin-left: 2em">
+	<div style="margin-left: 2em; margin-top:1%;">
 		<form action="{{ settings.USA_EPAY_FORM }}">
 			<input type="hidden" name="UMkey" value="{{ settings.USA_EPAY_FORM_KEY }}">
 			<input type="hidden" name="UMdescription" value="Office Nomads Billing Authorization">

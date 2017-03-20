@@ -266,13 +266,13 @@ function gotoEmailReset(emailAddress){
     <!-- Billing Profile -->
     <h5>Billing Profile</h5>
     {% include "member/profile/profile_billing_frag.html" %}
-    <div style="margin-left: 2em; margin-top: .5em;">
+    <div>
       <form method=POST action="{% url 'staff:billing:toggle_bill' user.username %}" onSubmit="return confirm('Are you sure?');">
-        <input type="hidden" name="back" value="{{ request.get_full_path }}">
+        <input type="hidden" name="back" value="{{ request.get_full_path }}" >
         {% if user.profile.has_valid_billing %}
-            <input type="submit" value="Flag Invalid Billing Profile">
+            <input type="submit" value="Flag Invalid Billing Profile" style='margin-left:2em; margin-top: 2%;' />
         {% else %}
-            <input type="submit" value="Clear Invalid Billing Flag">
+            <input type="submit" value="Clear Invalid Billing Flag" style='margin-left:2em; margin-top: 2%;' />
         {% endif %}
         {% csrf_token %}
       </form>

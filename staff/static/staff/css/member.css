@@ -259,14 +259,20 @@ td.up-input.rate {
 	margin-left: 3%;
 }
 
-.detail-table {
-  width: 60%;
+.detail-billing {
   margin-left: 2%;
+  margin-top: 2%;
+  font-size: 1.2em;
 }
 
 .detail-header {
   margin-top: 0;
   border-bottom: none;
+}
+
+.detail-table {
+  width: 60%;
+  margin-left: 2%;
 }
 
 .detail-table tr:nth-child(2n) {
@@ -351,6 +357,10 @@ td.up-input.rate {
 .input-field {
 	width: 25%;
 	display: inline-block !important;
+}
+
+.invalid {
+  color: red;
 }
 
 .lead-td {
@@ -525,6 +535,15 @@ td.up-input.rate {
 
 .user-report div {
   padding: .5em;
+}
+
+.valid, .invalid {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.valid {
+  color: green;
 }
 
 @media only screen and (max-width: 700px) {
