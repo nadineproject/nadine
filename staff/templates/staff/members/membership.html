@@ -18,7 +18,7 @@
       <td id='package'>
         {{ entity.membership.package }}
       </td>
-      <td>
+      <td class='sub-chips'>
         <a id='change' class='chip'>New Package</a>
         | <a id='update' class='chip'>Update Current Subscriptions</a>
         | <a id='end' class='chip'>End Current Package</a>
@@ -310,7 +310,7 @@
     $('#end-package').hide();
     $('#date-end').hide();
     $('#sub-end').hide();
-    $('.update-submit').hide()
+    $('.update-submit').hide();
     $('#id_created_by').val('{{ request.user }}');
     $('#id_bill_day').val('{{ bill_day }}');
     $('#id_username').val('{{ entity.username }}')

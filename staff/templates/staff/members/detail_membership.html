@@ -12,9 +12,9 @@
     <td>{{ membership.bill_day_str }}</td>
     <td>{{ membership.next_period_start }}</td>
     <td>{{ membership.package }}</td>
-    <td>
+    <td class='sub-chips'>
       <!-- Doesn't work:  Must be a POST -->
-      <a class='chip' href="?gen_bill">Regenerate Bill</a>
+      <a class='chip' href="?gen_bill">Regenerate Bill</a> | 
       <a class='chip' href="{% url 'staff:members:membership' user.username %}">Edit Membership</a>
     </td>
   </tr>

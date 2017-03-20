@@ -60,7 +60,7 @@ textarea.bcc-textarea {
 
 #end-header {
   width:50%;
-  padding-top: 2%;
+  padding-top: 3%;
   color: RGBA(200, 79, 78, .80);
 }
 
@@ -476,6 +476,16 @@ td.up-input.rate {
 
 .special_form {
   margin-bottom: 15%;
+}
+
+.sub-chips {
+  vertical-align: middle;
+}
+
+.sub-chips .chip {
+  background-color: RGBA(16, 91, 99, .70);
+  color: white;
+  font-weight: bold;
 }
 
 .sub-input {
