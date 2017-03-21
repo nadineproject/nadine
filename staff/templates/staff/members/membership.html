@@ -310,15 +310,13 @@
     $('#end-package').hide();
     $('#date-end').hide();
     $('#sub-end').hide();
-    $('.update-submit').hide();
+    $('.up-table').hide();
     $('#id_created_by').val('{{ request.user }}');
     $('#id_bill_day').val('{{ bill_day }}');
     $('#id_username').val('{{ entity.username }}')
-    $('.start_date').addClass('datepicker');
-    $('.end_date').addClass('datepicker');
+    $('.sub-input .start_date').addClass('datepicker');
+    $('.sub-input .end_date').addClass('datepicker');
     $('.created_by_td').val('{{ request.user }}');
-    $('.add-submit').hide();
-    $('.add-resource select#id_resource').attr('disabled', 'true');
 
 
     $('.datepicker').datepicker({
@@ -402,9 +400,7 @@
 
     $('#sub-end').on('change', function() {
       $('.add_date #id_start_date').val($('#sub-end').val());
-      $('.add-resource select#id_resource').removeAttr('disabled');
-      $('.add-submit').show();
-      $('.update-submit').show();
+      $('.up-table').show();
     })
 
     $('#end-input').on('change', function() {
@@ -419,10 +415,8 @@
         var date = new Date();
         var today = formatDate(date);
         $('.update-end').val(today);
-        $('.add-resource select#id_resource').removeAttr('disabled');
-        $('.add_date #id_start_date').val(today)
-        $('.update-submit').show();
-        $('.add-submit').show();
+        $('.add_date #id_start_date').val(today);
+        $('.up-table').show();
         $('#sub-end').hide();
       } else if (period == 'eop') {
         $('#sub-end').hide();
@@ -478,9 +472,7 @@
           var bd_date = [year, bd_month, bd].join('-');
           $('.update-end').val(date);
           $('.add_date #id_start_date').val(bd_date);
-          $('.add-resource select#id_resource').removeAttr('disabled');
-          $('.add-submit').show();
-          $('.update-submit').show();
+          $('.up-table').show();
       }
     })
 
