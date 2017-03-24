@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class UserBill(models.Model):
-    generated_on = models.DateTimeField(auto_now=True)
+    generated_on = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, related_name="bill")
     membership = models.ForeignKey(Membership, related_name="bills", null=True, blank=True)
     period_start = models.DateField()

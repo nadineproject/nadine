@@ -5,14 +5,8 @@ from nadine.models.billing import UserBill, Payment, BillLineItem
 
 
 class UserBillAdmin(StyledAdmin):
-    def amount(self):
-        return self.amount()
-
-    def paid(self):
-        return self.total_paid()
-
     model = UserBill
-    list_display = ('user', 'period_start', 'period_end', amount, paid)
+    list_display = ('id', 'user', 'period_start', 'period_end', 'amount', 'total_paid')
     search_fields = ('user__username', 'user__first_name')
     readonly_fields = ('generated_on', )
     fields = ('user', 'generated_on', 'period_start', 'period_end')

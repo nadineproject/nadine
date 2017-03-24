@@ -7,6 +7,7 @@ from monthdelta import MonthDelta, monthmod
 
 from django.conf import settings
 from django.db import migrations, models
+from django.utils import timezone
 import django.db.models.deletion
 
 
@@ -18,10 +19,11 @@ def forward(apps, schema_editor):
     BillLineItem = apps.get_model("nadine", "BillLineItem")
     CoworkingDayLineItem = apps.get_model("nadine", "CoworkingDayLineItem")
     Payment = apps.get_model("nadine", "Payment")
+    tz = timezone.get_current_timezone()
     print
 
     print("    Migrating Old Bills...")
-    for o in OldBill.objects.all().order_by('bill_date').reverse():
+    for o in OldBill.objects.all().order_by('bill_date'):
         # OldBill -> UserBill
         if o.paid_by:
             user = o.paid_by
@@ -36,7 +38,9 @@ def forward(apps, schema_editor):
         )
         if o.membership:
             bill.membership = o.membership.new_membership
-            bill.save()
+        bill_date = datetime.combine(o.bill_date, datetime.min.time())
+        bill.generated_on = timezone.make_aware(bill_date, tz)
+        bill.save()
 
         # We'll just create one line item for these old bills
         line_item = CoworkingDayLineItem.objects.create(
@@ -113,7 +117,7 @@ class Migration(migrations.Migration):
             name='UserBill',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('generated_on', models.DateTimeField(auto_now=True)),
+                ('generated_on', models.DateTimeField(auto_now_add=True)),
                 ('period_start', models.DateField()),
                 ('period_end', models.DateField()),
                 ('comment', models.TextField(blank=True, null=True)),
