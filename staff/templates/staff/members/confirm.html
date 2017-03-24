@@ -1,0 +1,153 @@
+{% extends 'staff/members/base.html' %}
+
+{% block content %}
+<h5>Confirm Membership Changes for <a href="{% url 'staff:members:detail' user.username %}">{{ user.get_full_name }}</a></h5>
+<form action='.' method='POST'>
+  {% if action == 'end_pkg' %}
+    <div class='end_pkg_table'>
+      <input name='end_pkg' type='hidden' value='end_pkg' />
+      <h6>Ending Current Package</h6>
+      <table>
+        <tr>
+          <td>
+            <strong>Ending current package and all subscriptions on:</strong>
+          </td>
+          <td>
+            {% if end_target %}
+              <input type='date' value='{{ end_target}}' readonly />
+            {% endif %}
+          </td>
+        </tr>
+      </table>
+    </div>
+  {% endif %}
+  {% if action == 'new_pkg' %}
+    <div class='new_pkg_table'>
+      <input type='hidden' value='new_pkg' name='new_pkg' />
+      <h6>Starting a New Package</h6>
+      <table>
+        <tr>
+          <th class='sub-th'>Resource</th>
+          <th class='sub-th'>Allowance</th>
+          <th class='sub-th'>Start Date</th>
+          <th class='sub-th'>End Date</th>
+          <th class='sub-th'>Overage</th>
+          <th class='sub-th'>Monthly</th>
+          <th class='sub-th'>Paid By</th>
+        </tr>
+        {% for sub in new_subs %}
+        <tr>
+          <td id='resource'>
+            {{ sub.resource }}
+          </td>
+          <td>
+            {{ sub.allowance }}
+          </td>
+          <td>
+            {{ sub.start_date }}
+          </td>
+          <td>
+            {{ sub.end_date }}
+          </td>
+          <td>
+            {{ sub.overage_rate }}
+          </td>
+          <td>
+            {{ sub.monthly_rate }}
+          </td>
+          <td>
+            {{ sub.paid_by }}
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  {% endif %}
+  {% if action == 'update_subs' %}
+    <div class='update_subs_table'>
+      <input type='hidden' name='update_subs' value='update_subs' />
+      {% if end_target %}
+      <h6>Ending Subscription</h6>
+        <table>
+          <tr>
+            <th class='sub-th'>Resource</th>
+            <th class='sub-th'>Allowance</th>
+            <th class='sub-th'>Overage</th>
+            <th class='sub-th'>Monthly</th>
+            <th class='sub-th'>Paid By</th>
+          </tr>
+          <tr>
+            <td id='resource'>
+              {{ ending_subs.resource }}
+            </td>
+            <td>
+              {{ ending_subs.allowance }}
+            </td>
+            <td>
+              {{ ending_subs.overage_rate }}
+            </td>
+            <td>
+              {{ ending_subs.monthly_rate }}
+            </td>
+            <td>
+              {{ ending_subs.paid_by }}
+            </td>
+          </tr>
+        </table>
+        <table>
+          <tr>
+            <td>
+              <strong>Ending this subscription on:</strong>
+            </td>
+            <td>
+              {{ end_target }}
+            </td>
+          </tr>
+        </table>
+      {% endif %}
+      <h6>Adding These Subscriptions</h6>
+        <table>
+          <tr>
+            <th class='sub-th'>Resource</th>
+            <th class='sub-th'>Allowance</th>
+            <th class='sub-th'>Overage</th>
+            <th class='sub-th'>Monthly</th>
+            <th class='sub-th'>Paid By</th>
+          </tr>
+          {% for ns in new_subs %}
+          <tr>
+            <td id='resource'>
+              {{ ns.resource }}
+            </td>
+            <td>
+              {{ ns.allowance }}
+            </td>
+            <td>
+              {{ ns.overage_rate }}
+            </td>
+            <td>
+              {{ ns.monthly_rate }}
+            </td>
+            <td>
+              {{ ns.paid_by }}
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+    </div>
+  {% endif %}
+  {% csrf_token %}
+  <input class='btn' type='submit' value='Confirm Changes' />
+</form>
+{% endblock %}
+
+{% block extrajs %}
+  <script>
+  $(document).ready(function() {
+    {% for message in messages %}
+        Materialize.toast('{{ message }}', 3000, '{{ message.tags }}-msg');
+    {% endfor %}
+
+  });
+  </script>
+{% endblock %}

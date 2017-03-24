@@ -13,6 +13,7 @@ urlpatterns = [
      url(r'^user_reports/$', members.view_user_reports, name='user_reports'),
      url(r'^slack_users/$', members.slack_users, name='slack_users'),
      url(r'^membership/(?P<username>[^/]+)/$', members.membership, name='membership'),
+     url(r'^confirm/(?P<username>[^/]+)/(?P<package>[^/]+)/(?P<end_target>[^/]+)/(?P<action>[^/]+)/(?P<ending_subs>[^/]+)/(?P<new_subs>[^/]+)/$', members.confirm_membership, name='confirm'),
      url(r'^organizations/$', members.org_list, name='organizations'),
      url(r'^organization/(?P<org_id>\d+)$', members.org_view, name='organization'),
 
