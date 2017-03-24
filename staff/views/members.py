@@ -435,7 +435,6 @@ def confirm_membership(request, username, package, end_target, action, ending_su
                                 paid_by = User.objects.get(username=p_username)
                             rs = ResourceSubscription(created_by=created_by, created_ts=created_ts, resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=paid_by, membership=user.membership)
                             rs.save()
-                        # ResourceSubscription.objects.bulk_create(subs)
                     messages.success(request, "You have updated the subscriptions for %s" % username)
                     return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}))
             except IntegrityError:
