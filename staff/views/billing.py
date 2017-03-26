@@ -53,17 +53,12 @@ def run_billing(request):
 
 
 def group_bills_by_date(bill_query):
-    ''' Group a given bill query in to a dictionary where the key is the date,
-    and the value is a dict of 'user' and 'bills' '''
     bills_by_date = {}
     for bill in bill_query:
         key = bill.created_ts
         if not key in bills_by_date:
-            bills_by_date[key] = {
-                'bills': [],
-                'user': bill.user
-            }
-        bills_by_date[key]['bills'].append(bill)
+            bills_by_date[key] = []
+        bills_by_date[key].append(bill.user)
     # Return an ordered dictionary by date
     ordered_bills = OrderedDict(sorted(bills_by_date.items(), key=lambda t: t[0]))
     return ordered_bills
@@ -104,7 +99,10 @@ def outstanding(request):
 
     bills = group_bills_by_date(UserBill.objects.unpaid(in_progress=False))
     bills_in_progress = group_bills_by_date(UserBill.objects.unpaid(in_progress=True))
-    invalids = User.helper.invalid_billing()
+
+    # TODO
+    # invalids = User.helper.invalid_billing()
+    invalids = []
 
     context = {
         'bills': bills,
@@ -179,7 +177,7 @@ def outstanding_old(request):
 @staff_member_required
 def bills_pay_all(request, username):
     user = get_object_or_404(User, username=username)
-    amount = user.profile.open_bill_amount()
+    amount = user.profile.open_bills_amount
 
     # Save all the bills!
     if amount > 0:

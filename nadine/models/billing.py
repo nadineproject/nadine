@@ -15,15 +15,17 @@ logger = logging.getLogger(__name__)
 
 class BillManager(models.Manager):
 
-    def unpaid(self, in_progress=None):
+    def unpaid(self, user=None, in_progress=None):
         query = self.filter(mark_paid=False)
+        if user != None:
+            query = query.filter(user=user)
         if in_progress != None:
             query = query.filter(in_progress=in_progress)
         query = query.annotate(owed=Sum('line_items__amount') - Sum('payment__paid_amount'), payment_count=Count('payment'))
         no_payments = Q(payment_count = 0)
         partial_payment = Q(owed__gt = 0)
         query = query.filter(no_payments | partial_payment)
-        return query
+        return query.order_by('due_date')
 
 
 class UserBill(models.Model):

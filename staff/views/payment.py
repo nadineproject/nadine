@@ -133,7 +133,7 @@ def usaepay_transactions(request, year, month, day):
     except Exception:
         # Xero not integrated
         pass
-    
+
     try:
         api = PaymentAPI()
 
@@ -154,7 +154,7 @@ def usaepay_transactions(request, year, month, day):
                 t['user'] = u
                 # TODO - change to User
                 t['member'] = u.profile
-                t['open_bill_amount'] = u.profile.open_bill_amount()
+                t['open_bills_amount'] = u.profile.open_bills_amount
                 t['xero_invoices'] = open_xero_invoices.get(t['username'], [])
                 for i in t['xero_invoices']:
                     if i['AmountDue'] != t['amount']:

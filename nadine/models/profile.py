@@ -13,7 +13,8 @@ from datetime import datetime, time, date, timedelta
 from dateutil.relativedelta import relativedelta
 
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, Sum, Value
+from django.db.models.functions import Coalesce
 from django.contrib import admin
 from django.core import urlresolvers
 from django.core.files.base import ContentFile
@@ -325,23 +326,18 @@ class UserProfile(models.Model):
         active = self.active_organization_memberships(target_date)
         return Organization.objects.filter(id__in=active.values('organization'))
 
-    def all_bills(self):
-        """Returns all of the open bills, both for this user and any bills for other members which are marked to be paid by this member."""
-        return OldBill.objects.filter(models.Q(user=self.user) | models.Q(paid_by=self.user)).order_by('-bill_date')
-
     def open_bills(self):
-        """Returns all of the open bills, both for this user and any bills for other members which are marked to be paid by this member."""
-        return OldBill.objects.filter(models.Q(user=self.user) | models.Q(paid_by=self.user)).filter(transactions=None).order_by('bill_date')
+        """Returns all open bills for this user """
+        from nadine.models.billing import UserBill
+        return UserBill.objects.unpaid(user=self.user)
 
-    def open_bill_amount(self):
+    @property
+    def open_bills_amount(self):
+        """Returns total of all open bills for this user """
         total = 0
         for b in self.open_bills():
-            total = total + b.amount
+            total += b.total_owed
         return total
-
-    def open_bills_amount(self):
-        """Returns the amount of all of the open bills, both for this member and any bills for other members which are marked to be paid by this member."""
-        return OldBill.objects.filter(models.Q(user=self.user) | models.Q(paid_by=self.user)).filter(transactions=None).aggregate(models.Sum('amount'))['amount__sum']
 
     def open_xero_invoices(self):
         from nadine.utils.xero_api import XeroAPI
