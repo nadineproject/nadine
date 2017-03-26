@@ -14,7 +14,7 @@
 	<table>
 		<tr>
 			<th>ID</th>
-			<th>Generated</th>
+			<th>Created</th>
 			<th>Member</th>
 			<th>Period Start</th>
 			<th>Period End</th>
@@ -28,7 +28,7 @@
 		{% for bill in bills %}
 			<tr class="{% cycle 'row-even' 'row-odd' %}">
 				<td><a href="{% url 'staff:billing:bill' bill.id %}">{{ bill.id }}</a></td>
-				<td>{{ bill.generated_on|date:"m/d/y" }}</a></td>
+				<td>{{ bill.created_ts|date:"m/d/y" }}</a></td>
 				<td><a href="{% url 'staff:members:detail' bill.user.username %}">{{ bill.user.get_full_name }}</a></td>
 				<td>{{ bill.period_start }}</td>
 				<td>{{ bill.period_end }}</td>

@@ -13,13 +13,21 @@ from nadine.models.membership import Membership
 
 logger = logging.getLogger(__name__)
 
+class BillManager(models.Manager):
+
+    def unpaid(self, in_progress=True):
+        return
+
 
 class UserBill(models.Model):
-    generated_on = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(User, related_name="bill")
+    objects = BillManager()
+    created_ts = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, related_name="+", null=True, blank=True)
+    user = models.ForeignKey(User, related_name="bills")
     membership = models.ForeignKey(Membership, related_name="bills", null=True, blank=True)
     period_start = models.DateField()
     period_end = models.DateField()
+    due_date = models.DateField()
     comment = models.TextField(blank=True, null=True)
     in_progress = models.BooleanField(default=False, blank=False, null=False)
 

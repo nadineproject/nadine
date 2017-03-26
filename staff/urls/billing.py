@@ -16,6 +16,7 @@ urlpatterns = [
     url(r'^run/$', billing.run_billing, name='run'),
     url(r'^transactions/$', billing.transactions, name='transactions'),
     url(r'^transaction/(?P<id>\d+)/$', billing.transaction, name='transaction'),
+    url(r'^bills/outstanding_old/$', billing.outstanding_old, name='outstanding_old'),
 
     url(r'^bills/(?P<username>[^/]+)/$', billing.user_bills, name='user_bills'),
     url(r'^transactions/(?P<username>[^/]+)/$', billing.user_transactions, name='user_transactions'),

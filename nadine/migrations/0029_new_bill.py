@@ -35,11 +35,12 @@ def forward(apps, schema_editor):
             user = user,
             period_start = start,
             period_end = end,
+            due_date =  o.bill_date,
         )
         if o.membership:
             bill.membership = o.membership.new_membership
         bill_date = datetime.combine(o.bill_date, datetime.min.time())
-        bill.generated_on = timezone.make_aware(bill_date, tz)
+        bill.created_ts = timezone.make_aware(bill_date, tz)
         bill.save()
 
         # We'll just create one line item for these old bills
@@ -117,13 +118,14 @@ class Migration(migrations.Migration):
             name='UserBill',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('generated_on', models.DateTimeField(auto_now_add=True)),
+                ('created_ts', models.DateTimeField(auto_now_add=True)),
+                ('created_by', models.ForeignKey(null=True, blank=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL)),
                 ('period_start', models.DateField()),
                 ('period_end', models.DateField()),
-                ('comment', models.TextField(blank=True, null=True)),
+                ('due_date', models.DateField()),
                 ('in_progress', models.BooleanField(default=False)),
-                # ('membership', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='nadine.Membership')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='bill', to=settings.AUTH_USER_MODEL)),
+                ('comment', models.TextField(blank=True, null=True)),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='bills', to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(

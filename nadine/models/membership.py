@@ -604,7 +604,7 @@ class ResourceSubscription(models.Model):
     objects = SubscriptionManager()
 
     created_ts = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, related_name="+", null=True)
+    created_by = models.ForeignKey(User, related_name="+", null=True, blank=True)
     resource = models.ForeignKey(Resource)
     membership = models.ForeignKey(Membership, related_name="subscriptions")
     description = models.CharField(max_length=64, blank=True, null=True)

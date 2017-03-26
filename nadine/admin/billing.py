@@ -8,8 +8,9 @@ class UserBillAdmin(StyledAdmin):
     model = UserBill
     list_display = ('id', 'user', 'period_start', 'period_end', 'amount', 'total_paid')
     search_fields = ('user__username', 'user__first_name')
-    readonly_fields = ('generated_on', )
-    fields = ('user', 'generated_on', 'period_start', 'period_end')
+    raw_id_fields = ('user', )
+    readonly_fields = ('id', 'created_ts', 'created_by')
+    fields = ('id', 'user', 'created_ts', 'period_start', 'period_end', 'due_date')
     ordering = ['-period_start', ]
 
 
