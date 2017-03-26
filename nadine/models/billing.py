@@ -15,8 +15,11 @@ logger = logging.getLogger(__name__)
 
 class BillManager(models.Manager):
 
-    def unpaid(self, in_progress=True):
-        return
+    def unpaid(self, in_progress=None):
+        query = self.filter(payment=None)
+        if in_progress != None:
+            query = query.filter(in_progress=in_progress)
+        return query
 
 
 class UserBill(models.Model):
