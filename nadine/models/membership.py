@@ -197,6 +197,13 @@ class Membership(models.Model):
             suffix = ["st", "nd", "rd"][self.bill_day % 10 - 1]
         return "%d%s" % (self.bill_day, suffix)
 
+    @property
+    def start_date(self):
+        first_subscription = self.subscriptions.all().order_by('start_date').first()
+        if not first_subscription:
+            return None
+        return first_subscription.start_date
+
     def end_all(self, target_date=None):
         '''End all the active subscriptions.  Defaults to yesterday.'''
         if not target_date:
@@ -362,7 +369,7 @@ class Membership(models.Model):
 
         return next_period_start
 
-    def generate_bill(self, target_date=None):
+    def generate_bill(self, target_date=None, created_by=None):
         if not target_date:
             target_date = localtime(now()).date()
 
@@ -426,8 +433,10 @@ class Membership(models.Model):
                 bill = UserBill.objects.create(
                     user = user,
                     membership = self,
+                    due_date = period_start,
                     period_start = period_start,
-                    period_end = period_end
+                    period_end = period_end,
+                    created_by = created_by,
                 )
                 new_bill['bill'] = bill
 

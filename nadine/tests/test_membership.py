@@ -161,6 +161,20 @@ class MembershipTestCase(TestCase):
     ############################################################################
 
 
+    def test_start_date(self):
+        # Our start date should be equal to the start of the first subscription
+        m = self.create_membership(start=date(2016,1,1), end=date(2016,5,31))
+        self.assertEqual(date(2016,1,1), m.start_date)
+        # Create another subscription and test the start date does not change
+        ResourceSubscription.objects.create(
+            membership = m,
+            resource = self.test_resource,
+            start_date = date(2016,6,1),
+            monthly_rate = 200,
+            overage_rate = 20,
+        )
+        self.assertEqual(date(2016,1,1), m.start_date)
+
     def test_inactive_period(self):
         self.assertEquals((None, None), self.membership1.get_period(target_date=yesterday))
         self.assertEquals((None, None), self.membership2.get_period(target_date=yesterday))
