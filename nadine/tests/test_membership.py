@@ -389,21 +389,20 @@ class MembershipTestCase(TestCase):
         self.assertEquals(1, membership.bills.count())
         self.assertEquals(membership.monthly_rate(), bill.amount)
 
-        # Change the date and regenrate the bill
-        # TODO - seems prorating like this doesn't work --JLS
-        # subscription.start_date = today + timedelta(days=5)
-        # subscription.save()
-        # membership.generate_bill(target_date=today)
-        # self.assertEquals(1, membership.bills.count())
-        # bill = membership.bills.first()
-        # print bill.amount
-        # self.assertTrue(membership.monthly_rate() > bill.amount)
-
-    # TODO
-    # def test_generate_all_bills(self):
-    #     self.assertEquals(0, self.membership6.bills.count())
-    #     self.membership6.generate_all_bills()
-    #     self.assertEquals(12, self.membership6.bills.count())
+    def test_generate_all_bills(self):
+        user1 = User.objects.create(username='user_one', first_name='User', last_name='One')
+        membership = user1.membership
+        subscription = ResourceSubscription.objects.create(
+            membership = membership,
+            resource = self.test_resource,
+            start_date = date(year=2016, month=1, day=1),
+            end_date = date(year=2016, month=12, day=31),
+            monthly_rate = 100.00,
+            overage_rate = 0,
+        )
+        self.assertEquals(0, membership.bills.count())
+        membership.generate_all_bills()
+        self.assertEquals(12, membership.bills.count())
 
     def test_package_monthly_rate(self):
         # Only 1 subscription so the totals should match
