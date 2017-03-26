@@ -63,7 +63,7 @@ class UserBill(models.Model):
     @property
     def payment_date(self):
         # Date of the last payment
-        last_payment = self.payments.order_by('payment_date').reverse().first()
+        last_payment = self.payments.order_by('payment_date').last()
         if last_payment:
             return last_payment.payment_date
         else:
