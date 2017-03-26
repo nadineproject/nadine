@@ -146,10 +146,6 @@ class PayBillsForm(forms.Form):
     transaction_note = forms.CharField(required=False, widget=forms.Textarea)
 
 
-class RunBillingForm(forms.Form):
-    run_billing = forms.BooleanField(required=True, widget=forms.HiddenInput)
-
-
 class MemberSearchForm(forms.Form):
     terms = forms.CharField(max_length=100)
 
