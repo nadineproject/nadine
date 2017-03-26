@@ -3,7 +3,7 @@ from datetime import timedelta, date
 from decimal import Decimal
 
 from django.db import models
-from django.db.models import Q, Sum, Value
+from django.db.models import Q, Count, Sum, Value
 from django.db.models.functions import Coalesce
 from django.utils.timezone import localtime, now
 from django.core.urlresolvers import reverse
@@ -16,9 +16,13 @@ logger = logging.getLogger(__name__)
 class BillManager(models.Manager):
 
     def unpaid(self, in_progress=None):
-        query = self.filter(payment=None)
+        query = self.filter(mark_paid=False)
         if in_progress != None:
             query = query.filter(in_progress=in_progress)
+        query = query.annotate(owed=Sum('line_items__amount') - Sum('payment__paid_amount'), payment_count=Count('payment'))
+        no_payments = Q(payment_count = 0)
+        partial_payment = Q(owed__gt = 0)
+        query = query.filter(no_payments | partial_payment)
         return query
 
 
@@ -33,6 +37,7 @@ class UserBill(models.Model):
     due_date = models.DateField()
     comment = models.TextField(blank=True, null=True)
     in_progress = models.BooleanField(default=False, blank=False, null=False)
+    mark_paid = models.BooleanField(default=False, blank=False, null=False)
 
     def __unicode__(self):
         return "Bill %d" % self.id
@@ -51,7 +56,7 @@ class UserBill(models.Model):
 
     @property
     def is_paid(self):
-        return self.total_owed <= 0
+        return self.mark_paid or self.total_owed <= 0
 
     @property
     def payment_date(self):

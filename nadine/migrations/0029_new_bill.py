@@ -59,6 +59,12 @@ def forward(apps, schema_editor):
         line_item.save()
         bill.save()
 
+        # If there are any transactions on this bill
+        # we are going to manually mark this as paid
+        if o.transactions.count() > 0:
+            bill.mark_paid = True
+            bill.save()
+        
         # Transactions -> Payments
         for t in o.transactions.all():
             p = Payment.objects.create(
@@ -124,6 +130,7 @@ class Migration(migrations.Migration):
                 ('period_end', models.DateField()),
                 ('due_date', models.DateField()),
                 ('in_progress', models.BooleanField(default=False)),
+                ('mark_paid', models.BooleanField(default=False)),
                 ('comment', models.TextField(blank=True, null=True)),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='bills', to=settings.AUTH_USER_MODEL)),
             ],
