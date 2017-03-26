@@ -41,7 +41,7 @@ from nadine.settings import TIME_ZONE
 from nadine.utils.payment_api import PaymentAPI
 from nadine.utils.slack_api import SlackAPI
 from nadine.models.core import GENDER_CHOICES, HowHeard, Industry, Neighborhood, Website, URLType
-from nadine.models.membership import Membership, SecurityDeposit
+from nadine.models.membership import Membership, ResourceSubscription, SecurityDeposit
 from nadine.models.membership import OldMembership, MembershipPlan
 from nadine.models.usage import CoworkingDay
 from nadine.models.payment import OldBill
@@ -348,13 +348,13 @@ class UserProfile(models.Model):
         from nadine.forms import PayBillsForm
         return PayBillsForm(initial={'username': self.user.username, 'amount': self.open_bills_amount})
 
-    def last_bill(self):
-        """Returns the latest Bill, or None if the member has not been billed.
-        NOTE: This does not (and should not) return bills which are for other members but which are to be paid by this member."""
-        bills = OldBill.objects.filter(user=self.user)
-        if len(bills) == 0:
-            return None
-        return bills[0]
+    # TODO - remove
+    # def last_bill(self):
+    #     """Returns the latest Bill, or None if the member has not been billed.
+    #     bills = OldBill.objects.filter(user=self.user)
+    #     if len(bills) == 0:
+    #         return None
+    #     return bills[0]
 
     def membership_history(self):
         return OldMembership.objects.filter(user=self.user).order_by('-start_date', 'end_date')
@@ -407,15 +407,6 @@ class UserProfile(models.Model):
     def paid_count(self):
         return self.activity().filter(payment='Bill').count()
 
-    def first_visit(self):
-        if OldMembership.objects.filter(user=self.user).count() > 0:
-            return OldMembership.objects.filter(user=self.user).order_by('start_date')[0].start_date
-        else:
-            if CoworkingDay.objects.filter(user=self.user).count() > 0:
-                return CoworkingDay.objects.filter(user=self.user).order_by('visit_date')[0].visit_date
-            else:
-                return None
-
     def all_emails(self):
         # Done in two queries so that the primary email address is always on top.
         primary = self.user.emailaddress_set.filter(is_primary=True)
@@ -426,7 +417,7 @@ class UserProfile(models.Model):
         return self.user.emailaddress_set.filter(is_primary=False)
 
     def duration(self):
-        return relativedelta(localtime(now()).date(), self.first_visit())
+        return relativedelta(localtime(now()).date(), self.first_visit)
 
     def duration_str(self, include_days=False):
         retval = ""
@@ -505,21 +496,39 @@ class UserProfile(models.Model):
             for alert in alerts:
                 alert.resolve(resolved_by)
 
-    def member_since(self):
-        first = self.first_visit()
-        if first == None:
-            return None
-        return localtime(now()) - datetime.combine(first, time(0, 0, 0))
+    @property
+    def first_visit(self):
+        first_visit = date.max
+        first_day = CoworkingDay.objects.filter(user=self.user).order_by('visit_date').first()
+        if first_day:
+            if first_day.visit_date < first_visit:
+                first_visit = first_day.visit_date
+        all_memberships = Membership.objects.for_user(self.user.username)
+        first_subscription = ResourceSubscription.objects.filter(membership__in=all_memberships).order_by('start_date').first()
+        if first_subscription:
+            if first_subscription.start_date < first_visit:
+                first_visit = first_subscription.start_date
+        if first_visit < date.max:
+            return first_visit
+        return None
 
+    @property
     def last_visit(self):
-        if CoworkingDay.objects.filter(user=self.user).count() > 0:
-            return CoworkingDay.objects.filter(user=self.user).latest('visit_date').visit_date
-        else:
-            if OldMembership.objects.filter(user=self.user, end_date__isnull=False).count() > 0:
-                return OldMembership.objects.filter(user=self.user, end_date__isnull=False).latest('end_date').end_date
-            else:
-                return None
+        last_visit = date.min
+        last_day = CoworkingDay.objects.filter(user=self.user).order_by('visit_date').last()
+        if last_day:
+            if last_day.visit_date > last_visit:
+                last_visit = last_day.visit_date
+        all_memberships = Membership.objects.for_user(self.user.username)
+        last_subscription = ResourceSubscription.objects.filter(membership__in=all_memberships).order_by('start_date').last()
+        if last_subscription and last_subscription.end_date:
+            if last_subscription.end_date > last_visit:
+                last_visit = last_subscription.end_date
+        if last_visit > date.min:
+            return last_visit
+        return None
 
+    @property
     def membership_type(self):
         membership_type = ""
         # Grab the first one.  This will be the individual membership even if they have an org membership

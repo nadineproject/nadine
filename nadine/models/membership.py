@@ -156,9 +156,9 @@ class MembershipManager(models.Manager):
         return members
 
     def for_user(self, username, target_date=None):
-        user = User.objects.get(username=username)
-        individual = Q(individualmembership__user = user)
-        organization  = Q(organizationmembership__organization__organizationmember__user = user)
+        # user = User.objects.get(username=username)
+        individual = Q(individualmembership__user__username = username)
+        organization  = Q(organizationmembership__organization__organizationmember__user__username = username)
         return Membership.objects.filter(individual or organization)
 
 
