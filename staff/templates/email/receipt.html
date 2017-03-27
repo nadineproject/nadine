@@ -9,7 +9,7 @@
       <tr><td margin="0 0 1.6em 0" style="font-size:120%;">Bill for {{ bill.user.get_full_name }}</td></tr>
       <tr><td>
         <table border="0" cellspacing="0" cellpadding="0" border="0">
-          <tr><td width="20px"><strong>Bill Date:</strong></td><td width="150px"> {{ bill.generated_on|date:"M d, Y" }}</td></tr>
+          <tr><td width="20px"><strong>Due Date:</strong></td><td width="150px"> {{ bill.due_date|date:"M d, Y" }}</td></tr>
           <tr><td width="20px"><strong>Location:</strong></td><td width="150px"> {{ site.name }}</td></tr>
           <tr><td width="20px"><strong>Period:</strong></td><td width="150px"> {{ bill.period_start }} <i>to</i> {{ bill.period_end }}</td></tr>
           {% if bill_url %}

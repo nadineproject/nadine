@@ -3,7 +3,7 @@ from datetime import timedelta, date
 from decimal import Decimal
 
 from django.db import models
-from django.db.models import Q, Sum, Value
+from django.db.models import Q, Count, Sum, Value
 from django.db.models.functions import Coalesce
 from django.utils.timezone import localtime, now
 from django.core.urlresolvers import reverse
@@ -13,15 +13,33 @@ from nadine.models.membership import Membership
 
 logger = logging.getLogger(__name__)
 
+class BillManager(models.Manager):
+
+    def unpaid(self, user=None, in_progress=None):
+        query = self.filter(mark_paid=False)
+        if user != None:
+            query = query.filter(user=user)
+        if in_progress != None:
+            query = query.filter(in_progress=in_progress)
+        query = query.annotate(owed=Sum('line_items__amount') - Sum('payment__paid_amount'), payment_count=Count('payment'))
+        no_payments = Q(payment_count = 0)
+        partial_payment = Q(owed__gt = 0)
+        query = query.filter(no_payments | partial_payment)
+        return query.order_by('due_date')
+
 
 class UserBill(models.Model):
-    generated_on = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(User, related_name="bill")
+    objects = BillManager()
+    created_ts = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, related_name="+", null=True, blank=True)
+    user = models.ForeignKey(User, related_name="bills")
     membership = models.ForeignKey(Membership, related_name="bills", null=True, blank=True)
     period_start = models.DateField()
     period_end = models.DateField()
+    due_date = models.DateField()
     comment = models.TextField(blank=True, null=True)
     in_progress = models.BooleanField(default=False, blank=False, null=False)
+    mark_paid = models.BooleanField(default=False, blank=False, null=False)
 
     def __unicode__(self):
         return "Bill %d" % self.id
@@ -40,12 +58,12 @@ class UserBill(models.Model):
 
     @property
     def is_paid(self):
-        return self.total_owed <= 0
+        return self.mark_paid or self.total_owed <= 0
 
     @property
     def payment_date(self):
         # Date of the last payment
-        last_payment = self.payments.order_by('payment_date').reverse().first()
+        last_payment = self.payments.order_by('payment_date').last()
         if last_payment:
             return last_payment.payment_date
         else:

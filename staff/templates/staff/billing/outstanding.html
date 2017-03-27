@@ -3,36 +3,43 @@
 {% block sub-title %}Bills{% endblock %}
 
 {% block sub-head %}
-<script>
-function toggleBillDetails(userID){
-	var detail_selector = '#bill-details-' + userID;
-	var detail_toggle_selector = '#bill-details-toggle-' + userID;
-	if($(detail_selector).is(':hidden')) {
-		$(detail_selector).show();
-		$(detail_toggle_selector).html('[-]');
-	} else {
-		$(detail_selector).hide();
-		$(detail_toggle_selector).html('[+]');
-	}
-}
+	<script>
+		function toggleBillDetails(userID){
+			var detail_selector = '#bill-details-' + userID;
+			var detail_toggle_selector = '#bill-details-toggle-' + userID;
+			if($(detail_selector).is(':hidden')) {
+				$(detail_selector).show();
+				$(detail_toggle_selector).html('[-]');
+			} else {
+				$(detail_selector).hide();
+				$(detail_toggle_selector).html('[+]');
+			}
+		}
 
-function initPage(){
-	$(".bill-details").hide();
-}
+		function initPage(){
+			$(".bill-details").hide();
+		}
 
-$(document).ready(function() {
-	initPage();
-});
-</script>
+		$(document).ready(function() {
+			initPage();
+		});
+	</script>
 {% endblock %}
 
 {% block content %}
 
 <h4>Outstanding Bills</h4>
-{% if page_message%}<p id="page-message">{{ page_message|safe }}</p>{% endif %}
+
+{% if messages %}
+<div class="messages">
+	{% for message in messages %}
+		<div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+	{% endfor %}
+</div>
+{% endif %}
 
 {% if bills %}
-	{% include "staff/billing/bills_table.html" %}
+	{% include "staff/billing/outstanding_table.html" %}
 {% else %}
 	<p>There are no open bills!</p>
 {% endif %}
@@ -40,7 +47,7 @@ $(document).ready(function() {
 {% if bills_in_progress %}
 	<h4>In Progress</h4>
 	{% with bills_in_progress as bills and True as in_progress %}
-		{% include "staff/billing/bills_table.html" %}
+		{% include "staff/billing/outstanding_table.html" %}
 	{% endwith %}
 {% endif %}
 

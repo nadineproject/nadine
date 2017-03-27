@@ -18,7 +18,7 @@ from decimal import Decimal
 
 from nadine.models import *
 from nadine import email
-from nadine.forms import PayBillsForm, RunBillingForm, DateRangeForm
+from nadine.forms import PayBillsForm, DateRangeForm
 from staff.views.activity import date_range_from_request, START_DATE_PARAM, END_DATE_PARAM
 from staff import billing
 
@@ -52,8 +52,69 @@ def run_billing(request):
     return render(request, 'staff/billing/run_billing.html', context)
 
 
+def group_bills_by_date(bill_query):
+    bills_by_date = {}
+    for bill in bill_query:
+        key = bill.created_ts
+        if not key in bills_by_date:
+            bills_by_date[key] = []
+        bills_by_date[key].append(bill.user)
+    # Return an ordered dictionary by date
+    ordered_bills = OrderedDict(sorted(bills_by_date.items(), key=lambda t: t[0]))
+    return ordered_bills
+
+
 @staff_member_required
 def outstanding(request):
+    if request.method == 'POST':
+        action = request.POST.get("action", "Set Paid")
+        pay_bills_form = PayBillsForm(request.POST)
+        if pay_bills_form.is_valid():
+            user = User.objects.get(username=pay_bills_form.cleaned_data['username'])
+            users_bills = {}
+            for bill in user.profile.open_bills():
+                users_bills[bill.id] = bill
+            bill_ids = [int(bill_id) for bill_id in request.POST.getlist('bill_id')]
+            if action == "set_paid":
+                amount = pay_bills_form.cleaned_data['amount']
+                transaction = Transaction(user=user, status='closed', amount=Decimal(amount))
+                transaction.note = pay_bills_form.cleaned_data['transaction_note']
+                transaction.save()
+                for bill_id in bill_ids:
+                    transaction.bills.add(users_bills[bill_id])
+                transaction_url = reverse('staff:billing:transaction', args=[], kwargs={'id': transaction.id})
+                page_message = 'Created a <a href="%s">transaction for %s</a>' % (transaction_url, user.get_full_name())
+            elif action == "mark_in_progress":
+                for bill_id in bill_ids:
+                    bill = users_bills[bill_id]
+                    bill.in_progress = True
+                    bill.save()
+                    page_message = "Bills marked 'In Progress'"
+            elif action == "clear_in_progress":
+                for bill_id in bill_ids:
+                    bill = users_bills[bill_id]
+                    bill.in_progress = False
+                    bill.save()
+                    page_message = "Bills updated"
+
+    bills = group_bills_by_date(UserBill.objects.unpaid(in_progress=False))
+    bills_in_progress = group_bills_by_date(UserBill.objects.unpaid(in_progress=True))
+
+    # TODO
+    # invalids = User.helper.invalid_billing()
+    invalids = []
+
+    context = {
+        'bills': bills,
+        'bills_in_progress': bills_in_progress,
+        'invalid_members': invalids,
+    }
+    return render(request, 'staff/billing/outstanding.html', context)
+
+
+# TODO - Remove
+@staff_member_required
+def outstanding_old(request):
     page_message = None
     if request.method == 'POST':
         action = request.POST.get("action", "Set Paid")
@@ -110,13 +171,13 @@ def outstanding(request):
         'page_message': page_message,
         'invalid_members': invalids,
     }
-    return render(request, 'staff/billing/bills.html', context)
+    return render(request, 'staff/billing/outstanding_old.html', context)
 
 
 @staff_member_required
 def bills_pay_all(request, username):
     user = get_object_or_404(User, username=username)
-    amount = user.profile.open_bill_amount()
+    amount = user.profile.open_bills_amount
 
     # Save all the bills!
     if amount > 0:

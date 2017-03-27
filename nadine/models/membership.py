@@ -156,9 +156,9 @@ class MembershipManager(models.Manager):
         return members
 
     def for_user(self, username, target_date=None):
-        user = User.objects.get(username=username)
-        individual = Q(individualmembership__user = user)
-        organization  = Q(organizationmembership__organization__organizationmember__user = user)
+        # user = User.objects.get(username=username)
+        individual = Q(individualmembership__user__username = username)
+        organization  = Q(organizationmembership__organization__organizationmember__user__username = username)
         return Membership.objects.filter(individual or organization)
 
 
@@ -196,6 +196,13 @@ class Membership(models.Model):
         else:
             suffix = ["st", "nd", "rd"][self.bill_day % 10 - 1]
         return "%d%s" % (self.bill_day, suffix)
+
+    @property
+    def start_date(self):
+        first_subscription = self.subscriptions.all().order_by('start_date').first()
+        if not first_subscription:
+            return None
+        return first_subscription.start_date
 
     def end_all(self, target_date=None):
         '''End all the active subscriptions.  Defaults to yesterday.'''
@@ -362,7 +369,7 @@ class Membership(models.Model):
 
         return next_period_start
 
-    def generate_bill(self, target_date=None):
+    def generate_bill(self, target_date=None, created_by=None):
         if not target_date:
             target_date = localtime(now()).date()
 
@@ -426,8 +433,10 @@ class Membership(models.Model):
                 bill = UserBill.objects.create(
                     user = user,
                     membership = self,
+                    due_date = period_start,
                     period_start = period_start,
-                    period_end = period_end
+                    period_end = period_end,
+                    created_by = created_by,
                 )
                 new_bill['bill'] = bill
 
@@ -471,23 +480,14 @@ class Membership(models.Model):
                 return True
         return False
 
+    def generate_all_bills(self):
+        today = localtime(now()).date()
+        period_start = self.start_date
+        while period_start and period_start < today:
+            self.generate_bill(target_date=period_start)
+            period_start = self.next_period_start(period_start)
+
     # Brought over from modernomad but not ported yet
-    # def generate_all_bills(self, target_date=None):
-    #     today = localtime(now()).date()
-    #
-    #     if not target_date:
-    #         target_date = self.start_date
-    #
-    #     if self.end_date and self.end_date < today:
-    #         end_date = self.end_date
-    #     else:
-    #         end_date = today
-    #
-    #     period_start = target_date
-    #     while period_start and (period_start < today) and (period_start < end_date):
-    #         self.generate_bill(target_date=period_start)
-    #         period_start = self.next_period_start(period_start)
-    #
     # def total_periods(self, target_date=None):
     #     ''' returns total periods between subscription start date and target
     #     date.'''
@@ -604,7 +604,7 @@ class ResourceSubscription(models.Model):
     objects = SubscriptionManager()
 
     created_ts = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, related_name="+", null=True)
+    created_by = models.ForeignKey(User, related_name="+", null=True, blank=True)
     resource = models.ForeignKey(Resource)
     membership = models.ForeignKey(Membership, related_name="subscriptions")
     description = models.CharField(max_length=64, blank=True, null=True)
