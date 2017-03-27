@@ -1,22 +1,54 @@
-<body>
-  <table cellspacing="0" cellpadding="0" border="0">
+{% load static %}
+
+<body id='receipt-body'>
+  <table cellspacing="0" cellpadding="0" border="0" style='width: 100%;'>
+    <tr>
+      <td width="33%;" align="center" style="font-size:140%;">
+        <strong>RECEIPT -
+          {% if bill.is_paid %}
+          <span style='color: green;'> PAID</span>
+          {% else %}
+          <span style='color: red;'> UNPAID </span>
+          {% endif %}
+        </strong>
+      </td>
+      <td width="33%;">
+        <img src="{% static 'img/logo-line.png' %}" style='width:150px; height:150px; margin-left: 9%;'/>
+        <h5>{{ site.name }}</h5>
+      </td>
+      <td width="33%">
+
+      </td>
+    </tr>
+  </table>
+
+  <table cellspacing="0" cellpadding="0" border="0" style='margin-top:2%;';>
       <tr>
-        <td width="600px" align="center" style="font-size:140%;">
-          <strong>RECEIPT - {% if bill.is_paid %} PAID {% else %} UNPAID {% endif %}</strong>
+        <td style="font-size:120%; width: 250px;">Bill for: {{ bill.user.get_full_name }}</td>
+        <td>
+          <table border="0" cellspacing="0" cellpadding="0" border="0">
+            <tr>
+              <td width="20px"><strong>Due Date:</strong></td>
+              <td width="160px"> {{ bill.due_date|date:"M d, Y" }}</td>
+            </tr>
+            <tr>
+              <td width="20px"><strong>Location:</strong></td>
+              <td width="160px"> {{ site.name }}</td>
+            </tr>
+            <tr>
+              <td width="20px"><strong>Period:</strong></td>
+              <td width="160px"> {{ bill.period_start }} <i>to</i> {{ bill.period_end }}</td>
+            </tr>
+            {% if bill_url %}
+              <tr>
+                <td width="150px"><a href="{{ bill_url }}">View Online</a></td>
+              </tr>
+            {% endif %}
+          </table>
         </td>
       </tr>
-
-      <tr><td margin="0 0 1.6em 0" style="font-size:120%;">Bill for {{ bill.user.get_full_name }}</td></tr>
-      <tr><td>
-        <table border="0" cellspacing="0" cellpadding="0" border="0">
-          <tr><td width="20px"><strong>Due Date:</strong></td><td width="150px"> {{ bill.due_date|date:"M d, Y" }}</td></tr>
-          <tr><td width="20px"><strong>Location:</strong></td><td width="150px"> {{ site.name }}</td></tr>
-          <tr><td width="20px"><strong>Period:</strong></td><td width="150px"> {{ bill.period_start }} <i>to</i> {{ bill.period_end }}</td></tr>
-          {% if bill_url %}
-            <tr><td width="150px"><a href="{{ bill_url }}">View Online</a></td></tr>
-          {% endif %}
-        </table>
-      </td></tr>
+    </table>
+    <table>
 
       <tr><td width="600px"><p margin="1.6em 0 1.6em 0"><hr></p></td></tr>
 
