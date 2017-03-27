@@ -3,18 +3,19 @@
 <body id='receipt-body'>
   <table cellspacing="0" cellpadding="0" border="0" style='width: 100%;'>
     <tr>
-      <td width="33%;" align="center" style="font-size:140%;">
-        <strong>RECEIPT -
+      <td>
+        <img src="{% static 'img/logo-line.png' %}" style='width:150px; height:150px;'/>
+      </td>
+      <td width="33%;" align="center" >
+        <h1>{{ site.name }}</h1>
+        <!-- Add functionality for site address and phone number -->
+        <strong style="font-size:110%;">RECEIPT -
           {% if bill.is_paid %}
           <span style='color: green;'> PAID</span>
           {% else %}
           <span style='color: red;'> UNPAID </span>
           {% endif %}
         </strong>
-      </td>
-      <td width="33%;">
-        <img src="{% static 'img/logo-line.png' %}" style='width:150px; height:150px; margin-left: 9%;'/>
-        <h5>{{ site.name }}</h5>
       </td>
       <td width="33%">
 
@@ -24,7 +25,7 @@
 
   <table cellspacing="0" cellpadding="0" border="0" style='margin-top:2%;';>
       <tr>
-        <td style="font-size:120%; width: 250px;">Bill for: {{ bill.user.get_full_name }}</td>
+        <td style="font-size:120%; width: 300px;">Bill for: {{ bill.user.get_full_name }}</td>
         <td>
           <table border="0" cellspacing="0" cellpadding="0" border="0">
             <tr>
@@ -48,40 +49,32 @@
         </td>
       </tr>
     </table>
+    <hr style='margin-top: 5%;' />
     <table>
-
-      <tr><td width="600px"><p margin="1.6em 0 1.6em 0"><hr></p></td></tr>
-
-      <tr><td width="600px">
-        <table border="0" width="400px" cellspacing="0" cellpadding="0" border="0">
-        <tr>
-            <th style="text-align: left; width:200px">Description</th>
-            <th style="text-align: right;">Amount</th>
-        </tr>
+      <tr>
+        <th style="text-align: left; width:440px; margin-left:40px;">Description</th>
+        <th style="text-align: right;">Amount</th>
+      </tr>
         {% for line_item in bill.line_items.all %}
-            <tr>
-                <td>{{ line_item.description }}</td>
-                <td style="text-align: right;">${{ line_item.amount|floatformat:2 }}</td>
-            </tr>
+          <tr>
+            <td style="text-align: left; width:440px; margin-left:40px">{{ line_item.description }}</td>
+            <td style="text-align: right;">${{ line_item.amount|floatformat:2 }}</td>
+          </tr>
         {% endfor %}
         <tr>
-            <td colspan="2" style="text-align: right;">
-                {% if bill.total_owed == 0 %}
-                    <strong>Total Paid:</strong> ${{ bill.total_paid|floatformat:2 }}
-                {% else %}
-                    <strong>Total Owed:</strong> ${{ bill.total_owed|floatformat:2 }}
-                {% endif %}
-            </td>
+          <td colspan="2" style="text-align: right; padding-top: 5%;">
+            {% if bill.total_owed == 0 %}
+              <strong>Total Paid:</strong> ${{ bill.total_paid|floatformat:2 }}
+            {% else %}
+              <strong>Total Owed:</strong> ${{ bill.total_owed|floatformat:2 }}
+            {% endif %}
+          </td>
         </table>
       </td></tr>
-
-      <tr><td width="600px"><p margin="1.6em 0 1.6em 0"><hr></p></td></tr>
-
-      <tr><td width="600px">
-        <p style="margin: 1em 0 0 0;">
-          Thank you!<br/>
-          The {{ site.name }} Team<br/>
-        </p>
-    </td></tr>
-  </table>
+    </table>
+    <hr />
+    <p style="margin: 1em 0 0 0;">
+      Thank you!<br/>
+      The {{ site.name }} Team<br/>
+    </p>
 </body>

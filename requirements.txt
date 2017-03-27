@@ -51,3 +51,6 @@ sphinx-rtd-theme==0.1.9
 recommonmark==0.4.0
 pycodestyle==2.3.0
 sphinx-autoapi==0.4.0
+
+#For PDF creatiogn:
+weasyprint==0.36

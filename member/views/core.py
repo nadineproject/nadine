@@ -1,4 +1,5 @@
 from datetime import date, datetime, timedelta
+from weasyprint import HTML, CSS
 
 from django.conf import settings
 from django.contrib import messages
@@ -61,7 +62,6 @@ def is_new_user(user):
 ######################################################################
 #  Core Views
 ######################################################################
-
 
 def not_active(request):
     return render(request, 'member/core/not_active.html', {'settings': settings})
@@ -167,12 +167,9 @@ def bill_receipt(request, bill_id):
         # 'bill_url': "http://" + Site.objects.get_current().domain + bill.get_absolute_url()
     })
     receipt_html = htmltext.render(c)
+    pdf_file = HTML(string=receipt_html, base_url=request.build_absolute_uri()).write_pdf()
 
-    context = {
-        'receipt_html': receipt_html,
-        'bill': bill,
-    }
-    return render(request, 'member/core/bill_receipt.html', context)
+    return HttpResponse(pdf_file, content_type='application/pdf')
 
 
 @csrf_exempt
