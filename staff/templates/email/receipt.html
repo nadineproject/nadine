@@ -77,4 +77,12 @@
       Thank you!<br/>
       The {{ site.name }} Team<br/>
     </p>
+    <footer style='position:fixed; bottom: 0; width:100%; text-align: center;'>
+      <!-- This is for when more information about site is available -->
+      {% if site.phone %}
+        {{ site.phone }} - {{ site.address }} - {{ site.email }}
+      {% else %}
+        {{ site.name }}
+      {% endif %}
+    </footer>
 </body>
