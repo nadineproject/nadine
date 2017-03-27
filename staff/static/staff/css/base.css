@@ -232,8 +232,10 @@ table tr.row-even td { background: #eee; }
 .inline-form {display: inline;}
 .centered {text-align: center !important;}
 .left {text-align: left !important;}
+.error-msg { background-color: red;}
 .error-td {color: red;}
 .enable-cb {position: inherit !important; left: inherit !important; opacity: 1 !important; }
+.success-msg { background-color: green; }
 
 #activity-dates {margin-left: 20%; font-size: 2em;}
 

@@ -225,7 +225,7 @@ td.up-input.rate {
 }
 
 .allowance {
-  width: 2% !important;
+  width: 10% !important;
 }
 
 .allowance input {
@@ -247,6 +247,10 @@ td.up-input.rate {
 
 .chip {
   color: RGBA(28, 164, 230, 1.00);
+}
+
+.confirm-btn {
+  margin-left: 40%;
 }
 
 .date-input, .mem-input {
@@ -337,10 +341,6 @@ td.up-input.rate {
 .epay-link {
   margin-left: 2em;
   margin-top: .5em;
-}
-
-.error-msg {
-  background-color: red;
 }
 
 .guest-row {
@@ -440,7 +440,7 @@ td.up-input.rate {
 }
 
 .rate {
-  width: 10% !important;
+  width: 13% !important;
 }
 
 .report select {
@@ -464,6 +464,10 @@ td.up-input.rate {
 
 .resource {
   padding-top: 2%;
+}
+
+.resource-th {
+  width: 15% !important;
 }
 
 .responsive-table #alerts-th {
@@ -505,8 +509,12 @@ td.up-input.rate {
   margin-bottom: 2%;
 }
 
-.success-msg {
-  background-color: green;
+.sub-td {
+  padding: 2%;
+}
+
+.sub-th {
+  font-size: 1.1em;
 }
 
 .tabs .tab a {
@@ -540,7 +548,6 @@ td.up-input.rate {
 .update-submit {
   margin-left: 30%;
 }
-
 
 .update-submit {
   background-color: RGBA(158, 89, 88, 1.00);

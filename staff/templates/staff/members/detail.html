@@ -24,16 +24,16 @@ function gotoEmailReset(emailAddress){
 </script>
 <script>
     $(function () {
-        jQuery('#tabs').tabs();
+      jQuery('#tabs').tabs();
 
-        var availableDays = ["Birthday", "Anniversary", "Child's Birthday"];
-        $( "#specialdays" ).autocomplete({
-            source: availableDays
-        });
+      var availableDays = ["Birthday", "Anniversary", "Child's Birthday"];
+      $( "#specialdays" ).autocomplete({
+          source: availableDays
+      });
 
-        {% for message in messages %}
-            Materialize.toast('{{ message }}', 3000, '{{ message.tags }}-msg');
-        {% endfor %}
+      {% for message in messages %}
+  				Materialize.toast('{{ message }}', 3000, '{{ message.tags }}-msg');
+  		{% endfor %}
     });
 </script>
 {% endblock %}

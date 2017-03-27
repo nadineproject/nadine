@@ -277,21 +277,14 @@ def membership(request, username):
 
     if request.method == 'POST':
         if 'update' in request.POST:
+            # Need to make this where it only posts on final post button
+            # if it already has an id and is marked for ending, end it
+            # else, if no id and adding is marked, then add
+
             s_id = request.POST['id']
             end_target = request.POST['end_date']
 
             return HttpResponseRedirect(reverse('staff:members:confirm', kwargs={'username': username, 'package': None, 'action': 'update_subs', 'new_subs': None, 'end_target': end_target, 'ending_subs': s_id}))
-        elif 'ending' in request.POST:
-            if request.POST['ending'] == 'today':
-                end_date = today
-                end_target = end_date.strftime('%Y-%m-%d')
-            elif request.POST['ending'] == 'eop':
-                ps, end_date = user.membership.get_period()
-                end_target = end_date.strftime('%Y-%m-%d')
-            else:
-                end_target = request.POST['date-end']
-
-            return HttpResponseRedirect(reverse('staff:members:confirm', kwargs={'username': username, 'package': None, 'action': 'end_pkg', 'new_subs': None, 'end_target': end_target, 'ending_subs': None}))
         elif 'add' in request.POST:
             add_form = SubForm(request.POST)
             new_subs = []
@@ -311,6 +304,17 @@ def membership(request, username):
 
                 new_subs.append({'created_by':request.user.username, 'resource':resource, 'allowance':allowance, 'start_date':start_date, 'end_date':end_date, 'monthly_rate':monthly_rate, 'overage_rate':overage_rate, 'paid_by':paid_by, 'membership':membership.id})
                 return HttpResponseRedirect(reverse('staff:members:confirm', kwargs={'username': username, 'package': membership.id, 'action': 'update_subs', 'new_subs': new_subs, 'end_target': None, 'ending_subs': None}))
+        elif 'ending' in request.POST:
+            if request.POST['ending'] == 'today':
+                end_date = today
+                end_target = end_date.strftime('%Y-%m-%d')
+            elif request.POST['ending'] == 'eop':
+                ps, end_date = user.membership.get_period()
+                end_target = end_date.strftime('%Y-%m-%d')
+            else:
+                end_target = request.POST['date-end']
+
+            return HttpResponseRedirect(reverse('staff:members:confirm', kwargs={'username': username, 'package': None, 'action': 'end_pkg', 'new_subs': None, 'end_target': end_target, 'ending_subs': None}))
         else:
             package_form = MembershipPackageForm(request.POST)
             sub_formset = SubFormSet(request.POST)
