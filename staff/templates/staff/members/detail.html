@@ -32,8 +32,18 @@ function gotoEmailReset(emailAddress){
       });
 
       {% for message in messages %}
-  				Materialize.toast('{{ message }}', 3000, '{{ message.tags }}-msg');
+        {% if message.tags == 'error' %}
+  				Materialize.toast('{{ message }}', 60000, 'error-msg msg');
+        {% else %}
+          Materialize.toast('{{ message }}', 3000, '{{ message.tags }}-msg msg');
+        {% endif %}
   		{% endfor %}
+
+      $(document).on('click', '#toast-container .toast', function() {
+        $(this).fadeOut(function(){
+          $(this).remove();
+        });
+      });
     });
 </script>
 {% endblock %}

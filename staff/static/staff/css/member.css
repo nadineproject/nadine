@@ -192,6 +192,19 @@ input#id_bill_day {
   margin-left: 20%;
 }
 
+#toast-container .error-msg {
+    cursor: pointer;
+}
+#toast-container .error-msg::after {
+    content: "(x)";
+    -webkit-font-feature-settings: 'liga';
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 300;
+    float: right;
+    padding-left: 3rem;
+}
+
 .add_date #id_start_date, .add_date #id_end_date {
   width: 100%;
 }
