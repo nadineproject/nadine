@@ -31,8 +31,13 @@
     </td>
     <th>Amount:</th>
     <td>${{ bill.amount }}</td>
-    <th id='paid-th'>Paid:</th>
-    <td>${{ bill.total_paid }}</td>
+    {% if bill.is_paid %}
+      <th id='paid-th'>Paid:</th>
+      <td>${{ bill.total_paid }}</td>
+    {% else %}
+      <th style='color:red;' id='paid-th'>Paid:</th>
+      <td style='color:red;' >${{ bill.total_paid }} ({{ diff }} Days Past Due)</td>
+    {% endif %}
   </tr>
 </table>
 
