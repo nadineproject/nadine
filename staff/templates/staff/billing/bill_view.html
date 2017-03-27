@@ -9,17 +9,17 @@
 [ <a href="{{ bill.get_absolute_url }}">view receipt </a> | <a href="{{ bill.get_admin_url }}">admin</a> ]
 
 <h5>Detail</h5>
-<table>
+<table class='bill-id-table'>
   <tr>
     <th>Created:</th>
     <td>{{ bill.created_ts }}</td>
-  </tr>
-  <tr>
     <th>Period:</th>
     <td>
       {{ bill.period_start|date:"m/d/y" }} to {{ bill.period_end|date:"m/d/y" }}
     </td>
   </tr>
+</table>
+<table class='bill-id-table bill-id-table-2'>
   <tr>
     <th>Membership</th>
     <td>
@@ -29,25 +29,24 @@
         None
       {% endif %}
     </td>
-  </tr>
-  <tr>
     <th>Amount:</th>
     <td>${{ bill.amount }}</td>
-  </tr>
-  <tr>
-    <th>Paid:</th>
+    <th id='paid-th'>Paid:</th>
     <td>${{ bill.total_paid }}</td>
   </tr>
+  <!-- <tr>
+
+  </tr> -->
 </table>
 
 <h5>Line Items</h5>
-<table>
+<table class='item-table'>
   <tr>
     <th>Description</th>
     <th>Amount</th>
   </tr>
   {% for line_item in bill.line_items.all %}
-      <tr>
+      <tr class='{% cycle "row-odd" "row-even" %}'>
           <td>{{ line_item.description }}</td>
           <td style="text-align: right;">${{ line_item.amount|floatformat:2 }}</td>
       </tr>

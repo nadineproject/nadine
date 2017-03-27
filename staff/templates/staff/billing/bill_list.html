@@ -50,3 +50,16 @@
 {% endif %}
 
 {% endblock %}
+
+{% block extrajs %}
+<script>
+	$(document).ready(function() {
+		$('#id_start').addClass('datepicker');
+		$('#id_end').addClass('datepicker');
+
+		$('.datepicker').datepicker({
+      dateFormat: 'yy-mm-dd',
+    });
+	});
+</script>
+{% endblock %}

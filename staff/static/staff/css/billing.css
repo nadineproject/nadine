@@ -46,6 +46,21 @@ input.datepicker {
   text-decoration: none;
 }
 
+.bill-id-table th, .bill-id-table td {
+  text-align: left !important;
+}
+
+.bill-id-table th {
+  padding-left: 2%;
+  width: 12%;
+  font-size: 1.1em;
+}
+
+.bill-id-table {
+  margin: 2%;
+  width: 75% !important;
+}
+
 .bill-info {
   margin-left: 40px;
 }
@@ -101,6 +116,19 @@ input.datepicker {
 
 .input-td {
   width: 20%;
+}
+
+.item-table {
+  width: 90% !important;
+  margin: 2%;
+}
+
+.item-table th {
+  font-size: 1.1em;
+}
+
+.item-table th, .item-table td {
+  text-align: left !important;
 }
 
 .open-bill {
@@ -182,6 +210,10 @@ input.datepicker {
 	width: 30%;
 	vertical-align: baseline;
 	padding-left: 3%;
+}
+
+#paid-th {
+  width: 7%;
 }
 
 #set_paid {
