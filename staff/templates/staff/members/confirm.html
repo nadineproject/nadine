@@ -110,6 +110,7 @@
           </tr>
         </table>
       {% endif %}
+      {% if new_subs %}
       <h6>Adding These Subscriptions</h6>
         <table class='sub-table' id='add-sub-table'>
           <tr>
@@ -149,6 +150,7 @@
           </tr>
           {% endfor %}
         </table>
+        {% endif %}
     </div>
   {% endif %}
   {% csrf_token %}
