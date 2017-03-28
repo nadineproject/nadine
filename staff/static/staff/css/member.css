@@ -263,7 +263,8 @@ td.up-input.rate {
 }
 
 .confirm-btn {
-  margin-left: 40%;
+  margin-left: 35%;
+  margin-top: 2%;
 }
 
 .date-input, .mem-input {
@@ -349,6 +350,20 @@ td.up-input.rate {
 .end-table {
   margin-left: 2%;
   margin-bottom: 3%;
+}
+
+.ending-p {
+  font-size: 1.3em;
+  text-align: center;
+  margin-top: 3%;
+}
+
+.ending-p input {
+  width: 20%;
+  border-bottom: none;
+  vertical-align: baseline;
+  font-weight: bold;
+  font-size: 110%;
 }
 
 .epay-link {

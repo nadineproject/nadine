@@ -29,7 +29,7 @@
 
 <div class='curr-sub'>
   <h5>Subscriptions</h5>
-  <table class='sub-table'>
+  <table class='sub-table' style='margin-top: 2%;'>
     <tr>
       <th class='sub-th'>Resource</th>
       <th class='sub-th'>Allowance</th>
@@ -321,6 +321,7 @@
 
     $('.datepicker').datepicker({
       dateFormat: 'yy-mm-dd',
+      minDate: 0
     });
 
   //JS for changing package
@@ -381,6 +382,7 @@
 
       $('.datepicker').datepicker({
         dateFormat: 'yy-mm-dd',
+        minDate: 0
       });
 
       $('.delete-row').on('click', function(e) {

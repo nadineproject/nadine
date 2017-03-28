@@ -3,10 +3,12 @@
 
 {% block sub-title %}Bill | {{ bill.user.get_full_name }}{% endblock %}
 
+<!-- SHOW GUEST DROP_INS & OVERAGES -->
+
 {% block content %}
 
 <h4>Bill {{ bill.id }}: <a href="{% url 'staff:members:detail' bill.user.username %}">{{ bill.user.get_full_name }}</a></h4>
-[ <a href="{{ bill.get_absolute_url }}">view receipt </a> | <a href="{{ bill.get_admin_url }}">admin</a> ]
+<span>[ <a href="{{ bill.get_absolute_url }}">view receipt </a> | <a href="{{ bill.get_admin_url }}">admin</a> ]</span>
 
 <h5>Detail</h5>
 <table class='bill-id-table'>

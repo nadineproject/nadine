@@ -2,38 +2,49 @@
 {% load app_filters %}
 
 {% block content %}
-<h5>Confirm Membership Changes for <a href="{% url 'staff:members:detail' user.username %}">{{ user.get_full_name }}</a></h5>
+<h5 style='margin-bottom: 3%;'>Confirm Membership Changes for <a href="{% url 'staff:members:detail' user.username %}">{{ user.get_full_name }}</a></h5>
+<h6>Current Subscriptions</h6>
+<table class='sub-table'>
+  <tr>
+    <th class='sub-th'>Resource</th>
+    <th class='allowance sub-th'>Allowance</th>
+    <th class='sub-th'>Start Date</th>
+    <th class='sub-th'>End Date</th>
+    <th class='rate sub-th'>Monthly Rate</th>
+    <th class='rate sub-th'>Overage rate</th>
+    <th class='sub-th'>Paid By</th>
+  </tr>
+  {% for c in user.membership.active_subscriptions %}
+    <tr class='{% cycle "row-odd" "row-even" %}'>
+      <td>{{ c.resource }}</td>
+      <td>{{ c.allowance }}</td>
+      <td>{{ c.start_date }}</td>
+      <td>{{ c.end_date |default:"-" }}</td>
+      <td>${{ c.monthly_rate }}/month</td>
+      <td>${{ c.overage_rate }}</td>
+      <td>{{ c.paid_by|default:"" }}</td>
+    </tr>
+  {% endfor %}
+</table>
 <form action='.' method='POST'>
   {% if action == 'end_pkg' %}
     <div class='end_pkg_table'>
       <input name='end_pkg' type='hidden' value='end_pkg' />
-      <h6>Ending Current Package</h6>
-      <table>
-        <tr>
-          <td>
-            <strong>Ending current package and all subscriptions on:</strong>
-          </td>
-          <td>
-            {% if end_target %}
-              <input type='date' value='{{ end_target}}' readonly />
-            {% endif %}
-          </td>
-        </tr>
-      </table>
+      <p class='ending-p'><strong>Ending this package and all subscritions on:</strong> <input type='date' value="{{ end_target }}" readonly /></p>
     </div>
   {% endif %}
   {% if action == 'new_pkg' %}
     <div class='new_pkg_table'>
       <input type='hidden' value='new_pkg' name='new_pkg' />
-      <h6>Starting a New Package</h6>
+      <h6>New Package Subscriptions</h6>
       <table class='sub-table'>
         <tr>
           <th class='sub-th'>Resource</th>
           <th class='allowance sub-th'>Allowance</th>
           <th class='sub-th'>Start Date</th>
           <th class='sub-th'>End Date</th>
-          <th class='rate sub-th'>Overage Rate</th>
           <th class='rate sub-th'>Monthly Rate</th>
+          <th class='rate sub-th'>Overage Rate</th>
           <th class='sub-th'>Paid By</th>
         </tr>
         {% for sub in new_subs %}
@@ -51,10 +62,10 @@
             {{ sub.end_date }}
           </td>
           <td>
-            ${{ sub.overage_rate }}
+            ${{ sub.monthly_rate }}
           </td>
           <td>
-            ${{ sub.monthly_rate }}
+            ${{ sub.overage_rate }}
           </td>
           <td>
             {{ sub.paid_by }}
@@ -74,8 +85,8 @@
             <th class='resource-th sub-th'>Resource</th>
             <th class='allowance sub-th'>Allowance</th>
             <th class='sub-th'>Start Date</th>
-            <th class='rate sub-th'>Overage Rate</th>
             <th class='rate sub-th'>Monthly Rate</th>
+            <th class='rate sub-th'>Overage Rate</th>
             <th class='sub-th'>Paid By</th>
           </tr>
           <tr>
@@ -89,26 +100,17 @@
               {{ ending_subs.start_date }}
             </td>
             <td>
-              {{ ending_subs.overage_rate }}
+              {{ ending_subs.monthly_rate }}
             </td>
             <td>
-              {{ ending_subs.monthly_rate }}
+              {{ ending_subs.overage_rate }}
             </td>
             <td>
               {{ ending_subs.paid_by }}
             </td>
           </tr>
         </table>
-        <table>
-          <tr>
-            <td>
-              <strong>Ending this subscription on:</strong>
-            </td>
-            <td>
-              {{ end_target }}
-            </td>
-          </tr>
-        </table>
+        <p class='ending-p'><strong>Ending this subscription on:</strong>  <input type='date' value="{{ end_target }}" readonly /></p>
       {% endif %}
       {% if new_subs %}
       <h6>Adding These Subscriptions</h6>
@@ -118,8 +120,8 @@
             <th class='allowance sub-th'>Allowance</th>
             <th class='sub-th'>Start Date</th>
             <th class='sub-th'>End Date</th>
-            <th class='rate sub-th'>Overage Rate</th>
             <th class='rate sub-th'>Monthly Rate</th>
+            <th class='rate sub-th'>Overage Rate</th>
             <th class='sub-th'>Paid By</th>
           </tr>
           {% for ns in new_subs %}
@@ -137,10 +139,10 @@
               {{ ns.end_date }}
             </td>
             <td class='sub-td'>
-              ${{ ns.overage_rate }}
+              ${{ ns.monthly_rate }}
             </td>
             <td class='sub-td'>
-              ${{ ns.monthly_rate }}
+              ${{ ns.overage_rate }}
             </td>
             <td class='sub-td'>
               {% if ns.paid_by %}
@@ -161,10 +163,12 @@
 {% block extrajs %}
   <script>
   $(document).ready(function() {
+    $('.button-collapse').sideNav();
+		$('.collapsible').collapsible();
+
     {% for message in messages %}
         Materialize.toast('{{ message }}', 3000, '{{ message.tags }}-msg');
     {% endfor %}
-
   });
   </script>
 {% endblock %}

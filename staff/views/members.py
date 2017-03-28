@@ -437,9 +437,17 @@ def confirm_membership(request, username, package, end_target, action, ending_su
                             if sub['paid_by']:
                                 p_username = sub['paid_by']
                                 paid_by = User.objects.get(username=p_username)
+                            already_have = user.membership.active_subscriptions().filter(resource=resource)
+                            if len(already_have) > 0:
+                                p_id = already_have[0].id
+                                prev_rs = ResourceSubscription.objects.get(id=p_id)
+                                allowance = int(allowance) + prev_rs.allowance
+                                monthly_rate = int(monthly_rate) + prev_rs.monthly_rate
+                                prev_rs.end_date = datetime.strptime(start_date, '%Y-%m-%d') - timedelta(days=1)
+                                prev_rs.save()
                             rs = ResourceSubscription(created_by=created_by, created_ts=created_ts, resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=paid_by, membership=user.membership)
                             rs.save()
-                    messages.error(request, "You have updated the subscriptions for %s" % username)
+                    messages.success(request, "You have updated the subscriptions for %s" % username)
                     return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}))
             except IntegrityError:
                 messages.error(request, 'There was an error updating the subsciptions')
