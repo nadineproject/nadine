@@ -438,7 +438,7 @@ def confirm_membership(request, username, package, end_target, action, ending_su
                                 p_username = sub['paid_by']
                                 paid_by = User.objects.get(username=p_username)
                             already_have = user.membership.active_subscriptions().filter(resource=resource)
-                            if len(already_have) > 0:
+                            if len(already_have) > 0 and paid_by == None:
                                 p_id = already_have[0].id
                                 prev_rs = ResourceSubscription.objects.get(id=p_id)
                                 allowance = int(allowance) + prev_rs.allowance
