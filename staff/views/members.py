@@ -291,7 +291,8 @@ def membership(request, username):
             if add_form.is_valid():
                 paid_by_username = request.POST.get('paid_by', None)
                 if paid_by_username:
-                    paid_by = User.objects.get(username=paid_by_username)
+                    paid_by_object = User.objects.get(username=paid_by_username)
+                    paid_by = paid_by_object.username
                 else:
                     paid_by = None
                 resource = request.POST.get('resource')
@@ -403,7 +404,7 @@ def confirm_membership(request, username, package, end_target, action, ending_su
                             paid_by = User.objects.get(username=p_username)
                         rs = ResourceSubscription(created_by=created_by, created_ts=created_ts, resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=paid_by, membership=membership)
                         rs.save()
-                    messages.success(request, "You have updated the subscriptions for %s" % username)
+                    messages.error(request, "You have updated the subscriptions for %s" % username)
                     return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}))
             except IntegrityError as e:
                 print('There was an ERROR: %s' % e.message)
@@ -437,8 +438,8 @@ def confirm_membership(request, username, package, end_target, action, ending_su
                             if sub['paid_by']:
                                 p_username = sub['paid_by']
                                 paid_by = User.objects.get(username=p_username)
-                            already_have = user.membership.active_subscriptions().filter(resource=resource)
-                            if len(already_have) > 0 and paid_by == None:
+                            already_have = user.membership.active_subscriptions().filter(resource=resource).filter(paid_by=paid_by)
+                            if len(already_have) > 0:
                                 p_id = already_have[0].id
                                 prev_rs = ResourceSubscription.objects.get(id=p_id)
                                 allowance = int(allowance) + prev_rs.allowance
