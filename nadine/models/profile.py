@@ -13,7 +13,7 @@ from datetime import datetime, time, date, timedelta
 from dateutil.relativedelta import relativedelta
 
 from django.db import models
-from django.db.models import Q, Sum, Value
+from django.db.models import F, Q, Sum, Value
 from django.db.models.functions import Coalesce
 from django.contrib import admin
 from django.core import urlresolvers
@@ -87,6 +87,31 @@ class UserQueryHelper():
         organization_members = self.active_organization_members(target_date, package_name)
         combined_query = individual_members | organization_members
         return combined_query.distinct()
+
+    def payers(self, target_date=None):
+        ''' return a set of Users that are paying for the active memberships '''
+        # I tried to make this method as easy to read as possible. -- JLS
+        # This joins the following sets:
+        #   Individuals paying for their own membership,
+        #   Organization leads of active organizations,
+        #   Users paying for other's memberships
+        active_subscriptions = ResourceSubscription.objects.active_subscriptions(target_date)
+        paid_by_self = active_subscriptions.filter(paid_by__isnull=True)
+
+        paid_by_other = active_subscriptions.filter(paid_by__isnull=False)
+        other_payers = paid_by_other.annotate(payer=F('paid_by')).values('payer')
+
+        is_individual_membership = Q(membership__individualmembership__isnull=False)
+        individual_payers = paid_by_self.filter(is_individual_membership).annotate(payer=F('membership__individualmembership__user')).values('payer')
+
+        is_organizaion_membership = Q(membership__organizationmembership__isnull=False)
+        organization_leads = paid_by_self.filter(is_organizaion_membership).annotate(payer=F('membership__organizationmembership__organization__lead')).values('payer')
+
+        combined_set = (individual_payers | organization_leads | other_payers)
+        return User.objects.filter(id__in=combined_set).distinct()
+
+    def invalid_billing(self):
+        return self.payers.filter(profile__valid_billing=False)
 
     def here_today(self, day=None):
         if not day:
@@ -187,14 +212,6 @@ class UserQueryHelper():
 
     def missing_photo(self):
         return self.active_members().filter(profile__photo="").order_by('first_name')
-
-    def payers(self):
-        # TODO - Not done yet!
-        active_subscriptions = ResourceSubscription.objects.active_subscriptions()
-        return User.objects.filter(id__in=active_subscriptions.values('paid_by')).distinct()
-
-    def invalid_billing(self):
-        return self.payers.filter(profile__valid_billing=False)
 
     def members_with_desks(self):
         memberships = Membership.objects.active_memberships().filter(has_desk=True)
