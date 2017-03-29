@@ -95,10 +95,10 @@ class UserQueryHelper():
         #   Individuals paying for their own membership,
         #   Organization leads of active organizations,
         #   Users paying for other's memberships
-        active_subscriptions = ResourceSubscription.objects.active_subscriptions(target_date)
-        paid_by_self = active_subscriptions.filter(paid_by__isnull=True)
+        active_paid_subscriptions = ResourceSubscription.objects.active_subscriptions(target_date).filter(monthly_rate__gt=0)
+        paid_by_self = active_paid_subscriptions.filter(paid_by__isnull=True)
 
-        paid_by_other = active_subscriptions.filter(paid_by__isnull=False)
+        paid_by_other = active_paid_subscriptions.filter(paid_by__isnull=False)
         other_payers = paid_by_other.annotate(payer=F('paid_by')).values('payer')
 
         is_individual_membership = Q(membership__individualmembership__isnull=False)
