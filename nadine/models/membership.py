@@ -14,7 +14,8 @@ from dateutil.relativedelta import relativedelta
 from decimal import Decimal
 
 from django.db import models
-from django.db.models import Q
+from django.db.models import F, Q, Count, Sum, Value
+from django.db.models.functions import Coalesce
 from django.contrib import admin
 from django.core import urlresolvers
 from django.core.files.base import ContentFile
@@ -60,8 +61,8 @@ class MemberGroups():
     def get_member_groups():
         group_list = []
         for package in MembershipPackage.objects.filter(enabled=True).order_by('name'):
-            package_name = package.name
-            if len(User.helper.active_members(package_name=package_name)) > 0:
+            if User.helper.active_members_by_package(package).count() > 0:
+                package_name = package.name
                 group_list.append((package_name, "%s Members" % package_name))
         for g, d in sorted(MemberGroups.GROUP_DICT.items(), key=operator.itemgetter(0)):
             group_list.append((g, d))
@@ -598,6 +599,12 @@ class SubscriptionManager(models.Manager):
         unending = Q(end_date__isnull=True)
         future_ending = Q(end_date__gte=target_date)
         return self.filter(current & (unending | future_ending)).distinct()
+
+    def active_subscriptions_with_username(self, target_date=None):
+        ''' Return the set of active subscriptions including the username for each subscription. '''
+        individual_user = F('membership__individualmembership__user__username')
+        organization_user = F('membership__organizationmembership__organization__organizationmember__user__username')
+        return self.active_subscriptions().annotate(username=Coalesce(individual_user, organization_user))
 
 
 class ResourceSubscription(models.Model):

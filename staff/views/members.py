@@ -90,10 +90,14 @@ def members(request, group=None):
         member_count = users.count()
         group_name = MemberGroups.GROUP_DICT[group]
     else:
-        # Assume the group is a membership plan
-        users = User.helper.active_members(package_name=group)
-        member_count = len(users)
         group_name = "%s Members" % group
+        member_count = 0
+        
+        # See if our 'group' is a package name
+        package = MembershipPackage.objects.filter(name=group).first()
+        if package:
+            users = User.helper.active_members_by_package(package).order_by('first_name')
+            member_count = len(users)
 
     # How many members do we have?
     total_members = User.helper.active_members().count()

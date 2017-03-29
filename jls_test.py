@@ -3,6 +3,8 @@ from dateutil.relativedelta import relativedelta
 
 from django.contrib.auth.models import User
 from django.utils.timezone import localtime, now
+from django.db.models import Q, Count, Sum, Value
+from django.db.models.functions import Coalesce
 
 from nadine.models import *
 
