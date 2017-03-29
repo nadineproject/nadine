@@ -74,10 +74,19 @@ def user_file_upload_path(instance, filename):
 
 class UserQueryHelper():
 
-    def active_members(self):
-        # TODO - convert
-        active_members = Q(id__in=OldMembership.objects.active_memberships().values('user'))
-        return User.objects.select_related('profile').filter(active_members).order_by('first_name')
+    def active_individual_members(self, target_date=None, package_name=None):
+        individual_memberships = Membership.objects.active_individual_memberships(target_date, package_name)
+        return User.objects.filter(id__in=individual_memberships.values('individualmembership__user'))
+
+    def active_organization_members(self, target_date=None, package_name=None):
+        organization_memberships = Membership.objects.active_organization_memberships(target_date, package_name)
+        return User.objects.filter(id__in=organization_memberships.values('organizationmembership__organization__organizationmember__user'))
+
+    def active_members(self, target_date=None, package_name=None):
+        individual_members = self.active_individual_members(target_date, package_name)
+        organization_members = self.active_organization_members(target_date, package_name)
+        combined_query = individual_members | organization_members
+        return combined_query.distinct()
 
     def here_today(self, day=None):
         if not day:
@@ -179,17 +188,13 @@ class UserQueryHelper():
     def missing_photo(self):
         return self.active_members().filter(profile__photo="").order_by('first_name')
 
-    def invalid_billing(self):
-        active_memberships = Membership.objects.active_memberships()
-        free_memberships = active_memberships.filter(monthly_rate=0)
-        freeloaders = Q(id__in=free_memberships.values('user'))
-        guest_memberships = active_memberships.filter(paid_by__isnull=False)
-        guests = Q(id__in=guest_memberships.values('user'))
-        active_invalids = self.active_members().filter(profile__valid_billing=False)
-        return active_invalids.exclude(freeloaders).exclude(guests)
+    def payers(self):
+        # TODO - Not done yet!
+        active_subscriptions = ResourceSubscription.objects.active_subscriptions()
+        return User.objects.filter(id__in=active_subscriptions.values('paid_by')).distinct()
 
-    def members_by_package(self, package_name):
-        return Membership.objects.active_members(package_name=package_name)
+    def invalid_billing(self):
+        return self.payers.filter(profile__valid_billing=False)
 
     def members_with_desks(self):
         memberships = Membership.objects.active_memberships().filter(has_desk=True)

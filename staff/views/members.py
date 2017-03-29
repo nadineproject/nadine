@@ -91,7 +91,7 @@ def members(request, group=None):
         group_name = MemberGroups.GROUP_DICT[group]
     else:
         # Assume the group is a membership plan
-        users = User.helper.members_by_package(group)
+        users = User.helper.active_members(package_name=group)
         member_count = len(users)
         group_name = "%s Members" % group
 
