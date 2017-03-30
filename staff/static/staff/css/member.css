@@ -29,7 +29,7 @@ textarea.bcc-textarea {
 	height: 6rem;
 }
 
-#bd-head, #package-head  {
+#bd-head  {
   width: 15% !important;
   vertical-align: middle;
 }
@@ -151,6 +151,13 @@ input#id_bill_day {
 
 #package {
   width: 20%;
+}
+
+#package-head {
+  width: 15%;
+  padding-top: 2%;
+  color: RGBA(200, 79, 78, .80);
+  font-size: 1.2em;
 }
 
 #quick-links {

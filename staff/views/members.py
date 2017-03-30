@@ -92,7 +92,7 @@ def members(request, group=None):
     else:
         group_name = "%s Members" % group
         member_count = 0
-        
+
         # See if our 'group' is a package name
         package = MembershipPackage.objects.filter(name=group).first()
         if package:
@@ -278,38 +278,12 @@ def membership(request, username):
 
     if package != user.membership.package.id:
         subscriptions = SubscriptionDefault.objects.filter(package=package)
-        sub_data=[{'id': None, 'resource': s.resource, 'allowance':s.allowance, 'start_date':today, 'end_date': None, 'username': user.username, 'created_by': request.user, 'monthly_rate': s.monthly_rate, 'overage_rate': s.overage_rate, 'paid_by': None} for s in subscriptions]
+        sub_data=[{'s_id': None, 'resource': s.resource, 'allowance':s.allowance, 'start_date':today, 'end_date': None, 'username': user.username, 'created_by': request.user, 'monthly_rate': s.monthly_rate, 'overage_rate': s.overage_rate, 'paid_by': None} for s in subscriptions]
     else:
         subscriptions = user.membership.active_subscriptions()
-        sub_data=[{'id': s.id, 'resource': s.resource, 'allowance':s.allowance, 'start_date':s.start_date, 'end_date': s.end_date, 'username': user.username, 'created_by': s.created_by, 'monthly_rate': s.monthly_rate, 'overage_rate': s.overage_rate, 'paid_by': s.paid_by} for s in subscriptions]
+        sub_data=[{'s_id': s.id, 'resource': s.resource, 'allowance':s.allowance, 'start_date':s.start_date, 'end_date': s.end_date, 'username': user.username, 'created_by': s.created_by, 'monthly_rate': s.monthly_rate, 'overage_rate': s.overage_rate, 'paid_by': s.paid_by} for s in subscriptions]
 
     if request.method == 'POST':
-        # if 'update' in request.POST:
-        #     s_id = request.POST['id']
-        #     end_target = request.POST['end_date']
-        #
-        #     return HttpResponseRedirect(reverse('staff:members:confirm', kwargs={'username': username, 'package': None, 'action': 'update_subs', 'new_subs': None, 'end_target': end_target, 'ending_subs': s_id}))
-        # if 'add' in request.POST:
-        #     add_form = SubForm(request.POST)
-        #     new_subs = []
-        #     if add_form.is_valid():
-        #         paid_by_username = request.POST.get('paid_by', None)
-        #         if paid_by_username:
-        #             paid_by_object = User.objects.get(username=paid_by_username)
-        #             paid_by = paid_by_object.username
-        #         else:
-        #             paid_by = None
-        #         resource = request.POST.get('resource')
-        #         allowance = request.POST.get('allowance')
-        #         start_date = request.POST.get('start_date')
-        #         end_date = request.POST.get('end_date', None)
-        #         monthly_rate = request.POST.get('monthly_rate', 0)
-        #         overage_rate = request.POST.get('overage_rate', 0)
-        #         membership = user.membership
-        #
-        #         new_subs.append({'created_by':request.user.username, 'resource':resource, 'allowance':allowance, 'start_date':start_date, 'end_date':end_date, 'monthly_rate':monthly_rate, 'overage_rate':overage_rate, 'paid_by':paid_by, 'membership':membership.id})
-        #
-        #         return HttpResponseRedirect(reverse('staff:members:confirm', kwargs={'username': username, 'package': membership.id, 'action': 'update_subs', 'new_subs': new_subs, 'end_target': None, 'ending_subs': None}))
         if 'ending' in request.POST:
             if request.POST['ending'] == 'today':
                 end_date = today
@@ -395,7 +369,7 @@ def confirm_membership(request, username, package, end_target, action, ending_su
 
                 # Review all subscriptions to see if adding or ending
                 for sub in subs:
-                    sub_id = sub['id']
+                    sub_id = sub['s_id']
                     if sub_id and sub['end_date']:
                         end_date = sub['end_date']
                         to_end = user.membership.active_subscriptions().filter(id=sub_id)

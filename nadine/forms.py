@@ -480,7 +480,7 @@ class SubForm(forms.Form):
     username = forms.CharField(required=False, widget=forms.HiddenInput({'class':'username_td'}))
     created_ts = forms.DateField(required=False, widget=forms.HiddenInput)
     created_by = forms.CharField(required=False, widget=forms.HiddenInput({'class':'created_by_td'}))
-    s_id = forms.IntegerField(required=False)
+    s_id = forms.IntegerField(required=False, widget=forms.HiddenInput())
     resource = forms.ModelChoiceField(queryset=Resource.objects.all(), required=False)
     allowance = forms.IntegerField(required=False)
     start_date = forms.DateField(widget=forms.TextInput(attrs={'class': 'start_date'}), required=False)
