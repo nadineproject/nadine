@@ -138,13 +138,20 @@ class MembershipManager(models.Manager):
         return self.active_memberships(target_date, package_name).filter(organizationmembership__isnull=False)
 
     def ready_for_billing(self, target_date=None):
+        ''' Return a set of memberships ready for billing.  This
+        includes all active memberships that fall on this billing day,
+        and the memberships that ended yesterday. '''
         if not target_date:
             target_date = localtime(now()).date()
         ready = []
-        for m in self.active_memberships(target_date):
+        memberships_today = self.active_memberships(target_date)
+        for m in memberships_today:
             (this_period_start, this_period_end) = m.get_period(target_date)
             if this_period_start == target_date:
                 ready.append(m)
+        memberships_yesterday = Membership.objects.active_memberships(target_date - timedelta(days=1))
+        for m in memberships_yesterday.exclude(id__in=memberships_today.values('id')):
+            ready.append(m)
         return ready
 
     def future_memberships(self, target_date=None):
