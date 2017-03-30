@@ -294,7 +294,7 @@ def membership(request, username):
             else:
                 end_target = request.POST['date-end']
 
-            return HttpResponseRedirect(reverse('staff:members:confirm', kwargs={'username': username, 'package': None, 'action': 'end_pkg', 'new_subs': None, 'end_target': end_target, 'ending_subs': None}))
+            return HttpResponseRedirect(reverse('staff:members:confirm', kwargs={'username': username, 'package': None, 'new_subs': None, 'end_target': end_target}))
         else:
             package_form = MembershipPackageForm(request.POST)
             sub_formset = SubFormSet(request.POST)
@@ -322,7 +322,7 @@ def membership(request, username):
                                 new_subs.append({'s_id': s_id,'resource':resource.id, 'allowance':allowance, 'start_date':start_date, 'end_date':end_date, 'monthly_rate': monthly_rate, 'overage_rate':overage_rate, 'paid_by':paid_by, 'membership':None})
                         end_target = start - timedelta(days=1)
 
-                        return HttpResponseRedirect(reverse('staff:members:confirm', kwargs={'username': username, 'package': membership, 'end_target': end_target, 'action': 'new_pkg', 'ending_subs': None, 'new_subs': new_subs}))
+                        return HttpResponseRedirect(reverse('staff:members:confirm', kwargs={'username': username, 'package': membership, 'end_target': end_target, 'new_subs': new_subs}))
 
                 except IntegrityError:
                     messages.error(request, 'There was an error updating the subscriptions')
@@ -347,80 +347,74 @@ def membership(request, username):
     return render(request, 'staff/members/membership.html', context)
 
 @staff_member_required
-def confirm_membership(request, username, package, end_target, action, ending_subs, new_subs):
+def confirm_membership(request, username, package, end_target, new_subs):
     user = get_object_or_404(User, username=username)
     new_subs = unicodedata.normalize('NFKD', new_subs).encode('ascii', 'ignore')
     package = unicodedata.normalize('NFKD', package).encode('ascii', 'ignore')
     subs = ast.literal_eval(new_subs)
     pkg = ast.literal_eval(package)
-    print user.membership.package.id
-    print pkg
     if request.method == 'POST':
         try:
             with transaction.atomic():
                 # Check to see if new membership package. If so, end all previous subscriptions
                 membership = user.membership
-                mem_package = MembershipPackage.objects.get(id=pkg['package'])
-                if user.membership.package != mem_package:
-                    membership.package = mem_package
-                    membership.bill_day = pkg['bill_day']
-                    membership.save()
+                if pkg:
+                    # If there is a package, then make changes, else, we are ending all
+                    mem_package = MembershipPackage.objects.get(id=pkg['package'])
+                    if user.membership.package != mem_package:
+                        membership.package = mem_package
+                        membership.bill_day = pkg['bill_day']
+                        membership.save()
+                        user.membership.end_all(end_target)
+
+                    # Review all subscriptions to see if adding or ending
+                    for sub in subs:
+                        sub_id = sub['s_id']
+                        if sub_id and sub['end_date']:
+                            end_date = sub['end_date']
+                            to_end = user.membership.active_subscriptions().filter(id=sub_id)
+                            to_end.end_date = sub['end_date']
+                            to_end.save()
+                        paid_by = None
+                        created_ts = localtime(now())
+                        created_by = request.user
+                        resource = Resource.objects.get(id=sub['resource'])
+                        allowance = sub['allowance']
+                        start_date = sub['start_date']
+                        if sub['end_date']:
+                            end_date = sub['end_date']
+                        else:
+                            end_date = None
+                        monthly_rate = sub['monthly_rate']
+                        overage_rate = sub['overage_rate']
+                        if sub['paid_by']:
+                            p_username = sub['paid_by']
+                            paid_by = User.objects.get(username=p_username)
+
+                        # Check to see if it is a unique resource and end if it is not
+                        already_have = user.membership.active_subscriptions().filter(resource=resource).filter(paid_by=paid_by)
+                        if len(already_have) > 0:
+                            p_id = already_have[0].id
+                            prev_rs = ResourceSubscription.objects.get(id=p_id)
+                            if not prev_rs.end_date:
+                                allowance = int(allowance) + prev_rs.allowance
+                                monthly_rate = int(monthly_rate) + prev_rs.monthly_rate
+                                prev_rs.end_date = datetime.strptime(start_date, '%Y-%m-%d') - timedelta(days=1)
+                                prev_rs.save()
+                        # Save new resource
+                        rs = ResourceSubscription(created_by=created_by, created_ts=created_ts, resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=paid_by, membership=membership)
+                        rs.save()
+                else:
                     user.membership.end_all(end_target)
-
-                # Review all subscriptions to see if adding or ending
-                for sub in subs:
-                    sub_id = sub['s_id']
-                    if sub_id and sub['end_date']:
-                        end_date = sub['end_date']
-                        to_end = user.membership.active_subscriptions().filter(id=sub_id)
-                        to_end.end_date = sub['end_date']
-                        to_end.save()
-                    paid_by = None
-                    created_ts = localtime(now())
-                    created_by = request.user
-                    resource = Resource.objects.get(id=sub['resource'])
-                    allowance = sub['allowance']
-                    start_date = sub['start_date']
-                    if sub['end_date']:
-                        end_date = sub['end_date']
-                    else:
-                        end_date = None
-                    monthly_rate = sub['monthly_rate']
-                    overage_rate = sub['overage_rate']
-                    if sub['paid_by']:
-                        p_username = sub['paid_by']
-                        paid_by = User.objects.get(username=p_username)
-
-                    # Check to see if it is a unique resource and end if it is not
-                    already_have = user.membership.active_subscriptions().filter(resource=resource).filter(paid_by=paid_by)
-                    if len(already_have) > 0:
-                        p_id = already_have[0].id
-                        prev_rs = ResourceSubscription.objects.get(id=p_id)
-                        if not prev_rs.end_date:
-                            allowance = int(allowance) + prev_rs.allowance
-                            monthly_rate = int(monthly_rate) + prev_rs.monthly_rate
-                            prev_rs.end_date = datetime.strptime(start_date, '%Y-%m-%d') - timedelta(days=1)
-                            prev_rs.save()
-                    # Save new resource
-                    rs = ResourceSubscription(created_by=created_by, created_ts=created_ts, resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=paid_by, membership=membership)
-                    rs.save()
                 messages.success(request, "You have updated the subscriptions for %s" % username)
                 return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}))
         except IntegrityError as e:
             print('There was an ERROR: %s' % e.message)
             messages.error(request, 'There was an error setting new membership package')
-
-        # if 'end_pkg' in request.POST:
-        #     user.membership.end_all(end_target)
-        #     messages.success(request, "You have ended the membership package for %s" % username)
-        #     return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}))
-
     context = {
         'entity': user,
         'package': pkg,
-        'action': action,
         'new_subs': subs,
-        'ending_subs': ending_subs,
         'end_target': end_target,
     }
     return render(request, 'staff/members/confirm.html', context)

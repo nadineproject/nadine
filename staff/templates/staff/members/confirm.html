@@ -3,7 +3,7 @@
 
 {% block content %}
 <h5 style='margin-bottom: 3%;'>Confirm Membership Changes for <a href="{% url 'staff:members:detail' user.username %}">{{ user.get_full_name }}</a></h5>
-<h6>Current Subscriptions</h6>
+<!-- <h6>Current Subscriptions</h6>
 <table class='sub-table'>
   <tr>
     <th class='sub-th'>Resource</th>
@@ -25,18 +25,10 @@
       <td>{{ c.paid_by|default:"" }}</td>
     </tr>
   {% endfor %}
-</table>
+</table> -->
 <form action='.' method='POST'>
-  {% if action == 'end_pkg' %}
-    <div class='end_pkg_table'>
-      <input name='end_pkg' type='hidden' value='end_pkg' />
-      <p class='ending-p'><strong>Ending this package and all subscritions on:</strong> <input type='date' value="{{ end_target }}" readonly /></p>
-    </div>
-  {% endif %}
-  {% if action == 'new_pkg' %}
-    <div class='new_pkg_table'>
-      <input type='hidden' value='new_pkg' name='new_pkg' />
-      <h6>New Package Subscriptions</h6>
+      {% if new_subs %}
+      <h6>Ending These Subscriptions</h6>
       <table class='sub-table'>
         <tr>
           <th class='sub-th'>Resource</th>
@@ -44,117 +36,81 @@
           <th class='sub-th'>Start Date</th>
           <th class='sub-th'>End Date</th>
           <th class='rate sub-th'>Monthly Rate</th>
-          <th class='rate sub-th'>Overage Rate</th>
+          <th class='rate sub-th'>Overage rate</th>
           <th class='sub-th'>Paid By</th>
         </tr>
-        {% for sub in new_subs %}
-        <tr>
-          <td id='resource'>
-            {{ sub.resource|resource_filter }}
-          </td>
-          <td>
-            {{ sub.allowance }}
-          </td>
-          <td>
-            {{ sub.start_date }}
-          </td>
-          <td>
-            {{ sub.end_date }}
-          </td>
-          <td>
-            ${{ sub.monthly_rate }}
-          </td>
-          <td>
-            ${{ sub.overage_rate }}
-          </td>
-          <td>
-            {{ sub.paid_by }}
-          </td>
-        </tr>
-        {% endfor %}
-      </table>
-    </div>
-  {% endif %}
-  {% if action == 'update_subs' %}
-    <div>
-      <input type='hidden' name='update_subs' value='update_subs' />
-      {% if end_target != 'None' %}
-      <h6>Ending Subscription</h6>
-        <table class='sub-table'>
-          <tr>
-            <th class='resource-th sub-th'>Resource</th>
-            <th class='allowance sub-th'>Allowance</th>
-            <th class='sub-th'>Start Date</th>
-            <th class='rate sub-th'>Monthly Rate</th>
-            <th class='rate sub-th'>Overage Rate</th>
-            <th class='sub-th'>Paid By</th>
-          </tr>
-          <tr>
-            <td id='resource'>
-              {{ ending_subs.resource }}
-            </td>
-            <td>
-              {{ ending_subs.allowance }}
-            </td>
-            <td>
-              {{ ending_subs.start_date }}
-            </td>
-            <td>
-              {{ ending_subs.monthly_rate }}
-            </td>
-            <td>
-              {{ ending_subs.overage_rate }}
-            </td>
-            <td>
-              {{ ending_subs.paid_by }}
-            </td>
-          </tr>
-        </table>
-        <p class='ending-p'><strong>Ending this subscription on:</strong>  <input type='date' value="{{ end_target }}" readonly /></p>
-      {% endif %}
-      {% if new_subs %}
-      <h6>Adding These Subscriptions</h6>
-        <table class='sub-table' id='add-sub-table'>
-          <tr>
-            <th class='resource-th sub-th'>Resource</th>
-            <th class='allowance sub-th'>Allowance</th>
-            <th class='sub-th'>Start Date</th>
-            <th class='sub-th'>End Date</th>
-            <th class='rate sub-th'>Monthly Rate</th>
-            <th class='rate sub-th'>Overage Rate</th>
-            <th class='sub-th'>Paid By</th>
-          </tr>
-          {% for ns in new_subs %}
-          <tr class='{% cycle "row-even" "row-odd" %}'>
-            <td class='sub-td'>
-              <strong>{{ ns.resource|resource_filter }}</strong>
-            </td>
-            <td class='sub-td'>
-              {{ ns.allowance }}
-            </td>
-            <td class='sub-td'>
-              {{ ns.start_date }}
-            </td>
-            <td class='sub-td'>
-              {{ ns.end_date }}
-            </td>
-            <td class='sub-td'>
-              ${{ ns.monthly_rate }}
-            </td>
-            <td class='sub-td'>
-              ${{ ns.overage_rate }}
-            </td>
-            <td class='sub-td'>
-              {% if ns.paid_by %}
-                {{ ns.paid_by }}
-              {% endif %}
-            </td>
-          </tr>
+        {% for ns in new_subs %}
+          {% if ns.end_date %}
+              <tr class='{% cycle "row-even" "row-odd" %}'>
+                <td class='sub-td'>
+                  <strong>{{ ns.resource|resource_filter }}</strong>
+                </td>
+                <td class='sub-td'>
+                  {{ ns.allowance }}
+                </td>
+                <td class='sub-td'>
+                  {{ ns.start_date }}
+                </td>
+                <td class='sub-td'>
+                  {{ ns.end_date }}
+                </td>
+                <td class='sub-td'>
+                  ${{ ns.monthly_rate }}
+                </td>
+                <td class='sub-td'>
+                  ${{ ns.overage_rate }}
+                </td>
+                <td class='sub-td'>
+                  {% if ns.paid_by %}
+                    {{ ns.paid_by }}
+                  {% endif %}
+                </td>
+              </tr>
+          {% else %}{% endif %}
           {% endfor %}
         </table>
-        {% endif %}
-    </div>
-  {% endif %}
+          <h6>Adding These Subscriptions</h6>
+          <table class='sub-table'>
+            <tr>
+              <th class='sub-th'>Resource</th>
+              <th class='allowance sub-th'>Allowance</th>
+              <th class='sub-th'>Start Date</th>
+              <th class='sub-th'>End Date</th>
+              <th class='rate sub-th'>Monthly Rate</th>
+              <th class='rate sub-th'>Overage rate</th>
+              <th class='sub-th'>Paid By</th>
+            </tr>
+          {% for ns in new_subs %}
+            {% if ns.end_date == None %}
+              <tr class='{% cycle "row-even" "row-odd" %}'>
+                <td class='sub-td'>
+                  <strong>{{ ns.resource|resource_filter }}</strong>
+                </td>
+                <td class='sub-td'>
+                  {{ ns.allowance }}
+                </td>
+                <td class='sub-td'>
+                  {{ ns.start_date }}
+                </td>
+                <td class='sub-td'>
+                  {{ ns.end_date }}
+                </td>
+                <td class='sub-td'>
+                  ${{ ns.monthly_rate }}
+                </td>
+                <td class='sub-td'>
+                  ${{ ns.overage_rate }}
+                </td>
+                <td class='sub-td'>
+                  {% if ns.paid_by %}
+                    {{ ns.paid_by }}
+                  {% endif %}
+                </td>
+              </tr>
+          {% endif %}
+        {% endfor %}
+      </table>
+      {% endif %}
   {% csrf_token %}
   <input class='btn confirm-btn' type='submit' value='Confirm Changes' />
 </form>

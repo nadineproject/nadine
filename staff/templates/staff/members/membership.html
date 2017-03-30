@@ -353,6 +353,7 @@
 
       $('.delete-row').on('click', function(e) {
         e.preventDefault();
+        var val = $('#target_date').val();
         $(this).parent().siblings('#end_date_td').children().val(val);
       });
 		});
@@ -469,9 +470,11 @@
 
   //JS for ending membership package
     $('#end').on('click', function(e) {
+      action = 'end';
       e.preventDefault();
       $('#end-package').show();
       $('#change-package').hide();
+      $('.mem-details-table').hide();
     })
 
     $('#select-end').change(function(){
