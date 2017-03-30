@@ -9,7 +9,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.contrib.auth.models import User
 
-from nadine.models.membership import Membership
+from nadine.models.membership import OldMembership
 from nadine.models.payment import OldBill, BillingLog, Transaction
 from nadine.models.usage import CoworkingDay
 
@@ -107,7 +107,7 @@ class Run:
             self.add_guest_log(log)
 
         # Grab all the daily_logs attached to memberships marked as guests of this user
-        for membership in Membership.objects.filter(paid_by=self.user).order_by('start_date'):
+        for membership in OldMembership.objects.filter(paid_by=self.user).order_by('start_date'):
             if membership.end_date and membership.end_date < self.start_date:
                 continue
             if membership.start_date > self.end_date:
@@ -168,7 +168,7 @@ def run_billing(bill_time=None):
     try:
         # This should be changed to "all users w/ activity"
         for user in User.objects.all():
-            last_bill = user.profile.last_bill()
+            last_bill = OldBill.objects.filter(user=user).last()
             if last_bill:
                 start_date = last_bill.bill_date + timedelta(days=1)
             else:
