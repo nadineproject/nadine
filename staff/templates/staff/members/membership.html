@@ -294,6 +294,7 @@
       $('#new-package').val('{{ package }}');
       $('#id_bill_day').val('{{ bill_day }}');
       $('.curr-sub').hide();
+      $('#target_date').val(targetDate);
       $('#id_package > option').each(function() {
         if($(this).val() == '{{ package }}') {
           $(this).attr('selected', 'selected');
