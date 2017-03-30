@@ -480,10 +480,11 @@ class SubForm(forms.Form):
     username = forms.CharField(required=False, widget=forms.HiddenInput({'class':'username_td'}))
     created_ts = forms.DateField(required=False, widget=forms.HiddenInput)
     created_by = forms.CharField(required=False, widget=forms.HiddenInput({'class':'created_by_td'}))
+    s_id = forms.IntegerField(required=False)
     resource = forms.ModelChoiceField(queryset=Resource.objects.all(), required=False)
     allowance = forms.IntegerField(required=False)
     start_date = forms.DateField(widget=forms.TextInput(attrs={'class': 'start_date'}), required=False)
-    end_date = forms.DateField(widget=forms.TextInput(attrs={'class': 'start_date'}), required=False)
+    end_date = forms.DateField(widget=forms.TextInput(attrs={'class': 'end_date'}), required=False)
     monthly_rate = forms.IntegerField(required=False)
     overage_rate = forms.IntegerField(required=False)
     paid_by = forms.CharField(widget=forms.TextInput(attrs={'class': 'paying_user'}), max_length=128, required=False)
@@ -498,6 +499,9 @@ class SubForm(forms.Form):
             created_ts = self.cleaned_data['created_ts']
         else:
             created_ts = timezone.now()
+        if self.cleaned_data['s_id']:
+            s_id = self.cleaned_data['id']
+
         created_by_user = self.cleaned_data['created_by']
         created_by = User.objects.get(username=created_by_user)
         resource = self.cleaned_data['resource']
@@ -511,7 +515,12 @@ class SubForm(forms.Form):
         else:
             paid_by = None
 
-        sub = ResourceSubscription(created_ts=created_ts, created_by=created_by, resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=paid_by, membership=user.membership)
+        if s_id:
+            sub = ResourceSubscription.objects.get(id=s_id)
+            sub.end_date = end_date
+        else:
+            sub = ResourceSubscription(created_ts=created_ts, created_by=created_by, resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=paid_by, membership=user.membership)
+
         sub.save()
 
         return sub

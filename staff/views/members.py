@@ -267,45 +267,46 @@ def membership(request, username):
     start = None
     active_members = User.helper.active_members()
     SubFormSet = formset_factory(SubForm)
-    package = request.GET.get('package', None)
+    package = request.GET.get('package', user.membership.package.id)
+    target_date = request.GET.get('target_date', None)
     bill_day = request.GET.get('bill_day', user.membership.bill_day)
     today = localtime(now()).date()
 
-    if package:
+    if package != user.membership.package.id:
         subscriptions = SubscriptionDefault.objects.filter(package=package)
-        sub_data=[{'resource': s.resource, 'allowance':s.allowance, 'start_date':today, 'end_date': None, 'username': user.username, 'created_by': request.user, 'monthly_rate': s.monthly_rate, 'overage_rate': s.overage_rate, 'paid_by': None} for s in subscriptions]
+        sub_data=[{'id': None, 'resource': s.resource, 'allowance':s.allowance, 'start_date':today, 'end_date': None, 'username': user.username, 'created_by': request.user, 'monthly_rate': s.monthly_rate, 'overage_rate': s.overage_rate, 'paid_by': None} for s in subscriptions]
+    else:
+        subscriptions = user.membership.active_subscriptions()
+        sub_data=[{'id': s.id, 'resource': s.resource, 'allowance':s.allowance, 'start_date':s.start_date, 'end_date': s.end_date, 'username': user.username, 'created_by': s.created_by, 'monthly_rate': s.monthly_rate, 'overage_rate': s.overage_rate, 'paid_by': s.paid_by} for s in subscriptions]
 
     if request.method == 'POST':
-        if 'update' in request.POST:
-            # Need to make this where it only posts on final post button
-            # if it already has an id and is marked for ending, end it
-            # else, if no id and adding is marked, then add
-
-            s_id = request.POST['id']
-            end_target = request.POST['end_date']
-
-            return HttpResponseRedirect(reverse('staff:members:confirm', kwargs={'username': username, 'package': None, 'action': 'update_subs', 'new_subs': None, 'end_target': end_target, 'ending_subs': s_id}))
-        elif 'add' in request.POST:
-            add_form = SubForm(request.POST)
-            new_subs = []
-            if add_form.is_valid():
-                paid_by_username = request.POST.get('paid_by', None)
-                if paid_by_username:
-                    paid_by_object = User.objects.get(username=paid_by_username)
-                    paid_by = paid_by_object.username
-                else:
-                    paid_by = None
-                resource = request.POST.get('resource')
-                allowance = request.POST.get('allowance')
-                start_date = request.POST.get('start_date')
-                end_date = request.POST.get('end_date', None)
-                monthly_rate = request.POST.get('monthly_rate', 0)
-                overage_rate = request.POST.get('overage_rate', 0)
-                membership = user.membership
-
-                new_subs.append({'created_by':request.user.username, 'resource':resource, 'allowance':allowance, 'start_date':start_date, 'end_date':end_date, 'monthly_rate':monthly_rate, 'overage_rate':overage_rate, 'paid_by':paid_by, 'membership':membership.id})
-                return HttpResponseRedirect(reverse('staff:members:confirm', kwargs={'username': username, 'package': membership.id, 'action': 'update_subs', 'new_subs': new_subs, 'end_target': None, 'ending_subs': None}))
-        elif 'ending' in request.POST:
+        # if 'update' in request.POST:
+        #     s_id = request.POST['id']
+        #     end_target = request.POST['end_date']
+        #
+        #     return HttpResponseRedirect(reverse('staff:members:confirm', kwargs={'username': username, 'package': None, 'action': 'update_subs', 'new_subs': None, 'end_target': end_target, 'ending_subs': s_id}))
+        # if 'add' in request.POST:
+        #     add_form = SubForm(request.POST)
+        #     new_subs = []
+        #     if add_form.is_valid():
+        #         paid_by_username = request.POST.get('paid_by', None)
+        #         if paid_by_username:
+        #             paid_by_object = User.objects.get(username=paid_by_username)
+        #             paid_by = paid_by_object.username
+        #         else:
+        #             paid_by = None
+        #         resource = request.POST.get('resource')
+        #         allowance = request.POST.get('allowance')
+        #         start_date = request.POST.get('start_date')
+        #         end_date = request.POST.get('end_date', None)
+        #         monthly_rate = request.POST.get('monthly_rate', 0)
+        #         overage_rate = request.POST.get('overage_rate', 0)
+        #         membership = user.membership
+        #
+        #         new_subs.append({'created_by':request.user.username, 'resource':resource, 'allowance':allowance, 'start_date':start_date, 'end_date':end_date, 'monthly_rate':monthly_rate, 'overage_rate':overage_rate, 'paid_by':paid_by, 'membership':membership.id})
+        #
+        #         return HttpResponseRedirect(reverse('staff:members:confirm', kwargs={'username': username, 'package': membership.id, 'action': 'update_subs', 'new_subs': new_subs, 'end_target': None, 'ending_subs': None}))
+        if 'ending' in request.POST:
             if request.POST['ending'] == 'today':
                 end_date = today
                 end_target = end_date.strftime('%Y-%m-%d')
@@ -326,6 +327,7 @@ def membership(request, username):
                         membership = {'package': request.POST['package'], 'bill_day': request.POST['bill_day']}
                         for sub_form in sub_formset:
                             paid_by = None
+                            s_id = sub_form.cleaned_data.get('s_id', None)
                             resource = sub_form.cleaned_data.get('resource', None)
                             allowance = sub_form.cleaned_data.get('allowance', None)
                             start_date = sub_form.cleaned_data.get('start_date', None)
@@ -339,7 +341,7 @@ def membership(request, username):
                             overage_rate = sub_form.cleaned_data.get('overage_rate', None)
                             paid_by = sub_form.cleaned_data.get('paid_by', None)
                             if resource and start_date:
-                                new_subs.append({'resource':resource.id, 'allowance':allowance, 'start_date':start_date, 'end_date':end_date, 'monthly_rate': monthly_rate, 'overage_rate':overage_rate, 'paid_by':paid_by, 'membership':None})
+                                new_subs.append({'s_id': s_id,'resource':resource.id, 'allowance':allowance, 'start_date':start_date, 'end_date':end_date, 'monthly_rate': monthly_rate, 'overage_rate':overage_rate, 'paid_by':paid_by, 'membership':None})
                         end_target = start - timedelta(days=1)
 
                         return HttpResponseRedirect(reverse('staff:members:confirm', kwargs={'username': username, 'package': membership, 'end_target': end_target, 'action': 'new_pkg', 'ending_subs': None, 'new_subs': new_subs}))
@@ -362,6 +364,7 @@ def membership(request, username):
         'bill_day': bill_day,
         'sub_formset': sub_formset,
         'active_members': active_members,
+        'target_date': target_date,
     }
     return render(request, 'staff/members/membership.html', context)
 
@@ -372,86 +375,67 @@ def confirm_membership(request, username, package, end_target, action, ending_su
     package = unicodedata.normalize('NFKD', package).encode('ascii', 'ignore')
     subs = ast.literal_eval(new_subs)
     pkg = ast.literal_eval(package)
-    if ending_subs != 'None':
-        ending_subs = ResourceSubscription.objects.get(id=ending_subs)
-
+    print user.membership.package.id
+    print pkg
     if request.method == 'POST':
-        if 'new_pkg' in request.POST:
-            try:
-                with transaction.atomic():
-                    user.membership.end_all(end_target)
-
-                    membership = user.membership
-                    mem_package = MembershipPackage.objects.get(id=pkg['package'])
+        try:
+            with transaction.atomic():
+                # Check to see if new membership package. If so, end all previous subscriptions
+                membership = user.membership
+                mem_package = MembershipPackage.objects.get(id=pkg['package'])
+                if user.membership.package != mem_package:
                     membership.package = mem_package
                     membership.bill_day = pkg['bill_day']
                     membership.save()
-                    for sub in subs:
-                        paid_by = None
-                        created_ts = localtime(now())
-                        created_by = request.user
-                        resource = Resource.objects.get(id=sub['resource'])
-                        allowance = sub['allowance']
-                        start_date = sub['start_date']
-                        if sub['end_date']:
-                            end_date = sub['end_date']
-                        else:
-                            end_date = None
-                        monthly_rate = sub['monthly_rate']
-                        overage_rate = sub['overage_rate']
-                        if sub['paid_by']:
-                            p_username = sub['paid_by']
-                            paid_by = User.objects.get(username=p_username)
-                        rs = ResourceSubscription(created_by=created_by, created_ts=created_ts, resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=paid_by, membership=membership)
-                        rs.save()
-                    messages.error(request, "You have updated the subscriptions for %s" % username)
-                    return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}))
-            except IntegrityError as e:
-                print('There was an ERROR: %s' % e.message)
-                messages.error(request, 'There was an error setting new membership package')
+                    user.membership.end_all(end_target)
 
-        if 'end_pkg' in request.POST:
-            user.membership.end_all(end_target)
-            messages.success(request, "You have ended the membership package for %s" % username)
-            return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}))
+                # Review all subscriptions to see if adding or ending
+                for sub in subs:
+                    sub_id = sub['id']
+                    if sub_id and sub['end_date']:
+                        end_date = sub['end_date']
+                        to_end = user.membership.active_subscriptions().filter(id=sub_id)
+                        to_end.end_date = sub['end_date']
+                        to_end.save()
+                    paid_by = None
+                    created_ts = localtime(now())
+                    created_by = request.user
+                    resource = Resource.objects.get(id=sub['resource'])
+                    allowance = sub['allowance']
+                    start_date = sub['start_date']
+                    if sub['end_date']:
+                        end_date = sub['end_date']
+                    else:
+                        end_date = None
+                    monthly_rate = sub['monthly_rate']
+                    overage_rate = sub['overage_rate']
+                    if sub['paid_by']:
+                        p_username = sub['paid_by']
+                        paid_by = User.objects.get(username=p_username)
 
-        if 'update_subs' in request.POST:
-            try:
-                with transaction.atomic():
-                    if ending_subs != 'None':
-                        ending_subs.end_date = end_target
-                        ending_subs.save()
-                    if subs:
-                        for sub in subs:
-                            paid_by = None
-                            created_ts = localtime(now())
-                            created_by = request.user
-                            resource = Resource.objects.get(id=sub['resource'])
-                            allowance = sub['allowance']
-                            start_date = sub['start_date']
-                            if sub['end_date']:
-                                end_date = sub['end_date']
-                            else:
-                                end_date = None
-                            monthly_rate = sub['monthly_rate']
-                            overage_rate = sub['overage_rate']
-                            if sub['paid_by']:
-                                p_username = sub['paid_by']
-                                paid_by = User.objects.get(username=p_username)
-                            already_have = user.membership.active_subscriptions().filter(resource=resource).filter(paid_by=paid_by)
-                            if len(already_have) > 0:
-                                p_id = already_have[0].id
-                                prev_rs = ResourceSubscription.objects.get(id=p_id)
-                                allowance = int(allowance) + prev_rs.allowance
-                                monthly_rate = int(monthly_rate) + prev_rs.monthly_rate
-                                prev_rs.end_date = datetime.strptime(start_date, '%Y-%m-%d') - timedelta(days=1)
-                                prev_rs.save()
-                            rs = ResourceSubscription(created_by=created_by, created_ts=created_ts, resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=paid_by, membership=user.membership)
-                            rs.save()
-                    messages.success(request, "You have updated the subscriptions for %s" % username)
-                    return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}))
-            except IntegrityError:
-                messages.error(request, 'There was an error updating the subsciptions')
+                    # Check to see if it is a unique resource and end if it is not
+                    already_have = user.membership.active_subscriptions().filter(resource=resource).filter(paid_by=paid_by)
+                    if len(already_have) > 0:
+                        p_id = already_have[0].id
+                        prev_rs = ResourceSubscription.objects.get(id=p_id)
+                        if not prev_rs.end_date:
+                            allowance = int(allowance) + prev_rs.allowance
+                            monthly_rate = int(monthly_rate) + prev_rs.monthly_rate
+                            prev_rs.end_date = datetime.strptime(start_date, '%Y-%m-%d') - timedelta(days=1)
+                            prev_rs.save()
+                    # Save new resource
+                    rs = ResourceSubscription(created_by=created_by, created_ts=created_ts, resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=paid_by, membership=membership)
+                    rs.save()
+                messages.success(request, "You have updated the subscriptions for %s" % username)
+                return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}))
+        except IntegrityError as e:
+            print('There was an ERROR: %s' % e.message)
+            messages.error(request, 'There was an error setting new membership package')
+
+        # if 'end_pkg' in request.POST:
+        #     user.membership.end_all(end_target)
+        #     messages.success(request, "You have ended the membership package for %s" % username)
+        #     return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}))
 
     context = {
         'entity': user,

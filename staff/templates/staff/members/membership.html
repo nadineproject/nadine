@@ -3,30 +3,6 @@
 {% block content %}
 <h4>Membership for <a href="{% url 'staff:members:detail' entity.username %}">{{ entity.get_full_name }}</a></h4>
 
-<h5 style='margin-top: 5%;'>Current Package Details</h5>
-<table class='mem-details-table'>
-  <tr>
-    <th class='sub-th'>Billing Day</th>
-    <th class='sub-th'>Next Bill</th>
-    <th class='sub-th'>Package</th>
-    <th class='sub-th'></th>
-  </tr>
-  <tr>
-    <td>{{ entity.membership.bill_day_str }}</td>
-    <td>{{ entity.membership.next_period_start }}</td>
-    <form>
-      <td id='package'>
-        {{ entity.membership.package }}
-      </td>
-      <td class='sub-chips'>
-        <a id='change' class='chip'>New Package</a>
-        | <a id='update' class='chip'>Update Current Subscriptions</a>
-        | <a id='end' class='chip'>End Current Package</a>
-      </td>
-    </form>
-  </tr>
-</table>
-
 <div class='curr-sub'>
   <h5>Subscriptions</h5>
   <table class='sub-table' style='margin-top: 2%;'>
@@ -57,110 +33,30 @@
   </table>
 </div>
 
-<div id='update-package'>
-  <h5>Update Current Subscriptions</h5>
-  <form action='.' method='POST'>
-    <table class='end-table'>
-      <tr>
-        <td id='end-header'>
-          <strong>When do you want the changes to go in effect?</strong>
+<div class='curr-sub'>
+  <h5 style='margin-top: 5%;'>Current Package Details</h5>
+  <table class='mem-details-table'>
+    <tr>
+      <th class='sub-th'>Billing Day</th>
+      <th class='sub-th'>Next Bill</th>
+      <th class='sub-th'>Package</th>
+      <th class='sub-th' style='text-align: center !important;'>What do you want to do?</th>
+    </tr>
+    <tr>
+      <td>{{ entity.membership.bill_day_str }}</td>
+      <td>{{ entity.membership.next_period_start }}</td>
+      <form>
+        <td id='package'>
+          {{ entity.membership.package }}
         </td>
-        <td id='select-end-td'>
-          <select name='ending' id='end-input'>
-            <option disabled selected="true">
-              Select One
-            </option>
-            <option value='today'>
-              Today
-            </option>
-            <option value='eop'>
-              End of This Bill Period
-            </option>
-            <option value='other'>
-              Other
-            </option>
-          </select>
+        <td class='sub-chips'>
+          <a id='change' class='chip'>New Package</a>
+          | <a id='update' class='chip'>Update Current Subscriptions</a>
+          | <a id='end' class='chip'>End Current Package</a>
         </td>
-        <td style='width:30%;'>
-          <input id='sub-end' name='date-end' class='datepicker' placeholder="Select Date" />
-        </td>
-        <td style='padding-top:2%;'>
-          <span class='cancel'>Cancel</span>
-        </td>
-      </tr>
-    </table>
-    <table class='up-table'>
-      <tr class='up-table-th'>
-        <th>Resource</th>
-        <th class='allowance'>Allowance</th>
-        <th>Start Date</th>
-        <th>End Date</th>
-        <th class='rate'>Monthly Rate</th>
-        <th class='rate'>Overage Rate</th>
-        <th>Paid By</th>
-        <th>Add / End Subscription</th>
-      </tr>
-      {% for r in entity.membership.active_subscriptions %}
-      <tr class="{% cycle 'row-even' 'row-odd' %} subs">
-        <form action='.' method='POST'>
-          <input name='id' value='{{ r.id }}' type='hidden' />
-          <input name='update' type='hidden' value='update' />
-          <td class='up-input resource'><strong>{{ r.resource }}</strong></td>
-          <td class='up-input allowance'><input type='number' value='{{ r.allowance }}' name='allowance' min='0' readonly /></td>
-          <td class='up-input date'><input type='date' name='start_date' value='{{ r.start_date|date:"Y-m-d" }}' readonly  /></td>
-          {% if r.end_date %}
-            <td class='up-input date'><input class='end_date-{{ r.id }}' name='end_date' type='date' value='{{ r.end_date|date:"Y-m-d" }}' readonly  /></td>
-          {% else %}
-          <td class='up-input date'><input class='end_date-{{ r.id }} update-end' name='end_date' type='date' value='{{ r.end_date|date:"Y-m-d" }}' readonly  /></td>
-          {% endif %}
-          <td class='up-input rate monthly_rate'><input type='number' name='monthly_rate' min='0' value='{{ r.monthly_rate }}' readonly /></td>
-          <td class='up-input rate'><input type='number' name='overage_rate' value='{{ r.overage_rate }}' readonly /></td>
-          <td class='up-input paying'><input type='text' name='paid_by' class='paying_user' value='{{ r.paid_by }}' readonly /></td>
-          <td class='edit-td'>
-            {% if r.end_date %}{% else %}
-            {% csrf_token %}
-            <button class='update-submit btn-floating' id='submit-{{ r.id }}' type='submit'><strong>End</strong></button>
-            {% endif %}
-          </td>
-        </form>
-			</tr>
-      {% endfor %}
-      <tr class="{% cycle 'row-even' 'row-odd' %}">
-        <form class='add-form' action='.' method='POST'>
-          <input type='hidden' value='add-sub' name='add' />
-          <input type='hidden' value='{{ entity.username }}' name='username' />
-          <input type='hidden' value='{{ request.user }}' name='created_by'/>
-          <td class='resource add-resource'>
-            {{ add_form.resource }}
-          </td>
-          <td class='allowance'>
-            {{ add_form.allowance }}
-          </td>
-          <td class='add_date'>
-            {{ add_form.start_date }}
-          </td>
-          <td class='add_date'>
-            {{ add_form.end_date }}
-          </td>
-          <td class='rate monthly_rate'>
-            {{ add_form.monthly_rate }}
-          </td>
-          <td class='rate'>
-            {{ add_form.overage_rate }}
-          </td>
-          <td>
-            {{ add_form.paid_by }}
-          </td>
-          <td class='edit-td'>
-            {% csrf_token %}
-            <button class='add-submit btn-floating' type='submit'><strong>Add</strong></button>
-          </td>
-        </form>
-      </tr>
-    </table>
-    {% csrf_token %}
-  </form>
-<!-- <span style='margin-left: 3%;'>*EoBP: Ends subscription at the end of current billing period</span> -->
+      </form>
+    </tr>
+  </table>
 </div>
 
 <div id='end-package'>
@@ -196,7 +92,34 @@
 
 <div id='change-package'>
   <h5>Change Membership</h5>
+  <table class='end-table'>
+    <tr>
+      <td id='end-header'>
+        <strong>When do you want the changes to go in effect?</strong>
+      </td>
+      <td id='select-end-td'>
+        <select name='ending' id='target-input'>
+          <option disabled selected="true">
+            Select One
+          </option>
+          <option value='today'>
+            Today
+          </option>
+          <option value='eop'>
+            End of This Bill Period
+          </option>
+          <option value='other'>
+            Other
+          </option>
+        </select>
+      </td>
+      <td style='width:30%;'>
+        <input id='sub-end' name='date-end' class='datepicker' placeholder="Select Date" />
+      </td>
+    </tr>
+  </table>
   <form class='change-form' action='.' method='GET'>
+    <input type='hidden' name='target_date' id='target_date' />
     <table class='sub-table'>
       <tr>
         <td id='package-head'>
@@ -218,7 +141,7 @@
     </table>
   </form>
   <form action='.' method='POST'>
-    <table class='sub-table'>
+    <table class='sub-table change-table'>
       {% if subscriptions %}
       <tr>
         <th class='sub-th'>Resource</th>
@@ -233,15 +156,22 @@
       {{ sub_formset.management_form }}
       {% for sub_form in sub_formset %}
       <tr class='sub-formset subs'>
+        {% if sub_form.id %}
+          <input name='id' type='hidden' value='{{ sub_form.s_id }}' />
+        {% endif %}
 				<td class='sub-input'>{{ sub_form.resource }}</td>
 				<td class='sub-input allowance'>{{ sub_form.allowance  }}</td>
         <td class='sub-input'>{{ sub_form.start_date  }}</td>
-        <td class='sub-input'>{{ sub_form.end_date  }}</td>
+        <td class='sub-input' id='end_date_td'>{{ sub_form.end_date  }}</td>
         <td class='sub-input rate monthly_rate'>{{ sub_form.monthly_rate  }}</td>
         <td class='sub-input rate'>{{ sub_form.overage_rate }}</td>
         <td class='sub-input'>{{ sub_form.paid_by  }}</td>
         <td class='sub-input'>
-          <a class="delete-row">Remove</a>
+          {% if sub_form.s_id != 'None' %}
+            <a class='delete-row'>End</a>
+          {% else %}
+            <a class='add-row'>Add</a>
+          {% endif %}
           <input type='hidden' class='chosen_package' name='package' value="{{ package }}" />
           <input type='hidden' class='ur_bill_day' name='bill_day' value="{{ bill_day }}" />
           {% if entity.username %}
@@ -305,42 +235,65 @@
     $('.button-collapse').sideNav();
     $('.collapsible').collapsible();
     var package = '{{ package }}';
+    var targetDate = '{{ target_date }}';
+    var start = '';
+    var end = '';
+    var action = '';
+
+    $('#id_package > option').each(function() {
+      if ($(this).val() == '{{ package }}') {
+        $(this).attr('selected', 'selected');
+      }
+    });
+
     $('#change-package').hide();
-    $('#update-package').hide();
     $('#end-package').hide();
     $('#date-end').hide();
     $('#sub-end').hide();
-    $('.up-table').hide();
+
     $('#id_created_by').val('{{ request.user }}');
     $('#id_bill_day').val('{{ bill_day }}');
     $('#id_username').val('{{ entity.username }}')
-    $('.sub-input .start_date').addClass('datepicker');
-    $('.sub-input .end_date').addClass('datepicker');
     $('.created_by_td').val('{{ request.user }}');
 
-
+    $('.sub-input .start_date').addClass('datepicker');
+    $('.sub-input .end_date').addClass('datepicker');
     $('.datepicker').datepicker({
       dateFormat: 'yy-mm-dd',
       minDate: 0
     });
 
+    if(targetDate != 'None') {
+      $('.start_date').val(targetDate);
+    }
+
   //JS for changing package
     $('#change').on('click', function(e) {
+      action = 'change';
       e.preventDefault();
       $('#change-package').show();
+      $('.change-form').show();
+      $('.change-table').hide();
       $('#end-package').hide();
-      $('#update-package').hide();
       $('.curr-sub').hide();
     })
 
     //Formset functionality for changing membership package
     $('.sub-formset').formset({
       addText:'Add Another',
-      deleteText: 'Remove'
+      deleteText: 'End'
     })
 
-    //Setting up the view if there is a selected package
-    if( package != 'None') {
+    $('#end-input').change(function(){
+      if ($('#end-input').val() == 'other') {
+        $('#sub-end').show();
+        $('#sub-end').datepicker('show');
+      }
+    })
+
+    // Setting up the view if there is a selected package
+    if(targetDate != 'None') {
+      $('.end-table').hide();
       $('#change-package').show();
       $('#new-package').val('{{ package }}');
       $('#id_bill_day').val('{{ bill_day }}');
@@ -352,11 +305,13 @@
       })
     }
 
+    //End indv. subscription button function/look
     $('.delete-row').addClass('btn-floating btn-large btn');
     $('.delete-row').on('click', function(e) {
       e.preventDefault();
-      $(this).closest('tr').remove();
-    })
+      var val = $('#target_date').val();
+      $(this).parent().siblings('#end_date_td').children().val(val);
+    });
 
     $('#id_package').on('change', function() {
       package = $(this).val();
@@ -372,8 +327,9 @@
       $('.change-form').submit();
     })
 
+    // Review all this. What needs to change to match new functionality
     $('.add-row').on('click', function(e) {
-			$('.delete-row').addClass('btn-floating btn-large btn');
+			$('#delete-row').addClass('btn-floating btn-large btn');
       $('.username_td').val('{{ entity.username }}');
       $('.created_by_td').val('{{ request.user }}');
       $('.ur_bill_day').val('{{ bill_day }}');
@@ -387,26 +343,26 @@
 
       $('.delete-row').on('click', function(e) {
         e.preventDefault();
-        $(this).closest('tr').remove();
-      })
+        $(this).parent().siblings('#end_date_td').children().val(val);
+      });
 		});
 
   //Updating subscription functionality
     $('#update').on('click', function(e) {
       e.preventDefault();
-      $('#update-package').show();
-      $('#end-package').hide();
-      $('#change-package').hide();
+      action = 'update'
+      $('#change-package').show();
       $('.curr-sub').hide();
+      $('.change-form').hide();
     })
 
     $('#sub-end').on('change', function() {
-      $('.add_date #id_start_date').val($('#sub-end').val());
-      $('.up-table').show();
+      $('#target_date').val($('#sub-end').val());
     })
 
-    $('#end-input').on('change', function() {
-      var period = $('#end-input').val();
+    //This should (ONLY maybe) be for ENDING memberships
+    $('#target-input').on('change', function() {
+      var period = $('#target-input').val();
 
       if(period == 'other') {
         $('#sub-end').show();
@@ -416,12 +372,9 @@
       if (period == 'today') {
         var date = new Date();
         var today = formatDate(date);
-        $('.update-end').val(today);
-        $('.add_date #id_start_date').val(today);
-        $('.up-table').show();
-        $('#sub-end').hide();
+        $('#target_date').val(today);
+
       } else if (period == 'eop') {
-        $('#sub-end').hide();
         var d = new Date();
         var bd = '{{ bill_day }}';
         if (d.getDate() < bd) {
@@ -472,9 +425,10 @@
 
           var date = [year, month, day].join('-');
           var bd_date = [year, bd_month, bd].join('-');
-          $('.update-end').val(date);
-          $('.add_date #id_start_date').val(bd_date);
-          $('.up-table').show();
+          end = date;
+          start = bd_date;
+          $('#target_date').val(end);
+
       }
     })
 
@@ -497,7 +451,6 @@
     $('#end').on('click', function(e) {
       e.preventDefault();
       $('#end-package').show();
-      $('#update-package').hide();
       $('#change-package').hide();
     })
 
