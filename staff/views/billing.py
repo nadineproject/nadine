@@ -99,10 +99,7 @@ def outstanding(request):
 
     bills = group_bills_by_date(UserBill.objects.unpaid(in_progress=False))
     bills_in_progress = group_bills_by_date(UserBill.objects.unpaid(in_progress=True))
-
-    # TODO
-    # invalids = User.helper.invalid_billing()
-    invalids = []
+    invalids = User.helper.invalid_billing()
 
     context = {
         'bills': bills,

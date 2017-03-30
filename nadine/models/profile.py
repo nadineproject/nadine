@@ -13,7 +13,7 @@ from datetime import datetime, time, date, timedelta
 from dateutil.relativedelta import relativedelta
 
 from django.db import models
-from django.db.models import Q, Sum, Value
+from django.db.models import F, Q, Sum, Value
 from django.db.models.functions import Coalesce
 from django.contrib import admin
 from django.core import urlresolvers
@@ -43,6 +43,7 @@ from nadine.utils.slack_api import SlackAPI
 from nadine.models.core import GENDER_CHOICES, HowHeard, Industry, Neighborhood, Website, URLType
 from nadine.models.membership import Membership, ResourceSubscription, SecurityDeposit
 from nadine.models.membership import OldMembership, MembershipPlan
+from nadine.models.resource import Resource
 from nadine.models.usage import CoworkingDay
 from nadine.models.payment import OldBill
 from nadine.models.organization import Organization
@@ -74,76 +75,110 @@ def user_file_upload_path(instance, filename):
 
 class UserQueryHelper():
 
-    def active_members(self):
-        # TODO - convert
-        active_members = Q(id__in=OldMembership.objects.active_memberships().values('user'))
-        return User.objects.select_related('profile').filter(active_members).order_by('first_name')
+    def active_individual_members(self, target_date=None):
+        individual_memberships = Membership.objects.active_individual_memberships(target_date)
+        return User.objects.filter(id__in=individual_memberships.values('individualmembership__user'))
 
-    def here_today(self, day=None):
-        if not day:
-            day = localtime(now()).date()
+    def active_organization_members(self, target_date=None):
+        organization_memberships = Membership.objects.active_organization_memberships(target_date)
+        return User.objects.filter(id__in=organization_memberships.values('organizationmembership__organization__organizationmember__user'))
+
+    def active_members(self, target_date=None):
+        individual_members = self.active_individual_members(target_date)
+        organization_members = self.active_organization_members(target_date)
+        combined_query = individual_members | organization_members
+        return combined_query.distinct()
+
+    def active_members_by_package(self, package, target_date=None):
+        active_subscriptions = ResourceSubscription.objects.active_subscriptions_with_username().filter(membership__package=package)
+        return User.objects.filter(username__in=active_subscriptions.values('username'))
+
+    def active_members_by_resource(self, resource, target_date=None):
+        active_subscriptions = ResourceSubscription.objects.active_subscriptions_with_username().filter(resource=resource)
+        return User.objects.filter(username__in=active_subscriptions.values('username'))
+
+    def payers(self, target_date=None):
+        ''' Return a set of Users that are paying for the active memberships '''
+        # I tried to make this method as easy to read as possible. -- JLS
+        # This joins the following sets:
+        #   Individuals paying for their own membership,
+        #   Organization leads of active organizations,
+        #   Users paying for other's memberships
+        active_paid_subscriptions = ResourceSubscription.objects.active_subscriptions(target_date).filter(monthly_rate__gt=0)
+        paid_by_self = active_paid_subscriptions.filter(paid_by__isnull=True)
+
+        paid_by_other = active_paid_subscriptions.filter(paid_by__isnull=False)
+        other_payers = paid_by_other.annotate(payer=F('paid_by')).values('payer')
+
+        is_individual_membership = Q(membership__individualmembership__isnull=False)
+        individual_payers = paid_by_self.filter(is_individual_membership).annotate(payer=F('membership__individualmembership__user')).values('payer')
+
+        is_organizaion_membership = Q(membership__organizationmembership__isnull=False)
+        organization_leads = paid_by_self.filter(is_organizaion_membership).annotate(payer=F('membership__organizationmembership__organization__lead')).values('payer')
+
+        combined_set = (individual_payers | organization_leads | other_payers)
+        return User.objects.filter(id__in=combined_set).distinct()
+
+    def invalid_billing(self):
+        return self.payers.filter(profile__valid_billing=False)
+
+    def here_today(self, target_date=None):
+        if not target_date:
+            target_date = localtime(now()).date()
 
         # The members who are on the network
         from arpwatch.arp import users_for_day_query
-        arp_members_query = users_for_day_query(day=day)
+        arp_members_query = users_for_day_query(day=target_date).distinct()
 
         # The members who have signed in
-        daily_members_query = User.objects.filter(id__in=CoworkingDay.objects.filter(visit_date=day).values('user__id'))
+        daily_members_query = User.objects.filter(id__in=CoworkingDay.objects.filter(visit_date=target_date).values('user__id')).distinct()
 
-        # The members that have access a door
-        door_query = DoorEvent.objects.users_for_day(day)
-        door_members_query = User.helper.active_members().filter(id__in=door_query.values('user'))
+        # The members that have accessed a door
+        door_query = DoorEvent.objects.users_for_day(target_date)
+        door_members_query = User.helper.active_members().filter(id__in=door_query.values('user__id'))
 
         combined_query = arp_members_query | daily_members_query | door_members_query
         return combined_query.distinct()
 
-    def not_signed_in(self, day=None):
-        if not day:
-            day = localtime(now()).date()
+    def not_signed_in(self, target_date=None):
+        if not target_date:
+            target_date = localtime(now()).date()
 
         signed_in = []
-        for l in CoworkingDay.objects.filter(visit_date=day):
+        for l in CoworkingDay.objects.filter(visit_date=target_date):
             signed_in.append(l.user)
 
         not_signed_in = []
-        for u in self.here_today(day):
-            if not u in signed_in and not u.profile.has_desk(day):
-                not_signed_in.append({'user':u, 'day':day})
+        for u in self.here_today(target_date):
+            if not u in signed_in and not u.profile.has_desk(target_date):
+                not_signed_in.append({'user':u, 'day':target_date})
 
         return not_signed_in
 
-    def not_signed_in_since(self, day=None):
-        if not day:
-            day = localtime(now()).date()
+    def not_signed_in_since(self, target_date=None):
+        if not target_date:
+            target_date = localtime(now()).date()
         not_signed_in = []
 
         d = localtime(now()).date()
-        while day <= d:
+        while target_date <= d:
             not_signed_in.extend(self.not_signed_in(d))
             d = d - timedelta(days=1)
 
         return not_signed_in
 
-    def exiting_members(self, day=None):
-        if day == None:
-            day = localtime(now())
-        next_day = day + timedelta(days=1)
+    def exiting_members(self, target_date=None):
+        if target_date == None:
+            target_date = localtime(now())
 
         # Exiting members are here today and gone tomorrow.  Pull up all the active
         # memberships for today and remove the list of active members tomorrow.
-        today_memberships = Membership.objects.active_memberships(day)
-        tomorrow_memberships = Membership.objects.active_memberships(next_day)
-        exiting = today_memberships.exclude(user__in=tomorrow_memberships.values('user'))
-
-        return User.objects.filter(id__in=exiting.values('user'))
+        today_memberships = self.active_members(target_date)
+        tomorrow_memberships = self.active_members(target_date + timedelta(days=1))
+        return today_memberships.exclude(id__in=tomorrow_memberships.values('id'))
 
     def active_member_emails(self):
-        emails = []
-        for membership in Membership.objects.active_memberships():
-            for e in EmailAddress.objects.filter(user=membership.user):
-                if e.email not in emails:
-                    emails.append(e.email)
-        return emails
+        return EmailAddress.objects.filter(user__in=self.active_members()).values_list('email', flat=True)
 
     def expired_slack_users(self):
         expired_users = []
@@ -162,9 +197,9 @@ class UserQueryHelper():
 
     def stale_members(self):
         smd = self.stale_member_date()
-        recently_used = CoworkingDay.objects.filter(visit_date__gte=smd).values('user').distinct()
-        memberships = Membership.objects.active_memberships().filter(start_date__lte=smd, has_desk=False)
-        return User.objects.filter(id__in=memberships.values('user')).exclude(id__in=recently_used).order_by('first_name')
+        recently_used = Q(id__in=CoworkingDay.objects.filter(visit_date__gte=smd).values('user').distinct())
+        has_desk = Q(id__in=self.members_with_desks().values('id'))
+        return self.active_members().exclude(has_desk).exclude(recently_used).order_by('first_name')
 
     def missing_member_agreement(self):
         active_agmts = FileUpload.objects.filter(document_type=FileUpload.MEMBER_AGMT, user__in=self.active_members()).distinct()
@@ -179,29 +214,20 @@ class UserQueryHelper():
     def missing_photo(self):
         return self.active_members().filter(profile__photo="").order_by('first_name')
 
-    def invalid_billing(self):
-        active_memberships = Membership.objects.active_memberships()
-        free_memberships = active_memberships.filter(monthly_rate=0)
-        freeloaders = Q(id__in=free_memberships.values('user'))
-        guest_memberships = active_memberships.filter(paid_by__isnull=False)
-        guests = Q(id__in=guest_memberships.values('user'))
-        active_invalids = self.active_members().filter(profile__valid_billing=False)
-        return active_invalids.exclude(freeloaders).exclude(guests)
+    def members_with_desks(self, target_date=None):
+        ''' Return a set of users with an active 'desk' subscription. '''
+        desk_resource = Resource.objects.filter(name__icontains='desk').first()
+        return self.active_members_by_resource(desk_resource, target_date).order_by('first_name')
 
-    def members_by_package(self, package_name):
-        return Membership.objects.active_members(package_name=package_name)
+    def members_with_keys(self, target_date=None):
+        ''' Return a set of users with an active 'key' subscription. '''
+        key_resource = Resource.objects.filter(name__icontains='key').first()
+        return self.active_members_by_resource(key_resource, target_date).order_by('first_name')
 
-    def members_with_desks(self):
-        memberships = Membership.objects.active_memberships().filter(has_desk=True)
-        return User.objects.filter(id__in=memberships.values('user')).order_by('first_name')
-
-    def members_with_keys(self):
-        memberships = Membership.objects.active_memberships().filter(has_key=True)
-        return User.objects.filter(id__in=memberships.values('user')).order_by('first_name')
-
-    def members_with_mail(self):
-        memberships = Membership.objects.active_memberships().filter(has_mail=True)
-        return User.objects.filter(id__in=memberships.values('user')).order_by('first_name')
+    def members_with_mail(self, target_date=None):
+        ''' Return a set of users with an active 'mail' subscription. '''
+        mail_resource = Resource.objects.filter(name__icontains='mail').first()
+        return self.active_members_by_resource(mail_resource, target_date).order_by('first_name')
 
     def members_by_neighborhood(self, hood, active_only=True):
         if active_only:
@@ -213,6 +239,7 @@ class UserQueryHelper():
         return self.active_members().filter(profile__tags__name__in=[tag])
 
     def managers(self, include_future=False):
+        # TODO - port
         if hasattr(settings, 'TEAM_MEMBERSHIP_PLAN'):
             management_plan = MembershipPlan.objects.filter(name=settings.TEAM_MEMBERSHIP_PLAN).first()
             memberships = Membership.objects.active_memberships().filter(membership_plan=management_plan).distinct()

@@ -3,7 +3,7 @@ from datetime import timedelta, date
 from decimal import Decimal
 
 from django.db import models
-from django.db.models import Q, Count, Sum, Value
+from django.db.models import F, Q, Count, Sum, Value
 from django.db.models.functions import Coalesce
 from django.utils.timezone import localtime, now
 from django.core.urlresolvers import reverse

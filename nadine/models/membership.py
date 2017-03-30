@@ -14,7 +14,8 @@ from dateutil.relativedelta import relativedelta
 from decimal import Decimal
 
 from django.db import models
-from django.db.models import Q
+from django.db.models import F, Q, Count, Sum, Value
+from django.db.models.functions import Coalesce
 from django.contrib import admin
 from django.core import urlresolvers
 from django.core.files.base import ContentFile
@@ -60,8 +61,8 @@ class MemberGroups():
     def get_member_groups():
         group_list = []
         for package in MembershipPackage.objects.filter(enabled=True).order_by('name'):
-            package_name = package.name
-            if len(Membership.objects.active_members(package_name=package_name)) > 0:
+            if User.helper.active_members_by_package(package).count() > 0:
+                package_name = package.name
                 group_list.append((package_name, "%s Members" % package_name))
         for g, d in sorted(MemberGroups.GROUP_DICT.items(), key=operator.itemgetter(0)):
             group_list.append((g, d))
@@ -70,7 +71,7 @@ class MemberGroups():
     @staticmethod
     def get_members(group):
         if group == MemberGroups.ALL:
-            return Membership.objects.active_members()
+            return User.helper.active_members()
         elif group == MemberGroups.HAS_DESK:
             return User.helper.members_with_desks()
         elif group == MemberGroups.HAS_KEY:
@@ -130,6 +131,12 @@ class MembershipManager(models.Manager):
             membership_query = membership_query.filter(package__name=package_name)
         return membership_query
 
+    def active_individual_memberships(self, target_date=None, package_name=None):
+        return self.active_memberships(target_date, package_name).filter(individualmembership__isnull=False)
+
+    def active_organization_memberships(self, target_date=None, package_name=None):
+        return self.active_memberships(target_date, package_name).filter(organizationmembership__isnull=False)
+
     def ready_for_billing(self, target_date=None):
         if not target_date:
             target_date = localtime(now()).date()
@@ -145,21 +152,11 @@ class MembershipManager(models.Manager):
             target_date = localtime(now()).date()
         return self.filter(subscriptions__start_date__gt=target_date)
 
-    def active_members(self, target_date=None, package_name=None):
-        members = []
-        for membership in self.active_memberships(target_date, package_name):
-            if hasattr(membership, 'individualmembership'):
-                members.append(membership.individualmembership.user)
-            elif hasattr(membership, 'organizationmembership'):
-                org = membership.organizationmembership.organization
-                members.extend(org.members())
-        return members
-
     def for_user(self, username, target_date=None):
         # user = User.objects.get(username=username)
         individual = Q(individualmembership__user__username = username)
         organization  = Q(organizationmembership__organization__organizationmember__user__username = username)
-        return Membership.objects.filter(individual or organization)
+        return self.filter(individual or organization)
 
 
 class Membership(models.Model):
@@ -270,7 +267,7 @@ class Membership(models.Model):
         current = Q(start_date__lte=target_date)
         unending = Q(end_date__isnull=True)
         future_ending = Q(end_date__gte=target_date)
-        return self.subscriptions.filter().filter(current & (unending | future_ending)).distinct()
+        return self.subscriptions.filter(current & (unending | future_ending)).distinct()
 
     def subscriptions_by_payer(self, target_date=None):
         ''' Pull the active subscriptions for given target_date and group them by payer '''
@@ -595,9 +592,19 @@ class OrganizationMembership(Membership):
 
 class SubscriptionManager(models.Manager):
 
-    def active_subscriptions(self, user, period_start, period_end):
-        # TODO
-        pass
+    def active_subscriptions(self, target_date=None):
+        if not target_date:
+            target_date = localtime(now()).date()
+        current = Q(start_date__lte=target_date)
+        unending = Q(end_date__isnull=True)
+        future_ending = Q(end_date__gte=target_date)
+        return self.filter(current & (unending | future_ending)).distinct()
+
+    def active_subscriptions_with_username(self, target_date=None):
+        ''' Return the set of active subscriptions including the username for each subscription. '''
+        individual_user = F('membership__individualmembership__user__username')
+        organization_user = F('membership__organizationmembership__organization__organizationmember__user__username')
+        return self.active_subscriptions().annotate(username=Coalesce(individual_user, organization_user))
 
 
 class ResourceSubscription(models.Model):
