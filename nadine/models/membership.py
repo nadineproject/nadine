@@ -277,15 +277,11 @@ class Membership(models.Model):
         # Loop through all the subscriptions and compile a list of possible matches
         possible_matches = list(MembershipPackage.objects.filter(enabled=True))
         for s in subscriptions:
-            matches = SubscriptionDefault.objects.filter(resource = s.resource, allowance = s.allowance, monthly_rate = s.monthly_rate, overage_rate = s.overage_rate)
-            for p in possible_matches:
-                if p not in matches:
-                    possible_matches.remove(p)
+            matches = SubscriptionDefault.objects.filter(resource = s.resource, allowance = s.allowance, monthly_rate = s.monthly_rate, overage_rate = s.overage_rate).values_list('package', flat=True)
+            possible_matches = [p for p in possible_matches if p.id in matches]
 
         # For all possible matches, check the number of subscriptions against the defaults
-        for p in possible_matches:
-            if p.defaults.count() != subscriptions.count():
-                possible_matches.remove(p)
+        possible_matches = [p for p in possible_matches if p.defaults.count() == subscriptions.count()]
 
         # If there is only one, we have a match
         if len(possible_matches) == 1:
