@@ -327,13 +327,23 @@ class Membership(models.Model):
             rate = 0
         return rate
 
-    def bill_amount(self, target_date=None):
+    def bills_for_period(self, target_date=None):
+        ''' Return all bills due for this membership on a given date '''
+        ps, pe = self.get_period(target_date)
+        return self.bills.filter(due_date=ps)
+
+    def bill_totals(self, target_date=None):
         ''' Return the sum of all bills due for this membership on a given date '''
-        if not target_date:
-            target_date = localtime(now()).date()
         total = 0
-        for b in self.bills.filter(due_date=target_date):
+        for b in self.bills_for_period(target_date):
             total += b.amount
+        return total
+
+    def payment_totals(self, target_date=None):
+        ''' Return the sum of all bills due for this membership on a given date '''
+        total = 0
+        for b in self.bills_for_period(target_date):
+            total += b.total_paid
         return total
 
     def get_period(self, target_date=None):

@@ -67,8 +67,9 @@ def ready_for_billing(request, year, month, day):
             'membership': m,
             'monthly_rate': m.monthly_rate(target_date=d),
             'matching_package': m.matching_package(target_date=d),
-            'bill_count': m.bills.filter(due_date=d).count(),
-            'bill_amount': m.bill_amount(target_date=d),
+            'bills': m.bills_for_period(target_date=d),
+            'bill_totals': m.bill_totals(target_date=d),
+            'payment_totals': m.payment_totals(target_date=d),
         })
     context = {
         'memberships': memberships,
