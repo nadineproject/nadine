@@ -684,6 +684,11 @@ class UserProfile(models.Model):
     def get_absolute_url(self):
         return ('member:profile:view', [], {'username': self.user.username})
 
+    @models.permalink
+    def get_staff_url(self):
+        return ('staff:members:detail', [], {'username': self.user.username})
+
+
     class Meta:
         app_label = 'nadine'
         ordering = ['user__first_name', 'user__last_name']

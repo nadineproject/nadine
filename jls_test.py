@@ -32,3 +32,7 @@ def test_new_bills():
         new = user.bills.last()
         if new:
             print("   NEW: Date: %s, Amount: $%s" % (new.due_date, new.amount))
+
+def test_packages():
+    for m in Membership.objects.active_memberships():
+        print("who: %s, package: %s, matching: %s, matches: %s" % (m.who, m.package, m.matching_package(), m.matches_package()))

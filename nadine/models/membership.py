@@ -178,7 +178,13 @@ class Membership(models.Model):
             return self.individualmembership.user.get_full_name()
         elif self.is_organization:
             return self.organizationmembership.organization.name
-        return None
+
+    @property
+    def who_url(self):
+        if self.is_individual:
+            return self.individualmembership.user.profile.get_staff_url()
+        elif self.is_organization:
+            return self.organizationmembership.organization.get_staff_url()
 
     @property
     def active_now(self):
@@ -250,25 +256,22 @@ class Membership(models.Model):
         if not self.package:
             return False
 
+        # First check the count of subscripitions with the default
         subscriptions = self.active_subscriptions(target_date)
         if self.package.defaults.count() != subscriptions.count():
             return False
 
+        # For every subscription, there should be one default that matches
         for s in subscriptions:
-            matches = SubscriptionDefault.objects.filter(
-                package = self.package,
-                resource = s.resource,
-                allowance = s.allowance,
-                monthly_rate = s.monthly_rate,
-                overage_rate = s.overage_rate
-            ).count() == 1
-            if not matches:
+            matches = SubscriptionDefault.objects.filter(package = self.package, resource = s.resource, allowance = s.allowance, monthly_rate = s.monthly_rate, overage_rate = s.overage_rate)
+            if matches.count() != 1:
                 return False
 
+        # If we've made it this far, it's a match
         return True
 
     def matching_package(self, target_date=None):
-        ''' Calculates whitch package matches the subscriptions. '''
+        ''' Calculates which package matches the subscriptions. '''
         subscriptions = self.active_subscriptions(target_date)
 
         # Loop through all the subscriptions and compile a list of possible matches
@@ -401,6 +404,10 @@ class Membership(models.Model):
                     next_period_start = s.start_date
 
         return next_period_start
+
+    def last_change(self):
+        last_subscription = self.subscriptions.all().order_by('created_ts').last()
+        return last_subscription.created_ts
 
     def generate_bill(self, target_date=None, created_by=None):
         if not target_date:

@@ -94,7 +94,7 @@
 					<a class='col s1 tooltipped' data-position="bottom" data-tooltip="Edit Details" href="{% url 'member:org:edit' organization.id %}"><img id='edit' alt='edit icon' style='height:30px;' src="{% static 'img/edit.png' %}"/></a>
 				{% endif %}
 				{% if request.user.is_staff %}
-					<a class='col s1 tooltipped' data-position="bottom" data-tooltip='Admin' href="{{ organization.admin_url }}"><img id='admin' alt='admin icon' src="{% static 'img/admin.png' %}"/></a>
+					<a class='col s1 tooltipped' data-position="bottom" data-tooltip='Admin' href="{{ organization.get_admin_url }}"><img id='admin' alt='admin icon' src="{% static 'img/admin.png' %}"/></a>
 				{% endif %}
 			</div>
 		</div>

@@ -129,9 +129,17 @@ class Organization(models.Model):
     def __unicode__(self):
         return self.name
 
-    @property
-    def admin_url(self):
-        return urlresolvers.reverse('admin:nadine_organization_change', args=[self.id])
+    @models.permalink
+    def get_absolute_url(self):
+        return ('member:org:view', [], {'org_id': self.id})
+
+    @models.permalink
+    def get_staff_url(self):
+        return ('staff:members:organization', [], {'org_id': self.id})
+
+    @models.permalink
+    def get_admin_url(self):
+        return ('admin:nadine_organization_change', [self.id], {})
 
     class Meta:
         app_label = 'nadine'
