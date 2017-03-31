@@ -120,7 +120,7 @@ class UserQueryHelper():
         return User.objects.filter(id__in=combined_set).distinct()
 
     def invalid_billing(self):
-        return self.payers.filter(profile__valid_billing=False)
+        return self.payers().filter(profile__valid_billing=False)
 
     def here_today(self, target_date=None):
         if not target_date:

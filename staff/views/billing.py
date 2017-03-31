@@ -220,13 +220,17 @@ def toggle_billing_flag(request, username):
 
     page_message = user.get_full_name() + " billing profile: "
     if user.profile.valid_billing:
-        page_message += " Invalid"
         user.profile.valid_billing = False
-        email.send_invalid_billing(user)
+        messages.success(request, user.get_full_name() + " billing profile: Invalid")
+        try:
+            email.send_invalid_billing(user)
+        except Exception:
+            messages.error(request, "Failed to send invalid billing email to: " + user.email)
     else:
-        page_message += " Valid"
         user.profile.valid_billing = True
+        messages.success(request, user.get_full_name() + " billing profile: Valid")
     user.profile.save()
+
 
     if 'back' in request.POST:
         return HttpResponseRedirect(request.POST.get('back'))
