@@ -52,16 +52,45 @@ def run_billing(request):
     return render(request, 'staff/billing/run_billing.html', context)
 
 
+@staff_member_required
+def ready_today(request):
+    today = localtime(now())
+    return HttpResponseRedirect(reverse('staff:billing:ready', args=[], kwargs={'year': today.year, 'month': today.month, 'day': today.day}))
+
+
+@staff_member_required
+def ready_for_billing(request, year, month, day):
+    d = date(year=int(year), month=int(month), day=int(day))
+    memberships = []
+    for m in Membership.objects.ready_for_billing(target_date=d):
+        memberships.append({
+            'membership': m,
+            'monthly_rate': m.monthly_rate(target_date=d),
+            'matching_package': m.matching_package(target_date=d),
+            'bill_count': m.bills.filter(due_date=d).count(),
+            'bill_amount': m.bill_amount(target_date=d),
+        })
+    context = {
+        'memberships': memberships,
+        'date': d,
+        'previous_date': d - timedelta(days=1),
+        'next_date': d + timedelta(days=1),
+    }
+    return render(request, 'staff/billing/ready_for_billing.html', context)
+
+
 def group_bills_by_date(bill_query):
     bills_by_date = {}
     for bill in bill_query:
-        key = bill.created_ts
+        key = bill.created_ts.date()
         if not key in bills_by_date:
             bills_by_date[key] = []
         bills_by_date[key].append(bill.user)
     # Return an ordered dictionary by date
     ordered_bills = OrderedDict(sorted(bills_by_date.items(), key=lambda t: t[0]))
     return ordered_bills
+
+
 
 
 @staff_member_required

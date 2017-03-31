@@ -32,5 +32,3 @@ def test_new_bills():
         new = user.bills.last()
         if new:
             print("   NEW: Date: %s, Amount: $%s" % (new.due_date, new.amount))
-
-test_new_bills()

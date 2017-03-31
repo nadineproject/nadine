@@ -246,7 +246,7 @@ class Membership(models.Model):
             )
 
     def matches_package(self, target_date=None):
-        ''' Calculates if the subscriptions match the package'''
+        ''' Calculates if the subscriptions match the package. '''
         if not self.package:
             return False
 
@@ -254,7 +254,6 @@ class Membership(models.Model):
         if self.package.defaults.count() != subscriptions.count():
             return False
 
-        matching_package = None
         for s in subscriptions:
             matches = SubscriptionDefault.objects.filter(
                 package = self.package,
@@ -267,6 +266,27 @@ class Membership(models.Model):
                 return False
 
         return True
+
+    def matching_package(self, target_date=None):
+        ''' Calculates whitch package matches the subscriptions. '''
+        subscriptions = self.active_subscriptions(target_date)
+
+        # Loop through all the subscriptions and compile a list of possible matches
+        possible_matches = list(MembershipPackage.objects.filter(enabled=True))
+        for s in subscriptions:
+            matches = SubscriptionDefault.objects.filter(resource = s.resource, allowance = s.allowance, monthly_rate = s.monthly_rate, overage_rate = s.overage_rate)
+            for p in possible_matches:
+                if p not in matches:
+                    possible_matches.remove(p)
+
+        # For all possible matches, check the number of subscriptions against the defaults
+        for p in possible_matches:
+            if p.defaults.count() != subscriptions.count():
+                possible_matches.remove(p)
+
+        # If there is only one, we have a match
+        if len(possible_matches) == 1:
+            return possible_matches[0]
 
     def active_subscriptions(self, target_date=None):
         if not target_date:
@@ -307,6 +327,15 @@ class Membership(models.Model):
         if not rate:
             rate = 0
         return rate
+
+    def bill_amount(self, target_date=None):
+        ''' Return the sum of all bills due for this membership on a given date '''
+        if not target_date:
+            target_date = localtime(now()).date()
+        total = 0
+        for b in self.bills.filter(due_date=target_date):
+            total += b.amount
+        return total
 
     def get_period(self, target_date=None):
         ''' Get period associated with a certain date.
