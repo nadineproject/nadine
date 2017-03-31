@@ -633,8 +633,6 @@ class UserProfile(models.Model):
             pass
         return False
 
-    def __str__(self): return '%s %s' % (smart_str(self.user.first_name), smart_str(self.user.last_name))
-
     def auto_bill_enabled(self):
         if not hasattr(settings, 'USA_EPAY_KEY'):
             return None
@@ -679,6 +677,12 @@ class UserProfile(models.Model):
                 if active_membership:
                     return active_membership.membership_plan == management_plan
         return False
+
+    def __str__(self): return '%s %s' % (smart_str(self.user.first_name), smart_str(self.user.last_name))
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('member:profile:view', [], {'username': self.user.username})
 
     class Meta:
         app_label = 'nadine'
