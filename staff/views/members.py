@@ -352,6 +352,7 @@ def confirm_membership(request, username, package, end_target, new_subs):
     new_subs = unicodedata.normalize('NFKD', new_subs).encode('ascii', 'ignore')
     package = unicodedata.normalize('NFKD', package).encode('ascii', 'ignore')
     subs = ast.literal_eval(new_subs)
+    print subs
     pkg = ast.literal_eval(package)
     if request.method == 'POST':
         try:
@@ -370,40 +371,42 @@ def confirm_membership(request, username, package, end_target, new_subs):
                     # Review all subscriptions to see if adding or ending
                     for sub in subs:
                         sub_id = sub['s_id']
-                        if sub_id and sub['end_date']:
-                            end_date = sub['end_date']
-                            to_end = user.membership.active_subscriptions().filter(id=sub_id)
-                            to_end.end_date = sub['end_date']
-                            to_end.save()
-                        paid_by = None
-                        created_ts = localtime(now())
-                        created_by = request.user
-                        resource = Resource.objects.get(id=sub['resource'])
-                        allowance = sub['allowance']
-                        start_date = sub['start_date']
-                        if sub['end_date']:
-                            end_date = sub['end_date']
+                        if sub_id != None:
+                            if sub_id and sub['end_date']:
+                                end_date = sub['end_date']
+                                to_end = user.membership.active_subscriptions().get(id=sub_id)
+                                to_end.end_date = sub['end_date']
+                                to_end.save()
                         else:
-                            end_date = None
-                        monthly_rate = sub['monthly_rate']
-                        overage_rate = sub['overage_rate']
-                        if sub['paid_by']:
-                            p_username = sub['paid_by']
-                            paid_by = User.objects.get(username=p_username)
+                            paid_by = None
+                            created_ts = localtime(now())
+                            created_by = request.user
+                            resource = Resource.objects.get(id=sub['resource'])
+                            allowance = sub['allowance']
+                            start_date = sub['start_date']
+                            if sub['end_date']:
+                                end_date = sub['end_date']
+                            else:
+                                end_date = None
+                            monthly_rate = sub['monthly_rate']
+                            overage_rate = sub['overage_rate']
+                            if sub['paid_by']:
+                                p_username = sub['paid_by']
+                                paid_by = User.objects.get(username=p_username)
 
-                        # Check to see if it is a unique resource and end if it is not
-                        already_have = user.membership.active_subscriptions().filter(resource=resource).filter(paid_by=paid_by)
-                        if len(already_have) > 0:
-                            p_id = already_have[0].id
-                            prev_rs = ResourceSubscription.objects.get(id=p_id)
-                            if not prev_rs.end_date:
-                                allowance = int(allowance) + prev_rs.allowance
-                                monthly_rate = int(monthly_rate) + prev_rs.monthly_rate
-                                prev_rs.end_date = datetime.strptime(start_date, '%Y-%m-%d') - timedelta(days=1)
-                                prev_rs.save()
-                        # Save new resource
-                        rs = ResourceSubscription(created_by=created_by, created_ts=created_ts, resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=paid_by, membership=membership)
-                        rs.save()
+                            # Check to see if it is a unique resource and end if it is not
+                            already_have = user.membership.active_subscriptions().filter(resource=resource).filter(paid_by=paid_by)
+                            if len(already_have) > 0:
+                                p_id = already_have[0].id
+                                prev_rs = ResourceSubscription.objects.get(id=p_id)
+                                if not prev_rs.end_date:
+                                    allowance = int(allowance) + prev_rs.allowance
+                                    monthly_rate = int(monthly_rate) + prev_rs.monthly_rate
+                                    prev_rs.end_date = datetime.strptime(start_date, '%Y-%m-%d') - timedelta(days=1)
+                                    prev_rs.save()
+                            # Save new resource
+                            rs = ResourceSubscription(created_by=created_by, created_ts=created_ts, resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=paid_by, membership=membership)
+                            rs.save()
                 else:
                     user.membership.end_all(end_target)
                 messages.success(request, "You have updated the subscriptions for %s" % username)

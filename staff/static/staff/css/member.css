@@ -287,6 +287,10 @@ td.up-input.rate {
 	margin-left: 3%;
 }
 
+.delete-row {
+  background-color: RGBA(158, 89, 88, 1.00);
+}
+
 .detail-billing {
   margin-left: 2%;
   margin-top: 2%;

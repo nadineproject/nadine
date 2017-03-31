@@ -149,16 +149,42 @@
       {{ sub_formset.management_form }}
       {% for sub_form in sub_formset %}
       <tr class='sub-formset subs'>
-        {% if sub_form.id %}
-          {{ sub_form.s_id }}
+        {{ sub_form.s_id }}
+        {% if sub_form.s_id.value %}
+          <td class='sub-input disabled'>{{ sub_form.resource }}</td>
+        {% else %}
+          <td class='sub-input'>{{ sub_form.resource }}</td>
         {% endif %}
-				<td class='sub-input'>{{ sub_form.resource }}</td>
-				<td class='sub-input allowance'>{{ sub_form.allowance  }}</td>
-        <td class='sub-input' id='start_date_td'>{{ sub_form.start_date  }}</td>
-        <td class='sub-input' id='end_date_td'>{{ sub_form.end_date  }}</td>
-        <td class='sub-input rate monthly_rate'>{{ sub_form.monthly_rate  }}</td>
-        <td class='sub-input rate'>{{ sub_form.overage_rate }}</td>
-        <td class='sub-input'>{{ sub_form.paid_by  }}</td>
+        {% if sub_form.s_id.value %}
+          <td class='sub-input allowance disabled'>{{ sub_form.allowance  }}</td>
+        {% else %}
+          <td class='sub-input allowance'>{{ sub_form.allowance  }}</td>
+        {% endif %}
+        {% if sub_form.s_id.value %}
+          <td class='sub-input disabled' id='start_date_td'>{{ sub_form.start_date  }}</td>
+        {% else %}
+          <td class='sub-input' id='start_date_td'>{{ sub_form.start_date  }}</td>
+        {% endif %}
+        {% if sub_form.s_id.value %}
+          <td class='sub-input disabled' id='end_date_td'>{{ sub_form.end_date  }}</td>
+        {% else %}
+          <td class='sub-input' id='end_date_td'>{{ sub_form.end_date  }}</td>
+        {% endif %}
+        {% if sub_form.s_id.value %}
+          <td class='sub-input rate monthly_rate disabled'>{{ sub_form.monthly_rate  }}</td>
+        {% else %}
+          <td class='sub-input rate monthly_rate'>{{ sub_form.monthly_rate  }}</td>
+        {% endif %}
+        {% if sub_form.s_id.value %}
+          <td class='sub-input rate disabled'>{{ sub_form.overage_rate }}</td>
+        {% else %}
+          <td class='sub-input rate'>{{ sub_form.overage_rate }}</td>
+        {% endif %}
+        {% if sub_form.s_id.value %}
+          <td class='sub-input disabled'>{{ sub_form.paid_by  }}</td>
+        {% else %}
+          <td class='sub-input'>{{ sub_form.paid_by  }}</td>
+        {% endif %}
         <td class='sub-input'>
           {% if sub_form.s_id.value  %}
             <a class='delete-row'>End</a>
@@ -244,12 +270,14 @@
     $('#date-end').hide();
     $('#sub-end').hide();
     $('.sub-form').hide();
+    $('#id_bill_day').hide();
+
 
     $('#id_created_by').val('{{ request.user }}');
     $('#id_bill_day').val('{{ bill_day }}');
     $('#id_username').val('{{ entity.username }}')
     $('.created_by_td').val('{{ request.user }}');
-    $('#id_bill_day').hide();
+    $('.disabled input').attr('readonly', 'readonly');
 
     $('.sub-input .start_date').addClass('datepicker');
     $('.sub-input .end_date').addClass('datepicker');
@@ -268,8 +296,6 @@
       e.preventDefault();
       $('#change-package').show();
       $('.change-form').show();
-      // $('.change-table').hide();
-      // $('#end-package').hide();
       $('.mem-details-table').hide();
     })
 
@@ -309,6 +335,7 @@
       e.preventDefault();
       var val = $('#target_date').val();
       $(this).parent().siblings('#end_date_td').children().val(val);
+      $(this).fadeOut("slow");
     });
 
     $('.add-btn').on('click', function(e) {
@@ -372,6 +399,12 @@
       if (action == 'update') {
         $('.curr-sub').hide();
         $('.sub-form').show();
+        $('#start_date_td input').each(function() {
+          if(!($(this).attr('readonly'))) {
+            $(this).val($('#sub-end').val());
+            $(this).attr('readonly', 'readonly');
+          }
+        })
       }
     })
 
@@ -391,6 +424,12 @@
         if (action == 'update') {
           $('.curr-sub').hide();
           $('.sub-form').show();
+          $('#start_date_td input').each(function() {
+            if(!($(this).attr('readonly'))) {
+              $(this).val(today);
+              $(this).attr('readonly', 'readonly');
+            }
+          })
         }
       } else if (period == 'eop') {
         var d = new Date();
@@ -449,6 +488,12 @@
           if (action == 'update') {
             $('.curr-sub').hide();
             $('.sub-form').show();
+            $('#start_date_td input').each(function() {
+              if(!($(this).attr('readonly'))) {
+                $(this).val(start);
+                $(this).attr('readonly', 'readonly');
+              }
+            })
           }
       }
     })
