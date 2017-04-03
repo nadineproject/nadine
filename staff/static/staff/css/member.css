@@ -11,6 +11,10 @@ h6 {
   color: RGBA(16, 91, 99, 1.00);
 }
 
+h5 {
+  margin-bottom: 2%;
+}
+
 /*input[type=date] {
   width: 85%;
 }*/
@@ -367,6 +371,7 @@ td.up-input.rate {
   font-size: 1.3em;
   text-align: center;
   margin-top: 3%;
+  color: RGBA(158, 89, 88, 1.00);
 }
 
 .ending-p input {

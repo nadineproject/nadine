@@ -89,27 +89,27 @@
   </table>
   {% else %}
   <table class='sub-table'>
-  <tr>
-    <th class='sub-th'>Resource</th>
-    <th class='allowance sub-th'>Allowance</th>
-    <th class='sub-th'>Start Date</th>
-    <th class='sub-th'>End Date</th>
-    <th class='rate sub-th'>Monthly Rate</th>
-    <th class='rate sub-th'>Overage rate</th>
-    <th class='sub-th'>Paid By</th>
-  </tr>
-  {% for c in user.membership.active_subscriptions %}
-    <tr class='{% cycle "row-odd" "row-even" %}'>
-      <td>{{ c.resource }}</td>
-      <td>{{ c.allowance }}</td>
-      <td>{{ c.start_date }}</td>
-      <td>{{ c.end_date |default:"-" }}</td>
-      <td>${{ c.monthly_rate }}/month</td>
-      <td>${{ c.overage_rate }}</td>
-      <td>{{ c.paid_by|default:"" }}</td>
+    <tr>
+      <th class='sub-th'>Resource</th>
+      <th class='allowance sub-th'>Allowance</th>
+      <th class='sub-th'>Start Date</th>
+      <th class='sub-th'>End Date</th>
+      <th class='rate sub-th'>Monthly Rate</th>
+      <th class='rate sub-th'>Overage rate</th>
+      <th class='sub-th'>Paid By</th>
     </tr>
+    {% for c in user.membership.active_subscriptions %}
+      <tr class='{% cycle "row-odd" "row-even" %}'>
+        <td>{{ c.resource }}</td>
+        <td>{{ c.allowance }}</td>
+        <td>{{ c.start_date }}</td>
+        <td>{{ c.end_date |default:"-" }}</td>
+        <td>${{ c.monthly_rate }}/month</td>
+        <td>${{ c.overage_rate }}</td>
+        <td>{{ c.paid_by|default:"" }}</td>
+      </tr>
   {% endfor %}
-</table>
+  </table>
   <div class='end_pkg_table'>
     <input name='end_pkg' type='hidden' value='end_pkg' />
     <p class='ending-p'><strong>Ending this package and all subscritions on:</strong> <input type='date' value="{{ end_target }}" readonly /></p>

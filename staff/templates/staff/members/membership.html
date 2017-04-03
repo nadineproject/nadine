@@ -254,19 +254,20 @@
     $('.sub-form').hide();
     $('#id_bill_day').hide();
 
-
-    $('#id_created_by').val('{{ request.user }}');
-    $('#id_bill_day').val('{{ bill_day }}');
-    $('#id_username').val('{{ entity.username }}')
-    $('.created_by_td').val('{{ request.user }}');
-    $('.disabled input').attr('readonly', 'readonly');
-
     $('.sub-input .start_date').addClass('datepicker');
     $('.sub-input .end_date').addClass('datepicker');
     $('.datepicker').datepicker({
       dateFormat: 'yy-mm-dd',
       minDate: 0
     });
+
+    $('#id_created_by').val('{{ request.user }}');
+    $('#id_bill_day').val('{{ bill_day }}');
+    $('#id_username').val('{{ entity.username }}')
+    $('.created_by_td').val('{{ request.user }}');
+    $('.disabled input').attr('readonly', 'readonly');
+    $('.disabled input.end_date').datepicker('destroy');
+    $('.disabled input.start_date').datepicker('destroy');
 
     if(targetDate != 'None') {
       $('.start_date').val(targetDate);
@@ -297,6 +298,7 @@
     // Setting up the view if there is a selected package
     if(targetDate != 'None') {
       $('.end-table').hide();
+      $('.change-form').hide();
       $('#change-package').show();
       $('.sub-form').show();
       $('#new-package').val('{{ package }}');
@@ -385,6 +387,7 @@
           if(!($(this).attr('readonly'))) {
             $(this).val($('#sub-end').val());
             $(this).attr('readonly', 'readonly');
+            $(this).datepicker('destroy');
           }
         })
       }
@@ -410,6 +413,7 @@
             if(!($(this).attr('readonly'))) {
               $(this).val(today);
               $(this).attr('readonly', 'readonly');
+              $(this).datepicker('destroy');
             }
           })
         }
@@ -474,6 +478,7 @@
               if(!($(this).attr('readonly'))) {
                 $(this).val(start);
                 $(this).attr('readonly', 'readonly');
+                $(this).datepicker('destroy');
               }
             })
           }
