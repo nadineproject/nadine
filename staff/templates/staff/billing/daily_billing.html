@@ -1,15 +1,15 @@
 {% extends "staff/billing/base.html" %}
 
-{% block sub-title %}Ready For Billing{% endblock %}
+{% block sub-title %}Daily Billing{% endblock %}
 
 {% block content %}
 
 <div class='day-header'>
   <h5>Billing For <span id='dis-date'>- {{ date|date:"l, M dS" }}</span></h5>
   <span id='activity-dates'>
-  <a href="{% url 'staff:billing:ready' previous_date.year previous_date.month previous_date.day %}">&larr;</a>
+  <a href="{% url 'staff:billing:daily_billing' previous_date.year previous_date.month previous_date.day %}">&larr;</a>
   <input type='date' name='date' class='datepicker' value="{{ date|date:'Y-m-d' }}"/>
-  <a href="{% url 'staff:billing:ready' next_date.year next_date.month next_date.day %}">&rarr;</a>
+  <a href="{% url 'staff:billing:daily_billing' next_date.year next_date.month next_date.day %}">&rarr;</a>
   </span>
 </div>
 
@@ -70,7 +70,7 @@
       </td>
     </tr>
   {% empty %}
-    <tr><th>No memberships are ready for billing</th></tr>
+    <tr><th>No billing today</th></tr>
   {% endfor %}
 </table>
 
@@ -80,7 +80,7 @@
 <script>
   function changeDate(input) {
     var date = input.split('-');
-    var url = "{% url 'staff:billing:ready' 2016 12 14 %}".replace(/14/, date[2]).replace(/12/, date[1]).replace(/2016/, date[0]);
+    var url = "{% url 'staff:billing:daily_billing' 2016 12 14 %}".replace(/14/, date[2]).replace(/12/, date[1]).replace(/2016/, date[0]);
     window.location.href = url;
   }
 

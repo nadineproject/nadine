@@ -53,13 +53,13 @@ def run_billing(request):
 
 
 @staff_member_required
-def ready_today(request):
+def billing_today(request):
     today = localtime(now())
-    return HttpResponseRedirect(reverse('staff:billing:ready', args=[], kwargs={'year': today.year, 'month': today.month, 'day': today.day}))
+    return HttpResponseRedirect(reverse('staff:billing:daily_billing', args=[], kwargs={'year': today.year, 'month': today.month, 'day': today.day}))
 
 
 @staff_member_required
-def ready_for_billing(request, year, month, day):
+def daily_billing(request, year, month, day):
     d = date(year=int(year), month=int(month), day=int(day))
     memberships = []
     for m in Membership.objects.ready_for_billing(target_date=d):
@@ -77,7 +77,7 @@ def ready_for_billing(request, year, month, day):
         'previous_date': d - timedelta(days=1),
         'next_date': d + timedelta(days=1),
     }
-    return render(request, 'staff/billing/ready_for_billing.html', context)
+    return render(request, 'staff/billing/daily_billing.html', context)
 
 
 def group_bills_by_date(bill_query):
