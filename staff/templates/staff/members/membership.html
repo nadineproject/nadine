@@ -152,37 +152,19 @@
         {{ sub_form.s_id }}
         {% if sub_form.s_id.value %}
           <td class='sub-input disabled'>{{ sub_form.resource }}</td>
-        {% else %}
-          <td class='sub-input'>{{ sub_form.resource }}</td>
-        {% endif %}
-        {% if sub_form.s_id.value %}
           <td class='sub-input allowance disabled'>{{ sub_form.allowance  }}</td>
-        {% else %}
-          <td class='sub-input allowance'>{{ sub_form.allowance  }}</td>
-        {% endif %}
-        {% if sub_form.s_id.value %}
           <td class='sub-input disabled' id='start_date_td'>{{ sub_form.start_date  }}</td>
-        {% else %}
-          <td class='sub-input' id='start_date_td'>{{ sub_form.start_date  }}</td>
-        {% endif %}
-        {% if sub_form.s_id.value %}
           <td class='sub-input disabled' id='end_date_td'>{{ sub_form.end_date  }}</td>
-        {% else %}
-          <td class='sub-input' id='end_date_td'>{{ sub_form.end_date  }}</td>
-        {% endif %}
-        {% if sub_form.s_id.value %}
           <td class='sub-input rate monthly_rate disabled'>{{ sub_form.monthly_rate  }}</td>
-        {% else %}
-          <td class='sub-input rate monthly_rate'>{{ sub_form.monthly_rate  }}</td>
-        {% endif %}
-        {% if sub_form.s_id.value %}
           <td class='sub-input rate disabled'>{{ sub_form.overage_rate }}</td>
-        {% else %}
-          <td class='sub-input rate'>{{ sub_form.overage_rate }}</td>
-        {% endif %}
-        {% if sub_form.s_id.value %}
           <td class='sub-input disabled'>{{ sub_form.paid_by  }}</td>
         {% else %}
+          <td class='sub-input'>{{ sub_form.resource }}</td>
+          <td class='sub-input allowance'>{{ sub_form.allowance  }}</td>
+          <td class='sub-input' id='start_date_td'>{{ sub_form.start_date  }}</td>
+          <td class='sub-input' id='end_date_td'>{{ sub_form.end_date  }}</td>
+          <td class='sub-input rate monthly_rate'>{{ sub_form.monthly_rate  }}</td>
+          <td class='sub-input rate'>{{ sub_form.overage_rate }}</td>
           <td class='sub-input'>{{ sub_form.paid_by  }}</td>
         {% endif %}
         <td class='sub-input'>
