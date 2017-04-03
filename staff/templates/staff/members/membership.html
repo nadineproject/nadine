@@ -168,7 +168,8 @@
           <td class='sub-input'>{{ sub_form.paid_by  }}</td>
         {% endif %}
         <td class='sub-input'>
-          {% if sub_form.s_id.value  %}
+          {% if sub_form.end_date.value %}
+          {% elif sub_form.s_id.value  %}
             <a class='delete-row'>End</a>
           {% else %}
             <a class='add-btn'>Add</a>
@@ -383,6 +384,7 @@
       if (action == 'update') {
         $('.curr-sub').hide();
         $('.sub-form').show();
+        $('.end-table').hide();
         $('#start_date_td input').each(function() {
           if(!($(this).attr('readonly'))) {
             $(this).val($('#sub-end').val());
@@ -409,6 +411,7 @@
         if (action == 'update') {
           $('.curr-sub').hide();
           $('.sub-form').show();
+          $('.end-table').hide();
           $('#start_date_td input').each(function() {
             if(!($(this).attr('readonly'))) {
               $(this).val(today);
@@ -474,6 +477,7 @@
           if (action == 'update') {
             $('.curr-sub').hide();
             $('.sub-form').show();
+            $('.end-table').hide();
             $('#start_date_td input').each(function() {
               if(!($(this).attr('readonly'))) {
                 $(this).val(start);
