@@ -6,23 +6,26 @@ from staff.views import core
 from staff.views import billing, payment
 
 urlpatterns = [
+    # Pages
     url(r'^bills/$', billing.bill_list, name='bills'),
-    url(r'^bills/outstanding/$', billing.outstanding, name='outstanding'),
     url(r'^bill/(?P<bill_id>\d+)/$', billing.bill_view, name='bill'),
+    url(r'^bills/outstanding/$', billing.outstanding, name='outstanding'),
+    url(r'^bills/(?P<username>[^/]+)/$', billing.user_bills, name='user_bills'),
+    url(r'^daily/$', billing.billing_today, name='billing_today'),
+    url(r'^daily/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', billing.daily_billing, name='daily_billing'),
+
+    # Actions
     url(r'^pay_all/(?P<username>[^/]+)/$', billing.bills_pay_all, name='bills_paid'),
     url(r'^toggle_billing_flag/(?P<username>[^/]+)/$', billing.toggle_billing_flag, name='toggle_bill'),
-    url(r'^daily/$', billing.billing_today, name='billing_today'),
-    url(r'^daily/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)$', billing.daily_billing, name='daily_billing'),
 
-    # TODO - Old and shoudl be removed
+    # TODO - Old and should be removed
     url(r'^run/$', billing.run_billing, name='run'),
+    url(r'^bills/outstanding_old/$', billing.outstanding_old, name='outstanding_old'),
     url(r'^transactions/$', billing.transactions, name='transactions'),
     url(r'^transaction/(?P<id>\d+)/$', billing.transaction, name='transaction'),
-    url(r'^bills/outstanding_old/$', billing.outstanding_old, name='outstanding_old'),
-
-    url(r'^bills/(?P<username>[^/]+)/$', billing.user_bills, name='user_bills'),
     url(r'^transactions/(?P<username>[^/]+)/$', billing.user_transactions, name='user_transactions'),
 
+    # Integerations
     url(r'^usaepay/m/$', payment.usaepay_members, name='payments_members'),
     url(r'^usaepay/void/$', payment.usaepay_void, name='payment_void'),
     url(r'^usaepay/(?P<username>[^/]+)/$', payment.usaepay_user, name='user_payment'),
