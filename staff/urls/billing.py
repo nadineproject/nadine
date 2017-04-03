@@ -7,6 +7,8 @@ from staff.views import billing, payment
 
 urlpatterns = [
     url(r'^bills/$', billing.bill_list, name='bills'),
+    url(r'^bills/ready/$', billing.ready_today, name='ready_today'),
+    url(r'^bills/ready/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)$', billing.ready_for_billing, name='ready'),
     url(r'^bills/outstanding/$', billing.outstanding, name='outstanding'),
     url(r'^bill/(?P<bill_id>\d+)/$', billing.bill_view, name='bill'),
     url(r'^pay_all/(?P<username>[^/]+)/$', billing.bills_pay_all, name='bills_paid'),

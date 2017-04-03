@@ -74,6 +74,10 @@ class UserBill(models.Model):
         return ('member:receipt', [], {'bill_id': self.id})
 
     @models.permalink
+    def get_staff_url(self):
+        return ('staff:billing:bill', [], {'bill_id': self.id})
+
+    @models.permalink
     def get_admin_url(self):
         return ('admin:nadine_userbill_change', [self.id], {})
 
