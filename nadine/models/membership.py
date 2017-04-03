@@ -61,7 +61,7 @@ class MemberGroups():
     def get_member_groups():
         group_list = []
         for package in MembershipPackage.objects.filter(enabled=True).order_by('name'):
-            if User.helper.active_members_by_package(package).count() > 0:
+            if User.helper.members_by_package(package).count() > 0:
                 package_name = package.name
                 group_list.append((package_name, "%s Members" % package_name))
         for g, d in sorted(MemberGroups.GROUP_DICT.items(), key=operator.itemgetter(0)):
@@ -226,13 +226,12 @@ class Membership(models.Model):
         ps, pe = self.get_period()
         self.end_all(pe)
 
-    def set_to_package(self, package, start_date=None, end_date=None, paid_by=None, bypass_check=False):
+    def set_to_package(self, package, start_date=None, end_date=None, paid_by=None):
         if not start_date:
             start_date = localtime(now()).date()
 
-        if not bypass_check:
-            if self.is_active(start_date):
-                raise Exception("Trying to set an active membership to new package!  End the current membership before changing to new package.")
+        if self.is_active(start_date):
+            raise Exception("Trying to set an active membership to new package!  End the current membership before changing to new package.")
 
         # Save the package
         self.package = package
@@ -653,7 +652,7 @@ class SubscriptionManager(models.Manager):
         ''' Return the set of active subscriptions including the username for each subscription. '''
         individual_user = F('membership__individualmembership__user__username')
         organization_user = F('membership__organizationmembership__organization__organizationmember__user__username')
-        return self.active_subscriptions().annotate(username=Coalesce(individual_user, organization_user))
+        return self.active_subscriptions(target_date).annotate(username=Coalesce(individual_user, organization_user))
 
 
 class ResourceSubscription(models.Model):
