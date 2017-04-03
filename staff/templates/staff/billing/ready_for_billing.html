@@ -46,17 +46,17 @@
       <td>
         {% for bill in row.bills %}
           <a href="{{ bill.get_staff_url }}">${{ bill.amount }}</a>
-          {% if not forloop.first and not forloop.last %}, {% endif %}
+          {% if not forloop.last %}, {% endif %}
         {% empty %}
-         -
+          -
         {% endfor %}
       </td>
       <td>
         {% if row.payment_totals > 0 %}
           ${{ row.payment_totals }}
         {% else %}
-         -
-       {% endif %}
+          -
+        {% endif %}
       </td>
       <td>
         <form method="POST" action=".">
