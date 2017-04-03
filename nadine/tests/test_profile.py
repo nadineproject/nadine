@@ -136,7 +136,17 @@ class ProfileTestCase(TestCase):
         self.assertTrue(self.user4 in User.helper.members_by_neighborhood(self.neighborhood1, active_only=False))
 
     def test_by_resource(self):
-        pass
+        # User1 has a desk
+        self.assertTrue(self.user1 in User.helper.members_by_resource(self.desk_resource))
+        self.assertFalse(self.user1 in User.helper.members_by_resource(self.key_resource))
+        # User2 has key and mail
+        self.assertTrue(self.user2 in User.helper.members_by_resource(self.key_resource))
+        self.assertTrue(self.user2 in User.helper.members_by_resource(self.mail_resource))
+        self.assertFalse(self.user2 in User.helper.members_by_resource(self.desk_resource))
+        # User3 doesn't have any resources
+        self.assertFalse(self.user3 in User.helper.members_by_resource(self.key_resource))
+        self.assertFalse(self.user3 in User.helper.members_by_resource(self.mail_resource))
+        self.assertFalse(self.user3 in User.helper.members_by_resource(self.desk_resource))
 
     def test_valid_billing(self):
         # Member 1 has valid billing

@@ -207,26 +207,32 @@ class UserQueryHelper():
         return self.active_members().filter(profile__photo="").order_by('first_name')
 
     def members_by_package(self, package, target_date=None):
-        active_subscriptions = ResourceSubscription.objects.active_subscriptions_with_username().filter(membership__package=package)
+        active_subscriptions = ResourceSubscription.objects.active_subscriptions_with_username(target_date).filter(membership__package=package)
         return User.objects.filter(username__in=active_subscriptions.values('username'))
 
     def members_by_resource(self, resource, target_date=None):
-        active_subscriptions = ResourceSubscription.objects.active_subscriptions_with_username().filter(resource=resource)
+        active_subscriptions = ResourceSubscription.objects.active_subscriptions_with_username(target_date).filter(resource=resource)
         return User.objects.filter(username__in=active_subscriptions.values('username'))
 
     def members_with_desks(self, target_date=None):
         ''' Return a set of users with an active 'desk' subscription. '''
         desk_resource = Resource.objects.filter(name__icontains='desk').first()
+        if not desk_resource:
+            raise Exception("Could not find 'desk' resource")
         return self.members_by_resource(desk_resource, target_date).order_by('first_name')
 
     def members_with_keys(self, target_date=None):
         ''' Return a set of users with an active 'key' subscription. '''
         key_resource = Resource.objects.filter(name__icontains='key').first()
+        if not key_resource:
+            raise Exception("Could not find 'key' resource")
         return self.members_by_resource(key_resource, target_date).order_by('first_name')
 
     def members_with_mail(self, target_date=None):
         ''' Return a set of users with an active 'mail' subscription. '''
         mail_resource = Resource.objects.filter(name__icontains='mail').first()
+        if not mail_resource:
+            raise Exception("Could not find 'mail' resource")
         return self.members_by_resource(mail_resource, target_date).order_by('first_name')
 
     def members_by_neighborhood(self, hood, active_only=True):
