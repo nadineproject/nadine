@@ -12,6 +12,7 @@ h6 {
 }
 
 h5 {
+  margin-top: 1%;
   margin-bottom: 2%;
 }
 
@@ -64,8 +65,8 @@ textarea.bcc-textarea {
 
 #end-header {
   width:50%;
-  padding-top: 3%;
-  color: RGBA(200, 79, 78, .80);
+  padding-top: 1%;
+  color: RGBA(158, 89, 88, 1.00);
 }
 
 td#end-header strong {
@@ -364,7 +365,6 @@ td.up-input.rate {
 
 .end-table {
   margin-left: 2%;
-  margin-bottom: 3%;
 }
 
 .ending-p {
@@ -549,8 +549,8 @@ td.up-input.rate {
 }
 
 .sub-table {
-  margin-left: 2%;
-  margin-bottom: 2%;
+  margin: 2%;
+  /*margin-bottom: 2%;*/
 }
 
 .sub-td {

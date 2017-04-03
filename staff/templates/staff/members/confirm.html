@@ -5,48 +5,8 @@
 <h5 style='margin-bottom: 3%;'>Confirm Membership Changes for <a href="{% url 'staff:members:detail' user.username %}">{{ user.get_full_name }}</a></h5>
 <form action='.' method='POST'>
   {% if new_subs %}
-  <h6>Ending These Subscriptions</h6>
-  <table class='sub-table'>
-    <tr>
-      <th class='sub-th'>Resource</th>
-      <th class='allowance sub-th'>Allowance</th>
-      <th class='sub-th'>Start Date</th>
-      <th class='sub-th'>End Date</th>
-      <th class='rate sub-th'>Monthly Rate</th>
-      <th class='rate sub-th'>Overage rate</th>
-      <th class='sub-th'>Paid By</th>
-    </tr>
-    {% for ns in new_subs %}
-      {% if ns.end_date %}
-        <tr class='{% cycle "row-even" "row-odd" %}'>
-          <td class='sub-td'>
-            <strong>{{ ns.resource|resource_filter }}</strong>
-          </td>
-          <td class='sub-td'>
-            {{ ns.allowance }}
-          </td>
-          <td class='sub-td'>
-            {{ ns.start_date }}
-          </td>
-          <td class='sub-td'>
-            {{ ns.end_date }}
-          </td>
-          <td class='sub-td'>
-            ${{ ns.monthly_rate }}
-          </td>
-          <td class='sub-td'>
-            ${{ ns.overage_rate }}
-          </td>
-          <td class='sub-td'>
-            {% if ns.paid_by %}
-              {{ ns.paid_by }}
-            {% endif %}
-          </td>
-        </tr>
-      {% else %}{% endif %}
-    {% endfor %}
-    </table>
-    <h6>Adding These Subscriptions</h6>
+  <div class='ending-subs'>
+    <h6>Subscriptions with End Dates</h6>
     <table class='sub-table'>
       <tr>
         <th class='sub-th'>Resource</th>
@@ -57,43 +17,87 @@
         <th class='rate sub-th'>Overage rate</th>
         <th class='sub-th'>Paid By</th>
       </tr>
-    {% for ns in new_subs %}
-      {% if ns.end_date == None and ns.s_id == None %}
-        <tr class='{% cycle "row-even" "row-odd" %}'>
-          <td class='sub-td'>
-            <strong>{{ ns.resource|resource_filter }}</strong>
-          </td>
-          <td class='sub-td'>
-            {{ ns.allowance }}
-          </td>
-          <td class='sub-td'>
-            {{ ns.start_date }}
-          </td>
-          <td class='sub-td'>
-            {{ ns.end_date }}
-          </td>
-          <td class='sub-td'>
-            ${{ ns.monthly_rate }}
-          </td>
-          <td class='sub-td'>
-            ${{ ns.overage_rate }}
-          </td>
-          <td class='sub-td'>
-            {% if ns.paid_by %}
-              {{ ns.paid_by }}
-            {% endif %}
-          </td>
-        </tr>
-      {% endif %}
-    {% endfor %}
-  </table>
+      {% for ns in new_subs %}
+        {% if ns.end_date %}
+          <tr class='{% cycle "row-even" "row-odd" %}'>
+            <td class='sub-td'>
+              <strong>{{ ns.resource|resource_filter }}</strong>
+            </td>
+            <td class='sub-td'>
+              {{ ns.allowance }}
+            </td>
+            <td class='sub-td'>
+              {{ ns.start_date }}
+            </td>
+            <td class='sub-td'>
+              {{ ns.end_date }}
+            </td>
+            <td class='sub-td'>
+              ${{ ns.monthly_rate }}
+            </td>
+            <td class='sub-td'>
+              ${{ ns.overage_rate }}
+            </td>
+            <td class='sub-td'>
+              {% if ns.paid_by %}
+                {{ ns.paid_by }}
+              {% endif %}
+            </td>
+          </tr>
+        {% else %}{% endif %}
+      {% endfor %}
+      </table>
+  </div>
+  <div class='new-table'>
+    <h6>New Subscriptions</h6>
+    <table class='sub-table'>
+      <tr>
+        <th class='sub-th'>Resource</th>
+        <th class='allowance sub-th'>Allowance</th>
+        <th class='sub-th'>Start Date</th>
+        <th class='sub-th'>End Date</th>
+        <th class='rate sub-th'>Monthly Rate</th>
+        <th class='rate sub-th'>Overage rate</th>
+        <th class='sub-th'>Paid By</th>
+      </tr>
+      {% for ns in new_subs %}
+        {% if ns.end_date == None and ns.s_id == None %}
+          <tr class='{% cycle "row-even" "row-odd" %}'>
+            <td class='sub-td'>
+              <strong>{{ ns.resource|resource_filter }}</strong>
+            </td>
+            <td class='sub-td'>
+              {{ ns.allowance }}
+            </td>
+            <td class='sub-td'>
+              {{ ns.start_date }}
+            </td>
+            <td class='sub-td'>
+              {{ ns.end_date }}
+            </td>
+            <td class='sub-td'>
+              ${{ ns.monthly_rate }}
+            </td>
+            <td class='sub-td'>
+              ${{ ns.overage_rate }}
+            </td>
+            <td class='sub-td'>
+              {% if ns.paid_by %}
+                {{ ns.paid_by }}
+              {% endif %}
+            </td>
+          </tr>
+        {% endif %}
+      {% endfor %}
+    </table>
+  </div>
   {% else %}
+  <h6>Ending Package with These Subscriptions</h6>
   <table class='sub-table'>
     <tr>
       <th class='sub-th'>Resource</th>
       <th class='allowance sub-th'>Allowance</th>
       <th class='sub-th'>Start Date</th>
-      <th class='sub-th'>End Date</th>
       <th class='rate sub-th'>Monthly Rate</th>
       <th class='rate sub-th'>Overage rate</th>
       <th class='sub-th'>Paid By</th>
@@ -103,7 +107,6 @@
         <td>{{ c.resource }}</td>
         <td>{{ c.allowance }}</td>
         <td>{{ c.start_date }}</td>
-        <td>{{ c.end_date |default:"-" }}</td>
         <td>${{ c.monthly_rate }}/month</td>
         <td>${{ c.overage_rate }}</td>
         <td>{{ c.paid_by|default:"" }}</td>
@@ -125,6 +128,26 @@
   $(document).ready(function() {
     $('.button-collapse').sideNav();
 		$('.collapsible').collapsible();
+    var newSubs = 0;
+    var endingSubs = 0;
+
+    {% for ns in new_subs %}
+      {% if ns.end_date == None and ns.s_id == None %}
+      newSubs ++;
+      {% endif %}
+    {% endfor %}
+
+    {% for ns in new_subs %}
+      {% if ns.end_date %}
+        endingSubs ++;
+      {% endif %}
+    {% endfor %}
+
+    if (newSubs == 0) {
+      $('.new-table').hide();
+    } else if (endingSubs == 0) {
+      $('.ending-subs').hide();
+    }
 
     {% for message in messages %}
         Materialize.toast('{{ message }}', 3000, '{{ message.tags }}-msg');
