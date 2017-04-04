@@ -13,7 +13,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.sites.models import Site
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
-from django.utils import timezone
+from django.utils.timezone import localtime, now
 
 from nadine import email
 from nadine.utils import mailgun
@@ -91,7 +91,7 @@ def user_signin(request, username):
         # They have a desk so they can't sign in
         can_signin = False
     else:
-        signins_today = CoworkingDay.objects.filter(user=user, visit_date=timezone.localtime(timezone.now()).date())
+        signins_today = CoworkingDay.objects.filter(user=user, visit_date=localtime(now()).date())
         if signins_today.count() > 0:
             can_signin = False
 
@@ -144,7 +144,7 @@ def signin_user_guest(request, username, paid_by):
     user = get_object_or_404(User, username=username)
     day = CoworkingDay()
     day.user = user
-    day.visit_date = timezone.localtime(timezone.now()).date()
+    day.visit_date = localtime(now()).date()
     # Only proceed if they haven't signed in already
     if CoworkingDay.objects.filter(user=user, visit_date=day.visit_date).count() == 0:
         if paid_by:
@@ -210,7 +210,7 @@ def document_view(request, username, doc_type):
 
 def signature_capture(request, username, doc_type):
     user = get_object_or_404(User, username=username)
-    today = timezone.localtime(timezone.now()).date()
+    today = localtime(now()).date()
     form = SignatureForm(request.POST or None)
     if form and form.has_signature():
         signature_file = form.save_signature()
@@ -221,7 +221,7 @@ def signature_capture(request, username, doc_type):
 
 def signature_render(request, username, doc_type, signature_file):
     user = get_object_or_404(User, username=username)
-    today = timezone.localtime(timezone.now()).date()
+    today = localtime(now()).date()
     pdf_args = {'name': user.get_full_name, 'date': today, 'doc_type': doc_type, 'signature_file': signature_file}
     if 'save_file' in request.GET:
         # Save the PDF as a file and redirect them back to the document list
