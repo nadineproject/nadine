@@ -9,9 +9,11 @@ from django.utils.timezone import localtime, now
 from django.contrib.auth.models import User
 
 from nadine.models.billing import UserBill, Payment
+from nadine.models.membership import MembershipPackage, SubscriptionDefault
 from nadine.models.membership import Membership, ResourceSubscription
-from nadine.models.resource import Resource
 from nadine.models.organization import Organization
+from nadine.models.resource import Resource
+from nadine.models.usage import CoworkingDay
 
 today = localtime(now()).date()
 yesterday = today - timedelta(days=1)
@@ -30,6 +32,7 @@ class UserBillTestCase(TestCase):
 
         # Resources
         self.test_resource = Resource.objects.create(name="Test Resource")
+        self.day_resource = Resource.objects.create(name="Day Resource")
 
         # Test membership
         self.sub1 = ResourceSubscription.objects.create(
@@ -38,6 +41,24 @@ class UserBillTestCase(TestCase):
             start_date = two_months_ago,
             monthly_rate = 100.00,
             overage_rate = 0,
+        )
+
+        # Packages
+        self.basicPackage = MembershipPackage.objects.create(name="Basic")
+        SubscriptionDefault.objects.create(
+            package = self.basicPackage,
+            resource = self.day_resource,
+            monthly_rate = 50,
+            allowance = 3,
+            overage_rate = 20,
+        )
+        self.pt5Package = MembershipPackage.objects.create(name="PT5")
+        SubscriptionDefault.objects.create(
+            package = self.pt5Package,
+            resource = self.day_resource,
+            monthly_rate = 75,
+            allowance = 5,
+            overage_rate = 20,
         )
 
         # Generate all the bills for user1
@@ -67,5 +88,33 @@ class UserBillTestCase(TestCase):
         self.assertFalse(last_bill.is_paid)
         self.assertTrue(last_bill in UserBill.objects.unpaid())
 
+    def test_drop_in_on_billing_date_is_associated_with_correct_bill(self):
+        # User 8 = PT-5 5/20/2010 - 6/19/2010 & Basic since 6/20/2010
+        # Daily activity 6/11/2010 through 6/25/2010
+        user8 = User.objects.create(username='member_eight', first_name='Member', last_name='Eight')
+        user8.membership.bill_day = 20
+        user8.membership.save()
+        user8.membership.set_to_package(self.pt5Package, start_date=date(2010, 5, 20), end_date=date(2010, 6, 19))
+        user8.membership.set_to_package(self.basicPackage, start_date=date(2010, 6, 20))
+        for day in range(11, 25):
+            CoworkingDay.objects.create(user=user8, visit_date=date(2010, 6, day), payment='Bill')
+        user8.membership.generate_all_bills()
+
+        # May 20th bill = PT5 + 9 days (4 Overage)
+        may_20_pt5 = user8.bills.filter(period_start=date(2010, 5, 20)).first()
+        self.assertTrue(may_20_pt5 != None)
+        self.assertEqual(user8.membership.matching_package(date(2010, 5, 20)), self.pt5Package)
+        self.assertEqual(date(2010, 5, 20), may_20_pt5.due_date)
+        # The total isn't adding up just yet
+        # self.assertEqual(155.00, may_20_pt5.amount)
+        # self.assertEqual(9, may_20_pt5.overage.count())
+        # self.assertEqual(4, may_20_pt5.dropins.count())
+
+        # June 20th bill = Basic + 5 days (2 overage)
+        june_20_basic = user8.bills.filter(period_start=date(2010, 6, 20)).first()
+        self.assertTrue(june_20_basic != None)
+        self.assertEqual(user8.membership.matching_package(date(2010, 6, 20)), self.basicPackage)
+        # self.assertEqual(date(2010, 6, 20), june_20_basic.bill_date)
+        # self.assertEqual(0, june_20_basic.dropins.count())
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
