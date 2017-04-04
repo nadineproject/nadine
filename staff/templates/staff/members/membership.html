@@ -4,7 +4,7 @@
 <h4>Membership for <a href="{% url 'staff:members:detail' entity.username %}">{{ entity.get_full_name }}</a></h4>
 
 <div class='curr-sub'>
-  <h5>Subscriptions</h5>
+  <h6>Current Subscriptions</h6>
   <table class='sub-table' style='margin-top: 2%;'>
     <tr>
       <th class='sub-th'>Resource</th>
@@ -34,7 +34,7 @@
 </div>
 
 <div class='curr-sub'>
-  <h5 class='mem-details-table' style='margin-top: 2%;'>Current Package Details</h5>
+  <h6 class='mem-details-table'>Current Package Details</h6>
   <table class='mem-details-table'>
     <tr>
       <th class='sub-th'>Billing Day</th>
@@ -172,7 +172,7 @@
           {% elif sub_form.s_id.value  %}
             <a class='delete-row'>End</a>
           {% else %}
-            <a class='add-btn'>Add</a>
+
           {% endif %}
           <input type='hidden' class='chosen_package' name='package' value="{{ package }}" />
           <input type='hidden' class='ur_bill_day' name='bill_day' value="{{ bill_day }}" />
@@ -311,28 +311,25 @@
           $(this).attr('selected', 'selected');
         }
       })
+
+      if (action === '') {
+        $('#start_date_td input').each(function() {
+          if(!($(this).attr('readonly'))) {
+            $(this).attr('readonly', 'readonly');
+            $(this).datepicker('destroy');
+          }
+        })
+      }
     }
 
     //End indv. subscription button function/look
     $('.delete-row').addClass('btn-floating btn-large btn');
-    $('.add-btn').addClass('btn-floating btn-large btn');
     $('.delete-row').on('click', function(e) {
       e.preventDefault();
       var val = $('#target_date').val();
       $(this).parent().siblings('#end_date_td').children().val(val);
       $(this).fadeOut("slow");
     });
-
-    $('.add-btn').on('click', function(e) {
-      e.preventDefault();
-      var val = '';
-      if (start != '') {
-        val = start;
-      } else {
-        val = $('#target_date').val();
-      }
-      $(this).parent().siblings('#start_date_td').children().val(val);
-    })
 
     $('#id_package').on('change', function() {
       package = $(this).val();
@@ -351,7 +348,6 @@
     // Review all this. What needs to change to match new functionality
     $('.add-row').on('click', function(e) {
 			$('.delete-row').addClass('btn-floating btn-large btn');
-      $('.add-btn').addClass('btn-floating btn-large btn');
       $('.username_td').val('{{ entity.username }}');
       $('.created_by_td').val('{{ request.user }}');
       $('.ur_bill_day').val('{{ bill_day }}');
@@ -395,7 +391,6 @@
       }
     })
 
-    //This should (ONLY maybe) be for ENDING memberships
     $('#target-input').on('change', function() {
       var period = $('#target-input').val();
 
