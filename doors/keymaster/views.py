@@ -12,9 +12,9 @@ from django.http import Http404, HttpResponseServerError, HttpResponseRedirect, 
 from django.core.urlresolvers import reverse
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
-from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
+from django.utils.timezone import localtime, now
 
 from doors.keymaster.models import Keymaster, Door, DoorCode, DoorEvent
 from doors.core import EncryptedConnection, Messages, DoorEventTypes
@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 @staff_member_required
 def home(request):
     keymasters = Keymaster.objects.filter(is_enabled=True)
-    twoMinutesAgo = timezone.now() - timedelta(minutes=2)
+    twoMinutesAgo = localtime(now()) - timedelta(minutes=2)
     logs = DoorEvent.objects.all().order_by('timestamp').reverse()[:11]
 
     if 'keymaster_id' in request.POST:
@@ -71,7 +71,7 @@ def user_keys(request, username):
     keys = DoorCode.objects.filter(user=user)
     logs = DoorEvent.objects.filter(user=user).order_by("timestamp").reverse()
 
-    tenMinutesAgo = datetime.now(pytz.timezone(TIME_ZONE)) - timedelta(minutes=10)
+    tenMinutesAgo = localtime(now()) - timedelta(minutes=10)
     potential_key = DoorEvent.objects.filter(timestamp__gte=tenMinutesAgo, event_type=DoorEventTypes.UNRECOGNIZED).order_by("timestamp").reverse().first()
 
     if 'code_id' in request.POST and request.POST.get('action') == "Delete":
@@ -141,10 +141,10 @@ def test_door(request):
     xml_request = request.POST.get("xml_request", "")
     xml_response = ""
     if len(xml_request) > 0:
-        start_ts = timezone.now()
+        start_ts = localtime(now())
         controller = DoorController(ip_address, username, password)
         response_code, xml_response = controller.__send_xml_str(xml_request)
-        response_time = timezone.now() - start_ts
+        response_time = localtime(now()) - start_ts
         print("response code: %d, response time: %s" % (response_code, response_time))
     else:
         # Start with the basic framework

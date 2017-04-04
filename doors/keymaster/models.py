@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_delete
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.core import mail
-from django.utils import timezone
+from django.utils.timezone import localtime, now, make_aware, get_current_timezone
 
 from doors.core import DoorTypes, DoorEventTypes, Messages, EncryptedConnection
 
@@ -98,7 +98,7 @@ class Keymaster(models.Model):
 
                 # Convert the timestamp string to a datetime object
                 # Assert the timezone is the local timezone for this timestamp
-                tz = timezone.get_current_timezone()
+                tz = get_current_timezone()
                 naive_timestamp = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S")
                 tz_timestamp = tz.localize(naive_timestamp)
 
@@ -125,13 +125,13 @@ class Keymaster(models.Model):
 
     def mark_sync(self):
         # A successfull sync is a success
-        self.success_ts = timezone.now()
-        self.sync_ts = timezone.now()
+        self.success_ts = localtime(now())
+        self.sync_ts = localtime(now())
         self.is_syncing = False
         self.save()
 
     def mark_success(self):
-        self.success_ts = timezone.now()
+        self.success_ts = localtime(now())
         self.save()
 
     def force_sync(self):
@@ -143,7 +143,7 @@ class Keymaster(models.Model):
 
     def logs_for_day(self, target_date=None):
         if not target_date:
-            target_date = timezone.now()
+            target_date = localtime(now())
         target_date.replace(hour=0, minute=0, second=0, microsecond=0)
         end_date = target_date + timedelta(days=1)
         logs_today = self.gatekeeperlog_set.filter(keymaster=self, timestamp__gte=target_date, timestamp__lt=end_date)
@@ -209,7 +209,7 @@ class Door(models.Model):
         ts = None
         last_event = self.get_last_event()
         if last_event and last_event.timestamp:
-            tz = timezone.get_current_timezone()
+            tz = get_current_timezone()
             ts = str(last_event.timestamp.astimezone(tz))[:19].replace(" ", "T")
         return ts
 
@@ -242,9 +242,9 @@ class DoorEventManager(models.Manager):
 
     def users_for_day(self, day=None):
         if not day:
-            day = timezone.localtime(timezone.now())
+            day = localtime(now())
         start = datetime(year=day.year, month=day.month, day=day.day, hour=0, minute=0, second=0, microsecond=0)
-        start = timezone.make_aware(start, timezone.get_current_timezone())
+        start = make_aware(start, get_current_timezone())
         end = start + timedelta(days=1)
         #logger.debug("users_for_day from '%s' to '%s'" % (start, end))
         return DoorEvent.objects.filter(timestamp__range=(start, end))
