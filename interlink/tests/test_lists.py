@@ -7,15 +7,15 @@ from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.core.management import call_command
 from django.core import mail
-from django.utils import timezone
 from django.contrib.auth.models import User
+from django.utils.timezone import localtime, now
 
-from nadine.models.membership import MembershipPlan, Membership
+from nadine.models import Resource, Membership, MembershipPackage, SubscriptionDefault
 
 from interlink.tests.test_utils import create_user
 from interlink.models import MailingList, IncomingMail, OutgoingMail
 
-import members
+today = localtime(now()).date()
 
 class ListTest(TestCase):
 
@@ -23,23 +23,33 @@ class ListTest(TestCase):
         self.user1, self.client1 = create_user('alice', 'Alice', 'Dodgson', email='alice@example.com', is_staff=True)
         self.user2, self.client2 = create_user('bob', 'Bob', 'Albert', email='bob@example.com')
         self.user3, self.client3 = create_user('charlie', 'Charlie', 'Tuna', email='charlie@example.com')
+
         self.mlist1 = MailingList.objects.create(
             name='Hat Styles', description='All about les chapeau', subject_prefix='hat',
             email_address='hats@example.com', username='hat', password='1234',
             pop_host='localhost', smtp_host='localhost'
         )
 
-        self.basic_plan = MembershipPlan.objects.create(name='Basic', description='An occasional user', monthly_rate='50', daily_rate='25', dropin_allowance='5')
+        # Basic Packages = just days
+        self.day_resource = Resource.objects.create(name="Day Resource")
+        self.basicPackage = MembershipPackage.objects.create(name="Basic")
+        SubscriptionDefault.objects.create(
+            package = self.basicPackage,
+            resource = self.day_resource,
+            monthly_rate = 50,
+            allowance = 3,
+            overage_rate = 20,
+        )
 
     def test_subscription_form(self):
-        Membership.objects.create(user=self.user2, membership_plan=self.basic_plan, start_date=timezone.now().date() - timedelta(days=10))
+        self.user2.membership.set_to_package(self.basicPackage, start_date=today - timedelta(days=10))
         self.mlist1.moderators.add(self.user1)
         self.mlist1.subscribers.add(self.user2)
         form_data = {
             'subscribe': 'true',
             'mailing_list_id': self.mlist1.id
         }
-        response = self.client2.post(reverse('member:connect:email_lists'), form_data)
+        response = self.client1.post(reverse('member:connect:email_lists'), form_data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(IncomingMail.objects.count(), 0)
         self.assertEqual(OutgoingMail.objects.count(), 1)
@@ -58,7 +68,7 @@ class ListTest(TestCase):
                                                origin_address='bob@example.com',
                                                subject='ahoi 3',
                                                body='I like traffic lights',
-                                               sent_time=timezone.localtime(timezone.now()) - timedelta(minutes=15))
+                                               sent_time=localtime(now()) - timedelta(minutes=15))
 
         IncomingMail.objects.process_incoming()
         outgoing = OutgoingMail.objects.all()
@@ -70,7 +80,7 @@ class ListTest(TestCase):
                                                origin_address='alice@example.com',
                                                subject='ahoi 4',
                                                body='Who are you. Who who who who.',
-                                               sent_time=timezone.localtime(timezone.now()) - timedelta(minutes=10))
+                                               sent_time=localtime(now()) - timedelta(minutes=10))
 
         IncomingMail.objects.process_incoming()
         outgoing = OutgoingMail.objects.all()
@@ -88,7 +98,7 @@ class ListTest(TestCase):
                                                origin_address='unknownperson@example.com',
                                                subject='ahoi 3',
                                                body='I like traffic lights.',
-                                               sent_time=timezone.localtime(timezone.now()) - timedelta(minutes=15))
+                                               sent_time=localtime(now()) - timedelta(minutes=15))
         IncomingMail.objects.process_incoming()
         incoming = IncomingMail.objects.get(pk=incoming.pk)
         self.assertEqual(incoming.state, 'moderate')
@@ -115,7 +125,7 @@ class ListTest(TestCase):
                                                origin_address='bob@example.com',
                                                subject='This is a freaking auto-reply message',
                                                body='just a stupid message that should get bonked',
-                                               sent_time=timezone.localtime(timezone.now()) - timedelta(minutes=15))
+                                               sent_time=localtime(now()) - timedelta(minutes=15))
         IncomingMail.objects.process_incoming()
         incoming = IncomingMail.objects.get(pk=incoming.pk)
         self.assertEqual(incoming.state, 'moderate')
@@ -126,15 +136,15 @@ class ListTest(TestCase):
         self.mlist1.save()
         user3, _client3 = create_user('suz', 'Suz', 'Ebens', email='suz@example.com')
         self.assertEqual(0, self.mlist1.subscribers.count())
-        membership = Membership.objects.create(user=user3, membership_plan=self.basic_plan, start_date=timezone.now().date() - timedelta(days=31))
+        subscription1 = self.user3.membership.set_to_package(self.basicPackage, start_date=today - timedelta(days=31))
         self.assertEqual(1, self.mlist1.subscribers.count())
         self.assertTrue(user3 in self.mlist1.subscribers.all())
 
-        # Now test that subscribership isn't changed if a member is just changing to a new plan
-        membership.end_date = timezone.now().date() - timedelta(days=1)
-        membership.save()
+        # Now test that subscribership isn't changed if a member is just changing to a new package
+        subscription1.end_date = today - timedelta(days=1)
+        subscription1.save()
         self.mlist1.subscribers.remove(user3)
-        membership2 = Membership.objects.create(user=user3, membership_plan=self.basic_plan, start_date=timezone.now().date())
+        subscription2 = self.user3.membership.set_to_package(self.basicPackage, start_date=today)
         self.assertFalse(user3 in self.mlist1.subscribers.all())
 
     def test_subscribe_command(self):
@@ -144,7 +154,7 @@ class ListTest(TestCase):
         call_command('subscribe_members', '%s' % self.mlist1.id)
         self.assertEqual(0, self.mlist1.subscribers.count())
 
-        Membership.objects.create(user=self.user2, membership_plan=self.basic_plan, start_date=timezone.now().date() - timedelta(days=10))
+        self.user2.membership.set_to_package(self.basicPackage, start_date=today - timedelta(days=10))
         call_command('subscribe_members', '%s' % self.mlist1.id)
         self.assertEqual(1, self.mlist1.subscribers.count())
 
@@ -157,7 +167,7 @@ class ListTest(TestCase):
                                                origin_address='bob@example.com',
                                                subject='ahoi 3',
                                                body='I like traffic lights.',
-                                               sent_time=timezone.localtime(timezone.now()) - timedelta(minutes=15))
+                                               sent_time=localtime(now()) - timedelta(minutes=15))
 
         IncomingMail.objects.process_incoming()
         outgoing = OutgoingMail.objects.all()[0]
@@ -191,7 +201,7 @@ class ListTest(TestCase):
                                                origin_address='bogus@example.com',
                                                subject='ahoi 1',
                                                body='I like traffic lights.',
-                                               sent_time=timezone.localtime(timezone.now()) - timedelta(minutes=15))
+                                               sent_time=localtime(now()) - timedelta(minutes=15))
 
         self.assertEqual(incoming.state, 'raw')
         IncomingMail.objects.process_incoming()
@@ -216,7 +226,7 @@ class ListTest(TestCase):
                                                origin_address='alice@example.com',
                                                subject='ahoi 1',
                                                body='I like traffic lights.',
-                                               sent_time=timezone.localtime(timezone.now()) - timedelta(minutes=15))
+                                               sent_time=localtime(now()) - timedelta(minutes=15))
         self.assertEqual(incoming.state, 'raw')
         IncomingMail.objects.process_incoming()
         self.assertEqual(OutgoingMail.objects.count(), 2)
@@ -230,7 +240,7 @@ class ListTest(TestCase):
                                                origin_address='bob@example.com',
                                                subject='ahoi 3',
                                                body='I like traffic lights.',
-                                               sent_time=timezone.localtime(timezone.now()) - timedelta(minutes=15))
+                                               sent_time=localtime(now()) - timedelta(minutes=15))
 
         self.assertEqual(incoming.state, 'raw')
         IncomingMail.objects.process_incoming()
@@ -399,7 +409,7 @@ This email has no content type
                                                 origin_address=self.user2.email,
                                                 subject='ahoi 1',
                                                 body='This will go through',
-                                                sent_time=timezone.localtime(timezone.now()))
+                                                sent_time=localtime(now()))
 
         IncomingMail.objects.process_incoming()
         OutgoingMail.objects.send_outgoing()
@@ -410,12 +420,12 @@ This email has no content type
                                                  origin_address=self.user2.email,
                                                  subject='ahoi 2',
                                                  body='This will go through as well',
-                                                 sent_time=timezone.localtime(timezone.now()))
+                                                 sent_time=localtime(now()))
         _incoming3 = IncomingMail.objects.create(mailing_list=self.mlist1,
                                                  origin_address=self.user2.email,
                                                  subject='ahoi 3',
                                                  body='This will NOT go through',
-                                                 sent_time=timezone.localtime(timezone.now()))
+                                                 sent_time=localtime(now()))
         IncomingMail.objects.process_incoming()
         OutgoingMail.objects.send_outgoing()
         self.assertEqual(2, len(mail.outbox))
@@ -429,7 +439,7 @@ This email has no content type
         # Change #1 send time to be earlier (beyond the hour)
         # Send again -- this time #3 will go through
         outgoing1 = OutgoingMail.objects.get(original_mail=incoming1)
-        outgoing1.sent = timezone.localtime(timezone.now()) - timedelta(hours=2)
+        outgoing1.sent = localtime(now()) - timedelta(hours=2)
         outgoing1.save()
 
         OutgoingMail.objects.send_outgoing()
