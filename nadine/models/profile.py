@@ -89,14 +89,6 @@ class UserQueryHelper():
         combined_query = individual_members | organization_members
         return combined_query.distinct()
 
-    def active_members_by_package(self, package, target_date=None):
-        active_subscriptions = ResourceSubscription.objects.active_subscriptions_with_username().filter(membership__package=package)
-        return User.objects.filter(username__in=active_subscriptions.values('username'))
-
-    def active_members_by_resource(self, resource, target_date=None):
-        active_subscriptions = ResourceSubscription.objects.active_subscriptions_with_username().filter(resource=resource)
-        return User.objects.filter(username__in=active_subscriptions.values('username'))
-
     def payers(self, target_date=None):
         ''' Return a set of Users that are paying for the active memberships '''
         # I tried to make this method as easy to read as possible. -- JLS
@@ -214,20 +206,34 @@ class UserQueryHelper():
     def missing_photo(self):
         return self.active_members().filter(profile__photo="").order_by('first_name')
 
+    def members_by_package(self, package, target_date=None):
+        active_subscriptions = ResourceSubscription.objects.active_subscriptions_with_username(target_date).filter(membership__package=package)
+        return User.objects.filter(username__in=active_subscriptions.values('username'))
+
+    def members_by_resource(self, resource, target_date=None):
+        active_subscriptions = ResourceSubscription.objects.active_subscriptions_with_username(target_date).filter(resource=resource)
+        return User.objects.filter(username__in=active_subscriptions.values('username'))
+
     def members_with_desks(self, target_date=None):
         ''' Return a set of users with an active 'desk' subscription. '''
         desk_resource = Resource.objects.filter(name__icontains='desk').first()
-        return self.active_members_by_resource(desk_resource, target_date).order_by('first_name')
+        if not desk_resource:
+            raise Exception("Could not find 'desk' resource")
+        return self.members_by_resource(desk_resource, target_date).order_by('first_name')
 
     def members_with_keys(self, target_date=None):
         ''' Return a set of users with an active 'key' subscription. '''
         key_resource = Resource.objects.filter(name__icontains='key').first()
-        return self.active_members_by_resource(key_resource, target_date).order_by('first_name')
+        if not key_resource:
+            raise Exception("Could not find 'key' resource")
+        return self.members_by_resource(key_resource, target_date).order_by('first_name')
 
     def members_with_mail(self, target_date=None):
         ''' Return a set of users with an active 'mail' subscription. '''
         mail_resource = Resource.objects.filter(name__icontains='mail').first()
-        return self.active_members_by_resource(mail_resource, target_date).order_by('first_name')
+        if not mail_resource:
+            raise Exception("Could not find 'mail' resource")
+        return self.members_by_resource(mail_resource, target_date).order_by('first_name')
 
     def members_by_neighborhood(self, hood, active_only=True):
         if active_only:
@@ -375,21 +381,16 @@ class UserProfile(models.Model):
         from nadine.forms import PayBillsForm
         return PayBillsForm(initial={'username': self.user.username, 'amount': self.open_bills_amount})
 
-    # TODO - remove
-    # def last_bill(self):
-    #     """Returns the latest Bill, or None if the member has not been billed.
-    #     bills = OldBill.objects.filter(user=self.user)
-    #     if len(bills) == 0:
-    #         return None
-    #     return bills[0]
-
     def membership_history(self):
+        # TODO - port
         return OldMembership.objects.filter(user=self.user).order_by('-start_date', 'end_date')
 
     def membership_on_date(self, day):
+        # TODO - port
         return OldMembership.objects.filter(user=self.user, start_date__lte=day).filter(Q(end_date__isnull=True) | Q(end_date__gte=day)).first()
 
     def last_membership(self):
+        # TODO - remove
         """Returns the latest membership, even if it has an end date, or None if none exists"""
         memberships = OldMembership.objects.filter(user=self.user).order_by('-start_date', 'end_date')[0:]
         if memberships == None or len(memberships) == 0:
@@ -397,15 +398,18 @@ class UserProfile(models.Model):
         return memberships[0]
 
     def active_membership(self):
+        # TODO - remove
         for membership in self.membership_history():
             if membership.is_active():
                 return membership
         return None
 
     def membership_for_day(self, day):
+        # TODO - remove
         return Membership.objects.active_memberships(target_date=day).filter(user=self.user).first()
 
     def activity_this_month(self, target_date=None):
+        # TODO - Evaluate
         if not target_date:
             target_date = localtime(now()).date()
 
@@ -429,9 +433,11 @@ class UserProfile(models.Model):
         return activity
 
     def activity(self):
+        # TODO - Evaluate
         return CoworkingDay.objects.filter(user=self.user)
 
     def paid_count(self):
+        # TODO - Evaluate
         return self.activity().filter(payment='Bill').count()
 
     def all_emails(self):
@@ -578,41 +584,58 @@ class UserProfile(models.Model):
         else:
             return "Drop-in"
 
-    def is_active(self):
-        m = self.active_membership()
-        return m is not None
+    def active_subscriptions(self, target_date=None):
+        return ResourceSubscription.objects.active_subscriptions_with_username(target_date).filter(username=self.user.username)
+
+    def is_active(self, target_date=None):
+        return self.active_subscriptions(target_date).count() > 0
 
     def has_desk(self, target_date=None):
+        # TODO - port
         if not target_date:
             target_date = localtime(now()).date()
         m = self.membership_on_date(target_date)
         return m and m.has_desk
 
-    def is_guest(self):
-        m = self.active_membership()
-        if m and m.is_active() and m.paid_by:
-            return m.paid_by
-        return None
+    def is_guest(self, target_date=None):
+        for s in self.active_subscriptions(target_date):
+            if s.paid_by is not None:
+                return True
+        return False
 
-    def guests(self):
+    def hosts(self, target_date=None):
+        hosts = []
+        for s in self.active_subscriptions(target_date):
+            if s.paid_by is not None and s.paid_by not in hosts:
+                hosts.append(s.paid_by)
+        return hosts
+
+    def guests(self, target_date=None):
         guests = []
-        for membership in OldMembership.objects.filter(paid_by=self.user):
-            if membership.is_active():
-                guests.append(membership.user)
+        for subscription in ResourceSubscription.objects.active_subscriptions_with_username(target_date).filter(paid_by=self.user):
+            guest = User.objects.get(username=subscription.username)
+            if guest not in guests:
+                guests.append(guest)
         return guests
 
-    def has_valid_billing(self):
-        host = self.is_guest()
-        if host and host != self.user:
-            return host.profile.has_valid_billing()
-        if self.valid_billing is None:
-            logger.debug("%s: Null Valid Billing" % self)
+    def has_valid_billing(self, lookup_new_card=True):
+        hosts = self.hosts()
+        if hosts:
+            for host in hosts:
+                if not host.profile.has_valid_billing():
+                    # If just one host has invalid billing...
+                    return False
+            # All hosts have valid billing
+            return True
+
+        if self.valid_billing is None and lookup_new_card:
+            logger.debug("%s: Null Valid Billing.  Looking for new card..." % self)
             if self.has_new_card():
                 logger.debug("%s: Found new card.  Marking billing valid." % self)
                 self.valid_billing = True
                 self.save()
             else:
-                self.valid_billing = False
+                return False
         return self.valid_billing
 
     def has_billing_profile(self):
@@ -639,14 +662,6 @@ class UserProfile(models.Model):
         api = PaymentAPI()
         return api.auto_bill_enabled(self.user.username)
 
-    # TODO - Remove
-    def member_notes(self):
-        return MemberNote.objects.filter(user=self.user)
-
-    # TODO - Remove
-    def special_days(self):
-        return SpecialDay.objects.filter(user=self.user)
-
     def membership_days(self):
         total_days = 0
         for membership in self.membership_history():
@@ -659,6 +674,7 @@ class UserProfile(models.Model):
         return total_days
 
     def average_bill(self):
+        # TODO - Evaluate
         from nadine.models.payment import OldBill
         bills = OldBill.objects.filter(user=self.user)
         if bills:
@@ -669,6 +685,7 @@ class UserProfile(models.Model):
         return 0
 
     def is_manager(self):
+        # TODO - Port
         if self.user.is_staff: return True
         if hasattr(settings, 'TEAM_MEMBERSHIP_PLAN'):
             management_plan = MembershipPlan.objects.filter(name=settings.TEAM_MEMBERSHIP_PLAN).first()
@@ -687,7 +704,6 @@ class UserProfile(models.Model):
     @models.permalink
     def get_staff_url(self):
         return ('staff:members:detail', [], {'username': self.user.username})
-
 
     class Meta:
         app_label = 'nadine'

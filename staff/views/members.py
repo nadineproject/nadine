@@ -96,7 +96,7 @@ def members(request, group=None):
         # See if our 'group' is a package name
         package = MembershipPackage.objects.filter(name=group).first()
         if package:
-            users = User.helper.active_members_by_package(package).order_by('first_name')
+            users = User.helper.members_by_package(package).order_by('first_name')
             member_count = len(users)
 
     # How many members do we have?
