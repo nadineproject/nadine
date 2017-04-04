@@ -73,6 +73,36 @@
     <td><strong>${{ membership.monthly_rate }}/month</strong><td>
   </tr>
 </table>
+
+{% if user.membership.subscriptions.past_subscriptions %}
+<h5>Past Subscriptions</h5>
+<table class='sub-table'>
+  <tr>
+    <th class='sub-th'>Resource</th>
+    <th class='sub-th'>Allowance</th>
+    <th class='sub-th'>Start Date</th>
+    <th class='sub-th'>End Date</th>
+    <th class='sub-th'>Overage</th>
+    <th class='sub-th'>Monthly</th>
+    <th class='sub-th'>Paid By</th>
+  </tr>
+  {% for p in user.membership.subscriptions.past_subscriptions|dictsort:'start_date' %}
+    <tr class='{% cycle "row-even" "row-odd" %}'>
+      <td>{{ p.resource }}</td>
+      <td>{{ p.allowance }}</td>
+      <td>{{ p.start_date }}</td>
+      <td>{{ p.end_date |default:"-" }}</td>
+      <td>${{ p.overage_rate }}</td>
+      <td>${{ p.monthly_rate }}/month</td>
+      <td>{{ p.paid_by|default:"" }}</td>
+    </tr>
+  {% endfor %}
+  <tr>
+    <td colspan="5"><strong>Total:</strong></td>
+    <td><strong>${{ membership.monthly_rate }}/month</strong><td>
+  </tr>
+</table>
+{% endif %}
 <!-- Active Guest Memberships -->
 <!-- TODO This is the old way... needs to be ported to the new way -->
 <!--

@@ -659,6 +659,11 @@ class SubscriptionManager(models.Manager):
             target_date = localtime(now()).date()
         return self.filter(start_date__gt=target_date)
 
+    def past_subscriptions(self, target_date=None):
+        if not target_date:
+            target_date = localtime(now()).date()
+        return self.filter(end_date__lt=target_date)
+
 
 class ResourceSubscription(models.Model):
     objects = SubscriptionManager()
