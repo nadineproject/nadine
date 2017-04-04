@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.signals import user_logged_in
 from django.db import connection
 from django.db.models import Min, Max
-from django.utils import timezone
+from django.utils.timezone import localtime, now
 
 from nadine.models.membership import Membership
 from nadine.utils import network
@@ -51,7 +51,7 @@ class UserRemoteAddr(models.Model):
 
 # Signal to create a new UserRemoreAddr when people login
 def register_user_ip(sender, user, request, **kwargs):
-    logtime = timezone.localtime(timezone.now())
+    logtime = localtime(now())
     ip = network.get_addr(request)
     if ip:
         ip_log = UserRemoteAddr.objects.create(logintime=logtime, user=user, ip_address=ip)
@@ -93,7 +93,7 @@ class ArpLog_Manager(models.Manager):
         DeviceLog = namedtuple('DeviceLog', 'start, end, diff')
         logs = ArpLog.objects.filter(device__user=user, runtime__range=(day_start, day_end)).order_by('runtime')
         for arp_log in logs:
-            local_time = timezone.localtime(arp_log.runtime)
+            local_time = localtime(arp_log.runtime)
             key = local_time.date()
             if key in device_logs:
                 start = device_logs[key].start

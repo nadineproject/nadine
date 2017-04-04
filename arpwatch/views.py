@@ -7,7 +7,7 @@ from django.template import Context, loader
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, Http404, HttpResponseServerError, HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.contrib.admin.views.decorators import staff_member_required
-from django.utils import timezone
+from django.utils.timezone import localtime, now, make_aware, get_current_timezone
 
 from arpwatch.forms import *
 from arpwatch.models import *
@@ -59,7 +59,7 @@ def device(request, id):
 
 @staff_member_required
 def device_logs_today(request):
-    now = timezone.localtime(timezone.now())
+    now = localtime(now())
     return device_logs_by_day(request, str(now.year), str(now.month), str(now.day))
 
 
@@ -67,7 +67,7 @@ def device_logs_today(request):
 def device_logs_by_day(request, year, month, day):
     log_date = date(year=int(year), month=int(month), day=int(day))
     start = datetime(year=int(year), month=int(month), day=int(day), hour=0, minute=0, second=0, microsecond=0)
-    start = timezone.make_aware(start, timezone.get_current_timezone())
+    start = make_aware(start, get_current_timezone())
     end = start + timedelta(days=1)
     device_logs = ArpLog.objects.for_range(start, end)
     context = {'device_logs': device_logs, 'day': log_date,
@@ -78,14 +78,14 @@ def device_logs_by_day(request, year, month, day):
 
 @staff_member_required
 def logins_today(request):
-    now = timezone.localtime(timezone.now())
+    now = localtime(now())
     return logins_by_day(request, str(now.year), str(now.month), str(now.day))
 
 
 def logins_by_day(request, year, month, day):
     log_date = date(year=int(year), month=int(month), day=int(day))
     start = datetime(year=int(year), month=int(month), day=int(day), hour=0, minute=0, second=0, microsecond=0)
-    start = timezone.make_aware(start, timezone.get_current_timezone())
+    start = make_aware(start, get_current_timezone())
     end = start + timedelta(days=1)
     logs = UserRemoteAddr.objects.filter(logintime__gt=start, logintime__lt=end)
     context = {'logs': logs, 'day': log_date,
