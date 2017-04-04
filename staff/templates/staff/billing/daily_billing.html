@@ -66,6 +66,7 @@
           {% elif row.payment_totals == 0 %}
             <input type="submit" value="Regenerate Bill" />
           {% endif %}
+          {% csrf_token %}
         </form>
       </td>
     </tr>

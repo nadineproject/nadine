@@ -654,6 +654,11 @@ class SubscriptionManager(models.Manager):
         organization_user = F('membership__organizationmembership__organization__organizationmember__user__username')
         return self.active_subscriptions(target_date).annotate(username=Coalesce(individual_user, organization_user))
 
+    def future_subscriptions(self, target_date=None):
+        if not target_date:
+            target_date = localtime(now()).date()
+        return self.filter(start_date__gt=target_date)
+
 
 class ResourceSubscription(models.Model):
     objects = SubscriptionManager()
