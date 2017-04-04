@@ -3,6 +3,31 @@
 
 {% block content %}
 <h5 style='margin-bottom: 3%;'>Confirm Membership Changes for <a href="{% url 'staff:members:detail' user.username %}">{{ user.get_full_name }}</a></h5>
+
+<div class='old-subs'>
+  <h6>Ending this Package on {{ end_target }} </h6>
+  <table class='sub-table' style='margin-top: 2%;'>
+    <tr>
+      <th class='sub-th'>Resource</th>
+      <th class='sub-th'>Allowance</th>
+      <th class='sub-th'>Start Date</th>
+      <th class='sub-th'>Overage</th>
+      <th class='sub-th'>Monthly</th>
+      <th class='sub-th'>Paid By</th>
+    </tr>
+    {% for s in entity.membership.active_subscriptions %}
+      <tr class='{% cycle "row-even" "row-odd" %}'>
+        <td>{{ s.resource }}</td>
+        <td>{{ s.allowance }}</td>
+        <td>{{ s.start_date }}</td>
+        <td>${{ s.overage_rate }}</td>
+        <td>${{ s.monthly_rate }}/month</td>
+        <td>{{ s.paid_by|default:"" }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+</div>
+
 <form action='.' method='POST'>
   {% if new_subs %}
   <div class='ending-subs'>
@@ -128,8 +153,16 @@
   $(document).ready(function() {
     $('.button-collapse').sideNav();
 		$('.collapsible').collapsible();
+    $('.old-subs').hide();
+
     var newSubs = 0;
     var endingSubs = 0;
+    var newPkg = '{{ package.package }}';
+    var oldPkg = '{{ user.membership.package.id }}';
+
+    if (oldPkg != newPkg) {
+      $('.old-subs').show()
+    }
 
     {% for ns in new_subs %}
       {% if ns.end_date == None and ns.s_id == None %}

@@ -352,8 +352,8 @@ def confirm_membership(request, username, package, end_target, new_subs):
     new_subs = unicodedata.normalize('NFKD', new_subs).encode('ascii', 'ignore')
     package = unicodedata.normalize('NFKD', package).encode('ascii', 'ignore')
     subs = ast.literal_eval(new_subs)
-    print subs
     pkg = ast.literal_eval(package)
+
     if request.method == 'POST':
         try:
             with transaction.atomic():
