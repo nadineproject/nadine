@@ -21,13 +21,13 @@
   </div>
 {% endif %}
 
-<table>
+<table class='billing-today-tb'>
   {% for row in memberships %}
     {% if forloop.first %}
       <tr>
         <th>Who</th>
-        <th>Package</th>
-        <th>Monthly Rate</th>
+        <th class='rate'>Package</th>
+        <th class='rate'>Monthly Rate</th>
         <th>Bills</th>
         <th>Paid</th>
         <th></th>
@@ -39,10 +39,10 @@
         {% if date > row.membership.last_change.date %}
           {{ row.membership.package }}
         {% else %}
-          {{ row.matching_package|default:'' }}?
+          {{ row.matching_package|default:'' }}
         {% endif %}
       </td>
-      <td>${{ row.monthly_rate }}</td>
+      <td class='rate'>${{ row.monthly_rate }}</td>
       <td>
         {% for bill in row.bills %}
           <a href="{{ bill.get_staff_url }}">${{ bill.amount }}</a>

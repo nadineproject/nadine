@@ -94,6 +94,19 @@ input.datepicker {
   display: inline-block;
 }
 
+.bill_day {
+  width: 20% !important;
+}
+
+.billing-today-tb tbody th {
+  width: 20%;
+}
+
+.billing-today-tb {
+  width: 90% !important;
+  margin-left: 5%;
+}
+
 .bl-failure {
   background-color: #F99;
 }
