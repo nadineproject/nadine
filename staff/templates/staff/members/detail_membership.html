@@ -20,6 +20,32 @@
   </tr>
 </table>
 
+{% if user.membership.subscriptions.future_subscriptions %}
+<h5>Future Subscriptions</h5>
+<table class='sub-table'>
+  <tr>
+    <th class='sub-th'>Resource</th>
+    <th class='sub-th'>Allowance</th>
+    <th class='sub-th'>Start Date</th>
+    <th class='sub-th'>End Date</th>
+    <th class='sub-th'>Overage</th>
+    <th class='sub-th'>Monthly</th>
+    <th class='sub-th'>Paid By</th>
+  </tr>
+  {% for f in user.membership.subscriptions.future_subscriptions %}
+    <tr class='{% cycle "row-even" "row-odd" %}'>
+      <td>{{ f.resource }}</td>
+      <td>{{ f.allowance }}</td>
+      <td>{{ f.start_date }}</td>
+      <td>{{ f.end_date |default:"-" }}</td>
+      <td>${{ f.overage_rate }}</td>
+      <td>${{ f.monthly_rate }}/month</td>
+      <td>{{ f.paid_by|default:"" }}</td>
+    </tr>
+  {% endfor %}
+</table>
+{% endif %}
+
 <h5>Current Subscriptions</h5>
 <table class='sub-table'>
   <tr>
@@ -47,32 +73,6 @@
     <td><strong>${{ membership.monthly_rate }}/month</strong><td>
   </tr>
 </table>
-
-{% if user.membership.subscriptions.future_subscriptions %}
-<h5>Future Subscriptions</h5>
-<table class='sub-table'>
-  <tr>
-    <th class='sub-th'>Resource</th>
-    <th class='sub-th'>Allowance</th>
-    <th class='sub-th'>Start Date</th>
-    <th class='sub-th'>End Date</th>
-    <th class='sub-th'>Overage</th>
-    <th class='sub-th'>Monthly</th>
-    <th class='sub-th'>Paid By</th>
-  </tr>
-  {% for f in user.membership.subscriptions.future_subscriptions %}
-    <tr class='{% cycle "row-even" "row-odd" %}'>
-      <td>{{ f.resource }}</td>
-      <td>{{ f.allowance }}</td>
-      <td>{{ f.start_date }}</td>
-      <td>{{ f.end_date |default:"-" }}</td>
-      <td>${{ f.overage_rate }}</td>
-      <td>${{ f.monthly_rate }}/month</td>
-      <td>{{ f.paid_by|default:"" }}</td>
-    </tr>
-  {% endfor %}
-</table>
-{% endif %}
 <!-- Active Guest Memberships -->
 <!-- TODO This is the old way... needs to be ported to the new way -->
 <!--
