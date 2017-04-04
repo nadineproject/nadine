@@ -17,7 +17,8 @@ from django.conf.urls import include, url
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponse, Http404, HttpResponseServerError, HttpResponseRedirect, HttpResponsePermanentRedirect
-from django.utils import timezone
+from django.utils.timezone import localtime, now
+
 
 import arp
 from arpwatch.models import UserDevice, ArpLog
@@ -33,7 +34,7 @@ class ActivityModel(object):
     '''
 
     def __init__(self):
-        now = timezone.localtime(timezone.now())
+        now = localtime(now())
         midnight = now - timedelta(seconds=now.hour * 60 * 60 + now.minute * 60 + now.second) - timedelta(minutes=1)
         # These are the values which are directly exposed via the ActivityModel
         active_members = User.helper.active_members()
