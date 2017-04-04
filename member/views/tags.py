@@ -37,7 +37,7 @@ def get_tag_data(type):
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='member_not_active')
+@user_passes_test(is_active_member, login_url='member:not_active')
 def tag_list(request, type):
     tags = get_tag_data(type)
     context = {'type': type, 'tags': tags}
@@ -45,7 +45,7 @@ def tag_list(request, type):
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='member_not_active')
+@user_passes_test(is_active_member, login_url='member:not_active')
 def tag_cloud(request, type):
     tags = get_tag_data(type)
     context = {'type': type, 'tags': tags}
@@ -53,7 +53,7 @@ def tag_cloud(request, type):
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='member_not_active')
+@user_passes_test(is_active_member, login_url='member:not_active')
 def tag_view(request, type, tag):
     context = {'type': type, 'tag': tag}
     if type == "members":
@@ -66,7 +66,7 @@ def tag_view(request, type, tag):
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='member_not_active')
+@user_passes_test(is_active_member, login_url='member:not_active')
 def add_tag(request, username):
     user = get_object_or_404(User, username=username)
     if not user == request.user and not request.user.is_staff:
@@ -81,7 +81,7 @@ def add_tag(request, username):
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='member_not_active')
+@user_passes_test(is_active_member, login_url='member:not_active')
 def remove_tag(request, username, tag):
     user = get_object_or_404(User, username=username)
     if not user == request.user and not request.user.is_staff:
@@ -91,7 +91,7 @@ def remove_tag(request, username, tag):
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='member_not_active')
+@user_passes_test(is_active_member, login_url='member:not_active')
 def add_org_tag(request, org_id):
     org = get_object_or_404(Organization, id=org_id)
     if not (request.user.is_staff or org.can_edit(request.user)):
@@ -106,7 +106,7 @@ def add_org_tag(request, org_id):
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='member_not_active')
+@user_passes_test(is_active_member, login_url='member:not_active')
 def remove_org_tag(request, org_id, tag):
     org = get_object_or_404(Organization, id=org_id)
     if not (request.user.is_staff or org.can_edit(request.user)):

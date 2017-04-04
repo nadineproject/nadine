@@ -23,7 +23,7 @@ from member.views.core import is_active_member
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='member_not_active')
+@user_passes_test(is_active_member, login_url='member:not_active')
 def connect(request, username):
     message = ""
     target = get_object_or_404(User, username=username)
@@ -65,7 +65,7 @@ def chat(request):
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='member_not_active')
+@user_passes_test(is_active_member, login_url='member:not_active')
 def mail(request):
     user = request.user
     if request.method == 'POST':
@@ -73,15 +73,16 @@ def mail(request):
         if sub_form.is_valid():
             sub_form.save(user)
             return HttpResponseRedirect(reverse('member:connect:email_lists'))
-    context = {'user': user,
-               'mailing_list_subscription_form': MailingListSubscriptionForm(),
-               'settings': settings
-               }
+    context = {
+        'user': user,
+        'mailing_list_subscription_form': MailingListSubscriptionForm(),
+        'settings': settings
+    }
     return render(request, 'member/connect/mail.html', context)
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='member_not_active')
+@user_passes_test(is_active_member, login_url='member:not_active')
 def mail_message(request, id):
     message = get_object_or_404(IncomingMail, id=id)
     return render(request, 'member/connect/mail_message.html', {'message': message, 'settings': settings})
