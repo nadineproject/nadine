@@ -30,14 +30,10 @@ class UserBillTestCase(TestCase):
         self.user3 = User.objects.create(username='member_three', first_name='Member', last_name='Three')
         self.org3 = Organization.objects.create(lead=self.user3, name="User3 Org", created_by=self.user3)
 
-        # Resources
-        self.test_resource = Resource.objects.create(name="Test Resource")
-        self.day_resource = Resource.objects.create(name="Day Resource")
-
         # Test membership
         self.sub1 = ResourceSubscription.objects.create(
             membership = self.user1.membership,
-            resource = self.test_resource,
+            resource = Resource.objects.day_resource,
             start_date = two_months_ago,
             monthly_rate = 100.00,
             overage_rate = 0,
@@ -47,7 +43,7 @@ class UserBillTestCase(TestCase):
         self.basicPackage = MembershipPackage.objects.create(name="Basic")
         SubscriptionDefault.objects.create(
             package = self.basicPackage,
-            resource = self.day_resource,
+            resource = Resource.objects.day_resource,
             monthly_rate = 50,
             allowance = 3,
             overage_rate = 20,
@@ -55,7 +51,7 @@ class UserBillTestCase(TestCase):
         self.pt5Package = MembershipPackage.objects.create(name="PT5")
         SubscriptionDefault.objects.create(
             package = self.pt5Package,
-            resource = self.day_resource,
+            resource = Resource.objects.day_resource,
             monthly_rate = 75,
             allowance = 5,
             overage_rate = 20,
@@ -101,17 +97,16 @@ class UserBillTestCase(TestCase):
         user8.membership.generate_all_bills()
 
         # May 20th bill = PT5 + 9 days (4 Overage)
-        may_20_pt5 = user8.bills.filter(period_start=date(2010, 5, 20)).first()
+        may_20_pt5 = user8.bills.get(period_start=date(2010, 5, 20))
         self.assertTrue(may_20_pt5 != None)
         self.assertEqual(user8.membership.matching_package(date(2010, 5, 20)), self.pt5Package)
         self.assertEqual(date(2010, 5, 20), may_20_pt5.due_date)
-        # The total isn't adding up just yet
-        # self.assertEqual(155.00, may_20_pt5.amount)
+        self.assertEqual(155.00, may_20_pt5.amount)
         # self.assertEqual(9, may_20_pt5.overage.count())
         # self.assertEqual(4, may_20_pt5.dropins.count())
 
         # June 20th bill = Basic + 5 days (2 overage)
-        june_20_basic = user8.bills.filter(period_start=date(2010, 6, 20)).first()
+        june_20_basic = user8.bills.get(period_start=date(2010, 6, 20))
         self.assertTrue(june_20_basic != None)
         self.assertEqual(user8.membership.matching_package(date(2010, 6, 20)), self.basicPackage)
         # self.assertEqual(date(2010, 6, 20), june_20_basic.bill_date)

@@ -14,18 +14,11 @@ class ProfileTestCase(TestCase):
     def setUp(self):
         self.neighborhood1 = Neighborhood.objects.create(name="Beggar's Gulch")
 
-        # Resources
-        self.test_resource = Resource.objects.create(name="Test Resource")
-        self.desk_resource = Resource.objects.create(name="Desk Resource")
-        self.mail_resource = Resource.objects.create(name="Mail Resource")
-        self.day_resource = Resource.objects.create(name="Day Resource")
-        self.key_resource = Resource.objects.create(name="Key Resource")
-
         # Basic Packages = just days
         self.basicPackage = MembershipPackage.objects.create(name="Basic")
         SubscriptionDefault.objects.create(
             package = self.basicPackage,
-            resource = self.day_resource,
+            resource = Resource.objects.day_resource,
             monthly_rate = 50,
             allowance = 3,
             overage_rate = 20,
@@ -35,21 +28,21 @@ class ProfileTestCase(TestCase):
         self.pt5Package = MembershipPackage.objects.create(name="PT5")
         SubscriptionDefault.objects.create(
             package = self.pt5Package,
-            resource = self.day_resource,
+            resource = Resource.objects.day_resource,
             monthly_rate = 75,
             allowance = 5,
             overage_rate = 20,
         )
         SubscriptionDefault.objects.create(
             package = self.pt5Package,
-            resource = self.key_resource,
+            resource = Resource.objects.key_resource,
             monthly_rate = 100,
             allowance = 1,
             overage_rate = 0,
         )
         SubscriptionDefault.objects.create(
             package = self.pt5Package,
-            resource = self.mail_resource,
+            resource = Resource.objects.mail_resource,
             monthly_rate = 35,
             allowance = 1,
             overage_rate = 0,
@@ -59,14 +52,14 @@ class ProfileTestCase(TestCase):
         self.residentPackage = MembershipPackage.objects.create(name="Resident")
         SubscriptionDefault.objects.create(
             package = self.residentPackage,
-            resource = self.day_resource,
+            resource = Resource.objects.day_resource,
             monthly_rate = 0,
             allowance = 5,
             overage_rate = 20,
         )
         SubscriptionDefault.objects.create(
             package = self.residentPackage,
-            resource = self.desk_resource,
+            resource = Resource.objects.desk_resource,
             monthly_rate = 475,
             allowance = 1,
             overage_rate = 0,
@@ -137,16 +130,24 @@ class ProfileTestCase(TestCase):
 
     def test_by_resource(self):
         # User1 has a desk
-        self.assertTrue(self.user1 in User.helper.members_by_resource(self.desk_resource))
-        self.assertFalse(self.user1 in User.helper.members_by_resource(self.key_resource))
+        self.assertTrue(self.user1 in User.helper.members_with_desks())
+        self.assertFalse(self.user1 in User.helper.members_with_keys())
         # User2 has key and mail
-        self.assertTrue(self.user2 in User.helper.members_by_resource(self.key_resource))
-        self.assertTrue(self.user2 in User.helper.members_by_resource(self.mail_resource))
-        self.assertFalse(self.user2 in User.helper.members_by_resource(self.desk_resource))
+        self.assertTrue(self.user2 in User.helper.members_with_keys())
+        self.assertTrue(self.user2 in User.helper.members_with_mail())
+        self.assertFalse(self.user2 in User.helper.members_with_desks())
         # User3 doesn't have any resources
-        self.assertFalse(self.user3 in User.helper.members_by_resource(self.key_resource))
-        self.assertFalse(self.user3 in User.helper.members_by_resource(self.mail_resource))
-        self.assertFalse(self.user3 in User.helper.members_by_resource(self.desk_resource))
+        self.assertFalse(self.user3 in User.helper.members_with_keys())
+        self.assertFalse(self.user3 in User.helper.members_with_mail())
+        self.assertFalse(self.user3 in User.helper.members_with_desks())
+        # User4 doesn't have any resources
+        self.assertFalse(self.user4 in User.helper.members_with_keys())
+        self.assertFalse(self.user4 in User.helper.members_with_mail())
+        self.assertFalse(self.user4 in User.helper.members_with_desks())
+        # User5 has key and mail
+        self.assertTrue(self.user5 in User.helper.members_with_keys())
+        self.assertTrue(self.user5 in User.helper.members_with_mail())
+        self.assertFalse(self.user5 in User.helper.members_with_desks())
 
     def test_valid_billing(self):
         # Member 1 has valid billing

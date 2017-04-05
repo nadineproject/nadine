@@ -28,11 +28,11 @@ def forward(apps, schema_editor):
     print
 
     print("    Creating Resources...")
-    DAY = Resource.objects.create(name="Coworking Day", tracker_class="nadine.models.resource.CoworkingDayTracker" )
-    ROOM = Resource.objects.create(name="Room Booking", tracker_class="nadine.models.resource.RoomBookingTracker" )
-    DESK = Resource.objects.create(name="Dedicated Desk")
-    MAIL = Resource.objects.create(name="Mail Service")
-    KEY = Resource.objects.create(name="Key")
+    DAY = Resource.objects.create(name="Coworking Day", key="day", tracker_class="nadine.models.resource.CoworkingDayTracker" )
+    ROOM = Resource.objects.create(name="Room Booking", key="room", tracker_class="nadine.models.resource.RoomBookingTracker" )
+    DESK = Resource.objects.create(name="Dedicated Desk", key="desk")
+    MAIL = Resource.objects.create(name="Mail Service", key="mail")
+    KEY = Resource.objects.create(name="Key", key="key")
 
     print("    Migrating Membership Plans to Packages...")
     PACKAGE_MAP = {}
@@ -167,7 +167,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=64, unique=True)),
-                ('tracker_class', models.CharField(blank=True, max_length=64, null=True)),
+                ('key', models.CharField(max_length=8, blank=True, null=True)),
+                ('tracker_class', models.CharField(max_length=64, blank=True, null=True)),
             ],
         ),
         migrations.CreateModel(
