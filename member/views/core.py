@@ -163,7 +163,7 @@ def bill_receipt(request, bill_id):
     c = Context({
         'today': timezone.localtime(timezone.now()),
         'bill': bill,
-        'site': Site.objects.get_current(),
+        'site': Site.objects.get_current(), 
         # 'bill_url': "http://" + Site.objects.get_current().domain + bill.get_absolute_url()
     })
     receipt_html = htmltext.render(c)
