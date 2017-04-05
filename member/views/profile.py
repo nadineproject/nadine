@@ -121,7 +121,7 @@ def profile_billing(request, username):
     six_months_ago = timezone.now() - relativedelta(months=6)
     active_membership = user.profile.active_membership()
     bills = user.bill_set.filter(bill_date__gte=six_months_ago)
-    payments = user.transaction_set.prefetch_related('bills').filter(transaction_date__gte=six_months_ago)
+    payments = user.transaction_set.prefetch_related('bills').filter(transaction_date__gte=twelve_months_ago)
     context = {'user': user,
                'active_membership': active_membership,
                'bills': bills,
@@ -275,7 +275,7 @@ def disable_billing(request, username):
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='member:not_active')
+@user_passes_test(is_active_member, login_url='member_not_active')
 def file_view(request, disposition, username, file_name):
     if not request.user.is_staff and not username == request.user.username:
         return HttpResponseForbidden("Forbidden")
@@ -290,7 +290,7 @@ def file_view(request, disposition, username, file_name):
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='member:not_active')
+@user_passes_test(is_active_member, login_url='member_not_active')
 def edit_pic(request, username):
     user = get_object_or_404(User, username=username)
     if not user == request.user and not request.user.is_staff:
@@ -315,7 +315,7 @@ def edit_pic(request, username):
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='member:not_active')
+@user_passes_test(is_active_member, login_url='member_not_active')
 def edit_photo(request, username):
     user = get_object_or_404(User, username=username)
     if not user == request.user and not request.user.is_staff:
@@ -326,7 +326,7 @@ def edit_photo(request, username):
         try:
             if form.is_valid():
                 form.save()
-                return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': request.user.username}))
+                return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': user.username}))
             else:
                 print form
         except Exception as e:
