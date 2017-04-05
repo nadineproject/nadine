@@ -1,5 +1,8 @@
 {% extends "staff/members/base.html" %}
 
+{% block sub-title %}Edit Membership | {% endblock %}
+
+
 {% block content %}
 <h4>Membership for <a href="{% url 'staff:members:detail' entity.username %}">{{ entity.get_full_name }}</a></h4>
 
