@@ -151,11 +151,36 @@ class Room(models.Model):
         return calendar
 
 
+class ResourceManager(models.Manager):
+
+    def resource_by_key(self, key):
+        resource_search = Resource.objects.filter(key=key)
+        if resource_search.count() == 0:
+            raise Exception("Could not find '%s' resource" % key)
+        if resource_search.count() > 1:
+            raise Exception("Multiple '%s' resources found" % key)
+        return resource_search.first()
+
+    @property
+    def day_resource(self):
+        return resource_by_key(Resource.DAY)
+
+
 class Resource(models.Model):
+    DAY = "day"
+    KEY = "key"
+    MAIL = "mail"
+    DESK = "desk"
+    ROOM = "room"
+
     name = models.CharField(max_length=64, unique=True)
+    key = models.CharField(max_length=8, unique=True, null=True, blank=True)
     tracker_class = models.CharField(max_length=64, null=True, blank=True)
 
-    def __str__(self): return self.name
+    objects = ResourceManager()
+
+    def __str__(self):
+        return self.name
 
     def is_trackable(self):
         return self.tracker_class is not None
