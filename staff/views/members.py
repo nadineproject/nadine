@@ -42,6 +42,7 @@ def detail(request, username):
     # subscriptions = user.membership.first().active_subscriptions()
     # membership = user.
     email_logs = SentEmailLog.objects.filter(user=user).order_by('created').reverse()
+    cats = Membership.objects.future_memberships().filter(id=user.membership.id)
 
     if request.method == 'POST':
         if 'send_manual_email' in request.POST:
@@ -332,12 +333,10 @@ def membership(request, username):
     else:
         package_form = MembershipPackageForm()
         sub_formset = SubFormSet(initial=sub_data)
-        add_form = SubForm()
     context = {
         'entity': user,
         'subscriptions':subscriptions,
         'package_form': package_form,
-        'add_form': add_form,
         'package': package,
         'bill_day': bill_day,
         'sub_formset': sub_formset,

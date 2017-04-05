@@ -19,7 +19,7 @@
       <tr class='{% cycle "row-even" "row-odd" %}'>
         <td>{{ s.resource }}</td>
         <td>{{ s.allowance }}</td>
-        <td>{{ s.start_date }}</td>
+        <td>{{ s.start_date|date:'Y-m-d' }}</td>
         <td>${{ s.overage_rate }}</td>
         <td>${{ s.monthly_rate }}/month</td>
         <td>{{ s.paid_by|default:"" }}</td>
@@ -117,7 +117,7 @@
     </table>
   </div>
   {% else %}
-  <h6>Ending Package with These Subscriptions</h6>
+  <!-- <h6>Ending Package with These Subscriptions</h6>
   <table class='sub-table'>
     <tr>
       <th class='sub-th'>Resource</th>
@@ -137,10 +137,9 @@
         <td>{{ c.paid_by|default:"" }}</td>
       </tr>
   {% endfor %}
-  </table>
+  </table> -->
   <div class='end_pkg_table'>
-    <input name='end_pkg' type='hidden' value='end_pkg' />
-    <p class='ending-p'><strong>Ending this package and all subscritions on:</strong> <input type='date' value="{{ end_target }}" readonly /></p>
+    <p class='ending-p'><strong>Ending this package and all subscrptions on: {{ end_target }} </strong></p>
   </div>
   {% endif %}
   {% csrf_token %}

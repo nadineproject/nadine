@@ -20,7 +20,7 @@
         <td>{{ s.resource }}</td>
         <td>{{ s.allowance }}</td>
         <td>{{ s.start_date }}</td>
-        <td>{{ s.end_date |default:"-" }}</td>
+        <td>{{ s.end_date|default:"-" }}</td>
         <td>${{ s.overage_rate }}</td>
         <td>${{ s.monthly_rate }}/month</td>
         <td>{{ s.paid_by|default:"" }}</td>
@@ -153,7 +153,7 @@
         {% if sub_form.s_id.value %}
           <td class='sub-input disabled'>{{ sub_form.resource }}</td>
           <td class='sub-input allowance disabled'>{{ sub_form.allowance  }}</td>
-          <td class='sub-input disabled' id='start_date_td'>{{ sub_form.start_date  }}</td>
+          <td class='sub-input disabled' id='start_date_td'>{{ sub_form.start_date }}</td>
           <td class='sub-input disabled' id='end_date_td'>{{ sub_form.end_date  }}</td>
           <td class='sub-input rate monthly_rate disabled'>{{ sub_form.monthly_rate  }}</td>
           <td class='sub-input rate disabled'>{{ sub_form.overage_rate }}</td>
@@ -230,6 +230,20 @@
     $(".paying_user").autocomplete({
 			source: availableUsers
 		});
+
+    {% for message in messages %}
+      {% if message.tags == 'error' %}
+        Materialize.toast('{{ message }}', 60000, 'error-msg msg');
+      {% else %}
+        Materialize.toast('{{ message }}', 3000, '{{ message.tags }}-msg msg');
+      {% endif %}
+    {% endfor %}
+
+    $(document).on('click', '#toast-container .toast', function() {
+      $(this).fadeOut(function(){
+        $(this).remove();
+      });
+    });
   })();
 
   $(document).ready(function() {
