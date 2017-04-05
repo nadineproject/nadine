@@ -388,6 +388,7 @@ class Membership(models.Model):
         return (period_start, period_end)
 
     def is_period_boundary(self, target_date=None):
+        # TODO: Evaluate
         period = self.get_period(target_date=target_date)
         return period and period[1] == target_date
 
@@ -734,7 +735,10 @@ class ResourceSubscription(models.Model):
 
     def activity_line_item(self, bill):
         desc = "Activity " + str(self.resource) + " "
-        start = bill.period_start - timedelta(days=1)
+        # Get the start and end of the previous period
+        ps, pe = bill.membership.get_period(bill.period_start - timedelta(days=1))
+        print("Previous period: %s-%s" % (ps, pe))
+
         # TODO - complete --JLS
         return None
 

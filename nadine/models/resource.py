@@ -154,6 +154,7 @@ class Room(models.Model):
 class ResourceManager(models.Manager):
 
     def resource_by_key(self, key):
+        # print("pulling '%s' resource" % key)
         resource_search = Resource.objects.filter(key=key)
         if resource_search.count() == 0:
             raise Exception("Could not find '%s' resource" % key)
@@ -163,23 +164,23 @@ class ResourceManager(models.Manager):
 
     @property
     def day_resource(self):
-        return resource_by_key(Resource.DAY)
+        return self.resource_by_key(Resource.DAY)
 
     @property
     def key_resource(self):
-        return resource_by_key(Resource.KEY)
+        return self.resource_by_key(Resource.KEY)
 
     @property
     def mail_resource(self):
-        return resource_by_key(Resource.MAIL)
+        return self.resource_by_key(Resource.MAIL)
 
     @property
     def desk_resource(self):
-        return resource_by_key(Resource.DESK)
+        return self.resource_by_key(Resource.DESK)
 
     @property
     def room_resource(self):
-        return resource_by_key(Resource.ROOM)
+        return self.resource_by_key(Resource.ROOM)
 
 
 class Resource(models.Model):
