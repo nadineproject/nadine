@@ -19,9 +19,9 @@
       <tr class='{% cycle "row-even" "row-odd" %}'>
         <td>{{ s.resource }}</td>
         <td>{{ s.allowance }}</td>
-        <td>{{ s.start_date|date:'Y-m-d' }}</td>
+        <td>{{ s.start_date }}</td>
         {% if s.end_date %}
-          <td>{{ s.end_date|date:'Y-m-d'}}</td>
+          <td>{{ s.end_date }}</td>
         {% else %}
           <td>-</td>
         {% endif %}
@@ -479,6 +479,14 @@
           }
           if (day < 10) {
             day = '0' + day;
+          }
+
+          if(bd_month < 10) {
+            bd_month = '0' + bd_month;
+          }
+
+          if(bd < 10) {
+            bd = '0' + bd;
           }
 
           var date = [year, month, day].join('-');
