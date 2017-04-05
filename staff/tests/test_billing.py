@@ -7,10 +7,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.utils import timezone
 import staff.billing as billing
-from interlink.models import MailingList
-from staff.views.stats import beginning_of_next_month, first_days_in_months
 from nadine.models import *
-
 
 def print_user_data(user):
     print

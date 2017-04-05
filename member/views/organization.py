@@ -20,7 +20,7 @@ from member.views.core import is_active_member
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='member_not_active')
+@user_passes_test(is_active_member, login_url='member:not_active')
 def org_list(request):
     orgs = Organization.objects.active_organizations()
 
@@ -45,7 +45,7 @@ def org_list(request):
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='member_not_active')
+@user_passes_test(is_active_member, login_url='member:not_active')
 def org_view(request, org_id):
     org = get_object_or_404(Organization, id=org_id)
     can_edit = org.can_edit(request.user) or request.user.is_staff
@@ -69,7 +69,7 @@ def org_view(request, org_id):
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='member_not_active')
+@user_passes_test(is_active_member, login_url='member:not_active')
 def org_add(request):
     if 'org' not in request.POST and 'username' in request.POST:
         return HttpResponseForbidden("Forbidden")
@@ -89,7 +89,7 @@ def org_add(request):
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='member_not_active')
+@user_passes_test(is_active_member, login_url='member:not_active')
 def org_edit(request, org_id):
     page_message = None
     org = get_object_or_404(Organization, id=org_id)
@@ -143,7 +143,7 @@ def org_edit(request, org_id):
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='member_not_active')
+@user_passes_test(is_active_member, login_url='member:not_active')
 def org_member(request, org_id):
     org = get_object_or_404(Organization, id=org_id)
     if not (not org.locked or request.user.is_staff or org.can_edit(request.user)):
@@ -200,7 +200,7 @@ def org_member(request, org_id):
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='member_not_active')
+@user_passes_test(is_active_member, login_url='member:not_active')
 def org_edit_photo(request, org_id):
     org = get_object_or_404(Organization, id=org_id)
     if not (request.user.is_staff or org.can_edit(request.user)):

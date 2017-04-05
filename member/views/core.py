@@ -115,7 +115,7 @@ def help_topic(request, slug):
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='member_not_active')
+@user_passes_test(is_active_member, login_url='member:not_active')
 def view_members(request):
     active_members = User.helper.active_members().order_by('first_name')
     here_today = User.helper.here_today()
@@ -174,7 +174,7 @@ def bill_receipt(request, bill_id):
 
 @csrf_exempt
 @login_required
-@user_passes_test(is_manager, login_url='member_not_active')
+@user_passes_test(is_manager, login_url='member:not_active')
 def manage_member(request, username):
     user = get_object_or_404(User, username=username)
 

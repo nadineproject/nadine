@@ -20,7 +20,7 @@ from member.views.core import is_active_member
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='member_not_active')
+@user_passes_test(is_active_member, login_url='member:not_active')
 def events_google(request, location_slug=None):
     return render(request, 'member/events/events_google.html', {'settings': settings})
 
@@ -91,7 +91,7 @@ def coerce_times(start, end, date):
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='member_not_active')
+@user_passes_test(is_active_member, login_url='member:not_active')
 def create_booking(request):
     # Process URL variables
     has_av = request.GET.get('has_av', None)
@@ -153,7 +153,7 @@ def create_booking(request):
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='member_not_active')
+@user_passes_test(is_active_member, login_url='member:not_active')
 def confirm_booking(request, room, start, end, date):
     user = request.user
     room = get_object_or_404(Room, name=room)
@@ -221,7 +221,7 @@ def confirm_booking(request, room, start, end, date):
 
 
 @login_required
-@user_passes_test(is_active_member, login_url='member_not_active')
+@user_passes_test(is_active_member, login_url='member:not_active')
 def calendar(request):
     events = Event.objects.filter(is_public=True)
     data = []

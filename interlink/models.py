@@ -14,11 +14,10 @@ from django.core.mail import get_connection, EmailMultiAlternatives
 from django.db.models.signals import post_save
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-from django.utils import timezone
+from django.utils.timezone import localtime, now
 
 from nadine.models.profile import UserProfile
 from nadine.models.membership import Membership
-from nadine.models.membership import OldMembership
 from nadine.utils.slack_api import SlackAPI
 from interlink.message import MailingListMessage
 import interlink
@@ -28,35 +27,37 @@ logger = logging.getLogger(__name__)
 
 def unsubscribe_recent_dropouts():
     """Remove mailing list subscriptions from members whose memberships expired yesterday and they do not start a membership today"""
-    recently_expired = User.objects.filter(membership__end_date=timezone.now().date() - timedelta(days=1)).exclude(membership__start_date=timezone.now().date())
+    today = localtime(now()).date()
+    recently_expired = User.objects.filter(membership__end_date=today - timedelta(days=1)).exclude(membership__start_date=today)
     for u in recently_expired:
         MailingList.objects.unsubscribe_from_all(u)
 
 
-def membership_save_callback(sender, **kwargs):
-    """When a membership is created, add the user to any opt-out mailing lists"""
-    membership = kwargs['instance']
-    created = kwargs['created']
-    if not created:
-        return
-
-    # If the member is just switching from one membership to another, don't change subscriptions
-    # But if this membership is created in the past there is no way to know what they want so subscribe them
-    if membership.start_date > timezone.now().date():
-        # TODO
-        if OldMembership.objects.filter(user=membership.user, end_date=membership.start_date - timedelta(days=1)).count() != 0:
-            return
-
-    mailing_lists = MailingList.objects.filter(is_opt_out=True)
-    for ml in mailing_lists:
-        ml.subscribers.add(membership.user)
-
-    # If this is their first membership, also invite them to Slack
-    # TODO
-    if OldMembership.objects.filter(user=membership.user).count() == 1:
-        SlackAPI().invite_user_quiet(membership.user)
-
-post_save.connect(membership_save_callback, sender=OldMembership)
+# This signal used to be triggered when we saved a Membership.
+# With 2.0 every user has one membership that has multiple subscriptions so
+# This no longer makes sense.  The logic will be moved to the view/form --JLS
+# def membership_save_callback(sender, **kwargs):
+#     """When a membership is created, add the user to any opt-out mailing lists"""
+#     membership = kwargs['instance']
+#     created = kwargs['created']
+#     if not created:
+#         return
+#
+#     # If the member is just switching from one membership to another, don't change subscriptions
+#     # But if this membership is created in the past there is no way to know what they want so subscribe them
+#     today = localtime(now()).date()
+#     if membership.start_date > today:
+#         if OldMembership.objects.filter(user=membership.user, end_date=membership.start_date - timedelta(days=1)).count() != 0:
+#             return
+#
+#     mailing_lists = MailingList.objects.filter(is_opt_out=True)
+#     for ml in mailing_lists:
+#         ml.subscribers.add(membership.user)
+#
+#     # If this is their first membership, also invite them to Slack
+#     if OldMembership.objects.filter(user=membership.user).count() == 1:
+#         SlackAPI().invite_user_quiet(membership.user)
+# post_save.connect(membership_save_callback, sender=OldMembership)
 
 
 def awaiting_moderation(user):
@@ -149,7 +150,7 @@ class MailingList(models.Model):
         if time_struct:
             sent_time = datetime(*time_struct[:-2])
         else:
-            sent_time = timezone.localtime(timezone.now())
+            sent_time = localtime(now())
 
         body, html_body, file_names = self.find_bodies(message)
         for file_name in file_names:
@@ -328,7 +329,7 @@ class OutgoingMailManager(models.Manager):
         to_send = (self.select_related('mailing_list')
                        .filter(sent__isnull=True)
                        .filter(Q(last_attempt__isnull=True) |
-                               Q(last_attempt__lt=timezone.localtime(timezone.now()) - timedelta(minutes=10))))
+                               Q(last_attempt__lt=localtime(now()) - timedelta(minutes=10))))
         # This dict is indexed by the mailing list
         # and contains a list of each mail that should be sent using that smtp info
         d = defaultdict(list)
@@ -382,7 +383,7 @@ class OutgoingMail(models.Model):
             return len(msg.recipients())
 
         r = (OutgoingMail.objects.filter(mailing_list=self.mailing_list,
-                                         sent__gt=timezone.localtime(timezone.now()) - timedelta(minutes=10))
+                                         sent__gt=localtime(now()) - timedelta(minutes=10))
              .aggregate(Sum('sent_recipients')))
         num_sent_recipients = r['sent_recipients__sum'] or 0
 
@@ -450,7 +451,7 @@ class OutgoingMail(models.Model):
         num_recipients = self._check_throttle(msg)
 
         # Update this after we pass the throttle but before we actually try to send.
-        self.last_attempt = timezone.localtime(timezone.now())
+        self.last_attempt = localtime(now())
         self.attempts = self.attempts + 1
         self.save()
 
@@ -462,7 +463,7 @@ class OutgoingMail(models.Model):
             self.original_mail.save()
 
         self.sent_recipients = num_recipients
-        self.sent = timezone.localtime(timezone.now())
+        self.sent = localtime(now())
         self.save()
 
     class Meta:
