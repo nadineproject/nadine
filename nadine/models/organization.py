@@ -71,15 +71,22 @@ class Organization(models.Model):
     objects = OrganizationManager()
 
     def members(self, target_date=None):
-        active = self.active_memberships(target_date)
-        return User.objects.filter(id__in=active.values('user'))
+        memberships = self.active_memberships(target_date)
+        return User.objects.filter(id__in=memberships.values('user').distinct())
+
+    def members_in_period(self, period_start, period_end):
+        memberships = self.memberships_in_period(period_start, period_end)
+        return User.objects.filter(id__in=memberships.values('user').distinct())
 
     def active_memberships(self, target_date=None):
         if not target_date:
             target_date = localtime(now()).date()
-        future = Q(end_date__isnull=True)
-        unending = Q(end_date__gte=target_date)
-        return self.organizationmember_set.filter(start_date__lte=target_date).filter(future | unending)
+        return self.memberships_in_period(target_date, target_date)
+
+    def memberships_in_period(self, period_start, period_end):
+        future = Q(end_date__gte=period_end)
+        unending = Q(end_date__isnull=True)
+        return self.organizationmember_set.filter(start_date__lte=period_start).filter(future | unending)
 
     def active_membership(self, user, target_date=None):
         """ Active org membership for this user """

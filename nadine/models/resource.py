@@ -164,31 +164,31 @@ class ResourceManager(models.Manager):
 
     @property
     def day_resource(self):
-        return self.resource_by_key(Resource.DAY)
+        return self.resource_by_key(Resource.DAY_KEY)
 
     @property
     def key_resource(self):
-        return self.resource_by_key(Resource.KEY)
+        return self.resource_by_key(Resource.KEY_KEY)
 
     @property
     def mail_resource(self):
-        return self.resource_by_key(Resource.MAIL)
+        return self.resource_by_key(Resource.MAIL_KEY)
 
     @property
     def desk_resource(self):
-        return self.resource_by_key(Resource.DESK)
+        return self.resource_by_key(Resource.DESK_KEY)
 
     @property
     def room_resource(self):
-        return self.resource_by_key(Resource.ROOM)
+        return self.resource_by_key(Resource.ROOM_KEY)
 
 
 class Resource(models.Model):
-    DAY = "day"
-    KEY = "key"
-    MAIL = "mail"
-    DESK = "desk"
-    ROOM = "room"
+    DAY_KEY = "day"
+    KEY_KEY = "key"
+    MAIL_KEY = "mail"
+    DESK_KEY = "desk"
+    ROOM_KEY = "room"
 
     name = models.CharField(max_length=64, unique=True)
     key = models.CharField(max_length=8, unique=True, null=True, blank=True)
@@ -238,24 +238,43 @@ class ResourceTrackerABC:
         self.resource = resource
 
     @abstractmethod
-    def get_activity(self, period_start, period_end):
+    def get_activity(self, user, period_start, period_end):
         # Return a list of line items for all activity in the given time period
+        pass
+
+    @abstractmethod
+    def get_line_item(self, bill, description, amount, activity):
         pass
 
 
 class CoworkingDayTracker(ResourceTrackerABC):
 
-    # TODO - complete
-    def get_activity(self, period_start, period_end):
+    def get_activity(self, user, period_start, period_end):
+        from nadine.models.usage import CoworkingDay
+        print("user: %s, start: %s, end: %s" % (user, period_start, period_end))
+        return CoworkingDay.objects.filter(user=user, visit_date__range=(period_start, period_end), payment='Bill')
+
+    def get_line_item(self, bill, description, amount, activity):
+        # Add a list of dates to our description
+        day_list = []
+        for day in activity:
+            day_list.append(day.visit_date.isoformat())
+        if len(day_list) > 0:
+            description += ": " + ", ".join(day_list)
+
         from nadine.models.billing import CoworkingDayLineItem
-        return [CoworkingDayLineItem()]
+        line_item = CoworkingDayLineItem.objects.create(bill=bill, description=description, amount=amount)
+        line_item.days = activity
+        line_item.save()
 
 
+# TODO - complete
 class RoomBookingTracker(ResourceTrackerABC):
 
-    # TODO - complete
-    def get_activity(self, period_start, period_end):
+    def get_activity(self, user_list, period_start, period_end):
         return []
 
+    def get_line_item(self, bill, description, amount, activity):
+        return None
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
