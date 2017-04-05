@@ -165,6 +165,22 @@ class ResourceManager(models.Manager):
     def day_resource(self):
         return resource_by_key(Resource.DAY)
 
+    @property
+    def key_resource(self):
+        return resource_by_key(Resource.KEY)
+
+    @property
+    def mail_resource(self):
+        return resource_by_key(Resource.MAIL)
+
+    @property
+    def desk_resource(self):
+        return resource_by_key(Resource.DESK)
+
+    @property
+    def room_resource(self):
+        return resource_by_key(Resource.ROOM)
+
 
 class Resource(models.Model):
     DAY = "day"
