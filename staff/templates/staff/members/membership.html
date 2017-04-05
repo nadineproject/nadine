@@ -19,8 +19,12 @@
       <tr class='{% cycle "row-even" "row-odd" %}'>
         <td>{{ s.resource }}</td>
         <td>{{ s.allowance }}</td>
-        <td>{{ s.start_date }}</td>
-        <td>{{ s.end_date|default:"-" }}</td>
+        <td>{{ s.start_date|date:'Y-m-d' }}</td>
+        {% if s.end_date %}
+          <td>{{ s.end_date|date:'Y-m-d'}}</td>
+        {% else %}
+          <td>-</td>
+        {% endif %}
         <td>${{ s.overage_rate }}</td>
         <td>${{ s.monthly_rate }}/month</td>
         <td>{{ s.paid_by|default:"" }}</td>
