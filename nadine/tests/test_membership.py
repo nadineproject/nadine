@@ -108,11 +108,9 @@ class MembershipTestCase(TestCase):
             monthly_rate = 1000.00,
         )
 
-
     ############################################################################
     # Helper Methods
     ############################################################################
-
 
     def create_membership(self, bill_day=0, start=None, end=None, resource=None, monthly_rate=100, overage_rate=20):
         if not start:
@@ -132,14 +130,12 @@ class MembershipTestCase(TestCase):
         )
         return membership
 
-
     def period_boundary_test(self, period_start, period_end):
         # For a given period start, test the period_end is equal to the given period_end
         m = self.create_membership(start=period_start)
         ps, pe = m.get_period(target_date=period_start)
         # print("start: %s, end: %s, got: %s" % (period_start, period_end, pe))
         self.assertEquals(pe, period_end)
-
 
     def next_period_start_test(self, start, number):
         last_start = start
@@ -155,11 +151,29 @@ class MembershipTestCase(TestCase):
             self.assertEqual(last_start, this_start)
             last_start = next_start
 
-
     ############################################################################
     # Tests
     ############################################################################
 
+    def test_user_list(self):
+        user1 = User.objects.create(username='user_one', first_name='User', last_name='One')
+        user2 = User.objects.create(username='user_two', first_name='User', last_name='Two')
+        user3 = User.objects.create(username='user_three', first_name='User', last_name='Three')
+
+        # An individual membership should have only the individual
+        user_list = user3.membership.user_list()
+        self.assertEqual(1, len(user_list))
+        self.assertEqual(user3, user_list[0])
+
+        # An organization membership should have all members of that org
+        org1 = Organization.objects.create(lead=user1, name="Test Org", created_by=user1)
+        org1.add_member(user1)
+        org1.add_member(user2)
+        user_list = org1.membership.user_list()
+        self.assertEqual(2, len(user_list))
+        self.assertTrue(user1 in user_list)
+        self.assertTrue(user2 in user_list)
+        self.assertFalse(user3 in user_list)
 
     def test_start_date(self):
         # Our start date should be equal to the start of the first subscription

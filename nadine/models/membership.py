@@ -214,6 +214,17 @@ class Membership(models.Model):
             return None
         return first_subscription.start_date
 
+    def user_list(self, target_date=None):
+        if not target_date:
+            target_date = localtime(now()).date()
+        return self.users_in_period(target_date, target_date)
+
+    def users_in_period(self, period_start, period_end):
+        if self.is_individual:
+            return [self.individualmembership.user]
+        elif self.is_organization:
+            return list(self.organizationmembership.organization.members_in_period(period_start, period_end))
+
     def end_all(self, target_date=None):
         '''End all the active subscriptions.  Defaults to yesterday.'''
         if not target_date:
@@ -494,9 +505,9 @@ class Membership(models.Model):
             for s in new_bill['subscriptions']:
                 monthly_items.append(s.monthly_line_item(bill))
                 if s.resource.is_trackable():
-                    activity_line = s.activity_line_item(bill)
-                    if activity_line:
-                        activity_items.append(activity_line)
+                    activity_lines = s.activity_line_items(bill)
+                    if activity_lines:
+                        activity_items.extend(activity_lines)
 
             # Add them all up (in this specific order)
             new_bill['line_items'] = monthly_items
@@ -509,7 +520,9 @@ class Membership(models.Model):
             bill = new_bill['bill']
             bill.save()
             for item in new_bill['line_items']:
-                item.save()
+                if item:
+                    # TODO - evaluate why we would get None here --JLS
+                    item.save()
 
         # We've worked so hard to build up this pretty little dictionary
         # we might as well return it!
@@ -722,7 +735,7 @@ class ResourceSubscription(models.Model):
 
     def monthly_line_item(self, bill):
         from billing import BillLineItem
-        desc = "Monthly " + str(self.resource) + " "
+        desc = "Monthly " + self.resource.name + " "
         if self.description:
             desc += self.description + " "
         desc += "(%s to %s)" % (bill.period_start, bill.period_end)
@@ -733,14 +746,37 @@ class ResourceSubscription(models.Model):
         line_item = BillLineItem(bill=bill, description=desc, amount=amount)
         return line_item
 
-    def activity_line_item(self, bill):
-        desc = "Activity " + str(self.resource) + " "
-        # Get the start and end of the previous period
-        ps, pe = bill.membership.get_period(bill.period_start - timedelta(days=1))
-        print("Previous period: %s-%s" % (ps, pe))
+    def activity_line_items(self, bill):
+        # Get the start and end of the period just before our bill period
+        period_start, period_end = self.membership.get_period(bill.period_start - timedelta(days=1))
 
-        # TODO - complete --JLS
-        return None
+        # Pull the users active in this period
+        user_list = self.membership.users_in_period(period_start, period_end)
+        multiple_users = len(user_list) > 1
+
+        tracker = self.resource.get_tracker()
+
+        line_items = []
+        allowance_left = self.allowance
+        for user in user_list:
+            amount = 0
+            activity = tracker.get_activity(user, period_start, period_end)
+            overage = activity.count() - allowance_left
+            if overage > 0:
+                amount = overage * self.overage_rate
+            allowance_left = allowance_left - activity.count()
+            if allowance_left < 0:
+                allowance_left = 0
+
+            description = "%ss (%d)" % (self.resource.name, activity.count())
+            if multiple_users:
+                description = user.get_full_name() + " - " + description
+
+            line_item = tracker.get_line_item(bill, description, amount, activity)
+            line_items.append(line_item)
+
+        if len(line_items) > 0:
+            return line_items
 
 
 class SecurityDeposit(models.Model):
