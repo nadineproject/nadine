@@ -26,8 +26,6 @@ from nadine.forms import NewUserForm, MemberSearchForm
 from member.models import MOTD
 from .forms import SignatureForm
 
-from easy_pdf.rendering import render_to_pdf, render_to_pdf_response
-
 logger = logging.getLogger(__name__)
 
 def motd(request):
