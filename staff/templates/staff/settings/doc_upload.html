@@ -1,0 +1,27 @@
+{% extends "staff/settings/base.html" %}
+
+{% block sub-title %}Document Upload {% endblock %}
+
+{% block content %}
+<h4>Document Upload</h4>
+<form action='.' method='POST'>
+<table>
+  <tr>
+    <td>
+      Document Name
+    </td>
+    <td>
+      {{ doc_form.name }}
+    </td>
+    <td>
+      Select Document
+    </td>
+    <td>
+      {{ doc_form.document }}
+    </td>
+  </tr>
+</table>
+<input class='btn doc-btn' type='submit' value='Submit'  />
+{% csrf_token %}
+</form>
+{% endblock %}

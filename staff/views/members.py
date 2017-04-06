@@ -411,6 +411,11 @@ def confirm_membership(request, username, package, end_target, new_subs):
                             # Save new resource
                             rs = ResourceSubscription(created_by=created_by, created_ts=created_ts, resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=paid_by, membership=membership)
                             rs.save()
+                    # Slack invite if first subscriptions
+                    # if ResourceSubscription.objects.filter(membership=user.membership.id).count() == 0:
+                    #     print('New member!')
+                        # SlackAPI().invite_user_quiet(user)
+
                 else:
                     user.membership.end_all(end_target)
                 messages.success(request, "You have updated the subscriptions for %s" % username)

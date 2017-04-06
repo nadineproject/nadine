@@ -16,7 +16,7 @@ from django.utils import timezone
 
 from nadine.models.membership import MembershipPackage, SubscriptionDefault
 from nadine.utils import network
-from nadine.forms import HelpTextForm, MOTDForm
+from nadine.forms import HelpTextForm, MOTDForm, DocUploadForm
 from nadine.settings import MOTD_TIMEOUT
 from member.models import HelpText, MOTD
 
@@ -127,6 +127,19 @@ def motd(request):
                'selected': selected,
                'message': message}
     return render(request, 'staff/settings/motd.html', context)
+
+@staff_member_required
+def document_upload(request):
+    doc_form = DocUploadForm()
+    if request.method == 'POST':
+        doc_form = DocUploadForm(request.POST)
+        if doc_form.is_valid():
+            doc_form.save()
+            return HttpResponseRedirect(reverse('staff:tasks:todo'))
+    context = {
+        'doc_form': doc_form,
+    }
+    return render(request, 'staff/settings/doc_upload.html', context)
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
