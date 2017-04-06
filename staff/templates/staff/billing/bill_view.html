@@ -26,7 +26,7 @@
     <th>Membership</th>
     <td>
       {% if bill.membership %}
-        <a href="{% url 'staff:members:membership' user.username %}">{{ bill.membership.package }}</a>
+        <a href="{% url 'staff:members:membership' bill.user.username %}">{{ bill.membership.package }}</a>
       {% else %}
         None
       {% endif %}

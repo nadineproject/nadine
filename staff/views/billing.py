@@ -92,8 +92,6 @@ def group_bills_by_date(bill_query):
     return ordered_bills
 
 
-
-
 @staff_member_required
 def outstanding(request):
     if request.method == 'POST':
