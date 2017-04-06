@@ -322,7 +322,7 @@ def membership(request, username):
                             if resource and start_date:
                                 new_subs.append({'s_id': s_id,'resource':resource.id, 'allowance':allowance, 'start_date':start_date, 'end_date':end_date, 'monthly_rate': monthly_rate, 'overage_rate':overage_rate, 'paid_by':paid_by, 'membership':None})
                         end_target = start - timedelta(days=1)
-
+                        print('yup!')
                         return HttpResponseRedirect(reverse('staff:members:confirm', kwargs={'username': username, 'package': membership, 'end_target': end_target, 'new_subs': new_subs}))
 
                 except IntegrityError:
