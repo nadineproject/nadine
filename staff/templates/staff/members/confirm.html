@@ -7,7 +7,7 @@
 <h5 style='margin-bottom: 3%;'>Confirm Membership Changes for <a href="{% url 'staff:members:detail' user.username %}">{{ user.get_full_name }}</a></h5>
 
 <div class='old-subs'>
-  <h6>Ending this Package on {{ end_target }} </h6>
+  <h6>Ending {{ user.membership.package.name }} Membership Package on {{ end_target }} </h6>
   <table class='sub-table' style='margin-top: 2%;'>
     <tr>
       <th class='sub-th'>Resource</th>
