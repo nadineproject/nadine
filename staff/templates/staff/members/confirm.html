@@ -17,7 +17,7 @@
       <th class='sub-th'>Monthly</th>
       <th class='sub-th'>Paid By</th>
     </tr>
-    {% for s in entity.membership.active_subscriptions %}
+    {% for s in user.membership.active_subscriptions %}
       <tr class='{% cycle "row-even" "row-odd" %}'>
         <td>{{ s.resource }}</td>
         <td>{{ s.allowance }}</td>
@@ -119,27 +119,6 @@
     </table>
   </div>
   {% else %}
-  <!-- <h6>Ending Package with These Subscriptions</h6>
-  <table class='sub-table'>
-    <tr>
-      <th class='sub-th'>Resource</th>
-      <th class='allowance sub-th'>Allowance</th>
-      <th class='sub-th'>Start Date</th>
-      <th class='rate sub-th'>Monthly Rate</th>
-      <th class='rate sub-th'>Overage rate</th>
-      <th class='sub-th'>Paid By</th>
-    </tr>
-    {% for c in user.membership.active_subscriptions %}
-      <tr class='{% cycle "row-odd" "row-even" %}'>
-        <td>{{ c.resource }}</td>
-        <td>{{ c.allowance }}</td>
-        <td>{{ c.start_date }}</td>
-        <td>${{ c.monthly_rate }}/month</td>
-        <td>${{ c.overage_rate }}</td>
-        <td>{{ c.paid_by|default:"" }}</td>
-      </tr>
-  {% endfor %}
-  </table> -->
   <div class='end_pkg_table'>
     <p class='ending-p'><strong>Ending this package and all subscrptions on: {{ end_target }} </strong></p>
   </div>
@@ -161,7 +140,7 @@
     var newPkg = '{{ package.package }}';
     var oldPkg = '{{ user.membership.package.id }}';
 
-    if (oldPkg != newPkg) {
+    if (oldPkg != '' && oldPkg != newPkg) {
       $('.old-subs').show()
     }
 

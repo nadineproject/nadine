@@ -272,12 +272,18 @@ def membership(request, username):
     start = None
     active_members = User.helper.active_members()
     SubFormSet = formset_factory(SubForm)
-    package = request.GET.get('package', user.membership.package.id)
+    old_pkg = None
+    if user.membership.package:
+        old_pkg = user.membership.package.id
+    if user.membership.bill_day:
+        bill_day = user.membership.bill_day
+    else:
+        bill_day = 1
+    package = request.GET.get('package', old_pkg)
     target_date = request.GET.get('target_date', None)
-    bill_day = request.GET.get('bill_day', user.membership.bill_day)
     today = localtime(now()).date()
 
-    if package != user.membership.package.id:
+    if package != old_pkg:
         subscriptions = SubscriptionDefault.objects.filter(package=package)
         sub_data=[{'s_id': None, 'resource': s.resource, 'allowance':s.allowance, 'start_date':today, 'end_date': None, 'username': user.username, 'created_by': request.user, 'monthly_rate': s.monthly_rate, 'overage_rate': s.overage_rate, 'paid_by': None} for s in subscriptions]
     else:
@@ -303,7 +309,7 @@ def membership(request, username):
                 try:
                     with transaction.atomic():
                         new_subs = []
-                        membership = {'package': request.POST['package'], 'bill_day': request.POST['bill_day']}
+                        membership = {'package': request.POST['package'], 'bill_day': bill_day}
                         for sub_form in sub_formset:
                             paid_by = None
                             s_id = sub_form.cleaned_data.get('s_id', None)
@@ -322,7 +328,6 @@ def membership(request, username):
                             if resource and start_date:
                                 new_subs.append({'s_id': s_id,'resource':resource.id, 'allowance':allowance, 'start_date':start_date, 'end_date':end_date, 'monthly_rate': monthly_rate, 'overage_rate':overage_rate, 'paid_by':paid_by, 'membership':None})
                         end_target = start - timedelta(days=1)
-                        print('yup!')
                         return HttpResponseRedirect(reverse('staff:members:confirm', kwargs={'username': username, 'package': membership, 'end_target': end_target, 'new_subs': new_subs}))
 
                 except IntegrityError:
@@ -414,7 +419,7 @@ def confirm_membership(request, username, package, end_target, new_subs):
             print('There was an ERROR: %s' % e.message)
             messages.error(request, 'There was an error setting new membership package')
     context = {
-        'entity': user,
+        'user': user,
         'package': pkg,
         'new_subs': subs,
         'end_target': end_target,

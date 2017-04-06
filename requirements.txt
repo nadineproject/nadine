@@ -25,7 +25,6 @@ xhtml2pdf>=0.0.6
 # Required for Python3
 #xhtml2pdf==0.1b2
 reportlab>=2.7,<3
-django-easy-pdf==0.1.0
 django-jsignature==0.8
 
 # A few handy tools
@@ -52,5 +51,5 @@ recommonmark==0.4.0
 pycodestyle==2.3.0
 sphinx-autoapi==0.4.0
 
-#For PDF creatiogn:
+#For PDF creation:
 weasyprint==0.36
