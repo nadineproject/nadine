@@ -1,7 +1,7 @@
 {% extends 'staff/members/base.html' %}
 {% load app_filters %}
 
-{% block sub-title %}Confirm Changes | {% endblock %}
+{% block sub-title %}Confirm Changes {% endblock %}
 
 {% block content %}
 <h5 style='margin-bottom: 3%;'>Confirm Membership Changes for <a href="{% url 'staff:members:detail' user.username %}">{{ user.get_full_name }}</a></h5>

@@ -280,9 +280,10 @@ class Membership(models.Model):
         # If we've made it this far, it's a match
         return True
 
-    def matching_package(self, target_date=None):
+    def matching_package(self, target_date=None, subscriptions=None):
         ''' Calculates which package matches the subscriptions. '''
-        subscriptions = self.active_subscriptions(target_date)
+        if not subscriptions:
+            subscriptions = self.active_subscriptions(target_date)
 
         # Loop through all the subscriptions and compile a list of possible matches
         possible_matches = list(MembershipPackage.objects.filter(enabled=True))
