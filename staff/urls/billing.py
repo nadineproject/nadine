@@ -5,6 +5,7 @@ from staff.views import core
 
 from staff.views import billing, payment
 
+app_name = 'staff'
 urlpatterns = [
     # Pages
     url(r'^bills/$', billing.bill_list, name='bills'),

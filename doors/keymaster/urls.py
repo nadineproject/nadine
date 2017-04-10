@@ -2,6 +2,7 @@ from django.conf.urls import url
 
 from doors.keymaster import views
 
+app_name = 'doors'
 urlpatterns = [
     url(r'^$', views.home, name='home'),
     url(r'^logs/$', views.logs, name='logs'),

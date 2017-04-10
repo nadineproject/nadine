@@ -2,6 +2,7 @@ from django.conf.urls import url
 
 from arpwatch import views
 
+app_name = 'arpwatch'
 urlpatterns = [
    url(r'^$', views.home, name='home'),
    url(r'^import/$', views.import_files, name='import'),

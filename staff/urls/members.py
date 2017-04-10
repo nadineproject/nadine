@@ -2,6 +2,7 @@ from django.conf.urls import include, url
 
 from staff.views import members
 
+app_name = 'staff'
 urlpatterns = [
      url(r'^members/$', members.members, name='members'),
      url(r'^members/(?P<group>[^/]+)/$', members.members, name='member_group'),

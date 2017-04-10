@@ -3,6 +3,7 @@ from django.shortcuts import redirect
 
 from member.views import organization
 
+app_name = 'member'
 urlpatterns = [
     url(r'^$', organization.org_list, name='list'),
     url(r'^add/$', organization.org_add, name='add'),

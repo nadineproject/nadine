@@ -4,6 +4,7 @@ from django.views.generic import RedirectView
 
 from . import views
 
+app_name = 'tablet'
 urlpatterns = [
     url(r'^$', lambda r: redirect('tablet:motd'), name="home"),
 
