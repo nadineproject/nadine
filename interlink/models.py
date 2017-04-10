@@ -9,7 +9,7 @@ from django.db.models import Q, Sum
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.mail import get_connection, EmailMultiAlternatives
 from django.db.models.signals import post_save
 from django.template.loader import render_to_string

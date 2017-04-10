@@ -4,7 +4,7 @@ from django.template import Library
 from django import template
 from django.conf import settings
 from django.utils.html import format_html
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 
 from nadine.models.profile import EmailAddress

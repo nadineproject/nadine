@@ -6,7 +6,7 @@ from django.db import models
 from django.db.models import F, Q, Count, Sum, Value
 from django.db.models.functions import Coalesce
 from django.utils.timezone import localtime, now
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.conf import settings
 
