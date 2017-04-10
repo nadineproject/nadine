@@ -7,7 +7,6 @@ from collections import OrderedDict
 
 from django.db import models
 from django.db.models import Q
-from django.core import urlresolvers
 from django.conf import settings
 from django.utils.timezone import localtime, now
 from django.contrib.auth.models import User
@@ -136,17 +135,14 @@ class Organization(models.Model):
     def __unicode__(self):
         return self.name
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('member:org:view', [], {'org_id': self.id})
+        return reverse('member:org:view', kwargs={'org_id': self.id})
 
-    @models.permalink
     def get_staff_url(self):
-        return ('staff:members:organization', [], {'org_id': self.id})
+        return reverse('staff:members:organization', kwargs={'org_id': self.id})
 
-    @models.permalink
     def get_admin_url(self):
-        return ('admin:nadine_organization_change', [self.id], {})
+        return reverse('admin:nadine_organization_change', args=[self.id])
 
     class Meta:
         app_label = 'nadine'

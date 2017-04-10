@@ -17,7 +17,6 @@ from django.db import models
 from django.db.models import F, Q, Count, Sum, Value
 from django.db.models.functions import Coalesce
 from django.contrib import admin
-from django.core import urlresolvers
 from django.core.files.base import ContentFile
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
@@ -805,7 +804,7 @@ class MembershipPlan(models.Model):
     def __str__(self): return self.name
 
     def get_admin_url(self):
-        return urlresolvers.reverse('admin:nadine_membershipplan_change', args=[self.id])
+        return reverse('admin:nadine_membershipplan_change', args=[self.id])
 
     class Meta:
         app_label = 'nadine'
@@ -915,7 +914,7 @@ class OldMembership(models.Model):
         return '%s - %s - %s' % (self.start_date, self.user, self.membership_plan)
 
     def get_admin_url(self):
-        return urlresolvers.reverse('admin:nadine_membership_change', args=[self.id])
+        return reverse('admin:nadine_membership_change', args=[self.id])
 
     class Meta:
         app_label = 'nadine'

@@ -16,7 +16,6 @@ from django.db import models
 from django.db.models import F, Q, Sum, Value
 from django.db.models.functions import Coalesce
 from django.contrib import admin
-from django.core import urlresolvers
 from django.core.files.base import ContentFile
 from django.contrib.auth.models import User
 from django.conf import settings
@@ -688,13 +687,11 @@ class UserProfile(models.Model):
 
     def __str__(self): return '%s %s' % (smart_str(self.user.first_name), smart_str(self.user.last_name))
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('member:profile:view', [], {'username': self.user.username})
+        return reverse('member:profile:view', kwargs={'username': self.user.username})
 
-    @models.permalink
     def get_staff_url(self):
-        return ('staff:members:detail', [], {'username': self.user.username})
+        return reverse('staff:members:detail', kwargs={'username': self.user.username})
 
     class Meta:
         app_label = 'nadine'

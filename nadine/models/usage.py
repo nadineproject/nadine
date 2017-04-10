@@ -4,7 +4,7 @@ from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils.timezone import localtime, now
-from django.core import urlresolvers
+from django.urls import reverse
 from django.db.models.signals import post_save
 
 # from nadine.models.resource import Resource
@@ -39,7 +39,7 @@ class CoworkingDay(models.Model):
         return '%s - %s' % (self.visit_date, self.user)
 
     def get_admin_url(self):
-        return urlresolvers.reverse('admin:nadine_coworkingday_change', args=[self.id])
+        return reverse('admin:nadine_coworkingday_change', args=[self.id])
 
     class Meta:
         app_label = 'nadine'

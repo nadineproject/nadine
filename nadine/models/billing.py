@@ -70,17 +70,14 @@ class UserBill(models.Model):
         else:
             return None
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('member:receipt', [], {'bill_id': self.id})
+        return reverse('member:receipt', kwargs={'bill_id': self.id})
 
-    @models.permalink
     def get_staff_url(self):
-        return ('staff:billing:bill', [], {'bill_id': self.id})
+        return reverse('staff:billing:bill', kwargs={'bill_id': self.id})
 
-    @models.permalink
     def get_admin_url(self):
-        return ('admin:nadine_userbill_change', [self.id], {})
+        return reverse('admin:nadine_userbill_change', args=[self.id])
 
     # Not sure if I need this -- JLS
     # def non_refund_payments(self):

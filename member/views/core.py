@@ -11,7 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404, HttpRequest
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
-from django.template import Template, Context, RequestContext
+from django.template import Template, RequestContext
 from django.template.loader import get_template
 
 from nadine import email
@@ -160,13 +160,13 @@ def bill_receipt(request, bill_id):
 
     # I want to render the receipt exactly like we do in the email
     htmltext = get_template('email/receipt.html')
-    c = Context({
+    pdf_context = {
         'today': timezone.localtime(timezone.now()),
         'bill': bill,
-        'site': Site.objects.get_current(), 
+        'site': Site.objects.get_current(),
         # 'bill_url': "http://" + Site.objects.get_current().domain + bill.get_absolute_url()
-    })
-    receipt_html = htmltext.render(c)
+    }
+    receipt_html = htmltext.render(pdf_context)
     pdf_file = HTML(string=receipt_html, base_url=request.build_absolute_uri()).write_pdf()
 
     return HttpResponse(pdf_file, content_type='application/pdf')
