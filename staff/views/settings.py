@@ -15,6 +15,7 @@ from django.conf import settings
 from django.utils import timezone
 
 from nadine.models.membership import MembershipPackage, SubscriptionDefault
+from nadine.models.profile import FileUpload
 from nadine.utils import network
 from nadine.forms import HelpTextForm, MOTDForm, DocUploadForm
 from nadine.settings import MOTD_TIMEOUT
@@ -131,6 +132,7 @@ def motd(request):
 @staff_member_required
 def document_upload(request):
     doc_form = DocUploadForm()
+    docs = FileUpload.objects.values_list('document_type', flat=True).distinct()
     if request.method == 'POST':
         doc_form = DocUploadForm(request.POST)
         if doc_form.is_valid():
@@ -138,6 +140,7 @@ def document_upload(request):
             return HttpResponseRedirect(reverse('staff:tasks:todo'))
     context = {
         'doc_form': doc_form,
+        'docs': docs,
     }
     return render(request, 'staff/settings/doc_upload.html', context)
 

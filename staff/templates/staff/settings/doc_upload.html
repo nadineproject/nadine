@@ -3,25 +3,46 @@
 {% block sub-title %}Document Upload {% endblock %}
 
 {% block content %}
-<h4>Document Upload</h4>
+<h4>Document Preview and Upload</h4>
+<div style='width:50%; margin-top:2%;'>
+  <h6>Preview Document</h6>
+  <select>
+    <option disabled></option>
+    {% for doc in docs %}
+      <option>{{ doc }}</option>
+    {% endfor %}
+  </select>
+  <button onclick='preview()'>Preview</button>
+</div>
+<h6>Upload New Document</h6>
 <form action='.' method='POST'>
-<table>
-  <tr>
-    <td>
-      Document Name
-    </td>
-    <td>
-      {{ doc_form.name }}
-    </td>
-    <td>
-      Select Document
-    </td>
-    <td>
-      {{ doc_form.document }}
-    </td>
-  </tr>
-</table>
-<input class='btn doc-btn' type='submit' value='Submit'  />
-{% csrf_token %}
+  <table>
+    <tr>
+      <td>
+        Document Name
+      </td>
+      <td>
+        {{ doc_form.name }}
+      </td>
+      <td>
+        Select Document
+      </td>
+      <td>
+        {{ doc_form.document }}
+      </td>
+    </tr>
+  </table>
+  <button class='preview-btn' onclick='preview()' value='preview'>Preview</button>
+  <input class='btn doc-btn' type='submit' value='Submit'  />
+  {% csrf_token %}
 </form>
+{% endblock %}
+
+{% block extrajs %}
+<script>
+  $(document).ready(function() {
+    $('.button-collapse').sideNav();
+		$('.collapsible').collapsible();
+  })
+</script>
 {% endblock %}
