@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block content %}
-<h3 class='oswald' style='text-align: center;'>{{ action|title }} {{ organization.name}} Member</h3>
+<h3 class='header-font' style='text-align: center;'>{{ action|title }} {{ organization.name}} Member</h3>
 
 <form class='org-form' method="POST" action="." enctype="multipart/form-data">
 	<input type="hidden" name="action" value="save"/>

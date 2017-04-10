@@ -17,7 +17,7 @@
 
 {% block content %}
 <div class='booking-box'>
-  <h3 class='oswald' style='text-align:center; color:black;'>Book a Meeting Room</h3>
+  <h3 class='header-font' style='text-align:center; color:black;'>Book a Meeting Room</h3>
   <br />
   <form id='booking-reqs' action='#' method='GET'>
     <table>
@@ -77,7 +77,7 @@
       <div class='row'>
         {% if room.image %}
           <div class='col s1'>
-            <h5 class='oswald' style='color:RGBA(66, 98, 113, 1.00);'>{{ room.name }}</h5>
+            <h5 class='header-font' style='color:RGBA(66, 98, 113, 1.00);'>{{ room.name }}</h5>
             <p>Floor {{room.floor}}</p>
             <button class='btn room-show' id='{{ room.id }}'>More Info</button>
             <button class='btn room-close'>Hide Info</button>
@@ -87,7 +87,7 @@
           </div>
         {% else %}
         <div class='col s2'>
-          <h5 class='oswald' style='color:RGBA(66, 98, 113, 1.00);'>{{ room.name }}</h5>
+          <h5 class='header-font' style='color:RGBA(66, 98, 113, 1.00);'>{{ room.name }}</h5>
           <p>Floor {{room.floor}}</p>
           <button class='btn room-show' id='{{ room.id }}'>More Info</button>
           <button class='btn room-close'>Hide Info</button>

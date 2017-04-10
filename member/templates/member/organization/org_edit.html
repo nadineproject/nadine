@@ -16,7 +16,7 @@
 {% endblock %}
 
 {% block content %}
-<h3 class='oswald' style='text-align: center;'>Edit {{ organization.name}}</h3>
+<h3 class='header-font' style='text-align: center;'>Edit {{ organization.name}}</h3>
 {% if page_message %}
 	<div>
 		<p style='color:red;text-align:center;'>
@@ -108,7 +108,7 @@
 			</td>
 		</tr>
 	</table>
-	<h5 class='oswald links-header'>Links</h5>
+	<h5 class='header-font links-header'>Links</h5>
 	{{ org_link_formset.management_form }}
 	{% for link_form in org_link_formset %}
 	<div class='link-formset row'>

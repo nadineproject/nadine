@@ -5,16 +5,16 @@
 {% block content %}
 <h4>Document Preview and Upload</h4>
 <div style='width:50%; margin-top:2%;'>
-  <h6>Preview Document</h6>
-  <select>
+  <h5>Preview Document</h5>
+  <select style='margin-top: 2%;'>
     <option disabled></option>
     {% for doc in docs %}
       <option>{{ doc }}</option>
     {% endfor %}
   </select>
-  <button onclick='preview()'>Preview</button>
+  <button style='margin-top: 2%;' class='btn preview-btn' onclick='preview()'>Preview</button>
 </div>
-<h6>Upload New Document</h6>
+<h5>Upload New Document</h5>
 <form action='.' method='POST'>
   <table>
     <tr>

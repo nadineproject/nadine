@@ -79,7 +79,7 @@
 <div class='right-profile col s12 m8 l8'>
   <div class='basic-info'>
     <div class='row'>
-      <h2 class='col s9 oswald' id='prof-name'>{{ user.get_full_name }}</h2>
+      <h2 class='col s9 header-font' id='prof-name'>{{ user.get_full_name }}</h2>
       {% if can_edit %}
         <a class='col s1 tooltipped' data-position="bottom" data-tooltip="Edit Profile" href="{% url 'member:profile:edit' user.username %}"><img id='edit' src="{% static 'img/edit.png' %}" alt='edit-icon'/></a>
       {% endif %}

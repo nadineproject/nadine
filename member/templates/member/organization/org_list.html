@@ -16,7 +16,7 @@
 {% endblock %}
 
 {% block content %}
-<h3 class='oswald' style='text-align:center;'>Organizations at {{ site.name }}</h3>
+<h3 class='header-font' style='text-align:center;'>Organizations at {{ site.name }}</h3>
 <div class='ui-widget row'>
 	<form class='col s12 m7 l7 offset-m6 offset-l6' id='org-search-form' action="." method='POST'>
 		{% csrf_token %}

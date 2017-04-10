@@ -132,10 +132,14 @@ def motd(request):
 @staff_member_required
 def document_upload(request):
     doc_form = DocUploadForm()
+
+    # To be used to preview uploaded docs
     docs = FileUpload.objects.values_list('document_type', flat=True).distinct()
+
     if request.method == 'POST':
         doc_form = DocUploadForm(request.POST)
         if doc_form.is_valid():
+            # Currently not working as not attached to any model
             doc_form.save()
             return HttpResponseRedirect(reverse('staff:tasks:todo'))
     context = {

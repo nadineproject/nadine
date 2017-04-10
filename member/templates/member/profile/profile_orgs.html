@@ -2,7 +2,7 @@
   Note:  The jquery on this page will not work if loaded outside the profile page.
 {% endcomment %}
 
-<h3 class='oswald'>Current Organizations</h3>
+<h3 class='header-font'>Current Organizations</h3>
 {% if current_org_memberships %}
 <table class='current-orgs'>
   <thead>
@@ -29,7 +29,7 @@
 {% endif %}
 
 {% if past_org_memberships %}
-<h3 class='oswald'>Past Organizations</h3>
+<h3 class='header-font'>Past Organizations</h3>
 <table class='past-orgs'>
   <thead>
     <tr>
@@ -53,7 +53,7 @@
 {% endif %}
 
 <div class="ui-widget">
-  <h3 class='oswald'>Add Organization</h3>
+  <h3 class='header-font'>Add Organization</h3>
   <form id='org-add-form' action="{% url 'member:org:add' %}" method="POST">
     {% csrf_token %}
     <input id="org_input" name="org" type='text' style='width:50%; margin-right:5%;' placeholder='Acme Corp'/>

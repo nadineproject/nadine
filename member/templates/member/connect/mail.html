@@ -25,7 +25,7 @@
 {% endblock %}
 
 {% block content %}
-<h3 class='oswald centered'>Mailing lists</h3>
+<h3 class='font centered'>Mailing lists</h3>
 
 <div id="tabs">
 
@@ -39,7 +39,7 @@
 <div id="tabs-{{forloop.counter}}" class="plan-section">
 <ul>
 	<li class='mail-content'>
-		<h4 class='oswald'>
+		<h4 class='font'>
 			{{ mailing_list.name }}
 			{% if not mailing_list.moderator_controlled %} - {{ mailing_list.email_address}}
     			{% if is_subscriber %}
@@ -53,7 +53,7 @@
 		</h4>
 		<div class="list_desc">{{ mailing_list.description }}</div>
 
-		<h5 class='oswald'>Recent Messages</h5>
+		<h5 class='header-font'>Recent Messages</h5>
 		<div class="list_mail" id="recents-{{ mailing_list.id }}">
 			<table class="msg_table">
 				<tr>
@@ -81,7 +81,7 @@
 </div>
 
 {% if not user.mailing_list_memberships %}
-<h4 class='oswald'>There are no mailing lists configured for this site.</h4>
+<h4 class='header-font'>There are no mailing lists configured for this site.</h4>
 {% endif %}
 
 <form action="." method='post' id="mailing-list-subscription-form">{{ mailing_list_subscription_form }}{% csrf_token %}</form>

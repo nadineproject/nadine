@@ -1,6 +1,6 @@
  {% load static %}
 
- <h3 class='oswald' style='text-align: center;'>Edit Your Profile Image:</h3>
+ <h3 class='header-font' style='text-align: center;'>Edit Your Profile Image:</h3>
 
  <form id="profile_image_form" action="{% url 'member:profile:edit_photo' user.username %}" method="POST" enctype="multipart/form-data">
    <input type='hidden' name='username' value='{{ user.username }}'  />

@@ -83,7 +83,7 @@
 <div class='org-right-profile col s12 m8 l9'>
 	<div class='org-info'>
 		<div class='row'>
-			<h3 class='oswald col s9' style='margin-bottom:1%;'>{{ organization.name }}</h3>
+			<h3 class='header-font col s9' style='margin-bottom:1%;'>{{ organization.name }}</h3>
 			<div>
 				{% if organization.locked %}
 					<div class='col s1 tooltipped' data-position="bottom" data-tooltip='Locked'>
@@ -105,7 +105,7 @@
 		</div>
 		{% if organization.bio %}
 			<div class='col s12'>
-				<h5 class='oswald' style='color:black;'>Bio</h5>
+				<h5 class='header-font' style='color:black;'>Bio</h5>
 				<p style="margin:2em;">{{ organization.bio }} </p>
 			</div>
 		{% endif %}
@@ -117,7 +117,7 @@
 		</div>
 		{% endwith %}
 
-		<h5 class='oswald org-members col s12'>Organization Members</h5>
+		<h5 class='header-font org-members col s12'>Organization Members</h5>
 		<table>
 			<tr>
 				<th>Member</th>
@@ -182,7 +182,7 @@
 		{% endif %}
 
 		<!-- {% if organization.notes %}
-			<h5 class='oswald' style='color:black;'>Notes</h5>
+			<h5 class='header-font' style='color:black;'>Notes</h5>
 			<ul>
 				{% for n in organization.notes %}
 					<li>{{ n.created_ts }} {{ n.created_by }}: {{ n.note }}</li>
