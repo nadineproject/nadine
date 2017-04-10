@@ -2,6 +2,7 @@ from django.conf.urls import url
 
 from interlink import views
 
+app_name = 'interlink'
 urlpatterns = [
     url(r'^$', views.home, name='home'),
     url(r'^messages/(?P<list_id>[^/]+)/$', views.list_messages, name='messages'),

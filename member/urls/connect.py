@@ -3,6 +3,7 @@ from django.shortcuts import redirect
 
 from member.views import connect
 
+app_name = 'member'
 urlpatterns = [
     url(r'^notifications/$', connect.notifications, name='notifications'),
     url(r'^notifications/add/(?P<username>[^/]+)/$', connect.add_notification, name='add_notification'),

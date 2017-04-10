@@ -2,6 +2,7 @@ from django.conf.urls import include, url
 
 from staff.views import settings
 
+app_name = 'staff'
 urlpatterns = [
      url(r'^$', settings.index, name='index'),
      url(r'^packages/$', settings.membership_packages, name='membership_packages'),

@@ -2,6 +2,7 @@ from django.conf.urls import include, url
 
 from staff.views import stats
 
+app_name = 'staff'
 urlpatterns = [
     url(r'^daily/$', stats.daily, name='daily'),
     url(r'^history/$', stats.history, name='history'),

@@ -11,6 +11,7 @@ from django.contrib.auth.signals import user_logged_in
 from django.db import connection
 from django.db.models import Min, Max
 from django.utils.timezone import localtime, now
+from django.conf import settings
 
 from nadine.models.membership import Membership
 from nadine.utils import network
@@ -18,7 +19,7 @@ from nadine.utils import network
 logger = logging.getLogger(__name__)
 
 class UserDevice(models.Model):
-    user = models.ForeignKey(User, blank=True, null=True, unique=False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, unique=False, on_delete=models.CASCADE)
     device_name = models.CharField(max_length=32, blank=True, null=True)
     mac_address = models.CharField(max_length=17, blank=False, null=False, unique=True, db_index=True)
     ignore = models.BooleanField(default=False)
@@ -38,7 +39,7 @@ class UserDevice(models.Model):
 
 class UserRemoteAddr(models.Model):
     logintime = models.DateTimeField(blank=False)
-    user = models.ForeignKey(User, blank=False, null=False, unique=False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=False, null=False, unique=False, on_delete=models.CASCADE)
     ip_address = models.GenericIPAddressField(blank=False, null=False)
 
     class Meta:
@@ -108,7 +109,7 @@ class ArpLog_Manager(models.Manager):
 
 class ArpLog(models.Model):
     runtime = models.DateTimeField(blank=False, db_index=True)
-    device = models.ForeignKey(UserDevice, null=False)
+    device = models.ForeignKey(UserDevice, null=False, on_delete=models.CASCADE)
     ip_address = models.GenericIPAddressField(blank=False, null=False, db_index=True)
 
     objects = ArpLog_Manager()
@@ -128,5 +129,6 @@ class ImportLog(models.Model):
 
     def __str__(self):
         return '%s: %s = %s' % (self.created, self.file_name, self.success)
+
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

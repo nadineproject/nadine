@@ -3,6 +3,7 @@ from django.shortcuts import redirect
 
 from member.views import tags
 
+app_name = 'member'
 urlpatterns = [
     url(r'^list/(?P<type>[^/]+)/$', tags.tag_list, name='list'),
     url(r'^cloud/(?P<type>[^/]+)/$', tags.tag_cloud, name='cloud'),

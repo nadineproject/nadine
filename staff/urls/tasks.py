@@ -2,6 +2,7 @@ from django.conf.urls import include, url
 
 from staff.views import tasks
 
+app_name = 'staff'
 urlpatterns = [
      url(r'^$', tasks.todo, name='todo'),
      url(r'^(?P<key>[^/]+)/$', tasks.detail, name='detail'),

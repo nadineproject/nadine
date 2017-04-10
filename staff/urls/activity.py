@@ -2,6 +2,7 @@ from django.conf.urls import include, url
 
 from staff.views import activity
 
+app_name = 'staff'
 urlpatterns = [
     url(r'^graph/$', activity.graph, name='graph'),
     url(r'^list/$', activity.list, name='list'),

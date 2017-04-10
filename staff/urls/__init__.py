@@ -3,6 +3,7 @@ from django.conf.urls import include, url
 
 from staff.views import core
 
+app_name = 'staff'
 urlpatterns = [
     url(r'^$', lambda r: redirect('staff:tasks:todo'), name="home"),
 

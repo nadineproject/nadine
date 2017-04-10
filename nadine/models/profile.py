@@ -277,7 +277,7 @@ class UserQueryHelper():
 class UserProfile(models.Model):
     MAX_PHOTO_SIZE = 1024
 
-    user = models.OneToOneField(User, blank=False, related_name="profile")
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, blank=False, related_name="profile", on_delete=models.CASCADE)
     phone = PhoneNumberField(blank=True, null=True)
     phone2 = PhoneNumberField("Alternate Phone", blank=True, null=True)
     address1 = models.CharField(max_length=128, blank=True)
@@ -288,10 +288,10 @@ class UserProfile(models.Model):
     bio = models.TextField(blank=True, null=True)
     public_profile = models.BooleanField(default=False)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default="U")
-    howHeard = models.ForeignKey(HowHeard, blank=True, null=True)
-    #referred_by = models.ForeignKey(User, verbose_name="Referred By", related_name="referral", blank=True, null=True)
-    industry = models.ForeignKey(Industry, blank=True, null=True)
-    neighborhood = models.ForeignKey(Neighborhood, blank=True, null=True)
+    howHeard = models.ForeignKey(HowHeard, blank=True, null=True, on_delete=models.CASCADE)
+    #referred_by = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="Referred By", related_name="referral", blank=True, null=True, on_delete=models.CASCADE)
+    industry = models.ForeignKey(Industry, blank=True, null=True, on_delete=models.CASCADE)
+    neighborhood = models.ForeignKey(Neighborhood, blank=True, null=True, on_delete=models.CASCADE)
     has_kids = models.NullBooleanField(blank=True, null=True)
     self_employed = models.NullBooleanField(blank=True, null=True)
     last_modified = models.DateField(auto_now=True, editable=False)
@@ -710,7 +710,7 @@ class EmailAddress(models.Model):
 
     Pulled from https://github.com/scott2b/django-multimail
     """
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     email = models.EmailField(max_length=100, unique=True)
     created_ts = models.DateTimeField(auto_now_add=True)
     verif_key = models.CharField(max_length=40)
@@ -802,7 +802,7 @@ class EmailAddress(models.Model):
 
 
 class EmergencyContact(models.Model):
-    user = models.OneToOneField(User, blank=False)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, blank=False, on_delete=models.CASCADE)
     name = models.CharField(max_length=254, blank=True)
     relationship = models.CharField(max_length=254, blank=True)
     phone = PhoneNumberField(blank=True, null=True)
@@ -814,7 +814,7 @@ class EmergencyContact(models.Model):
 
 
 class XeroContact(models.Model):
-    user = models.OneToOneField(User, related_name="xero_contact")
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="xero_contact", on_delete=models.CASCADE)
     xero_id = models.CharField(max_length=64)
     last_sync = models.DateTimeField(null=True, blank=True)
 
@@ -824,7 +824,7 @@ class XeroContact(models.Model):
 
 class SentEmailLog(models.Model):
     created = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(User, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)
     recipient = models.EmailField()
     subject = models.CharField(max_length=128, blank=True, null=True)
     success = models.NullBooleanField(blank=False, null=False, default=False)
@@ -834,7 +834,7 @@ class SentEmailLog(models.Model):
 
 
 class SpecialDay(models.Model):
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     year = models.PositiveSmallIntegerField(blank=True, null=True)
     month = models.PositiveSmallIntegerField(blank=True, null=True)
     day = models.PositiveSmallIntegerField(blank=True, null=True)
@@ -842,9 +842,9 @@ class SpecialDay(models.Model):
 
 
 class MemberNote(models.Model):
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, null=True, related_name='+')
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, related_name='+', on_delete=models.CASCADE)
     note = models.TextField(blank=True, null=True)
 
     def __str__(self):
@@ -892,12 +892,12 @@ class FileUpload(models.Model):
 
     objects = FileUploadManager()
     uploadTS = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(User, blank=False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=False, on_delete=models.CASCADE)
     name = models.CharField(max_length=64)
     content_type = models.CharField(max_length=64)
     file = models.FileField(upload_to=user_file_upload_path, blank=False)
     document_type = models.CharField(max_length=200, choices=DOC_TYPES, default=None, null=True, blank=True)
-    uploaded_by = models.ForeignKey(User, related_name="uploaded_by")
+    uploaded_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="uploaded_by", on_delete=models.CASCADE)
 
     def is_pdf(self):
         if not self.content_type:

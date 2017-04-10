@@ -105,8 +105,8 @@ class MembershipPackage(models.Model):
 
 
 class SubscriptionDefault(models.Model):
-    package = models.ForeignKey(MembershipPackage, related_name="defaults")
-    resource = models.ForeignKey(Resource, null=True)
+    package = models.ForeignKey(MembershipPackage, related_name="defaults", on_delete=models.CASCADE)
+    resource = models.ForeignKey(Resource, null=True, on_delete=models.CASCADE)
     allowance = models.IntegerField(default=0)
     monthly_rate = models.DecimalField(decimal_places=2, max_digits=9)
     overage_rate = models.DecimalField(decimal_places=2, max_digits=9)
@@ -169,7 +169,7 @@ class MembershipManager(models.Manager):
 class Membership(models.Model):
     objects = MembershipManager()
     bill_day = models.SmallIntegerField(default=1)
-    package = models.ForeignKey(MembershipPackage, null=True, blank=True)
+    package = models.ForeignKey(MembershipPackage, null=True, blank=True, on_delete=models.CASCADE)
     # subscriptions = FK on ResourceSubscription
 
     @property
@@ -639,14 +639,14 @@ class Membership(models.Model):
 
 
 class IndividualMembership(Membership):
-    user = models.OneToOneField(User, related_name="membership")
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="membership", on_delete=models.CASCADE)
 
     def __str__(self):
         return '%s: %s' % (self.user, self.subscriptions.all())
 
 
 class OrganizationMembership(Membership):
-    organization = models.OneToOneField(Organization, related_name="membership")
+    organization = models.OneToOneField(Organization, related_name="membership", on_delete=models.CASCADE)
 
     def __str__(self):
         return '%s: %s' % (self.organization, self.subscriptions.all())
@@ -683,17 +683,16 @@ class ResourceSubscription(models.Model):
     objects = SubscriptionManager()
 
     created_ts = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, related_name="+", null=True, blank=True)
-    resource = models.ForeignKey(Resource)
-    membership = models.ForeignKey(Membership, related_name="subscriptions")
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="+", null=True, blank=True, on_delete=models.CASCADE)
+    resource = models.ForeignKey(Resource, on_delete=models.CASCADE)
+    membership = models.ForeignKey(Membership, related_name="subscriptions", on_delete=models.CASCADE)
     description = models.CharField(max_length=64, blank=True, null=True)
     allowance = models.IntegerField(default=0)
     start_date = models.DateField(db_index=True)
     end_date = models.DateField(blank=True, null=True, db_index=True)
     monthly_rate = models.DecimalField(decimal_places=2, max_digits=9)
     overage_rate = models.DecimalField(decimal_places=2, max_digits=9)
-    # default = models.ForeignKey(SubscriptionDefault, null=True, blank=True)
-    paid_by = models.ForeignKey(User, null=True, blank=True)
+    paid_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         sfx = ""
@@ -780,7 +779,7 @@ class ResourceSubscription(models.Model):
 
 
 class SecurityDeposit(models.Model):
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     received_date = models.DateField()
     returned_date = models.DateField(blank=True, null=True)
     amount = models.PositiveSmallIntegerField(default=0)
@@ -840,8 +839,8 @@ class OldMembership(models.Model):
 
     """A membership level which is billed monthly"""
     objects = OldMembershipManager()
-    user = models.ForeignKey(User, related_name="+")
-    membership_plan = models.ForeignKey(MembershipPlan, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="+", on_delete=models.CASCADE)
+    membership_plan = models.ForeignKey(MembershipPlan, null=True, on_delete=models.CASCADE)
     start_date = models.DateField(db_index=True)
     end_date = models.DateField(blank=True, null=True, db_index=True)
     monthly_rate = models.IntegerField(default=0)
@@ -850,8 +849,8 @@ class OldMembership(models.Model):
     has_desk = models.BooleanField(default=False)
     has_key = models.BooleanField(default=False)
     has_mail = models.BooleanField(default=False)
-    paid_by = models.ForeignKey(User, null=True, blank=True, related_name="guest_membership")
-    new_membership = models.ForeignKey(Membership, null=True, blank=True)
+    paid_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, related_name="guest_membership", on_delete=models.CASCADE)
+    new_membership = models.ForeignKey(Membership, null=True, blank=True, on_delete=models.CASCADE)
 
     @property
     def guest_of(self):

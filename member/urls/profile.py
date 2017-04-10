@@ -3,6 +3,7 @@ from django.shortcuts import redirect
 
 from member.views import profile
 
+app_name = 'member'
 urlpatterns = [
     url(r'^$', profile.profile_redirect, name='redirect'),
     url(r'^(?P<username>[^/]+)/$', profile.profile, name='view'),

@@ -84,7 +84,7 @@ class URLType(models.Model):
 
 
 class Website(models.Model):
-    url_type = models.ForeignKey(URLType)
+    url_type = models.ForeignKey(URLType, on_delete=models.CASCADE)
     url = models.URLField(blank=True, null=True)
 
     def __str__(self):

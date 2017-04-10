@@ -3,6 +3,7 @@ from django.conf.urls import url, include
 
 from comlink import views
 
+app_name = 'comlink'
 urlpatterns = [
     url(r'^$', views.home, name="home"),
     url(r'^inbox/(?P<address>[\w.%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4})/$', views.inbox, name='inbox'),

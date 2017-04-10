@@ -3,6 +3,7 @@ from django.shortcuts import redirect
 
 from member.views import events
 
+app_name = 'member'
 urlpatterns = [
     url(r'^events/$', events.events_google, name='events'),
     url(r'^booking/create/$', events.create_booking, name='create_booking'),

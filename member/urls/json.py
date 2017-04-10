@@ -3,6 +3,7 @@ from django.shortcuts import redirect
 
 from member.views import json
 
+app_name = 'member'
 urlpatterns = [
     url(r'^user_search/$', json.user_search, name='user_search'),
     url(r'^user_tags/$', json.user_tags, name='user_tags'),

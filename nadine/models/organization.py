@@ -57,9 +57,9 @@ def org_photo_path(instance, filename):
 
 class Organization(models.Model):
     created_ts = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, related_name="+")
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="+", on_delete=models.CASCADE)
     name = models.CharField(max_length=64, unique=True)
-    lead = models.ForeignKey(User, null=True, blank=True)
+    lead = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE)
     blurb = models.CharField(max_length=112, blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
     photo = models.ImageField(upload_to=org_photo_path, blank=True, null=True)
@@ -155,8 +155,8 @@ class Organization(models.Model):
 
 class OrganizationMember(models.Model):
     """ A record of a user being part of an organization """
-    organization = models.ForeignKey(Organization)
-    user = models.ForeignKey(User)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField(max_length=128, null=True, blank=True)
     start_date = models.DateField()
     end_date = models.DateField(null=True, blank=True)
@@ -187,8 +187,8 @@ class OrganizationMember(models.Model):
 
 class OrganizationNote(models.Model):
     created_ts = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, related_name="+")
-    organization = models.ForeignKey(Organization)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="+", on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     private = models.BooleanField(default=True)
     note = models.TextField()
 
