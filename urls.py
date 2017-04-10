@@ -14,6 +14,7 @@ admin.autodiscover()
 
 favicon_view = RedirectView.as_view(url='/static/img/favicon.ico', permanent=True)
 
+app_name = 'nadine'
 urlpatterns = [
     url(r'^$', views.index, name='site_index'),
 
@@ -43,8 +44,7 @@ urlpatterns = [
 
     url(r'^admin/login/$', login, {'template_name': 'login.html'}, name='login'),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-    url(r'^admin/', include(admin.site.urls)),
-
+    url(r'^admin/', admin.site.urls),
 ]
 
 if settings.DEBUG:
