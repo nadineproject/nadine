@@ -1,27 +1,39 @@
 {% extends "tablet/t_base.html" %}
-{% load staticfiles %}
+{% load static %}
 
 {% block nav-members %} class="ui-btn-active" {% endblock %}
 
 {% block content %}
-	<h2>Sign Documents</h2>
+	<h2>Documents for {{ user.get_full_name }}</h2>
 	<div style="margin-left: 3em;">
 	<table style="border: 1px solid black;">
 		<tr>
+			<th></th>
 			<th>Document</th>
-			<th>Status</th>
+			<th>Date</th>
+			<th></th>
 		</tr>
-	{% for key, description in document_types %}
+	{% for doc in documents %}
 		<tr>
-			<td style="vertical-align:middle;">{{ description }}</td>
-			<td style="text-align: center;">
-				{% if key in signed_docs %}
+			<td style="vertical-align:middle; text-align:center;">
+				{% if doc.file %}
 					<img src="{% static 'green_check.png' %}" height="32px">
+				{% endif %}
+			</td>
+
+			<td style="vertical-align:middle;">
+				{% if doc.file %}
+					<a href="{% get_media_prefix %}{{ doc.file.file.name }}">{{ doc.description }}</a>
 				{% else %}
+					{{ doc.description }}
+				{% endif %}
+			</td>
+
+			<td style="vertical-align:middle;">{{ doc.file.uploadTS|date:"M d, Y" }}</td>
+			<th>
 					<input type="button"
 						value="Sign"
-						onClick="parent.location='{% url 'tablet:sig_capture' user.username key %}'">
-				{% endif %}
+						onClick="parent.location='{% url 'tablet:sig_capture' user.username doc.key %}'" />
 			</th>
 		</tr>
 	{% endfor %}

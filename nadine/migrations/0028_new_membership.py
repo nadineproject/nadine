@@ -167,7 +167,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=64, unique=True)),
-                ('key', models.CharField(max_length=8, blank=True, null=True)),
+                ('key', models.CharField(max_length=8, blank=True, null=True, unique=True)),
                 ('tracker_class', models.CharField(max_length=64, blank=True, null=True)),
             ],
         ),

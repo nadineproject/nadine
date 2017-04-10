@@ -144,7 +144,6 @@ INSTALLED_APPS = [
     'interlink',
     'arpwatch',
     'tablet',
-    'easy_pdf',
     'jsignature',
     'taggit_templatetags2',
     'taggit',
