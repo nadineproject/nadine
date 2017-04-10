@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.core import management
 from django.contrib.auth.models import User
 from django.conf import settings
-from django.utils import timezone
+from django.utils.timezone import localtime, now
 from nadine.models import *
 
 class RoomTestCase(TestCase):
@@ -19,7 +19,7 @@ class RoomTestCase(TestCase):
         # With these 2 events, Room1 is booked for the next 5 hours and Room2 is available.
 
         # Event in Room1 starting today at 11AM for the 3 hours.
-        self.start1 = timezone.now().replace(hour=11, minute=0, tzinfo=timezone.get_current_timezone())
+        self.start1 = localtime(now()).replace(hour=11, minute=0)
         self.end1 = self.start1 + timedelta(hours=3)
         self.event1 = Event.objects.create(user=self.user1, room=self.room1, start_ts=self.start1, end_ts=self.end1)
 
@@ -54,8 +54,8 @@ class RoomTestCase(TestCase):
         self.assertTrue(rooms[0] == self.room2)
 
     def test_available_overlap(self):
-        start = timezone.now() + timedelta(hours=1)
-        end = timezone.now() + timedelta(hours=2)
+        start = localtime(now()) + timedelta(hours=1)
+        end = localtime(now()) + timedelta(hours=2)
         rooms = Room.objects.available(start=start, end=end)
         self.assertTrue(len(rooms) == 1)
         self.assertTrue(self.room2 in rooms)
@@ -86,7 +86,7 @@ class RoomTestCase(TestCase):
 
     def test_available_av(self):
         # Look for rooms with AV starting tomorrow
-        tomorrow = timezone.now() + timedelta(days=1)
+        tomorrow = localtime(now()) + timedelta(days=1)
         rooms = Room.objects.available(start=tomorrow, has_av=True)
         self.assertEqual(len(rooms), 1)
         self.assertEqual(self.room2, rooms[0])
@@ -98,7 +98,7 @@ class RoomTestCase(TestCase):
 
     def test_available_phone(self):
         # Look for rooms with a phoen starting tomorrow
-        tomorrow = timezone.now() + timedelta(days=1)
+        tomorrow = localtime(now()) + timedelta(days=1)
         rooms = Room.objects.available(start=tomorrow, has_phone=True)
         self.assertEqual(len(rooms), 1)
         self.assertEqual(self.room2, rooms[0])
