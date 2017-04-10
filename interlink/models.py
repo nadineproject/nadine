@@ -220,7 +220,7 @@ class IncomingMailManager(models.Manager):
 class IncomingMail(models.Model):
 
     """An email as popped for a mailing list"""
-    mailing_list = models.ForeignKey(MailingList, related_name='incoming_mails')
+    mailing_list = models.ForeignKey(MailingList, related_name='incoming_mails', on_delete=models.CASCADE)
     origin_address = models.EmailField()
     sent_time = models.DateTimeField()
     subject = models.TextField(blank=True)
@@ -228,7 +228,7 @@ class IncomingMail(models.Model):
     html_body = models.TextField(blank=True, null=True)
     original_message = models.TextField(blank=True)
 
-    owner = models.ForeignKey(User, blank=True, null=True, default=None)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, default=None, on_delete=models.CASCADE)
 
     STATES = (('raw', 'raw'), ('moderate', 'moderate'), ('send', 'send'), ('sent', 'sent'), ('reject', 'reject'))
     state = models.CharField(max_length=10, choices=STATES, default='raw')
@@ -361,9 +361,9 @@ class OutgoingMailManager(models.Manager):
 class OutgoingMail(models.Model):
 
     """Emails which are consumed by the interlink.tasks.EmailTask"""
-    mailing_list = models.ForeignKey(MailingList, related_name='outgoing_mails')
+    mailing_list = models.ForeignKey(MailingList, related_name='outgoing_mails', on_delete=models.CASCADE)
     moderators_only = models.BooleanField(default=False)
-    original_mail = models.ForeignKey(IncomingMail, blank=True, null=True, default=None, help_text='The incoming mail which caused this mail to be sent')
+    original_mail = models.ForeignKey(IncomingMail, blank=True, null=True, default=None, help_text='The incoming mail which caused this mail to be sent', on_delete=models.CASCADE)
     subject = models.TextField(blank=True)
     body = models.TextField(blank=True, null=True)
     html_body = models.TextField(blank=True, null=True)

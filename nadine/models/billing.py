@@ -8,6 +8,7 @@ from django.db.models.functions import Coalesce
 from django.utils.timezone import localtime, now
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
+from django.conf import settings
 
 from nadine.models.membership import Membership
 
@@ -31,9 +32,9 @@ class BillManager(models.Manager):
 class UserBill(models.Model):
     objects = BillManager()
     created_ts = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, related_name="+", null=True, blank=True)
-    user = models.ForeignKey(User, related_name="bills")
-    membership = models.ForeignKey(Membership, related_name="bills", null=True, blank=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="+", null=True, blank=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="bills", on_delete=models.CASCADE)
+    membership = models.ForeignKey(Membership, related_name="bills", null=True, blank=True, on_delete=models.CASCADE)
     period_start = models.DateField()
     period_end = models.DateField()
     due_date = models.DateField()
@@ -100,7 +101,7 @@ class UserBill(models.Model):
 
 
 class BillLineItem(models.Model):
-    bill = models.ForeignKey(UserBill, related_name="line_items", null=True)
+    bill = models.ForeignKey(UserBill, related_name="line_items", null=True, on_delete=models.CASCADE)
     description = models.CharField(max_length=200)
     amount = models.DecimalField(max_digits=7, decimal_places=2, default=0)
     custom = models.BooleanField(default=False)
@@ -114,8 +115,8 @@ class CoworkingDayLineItem(BillLineItem):
 
 
 class Payment(models.Model):
-    bill = models.ForeignKey(UserBill, null=True)
-    user = models.ForeignKey(User, null=True)
+    bill = models.ForeignKey(UserBill, null=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)
     payment_date = models.DateTimeField(auto_now_add=True)
     payment_service = models.CharField(max_length=200, blank=True, null=True, help_text="e.g., Stripe, Paypal, Dwolla, etc. May be empty")
     payment_method = models.CharField(max_length=200, blank=True, null=True, help_text="e.g., Visa, cash, bank transfer")

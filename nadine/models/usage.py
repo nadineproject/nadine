@@ -22,10 +22,10 @@ PAYMENT_CHOICES = (
 
 
 class CoworkingDay(models.Model):
-    user = models.ForeignKey(User, unique_for_date="visit_date")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, unique_for_date="visit_date", on_delete=models.CASCADE)
     visit_date = models.DateField("Date")
     payment = models.CharField("Payment", max_length=5, choices=PAYMENT_CHOICES)
-    paid_by = models.ForeignKey(User, blank=True, null=True, related_name="guest_day")
+    paid_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="guest_day", on_delete=models.CASCADE)
     note = models.CharField("Note", max_length=128, blank="True")
     created_ts = models.DateTimeField(auto_now_add=True)
 
@@ -54,14 +54,14 @@ post_save.connect(sign_in_callback, sender=CoworkingDay)
 
 
 class Event(models.Model):
-    user = models.ForeignKey(User)
-    room = models.ForeignKey('Room', null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    room = models.ForeignKey('Room', null=True, on_delete=models.CASCADE)
     created_ts = models.DateTimeField(auto_now_add=True)
     start_ts = models.DateTimeField(verbose_name="Start time")
     end_ts = models.DateTimeField(verbose_name="End time")
     description = models.CharField(max_length=128, null=True)
     charge = models.DecimalField(decimal_places=2, max_digits=9, null=True)
-    paid_by = models.ForeignKey(User, blank=True, null=True, related_name="guest_event")
+    paid_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="guest_event", on_delete=models.CASCADE)
     is_public = models.BooleanField(default=False)
 
     def __str__(self):

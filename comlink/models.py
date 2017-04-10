@@ -126,12 +126,11 @@ class EmailBaseModel(models.Model):
 
 
 class IncomingEmail(EmailBaseModel):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, blank=True, null=True, verbose_name=_("user"))
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, verbose_name=_("user"), on_delete=models.CASCADE)
 
 
 class Attachment(models.Model):
-    email = models.ForeignKey(IncomingEmail, verbose_name=_("email"))
+    email = models.ForeignKey(IncomingEmail, verbose_name=_("email"), on_delete=models.CASCADE)
     file = models.FileField(_("file"), upload_to=UPLOAD_TO)
     content_id = models.CharField(_("Content-ID"), max_length=255, blank=True,
                                   help_text=_("Content-ID (CID) referencing this attachment."))

@@ -42,13 +42,13 @@ class OldBill(models.Model):
 
     """A record of what fees a Member owes."""
     bill_date = models.DateField(blank=False, null=False)
-    user = models.ForeignKey(User, related_name="old_bill")
+    user = models.ForeignKey(User, related_name="old_bill", on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=7, decimal_places=2)
-    membership = models.ForeignKey('OldMembership', blank=True, null=True)
+    membership = models.ForeignKey('OldMembership', blank=True, null=True, on_delete=models.CASCADE)
     dropins = models.ManyToManyField('CoworkingDay', related_name='bills')
     guest_dropins = models.ManyToManyField('CoworkingDay', related_name='guest_bills')
     new_member_deposit = models.BooleanField(default=False, blank=False, null=False)
-    paid_by = models.ForeignKey(User, blank=True, null=True, related_name='guest_bills')
+    paid_by = models.ForeignKey(User, blank=True, null=True, related_name='guest_bills', on_delete=models.CASCADE)
     in_progress = models.BooleanField(default=False, blank=False, null=False)
 
     @property
@@ -74,7 +74,7 @@ class Transaction(models.Model):
 
     """A record of charges for a user."""
     transaction_date = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     TRANSACTION_STATUS_CHOICES = (('open', 'Open'), ('closed', 'Closed'))
     status = models.CharField(max_length=10, choices=TRANSACTION_STATUS_CHOICES, blank=False, null=False, default='open')
     bills = models.ManyToManyField(OldBill, related_name='transactions')

@@ -196,7 +196,7 @@ class Keymaster(models.Model):
 class Door(models.Model):
     name = models.CharField(max_length=16, unique=True)
     door_type = models.CharField(max_length=16, choices=DoorTypes.CHOICES)
-    keymaster = models.ForeignKey(Keymaster)
+    keymaster = models.ForeignKey(Keymaster, on_delete=models.CASCADE)
     username = models.CharField(max_length=32)
     password = models.CharField(max_length=32)
     ip_address = models.GenericIPAddressField()
@@ -218,9 +218,9 @@ class Door(models.Model):
 
 
 class DoorCode(models.Model):
-    created_by = models.ForeignKey(User, related_name="+")
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="+", on_delete=models.CASCADE)
     modified_ts = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     code = models.CharField(max_length=16, unique=True)
 
     def get_last_event(self):
@@ -254,8 +254,8 @@ class DoorEvent(models.Model):
     objects = DoorEventManager()
 
     timestamp = models.DateTimeField(null=False)
-    door = models.ForeignKey(Door, null=False)
-    user = models.ForeignKey(User, null=True, db_index=True)
+    door = models.ForeignKey(Door, null=False, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, db_index=True, on_delete=models.CASCADE)
     code = models.CharField(max_length=16, null=True)
     event_type = models.CharField(max_length=1, choices=DoorEventTypes.CHOICES, default=DoorEventTypes.UNKNOWN, null=False)
     event_description = models.CharField(max_length=256)
@@ -266,7 +266,7 @@ class DoorEvent(models.Model):
 class GatekeeperLog(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     resolved = models.BooleanField(default=False)
-    keymaster = models.ForeignKey(Keymaster)
+    keymaster = models.ForeignKey(Keymaster, on_delete=models.CASCADE)
     message = models.TextField()
 
     def __str__(self):

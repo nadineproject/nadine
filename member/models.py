@@ -57,6 +57,6 @@ class HelpText(models.Model):
 
 class UserNotification(models.Model):
     created = models.DateTimeField(auto_now_add=True)
-    notify_user = models.ForeignKey(User, related_name="notify", blank=False)
-    target_user = models.ForeignKey(User, related_name="target", blank=False)
+    notify_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="notify", blank=False, on_delete=models.CASCADE)
+    target_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="target", blank=False, on_delete=models.CASCADE)
     sent_date = models.DateTimeField(blank=True, null=True, default=None)

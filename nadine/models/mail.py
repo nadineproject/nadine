@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 #     """An email as popped for a mailing list"""
 #     created_ts = models.DateTimeField(auto_now_add=True)
 #     sent_ts = models.DateTimeField()
-#     #mailing_list = models.ForeignKey(MailingList)
+#     #mailing_list = models.ForeignKey(MailingList, on_delete=models.CASCADE)
 #     raw_message = models.TextField(blank=True)
 #     to_address = models.EmailField()
 #     from_address = models.EmailField()
@@ -15,7 +15,7 @@ from django.contrib.auth.models import User
 #     body_text = models.TextField(blank=True, null=True)
 #     body_html = models.TextField(blank=True, null=True)
 #
-#     sender = models.ForeignKey(User, blank=True, null=True, default=None)
+#     sender = models.ForeignKey(User, blank=True, null=True, default=None, on_delete=models.CASCADE)
 #
 #     #STATES = (('raw', 'raw'), ('moderate', 'moderate'), ('send', 'send'), ('sent', 'sent'), ('reject', 'reject'))
 #     #state = models.CharField(max_length=10, choices=STATES, default='raw')
