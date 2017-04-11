@@ -51,8 +51,9 @@ class RoomTestCase(TestCase):
         self.assertTrue(self.room2 in rooms)
 
     def test_available_flush_start(self):
+        #Check for a room for event that ends at start of another event
         start = self.start1 - timedelta(hours=1)
-        end = start + timedelta(hours=1)
+        end = self.start1
         rooms = Room.objects.available(start=start, end=end)
         self.assertTrue(len(rooms) > 0)
         self.assertTrue(len(rooms) == 2)
@@ -60,10 +61,14 @@ class RoomTestCase(TestCase):
         self.assertTrue(self.room2 in rooms)
 
     def test_available_flush_end(self):
+        #Check for a room for event that starts at end of another event
         start = self.end2
         end = start + timedelta(hours=1)
         rooms=Room.objects.available(start=start, end=end)
         self.assertTrue(len(rooms) > 0)
+        self.assertTrue(len(rooms) == 2)
+        self.assertTrue(self.room1 in rooms)
+        self.assertTrue(self.room2 in rooms)
 
     # def test_available_middle_opening(self):
         # To run this test, comment out Event2 and uncomment out Event3
