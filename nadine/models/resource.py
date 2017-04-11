@@ -14,6 +14,8 @@ from django.utils.timezone import localtime, now, get_current_timezone
 from PIL import Image
 import logging
 
+from nadine.models.usage import Event
+
 logger = logging.getLogger(__name__)
 
 
@@ -49,10 +51,21 @@ class RoomManager(models.Manager):
         if seats != None:
             rooms = rooms.filter(seats__gte=seats)
 
-        straddling = Q(event__start_ts__lte=start, event__end_ts__gt=start)
-        sandwich = Q(event__start_ts__gte=start, event__start_ts__lt=end)
-        overlap = Q(event__start_ts__lte=start, event__end_ts__gte=end)
-        rooms = rooms.exclude(straddling| sandwich | overlap)
+        events = Event.objects.all()
+        for event in events:
+            if event.start_ts >= start and event.start_ts <= end:
+                rooms = rooms.exclude(name=event.room)
+            elif (event.start_ts <= start) and (event.end_ts > start):
+                rooms = rooms.exclude(name=event.room)
+            elif (event.start_ts <= end) and (event.end_ts > start):
+                rooms = rooms.exclude(name=event.room)
+
+        # This code looks cleaner but running into bugs currently
+        # head = Q(event__start_ts__gte=start, event__start_ts__lte=end)
+        # middle = Q(event__start_ts__lte=start, event__end_ts__gt=start)
+        # tail = Q(event__start_ts__lte=end, event__end_ts__gt=start)
+        #
+        # rooms = rooms.exclude(head | middle | tail)
 
         return rooms
 
