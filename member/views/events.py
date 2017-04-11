@@ -11,6 +11,8 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404, HttpRequest
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
+from django.utils.timezone import localtime, now
+
 
 from nadine.models.usage import CoworkingDay, Event
 from nadine.models.resource import Room
@@ -110,6 +112,8 @@ def create_booking(request):
     # Turn our date, start, and end strings into timestamps
     start_ts, end_ts, start, end = coerce_times(start, end, date)
 
+    start_ts_mil = ((time.mktime(start_ts.timetuple()) * 1000))
+
     # Make auto date for start and end if not otherwise given
     room_dict = {}
     rooms = Room.objects.available(start=start_ts, end=end_ts, has_av=has_av, has_phone=has_phone, floor=floor, seats=seats)
@@ -147,7 +151,8 @@ def create_booking(request):
                'seats': seats,
                'all_day': all_day,
                'has_phone': has_phone,
-               'room_dict': room_dict
+               'room_dict': room_dict,
+               'start_ts_mil': start_ts_mil
                }
     return render(request, 'member/events/booking_create.html', context)
 

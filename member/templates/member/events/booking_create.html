@@ -72,107 +72,114 @@
       </table>
     </div>
   </form>
-  {% if rooms %}
-    {% for room in rooms %}
-      <div class='row'>
-        {% if room.image %}
-          <div class='col s1'>
+  <div class='roomDisplay'>
+    {% if rooms %}
+      {% for room in rooms %}
+        <div class='row'>
+          {% if room.image %}
+            <div class='col s1'>
+              <h5 class='header-font' style='color:RGBA(66, 98, 113, 1.00);'>{{ room.name }}</h5>
+              <p>Floor {{room.floor}}</p>
+              <button class='btn room-show' id='{{ room.id }}'>More Info</button>
+              <button class='btn room-close'>Hide Info</button>
+            </div>
+            <div class='col s1' id='thumbnail-box'>
+              <img class='room-thumbnail' src="{{ room.image.url }}"/>
+            </div>
+          {% else %}
+          <div class='col s2'>
             <h5 class='header-font' style='color:RGBA(66, 98, 113, 1.00);'>{{ room.name }}</h5>
             <p>Floor {{room.floor}}</p>
             <button class='btn room-show' id='{{ room.id }}'>More Info</button>
             <button class='btn room-close'>Hide Info</button>
           </div>
-          <div class='col s1' id='thumbnail-box'>
-            <img class='room-thumbnail' src="{{ room.image.url }}"/>
-          </div>
-        {% else %}
-        <div class='col s2'>
-          <h5 class='header-font' style='color:RGBA(66, 98, 113, 1.00);'>{{ room.name }}</h5>
-          <p>Floor {{room.floor}}</p>
-          <button class='btn room-show' id='{{ room.id }}'>More Info</button>
-          <button class='btn room-close'>Hide Info</button>
-        </div>
-        {% endif %}
-        <div class='col s8 cal-div' style='height:110px;'>
-          <table class='cal-table'>
-            <thead>
-              {% for block, times in room_dict.items %}
-                {% if room == block %}
-                  {% for time in times %}
-                    {% if forloop.last %}
-                    {% else %}
-                      {% if forloop.counter0|divisibleby:2 %}
-                        <th class="rotate"><div><span>
-                          {{ time.hour }}:{{ time.minutes }}
-                        </div></span></th>
-                      {% else %}
-                        <th></th>
-                      {% endif %}
-                    {% endif %}
-                  {% endfor %}
-                {% endif %}
-              {% endfor %}
-            </thead>
-            <tr>
-              {% if room in room_dict %}
+          {% endif %}
+          <div class='col s8 cal-div' style='height:110px;'>
+            <table class='cal-table'>
+              <thead>
                 {% for block, times in room_dict.items %}
                   {% if room == block %}
                     {% for time in times %}
                       {% if forloop.last %}
                       {% else %}
-                        {% if time.reserved %}
-                          <td class="cal-box reserved" id="hour-{{time.mil_hour}}{{time.minutes}}">
-                          </td>
-                        {% elif time.searched %}
-                          <td class="cal-box searched" id="hour-{{time.mil_hour}}{{time.minutes}}">
-                          </td>
+                        {% if forloop.counter0|divisibleby:2 %}
+                          <th class="rotate"><div><span>
+                            {{ time.hour }}:{{ time.minutes }}
+                          </div></span></th>
                         {% else %}
-                          <td class="cal-box available" id="hour-{{time.mil_hour}}{{time.minutes}}">
-                          </td>
+                          <th></th>
                         {% endif %}
                       {% endif %}
                     {% endfor %}
                   {% endif %}
                 {% endfor %}
-              {% endif %}
-            </tr>
-          </table>
-        </div>
-        <form class='col s1 book-room' action='.' method='POST'>
-          <input type='hidden' name='room' value='{{ room.name }}' />
-          <input type='hidden' name='start' value='{{ start }}'/>
-          <input type='hidden' name='end' value='{{ end }}' />
-          <input type='hidden' name='date' value='{{ date }}' />
-          <button type='submit' class='book-btn btn'>Book</button>
-          {% csrf_token %}
-        </form>
-      </div>
-      <div class='row dropdown-room slider closed' id='dropdown-{{ room.id }}'>
-        {% if room.image %}
-          <img class='col s3 m3 l3 offset-l1' src='{{ room.image.url }}'/>
-        {% endif %}
-        <div class='col s7 offset-s1'>
-          <div class='row' style='margin-bottom:0;'>
-            <h4 class='col s9 m10 l10'>{{ room.name }}</h4>
-            <button class='btn col s1 m1 l1 room-close'>X</p>
+              </thead>
+              <tr>
+                {% if room in room_dict %}
+                  {% for block, times in room_dict.items %}
+                    {% if room == block %}
+                      {% for time in times %}
+                        {% if forloop.last %}
+                        {% else %}
+                          {% if time.reserved %}
+                            <td class="cal-box reserved" id="hour-{{time.mil_hour}}{{time.minutes}}">
+                            </td>
+                          {% elif time.searched %}
+                            <td class="cal-box searched" id="hour-{{time.mil_hour}}{{time.minutes}}">
+                            </td>
+                          {% else %}
+                            <td class="cal-box available" id="hour-{{time.mil_hour}}{{time.minutes}}">
+                            </td>
+                          {% endif %}
+                        {% endif %}
+                      {% endfor %}
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+              </tr>
+            </table>
           </div>
-          <ul>
-            <li>Seats: {{ room.seats }}</li>
-            <li>Max Capacity: {{ room.max_capacity }}</li>
-            <li>Has A/V?: {{ room.has_av }}</li>
-            <li>Has Phone: {{ room.has_phone }}</li>
-          </ul>
-          <p><strong>Description:</strong> {{ room.description }}</p>
+          <form class='col s1 book-room' action='.' method='POST'>
+            <input type='hidden' name='room' value='{{ room.name }}' />
+            <input type='hidden' name='start' value='{{ start }}'/>
+            <input type='hidden' name='end' value='{{ end }}' />
+            <input type='hidden' name='date' value='{{ date }}' />
+            <button type='submit' class='book-btn btn'>Book</button>
+            {% csrf_token %}
+          </form>
         </div>
+        <div class='row dropdown-room slider closed' id='dropdown-{{ room.id }}'>
+          {% if room.image %}
+            <img class='col s3 m3 l3 offset-l1' src='{{ room.image.url }}'/>
+          {% endif %}
+          <div class='col s7 offset-s1'>
+            <div class='row' style='margin-bottom:0;'>
+              <h4 class='col s9 m10 l10'>{{ room.name }}</h4>
+              <button class='btn col s1 m1 l1 room-close'>X</p>
+            </div>
+            <ul>
+              <li>Seats: {{ room.seats }}</li>
+              <li>Max Capacity: {{ room.max_capacity }}</li>
+              <li>Has A/V?: {{ room.has_av }}</li>
+              <li>Has Phone: {{ room.has_phone }}</li>
+            </ul>
+            <p><strong>Description:</strong> {{ room.description }}</p>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class='row'>
+        <p style='color:red;text-align:center;padding:5%;'>
+          Sorry, there do not seem to be any rooms available that match your criteria.
+        </p>
       </div>
-    {% endfor %}
-  {% else %}
-    <div class='row'>
-      <p style='color:red;text-align:center;padding:5%;'>
-        Sorry, there do not seem to be any rooms available that match your criteria.
-      </p>
-    </div>
-  {% endif %}
+    {% endif %}
+  </div>
+  <div class='row time-error'>
+    <p style='color:red;text-align:center;padding:5%;'>
+      Please select a time and date in the future.
+    </p>
+  </div>
 </div>
 {% endblock %}
 
@@ -180,6 +187,17 @@
   <script>
     $(document).ready(function() {
   		$('.button-collapse').sideNav();
+      $('.time-error').hide();
+
+      // Hide rooms if searched time is in the past
+      var js_date = parseFloat('{{ start_ts_mil }}') + 1740000;
+      if (js_date < new Date()) {
+        $('.roomDisplay').hide();
+        $('.time-error').show();
+      } else {
+        $('.roomDisplay').show();
+        $('.time-error').hide();
+      }
 
       var amOrPm = ' AM';
 
