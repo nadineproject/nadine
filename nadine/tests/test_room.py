@@ -12,7 +12,6 @@ class RoomTestCase(TestCase):
 
     def setUp(self):
         self.user1 = User.objects.create(username='user_one', first_name='User', last_name='One')
-        self.user2 = User.objects.create(username='user_two', first_name='User', last_name='Two')
 
         self.room1 = Room.objects.create(name="Room 1", has_phone=False, has_av=False, floor=1, seats=4, max_capacity=10, default_rate=20.00)
         self.room2 = Room.objects.create(name="Room 2", has_phone=True, has_av=True, floor=1, seats=2, max_capacity=4, default_rate=20.00)
@@ -32,7 +31,7 @@ class RoomTestCase(TestCase):
         # Event in Room1 starting at 3 and going until 4
         # self.start2 = self.start1 + timedelta(hours=5)
         # self.end2 = self.start2 + timedelta(hours=1)
-        # self.event3 = Event.objects.create(user=self.user2, room=self.room1, start_ts=self.start2, end_ts=self.end2)
+        # self.event3 = Event.objects.create(user=self.user1, room=self.room1, start_ts=self.start2, end_ts=self.end2)
 
     def test_available(self):
         # Only Room2 is available at 11:00.
@@ -50,6 +49,21 @@ class RoomTestCase(TestCase):
         self.assertTrue(len(rooms) == 2)
         self.assertTrue(self.room1 in rooms)
         self.assertTrue(self.room2 in rooms)
+
+    def test_available_flush_start(self):
+        start = self.start1 - timedelta(hours=1)
+        end = start + timedelta(hours=1)
+        rooms = Room.objects.available(start=start, end=end)
+        self.assertTrue(len(rooms) > 0)
+        self.assertTrue(len(rooms) == 2)
+        self.assertTrue(self.room1 in rooms)
+        self.assertTrue(self.room2 in rooms)
+
+    def test_available_flush_end(self):
+        start = self.end2
+        end = start + timedelta(hours=1)
+        rooms=Room.objects.available(start=start, end=end)
+        self.assertTrue(len(rooms) > 0)
 
     # def test_available_middle_opening(self):
         # To run this test, comment out Event2 and uncomment out Event3

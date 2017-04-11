@@ -53,17 +53,17 @@ class RoomManager(models.Manager):
 
         events = Event.objects.all()
         for event in events:
-            if event.start_ts >= start and event.start_ts <= end:
+            if event.start_ts >= start and event.start_ts < end:
                 rooms = rooms.exclude(name=event.room)
             elif (event.start_ts <= start) and (event.end_ts > start):
                 rooms = rooms.exclude(name=event.room)
-            elif (event.start_ts <= end) and (event.end_ts > start):
+            elif (event.start_ts < end) and (event.end_ts > start):
                 rooms = rooms.exclude(name=event.room)
 
         # This code looks cleaner but running into bugs currently
-        # head = Q(event__start_ts__gte=start, event__start_ts__lte=end)
+        # head = Q(event__start_ts__gte=start, event__start_ts__lt=end)
         # middle = Q(event__start_ts__lte=start, event__end_ts__gt=start)
-        # tail = Q(event__start_ts__lte=end, event__end_ts__gt=start)
+        # tail = Q(event__start_ts__lt=end, event__end_ts__gt=start)
         #
         # rooms = rooms.exclude(head | middle | tail)
 
