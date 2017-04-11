@@ -529,7 +529,7 @@ class Membership(models.Model):
 
     def delete_unpaid_bills(self):
         for bill in self.bills.all():
-            if bill.is_paid:
+            if bill.total_paid == 0:
                 bill.delete()
 
     def has_unpaid_bills(self):
