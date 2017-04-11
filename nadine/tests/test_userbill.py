@@ -1,4 +1,4 @@
-import traceback
+import traceback, logging
 from datetime import datetime, timedelta, date
 from dateutil.relativedelta import relativedelta
 from django.urls import reverse
@@ -25,6 +25,9 @@ two_months_ago = today - relativedelta(months=2)
 class UserBillTestCase(TestCase):
 
     def setUp(self):
+        # Turn on logging for nadine models
+        logging.getLogger('nadine.models').setLevel(logging.DEBUG)
+
         self.user1 = User.objects.create(username='member_one', first_name='Member', last_name='One')
         self.user2 = User.objects.create(username='member_two', first_name='Member', last_name='Two')
         self.user3 = User.objects.create(username='member_three', first_name='Member', last_name='Three')
@@ -46,7 +49,7 @@ class UserBillTestCase(TestCase):
             resource = Resource.objects.day_resource,
             monthly_rate = 50,
             allowance = 3,
-            overage_rate = 20,
+            overage_rate = 15,
         )
         self.pt5Package = MembershipPackage.objects.create(name="PT5")
         SubscriptionDefault.objects.create(
@@ -94,22 +97,24 @@ class UserBillTestCase(TestCase):
         user8.membership.set_to_package(self.basicPackage, start_date=date(2010, 6, 20))
         for day in range(11, 25):
             CoworkingDay.objects.create(user=user8, visit_date=date(2010, 6, day), payment='Bill')
-        user8.membership.generate_all_bills()
 
-        # May 20th bill = PT5 + 9 days (4 Overage)
-        may_20_pt5 = user8.bills.get(period_start=date(2010, 5, 20))
-        self.assertTrue(may_20_pt5 != None)
+        # May 20th bill = PT5 - No overage from previous period
         self.assertEqual(user8.membership.matching_package(date(2010, 5, 20)), self.pt5Package)
-        self.assertEqual(date(2010, 5, 20), may_20_pt5.due_date)
-        self.assertEqual(155.00, may_20_pt5.amount)
-        # self.assertEqual(9, may_20_pt5.overage.count())
-        # self.assertEqual(4, may_20_pt5.dropins.count())
+        user8.membership.generate_bill(target_date=date(2010, 5, 20))
+        may_20_bill = user8.bills.get(period_start=date(2010, 5, 20))
+        self.assertTrue(may_20_bill != None)
+        self.assertEqual(date(2010, 5, 20), may_20_bill.due_date)
+        self.assertEqual(75.00, may_20_bill.amount)
+        # self.assertEqual(9, may_20_bill.overage.count())
+        # self.assertEqual(4, may_20_bill.dropins.count())
 
-        # June 20th bill = Basic + 5 days (2 overage)
-        june_20_basic = user8.bills.get(period_start=date(2010, 6, 20))
-        self.assertTrue(june_20_basic != None)
+        # June 20th bill = Basic + 4 over PT5 from previous period
         self.assertEqual(user8.membership.matching_package(date(2010, 6, 20)), self.basicPackage)
-        # self.assertEqual(date(2010, 6, 20), june_20_basic.bill_date)
-        # self.assertEqual(0, june_20_basic.dropins.count())
+        user8.membership.generate_bill(target_date=date(2010, 6, 20))
+        june_20_bill = user8.bills.get(period_start=date(2010, 6, 20))
+        self.assertTrue(june_20_bill != None)
+        self.assertEqual(date(2010, 6, 20), june_20_bill.due_date)
+        # self.assertEqual(0, june_20_bill.dropins.count())
+        self.assertEqual(130, june_20_bill.amount)
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
