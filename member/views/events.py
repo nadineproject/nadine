@@ -177,6 +177,7 @@ def confirm_booking(request, room, start, end, date):
             block['searched'] = True
 
     if request.method == 'POST':
+        booking_form = EventForm(request.POST)
         user = request.user
         room = request.POST.get('room')
         room = get_object_or_404(Room, name=room)

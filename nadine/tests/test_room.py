@@ -29,8 +29,8 @@ class RoomTestCase(TestCase):
         self.event2 = Event.objects.create(user=self.user1, room=self.room1, start_ts=self.start2, end_ts=self.end2)
 
     def test_available(self):
-        # Only Room2 is available now.
-        rooms = Room.objects.available()
+        # Only Room2 is available at 11:00.
+        rooms = Room.objects.available(start=localtime(now()).replace(hour=11, minute=0))
         self.assertTrue(len(rooms) > 0)
         self.assertTrue(rooms[0] == self.room2)
         self.assertFalse(rooms[0] == self.room1)
@@ -54,8 +54,9 @@ class RoomTestCase(TestCase):
         self.assertTrue(rooms[0] == self.room2)
 
     def test_available_overlap(self):
-        start = localtime(now()) + timedelta(hours=1)
-        end = localtime(now()) + timedelta(hours=2)
+        #Check for room with event starting before Event1 and ends after Event1 ends
+        start = self.start1 - timedelta(hours=1)
+        end = self.end1 + timedelta(hours=1)
         rooms = Room.objects.available(start=start, end=end)
         self.assertTrue(len(rooms) == 1)
         self.assertTrue(self.room2 in rooms)
