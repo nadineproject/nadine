@@ -7,7 +7,7 @@ from datetime import datetime, time, date, timedelta
 from django.db import models
 from django.db.models import Q
 from django.contrib import admin
-from django.core import urlresolvers
+from django.urls import reverse
 from django.core.files.base import ContentFile
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
@@ -67,7 +67,7 @@ class OldBill(models.Model):
         return 'Old Bill %s [%s]: %s - $%s' % (self.id, self.bill_date, self.user, self.amount)
 
     def get_admin_url(self):
-        return urlresolvers.reverse('admin:nadine_bill_change', args=[self.id])
+        return reverse('admin:nadine_bill_change', args=[self.id])
 
 
 class Transaction(models.Model):
@@ -89,4 +89,4 @@ class Transaction(models.Model):
         return '%s: %s' % (self.user.get_full_name(), self.amount)
 
     def get_admin_url(self):
-        return urlresolvers.reverse('admin:nadine_transaction_change', args=[self.id])
+        return reverse('admin:nadine_transaction_change', args=[self.id])

@@ -11,7 +11,7 @@ from tastypie.resources import Resource, ModelResource, ALL, ALL_WITH_RELATIONS
 
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.conf.urls import include, url
 from django.shortcuts import render_to_response, get_object_or_404

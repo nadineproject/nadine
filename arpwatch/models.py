@@ -5,7 +5,6 @@ from collections import OrderedDict, namedtuple
 from django.db import models
 from django.db.models import Q
 from django.contrib import admin
-from django.core import urlresolvers
 from django.contrib.auth.models import User
 from django.contrib.auth.signals import user_logged_in
 from django.db import connection

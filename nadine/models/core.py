@@ -14,7 +14,6 @@ from dateutil.relativedelta import relativedelta
 from django.db import models
 from django.db.models import Q
 from django.contrib import admin
-from django.core import urlresolvers
 from django.core.files.base import ContentFile
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
@@ -23,7 +22,7 @@ from django.utils.encoding import smart_str
 from django_localflavor_us.models import USStateField, PhoneNumberField
 from django.utils.timezone import localtime, now
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.sites.models import Site
 
 logger = logging.getLogger(__name__)

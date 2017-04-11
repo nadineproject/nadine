@@ -17,7 +17,6 @@ from django.db import models
 from django.db.models import F, Q, Count, Sum, Value
 from django.db.models.functions import Coalesce
 from django.contrib import admin
-from django.core import urlresolvers
 from django.core.files.base import ContentFile
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
@@ -27,7 +26,7 @@ from django.utils.encoding import smart_str
 from django_localflavor_us.models import USStateField, PhoneNumberField
 from django.utils.timezone import localtime, now
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.sites.models import Site
 
 from resource import Resource
@@ -644,12 +643,18 @@ class IndividualMembership(Membership):
     def __str__(self):
         return '%s: %s' % (self.user, self.subscriptions.all())
 
+    class Meta:
+        manager_inheritance_from_future = True
+
 
 class OrganizationMembership(Membership):
     organization = models.OneToOneField(Organization, related_name="membership", on_delete=models.CASCADE)
 
     def __str__(self):
         return '%s: %s' % (self.organization, self.subscriptions.all())
+
+    class Meta:
+        manager_inheritance_from_future = True
 
 
 class SubscriptionManager(models.Manager):
@@ -805,7 +810,7 @@ class MembershipPlan(models.Model):
     def __str__(self): return self.name
 
     def get_admin_url(self):
-        return urlresolvers.reverse('admin:nadine_membershipplan_change', args=[self.id])
+        return reverse('admin:nadine_membershipplan_change', args=[self.id])
 
     class Meta:
         app_label = 'nadine'
@@ -915,7 +920,7 @@ class OldMembership(models.Model):
         return '%s - %s - %s' % (self.start_date, self.user, self.membership_plan)
 
     def get_admin_url(self):
-        return urlresolvers.reverse('admin:nadine_membership_change', args=[self.id])
+        return reverse('admin:nadine_membership_change', args=[self.id])
 
     class Meta:
         app_label = 'nadine'

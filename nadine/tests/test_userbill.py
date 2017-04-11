@@ -1,7 +1,7 @@
 import traceback
 from datetime import datetime, timedelta, date
 from dateutil.relativedelta import relativedelta
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from django.test import TestCase, RequestFactory, Client
 from django.utils import timezone

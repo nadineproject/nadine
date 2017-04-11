@@ -6,7 +6,7 @@ from calendar import Calendar, HTMLCalendar
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404, HttpRequest
 from django.shortcuts import render, get_object_or_404

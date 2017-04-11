@@ -8,7 +8,7 @@ from django.contrib.sites.models import Site
 from django.template.loader import get_template, render_to_string
 from django.template import Template, TemplateDoesNotExist, Context, RequestContext
 from django.core.mail import send_mail, EmailMessage, EmailMultiAlternatives
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
 

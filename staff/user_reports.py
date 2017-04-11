@@ -4,7 +4,7 @@ from datetime import date, datetime, timedelta
 from django.utils import timezone
 from nadine.models.membership import Membership
 from arpwatch.models import UserDevice
-from django.forms.extras.widgets import SelectDateWidget
+from django.forms.widgets import SelectDateWidget
 
 REPORT_KEYS = (
     ('NEW_USERS', 'New Users'),
