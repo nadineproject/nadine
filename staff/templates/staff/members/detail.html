@@ -440,14 +440,14 @@ function gotoEmailReset(emailAddress){
             <tr>
                 <th class='note-date'>Date</th>
                 <th class='note-by'>By</th>
-                <th>Note</th>
+                <th class='note'>Note</th>
                 <th></th>
             </tr>
             {% for note in member_notes %}
                 <tr>
                     <td class='note-date'>{{ note.created|date:"M d, Y"}}</td>
                     <td class='note-by'>{% if note.created_by %}{{ note.created_by }} {% endif %}</td>
-                    <td class='left'>{{ note.note }}</td>
+                    <td class='left note'>{{ note.note }}</td>
                     <td class='right' nowrap>[ <a href="{% url 'admin:nadine_membernote_change' note.id %}">edit</a> ]</td>
                 </tr>
             {% endfor %}

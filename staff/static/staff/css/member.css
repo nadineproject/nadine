@@ -473,6 +473,10 @@ table.mem-details-table {
   margin: 2%;
 }
 
+.notes-table .note {
+  width: 75%;
+}
+
 .notes-table .note-date, .notes-table .note-by {
   width: 15%;
 }
