@@ -22,6 +22,14 @@ one_month_from_now = today + relativedelta(months=1)
 one_month_ago = today - relativedelta(months=1)
 two_months_ago = today - relativedelta(months=2)
 
+def print_bill(bill):
+    print("UserBill %d" % bill.id)
+    print("  due_date: %s" % bill.due_date)
+    print("  amount: $%s" % bill.amount)
+    print("  line_items:")
+    for line_item in bill.line_items.all().order_by('id'):
+        print("    %s: $%s" % (line_item.description, line_item.amount))
+
 class UserBillTestCase(TestCase):
 
     def setUp(self):
@@ -102,6 +110,7 @@ class UserBillTestCase(TestCase):
         self.assertEqual(user8.membership.matching_package(date(2010, 5, 20)), self.pt5Package)
         user8.membership.generate_bill(target_date=date(2010, 5, 20))
         may_20_bill = user8.bills.get(period_start=date(2010, 5, 20))
+        print_bill(may_20_bill)
         self.assertTrue(may_20_bill != None)
         self.assertEqual(date(2010, 5, 20), may_20_bill.due_date)
         self.assertEqual(75.00, may_20_bill.amount)
@@ -112,6 +121,7 @@ class UserBillTestCase(TestCase):
         self.assertEqual(user8.membership.matching_package(date(2010, 6, 20)), self.basicPackage)
         user8.membership.generate_bill(target_date=date(2010, 6, 20))
         june_20_bill = user8.bills.get(period_start=date(2010, 6, 20))
+        print_bill(june_20_bill)
         self.assertTrue(june_20_bill != None)
         self.assertEqual(date(2010, 6, 20), june_20_bill.due_date)
         # self.assertEqual(0, june_20_bill.dropins.count())
