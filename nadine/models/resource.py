@@ -7,7 +7,7 @@ from abc import ABCMeta, abstractmethod
 
 from django.db import models
 from django.conf import settings
-from django.db.models import Q
+from django.db.models import Q, F
 from django.contrib.auth.models import User
 from django.utils.timezone import localtime, now, get_current_timezone
 
@@ -255,39 +255,24 @@ class ResourceTrackerABC:
         # Return a list of line items for all activity in the given time period
         pass
 
-    @abstractmethod
-    def get_line_item(self, bill, description, amount, activity):
-        pass
-
 
 class CoworkingDayTracker(ResourceTrackerABC):
 
     def get_activity(self, user, period_start, period_end):
         from nadine.models.usage import CoworkingDay
-        logger.debug("user: %s, start: %s, end: %s" % (user, period_start, period_end))
-        return CoworkingDay.objects.filter(user=user, visit_date__range=(period_start, period_end), payment='Bill')
-
-    def get_line_item(self, bill, description, amount, activity):
-        # Add a list of dates to our description
-        day_list = []
-        for day in activity:
-            day_list.append(day.visit_date.isoformat())
-        if len(day_list) > 0:
-            description += ": " + ", ".join(day_list)
-
-        from nadine.models.billing import CoworkingDayLineItem
-        line_item = CoworkingDayLineItem.objects.create(bill=bill, description=description, amount=amount)
-        line_item.days = activity
-        line_item.save()
+        from nadine.models.billing import BillLineItem
+        logger.debug("get_activity(user=%s, period_start=%s, period_end=%s)" % (user, period_start, period_end))
+        day_resource = Resource.objects.day_resource
+        billed_coworking_days = BillLineItem.objects.filter(resource=day_resource).values('activity_id')
+        query = CoworkingDay.objects.filter(user=user, visit_date__range=(period_start, period_end), payment='Bill').exclude(id__in=billed_coworking_days)
+        return query.annotate(activity_date=F('visit_date'))
 
 
-# TODO - complete
 class RoomBookingTracker(ResourceTrackerABC):
 
-    def get_activity(self, user_list, period_start, period_end):
+    def get_activity(self, user, period_start, period_end):
+        # TODO - complete
         return []
 
-    def get_line_item(self, bill, description, amount, activity):
-        return None
 
-# Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

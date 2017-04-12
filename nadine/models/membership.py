@@ -297,12 +297,16 @@ class Membership(models.Model):
             return possible_matches[0]
 
     def active_subscriptions(self, target_date=None):
+        ''' Return the active subscriptions on a given day. '''
         if not target_date:
             target_date = localtime(now()).date()
-        current = Q(start_date__lte=target_date)
+        return self.subscriptions_for_period(target_date, target_date)
+
+    def subscriptions_for_period(self, period_start, period_end):
+        ''' Return the active subscriptions for a given period. '''
         unending = Q(end_date__isnull=True)
-        future_ending = Q(end_date__gte=target_date)
-        return self.subscriptions.filter(current & (unending | future_ending)).distinct()
+        future_ending = Q(end_date__gte=period_end)
+        return self.subscriptions.filter(start_date__lte=period_start).filter(unending | future_ending).distinct()
 
     def subscriptions_by_payer(self, target_date=None):
         ''' Pull the active subscriptions for given target_date and group them by payer '''
@@ -398,7 +402,6 @@ class Membership(models.Model):
         return (period_start, period_end)
 
     def is_period_boundary(self, target_date=None):
-        # TODO: Evaluate
         period = self.get_period(target_date=target_date)
         return period and period[1] == target_date
 
@@ -422,6 +425,7 @@ class Membership(models.Model):
         return next_period_start
 
     def last_change(self):
+        ''' Return the date of the last subscription change on this membership. '''
         last_subscription = self.subscriptions.all().order_by('created_ts').last()
         return last_subscription.created_ts
 
@@ -502,10 +506,15 @@ class Membership(models.Model):
             bill = new_bill['bill']
             monthly_items = []
             activity_items = []
-            for s in new_bill['subscriptions']:
-                monthly_items.append(s.monthly_line_item(bill))
-                if s.resource.is_trackable():
-                    activity_lines = s.activity_line_items(bill)
+            # Every subscription produces a monthly line item
+            for subscription in new_bill['subscriptions']:
+                monthly_items.append(bill.generate_monthly_line_item(subscription))
+            # Account for activity for each resource in the previous period
+            activity_period_end = bill.period_start - timedelta(days=1)
+            activity_period_start = activity_period_end - relativedelta(months=1) + timedelta(days=1)
+            for resource in Resource.objects.all():
+                if resource.is_trackable():
+                    activity_lines = bill.generate_activity_line_items(resource, activity_period_start, activity_period_end)
                     if activity_lines:
                         activity_items.extend(activity_lines)
 
@@ -738,50 +747,50 @@ class ResourceSubscription(models.Model):
 
         return Decimal(prorate_days) / period_days
 
-    def monthly_line_item(self, bill):
-        from billing import BillLineItem
-        desc = "Monthly " + self.resource.name + " "
-        if self.description:
-            desc += self.description + " "
-        desc += "(%s to %s)" % (bill.period_start, bill.period_end)
-        logger.debug("description: %s" % desc)
-        prorate = self.prorate_for_period(bill.period_start, bill.period_end)
-        logger.debug("prorate = %f" % prorate)
-        amount = prorate * self.monthly_rate
-        line_item = BillLineItem(bill=bill, description=desc, amount=amount)
-        return line_item
-
-    def activity_line_items(self, bill):
-        # Get the start and end of the period just before our bill period
-        period_start, period_end = self.membership.get_period(bill.period_start - timedelta(days=1))
-
-        # Pull the users active in this period
-        user_list = self.membership.users_in_period(period_start, period_end)
-        multiple_users = len(user_list) > 1
-
-        tracker = self.resource.get_tracker()
-
-        line_items = []
-        allowance_left = self.allowance
-        for user in user_list:
-            amount = 0
-            activity = tracker.get_activity(user, period_start, period_end)
-            overage = activity.count() - allowance_left
-            if overage > 0:
-                amount = overage * self.overage_rate
-            allowance_left = allowance_left - activity.count()
-            if allowance_left < 0:
-                allowance_left = 0
-
-            description = "%ss (%d)" % (self.resource.name, activity.count())
-            if multiple_users:
-                description = user.get_full_name() + " - " + description
-
-            line_item = tracker.get_line_item(bill, description, amount, activity)
-            line_items.append(line_item)
-
-        if len(line_items) > 0:
-            return line_items
+    # def monthly_line_item(self, bill):
+    #     from billing import BillLineItem
+    #     desc = "Monthly " + self.resource.name + " "
+    #     if self.description:
+    #         desc += self.description + " "
+    #     desc += "(%s to %s)" % (bill.period_start, bill.period_end)
+    #     logger.debug("description: %s" % desc)
+    #     prorate = self.prorate_for_period(bill.period_start, bill.period_end)
+    #     logger.debug("prorate = %f" % prorate)
+    #     amount = prorate * self.monthly_rate
+    #     line_item = BillLineItem(bill=bill, description=desc, amount=amount)
+    #     return line_item
+    #
+    # def activity_line_items(self, bill):
+    #     # Get the start and end of the period just before our bill period
+    #     period_start, period_end = self.membership.get_period(bill.period_start - timedelta(days=1))
+    #
+    #     # Pull the users active in this period
+    #     user_list = self.membership.users_in_period(period_start, period_end)
+    #     multiple_users = len(user_list) > 1
+    #
+    #     tracker = self.resource.get_tracker()
+    #
+    #     line_items = []
+    #     allowance_left = self.allowance
+    #     for user in user_list:
+    #         amount = 0
+    #         activity = tracker.get_activity(user, period_start, period_end)
+    #         overage = activity.count() - allowance_left
+    #         if overage > 0:
+    #             amount = overage * self.overage_rate
+    #         allowance_left = allowance_left - activity.count()
+    #         if allowance_left < 0:
+    #             allowance_left = 0
+    #
+    #         description = "%ss (%d)" % (self.resource.name, activity.count())
+    #         if multiple_users:
+    #             description = user.get_full_name() + " - " + description
+    #
+    #         line_item = tracker.get_line_item(bill, description, amount, activity)
+    #         line_items.append(line_item)
+    #
+    #     if len(line_items) > 0:
+    #         return line_items
 
 
 class SecurityDeposit(models.Model):

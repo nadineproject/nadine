@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 
 from nadine.models.membership import Membership
+from nadine.models.resource import Resource
 
 logger = logging.getLogger(__name__)
 
@@ -79,6 +80,68 @@ class UserBill(models.Model):
     def get_admin_url(self):
         return reverse('admin:nadine_userbill_change', args=[self.id])
 
+    def generate_monthly_line_item(self, subscription):
+        desc = "Monthly " + subscription.resource.name + " "
+        if subscription.description:
+            desc += subscription.description + " "
+        desc += "(%s to %s)" % (self.period_start, self.period_end)
+        logger.debug("description: %s" % desc)
+        prorate = subscription.prorate_for_period(self.period_start, self.period_end)
+        logger.debug("prorate = %f" % prorate)
+        amount = prorate * subscription.monthly_rate
+        line_item = BillLineItem(bill=self, description=desc, amount=amount)
+        return line_item
+
+    def generate_activity_line_items(self, resource, period_start, period_end):
+        ''' Generate line items for all activity for the given resource in the given period. '''
+        logger.debug("generate_activity_line_items(resource=%s, period_start=%s, period_end=%s)" % (resource.name, period_start, period_end))
+
+        # What subscriptions were active in this period?
+        subscriptions = self.membership.subscriptions_for_period(period_start, period_end).filter(resource=resource)
+        if not subscriptions:
+            return
+
+        # Add up all the allowances to see how much activity is included in this membership
+        allowance = 0
+        for s in subscriptions:
+            allowance += s.allowance
+
+        # Assume the overage rate for all subscriptions is the same.
+        # This will cause problems if there are multiple subscriptions with different rates!!!
+        # But since this should not be the case 99% of the time I'm going to do it the simple way --JLS
+        overage_rate = subscriptions.first().overage_rate
+
+        # Pull the users active in this period
+        user_list = self.membership.users_in_period(period_start, period_end)
+
+        # We'll use this tracker to pull the activity
+        tracker = resource.get_tracker()
+
+        line_items = []
+        allowance_left = allowance
+        for user in user_list:
+            for activity in tracker.get_activity(user, period_start, period_end):
+                activity_count = len(line_items) + 1
+                description = "%s %s (%d)" % (activity.activity_date, resource.name, activity_count)
+                amount = overage_rate
+                if allowance_left > 0:
+                    amount = 0
+                    allowance_left = allowance_left - 1
+
+                line_item = BillLineItem(
+                    bill = self,
+                    description = description,
+                    amount = amount,
+                    resource = resource,
+                    activity_id = activity.id
+
+                )
+
+                line_items.append(line_item)
+
+        if len(line_items) > 0:
+            return line_items
+
     # Not sure if I need this -- JLS
     # def non_refund_payments(self):
     #     return self.payments.filter(paid_amount__gt=0)
@@ -101,14 +164,18 @@ class BillLineItem(models.Model):
     bill = models.ForeignKey(UserBill, related_name="line_items", null=True, on_delete=models.CASCADE)
     description = models.CharField(max_length=200)
     amount = models.DecimalField(max_digits=7, decimal_places=2, default=0)
+    resource = models.ForeignKey(Resource, blank=True, null=True, db_index=True, on_delete=models.CASCADE)
+    activity_id = models.IntegerField(default=0)
     custom = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.description
 
 
-class CoworkingDayLineItem(BillLineItem):
-    days = models.ManyToManyField('CoworkingDay', related_name='bill_line')
+#
+# I don't think this is the right way to go -- JLS
+# class CoworkingDayLineItem(BillLineItem):
+#     days = models.ManyToManyField('CoworkingDay', related_name='bill_line')
 
 
 class Payment(models.Model):
