@@ -1,0 +1,23 @@
+<h3 class='header-font'>Upcoming Events and Room Bookings</h3>
+<table>
+  <tr style='border-bottom: 1px solid RGBA(216, 216, 216, 1.00);'>
+    <th>Event</th>
+    <th>Start</th>
+    <th>End</th>
+    <th>Room</th>
+    <th>Total Hours</th>
+  </tr>
+  {% for e in upcoming %}
+    <tr>
+      <td>{{ e.name }}</td>
+      <td>{{ e.start_ts }}</td>
+      <td>{{ e.end_ts }}</td>
+      <td>{{ e.room }}</td>
+      <td>{{ e.total }} hours</td>
+    </tr>
+  {% endfor %}
+</table>
+<div class='booking-total'>
+  <strong><span class='header-font'>Total event and room bookings for current bill period:</span> {{ total }} hours</strong>
+</div>
+<a class='btn booking-redirect' href='{% url "member:event:create_booking" %}'>Make a New Room Booking</a>

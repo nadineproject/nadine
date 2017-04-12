@@ -126,6 +126,14 @@
             {% include "member/profile/profile_orgs.html" %}
           </div>
         </li>
+        {% if has_bookings %}
+        <li>
+          <div class='collapsible-header' id='events_tab'>Events/Room Booking</div>
+          <div class='collapsible-body' id='events_target'>
+            {% include "member/spinner.html" %}
+          </div>
+        </li>
+        {% endif %}
         <li>
           <div class='collapsible-header' id='activity_tab'>Activity</div>
           <div class='collapsible-body' id='activity_target'>
@@ -191,7 +199,8 @@
           onclick_tab("#activity", "{% url 'member:profile:activity' user.username %}");
           onclick_tab("#billing", "{% url 'member:profile:billing' user.username %}");
           onclick_tab("#devices", "{% url 'member:profile:devices' user.username %}");
-          onclick_tab("#pic", "{% url 'member:profile:edit_photo' user.username %}")
+          onclick_tab("#pic", "{% url 'member:profile:edit_photo' user.username %}");
+          onclick_tab('#events', "{% url 'member:profile:events' user.username %}");
 
     			$('.edit-img').on('click', function(e) {
             e.preventDefault();

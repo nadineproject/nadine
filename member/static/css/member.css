@@ -374,7 +374,14 @@ table td {
 }
 
 
+
 /*Button styling*/
+.booking-redirect {
+	font-size: .8em;
+	margin-left: 32%;
+	margin-top: 5%;
+}
+
 .sub-btn, #confirm-btn, .reg-btn  {
 	margin-top: 2%;
 	margin-left: 35%;
@@ -1390,6 +1397,9 @@ img.org-photo#mem-photo {
 	margin-left: 3%;
 }
 
+.booking-total {
+	margin-top: 5%;
+}
 
 
 /*Styling for collapsible sections of member profile*/

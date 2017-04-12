@@ -13,10 +13,11 @@ from django.forms.formsets import formset_factory
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404, HttpRequest
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
+from django.utils.timezone import localtime, now
 
 from nadine import email
 from nadine.models.profile import UserProfile, FileUpload
-from nadine.models.usage import CoworkingDay
+from nadine.models.usage import CoworkingDay, Event
 from nadine.models.payment import Transaction
 from nadine.models.alerts import MemberAlert
 from nadine.models.organization import Organization, OrganizationMember
@@ -41,6 +42,8 @@ def profile(request, username):
     current_org_memberships = user.profile.active_organization_memberships()
     past_org_memberships = user.profile.past_organization_memberships()
     can_edit = request.user == user or request.user.is_staff
+    today = localtime(now()).date()
+    has_bookings = User.objects.filter(event__start_ts__gte=today)
 
     ALLOW_PHOTO_UPLOAD = settings.ALLOW_PHOTO_UPLOAD
     if request.user.is_staff:
@@ -51,7 +54,8 @@ def profile(request, username):
                'settings': settings,
                'ALLOW_PHOTO_UPLOAD': ALLOW_PHOTO_UPLOAD,
                'can_edit': can_edit,
-               'current_org_memberships': current_org_memberships, 'past_org_memberships': past_org_memberships
+               'current_org_memberships': current_org_memberships, 'past_org_memberships': past_org_memberships,
+               'has_bookings': has_bookings,
                }
     return render(request, 'member/profile/profile.html', context)
 
@@ -81,6 +85,26 @@ def profile_documents(request, username):
     context = {'user': user}
     return render(request, 'member/profile/profile_documents.html', context)
 
+@login_required
+def profile_events(request, username):
+    user = get_object_or_404(User, username=username)
+    today = localtime(now()).date()
+    upcoming_events = Event.objects.filter(user=user).filter(start_ts__gte=today)
+    upcoming = []
+    for e in upcoming_events:
+        total = ((e.end_ts - e.start_ts).total_seconds())/3600
+        upcoming.append({'name': e.description, 'start_ts': e.start_ts, 'end_ts': e.end_ts, 'room': e.room, 'total': total})
+
+    ps, pe = user.membership.get_period()
+    this_period = Event.objects.filter(user=user).filter(start_ts__gte=ps).filter(end_ts__lte=pe)
+    total = 0
+    for t in this_period:
+        total += ((t.end_ts - t.start_ts).total_seconds()/3600)
+    context = {'user': user,
+               'upcoming': upcoming,
+               'total': total,
+                }
+    return render(request, 'member/profile/profile_events.html', context)
 
 @login_required
 def user_activity_json(request, username):

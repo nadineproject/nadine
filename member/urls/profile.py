@@ -11,6 +11,7 @@ urlpatterns = [
     url(r'^(?P<username>[^/]+)/memberships/$', profile.profile_membership, name='membership'),
     url(r'^(?P<username>[^/]+)/organizations/$', profile.profile, name='orgs'),
     url(r'^(?P<username>[^/]+)/documents/$', profile.profile_documents, name='documents'),
+    url(r'^(?P<username>[^/]+)/events/$', profile.profile_events, name='events'),
     url(r'^(?P<username>[^/]+)/activity/$', profile.profile_activity, name='activity'),
     url(r'^(?P<username>[^/]+)/billing/$', profile.profile_billing, name='billing'),
     url(r'^(?P<username>[^/]+)/devices/$', profile.user_devices, name='devices'),
