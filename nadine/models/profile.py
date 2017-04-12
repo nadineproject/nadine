@@ -927,6 +927,9 @@ User.helper = UserQueryHelper()
 # Create a handy method on User to get an EmergencyContact
 User.get_emergency_contact = lambda self: EmergencyContact.objects.get_or_create(user=self)[0]
 
+# Method on User to get MemberNotes
+User.get_member_notes = lambda self: MemberNote.objects.filter(user=self)
+
 
 ###############################################################################
 # Call Backs

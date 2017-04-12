@@ -435,7 +435,7 @@ function gotoEmailReset(emailAddress){
 <div id="tabs-5">
     <h5>Notes</h5>
     <div>
-      {% if user.profile.member_notes %}
+      {% if member_notes %}
         <table>
             <tr>
                 <th>Date</th>
@@ -443,7 +443,7 @@ function gotoEmailReset(emailAddress){
                 <th class='left'>Note</th>
                 <th></th>
             </tr>
-            {% for note in user.profile.member_notes %}
+            {% for note in member_notes %}
                 <tr>
                     <td>{{ note.created|date:"M d, Y"}}</td>
                     <td>{% if note.created_by %}{{ note.created_by }} {% endif %}</td>

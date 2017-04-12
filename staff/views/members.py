@@ -43,7 +43,7 @@ def detail(request, username):
     # subscriptions = user.membership.first().active_subscriptions()
     # membership = user.
     email_logs = SentEmailLog.objects.filter(user=user).order_by('created').reverse()
-    cats = Membership.objects.future_memberships().filter(id=user.membership.id)
+    member_notes = user.get_member_notes()
 
     if request.method == 'POST':
         if 'send_manual_email' in request.POST:
@@ -51,6 +51,7 @@ def detail(request, username):
             email.send_manual(user, key)
         elif 'add_note' in request.POST:
             note = request.POST.get('note')
+            print(note)
             MemberNote.objects.create(user=user, created_by=request.user, note=note)
         elif 'add_special_day' in request.POST:
             month = request.POST.get('month')
@@ -76,6 +77,7 @@ def detail(request, username):
         'email_keys': email_keys,
         'staff_members':staff_members,
         'settings': settings,
+        'member_notes': member_notes,
     }
     return render(request, 'staff/members/detail.html', context)
 
