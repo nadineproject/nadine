@@ -43,7 +43,7 @@ def profile(request, username):
     past_org_memberships = user.profile.past_organization_memberships()
     can_edit = request.user == user or request.user.is_staff
     today = localtime(now()).date()
-    has_bookings = User.objects.filter(event__start_ts__gte=today)
+    has_bookings = User.objects.filter(username=user.username).filter(event__start_ts__gte=today)
 
     ALLOW_PHOTO_UPLOAD = settings.ALLOW_PHOTO_UPLOAD
     if request.user.is_staff:
