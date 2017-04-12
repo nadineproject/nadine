@@ -436,17 +436,17 @@ function gotoEmailReset(emailAddress){
     <h5>Notes</h5>
     <div>
       {% if member_notes %}
-        <table>
+        <table class='notes-table'>
             <tr>
-                <th>Date</th>
-                <th>By</th>
-                <th class='left'>Note</th>
+                <th class='note-date'>Date</th>
+                <th class='note-by'>By</th>
+                <th>Note</th>
                 <th></th>
             </tr>
             {% for note in member_notes %}
                 <tr>
-                    <td>{{ note.created|date:"M d, Y"}}</td>
-                    <td>{% if note.created_by %}{{ note.created_by }} {% endif %}</td>
+                    <td class='note-date'>{{ note.created|date:"M d, Y"}}</td>
+                    <td class='note-by'>{% if note.created_by %}{{ note.created_by }} {% endif %}</td>
                     <td class='left'>{{ note.note }}</td>
                     <td class='right' nowrap>[ <a href="{% url 'admin:nadine_membernote_change' note.id %}">edit</a> ]</td>
                 </tr>

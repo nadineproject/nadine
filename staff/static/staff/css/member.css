@@ -469,6 +469,22 @@ table.mem-details-table {
   text-align: left;
 }
 
+.notes-table {
+  margin: 2%;
+}
+
+.notes-table .note-date, .notes-table .note-by {
+  width: 15%;
+}
+
+.notes-table tr:first-of-type {
+  border-bottom: 1px solid RGBA(216, 216, 216, 1.00);
+}
+
+.notes-table th {
+  text-align: left !important;
+}
+
 .org_name_td {
   width: 20%;
 }
