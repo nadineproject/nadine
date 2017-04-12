@@ -279,7 +279,7 @@ class Membership(models.Model):
         # If we've made it this far, it's a match
         return True
 
-    def matching_package(self, subs, target_date=None):
+    def matching_package(self, target_date=None):
         ''' Calculates which package matches the subscriptions. '''
         subscriptions = self.active_subscriptions(target_date)
 

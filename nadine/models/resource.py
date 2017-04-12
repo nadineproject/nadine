@@ -223,7 +223,7 @@ class Resource(models.Model):
             mod_index = self.tracker_class.rfind(".")
             module_name = self.tracker_class[0:mod_index]
             class_name = self.tracker_class[mod_index+1:]
-            logger.info("Loading Class:  module_name='%s', class_name='%s'" % (module_name, class_name))
+            logger.debug("Loading Class:  module_name='%s', class_name='%s'" % (module_name, class_name))
             m = importlib.import_module(module_name)
             loaded_class = getattr(m, class_name)
             instance = loaded_class(self)
@@ -264,7 +264,7 @@ class CoworkingDayTracker(ResourceTrackerABC):
 
     def get_activity(self, user, period_start, period_end):
         from nadine.models.usage import CoworkingDay
-        print("user: %s, start: %s, end: %s" % (user, period_start, period_end))
+        logger.debug("user: %s, start: %s, end: %s" % (user, period_start, period_end))
         return CoworkingDay.objects.filter(user=user, visit_date__range=(period_start, period_end), payment='Bill')
 
     def get_line_item(self, bill, description, amount, activity):
