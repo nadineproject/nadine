@@ -23,6 +23,7 @@ from nadine.models.membership import MemberGroups, Membership, MembershipPackage
 from nadine.models.profile import MemberNote, SentEmailLog, FileUpload, SpecialDay
 from nadine.models.resource import Resource
 from nadine.models.organization import Organization
+from interlink.models import MailingList
 from nadine.forms import MemberSearchForm, MembershipForm, EventForm
 from nadine.utils.slack_api import SlackAPI
 from nadine.settings import TIME_ZONE
@@ -357,6 +358,7 @@ def confirm_membership(request, username, package, end_target, new_subs):
     package = unicodedata.normalize('NFKD', package).encode('ascii', 'ignore')
     subs = ast.literal_eval(new_subs)
     pkg = ast.literal_eval(package)
+    slack = None
 
     if request.method == 'POST':
         try:
@@ -371,7 +373,12 @@ def confirm_membership(request, username, package, end_target, new_subs):
                         membership.bill_day = pkg['bill_day']
                         membership.save()
                         user.membership.end_all(end_target)
-                        #TODO: If user has no new package then end their subscription to members@ email
+
+                        """When a membership is created, add the user to any opt-out mailing lists"""
+                        if user.membership.package == None:
+                            mailing_lists = MailingList.objects.filter(is_opt_out=True)
+                            for ml in mailing_lists:
+                                ml.subscribers.add(membership.user)
 
                     # Review all subscriptions to see if adding or ending
                     for sub in subs:
@@ -382,6 +389,7 @@ def confirm_membership(request, username, package, end_target, new_subs):
                                 to_end = user.membership.active_subscriptions().get(id=sub_id)
                                 to_end.end_date = sub['end_date']
                                 to_end.save()
+                                slack = None
                         else:
                             paid_by = None
                             created_ts = localtime(now())
@@ -412,17 +420,11 @@ def confirm_membership(request, username, package, end_target, new_subs):
                             # Save new resource
                             rs = ResourceSubscription(created_by=created_by, created_ts=created_ts, resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=paid_by, membership=membership)
                             rs.save()
-                    #TODO: """When first subscriptions is created, invite the user to Slack & add to membership""
-                    # if ResourceSubscription.objects.filter(membership=user.membership.id).count() == 0:
-                    #     print('New member!')
-                        # SlackAPI().invite_user_quiet(user)
-                        # """When a membership is created, add the user to any opt-out mailing lists"""
-                        #mailing_lists = MailingList.objects.filter(is_opt_out=True)
-                        # for ml in mailing_lists:
-                        #     ml.subscribers.add(membership.user)
-                        # Not sure about below method
-                        # post_save.connect(membership_save_callback, sender=OldMembership)
-                    # TODO: If they are a returning member who did not have a membership package before new start date, then add them to members@
+                            slack = True
+                    """When first subscriptions is created, invite the user to Slack & add to membership"""
+                    if slack == True:
+                        if ResourceSubscription.objects.filter(membership=user.membership.id).count() == 0:
+                            SlackAPI().invite_user_quiet(user)
                 else:
                     user.membership.end_all(end_target)
                 messages.success(request, "You have updated the subscriptions for %s" % username)

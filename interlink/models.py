@@ -28,9 +28,12 @@ logger = logging.getLogger(__name__)
 def unsubscribe_recent_dropouts():
     """Remove mailing list subscriptions from members whose memberships expired yesterday and they do not start a membership today"""
     today = localtime(now()).date()
-    recently_expired = User.objects.filter(membership__end_date=today - timedelta(days=1)).exclude(membership__start_date=today)
-    for u in recently_expired:
-        MailingList.objects.unsubscribe_from_all(u)
+    ended_subs = User.objects.filter(resourcesubscription__end_date=today - timedelta(days=1)).exclude(resourcesubscription__start_date=today)
+    for s in ended_subs:
+        if s.membership.subscriptions.future_subscriptions:
+            return
+        else:
+            MailingList.objects.unsubscribe_from_all(s)
 
 
 # This signal used to be triggered when we saved a Membership.
