@@ -371,6 +371,7 @@ def confirm_membership(request, username, package, end_target, new_subs):
                         membership.bill_day = pkg['bill_day']
                         membership.save()
                         user.membership.end_all(end_target)
+                        #TODO: If user has no new package then end their subscription to members@ email
 
                     # Review all subscriptions to see if adding or ending
                     for sub in subs:
@@ -411,11 +412,17 @@ def confirm_membership(request, username, package, end_target, new_subs):
                             # Save new resource
                             rs = ResourceSubscription(created_by=created_by, created_ts=created_ts, resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=paid_by, membership=membership)
                             rs.save()
-                    # Slack invite if first subscriptions
+                    #TODO: """When first subscriptions is created, invite the user to Slack & add to membership""
                     # if ResourceSubscription.objects.filter(membership=user.membership.id).count() == 0:
                     #     print('New member!')
                         # SlackAPI().invite_user_quiet(user)
-
+                        # """When a membership is created, add the user to any opt-out mailing lists"""
+                        #mailing_lists = MailingList.objects.filter(is_opt_out=True)
+                        # for ml in mailing_lists:
+                        #     ml.subscribers.add(membership.user)
+                        # Not sure about below method
+                        # post_save.connect(membership_save_callback, sender=OldMembership)
+                    # TODO: If they are a returning member who did not have a membership package before new start date, then add them to members@
                 else:
                     user.membership.end_all(end_target)
                 messages.success(request, "You have updated the subscriptions for %s" % username)
