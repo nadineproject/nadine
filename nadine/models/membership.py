@@ -437,15 +437,16 @@ class Membership(models.Model):
 
         # This method builds up a dictionary called new_bills
         # by looping through the membership/subscription data 4 times.
-        # The key is the user who will pay the bill, the value is another dict
+        # The key is the user who will pay the bill, the value is another dict.
         # new_bills = {
         #     'payer1': {
         #         'bill': UserBill
         #         'subscriptions': [ ResourceSubscriptions ]
         #         'line_items': [ BillLineItems() ]
         #         'custom_items': [ BillLineItems(custom=True) ]
-        #     }
-        #     'payer2': {}
+        #     },
+        #     'payer2': {},
+        #     ...
         # }
         new_bills = {}
 
