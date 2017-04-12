@@ -114,8 +114,7 @@ class UserBillTestCase(TestCase):
         self.assertTrue(may_20_bill != None)
         self.assertEqual(date(2010, 5, 20), may_20_bill.due_date)
         self.assertEqual(75.00, may_20_bill.amount)
-        # self.assertEqual(9, may_20_bill.overage.count())
-        # self.assertEqual(4, may_20_bill.dropins.count())
+        self.assertEqual(0, may_20_bill.resource_activity_count(Resource.objects.day_resource))
 
         # June 20th bill = Basic + 4 over PT5 from previous period
         self.assertEqual(user8.membership.matching_package(date(2010, 6, 20)), self.basicPackage)
@@ -124,7 +123,8 @@ class UserBillTestCase(TestCase):
         print_bill(june_20_bill)
         self.assertTrue(june_20_bill != None)
         self.assertEqual(date(2010, 6, 20), june_20_bill.due_date)
-        # self.assertEqual(0, june_20_bill.dropins.count())
         self.assertEqual(130, june_20_bill.amount)
+        self.assertEqual(9, june_20_bill.resource_activity_count(Resource.objects.day_resource))
+
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

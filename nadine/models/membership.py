@@ -509,12 +509,9 @@ class Membership(models.Model):
             # Every subscription produces a monthly line item
             for subscription in new_bill['subscriptions']:
                 monthly_items.append(bill.generate_monthly_line_item(subscription))
-            # Account for activity for each resource in the previous period
-            activity_period_end = bill.period_start - timedelta(days=1)
-            activity_period_start = activity_period_end - relativedelta(months=1) + timedelta(days=1)
             for resource in Resource.objects.all():
                 if resource.is_trackable():
-                    activity_lines = bill.generate_activity_line_items(resource, activity_period_start, activity_period_end)
+                    activity_lines = bill.generate_activity_line_items(resource)
                     if activity_lines:
                         activity_items.extend(activity_lines)
 

@@ -1,6 +1,7 @@
 import logging
-from datetime import timedelta, date
 from decimal import Decimal
+from datetime import timedelta, date
+from dateutil.relativedelta import relativedelta
 
 from django.db import models
 from django.db.models import F, Q, Count, Sum, Value
@@ -80,6 +81,44 @@ class UserBill(models.Model):
     def get_admin_url(self):
         return reverse('admin:nadine_userbill_change', args=[self.id])
 
+    def get_activity_period(self):
+        # Activity period is the previous month
+        activity_period_end = self.period_start - timedelta(days=1)
+        activity_period_start = activity_period_end - relativedelta(months=1) + timedelta(days=1)
+        return (activity_period_start, activity_period_end)
+
+    def resource_allowance(self, resource):
+        ''' Add up all the allowances to see how much activity is included in this membership. '''
+        ps, pe = self.get_activity_period()
+        subscriptions = self.membership.subscriptions_for_period(ps, pe).filter(resource=resource)
+        if not subscriptions:
+            return None
+        allowance = 0
+        for s in subscriptions:
+            allowance += s.allowance
+        return allowance
+
+    def resource_overage_rate(self, resource):
+        # Assume the overage rate for all subscriptions is the same.
+        # This will cause problems if there are multiple subscriptions with different rates!!!
+        # But since this should not be the case 99% of the time I'm going to do it the simple way --JLS
+        ps, pe = self.get_activity_period()
+        subscriptions = self.membership.subscriptions_for_period(ps, pe).filter(resource=resource)
+        if not subscriptions:
+            return None
+        return subscriptions.first().overage_rate
+
+    def resource_activity_count(self, resource):
+        return self.line_items.filter(resource=resource).count()
+
+    def resource_overage_count(self, resource):
+        allowance = self.resource_allowance(resource)
+        if allowance != None:
+            activity_count = self.resource_activity_count(resource)
+            if allowance < activity_count:
+                return activity_count - allowance
+            return 0
+
     def generate_monthly_line_item(self, subscription):
         desc = "Monthly " + subscription.resource.name + " "
         if subscription.description:
@@ -92,29 +131,15 @@ class UserBill(models.Model):
         line_item = BillLineItem(bill=self, description=desc, amount=amount)
         return line_item
 
-    def generate_activity_line_items(self, resource, period_start, period_end):
+    def generate_activity_line_items(self, resource):
         ''' Generate line items for all activity for the given resource in the given period. '''
-        logger.debug("generate_activity_line_items(resource=%s, period_start=%s, period_end=%s)" % (resource.name, period_start, period_end))
-
-        # What subscriptions were active in this period?
-        subscriptions = self.membership.subscriptions_for_period(period_start, period_end).filter(resource=resource)
-        if not subscriptions:
+        period_start, period_end = self.get_activity_period()
+        allowance = self.resource_allowance(resource)
+        if allowance == None:
+            # This indicates we have no subscriptions for this resource
             return
-
-        # Add up all the allowances to see how much activity is included in this membership
-        allowance = 0
-        for s in subscriptions:
-            allowance += s.allowance
-
-        # Assume the overage rate for all subscriptions is the same.
-        # This will cause problems if there are multiple subscriptions with different rates!!!
-        # But since this should not be the case 99% of the time I'm going to do it the simple way --JLS
-        overage_rate = subscriptions.first().overage_rate
-
-        # Pull the users active in this period
+        overage_rate = self.resource_overage_rate(resource)
         user_list = self.membership.users_in_period(period_start, period_end)
-
-        # We'll use this tracker to pull the activity
         tracker = resource.get_tracker()
 
         line_items = []
