@@ -46,6 +46,7 @@
 </table>
 {% endif %}
 
+{% if membership.active_subscriptions %}
 <h5>Current Subscriptions</h5>
 <table class='sub-table'>
   <tr>
@@ -73,6 +74,11 @@
     <td><strong>${{ membership.monthly_rate }}/month</strong><td>
   </tr>
 </table>
+{% else %}
+<h6 style='text-align: center; margin-top: 5%;'>
+  No current subscriptions.
+</h6>
+{% endif %}
 
 {% if user.membership.subscriptions.past_subscriptions %}
 <h5>Past Subscriptions</h5>
