@@ -64,13 +64,14 @@ textarea.bcc-textarea {
 }
 
 #end-header {
-  width:50%;
+  width:35%;
   padding-top: 1%;
+  vertical-align: middle;
   color: RGBA(158, 89, 88, 1.00);
 }
 
 td#end-header strong {
-  font-size: 1.4em;
+  font-size: 1.3em;
 }
 
 #end-package td {

@@ -98,7 +98,7 @@
 </div>
 
 <div id='change-package'>
-  <h6>Change Membership</h6>
+  <h6>Change Membership Package</h6>
   <table class='end-table'>
     <tr>
       <td id='end-header'>
@@ -127,7 +127,7 @@
   </table>
   <form class='change-form' action='.' method='GET'>
     <input type='hidden' name='target_date' id='target_date' />
-    <table class='sub-table' style='width: 70%;'>
+    <table class='sub-table'>
       <tr>
         <td id='end-header'>
           <strong>Choose a New Package: </strong>
@@ -137,6 +137,7 @@
         </td>
           {{ package_form.bill_day }}
         {{ package_form.username }}
+        <td style='width:30%;'></td>
       </tr>
     </table>
   </form>
