@@ -129,6 +129,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'urls'
 
 INSTALLED_APPS = [
+    # Django Applications
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -137,28 +138,31 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'django.contrib.staticfiles',
     'django.contrib.admindocs',
+    # Nadine Applications
     'nadine',
     'staff',
     'member',
+    'tablet',
+    'arpwatch',
     'comlink',
     'interlink',
-    'arpwatch',
-    'tablet',
+    'doors.keymaster',
+    # Other Applications
     'jsignature',
     'taggit_templatetags2',
     'taggit',
-    'djcelery',
-    'doors.keymaster',
+    # 'chroniker',
+    # 'djcelery',
 ]
 
 #
 # Celery initialization
 #
-try:
-    import djcelery
-    djcelery.setup_loader()
-except ImportError:
-    pass
+# try:
+#     import djcelery
+#     djcelery.setup_loader()
+# except ImportError:
+#     pass
 
 # Multimail settings
 # https://github.com/scott2b/django-multimail
@@ -199,13 +203,12 @@ MAILGUN_VERIFY_INCOMING = True
 #MAILGUN_DEBUG = False
 
 # Celery Settings
-CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT = ['json', 'msgpack', 'yaml']
 CELERY_DISABLE_RATE_LIMITS = True
-CELERY_RESULT_BACKEND = "amqp"
-BROKER_URL = "amqp://guest:guest@localhost:5672//"
+CELERY_RESULT_BACKEND = "rpc"
+CELERY_BROKER_URL = "rpc://guest:guest@localhost:5672//"
 CELERY_TIMEZONE = 'America/Los_Angeles'
 
 # When this is True, celery tasks will be run synchronously.
