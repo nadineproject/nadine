@@ -5,6 +5,7 @@ import traceback
 import logging
 
 from django.conf import settings
+from django.contrib import messages
 from django.db.models import Q
 from django.template import Context, loader
 from django.http import HttpResponse, Http404, HttpResponseServerError, HttpResponseRedirect, HttpResponsePermanentRedirect
@@ -46,20 +47,26 @@ def password_reset(request, is_admin_site=False, template_name='registration/pas
         form = password_reset_form(initial={'email': request.GET.get('email')})
     elif request.method == "POST":
         email = request.POST.get('email')
-        logger.info("Resetting password for '%s'" % email)
-        form = password_reset_form(request.POST)
-        if form.is_valid():
-            opts = {}
-            opts['use_https'] = request.is_secure()
-            opts['token_generator'] = token_generator
-            if is_admin_site:
-                opts['domain_override'] = request.META['HTTP_HOST']
-            else:
-                opts['email_template_name'] = email_template_name
-                if not Site._meta.installed:
-                    opts['domain_override'] = RequestSite(request).domain
-            form.save(**opts)
-            return HttpResponseRedirect(post_reset_redirect)
+        valid = EmailAddress.objects.filter(email=email)
+        if len(valid) > 0:
+            logger.info("Resetting password for '%s'" % email)
+            form = password_reset_form(request.POST)
+            if form.is_valid():
+                opts = {}
+                opts['use_https'] = request.is_secure()
+                opts['token_generator'] = token_generator
+                if is_admin_site:
+                    opts['domain_override'] = request.META['HTTP_HOST']
+                else:
+                    opts['email_template_name'] = email_template_name
+                    if not Site._meta.installed:
+                        opts['domain_override'] = RequestSite(request).domain
+                form.save(**opts)
+                return HttpResponseRedirect(post_reset_redirect)
+        else:
+            print('There is no user associated with that email. Please try again.')
+            messages.error(request, 'There is no user associated with that email.')
+            return render(request, template_name, {'form': password_reset_form()})
     else:
         form = password_reset_form()
     return render(request, template_name, {'form': form})
