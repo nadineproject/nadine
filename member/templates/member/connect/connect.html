@@ -33,6 +33,8 @@ or we can send an email to them with your information (<i>{{user.email}}</i>) an
 	$(document).ready(function() {
 		$('.button-collapse').sideNav();
 		$('div .success').hide();
+		$('footer').removeClass('main-footer');
+		$('footer').addClass('sticky-footer');
 
 		{% for message in messages %}
 			{% if message.tags == 'error' %}
