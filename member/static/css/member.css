@@ -100,8 +100,21 @@ table td {
 	outline:none;
 }
 
+.error-msg {
+	background-color: RGBA(186, 50, 35, 1.00);
+}
+
+.success-msg {
+	background-color: RGBA(0, 178, 130, 1.00);
+}
+
 .messages {
 	margin-top: 3%;
+}
+
+.errorlist li {
+	color: red;
+	font-style: italic;
 }
 
 .centered {

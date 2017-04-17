@@ -9,14 +9,9 @@
 <p align="center"><em>NOTE: Items in <strong>bold</strong> are viewable by all active members.</em></p>
 
 <div id="profile_form">
-  {% if page_message %}
-    <div>
-      <p style='color:red;text-align:center;'>
-        <strong> {{ page_message }} </strong>
-      </p>
-      <br />
-    </div>
-  {% endif %}
+  {% for message in messages %}
+    <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+  {% endfor %}
   <form enctype="multipart/form-data" action='.' method='POST'>
     <div id='registration'>
       <table>

@@ -162,7 +162,6 @@ def create_booking(request):
 def confirm_booking(request, room, start, end, date):
     user = request.user
     room = get_object_or_404(Room, name=room)
-    page_message = None
 
     start_ts, end_ts, start, end = coerce_times(start, end, date)
 
@@ -208,10 +207,10 @@ def confirm_booking(request, room, start, end, date):
                 return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': user.username}))
 
             except Exception as e:
-                page_message = str(e)
+                messages.error(request, str(e))
                 logger.error(str(e))
         else:
-            page_message = 'This room is no longer available at the requested time.'
+            messages.error(request, 'This room is no longer available at the requested time.')
     else:
         booking_form = EventForm()
 
@@ -220,7 +219,6 @@ def confirm_booking(request, room, start, end, date):
                'end': end,
                'room': room,
                'date': date,
-               'page_message': page_message,
                'event_dict': event_dict
                }
     return render(request, 'member/events/booking_confirm.html', context)

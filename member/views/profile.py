@@ -157,7 +157,6 @@ def profile_billing(request, username):
 
 @login_required
 def edit_profile(request, username):
-    page_message = None
     user = get_object_or_404(User, username=username)
     if not user == request.user:
         if not request.user.is_staff:
@@ -187,7 +186,7 @@ def edit_profile(request, username):
 
                             return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': user.username}))
                         else:
-                            page_message = 'Your password must be at least 8 characters long.'
+                            messages.error(request, 'Your password must be at least 8 characters long.')
                     else:
                         for link in link_data:
                             del_url = link.get('url')
@@ -208,9 +207,9 @@ def edit_profile(request, username):
 
                         return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': user.username}))
                 else:
-                    page_message = 'The entered passwords do not match. Please try again.'
+                    messages.error(request,'The entered passwords do not match. Please try again.')
             else:
-                page_message = 'There was an error saving your websites. Please make sure they have a valid URL and URL type.'
+                messages.error(request, 'There was an error saving your websites. Please make sure they have a valid URL and URL type.')
     else:
         link_formset = LinkFormSet(initial=link_data)
         profile = user.profile
@@ -232,7 +231,7 @@ def edit_profile(request, username):
                                                 'emergency_phone': emergency_contact.phone, 'emergency_email': emergency_contact.email,
                                                 })
 
-    context = {'user': user, 'profile_form': profile_form, 'page_message': page_message, 'link_formset': link_formset}
+    context = {'user': user, 'profile_form': profile_form, 'link_formset': link_formset}
     return render(request, 'member/profile/profile_edit.html', context)
 
 

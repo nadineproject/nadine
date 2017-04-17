@@ -11,7 +11,7 @@
 	<div>
 		<div class='col s12 m6 l6 offset-m3 offset-l3' id='login_box'>
 			{% if form.errors %}
-			<p>Your username and password didn't match. Please try again.</p>
+				<p class='error'>Your username and password didn't match. Please try again.</p>
 			{% endif %}
 			<div>
 				<form id='login_form'  method="POST" action=".">
@@ -42,9 +42,6 @@
 
 		</div>
 		<div class='col s6 offset-s3' id='reg_box'>
-			{% if page_message %}
-			  <p id="page_message">{{ page_message|safe }}</p>
-			{% endif %}
 			<div style="margin-left:2em;">
 			  <form id='registration_form' name='registration_form' action='../member/register/' method='POST'>
 			    <h2>Register</h2>
@@ -76,7 +73,7 @@
 	{% else %}
 	<div class='col s12 m6 l6 offset-m3 offset-l3' id='login_box'>
 		{% if form.errors %}
-			<p>Your username and password didn't match. Please try again.</p>
+			<p class='error'>Your username and password didn't match. Please try again.</p>
 		{% endif %}
 		<div>
 			<form id='login_form'  method="post" action=".">
@@ -131,6 +128,10 @@
 				$('#reg_box').hide();
 				$('#login_box').show();
 			})
+
+			$('.error').css('color', 'red');
+			$('.error').css('font-style', 'italic');
+			$('.error').css('text-align', 'center');
 		// })
 	</script>
 {% endblock %}

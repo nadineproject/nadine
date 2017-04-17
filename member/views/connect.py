@@ -25,14 +25,13 @@ from member.views.core import is_active_member
 @login_required
 @user_passes_test(is_active_member, login_url='member:not_active')
 def connect(request, username):
-    message = ""
     target = get_object_or_404(User, username=username)
     user = request.user
     action = request.GET.get('action')
     if action and action == "send_info":
         email.send_contact_request(user, target)
-        message = "Email Sent"
-    context = {'target': target, 'user': user, 'page_message': message, 'settings': settings}
+        messages.success(request, "Email Sent")
+    context = {'target': target, 'user': user, 'settings': settings}
     return render(request, 'member/connect/connect.html', context)
 
 

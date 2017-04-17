@@ -22,14 +22,6 @@
       <p style='text-align:center;'>
         Reminder: Make sure you include your setup and breakdown time in your reservation time.
       </p>
-      {% if page_message %}
-        <div>
-          <p style='color:red;text-align:center;'>
-            <strong> {{ page_message }} </strong>
-          </p>
-          <br />
-        </div>
-      {% endif %}
       <table>
         <tr>
           <td><strong>Booking For:</strong></td>
@@ -120,6 +112,7 @@
   <script>
     $(document).ready(function() {
   		$('.button-collapse').sideNav();
+      $('div .error').hide();
 
       $('.datepicker').pickadate({
         selectMonths: true,
@@ -481,6 +474,20 @@
           $('#end-time').val(newEnd);
         }
       })
+
+      {% for message in messages %}
+        {% if message.tags == 'error' %}
+          Materialize.toast('{{ message }}', 5000, 'error-msg msg');
+        {% else %}
+          Materialize.toast('{{ message }}', 3000, '{{ message.tags }}-msg msg');
+        {% endif %}
+      {% endfor %}
+
+      $(document).on('click', '#toast-container .toast', function() {
+        $(this).fadeOut(function(){
+          $(this).remove();
+        });
+      });
     });
   </script>
 {% endblock %}

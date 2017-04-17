@@ -28,15 +28,6 @@
 <p align="center"><em>NOTE: Items in <strong style='color:RGBA(79, 134, 135, 1);'>green bold</strong> are viewable by all active members.</em></p>
 
 <div id="profile_form">
-  {% if page_message %}
-    <div>
-      <p style='color:red;text-align:center;'>
-        <strong> {{ page_message }} </strong>
-      </p>
-      <br />
-    </div>
-  {% endif %}
-
   <h3>
       Email Addresses
       (<a onclick="$('#email_help').toggle();">?</a>)
@@ -356,6 +347,20 @@
       if($('#password-confirm').val() != $('#password-create').val()) {
         $('#password-row').after("<tr class='password-error'><td class='pf-error' id='passInput-error'>Passwords do not match.</td><td></td></tr>")
       }
+    });
+
+    {% for message in messages %}
+      {% if message.tags == 'error' %}
+        Materialize.toast('{{ message }}', 60000, 'error-msg msg');
+      {% else %}
+        Materialize.toast('{{ message }}', 3000, '{{ message.tags }}-msg msg');
+      {% endif %}
+    {% endfor %}
+
+    $(document).on('click', '#toast-container .toast', function() {
+      $(this).fadeOut(function(){
+        $(this).remove();
+      });
     });
   });
 </script>

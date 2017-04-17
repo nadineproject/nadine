@@ -193,7 +193,6 @@ def manage_member(request, username):
 
 @user_passes_test(is_new_user, login_url='member_home')
 def register(request):
-    page_message = None
     if request.method == 'POST':
         registration_form = NewUserForm(request.POST)
         profile_form = EditProfileForm(request.POST, request.FILES)
@@ -230,16 +229,14 @@ def register(request):
 
                     return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': user.username}))
             else:
-                page_message = 'The entered passwords do not match. Please try again.'
+                messages.error(request, 'The entered passwords do not match. Please try again.')
         except Exception as e:
-            page_message = str(e)
             logger.error(str(e))
     else:
         registration_form = NewUserForm()
         profile_form = EditProfileForm()
 
     context = {'registration_form': registration_form,
-               'page_message': page_message,
                'ALLOW_PHOTO_UPLOAD': settings.ALLOW_PHOTO_UPLOAD,
                'settings': settings,
                'profile_form': profile_form
