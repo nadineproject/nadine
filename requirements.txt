@@ -12,7 +12,7 @@ mailchimp==2.0.9
 requests==2.13.0
 cryptography==1.8.1
 suds-jurko==0.6
-python-slugify==1.2.2
+python-slugify==1.2.4
 
 # Should remain unversioned
 gunicorn
