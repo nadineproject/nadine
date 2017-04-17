@@ -11,6 +11,8 @@ from django.conf import settings
 from django.utils.timezone import localtime, now
 from django.contrib.auth.models import User
 from django.db.models.signals import pre_save, post_save
+from django.core.urlresolvers import reverse
+
 
 from nadine.models.core import Website, URLType
 
