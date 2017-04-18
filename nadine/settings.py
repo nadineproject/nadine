@@ -224,6 +224,9 @@ CRONJOBS = [
     # Other Tasks
     ('30 8 * * *', 'django.core.management.call_command', ['announce_special_days']),
 ]
+CRONTAB_LOCK_JOBS = True
+CRONTAB_COMMAND_PREFIX = ""
+CRONTAB_COMMAND_SUFFIX = ""
 
 # Allows for the login page to include or not include the option for nonmembers to register and make a user account.
 ALLOW_ONLINE_REGISTRATION = False
