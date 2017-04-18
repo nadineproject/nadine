@@ -16,7 +16,7 @@ class PopMailChecker(object):
 
     def fetch_mail(self):
         """Pops mail from the pop server and writes them as IncomingMail"""
-        print("Checking mail for: %s" % self.mailing_list.name)
+        self.logger.debug("Checking mail for: %s" % self.mailing_list.name)
         pop_client = poplib.POP3_SSL(self.mailing_list.pop_host, self.mailing_list.pop_port)
         try:
             response = pop_client.user(self.mailing_list.username)
@@ -40,7 +40,7 @@ class PopMailChecker(object):
                 return []
 
             results = []
-            self.logger.debug("Processing %d mails" % stats[0])
+            self.logger.info("Processing %d %s messages" % (stats[0], self.mailing_list.name))
             for i in range(stats[0]):
                 try:
                     response, mail, _size = pop_client.retr(i + 1)
