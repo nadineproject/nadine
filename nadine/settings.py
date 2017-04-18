@@ -288,6 +288,10 @@ LOGGING = {
             'level': 'INFO',
             'propagate': True,
         },
+        'django_crontab': {
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
+        },
         'nadine': {
             'handlers': ['console'],
             'level': 'INFO',
