@@ -1,4 +1,4 @@
-![readthedocs badge](https://readthedocs.org/projects/nadine/badge/)
+![readthedocs badge](https://readthedocs.org/projects/nadine/badge/) ![travisci badge](https://travis-ci.org/nadineproject/nadine.svg?branch=master)
 
 # Nadine
 
