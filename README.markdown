@@ -1,3 +1,5 @@
+![readthedocs badge](https://readthedocs.org/projects/nadine/badge/)
+
 # Nadine
 
 Nadine is an open source software project designed and built for use at Office Nomads to help handle daily operations of the space from both the staff and member sides of the house. Nadine has been in continuous use and development since 2007. We are working hard to make Nadine easier to install, configure, deploy, and update.
