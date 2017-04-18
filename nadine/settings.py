@@ -151,24 +151,14 @@ INSTALLED_APPS = [
     'jsignature',
     'taggit_templatetags2',
     'taggit',
-    # 'chroniker',
-    # 'djcelery',
+    'django_crontab',
 ]
-
-#
-# Celery initialization
-#
-# try:
-#     import djcelery
-#     djcelery.setup_loader()
-# except ImportError:
-#     pass
 
 # Multimail settings
 # https://github.com/scott2b/django-multimail
-#MULTIMAIL_FROM_EMAIL_ADDRESS = ''
-#MULTIMAIL_EMAIL_VERIFICATION_URL = "https://apps.officenomads.com/mail/verify/%(emailaddress_id)s/%(verif_key)s"
-#MULTIMAIL_FROM_EMAIL_ADDRESS = 'nadine@officenomads.com"
+# MULTIMAIL_FROM_EMAIL_ADDRESS = ''
+# MULTIMAIL_EMAIL_VERIFICATION_URL = "https://apps.officenomads.com/mail/verify/%(emailaddress_id)s/%(verif_key)s"
+# MULTIMAIL_FROM_EMAIL_ADDRESS = 'nadine@officenomads.com"
 EMAIL_VERIFICATION_URL = ''
 EMAIL_POST_VERIFY_URL = "/member/profile/"
 
@@ -176,11 +166,11 @@ EMAIL_POST_VERIFY_URL = "/member/profile/"
 JSIGNATURE_WIDTH = 500
 JSIGNATURE_HEIGHT = 200
 JSIGNATURE_COLOR = "30F"
-#JSIGNATURE_BACKGROUND_COLOR = "CCC"
+JSIGNATURE_RESET_BUTTON = False
+# JSIGNATURE_BACKGROUND_COLOR = "CCC"
 # JSIGNATURE_DECOR_COLOR
 # JSIGNATURE_LINE_WIDTH
-#JSIGNATURE_UNDO_BUTTON = True
-JSIGNATURE_RESET_BUTTON = False
+# JSIGNATURE_UNDO_BUTTON = True
 
 # USAePay Settings
 # Use API Doc/Literal WSDL
@@ -198,27 +188,43 @@ MAILGUN_UPLOAD_TO = "attachments/"
 MAILGUN_VERIFY_INCOMING = True
 
 # Mailgun Settings
-#MAILGUN_API_KEY = "YOUR-MAILGUN-API-KEY"
-#MAILGUN_DOMAIN = "YOUR-MAILGUN-DOMAIN"
-#MAILGUN_DEBUG = False
+# MAILGUN_API_KEY = "YOUR-MAILGUN-API-KEY"
+# MAILGUN_DOMAIN = "YOUR-MAILGUN-DOMAIN"
+# MAILGUN_DEBUG = False
 
-# Celery Settings
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_ACCEPT_CONTENT = ['json', 'msgpack', 'yaml']
-CELERY_DISABLE_RATE_LIMITS = True
-CELERY_RESULT_BACKEND = "rpc"
-CELERY_BROKER_URL = "rpc://guest:guest@localhost:5672//"
-CELERY_TIMEZONE = 'America/Los_Angeles'
-
-# When this is True, celery tasks will be run synchronously.
-# This is nice when running unit tests or in development.
-# In production set this to False in your local_settings.py
-CELERY_ALWAYS_EAGER = False
-
+# Mailchimp Settings
 # MAILCHIMP_API_KEY="YourMailchimpKey"
 # MAILCHIMP_NEWSLETTER_KEY="YourNewsletter"
-#MAILCHIMP_WEBHOOK_KEY = "nadine"
+# MAILCHIMP_WEBHOOK_KEY = "nadine"
+
+# Crontabs - Scheduled Tasks
+# https://github.com/kraiz/django-crontab
+CRONJOBS = [
+    # Check-in with members
+    ('30 8 * * *', 'django.core.management.call_command', ['checkin_anniversary']),
+    ('30 8 * * *', 'django.core.management.call_command', ['checkin_exiting']),
+    ('30 8 * * *', 'django.core.management.call_command', ['checkin_two_months']),
+    ('30 8 * * *', 'django.core.management.call_command', ['checkin_no_return']),
+    ('55 17 * * *', 'django.core.management.call_command', ['checkin_first_day']),
+    # Tasks to run every hour
+    ('0 * * * *', 'django.core.management.call_command', ['member_alert_check']),
+    # Tasks to run every 5 minutes
+    ('*/5 * * * *', 'django.core.management.call_command', ['import_arp']),
+    ('*/5 * * * *', 'django.core.management.call_command', ['send_user_notifications']),
+    # Interlink Tasks
+    ('*/2 * * * *', 'django.core.management.call_command', ['process_mail']),
+    ('0 * * * *', 'django.core.management.call_command', ['unsubscribe']),
+    # Backup Tasks at 1:00 AM
+    ('0 1 * * *', 'django.core.management.call_command', ['backup_members']),
+    ('0 1 * * *', 'django.core.management.call_command', ['backup_create']),
+    # Billing Tasks at 4:00 AM
+    ('0 4 * * *', 'django.core.management.call_command', ['generate_bills']),
+    # Other Tasks
+    ('30 8 * * *', 'django.core.management.call_command', ['announce_special_days']),
+]
+CRONTAB_LOCK_JOBS = True
+CRONTAB_COMMAND_PREFIX = ""
+CRONTAB_COMMAND_SUFFIX = ""
 
 # Allows for the login page to include or not include the option for nonmembers to register and make a user account.
 ALLOW_ONLINE_REGISTRATION = False
@@ -234,10 +240,10 @@ COUNTRY = 'US'
 # COUNTRY = 'CA'
 
 # Uncomment and insert social media URLS to be inserted in the footer
-#FACEBOOK_URL = "https://www.facebook.com/OfficeNomads"
-#TWITTER_URL = 'https://twitter.com/OfficeNomads'
-#YELP_URL = 'https://www.yelp.com/biz/office-nomads-seattle-2'
-#INSTAGRAM_URL = 'https://www.instagram.com/officenomads/'
+# FACEBOOK_URL = "https://www.facebook.com/OfficeNomads"
+# TWITTER_URL = 'https://twitter.com/OfficeNomads'
+# YELP_URL = 'https://www.yelp.com/biz/office-nomads-seattle-2'
+# INSTAGRAM_URL = 'https://www.instagram.com/officenomads/'
 
 # These are business hours used to organize reservations. Times MUST be in military time. Calendar will be broken up via 15 minute increments
 # OPEN_TIME = '8:30'
@@ -282,6 +288,10 @@ LOGGING = {
             'handlers': ['file', 'console'],
             'level': 'INFO',
             'propagate': True,
+        },
+        'django_crontab': {
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
         },
         'nadine': {
             'handlers': ['console'],

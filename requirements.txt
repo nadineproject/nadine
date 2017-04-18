@@ -1,13 +1,11 @@
 Django>=1.11,<2.0
 Pillow==4.1.0
 psycopg2==2.7.1
-#celery==4.0.0
-celery>=3.1.24,<4.0
-git+https://github.com/celery/django-celery#egg=master
 django-localflavor==1.4.1
 django-localflavor-us==1.1
 django-taggit==0.22.0
 django-taggit-templatetags2==1.6.1
+django-crontab==0.7.1
 mailchimp==2.0.9
 requests==2.13.0
 cryptography==1.8.1
@@ -40,7 +38,6 @@ sphinx-autoapi==0.4.0
 
 # TODO - Evaluate use of these libraries
 feedparser
-#django-celery==3.1.17
 MonthDelta==1.0b0
 
 # A few handy tools
