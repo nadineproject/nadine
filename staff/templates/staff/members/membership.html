@@ -5,7 +5,9 @@
 
 {% block content %}
 <h4>Membership for <a href="{% url 'staff:members:detail' entity.username %}">{{ entity.get_full_name }}</a></h4>
+<div class='hi'>
 
+</div>
 <div class='curr-sub'>
   <h6>Current Subscriptions</h6>
   <table class='sub-table' style='margin-top: 2%;'>
@@ -113,7 +115,7 @@
             Today
           </option>
           <option value='eop'>
-            End of This Bill Period
+            End of Bill Period
           </option>
           <option value='other'>
             Other
@@ -228,6 +230,89 @@
 
 {% block extrajs %}
 <script>
+  function formatDate(d) {
+    var month = '' + (d.getMonth() + 1);
+    var day = '' + d.getDate();
+    var year = d.getFullYear();
+
+    if (month.length < 2) {
+      month = '0' + month;
+    }
+    if (day.length < 2) {
+      day = '0' + day;
+    }
+
+    return [year, month, day].join('-');
+  }
+
+  function getToday() {
+    var date = new Date();
+    var today = formatDate(date);
+    return today;
+  }
+
+  function getEop() {
+    var d = new Date();
+    var bd = '{{ bill_day }}';
+    if (d.getDate() < bd) {
+      var month = (d.getMonth() + 1);
+      var bd_month = month;
+      var day = (bd - 1);
+    } else {
+      var month = (d.getMonth() + 2);
+      var bd_month = month;
+      var day = (bd - 1);
+    }
+    var year = d.getFullYear();
+
+    //if January, increase year by one
+    if ( month === 1) {
+      year = year + 1;
+    }
+
+    //if date is 0, then change to correct date by checking the month
+    if (day === 0) {
+      if (month === 3) {
+        month ='0' + 2;
+        day = 28;
+      } else if (month === 1){
+        month = 12;
+        day = 31;
+      } else if (month === 5 || month === 7 || month === 10 || month === 12) {
+        var sm = [5, 7, 10, 12];
+        sm.forEach(function(i) {
+          if (i == month) {
+            month = i - 1;
+            day = 30;
+          }
+        })
+      } else {
+        month = month - 1;
+        day = 31;
+      }
+    }
+
+    //make sure formatting is correct
+    if (month < 10) {
+      month = '0' + month;
+    }
+    if (day < 10) {
+      day = '0' + day;
+    }
+
+    if(bd_month < 10) {
+      bd_month = '0' + bd_month;
+    }
+
+    if(bd < 10) {
+      bd = '0' + bd;
+    }
+
+    var eopDate = [year, month, day].join('-');
+    var bdDate = [year, bd_month, bd].join('-');
+
+    return [eopDate, bdDate];
+  }
   (function() {
     var availableUsers = [
 			{% for u in active_members %}
@@ -290,6 +375,11 @@
     $('.disabled input').attr('readonly', 'readonly');
     $('.disabled input.end_date').datepicker('destroy');
     $('.disabled input.start_date').datepicker('destroy');
+
+    var today = getToday();
+
+    var eopDate = getEop()[0];
+    var bdDate = getEop()[1];
 
     if(targetDate != 'None') {
       $('.start_date').val(targetDate);
@@ -419,10 +509,7 @@
         $('#sub-end').show();
         $('#sub-end').datepicker('show');
       }
-
       if (period == 'today') {
-        var date = new Date();
-        var today = formatDate(date);
         $('#target_date').val(today);
         if (action == 'update') {
           $('.curr-sub').hide();
@@ -437,74 +524,14 @@
           })
         }
       } else if (period == 'eop') {
-        var d = new Date();
-        var bd = '{{ bill_day }}';
-        if (d.getDate() < bd) {
-          var month = (d.getMonth() + 1);
-          var bd_month = month;
-          var day = (bd - 1);
-        } else {
-          var month = (d.getMonth() + 2);
-          var bd_month = month;
-          var day = (bd - 1);
-        }
-          var year = d.getFullYear();
-
-          //if January, increase year by one
-          if ( month === 1) {
-            year = year + 1;
-          }
-
-          //if date is 0, then change to correct date by checking the month
-          if (day === 0) {
-            if (month === 3) {
-              month ='0' + 2;
-              day = 28;
-            } else if (month === 1){
-              month = 12;
-              day = 31;
-            } else if (month === 5 || month === 7 || month === 10 || month === 12) {
-              var sm = [5, 7, 10, 12];
-              sm.forEach(function(i) {
-                if (i == month) {
-                  month = i - 1;
-                  day = 30;
-                }
-              })
-            } else {
-              month = month - 1;
-              day = 31;
-            }
-          }
-
-          //make sure formatting is correct
-          if (month < 10) {
-            month = '0' + month;
-          }
-          if (day < 10) {
-            day = '0' + day;
-          }
-
-          if(bd_month < 10) {
-            bd_month = '0' + bd_month;
-          }
-
-          if(bd < 10) {
-            bd = '0' + bd;
-          }
-
-          var date = [year, month, day].join('-');
-          var bd_date = [year, bd_month, bd].join('-');
-          end = date;
-          start = bd_date;
-          $('#target_date').val(end);
+          $('#target_date').val(eopDate);
           if (action == 'update') {
             $('.curr-sub').hide();
             $('.sub-form').show();
             $('.end-table').hide();
             $('#start_date_td input').each(function() {
               if(!($(this).attr('readonly'))) {
-                $(this).val(start);
+                $(this).val(bdDate);
                 $(this).attr('readonly', 'readonly');
                 $(this).datepicker('destroy');
               }
@@ -512,21 +539,6 @@
           }
       }
     })
-
-    function formatDate(d) {
-      var month = '' + (d.getMonth() + 1);
-      var day = '' + d.getDate();
-      var year = d.getFullYear();
-
-      if (month.length < 2) {
-        month = '0' + month;
-      }
-      if (day.length < 2) {
-        day = '0' + day;
-      }
-
-      return [year, month, day].join('-');
-    }
 
   //JS for ending membership package
     $('#end').on('click', function(e) {
