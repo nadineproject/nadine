@@ -1,16 +1,23 @@
 import os
 import time
-from django.core.management.base import NoArgsCommand, CommandError
 
-from staff import tasks
+from django.core.management.base import BaseCommand, CommandError
+from django.contrib.auth.models import User
+
+from members.models import UserNotification
 
 
-class Command(NoArgsCommand):
+class Command(BaseCommand):
     help = "Send User Notification Emails."
 
-    requires_system_checks = True
+    def handle(*args, **options):
+        here_today = list(User.helper.here_today())
+        for n in UserNotification.objects.filter(sent_date__isnull=True):
+            if n.notify_user in here_today:
+                if n.target_user in here_today:
+                    email.send_user_notifications(n.notify_user, n.target_user)
+                    n.sent_date = timezone.localtime(timezone.now())
+                    n.save()
 
-    def handle_noargs(self, **options):
-        tasks.send_notifications()
 
 # Copyright 2017 Office Nomads LLC (http://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
