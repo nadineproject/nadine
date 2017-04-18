@@ -25,11 +25,10 @@ from staff import billing
 
 @staff_member_required
 def transactions(request):
-    page_message = None
     start, end = date_range_from_request(request)
     date_range_form = DateRangeForm({START_DATE_PARAM: start, END_DATE_PARAM: end})
     transactions = Transaction.objects.filter(transaction_date__range=(start, end)).order_by('-transaction_date')
-    context = {"transactions": transactions, 'date_range_form': date_range_form, 'page_message': page_message}
+    context = {"transactions": transactions, 'date_range_form': date_range_form}
     return render(request, 'staff/billing/transactions.html', context)
 
 
@@ -40,15 +39,14 @@ def transaction(request, id):
 
 
 def run_billing(request):
-    page_message = None
     run_billing_form = RunBillingForm(initial={'run_billing': True})
     if request.method == 'POST':
         run_billing_form = RunBillingForm(request.POST)
         if run_billing_form.is_valid():
             billing.run_billing()
-            page_message = 'At your request, I have run <a href="%s">the bills</a>.' % (reverse('staff:billing:outstanding', args=[], kwargs={}),)
+            messages.success(request, 'At your request, I have run <a href="%s">the bills</a>.' % (reverse('staff:billing:outstanding', args=[], kwargs={}),))
     logs = BillingLog.objects.all()[:10]
-    context = {'run_billing_form': run_billing_form, 'page_message': page_message, "billing_logs": logs}
+    context = {'run_billing_form': run_billing_form, "billing_logs": logs}
     return render(request, 'staff/billing/run_billing.html', context)
 
 
@@ -111,19 +109,19 @@ def outstanding(request):
                 for bill_id in bill_ids:
                     transaction.bills.add(users_bills[bill_id])
                 transaction_url = reverse('staff:billing:transaction', args=[], kwargs={'id': transaction.id})
-                page_message = 'Created a <a href="%s">transaction for %s</a>' % (transaction_url, user.get_full_name())
+                messages.success(request, 'Created a <a href="%s">transaction for %s</a>' % (transaction_url, user.get_full_name()))
             elif action == "mark_in_progress":
                 for bill_id in bill_ids:
                     bill = users_bills[bill_id]
                     bill.in_progress = True
                     bill.save()
-                    page_message = "Bills marked 'In Progress'"
+                    messages.success(request, "Bills marked 'In Progress'")
             elif action == "clear_in_progress":
                 for bill_id in bill_ids:
                     bill = users_bills[bill_id]
                     bill.in_progress = False
                     bill.save()
-                    page_message = "Bills updated"
+                    messages.success(request, "Bills updated")
 
     bills = group_bills_by_date(UserBill.objects.unpaid(in_progress=False))
     bills_in_progress = group_bills_by_date(UserBill.objects.unpaid(in_progress=True))
@@ -140,7 +138,6 @@ def outstanding(request):
 # TODO - Remove
 @staff_member_required
 def outstanding_old(request):
-    page_message = None
     if request.method == 'POST':
         action = request.POST.get("action", "Set Paid")
         pay_bills_form = PayBillsForm(request.POST)
@@ -158,19 +155,19 @@ def outstanding_old(request):
                 for bill_id in bill_ids:
                     transaction.bills.add(users_bills[bill_id])
                 transaction_url = reverse('staff:billing:transaction', args=[], kwargs={'id': transaction.id})
-                page_message = 'Created a <a href="%s">transaction for %s</a>' % (transaction_url, user.get_full_name())
+                messages.success(request, 'Created a <a href="%s">transaction for %s</a>' % (transaction_url, user.get_full_name()))
             elif action == "mark_in_progress":
                 for bill_id in bill_ids:
                     bill = users_bills[bill_id]
                     bill.in_progress = True
                     bill.save()
-                    page_message = "Bills marked 'In Progress'"
+                    messages.success(request, "Bills marked 'In Progress'")
             elif action == "clear_in_progress":
                 for bill_id in bill_ids:
                     bill = users_bills[bill_id]
                     bill.in_progress = False
                     bill.save()
-                    page_message = "Bills updated"
+                    messages.success(request, "Bills updated")
 
     bills = {}
     bills_in_progress = {}
@@ -193,7 +190,6 @@ def outstanding_old(request):
     context = {
         'bills': ordered_bills,
         'bills_in_progress': bills_in_progress,
-        'page_message': page_message,
         'invalid_members': invalids,
     }
     return render(request, 'staff/billing/outstanding_old.html', context)
@@ -246,7 +242,7 @@ def bill_list(request):
 def toggle_billing_flag(request, username):
     user = get_object_or_404(User, username=username)
 
-    page_message = user.get_full_name() + " billing profile: "
+    messages.success(request, user.get_full_name() + " billing profile: ")
     if user.profile.valid_billing:
         user.profile.valid_billing = False
         messages.success(request, user.get_full_name() + " billing profile: Invalid")

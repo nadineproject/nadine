@@ -7,10 +7,6 @@
 
 <h4>Run Billing:</h4>
 
-{% if page_message %}
-	<p>{{ page_message|safe }}</p>
-{% endif %}
-
 <form action="." method="post">
 	{{ run_billing_form }}
 	<input style='margin-top:2%;' type="submit" value="Run Billing " />

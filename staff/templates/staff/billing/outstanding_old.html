@@ -29,7 +29,6 @@ $(document).ready(function() {
 {% block content %}
 
 <h4>Outstanding Bills</h4>
-{% if page_message%}<p id="page-message">{{ page_message|safe }}</p>{% endif %}
 
 {% if bills %}
 	{% include "staff/billing/bills_table.html" %}
