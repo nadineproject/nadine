@@ -91,7 +91,6 @@ def org_add(request):
 @login_required
 @user_passes_test(is_active_member, login_url='member:not_active')
 def org_edit(request, org_id):
-    page_message = None
     org = get_object_or_404(Organization, id=org_id)
     if not (request.user.is_staff or org.can_edit(request.user)):
         return HttpResponseForbidden("Forbidden")
@@ -127,7 +126,7 @@ def org_edit(request, org_id):
                     form.save()
                     return HttpResponseRedirect(reverse('member:org:view', kwargs={'org_id': org.id}))
                 else:
-                    page_message = 'Please make sure the websites have a valid URL and URL type.'
+                    messages.error(request, 'Please make sure the websites have a valid URL and URL type.')
         except Exception as e:
             messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
     else:
@@ -137,7 +136,6 @@ def org_edit(request, org_id):
     context = {'organization': org,
                'form': form,
                'org_link_formset': org_link_formset,
-               'page_message': page_message
                }
     return render(request, 'member/organization/org_edit.html', context)
 

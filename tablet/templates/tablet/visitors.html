@@ -4,6 +4,9 @@
 {% block nav-visitors %} class="ui-btn-active" {% endblock %}
 
 {% block content %}
+{% for message in messages %}
+	<div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+{% endfor %}
 
 	<h2>Have you been here before?</h2>
 		<form id="member-search-form" action="{% url 'tablet:search' %}" method="POST">
@@ -15,10 +18,6 @@
 		</form>
 
 	<h2>New to Office Nomads?</h2>
-
-	{% if page_message %}
-		<p id="page_message">{{ page_message|safe }}</p>
-	{% endif %}
 
 	<div id="visitor-form">
 		<form action="{% url 'tablet:visitors' %}" method="POST">
@@ -44,4 +43,14 @@
 			</ul>
 		</div>
 	{% endif %}
+{% endblock %}
+
+{% block extrajs %}
+<script>
+	$(document).ready(function() {
+		$('div .error').css('color', 'red');
+		$('div .error').css('font-style', 'italic');
+		$('div .error').css('text-align', 'center');
+	})
+</script>
 {% endblock %}

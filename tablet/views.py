@@ -6,6 +6,7 @@ from weasyprint import HTML, CSS
 from datetime import date, datetime, time, timedelta
 
 from django.conf import settings
+from django.contrib import messages
 from django.template import RequestContext
 from django.contrib.auth.models import User
 from django.urls import reverse, resolve
@@ -47,7 +48,6 @@ def here_today(request):
 
 
 def visitors(request):
-    page_message = None
     if request.method == "POST":
         form = NewUserForm(request.POST)
         try:
@@ -55,12 +55,11 @@ def visitors(request):
                 user = form.save()
                 return HttpResponseRedirect(reverse('tablet:post_create', kwargs={'username': user.username}))
         except Exception as e:
-            page_message = str(e)[3:len(str(e)) - 2]
+            messages.error(request, str(e)[3:len(str(e)) - 2])
             logger.error(str(e))
-            #page_message = str(e)
     else:
         form = NewUserForm()
-    return render(request, 'tablet/visitors.html', {'new_user_form': form, 'page_message': page_message})
+    return render(request, 'tablet/visitors.html', {'new_user_form': form})
 
 
 def search(request):

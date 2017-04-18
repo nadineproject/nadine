@@ -110,7 +110,8 @@ def memberships(request):
         try:
             start_date = datetime.datetime.strptime(request.POST.get('start_date'), "%m-%Y").date()
         except:
-            return render(request, 'staff/stats/memberships.html', {'page_message': "Invalid Start Date!  Example: '01-2012'."})
+            messages.error(request, "Invalid Start Date!  Example: '01-2012'.")
+            return render(request, 'staff/stats/memberships.html', {})
     else:
         start_date = timezone.now().date() - timedelta(days=365)
     start_month = date(year=start_date.year, month=start_date.month, day=1)

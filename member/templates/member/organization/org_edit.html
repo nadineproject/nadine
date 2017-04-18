@@ -17,14 +17,6 @@
 
 {% block content %}
 <h3 class='header-font' style='text-align: center;'>Edit {{ organization.name}}</h3>
-{% if page_message %}
-	<div>
-		<p style='color:red;text-align:center;'>
-			<strong> {{ page_message }} </strong>
-		</p>
-		<br />
-	</div>
-{% endif %}
 <form class='org-form s12 m12 l12' method="POST" action="." enctype="multipart/form-data">
 	{{ form.org_id }}
 	<table>
@@ -161,6 +153,20 @@
 		$('.add-row').on('click', function(e) {
 			$('.delete-row').addClass('btn-floating btn-large btn url-btn');
 		})
+
+		{% for message in messages %}
+			{% if message.tags == 'error' %}
+				Materialize.toast('{{ message }}', 5000, 'error-msg msg');
+			{% else %}
+				Materialize.toast('{{ message }}', 3000, '{{ message.tags }}-msg msg');
+			{% endif %}
+		{% endfor %}
+
+		$(document).on('click', '#toast-container .toast', function() {
+			$(this).fadeOut(function(){
+				$(this).remove();
+			});
+		});
 	});
 </script>
 {% endblock %}
