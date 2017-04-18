@@ -1,23 +1,90 @@
 
 {% if memberships %}
-<table>
-  <thead>
+  {% if user.membership.active_subscriptions %}
+  <h3 class='header-font'>Current Package: {{ user.membership.package }}</h3>
+  <table class='sub-table'>
     <tr>
-      <th>Plan</th>
-      <th align="center">Start Date</th>
-      <th align="left">End Date</th>
+      <th class='sub-th'>Resource</th>
+      <th class='sub-th'>Allowance</th>
+      <th class='sub-th'>Start Date</th>
+      <th class='sub-th'>End Date</th>
+      <th class='sub-th'>Overage</th>
+      <th class='sub-th'>Monthly</th>
+      <th class='sub-th'>Paid By</th>
     </tr>
-  </thead>
-  <tbody>
-    {% for membership in memberships %}
-      <tr class="{% cycle 'row-even' 'row-odd' %}">
-         <td>{{ membership.membership_plan }}</td>
-         <td align="center">{{ membership.start_date|date:"M d, Y" }}</td>
-         <td align="left">{% if membership.end_date %}{{ membership.end_date|date:"M d, Y" }}{% endif %}</td>
+    {% for s in user.membership.active_subscriptions %}
+      <tr class='{% cycle "row-even" "row-odd" %}'>
+        <td>{{ s.resource }}</td>
+        <td>{{ s.allowance }}</td>
+        <td>{{ s.start_date }}</td>
+        {% if s.end_date %}
+          <td>{{ s.end_date }}</td>
+        {% else %}
+          <td>-</td>
+        {% endif %}
+        <td>${{ s.overage_rate }}</td>
+        <td>${{ s.monthly_rate }}/month</td>
+        <td>{{ s.paid_by|default:"" }}</td>
       </tr>
     {% endfor %}
-  </tbody>
-</table>
+    <tr>
+      <td colspan="5"><strong>Total:</strong></td>
+      <td><strong>${{ user.membership.monthly_rate }}/month</strong><td>
+    </tr>
+  </table>
+  {% endif %}
+
+  {% if user.membership.subscriptions.future_subscriptions %}
+  <h3 class='header-font'>Future Subscriptions</h3>
+  <table class='sub-table'>
+    <tr>
+      <th class='sub-th'>Resource</th>
+      <th class='sub-th'>Allowance</th>
+      <th class='sub-th'>Start Date</th>
+      <th class='sub-th'>End Date</th>
+      <th class='sub-th'>Overage</th>
+      <th class='sub-th'>Monthly</th>
+      <th class='sub-th'>Paid By</th>
+    </tr>
+    {% for f in user.membership.subscriptions.future_subscriptions %}
+      <tr class='{% cycle "row-even" "row-odd" %}'>
+        <td>{{ f.resource }}</td>
+        <td>{{ f.allowance }}</td>
+        <td>{{ f.start_date }}</td>
+        <td>{{ f.end_date |default:"-" }}</td>
+        <td>${{ f.overage_rate }}</td>
+        <td>${{ f.monthly_rate }}/month</td>
+        <td>{{ f.paid_by|default:"" }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+  {% endif %}
+
+  {% if user.membership.subscriptions.past_subscriptions %}
+  <h3 class='header-font'>Past Subscriptions</h3>
+  <table class='sub-table'>
+    <tr>
+      <th class='sub-th'>Resource</th>
+      <th class='sub-th'>Allowance</th>
+      <th class='sub-th'>Start Date</th>
+      <th class='sub-th'>End Date</th>
+      <th class='sub-th'>Overage</th>
+      <th class='sub-th'>Monthly</th>
+      <th class='sub-th'>Paid By</th>
+    </tr>
+    {% for p in user.membership.subscriptions.past_subscriptions|dictsort:'start_date' %}
+      <tr class='{% cycle "row-even" "row-odd" %}'>
+        <td>{{ p.resource }}</td>
+        <td>{{ p.allowance }}</td>
+        <td>{{ p.start_date }}</td>
+        <td>{{ p.end_date |default:"-" }}</td>
+        <td>${{ p.overage_rate }}</td>
+        <td>${{ p.monthly_rate }}/month</td>
+        <td>{{ p.paid_by|default:"" }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+  {% endif %}
 {% else %}
-    No membership history...
+  No membership history.
 {% endif %}

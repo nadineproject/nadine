@@ -1463,6 +1463,18 @@ dl dd:last-child:after {
 	content: "";
 }
 
+.sub-table {
+	margin-top: 3%;
+	font-size: 13px;
+}
+
+.sub-th {
+	background-color: RGBA(76, 76, 76, 1.00);
+	color: white;
+	border-radius: 0;
+	font-weight: lighter;
+}
+
 
 
 /*Event and Room Booking Styling*/

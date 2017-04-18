@@ -21,7 +21,7 @@ from nadine.models.usage import CoworkingDay, Event
 from nadine.models.payment import Transaction
 from nadine.models.alerts import MemberAlert
 from nadine.models.organization import Organization, OrganizationMember
-from nadine.models.membership import Membership
+from nadine.models.membership import Membership, ResourceSubscription
 from nadine.forms import EditProfileForm, ProfileImageForm, LinkForm, BaseLinkFormSet
 from nadine.utils import network
 from nadine.utils.payment_api import PaymentAPI
@@ -70,12 +70,9 @@ def profile_private(request, username):
 @login_required
 def profile_membership(request, username):
     user = get_object_or_404(User, username=username)
-    # memberships = user.membership_set.all().reverse()
-    memberships = OldMembership.objects.filter(user=user).reverse()
-
+    memberships = ResourceSubscription.objects.filter(membership=user.membership.id)
     context = {'user': user,
-               'memberships': memberships
-               }
+               'memberships': memberships,}
     return render(request, 'member/profile/profile_membership.html', context)
 
 
