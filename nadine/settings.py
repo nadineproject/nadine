@@ -129,6 +129,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'urls'
 
 INSTALLED_APPS = [
+    # Django Applications
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -136,29 +137,23 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.humanize',
     'django.contrib.staticfiles',
+    'django.contrib.admindocs',
+    # Nadine Applications
     'nadine',
     'staff',
     'members',
+    'tablet',
+    'arpwatch',
     'comlink',
     'interlink',
-    'arpwatch',
-    'tablet',
+    'doors.keymaster',
+    # Other Applications
     'easy_pdf',
     'jsignature',
     'taggit_templatetags2',
     'taggit',
-    'djcelery',
-    'doors.keymaster',
+    'django_crontab',
 ]
-
-#
-# Celery initialization
-#
-try:
-    import djcelery
-    djcelery.setup_loader()
-except ImportError:
-    pass
 
 # Multimail settings
 # https://github.com/scott2b/django-multimail
@@ -198,24 +193,37 @@ MAILGUN_VERIFY_INCOMING = True
 #MAILGUN_DOMAIN = "YOUR-MAILGUN-DOMAIN"
 #MAILGUN_DEBUG = False
 
-# Celery Settings
-CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_ACCEPT_CONTENT = ['json', 'msgpack', 'yaml']
-CELERY_DISABLE_RATE_LIMITS = True
-CELERY_RESULT_BACKEND = "amqp"
-BROKER_URL = "amqp://guest:guest@localhost:5672//"
-CELERY_TIMEZONE = 'America/Los_Angeles'
-
-# When this is True, celery tasks will be run synchronously.
-# This is nice when running unit tests or in development.
-# In production set this to False in your local_settings.py
-CELERY_ALWAYS_EAGER = False
-
+# Mailchimp Settings
 # MAILCHIMP_API_KEY="YourMailchimpKey"
 # MAILCHIMP_NEWSLETTER_KEY="YourNewsletter"
 #MAILCHIMP_WEBHOOK_KEY = "nadine"
+
+
+# Crontabs - Scheduled Tasks
+# https://github.com/kraiz/django-crontab
+CRONJOBS = [
+    # Check-in with members
+    ('30 8 * * *', 'django.core.management.call_command', ['checkin_anniversary']),
+    ('30 8 * * *', 'django.core.management.call_command', ['checkin_exiting']),
+    ('30 8 * * *', 'django.core.management.call_command', ['checkin_two_months']),
+    ('30 8 * * *', 'django.core.management.call_command', ['checkin_no_return']),
+    ('55 17 * * *', 'django.core.management.call_command', ['checkin_first_day']),
+    # Tasks to run every hour
+    ('0 * * * *', 'django.core.management.call_command', ['member_alert_check']),
+    # Tasks to run every 5 minutes
+    ('*/5 * * * *', 'django.core.management.call_command', ['import_arp']),
+    ('*/5 * * * *', 'django.core.management.call_command', ['send_user_notifications']),
+    # Interlink Tasks
+    ('*/2 * * * *', 'django.core.management.call_command', ['process_mail']),
+    ('0 * * * *', 'django.core.management.call_command', ['unsubscribe']),
+    # Backup Tasks at 1:00 AM
+    ('0 1 * * *', 'django.core.management.call_command', ['backup_members']),
+    ('0 1 * * *', 'django.core.management.call_command', ['backup_create']),
+    # Billing Tasks at 4:00 AM
+    ('0 4 * * *', 'django.core.management.call_command', ['run_billing']),
+    # Other Tasks
+    ('30 8 * * *', 'django.core.management.call_command', ['announce_special_days']),
+]
 
 # Allows for the login page to include or not include the option for nonmembers to register and make a user account.
 ALLOW_ONLINE_REGISTRATION = False
