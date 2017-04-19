@@ -545,10 +545,13 @@ class Membership(models.Model):
                 return True
         return False
 
-    def generate_all_bills(self):
-        today = localtime(now()).date()
-        period_start = self.start_date
-        while period_start and period_start < today:
+    def generate_all_bills(self, start_date=None, end_date=None):
+        if start_date is None:
+            start_date = self.start_date
+        if end_date is None:
+            end_date = localtime(now()).date()
+        period_start = start_date
+        while period_start and period_start < end_date:
             self.generate_bill(target_date=period_start)
             period_start = self.next_period_start(period_start)
 
