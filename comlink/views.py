@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 API_KEY = getattr(settings, "MAILGUN_API_KEY", "")
 
-VERIFY_SIGNATURE = getattr(settings, "MAILGUN_VERIFY_INCOMING", not settings.DEBUG)
+VERIFY_SIGNATURE = getattr(settings, "COMLINK_VERIFY_INCOMING", not settings.DEBUG)
 
 
 ##########################################################################
