@@ -6,7 +6,7 @@ import datetime
 
 from django.core.management.base import BaseCommand, CommandError
 
-from staff.backup import BackupManager
+from nadine.utils.backup import BackupManager
 
 
 class Command(BaseCommand):
