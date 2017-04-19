@@ -12,7 +12,7 @@ from django.contrib.sites.models import Site
 
 from email.Utils import parseaddr
 
-UPLOAD_TO = getattr(settings, "MAILGUN_UPLOAD_TO", "attachments/")
+UPLOAD_TO = getattr(settings, "COMLINK_UPLOAD_TO", "attachments/")
 
 logger = logging.getLogger(__name__)
 
