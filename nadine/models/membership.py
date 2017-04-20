@@ -697,15 +697,18 @@ class SubscriptionManager(models.Manager):
         return self.active_subscriptions(target_date).annotate(username=Coalesce(individual_user, organization_user))
 
     def all_subscriptions_by_member(self, target_ate=None):
+        ''' Return set of subscriptions by member '''
         individual_user = F('membership__individualmembership__user__username')
         return self.all().annotate(username=individual_user)
 
     def future_subscriptions(self, target_date=None):
+        '''Return set of subscriptions with start date in the future '''
         if not target_date:
             target_date = localtime(now()).date()
         return self.filter(start_date__gt=target_date)
 
     def past_subscriptions(self, target_date=None):
+        ''' Return set of subscriptions with end date in the past '''
         if not target_date:
             target_date = localtime(now()).date()
         return self.filter(end_date__lt=target_date)
