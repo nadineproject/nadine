@@ -228,23 +228,28 @@ def longevity(request):
     avg_total = 0
     for user in users:
         # Currently count all days of all subscriptions. We need unique days
-        user_memberships = [m for m in memberships if m.username == user.username]
-        membership_count = len(user_memberships)
+        user_subscriptions = [m for m in memberships if m.username == user.username]
+        subscription_count = len(user_subscriptions)
         total_days = 0
         max_days = 0
         current = False
-        for membership in user_memberships:
-            end = membership.end_date
+        starts = []
+        for sub in user_subscriptions:
+            end = sub.end_date
             if not end:
                 end = localtime(now()).date()
                 current = True
-            diff = end - membership.start_date
+            dates = (sub.start_date, end)
+            starts.append(dates)
+        date_set = set(starts)
+        for d in date_set:
+            diff = d[1] - d[0]
             days = diff.days
             total_days = total_days + days
             if (days > max_days):
                 max_days = days
         daily_logs = CoworkingDay.objects.filter(user=user).count()
-        membership_days.append(MembershipDays(user, membership_count, total_days, daily_logs, max_days, current))
+        membership_days.append(MembershipDays(user, subscription_count, total_days, daily_logs, max_days, current))
         if total_days > 0:
             avg_count = avg_count + 1
             avg_total = avg_total + total_days
