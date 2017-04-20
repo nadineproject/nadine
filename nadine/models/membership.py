@@ -130,6 +130,7 @@ class MembershipManager(models.Manager):
             membership_query = membership_query.filter(package__name=package_name)
         return membership_query
 
+    # Based on entered action, returns those which were started or ended within the given time period
     def date_range(self, start=None, end=None, action=None):
         if not start:
             start = localtime(now()).date()
@@ -699,7 +700,6 @@ class SubscriptionManager(models.Manager):
         individual_user = F('membership__individualmembership__user__username')
         return self.all().annotate(username=individual_user)
 
-
     def future_subscriptions(self, target_date=None):
         if not target_date:
             target_date = localtime(now()).date()
@@ -709,6 +709,7 @@ class SubscriptionManager(models.Manager):
         if not target_date:
             target_date = localtime(now()).date()
         return self.filter(end_date__lt=target_date)
+
 
 class ResourceSubscription(models.Model):
     objects = SubscriptionManager()

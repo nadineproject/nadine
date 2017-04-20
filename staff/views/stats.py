@@ -227,6 +227,7 @@ def longevity(request):
     avg_count = 0
     avg_total = 0
     for user in users:
+        # Currently count all days of all subscriptions. We need unique days
         user_memberships = [m for m in memberships if m.username == user.username]
         membership_count = len(user_memberships)
         total_days = 0
@@ -235,7 +236,7 @@ def longevity(request):
         for membership in user_memberships:
             end = membership.end_date
             if not end:
-                end = timezone.now().date()
+                end = localtime(now()).date()
                 current = True
             diff = end - membership.start_date
             days = diff.days

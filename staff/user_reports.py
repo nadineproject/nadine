@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from datetime import date, datetime, timedelta
 from django.utils import timezone
+from django.utils.timezone import localtime, now
 from nadine.models.membership import Membership
 from arpwatch.models import UserDevice
 from django.forms.widgets import SelectDateWidget
@@ -23,8 +24,8 @@ REPORT_FIELDS = (
 
 
 def getDefaultForm():
-    start = timezone.now().date() - timedelta(days=7)
-    end = timezone.now().date()
+    start = localtime(now()).date() - timedelta(days=365)
+    end = localtime(now()).date()
     form_data = {'report': 'NEW_MEMBER', 'order_by': 'JOINED', 'active_only': False, 'start_date': start, 'end_date': end}
     return UserReportForm(form_data)
 
@@ -49,7 +50,7 @@ class User_Report:
         self.start_date = form.data['start_date']
         self.end_date = form.data['end_date']
         if not self.end_date:
-            self.end_date = timezone.now().date()
+            self.end_date = localtime(now()).date()
         print(self.end_date)
 
     def get_users(self):
@@ -87,11 +88,11 @@ class User_Report:
         return User.objects.filter(date_joined__gte=self.start_date, date_joined__lte=self.end_date)
 
     def new_membership(self):
-        new_memberships = Membership.objects.filter(start_date__gte=self.start_date, start_date__lte=self.end_date)
+        new_memberships = Membership.objects.date_range(start=self.start_date, end=self.end_date, action='started')
         return User.objects.filter(membership__in=new_memberships)
 
     def ended_membership(self):
-        ended_memberships = Membership.objects.filter(end_date__gte=self.start_date, end_date__lte=self.end_date)
+        ended_memberships = Membership.objects.date_range(start=self.start_date, end=self.end_date, action='ended')
         return User.objects.filter(membership__in=ended_memberships)
 
     def invalid_billing(self):
