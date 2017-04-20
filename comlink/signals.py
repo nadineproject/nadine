@@ -17,7 +17,8 @@ email_received = Signal(providing_args=["instance", "attachments"])
 def router(sender, **kwargs):
     # Pull our email object and convert it to the mailgun_data we need`
     email = kwargs['instance']
-    mailgun_data = email.get_mailgun_data(stripped=True, footer=True)
+    strip_emails = getattr(settings, "COMLINK_STRIP_EMAILS", False)
+    mailgun_data = email.get_mailgun_data(stripped=strip_emails, footer=True)
     logger.debug("In Router: ")
     logger.debug(mailgun_data)
 
