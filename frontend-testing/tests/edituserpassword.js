@@ -10,7 +10,6 @@ casper.options.viewportSize = {width: 1100, height: 616};
 // print out all the messages in the headless browser context
 casper.on("page.error", function(msg, trace) {
     this.echo("Page Error: " + msg, "ERROR");
-    this.capture('img/password-error.png');
 });
 
 casper.test.begin('Can update password in member edit page', 10, function suite(test) {
