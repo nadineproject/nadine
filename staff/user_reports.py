@@ -51,7 +51,6 @@ class User_Report:
         self.end_date = form.data['end_date']
         if not self.end_date:
             self.end_date = localtime(now()).date()
-        print(self.end_date)
 
     def get_users(self):
         # Grab the users we want
@@ -89,11 +88,11 @@ class User_Report:
 
     def new_membership(self):
         new_memberships = Membership.objects.date_range(start=self.start_date, end=self.end_date, action='started')
-        return User.objects.filter(membership__in=new_memberships)
+        return User.objects.filter(membership__id__in=new_memberships)
 
     def ended_membership(self):
         ended_memberships = Membership.objects.date_range(start=self.start_date, end=self.end_date, action='ended')
-        return User.objects.filter(membership__in=ended_memberships)
+        return User.objects.filter(membership__id__in=ended_memberships)
 
     def invalid_billing(self):
         return User.objects.filter(profile__valid_billing=False)
