@@ -13,9 +13,10 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib import messages
 from django.conf import settings
+from django.utils.timezone import localtime, now
 
 from nadine.models.core import Neighborhood
-from nadine.models.membership import Membership, MembershipPlan
+from nadine.models.membership import Membership, MembershipPlan, ResourceSubscription
 from nadine.models.usage import CoworkingDay
 from nadine.forms import DateRangeForm
 
@@ -69,7 +70,7 @@ def calculate_monthly_low_high(plan_id, dates):
     high = 0
     low = 100000000
     for working_date in dates:
-        num_residents = Membership.objects.active_memberships(working_date).filter(membership_plan=plan_id).count()
+        num_residents = Membership.objects.active_memberships(working_date).filter(package=plan_id).count()
         high = max(high, num_residents)
         low = min(low, num_residents)
         avg = int(round((low + high) / 2))
@@ -108,12 +109,12 @@ def daily(request):
 def memberships(request):
     if 'start_date' in request.POST:
         try:
-            start_date = datetime.datetime.strptime(request.POST.get('start_date'), "%m-%Y").date()
+            start_date = datetime.strptime(request.POST.get('start_date'), "%m-%Y").date()
         except:
             messages.error(request, "Invalid Start Date!  Example: '01-2012'.")
             return render(request, 'staff/stats/memberships.html', {})
     else:
-        start_date = timezone.now().date() - timedelta(days=365)
+        start_date = localtime(now()).date() - timedelta(days=365)
     start_month = date(year=start_date.year, month=start_date.month, day=1)
     end_date = timezone.now().date()
     end_month = date(year=end_date.year, month=end_date.month, day=1)
@@ -165,8 +166,9 @@ def history(request):
     monthly_stats = [{'start_date': d, 'end_date': beginning_of_next_month(d) - timedelta(days=1)} for d in first_days_in_months(start_date, end_date)]
     for stat in monthly_stats:
         stat['monthly_total'] = Membership.objects.active_memberships(stat['end_date']).count()
-        stat['started'] = Membership.objects.filter(start_date__range=(stat['start_date'], stat['end_date'])).count()
-        stat['ended'] = Membership.objects.filter(end_date__range=(stat['start_date'], stat['end_date'])).count()
+        stat['started'] = Membership.objects.date_range(start=stat['start_date'], end=stat['end_date'], action='started').count()
+        stat['ended'] = Membership.objects.date_range(start=stat['start_date'], end=stat['end_date'], action='ended').count()
+
     monthly_stats.reverse()
     context = {'monthly_stats': monthly_stats,
                'date_range_form': date_range_form,
@@ -178,10 +180,11 @@ def history(request):
 @staff_member_required
 def monthly(request):
     # Pull all the monthly members
-    memberships = Membership.objects.filter(end_date__isnull=True).order_by('start_date')
+    memberships = Membership.objects.active_individual_memberships()
+    # memberships = Membership.objects.filter(end_date__isnull=True).order_by('start_date')
     total_income = 0
-    for membership in memberships:
-        total_income = total_income + membership.monthly_rate
+    # for membership in memberships:
+    #     total_income = total_income + membership.monthly_rate
     context = {'memberships': memberships, 'total_income': total_income}
     return render(request, 'staff/stats/monthly.html', context)
 
@@ -220,27 +223,33 @@ def longevity(request):
     MembershipDays = namedtuple('MembershipDays', 'user, membership_count, total_days, daily_logs, max_days, current')
     membership_days = []
     users = User.objects.all()
-    memberships = Membership.objects.select_related('user', 'user__profile').all()
+    memberships =  ResourceSubscription.objects.all_subscriptions_by_member()
     avg_count = 0
     avg_total = 0
     for user in users:
-        user_memberships = [m for m in memberships if m.user == user]
-        membership_count = len(user_memberships)
+        # Currently count all days of all subscriptions. We need unique days
+        user_subscriptions = [m for m in memberships if m.username == user.username]
+        subscription_count = len(user_subscriptions)
         total_days = 0
         max_days = 0
         current = False
-        for membership in user_memberships:
-            end = membership.end_date
+        starts = []
+        for sub in user_subscriptions:
+            end = sub.end_date
             if not end:
-                end = timezone.now().date()
+                end = localtime(now()).date()
                 current = True
-            diff = end - membership.start_date
+            dates = (sub.start_date, end)
+            starts.append(dates)
+        date_set = set(starts)
+        for d in date_set:
+            diff = d[1] - d[0]
             days = diff.days
             total_days = total_days + days
             if (days > max_days):
                 max_days = days
         daily_logs = CoworkingDay.objects.filter(user=user).count()
-        membership_days.append(MembershipDays(user, membership_count, total_days, daily_logs, max_days, current))
+        membership_days.append(MembershipDays(user, subscription_count, total_days, daily_logs, max_days, current))
         if total_days > 0:
             avg_count = avg_count + 1
             avg_total = avg_total + total_days

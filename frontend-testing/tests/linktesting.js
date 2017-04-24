@@ -12,7 +12,6 @@ casper.options.viewportSize = {width: 1100, height: 616};
 
 casper.on("page.error", function(msg, trace) {
     this.echo("Page Error: " + msg, "ERROR");
-    this.capture('img/login-error.png');
 });
 
 casper.test.begin('Links from given path return 200', function suite(test) {

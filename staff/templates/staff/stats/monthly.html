@@ -16,15 +16,15 @@
       <tr>
          <th>Member</th>
          <th>Start Date</th>
-         <th>Plan</th>
+         <th>Package</th>
          <th>Rate</th>
          <th>Note</th>
       </tr>
       {% for membership in memberships %}
 	      <tr class="{% cycle 'row-even' 'row-odd' %}">
-	         <td><a href="{% url 'staff:members:detail' membership.user.username %}">{{ membership.user.get_full_name }}</a></td>
+	         <td><a href="{{ membership.who_url }}">{{ membership.who }}</a></td>
 	         <td>{{ membership.start_date }}</td>
-	         <td>{{ membership.membership_plan }}</td>
+	         <td>{{ membership.package }}</td>
 	         <td>${{ membership.monthly_rate }}</td>
 	         <td class="note-cell">{{ membership.note }}</td>
 	      </tr>

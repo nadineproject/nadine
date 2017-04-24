@@ -130,6 +130,19 @@ class MembershipManager(models.Manager):
             membership_query = membership_query.filter(package__name=package_name)
         return membership_query
 
+    # Based on entered action, returns those which were started or ended within the given time period
+    def date_range(self, start=None, end=None, action=None):
+        if not start:
+            start = localtime(now()).date()
+        if not end:
+            end = localtime(now()).date()
+        if action == "started":
+            query = Q(subscriptions__start_date__gte=start, subscriptions__start_date__lte=end)
+        if action == "ended":
+            query = Q(subscriptions__end_date__gte=start, subscriptions__end_date__lte=end)
+        membership_query = self.filter(query)
+        return membership_query
+
     def active_individual_memberships(self, target_date=None, package_name=None):
         return self.active_memberships(target_date, package_name).filter(individualmembership__isnull=False)
 
@@ -592,12 +605,19 @@ class SubscriptionManager(models.Manager):
         organization_user = F('membership__organizationmembership__organization__organizationmember__user__username')
         return self.active_subscriptions(target_date).annotate(username=Coalesce(individual_user, organization_user))
 
+    def all_subscriptions_by_member(self, target_ate=None):
+        ''' Return set of subscriptions by member '''
+        individual_user = F('membership__individualmembership__user__username')
+        return self.all().annotate(username=individual_user)
+
     def future_subscriptions(self, target_date=None):
+        '''Return set of subscriptions with start date in the future '''
         if not target_date:
             target_date = localtime(now()).date()
         return self.filter(start_date__gt=target_date)
 
     def past_subscriptions(self, target_date=None):
+        ''' Return set of subscriptions with end date in the past '''
         if not target_date:
             target_date = localtime(now()).date()
         return self.filter(end_date__lt=target_date)

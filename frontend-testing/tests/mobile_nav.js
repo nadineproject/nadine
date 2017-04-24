@@ -13,8 +13,8 @@ casper.on('page.error', function(msg, trace) {
        var step = trace[i];
        this.echo('   ' + step.file + ' (line ' + step.line + ')', 'ERROR');
    }
-   this.capture('img/mobile-error.png');
 });
+
 casper.test.begin('Member App on Mobile Test', function(test) {
    casper.start('http://127.0.0.1:8000/member/');
    casper.userAgent("Mozilla/5.0 (compatible; MSIE 10.0; Windows Phone 8.0; Trident/6.0; IEMobile/10.0; ARM; Touch; NOKIA; Lumia 820)");

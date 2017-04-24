@@ -17,7 +17,7 @@ from django.conf import settings
 from doors.keymaster.models import DoorEvent
 from arpwatch.models import ArpLog
 from nadine.forms import CoworkingDayForm, DateRangeForm
-from nadine.models import CoworkingDay, Membership
+from nadine.models import CoworkingDay, Membership, ResourceSubscription
 
 START_DATE_PARAM = 'start'
 END_DATE_PARAM = 'end'
@@ -54,7 +54,7 @@ def graph(request):
     for day in days:
         memberships = Membership.objects.active_memberships(day['date'])
         day['daily_logs'] = CoworkingDay.objects.filter(visit_date=day['date']).count()
-        day['has_desk'] = memberships.filter(has_desk=True).count()
+        day['has_desk'] = ResourceSubscription.objects.active_subscriptions(target_date=day['date']).filter(resource=3).count()
         day['occupancy'] = day['daily_logs'] + day['has_desk']
         day['membership'] = memberships.count()
 
