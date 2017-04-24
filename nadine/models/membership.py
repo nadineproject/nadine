@@ -568,97 +568,6 @@ class Membership(models.Model):
             self.generate_bill(target_date=period_start)
             period_start = self.next_period_start(period_start)
 
-    # Brought over from modernomad but not ported yet
-    # def total_periods(self, target_date=None):
-    #     ''' returns total periods between subscription start date and target
-    #     date.'''
-    #     if not target_date:
-    #         target_date = localtime(now()).date()
-    #
-    #     if self.start_date > target_date:
-    #         return 0
-    #     if self.end_date and self.end_date < target_date:
-    #         target_date = self.end_date
-    #
-    #     rd = relativedelta(target_date + timedelta(days=1), self.start_date)
-    #     return rd.months + (12 * rd.years)
-    #
-    # def bills_between(self, start, end):
-    #     d = start
-    #     bills = []
-    #     while d < end:
-    #         b = self.get_bill_for_date(d)
-    #         if b:
-    #             bills.append(b)
-    #         d = self.next_period_start(d)
-    #         if not d:
-    #             break
-    #     return bills
-    #
-    # def days_between(self, start, end):
-    #     ''' return the number of days of this subscription that occur between start and end dates'''
-    #     days = 0
-    #     if not self.end_date:
-    #         # set the end date to be the end date passed in so we can work with
-    #         # a date object, but do NOT save.
-    #         self.end_date = end
-    #     if self.start_date >= start and self.end_date <= end:
-    #         days = (self.end_date - self.start_date).days
-    #     elif self.start_date <= start and self.end_date >= end:
-    #         days = (end - start).days
-    #     elif self.start_date < start:
-    #         days = (self.end_date - start).days
-    #     elif self.end_date > end:
-    #         days = (end - self.start_date).days
-    #     return days
-    #
-    # def last_paid(self, include_partial=False):
-    #     ''' returns the end date of the last period with payments, unless no
-    #     bills have been paid in which case it returns the start date of the
-    #     first period.
-    #
-    #     If include_partial=True we will count partially paid bills as "paid"
-    #     '''
-    #     bills = self.bills.order_by('period_start').reverse()
-    #     # go backwards in time through the bills
-    #     if not bills:
-    #         return None
-    #     for b in bills:
-    #         try:
-    #             (paid_until_start, paid_until_end) = self.get_period(target_date=b.period_end)
-    #         except:
-    #             print "didn't like date"
-    #             print b.period_end
-    #         if b.is_paid() or (include_partial and b.total_paid() > 0):
-    #             return paid_until_end
-    #     return b.period_start
-    #
-    # def update_for_end_date(self, new_end_date):
-    #     ''' deletes and regenerates bills after a change in end date'''
-    #     self.end_date = new_end_date
-    #     self.save()
-    #
-    #     # if the new end date is not on a period boundary, the final bill needs
-    #     # to be pro-rated, so we need to regenerate it.
-    #     today = localtime(now()).date()
-    #     period_start, period_end = self.get_period(today)
-    #
-    #     # delete unpaid bills will skip any bills with payments on them.
-    #     self.delete_unpaid_bills()
-    #
-    #     # in general there are SO MANY edge cases about when to regenerate
-    #     # bills, that we just regenerate them in all cases.
-    #     self.generate_all_bills()
-    #
-    # def expected_num_bills(self):
-    #     today = localtime(now()).date()
-    #     period_start = self.start_date
-    #     num_expected = 0
-    #     while period_start and (period_start < today) and (period_start < self.end_date):
-    #         num_expected += 1
-    #         period_start = self.next_period_start(period_start)
-    #     return num_expected
-
 
 class IndividualMembership(Membership):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="membership", on_delete=models.CASCADE)
@@ -761,6 +670,12 @@ class ResourceSubscription(models.Model):
             prorate_end = self.end_date
         if self.start_date > period_start:
             prorate_start = self.start_date
+        
+        # print prorate_start
+        # print period_start
+        # print prorate_end
+        # print period_end
+        # print self.monthly_rate
 
         period_days = (period_end - period_start).days
         prorate_days = (prorate_end - prorate_start).days
