@@ -4,8 +4,10 @@
 {% endblock %}
 
 {% block content %}
-	<h2>{{ title }}</h2>
+	<h2 class='header-font'>{{ title }}</h2>
+	<div class='col s8 offset-s2'>
 	{% autoescape off %}
 		{{ page_body }}
 	{% endautoescape %}
+	</div>
 {% endblock %}
