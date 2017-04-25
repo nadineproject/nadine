@@ -7,7 +7,6 @@ import logging
 from django.conf import settings
 from django.contrib import messages
 from django.db.models import Q
-from django.template import Context, loader
 from django.http import HttpResponse, Http404, HttpResponseServerError, HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import auth, messages

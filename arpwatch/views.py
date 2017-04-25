@@ -3,7 +3,6 @@ from datetime import datetime, timedelta, date
 from django.contrib import auth
 from django.conf import settings
 from django.template import RequestContext
-from django.template import Context, loader
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, Http404, HttpResponseServerError, HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.contrib.admin.views.decorators import staff_member_required

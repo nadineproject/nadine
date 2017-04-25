@@ -11,7 +11,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
-from django.template import Template, TemplateDoesNotExist, Context
+from django.template import Template, TemplateDoesNotExist
 from django.template.loader import get_template
 from django.contrib.sites.models import Site
 from django.utils import timezone
@@ -140,12 +140,12 @@ def get_manage_member_content(user):
         site_url = ''
     else:
         site_url = "https://" + Site.objects.get_current().domain
-    c = Context({
+    context = {
         'today': timezone.localtime(timezone.now()),
         'user': user,
         'site_url': site_url,
-    })
-    return render_templates(c, "manage_member")
+    }
+    return render_templates(context, "manage_member")
 
 
 # Deprecated and moved to clean_mailgun_data
