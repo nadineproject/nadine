@@ -18,6 +18,7 @@ from django.utils.timezone import localtime, now
 from nadine import email
 from nadine.models.profile import UserProfile, FileUpload
 from nadine.models.usage import CoworkingDay, Event
+from nadine.models.billing import UserBill
 from nadine.models.payment import Transaction
 from nadine.models.alerts import MemberAlert
 from nadine.models.organization import Organization, OrganizationMember
@@ -138,11 +139,11 @@ def profile_activity(request, username):
 
 @login_required
 def profile_billing(request, username):
-    user = get_object_or_404(User.objects.prefetch_related('transaction_set', 'bill_set'), username=username)
-    six_months_ago = timezone.now() - relativedelta(months=6)
+    user = get_object_or_404(User.objects.prefetch_related('transaction_set'), username=username)
+    six_months_ago = localtime(now()) - relativedelta(months=6)
     active_membership = user.profile.active_membership()
-    bills = user.bill_set.filter(bill_date__gte=six_months_ago)
-    payments = user.transaction_set.prefetch_related('bills').filter(transaction_date__gte=twelve_months_ago)
+    bills = UserBill.objects.filter(user=user).filter(due_date__gte=six_months_ago)
+    payments = user.transaction_set.prefetch_related('bills').filter(transaction_date__gte=six_months_ago)
     context = {'user': user,
                'active_membership': active_membership,
                'bills': bills,
