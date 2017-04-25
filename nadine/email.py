@@ -6,7 +6,7 @@ from datetime import datetime, time, date, timedelta
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.template.loader import get_template, render_to_string
-from django.template import Template, TemplateDoesNotExist, Context, RequestContext
+from django.template import Template, TemplateDoesNotExist, RequestContext
 from django.core.mail import send_mail, EmailMessage, EmailMultiAlternatives
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -276,10 +276,10 @@ def announce_special_day(user, special_day):
 #     if hasattr(settings, "EMAIL_SUBJECT_PREFIX"):
 #         subject = settings.EMAIL_SUBJECT_PREFIX.strip() + " " + subject
 #
-#     c = Context({
+#     c = {
 #         'user': user,
 #         'domain': Site.objects.get_current().domain,
-#     })
+#     }
 #     text_content, html_content = mailgun.render_templates(c, "manage_member")
 #     logger.debug("text_context: %s" % text_content)
 #     logger.debug("html_content: %s" % html_content)
