@@ -152,15 +152,11 @@ def document_upload(request):
             doc_form.name = name
             doc_form.document = doc
             if doc_form.is_valid():
-                # slug = slugify(name)
-                # fs = FileSystemStorage()
-                # filename = fs.save('/documents/%s.png' % slug, doc)
-                # uploaded_file_url = fs.url(filename)
-                # Still not working yet. Need to make model decision
                 doc_form.save()
                 return HttpResponseRedirect(reverse('staff:tasks:todo'))
             else:
                 print doc_form.errors
+                messages.error(request, 'There was an error uploading your document')
     context = {
         'doc_form': doc_form,
         'docs': docs,

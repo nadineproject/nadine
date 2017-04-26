@@ -19,6 +19,9 @@
 </form>
 <form enctype="multipart/form-data"  action='.' method='POST'>
 <h5>Upload New Document</h5>
+<p style='text-align: center;'>
+  All uploads must be in PNG format at time of upload for them to be properly accessed by Nadine's PDF features.
+</p>
   <table>
     <tr>
       <td>
@@ -46,6 +49,20 @@
   $(document).ready(function() {
     $('.button-collapse').sideNav();
 		$('.collapsible').collapsible();
+
+    {% for message in messages %}
+      {% if message.tags == 'error' %}
+        Materialize.toast('{{ message }}', 60000, 'error-msg msg');
+      {% else %}
+        Materialize.toast('{{ message }}', 3000, '{{ message.tags }}-msg msg');
+      {% endif %}
+    {% endfor %}
+
+    $(document).on('click', '#toast-container .toast', function() {
+      $(this).fadeOut(function(){
+        $(this).remove();
+      });
+    });
   })
 </script>
 {% endblock %}
