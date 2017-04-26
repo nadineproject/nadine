@@ -18,7 +18,7 @@ from localflavor.us.us_states import US_STATES
 from localflavor.ca.ca_provinces import PROVINCE_CHOICES
 
 from nadine import email
-from nadine.models.core import HowHeard, Industry, Neighborhood, URLType, GENDER_CHOICES
+from nadine.models.core import HowHeard, Industry, Neighborhood, URLType, GENDER_CHOICES, Document
 from nadine.models.profile import UserProfile, MemberNote, user_photo_path
 from nadine.models.membership import Membership, MembershipPlan, MembershipPackage, ResourceSubscription, IndividualMembership
 from nadine.models.usage import PAYMENT_CHOICES, CoworkingDay
@@ -597,11 +597,29 @@ class DocUploadForm(forms.Form):
     document = forms.FileField(required=True)
 
     def save(self):
-        filename = "documents/%s.png" % self.cleaned_data['name']
-        #TODO: What model will this live in?
-        # Once decided, update save function
+        name = self.cleaned_data['name']
+        document = self.cleaned_data['document']
+        doc = Document(name=name, document=document)
+        doc.save()
 
         return doc
+
+# class ProfileImageForm(forms.Form):
+#     username = forms.CharField(required=True, widget=forms.HiddenInput)
+#     photo = forms.FileField(required=False)
+#     cropped_image_data = forms.CharField(widget=forms.HiddenInput())
+#
+#     def save(self):
+#         user = User.objects.get(username=self.cleaned_data['username'])
+#         filename = "user_photos/%s.png" % self.cleaned_data['username']
+#         raw_img_data = self.cleaned_data['cropped_image_data']
+#         if not raw_img_data or len(raw_img_data) == 0:
+            # Nothing to save here
+        #     return
+        # img_data = base64.b64decode(raw_img_data)
+        # if user.profile.photo:
+        #     user.profile.photo.delete()
+        # user.profile.photo.save(filename, ContentFile(img_data))
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

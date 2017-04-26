@@ -137,7 +137,6 @@ def document_upload(request):
     # To be used to preview uploaded docs
     docs = FileUpload.objects.values_list('document_type', flat=True).distinct().exclude(document_type='None')
 
-
     if request.method == 'POST':
         if 'doc_type' in request.POST:
             user = request.user
@@ -146,11 +145,13 @@ def document_upload(request):
             pdf_args = {'doc_type': doc_type}
             return render(request, 'staff/settings/doc_preview.html', pdf_args)
         else:
-            doc_form = DocUploadForm(request.POST)
+            doc_form = DocUploadForm(request.POST, request.FILES)
             if doc_form.is_valid():
-                # Currently not working as not attached to any model
+                # Still not working yet. Need to make model decision
                 doc_form.save()
                 return HttpResponseRedirect(reverse('staff:tasks:todo'))
+            else:
+                print doc_form.errors
     context = {
         'doc_form': doc_form,
         'docs': docs,
