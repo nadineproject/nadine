@@ -35,6 +35,7 @@ GENDER_CHOICES = (
     ('O', 'Other'),
 )
 
+''' Renames an uploaded file based on name given, not on the filename uploaded '''
 def doc_upload_path(instance, filename):
     path='.'
     inst_name = instance.name
