@@ -6,13 +6,16 @@
 <h4>Document Preview and Upload</h4>
 <div style='width:50%; margin-top:2%;'>
   <h5>Preview Document</h5>
-  <select style='margin-top: 2%;'>
-    <option disabled></option>
-    {% for doc in docs %}
-      <option>{{ doc }}</option>
-    {% endfor %}
-  </select>
-  <button style='margin-top: 2%;' class='btn preview-btn' onclick='preview()'>Preview</button>
+  <form action='.' method='POST'>
+    <select name='doc_type' style='margin-top: 2%;'>
+      <option disabled></option>
+      {% for doc in docs %}
+        <option>{{ doc }}</option>
+      {% endfor %}
+    </select>
+    <button type='submit' style='margin-top: 2%;' class='btn preview-btn'>Preview</button>
+    {% csrf_token %}
+  </form>
 </div>
 <h5>Upload New Document</h5>
 <form action='.' method='POST'>

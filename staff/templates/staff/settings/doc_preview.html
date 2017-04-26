@@ -1,0 +1,54 @@
+{% load staticfiles %}
+<html>
+<head>
+	<style>
+    body {
+      padding-bottom: 5%;
+    }
+
+    div {
+      width: 65%;
+    }
+
+		.signature_box th {
+			width: 50px;
+			vertical-align: bottom;
+		}
+
+		.signature_box td {
+			border-bottom: 1px solid #ccc;
+			padding-bottom: 7%;
+			width: 400px;
+			vertical-align: bottom;
+		}
+	</style>
+</head>
+<body>
+	<div id="page1_content">
+		<img src="/media/documents/{{doc_type}}1.png" width='100%'/>
+	</div>
+	<pdf:nextpage>
+	<div id="page2_content">
+		<img src="/media/documents/{{doc_type}}2.png" width='100%' />
+		<div class="signature_box">
+			<table>
+				<tr>
+					<th></th>
+					<th>Name:</th>
+					<td></td>
+				</tr>
+				<tr>
+					<th></th>
+					<th>Date:</th>
+					<td></td>
+				</tr>
+				<tr>
+					<th></th>
+					<th>Signature:</th>
+					<td></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</body>
+</html>

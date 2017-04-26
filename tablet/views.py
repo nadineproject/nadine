@@ -222,7 +222,7 @@ def signature_render(request, username, doc_type, signature_file):
     user = get_object_or_404(User, username=username)
     today = localtime(now()).date()
     pdf_args = {'name': user.get_full_name, 'date': today, 'doc_type': doc_type, 'signature_file': signature_file}
-    if 'save_file' in request.GET:
+    if 'save_file' in requestself.GET:
         # Save the PDF as a file and redirect them back to the document list
         htmltext = get_template('tablet/signature_render.html')
         signature_html = htmltext.render(pdf_args)

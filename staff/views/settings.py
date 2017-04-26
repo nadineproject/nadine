@@ -8,11 +8,13 @@ from django.contrib.auth.models import User
 from django.contrib.admin.views.decorators import staff_member_required
 from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.sites.models import Site
 from django.contrib import messages
 from django.conf import settings
 from django.utils import timezone
+from django.utils.timezone import localtime, now
 
 from nadine.models.membership import MembershipPackage, SubscriptionDefault
 from nadine.models.profile import FileUpload
@@ -132,16 +134,23 @@ def motd(request):
 @staff_member_required
 def document_upload(request):
     doc_form = DocUploadForm()
-
     # To be used to preview uploaded docs
-    docs = FileUpload.objects.values_list('document_type', flat=True).distinct()
+    docs = FileUpload.objects.values_list('document_type', flat=True).distinct().exclude(document_type='None')
+
 
     if request.method == 'POST':
-        doc_form = DocUploadForm(request.POST)
-        if doc_form.is_valid():
-            # Currently not working as not attached to any model
-            doc_form.save()
-            return HttpResponseRedirect(reverse('staff:tasks:todo'))
+        if 'doc_type' in request.POST:
+            user = request.user
+            today = localtime(now()).date()
+            doc_type = request.POST.get('doc_type')
+            pdf_args = {'doc_type': doc_type}
+            return render(request, 'staff/settings/doc_preview.html', pdf_args)
+        else:
+            doc_form = DocUploadForm(request.POST)
+            if doc_form.is_valid():
+                # Currently not working as not attached to any model
+                doc_form.save()
+                return HttpResponseRedirect(reverse('staff:tasks:todo'))
     context = {
         'doc_form': doc_form,
         'docs': docs,
