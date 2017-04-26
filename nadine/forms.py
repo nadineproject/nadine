@@ -599,7 +599,7 @@ class DocUploadForm(forms.Form):
     def save(self):
         name = self.cleaned_data['name']
         document = self.cleaned_data['document']
-        doc = Document(name=name, document=document)
+        doc = Documents(name=name, document=document)
         doc.save()
 
         return doc

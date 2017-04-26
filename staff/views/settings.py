@@ -15,6 +15,7 @@ from django.contrib import messages
 from django.conf import settings
 from django.utils import timezone
 from django.utils.timezone import localtime, now
+from django.core.files.storage import FileSystemStorage
 
 from nadine.models.membership import MembershipPackage, SubscriptionDefault
 from nadine.models.profile import FileUpload
@@ -146,7 +147,15 @@ def document_upload(request):
             return render(request, 'staff/settings/doc_preview.html', pdf_args)
         else:
             doc_form = DocUploadForm(request.POST, request.FILES)
+            name = slugify(request.POST.get('name'))
+            doc = request.POST.get('document')
+            doc_form.name = name
+            doc_form.document = doc
             if doc_form.is_valid():
+                # slug = slugify(name)
+                # fs = FileSystemStorage()
+                # filename = fs.save('/documents/%s.png' % slug, doc)
+                # uploaded_file_url = fs.url(filename)
                 # Still not working yet. Need to make model decision
                 doc_form.save()
                 return HttpResponseRedirect(reverse('staff:tasks:todo'))

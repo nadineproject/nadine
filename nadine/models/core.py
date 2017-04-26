@@ -95,7 +95,7 @@ class Website(models.Model):
 
 class Documents(models.Model):
     name = models.CharField(max_length=255, blank=False)
-    document = models.FileField(upload_to='documents/%s' % name)
+    document = models.FileField(upload_to='documents/')
 
     def __str__(self):
         return self.name
