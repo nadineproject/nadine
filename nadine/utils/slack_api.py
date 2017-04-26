@@ -244,7 +244,7 @@ class Chat(BaseAPI):
                      parse=None, link_names=None, attachments=None,
                      unfurl_links=None, unfurl_media=None, icon_url=None,
                      icon_emoji=None):
-       
+
         # Ensure attachments are json encoded
         if attachments:
             if isinstance(attachments, list):
@@ -519,7 +519,7 @@ class IncomingWebhook(object):
 
 class SlackAPI:
     oauth = OAuth(timeout=DEFAULT_TIMEOUT)
-    
+
     def __init__(self, incoming_webhook_url=None,
                  timeout=DEFAULT_TIMEOUT):
 

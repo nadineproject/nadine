@@ -81,7 +81,7 @@
             <option value='today'>
               Today
             </option>
-            <option value='eop'>
+            <option class='end-eop' value='eop'>
               End of This Bill Period
             </option>
             <option value='other'>
@@ -114,8 +114,7 @@
           <option value='today'>
             Today
           </option>
-          <option value='eop'>
-            End of Bill Period
+          <option class='change-eop' value='eop'>
           </option>
           <option value='other'>
             Other
@@ -139,10 +138,13 @@
         </td>
           {{ package_form.bill_day }}
         {{ package_form.username }}
-        <td style='width:30%;'></td>
+        <td style='width:30%; vertical-align: middle;'></td>
       </tr>
     </table>
   </form>
+  <div style='margin-left:45%;'>
+    <span class='cancel'>Cancel</span>
+  </div>
   <form class='sub-form' action='.' method='POST'>
     <table class='sub-table change-table'>
       {% if subscriptions %}
@@ -380,10 +382,13 @@
 
     var eopDate = getEop()[0];
     var bdDate = getEop()[1];
+    $('.change-eop').text('Start of Next Bill Period:   ' + bdDate);
+    $('.end-eop').text('End of this Bill Period:  ' + eopDate);
 
     if(targetDate != 'None') {
       $('.start_date').val(targetDate);
     }
+
 
   //JS for changing package
     $('#change').on('click', function(e) {
@@ -484,6 +489,7 @@
       $('#change-package').show();
       $('.mem-details-table').hide();
       $('.change-form').hide();
+      $('.end-table').css('margin-bottom', '3%');
     })
 
     $('#sub-end').on('change', function() {

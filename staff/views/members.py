@@ -361,8 +361,6 @@ def confirm_membership(request, username, package, end_target, new_subs):
     package = unicodedata.normalize('NFKD', package).encode('ascii', 'ignore')
     subs = ast.literal_eval(new_subs)
     pkg = ast.literal_eval(package)
-    slack = None
-
     if request.method == 'POST':
         try:
             with transaction.atomic():
@@ -423,11 +421,9 @@ def confirm_membership(request, username, package, end_target, new_subs):
                             # Save new resource
                             rs = ResourceSubscription(created_by=created_by, created_ts=created_ts, resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=paid_by, membership=membership)
                             rs.save()
-                            slack = True
                     """When first subscriptions is created, invite the user to Slack & add to membership"""
-                    if slack == True:
-                        if ResourceSubscription.objects.filter(membership=user.membership.id).count() == 0:
-                            SlackAPI().invite_user_quiet(user)
+                    if ResourceSubscription.objects.filter(membership=user.membership.id).count() == len(subs):
+                        SlackAPI().invite_user_quiet(user)
                 else:
                     user.membership.end_all(end_target)
                     PaymentAPI().disable_recurring(username)
