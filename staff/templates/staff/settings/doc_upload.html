@@ -19,19 +19,16 @@
 </form>
 <form enctype="multipart/form-data"  action='.' method='POST'>
 <h5>Upload New Document</h5>
-<p style='text-align: center;'>
-  All uploads must be in PNG format at time of upload for them to be properly accessed by Nadine's PDF features.
-</p>
   <table>
     <tr>
       <td>
-        Document Name
+        <strong>Document Name</strong>
       </td>
       <td>
         {{ doc_form.name }}
       </td>
       <td>
-        Select Document
+        <strong>Select Document</strong>
       </td>
       <td>
         {{ doc_form.document }}

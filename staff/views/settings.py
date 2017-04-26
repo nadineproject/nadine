@@ -18,6 +18,7 @@ from django.utils.timezone import localtime, now
 from django.core.files.storage import FileSystemStorage
 
 from nadine.models.membership import MembershipPackage, SubscriptionDefault
+from nadine.models.core import Documents
 from nadine.models.profile import FileUpload
 from nadine.utils import network
 from nadine.forms import HelpTextForm, MOTDForm, DocUploadForm
@@ -136,7 +137,8 @@ def motd(request):
 def document_upload(request):
     doc_form = DocUploadForm()
     # To be used to preview uploaded docs
-    docs = FileUpload.objects.values_list('document_type', flat=True).distinct().exclude(document_type='None')
+    # docs = FileUpload.objects.values_list('document_type', flat=True).distinct().exclude(document_type='None')
+    docs = Documents.objects.values_list('name', flat=True).distinct().exclude(name='None')
 
     if request.method == 'POST':
         if 'doc_type' in request.POST:
@@ -149,8 +151,6 @@ def document_upload(request):
             doc_form = DocUploadForm(request.POST, request.FILES)
             name = slugify(request.POST.get('name'))
             doc = request.POST.get('document')
-            doc_form.name = name
-            doc_form.document = doc
             if doc_form.is_valid():
                 doc_form.save()
                 return HttpResponseRedirect(reverse('staff:tasks:todo'))

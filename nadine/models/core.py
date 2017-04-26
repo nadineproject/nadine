@@ -35,6 +35,16 @@ GENDER_CHOICES = (
     ('O', 'Other'),
 )
 
+def doc_upload_path(instance, filename):
+    path='.'
+    inst_name = instance.name
+    doc_count = Documents.objects.filter(name=inst_name).count() + 1
+    name = inst_name + str(doc_count)
+    filename='documents/%s.png' % name
+    print filename
+
+    return os.path.join(path, filename)
+
 
 class HowHeard(models.Model):
 
@@ -95,7 +105,7 @@ class Website(models.Model):
 
 class Documents(models.Model):
     name = models.CharField(max_length=255, blank=False)
-    document = models.FileField(upload_to='documents/')
+    document = models.FileField(upload_to=doc_upload_path)
 
     def __str__(self):
         return self.name
