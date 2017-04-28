@@ -2,6 +2,7 @@ from datetime import date, datetime
 from slugify import slugify
 
 from django.utils import timezone
+from django.db import IntegrityError, transaction
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -11,6 +12,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.sites.models import Site
+from django.forms.formsets import formset_factory
 from django.contrib import messages
 from django.conf import settings
 from django.utils import timezone
@@ -21,7 +23,7 @@ from nadine.models.membership import MembershipPackage, SubscriptionDefault
 from nadine.models.core import Documents
 from nadine.models.profile import FileUpload
 from nadine.utils import network
-from nadine.forms import HelpTextForm, MOTDForm, DocUploadForm
+from nadine.forms import HelpTextForm, MOTDForm, DocUploadForm, PackageForm
 from nadine.settings import MOTD_TIMEOUT
 from member.models import HelpText, MOTD
 
@@ -43,7 +45,39 @@ def index(request):
 @staff_member_required
 def membership_packages(request):
     packages = SubscriptionDefault.objects.all().order_by('package')
-    context = {'packages':packages}
+    PackageFormset = formset_factory(PackageForm)
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        enabled_bx = request.POST.get('enabled')
+        if enabled_bx == 'on':
+            enabled = True
+        else:
+            enabled = False
+        mem_pkg = MembershipPackage(name=name, enabled=enabled)
+        mem_pkg.save()
+        print('id is %s ') % mem_pkg.id
+        try:
+            with transaction.atomic():
+                package_formset = PackageFormset(request.POST)
+                if package_formset.is_valid():
+                    for p in package_formset:
+                        p.package = mem_pkg.id
+                        if p.is_valid():
+                            p.save()
+                            return HttpResponseRedirect(reverse('staff:tasks:todo'))
+                        # else:
+                        #     messages.error(request, 'There was an error saving the membeship package')
+                else:
+                    print package_formset.errors
+        except IntegrityError as e:
+            print('There was an ERROR: %s' % e.message)
+            messages.error(request, 'There was an error creating the new membership package')
+    else:
+        print('boop')
+        package_formset = PackageFormset()
+    context = {'packages':packages,
+               'package_formset': package_formset,
+               }
     return render(request, 'staff/settings/membership_packages.html', context)
 
 

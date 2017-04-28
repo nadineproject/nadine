@@ -20,7 +20,7 @@ from localflavor.ca.ca_provinces import PROVINCE_CHOICES
 from nadine import email
 from nadine.models.core import HowHeard, Industry, Neighborhood, URLType, GENDER_CHOICES, Documents
 from nadine.models.profile import UserProfile, MemberNote, user_photo_path
-from nadine.models.membership import Membership, MembershipPlan, MembershipPackage, ResourceSubscription, IndividualMembership
+from nadine.models.membership import Membership, MembershipPlan, MembershipPackage, ResourceSubscription, IndividualMembership, SubscriptionDefault
 from nadine.models.usage import PAYMENT_CHOICES, CoworkingDay
 from nadine.models.resource import Room, Resource
 from nadine.models.organization import Organization, OrganizationMember
@@ -603,6 +603,35 @@ class DocUploadForm(forms.Form):
         doc.save()
 
         return doc
+
+class PackageForm(forms.Form):
+    # pkg_id =  forms.IntegerField(required=False, widget=forms.HiddenInput({'class':'id_td'}))
+    package = forms.CharField(max_length=128, required=False)
+    resource = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), label='Choose a Package', queryset=Resource.objects.all(), required=True)
+    allowance = forms.IntegerField(min_value=1, required=True)
+    monthly_rate = forms.IntegerField(min_value=0, required=True)
+    overage_rate = forms.IntegerField(min_value=0, required=True)
+
+    def save(self):
+        package_id = self.cleaned_data['package']
+        print('Package id is %s ' % package_id)
+        resource = self.cleaned_data['resource']
+        allowance = self.cleaned_data['allowance']
+        monthly_rate = self.cleaned_data['monthly_rate']
+        overage_rate = self.cleaned_data['overage_rate']
+        package = MembershipPackage.objects.get(id=package_id)
+        # if self.cleaned_data['pkg_id']:
+        #     pkg_id = self.cleaned_data['pkg_id']
+        #     pkg = SubscriptionDefault.objects.get(id=pkg_id)
+        #     pkg.allowance = allowance
+        #     pkg.monthly_rate = monthly_rate
+        #     pkg.overage_rate = overage_rate
+        #     pkg.save
+        # else:
+        pkg = SubscriptionDefault(package=package, resource=resource, allowance=allowance, monthly_rate=monthly_rate, overage_rate=overage_rate)
+        pkg.save()
+
+        return pkg
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
