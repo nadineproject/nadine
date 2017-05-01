@@ -67,7 +67,8 @@ def membership_packages(request):
                         overage_rate = p.cleaned_data.get('overage_rate')
                         pkg = SubscriptionDefault(package=mem_pkg, resource=resource, allowance=allowance, monthly_rate=monthly_rate, overage_rate=overage_rate)
                         pkg.save()
-                        return HttpResponseRedirect(reverse('staff:tasks:todo'))
+
+                    return HttpResponseRedirect(reverse('staff:tasks:todo'))
                 else:
                     print package_formset.errors
         except IntegrityError as e:

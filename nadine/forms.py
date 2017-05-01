@@ -605,7 +605,6 @@ class DocUploadForm(forms.Form):
         return doc
 
 class PackageForm(forms.Form):
-    # pkg_id =  forms.IntegerField(required=False, widget=forms.HiddenInput({'class':'id_td'}))
     package = forms.CharField(max_length=128, required=False)
     resource = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), label='Choose a Package', queryset=Resource.objects.all(), required=True)
     allowance = forms.IntegerField(min_value=1, required=True)
@@ -619,14 +618,6 @@ class PackageForm(forms.Form):
         monthly_rate = self.cleaned_data['monthly_rate']
         overage_rate = self.cleaned_data['overage_rate']
         package = MembershipPackage.objects.get(id=package_id)
-        # if self.cleaned_data['pkg_id']:
-        #     pkg_id = self.cleaned_data['pkg_id']
-        #     pkg = SubscriptionDefault.objects.get(id=pkg_id)
-        #     pkg.allowance = allowance
-        #     pkg.monthly_rate = monthly_rate
-        #     pkg.overage_rate = overage_rate
-        #     pkg.save
-        # else:
         pkg = SubscriptionDefault(package=package, resource=resource, allowance=allowance, monthly_rate=monthly_rate, overage_rate=overage_rate)
         pkg.save()
 

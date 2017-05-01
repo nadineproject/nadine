@@ -53,6 +53,10 @@ table td {
   margin-top: 2%;
 }
 
+/*.pkg-table {
+  width: 70%;
+}*/
+
 .preview-tr {
   display: none;
 }

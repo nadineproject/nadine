@@ -5,40 +5,55 @@
   <form action='.' method='POST'>
   <table>
     <tr>
-      <td>
+      <td style='width: 12%;'>
         <strong>Package Name:</strong>
       </td>
-      <td>
-        <input type='text' maxlength="128" name='name' />
+      <td class='select-td'>
+        <select class='select-pkg' name='package'>
+          <option selected> ----------- </option>
+          <option value='new'>- Create New Package -</option>
+          {% for p in packages %}
+            <option value='{{ p }}'>
+              {{ p.package }}
+            </option>
+          {% endfor %}
+        </select>
       </td>
-      <td>
+      <td style='padding-left: 5%;'>
         <input id='enabled' type='checkbox' name='enabled' />
         <label for='enabled'>Enable?</label>
       </td>
     </tr>
   </table>
-  <table>
-    <tr>
-      <th>Resource</th>
-      <th>Allowance</th>
-      <th>Monthly Rate</th>
-      <th>Overage Rate</th>
-      <th></th>
-    </tr>
+  <table class='pkg-table'>
     {{ package_formset.management_form }}
     {% for package_form in package_formset %}
       <tr class='package_formset'>
         <td>
+          <strong>Resource:</strong>
+        </td>
+        <td>
           {{ package_form.resource }}
         </td>
         <td>
+          <strong>Allowance:</strong>
+        </td>
+        <td style='width: 10%;'>
           {{ package_form.allowance }}
         </td>
         <td>
+          <strong>Monthly Rate:</strong>
+        </td>
+        <td style='width: 10%;'>
           {{ package_form.monthly_rate }}
         </td>
-        <td>
+        <td >
+          <strong>Overage Rate:</strong>
+        </td>
+        <td id='overage-td' style='width: 10%;'>
           {{ package_form.overage_rate}}
+        </td>
+        <td id='del-td'>
         </td>
       </tr>
     {% endfor %}
@@ -55,16 +70,6 @@
       <th>Overage Rate</th>
       <th></th>
     </tr>
-    <!-- <tr>
-      <form action='.' method='POST'>
-        <input type='hidden' name='add' />
-
-        <td>
-          <button type='submit'>Add</button>
-        </td>
-        {% csrf_token %}
-      </form>
-    </tr> -->
     {% for package in packages %}
       <tr class="{% cycle 'row-even' 'row-odd' %}">
         <td>
@@ -118,6 +123,11 @@
     $('.button-collapse').sideNav();
     $('.collapsible').collapsible();
     $('.edit-pkg').hide();
+    $('.package_formset').formset({
+      addText:'Add Another',
+      deleteText: 'Delete'
+    })
+    $('.delete-row').appendTo($('#del-td'));
 
     $('.edit-package').click(function(e) {
       e.preventDefault();
@@ -125,15 +135,18 @@
       $('#edit-' + id).toggle();
     })
 
-    $('.package_formset').formset({
-      addText:'Add Another',
-      deleteText: 'Delete'
-    })
-
     $('.cancel').click(function(e) {
       e.preventDefault();
       $('.edit-pkg').hide();
     })
+
+    $('.select-pkg').on('change', function(){
+      if($('.select-pkg').val() == 'new') {
+        $('.select-td').empty();
+        $('.select-td').append("<input class='pkg-name' type='text' maxlength='128' name='package' placeholder='Enter Package Name Here' />");
+      }
+    })
+
 
     {% for message in messages %}
       {% if message.tags == 'error' %}
