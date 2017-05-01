@@ -614,7 +614,6 @@ class PackageForm(forms.Form):
 
     def save(self):
         package_id = self.cleaned_data['package']
-        print('Package id is %s ' % package_id)
         resource = self.cleaned_data['resource']
         allowance = self.cleaned_data['allowance']
         monthly_rate = self.cleaned_data['monthly_rate']

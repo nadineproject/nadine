@@ -47,26 +47,27 @@ def membership_packages(request):
     packages = SubscriptionDefault.objects.all().order_by('package')
     PackageFormset = formset_factory(PackageForm)
     if request.method == 'POST':
-        name = request.POST.get('name')
-        enabled_bx = request.POST.get('enabled')
-        if enabled_bx == 'on':
-            enabled = True
-        else:
-            enabled = False
-        mem_pkg = MembershipPackage(name=name, enabled=enabled)
-        mem_pkg.save()
-        print('id is %s ') % mem_pkg.id
         try:
             with transaction.atomic():
+                name = request.POST.get('name')
+                enabled_bx = request.POST.get('enabled')
+                if enabled_bx == 'on':
+                    enabled = True
+                else:
+                    enabled = False
+                mem_pkg = MembershipPackage(name=name, enabled=enabled)
+                mem_pkg.save()
+
                 package_formset = PackageFormset(request.POST)
                 if package_formset.is_valid():
                     for p in package_formset:
-                        p.package = mem_pkg.id
-                        if p.is_valid():
-                            p.save()
-                            return HttpResponseRedirect(reverse('staff:tasks:todo'))
-                        # else:
-                        #     messages.error(request, 'There was an error saving the membeship package')
+                        resource = p.cleaned_data.get('resource')
+                        allowance = p.cleaned_data.get('allowance')
+                        monthly_rate = p.cleaned_data.get('monthly_rate')
+                        overage_rate = p.cleaned_data.get('overage_rate')
+                        pkg = SubscriptionDefault(package=mem_pkg, resource=resource, allowance=allowance, monthly_rate=monthly_rate, overage_rate=overage_rate)
+                        pkg.save()
+                        return HttpResponseRedirect(reverse('staff:tasks:todo'))
                 else:
                     print package_formset.errors
         except IntegrityError as e:
