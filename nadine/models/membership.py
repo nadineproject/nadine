@@ -249,7 +249,7 @@ class Membership(models.Model):
         ps, pe = self.get_period()
         self.end_all(pe)
 
-    def set_to_package(self, package, start_date=None, end_date=None, paid_by=None):
+    def set_to_package(self, package, start_date=None, end_date=None, paid_by=None, bill_day=None):
         if not start_date:
             start_date = localtime(now()).date()
 
@@ -257,6 +257,8 @@ class Membership(models.Model):
             raise Exception("Trying to set an active membership to new package!  End the current membership before changing to new package.")
 
         # Save the package
+        if bill_day:
+            self.bill_day = bill_day
         self.package = package
         self.save()
 
@@ -670,7 +672,7 @@ class ResourceSubscription(models.Model):
             prorate_end = self.end_date
         if self.start_date > period_start:
             prorate_start = self.start_date
-        
+
         # print prorate_start
         # print period_start
         # print prorate_end

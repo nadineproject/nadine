@@ -263,10 +263,12 @@ class CoworkingDayTracker(ResourceTrackerABC):
         from nadine.models.usage import CoworkingDay
         from nadine.models.billing import BillLineItem
         logger.debug("get_activity(user=%s, period_start=%s, period_end=%s)" % (user, period_start, period_end))
-        day_resource = Resource.objects.day_resource
-        billed_coworking_days = BillLineItem.objects.filter(resource=day_resource).values('activity_id')
-        query = CoworkingDay.objects.filter(user=user, visit_date__range=(period_start, period_end), payment='Bill').exclude(id__in=billed_coworking_days)
-        return query.annotate(activity_date=F('visit_date'))
+        # All coworking days associated with a bill
+        billed_coworking_days = BillLineItem.objects.filter(resource=Resource.objects.day_resource).values('activity_id')
+        # All billable coworking days not associated with a bill
+        billable_coworking_days = CoworkingDay.objects.filter(visit_date__range=(period_start, period_end), payment='Bill').exclude(id__in=billed_coworking_days).annotate(activity_date=F('visit_date'))
+        # Return the set of billable coworking days either for this user, or paid by this user
+        return billable_coworking_days.filter(Q(user=user) | Q(paid_by=user))
 
 
 class RoomBookingTracker(ResourceTrackerABC):
