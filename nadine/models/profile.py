@@ -26,7 +26,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.contrib.sites.models import Site
 
-from monthdelta import MonthDelta, monthmod
 from taggit.managers import TaggableManager
 from taggit.models import TaggedItemBase
 
@@ -183,7 +182,7 @@ class UserQueryHelper():
         return expired_users
 
     def stale_member_date(self):
-        three_months_ago = localtime(now()) - MonthDelta(3)
+        three_months_ago = localtime(now()) - relativedelta(months=3)
         return three_months_ago
 
     def stale_members(self):
@@ -399,7 +398,6 @@ class UserProfile(models.Model):
         return Membership.objects.active_memberships(target_date=day).filter(user=self.user).first()
 
     def activity_this_month(self, target_date=None):
-        # TODO - Evaluate
         if not target_date:
             target_date = localtime(now()).date()
 
@@ -412,7 +410,7 @@ class UserProfile(models.Model):
             month_start = membership.prev_billing_date(target_date)
         else:
             # Just go back one month from this date since there isn't a membership to work with
-            month_start = target_date - MonthDelta(1)
+            month_start = target_date - relativedelta(months = 1)
 
         activity = []
         for h in [self.user] + self.guests():
@@ -422,13 +420,13 @@ class UserProfile(models.Model):
             activity.append(l)
         return activity
 
-    def activity(self):
-        # TODO - Evaluate
-        return CoworkingDay.objects.filter(user=self.user)
-
-    def paid_count(self):
-        # TODO - Evaluate
-        return self.activity().filter(payment='Bill').count()
+    # def activity(self):
+    #     # TODO - Evaluate
+    #     return CoworkingDay.objects.filter(user=self.user)
+    #
+    # def paid_count(self):
+    #     # TODO - Evaluate
+    #     return self.activity().filter(payment='Bill').count()
 
     def all_emails(self):
         # Done in two queries so that the primary email address is always on top.
