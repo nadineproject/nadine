@@ -118,16 +118,16 @@
     $('.collapsible').collapsible();
     $('.edit-pkg').hide();
     $('.select-pkg').val('{{ package }}');
-        $('.package_formset').formset({
+    $('.package_formset').formset({
       addText:'Add Another',
       deleteText: 'Delete'
     })
+
     $('.delete-row').appendTo($('#del-td'));
 
-    if($('.select-pkg').val() != null) {
-      $('.select-form').hide();
-    }
-
+    // if($('.select-pkg').val() != null) {
+    //   $('.select-form').hide();
+    // }
 
     $('.select-pkg').on('change', function(){
       var value = $('.select-pkg').val();
@@ -137,6 +137,17 @@
       } else {
         $('.select-form').submit();
       }
+    })
+
+    $('.edit-package').click(function(e) {
+      e.preventDefault();
+      id = $(this).val();
+      $('#edit-' +  id).toggle();
+    })
+
+    $('.cancel').click(function(e) {
+      e.preventDefault();
+      $('.edit-pkg').hide();
     })
 
     {% for message in messages %}
