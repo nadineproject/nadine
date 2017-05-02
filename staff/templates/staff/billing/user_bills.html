@@ -7,8 +7,8 @@
 {% endblock %}
 
 {% block content %}
-<h4>Bills for <a href="{% url 'staff:members:detail' user.username %}">{{ user.get_full_name }}</a>:</h4>
-
+<h4>Bills for <a href="{% url 'staff:members:detail' user.username %}">{{ user.get_full_name }}</a></h4>
+{% if bills %}
 <table>
   <tr>
     <th>ID</th>
@@ -34,11 +34,9 @@
       <td class="amount">${{ bill.total_paid }}</td>
       <!-- <td><a href="{{ bill.get_admin_url }}">edit</a></td> -->
     </tr>
-  {% empty %}
-    <tr colspan="8">
-      <th style="text-align:center;">There are no bills for this user.</th>
-    </tr>
   {% endfor %}
 </table>
+{% endif %}
+<h5 style='text-align: center; margin-top: 5%;'>There are no bills for this user</h5>
 
 {% endblock %}
