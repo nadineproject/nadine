@@ -272,7 +272,7 @@ def bill_view(request, bill_id):
 @staff_member_required
 def user_bills(request, username):
     user = get_object_or_404(User, username=username)
-    bills = user.bill_set.all()
+    bills = user.bills.all()
     return render(request, 'staff/billing/user_bills.html', {'user':user, 'bills':bills})
 
 

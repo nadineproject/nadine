@@ -8,16 +8,37 @@
 
 {% block content %}
 <h4>Bills for <a href="{% url 'staff:members:detail' user.username %}">{{ user.get_full_name }}</a>:</h4>
-{% if not bills %}
-  <p>There are no bills!</p>
-{% endif%}
 
-{% for bill in bills %}
-   {% with "yes" as hide_paid_by %}
-   {% with "yes" as show_member_name %}
-      {% include "staff/billing/bill_table.frag" %}
-   {% endwith %}
-   {% endwith %}
-{% endfor %}
+<table>
+  <tr>
+    <th>ID</th>
+    <th>Created</th>
+    <th>Period Start</th>
+    <th>Period End</th>
+    <th>Membership</th>
+    <th>Lines</th>
+    <th class="amount">Amount</th>
+    <th class="amount">Paid</th>
+    <!-- <th>&nbsp;</th> -->
+  </tr>
+
+  {% for bill in bills %}
+    <tr class="{% cycle 'row-even' 'row-odd' %}">
+      <td><a href="{% url 'staff:billing:bill' bill.id %}">{{ bill.id }}</a></td>
+      <td>{{ bill.created_ts|date:"m/d/y" }}</a></td>
+      <td>{{ bill.period_start }}</td>
+      <td>{{ bill.period_end }}</td>
+      <td>{{ bill.membership.package }}</td>
+      <td>{{ bill.line_items.all | length }}</td>
+      <td class="amount">${{ bill.amount }}</td>
+      <td class="amount">${{ bill.total_paid }}</td>
+      <!-- <td><a href="{{ bill.get_admin_url }}">edit</a></td> -->
+    </tr>
+  {% empty %}
+    <tr colspan="8">
+      <th style="text-align:center;">There are no bills for this user.</th>
+    </tr>
+  {% endfor %}
+</table>
 
 {% endblock %}

@@ -137,6 +137,7 @@ class UserBill(models.Model):
         allowance = self.resource_allowance(resource)
         if allowance == None:
             # This indicates we have no subscriptions for this resource
+            # TODO - wrong.  They could still have activity
             return
         overage_rate = self.resource_overage_rate(resource)
         user_list = self.membership.users_in_period(period_start, period_end)
