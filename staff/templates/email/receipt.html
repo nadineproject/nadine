@@ -57,7 +57,7 @@
       </tr>
         {% for line_item in bill.line_items.all %}
           <tr>
-            <td style="text-align: left; width:440px; margin-left:40px">{{ line_item.description }}</td>
+            <td style="text-align: left; width:440px; margin-left:40px">{{ line_item.description }}{% if benefactor %} - For {{ benefactor.get_full_name }}{% endif %}</td>
             <td style="text-align: right;">${{ line_item.amount|floatformat:2 }}</td>
           </tr>
         {% endfor %}

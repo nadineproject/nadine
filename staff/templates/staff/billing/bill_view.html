@@ -17,7 +17,7 @@
     <td style="width: 30%;">{{ bill.created_ts|date:"m/d/y P" }}</td>
     {% if bill.created_by %}
       <th style="width: 15%;">Created By:</th>
-      <td>{{ bill.created_by }}</td>
+      <td>{{ bill.created_by.get_full_name }}</td>
     {% else %}
       <th style='width: 15%;'></th>
       <td style='border-bottom: none;'></td>

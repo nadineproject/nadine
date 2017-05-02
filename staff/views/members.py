@@ -65,7 +65,7 @@ def detail(request, username):
         elif 'gen_bill' in request.POST:
             bill = user.membership.generate_bill(created_by=request.user)
             if len(bill.keys()) == 1:
-                return HttpResponseRedirect(reverse('staff:billing:bill', kwargs={'bill_id': bill[user.username]['bill'].id}))
+                return HttpResponseRedirect(reverse('staff:billing:bill', kwargs={'bill_id': bill[bill.keys()[0]]['bill'].id}))
             else:
                 return HttpResponseRedirect(reverse('staff:billing:user_bills', kwargs={'username': user.username }))
             messages.add_message(request, messages.SUCCESS, "Bill Generated")
