@@ -14,9 +14,14 @@
 <table class='bill-id-table'>
   <tr>
     <th>Created:</th>
-    <td style="width: 30%;">{{ bill.created_ts }}</td>
-    <th style="width: 15%;">Created By:</th>
-    <td>{{ bill.created_by }}</td>
+    <td style="width: 30%;">{{ bill.created_ts|date:"m/d/y P" }}</td>
+    {% if bill.created_by %}
+      <th style="width: 15%;">Created By:</th>
+      <td>{{ bill.created_by }}</td>
+    {% else %}
+      <th style='width: 15%;'></th>
+      <td style='border-bottom: none;'></td>
+    {% endif %}
   </tr>
 </table>
 <table class='bill-id-table'>
@@ -46,7 +51,7 @@
       <td>${{ bill.total_paid }}</td>
     {% else %}
       <th style='color:red;' id='paid-th'>Paid:</th>
-      <td style='color:red;' >${{ bill.total_paid }} ({{ diff }} Days Past Due)</td>
+      <td style='color:red;' >${{ bill.total_paid }} {% if diff %}({{ diff.days }} Days Past Due){% endif %}</td>
     {% endif %}
   </tr>
 </table>

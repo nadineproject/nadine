@@ -264,12 +264,17 @@ def toggle_billing_flag(request, username):
 @staff_member_required
 def bill_view(request, bill_id):
     bill = get_object_or_404(UserBill, id=bill_id)
-    bill_user = User.objects.get(membership = bill.membership)
+    if bill.membership:
+        bill_user = User.objects.get(membership = bill.membership)
+    else:
+        bill_user = bill.user
     benefactor = None
     if bill_user != bill.user:
         benefactor = bill_user
     diff = localtime(now()).date() - bill.period_end
-    context = {"bill": bill, "diff": diff.days, "benefactor": benefactor}
+    if diff.days < 1:
+        diff = None
+    context = {"bill": bill, "diff": diff, "benefactor": benefactor}
     return render(request, 'staff/billing/bill_view.html', context)
 
 
