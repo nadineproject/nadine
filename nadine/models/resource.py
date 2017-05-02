@@ -205,6 +205,7 @@ class Resource(models.Model):
 
     name = models.CharField(max_length=64, unique=True)
     key = models.CharField(max_length=8, unique=True, null=True, blank=True)
+    default_rate = models.DecimalField(max_digits=7, decimal_places=2, default=0)
     tracker_class = models.CharField(max_length=64, null=True, blank=True)
 
     objects = ResourceManager()
