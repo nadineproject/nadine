@@ -1,5 +1,4 @@
 {% load static %}
-
 <h5>Details</h5>
 <table class='mem-details-table'>
   <tr class='row-even'>
@@ -13,8 +12,12 @@
     <td>{{ membership.next_period_start }}</td>
     <td>{{ membership.package }}</td>
     <td class='sub-chips'>
-      <!-- Doesn't work:  Must be a POST -->
-      <a class='chip' href="?gen_bill">Regenerate Bill</a> |
+      <form style='display:inline;' class='genbill-form' action='.' method='POST'>
+        <input type='hidden' name='gen_bill' value='true' />
+        <a class='chip' onclick="$('.genbill-form').submit()">Regenerate Bill</a>
+        {% csrf_token %}
+      </form>
+      |
       <a class='chip' href="{% url 'staff:members:membership' user.username %}">Edit Membership</a>
     </td>
   </tr>

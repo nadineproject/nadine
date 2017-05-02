@@ -2,6 +2,27 @@
 
 {% block content %}
   <h4>Membership Packages</h4>
+  <form class='select-form' action='.' method='GET'>
+    <table>
+      <tr>
+        <td style='width: 12%;'>
+          <strong>Package Name:</strong>
+        </td>
+        <td class='select-td'>
+          <select class='select-pkg' name='package'>
+            <option selected> ----------- </option>
+            <option value='new'>- Create New Package -</option>
+            {% for p in packages %}
+              <option value='{{ p.id }}'>
+                {{ p.package }}
+              </option>
+            {% endfor %}
+          </select>
+        </td>
+      </tr>
+    </table>
+    {% csrf_token %}
+  </form>
   <form action='.' method='POST'>
   <table>
     <tr>
@@ -13,7 +34,7 @@
           <option selected> ----------- </option>
           <option value='new'>- Create New Package -</option>
           {% for p in packages %}
-            <option value='{{ p }}'>
+            <option value='{{ p.id }}'>
               {{ p.package }}
             </option>
           {% endfor %}
@@ -81,33 +102,6 @@
         <td>{{ package.allowance }}</td>
         <td>{{ package.monthly_rate }}</td>
         <td style='text-align: center;'>{{ package.overage_rate }}</td>
-        <td>
-          <button class='edit-package' value='{{ package.id }}'>Edit</button>
-        </td>
-      </tr>
-      <tr class="edit-pkg {% cycle 'row-even' 'row-odd' %}" id='edit-{{ package.id }}'>
-        <form action='.' method='POST'>
-          <td><input type='hidden' name='edit' /></td>
-          <td>
-            <input type='hidden' name='pkg_id' value='{{ package.id }}' />
-          </td>
-          <td>
-            {{ package_form.allowance }}
-          </td>
-          <td>
-            {{ package_form.monthly_rate }}
-          </td>
-          <td>
-            {{package_form.overage_rate }}
-          </td>
-          <td>
-            <button type='submit'>Update</button>
-          </td>
-          <td>
-            <a class='cancel'>Cancel</a>
-          </td>
-          {% csrf_token %}
-        </form>
       </tr>
     {% empty %}
       <tr>
@@ -123,30 +117,27 @@
     $('.button-collapse').sideNav();
     $('.collapsible').collapsible();
     $('.edit-pkg').hide();
-    $('.package_formset').formset({
+    $('.select-pkg').val('{{ package }}');
+        $('.package_formset').formset({
       addText:'Add Another',
       deleteText: 'Delete'
     })
     $('.delete-row').appendTo($('#del-td'));
 
-    $('.edit-package').click(function(e) {
-      e.preventDefault();
-      id = $(this).val();
-      $('#edit-' + id).toggle();
-    })
+    if($('.select-pkg').val() != null) {
+      $('.select-form').hide();
+    }
 
-    $('.cancel').click(function(e) {
-      e.preventDefault();
-      $('.edit-pkg').hide();
-    })
 
     $('.select-pkg').on('change', function(){
-      if($('.select-pkg').val() == 'new') {
+      var value = $('.select-pkg').val();
+      if(value == 'new') {
         $('.select-td').empty();
         $('.select-td').append("<input class='pkg-name' type='text' maxlength='128' name='package' placeholder='Enter Package Name Here' />");
+      } else {
+        $('.select-form').submit();
       }
     })
-
 
     {% for message in messages %}
       {% if message.tags == 'error' %}

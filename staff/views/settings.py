@@ -46,6 +46,15 @@ def index(request):
 def membership_packages(request):
     packages = SubscriptionDefault.objects.all().order_by('package')
     PackageFormset = formset_factory(PackageForm)
+    package = request.GET.get('package', None)
+    sub_data = None
+    enabled = False
+    if package != None and package != 'new':
+        pkg = MembershipPackage.objects.get(id=package)
+        sub_defaults = SubscriptionDefault.objects.filter(package=pkg)
+        sub_data = [{'name':pkg.name, 'resource': s.resource.id, 'allowance': s.allowance, 'monthly_rate': s.monthly_rate, 'overage_rate': s.overage_rate} for s in sub_defaults]
+        enabled = pkg.enabled
+
     if request.method == 'POST':
         try:
             with transaction.atomic():
@@ -75,10 +84,11 @@ def membership_packages(request):
             print('There was an ERROR: %s' % e.message)
             messages.error(request, 'There was an error creating the new membership package')
     else:
-        print('boop')
-        package_formset = PackageFormset()
+        package_formset = PackageFormset(initial=sub_data)
     context = {'packages':packages,
+               'package': package,
                'package_formset': package_formset,
+               'enabled': enabled
                }
     return render(request, 'staff/settings/membership_packages.html', context)
 
