@@ -64,7 +64,7 @@ def detail(request, username):
             SpecialDay.objects.create(user=user, month=month, day=day, year=year, description=desc)
         elif 'gen_bill' in request.POST:
             bill = user.membership.generate_bill(created_by=request.user)
-            if len(bill.keys()) == 1:
+            if bill and len(bill.keys()) == 1:
                 return HttpResponseRedirect(reverse('staff:billing:bill', kwargs={'bill_id': bill[bill.keys()[0]]['bill'].id}))
             else:
                 return HttpResponseRedirect(reverse('staff:billing:user_bills', kwargs={'username': user.username }))
