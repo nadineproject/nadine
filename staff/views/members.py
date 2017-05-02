@@ -63,11 +63,11 @@ def detail(request, username):
             desc = request.POST.get('description')
             SpecialDay.objects.create(user=user, month=month, day=day, year=year, description=desc)
         elif 'gen_bill' in request.POST:
-            bill = user.membership.generate_bill()
+            bill = user.membership.generate_bill(created_by=request.user)
             if len(bill.keys()) == 1:
                 return HttpResponseRedirect(reverse('staff:billing:bill', kwargs={'bill_id': bill[user.username]['bill'].id}))
             else:
-                return HttpResponseRedirect(reverse('staff:billing:user_bill', kwargs={'username': user.username }))
+                return HttpResponseRedirect(reverse('staff:billing:user_bills', kwargs={'username': user.username }))
             messages.add_message(request, messages.SUCCESS, "Bill Generated")
         else:
             print(request.POST)

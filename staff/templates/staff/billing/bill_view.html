@@ -14,11 +14,19 @@
 <table class='bill-id-table'>
   <tr>
     <th>Created:</th>
-    <td>{{ bill.created_ts }}</td>
+    <td style="width: 30%;">{{ bill.created_ts }}</td>
+    <th style="width: 15%;">Created By:</th>
+    <td>{{ bill.created_by }}</td>
+  </tr>
+</table>
+<table class='bill-id-table'>
+  <tr>
     <th>Period:</th>
     <td>
       {{ bill.period_start|date:"m/d/y" }} to {{ bill.period_end|date:"m/d/y" }}
     </td>
+    <th>Due Date:</th>
+    <td>{{ bill.due_date|date:"m/d/y"  }}</td>
   </tr>
 </table>
 <table class='bill-id-table bill-id-table-2'>
@@ -51,7 +59,7 @@
   </tr>
   {% for line_item in bill.line_items.all %}
       <tr class='{% cycle "row-odd" "row-even" %}'>
-          <td>{{ line_item.description }}</td>
+          <td>{{ line_item.description }} {% if benefactor %} - For {{ benefactor.get_full_name }}{% endif %}</td>
           <td style="text-align: right;">${{ line_item.amount|floatformat:2 }}</td>
       </tr>
   {% endfor %}
