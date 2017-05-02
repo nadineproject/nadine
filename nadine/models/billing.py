@@ -91,8 +91,6 @@ class UserBill(models.Model):
         ''' Add up all the allowances to see how much activity is included in this membership. '''
         ps, pe = self.get_activity_period()
         subscriptions = self.membership.subscriptions_for_period(ps, pe).filter(resource=resource)
-        if not subscriptions:
-            return None
         allowance = 0
         for s in subscriptions:
             allowance += s.allowance
@@ -105,7 +103,7 @@ class UserBill(models.Model):
         ps, pe = self.get_activity_period()
         subscriptions = self.membership.subscriptions_for_period(ps, pe).filter(resource=resource)
         if not subscriptions:
-            return None
+            return resource.default_rate
         return subscriptions.first().overage_rate
 
     def resource_activity_count(self, resource):
@@ -135,10 +133,6 @@ class UserBill(models.Model):
         ''' Generate line items for all activity for the given resource in the given period. '''
         period_start, period_end = self.get_activity_period()
         allowance = self.resource_allowance(resource)
-        if allowance == None:
-            # This indicates we have no subscriptions for this resource
-            # TODO - wrong.  They could still have activity
-            return
         overage_rate = self.resource_overage_rate(resource)
         user_list = self.membership.users_in_period(period_start, period_end)
         tracker = resource.get_tracker()
