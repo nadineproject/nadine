@@ -161,15 +161,11 @@ class UserBillTestCase(TestCase):
     def test_guest_membership_bills(self):
         # User 6, 7 = PT-5 6/26/2008 - User 7 guest of User 6
         user6 = User.objects.create(username='member_six', first_name='Member', last_name='Six')
-        user6.membership.set_to_package(self.pt5Package, start_date=date(2008, 6, 26), end_date=None)
-        user6.membership.bill_day = 26
-        user6.membership.save()
+        user6.membership.set_to_package(self.pt5Package, start_date=date(2008, 6, 26), end_date=None, bill_day=26)
 
         # User 7 has daily activity 6/1/2010 through 6/15/2010
         user7 = User.objects.create(username='member_seven', first_name='Member', last_name='Seven')
-        user7.membership.set_to_package(self.pt5Package, start_date=date(2008, 6, 26), paid_by=user6)
-        user7.membership.bill_day = 26
-        user7.membership.save()
+        user7.membership.set_to_package(self.pt5Package, start_date=date(2008, 6, 26), paid_by=user6, bill_day=26)
         for day in range(1, 16):
             CoworkingDay.objects.create(user=user7, visit_date=date(2010, 6, day), payment='Bill')
 
