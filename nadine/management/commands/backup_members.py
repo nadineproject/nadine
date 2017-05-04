@@ -5,7 +5,7 @@ import sys
 import datetime
 
 from django.core.management.base import BaseCommand, CommandError
-from staff.backup import BackupManager
+from nadine.utils.backup import BackupManager
 
 class Command(BaseCommand):
     help = "Export a CSV of active members"
@@ -15,4 +15,3 @@ class Command(BaseCommand):
     def handle(self, *labels, **options):
         manager = BackupManager()
         manager.export_active_users()
-
