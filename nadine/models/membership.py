@@ -29,13 +29,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.contrib.sites.models import Site
 
-<<<<<<< HEAD
 from resource import Resource
 from organization import Organization
 # from nadine.models import billing
 
-=======
->>>>>>> origin/1.9
 logger = logging.getLogger(__name__)
 
 
