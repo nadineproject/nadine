@@ -26,8 +26,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
 
-from monthdelta import MonthDelta, monthmod
-
 logger = logging.getLogger(__name__)
 
 
@@ -188,13 +186,13 @@ class Membership(models.Model):
     def prev_billing_date(self, test_date=None):
         if not test_date:
             test_date = date.today()
-        day_difference = monthmod(self.start_date, test_date)[1]
-        return test_date - day_difference
+        difference = relativedelta(test_date, self.start_date)
+        return self.start_date + relativedelta(years=difference.years, months=difference.months)
 
     def next_billing_date(self, test_date=None):
         if not test_date:
             test_date = date.today()
-        return self.prev_billing_date(test_date) + MonthDelta(1)
+        return self.prev_billing_date(test_date) + relativedelta(months=1)
 
     def get_allowance(self):
         if self.paid_by:

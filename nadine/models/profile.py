@@ -27,7 +27,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
 
-from monthdelta import MonthDelta, monthmod
 from taggit.managers import TaggableManager
 from taggit.models import TaggedItemBase
 
@@ -155,7 +154,7 @@ class UserQueryHelper():
         return expired_users
 
     def stale_member_date(self):
-        three_months_ago = timezone.now() - MonthDelta(3)
+        three_months_ago = timezone.now() - relativedelta(months=3)
         return three_months_ago
 
     def stale_members(self):
@@ -395,7 +394,7 @@ class UserProfile(models.Model):
             month_start = membership.prev_billing_date(test_date)
         else:
             # Just go back one month from this date since there isn't a membership to work with
-            month_start = test_date - MonthDelta(1)
+            month_start = test_date - relativedelta(months=1)
 
         activity = []
         for h in [self.user] + self.guests():
