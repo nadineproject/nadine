@@ -605,23 +605,48 @@ class DocUploadForm(forms.Form):
         return doc
 
 class PackageForm(forms.Form):
-    package = forms.CharField(max_length=128, required=False)
-    resource = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), label='Choose a Package', queryset=Resource.objects.all(), required=True)
+    name = forms.CharField(max_length=128, required=True)
+    sub_id = forms.IntegerField(required=False, widget=forms.HiddenInput)
+    package = forms.IntegerField(required=False, widget=forms.HiddenInput)
+    enabled = forms.ChoiceField(choices=((True, 'Yes'), (False, 'No')), required=False)
+    resource = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), label='Choose a Resource', queryset=Resource.objects.all(), required=True)
     allowance = forms.IntegerField(min_value=1, required=True)
     monthly_rate = forms.IntegerField(min_value=0, required=True)
     overage_rate = forms.IntegerField(min_value=0, required=True)
 
     def save(self):
-        package_id = self.cleaned_data['package']
+        if not self.is_valid():
+            raise Exception('The form must be valid in order to save')
+        name = self.cleaned_data['name']
+        package = self.cleaned_data['package']
         resource = self.cleaned_data['resource']
         allowance = self.cleaned_data['allowance']
         monthly_rate = self.cleaned_data['monthly_rate']
         overage_rate = self.cleaned_data['overage_rate']
-        package = MembershipPackage.objects.get(id=package_id)
-        pkg = SubscriptionDefault(package=package, resource=resource, allowance=allowance, monthly_rate=monthly_rate, overage_rate=overage_rate)
-        pkg.save()
+        enabled = self.cleaned_data['enabled']
+        if enabled == 'False':
+            enabled = False
+        else:
+            enabled = True
 
-        return pkg
+        if self.cleaned_data['sub_id']:
+            p = MembershipPackage.objects.get(id=package)
+            p.enabled = enabled
+            p.save()
+
+            sub_default = ResourceSubscription.objects.get(id=self.cleaned_data['sub_id'])
+            sub_default.allowance = allowance
+            sub_default.monthly_rate = monthly_rate
+            sub_default.overage_rate = overage_rate
+            sub_default.save()
+        else:
+            p = MembershipPackage(name=name, enabled=enabled)
+            p.save()
+
+            sub_default = SubscriptionDefault(package=p, resource=resource, allowance=allowance, monthly_rate=monthly_rate, overage_rate=overage_rate)
+            sub_default.save()
+
+        return sub_default
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

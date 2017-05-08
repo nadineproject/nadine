@@ -22,6 +22,7 @@ from django.core.files.storage import FileSystemStorage
 from nadine.models.membership import MembershipPackage, SubscriptionDefault
 from nadine.models.core import Documents
 from nadine.models.profile import FileUpload
+from nadine.models.resource import Resource
 from nadine.utils import network
 from nadine.forms import HelpTextForm, MOTDForm, DocUploadForm, PackageForm
 from nadine.settings import MOTD_TIMEOUT
@@ -49,46 +50,35 @@ def membership_packages(request):
     package = request.GET.get('package', None)
     sub_data = None
     enabled = False
-    if package != None and package != 'new':
+    if package != None:
         pkg = MembershipPackage.objects.get(id=package)
         sub_defaults = SubscriptionDefault.objects.filter(package=pkg)
-        sub_data = [{'name':pkg.name, 'resource': s.resource.id, 'allowance': s.allowance, 'monthly_rate': s.monthly_rate, 'overage_rate': s.overage_rate} for s in sub_defaults]
+        sub_data = [{'name':pkg.name,'sub_id': s.id, 'package': pkg.id, 'enabled': pkg.enabled, 'resource': s.resource.id, 'allowance': s.allowance, 'monthly_rate': s.monthly_rate, 'overage_rate': s.overage_rate} for s in sub_defaults]
         enabled = pkg.enabled
 
     if request.method == 'POST':
         try:
             with transaction.atomic():
-                name = request.POST.get('name')
-                enabled_bx = request.POST.get('enabled')
-                if enabled_bx == 'on':
-                    enabled = True
-                else:
-                    enabled = False
-                mem_pkg = MembershipPackage(name=name, enabled=enabled)
-                mem_pkg.save()
-
                 package_formset = PackageFormset(request.POST)
                 if package_formset.is_valid():
                     for p in package_formset:
-                        resource = p.cleaned_data.get('resource')
-                        allowance = p.cleaned_data.get('allowance')
-                        monthly_rate = p.cleaned_data.get('monthly_rate')
-                        overage_rate = p.cleaned_data.get('overage_rate')
-                        pkg = SubscriptionDefault(package=mem_pkg, resource=resource, allowance=allowance, monthly_rate=monthly_rate, overage_rate=overage_rate)
-                        pkg.save()
-
-                    return HttpResponseRedirect(reverse('staff:tasks:todo'))
+                        if p.cleaned_data.get('name') != None:
+                            p.save()
+                    return HttpResponseRedirect(reverse('staff:settings:membership_packages'))
                 else:
                     print package_formset.errors
         except IntegrityError as e:
             print('There was an ERROR: %s' % e.message)
+            print(request.POST)
             messages.error(request, 'There was an error creating the new membership package')
     else:
         package_formset = PackageFormset(initial=sub_data)
+        package_form = PackageForm()
     context = {'packages':packages,
                'package': package,
                'package_formset': package_formset,
-               'enabled': enabled
+               'enabled': enabled,
+               'package_form': package_form,
                }
     return render(request, 'staff/settings/membership_packages.html', context)
 

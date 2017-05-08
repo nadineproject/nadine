@@ -9,34 +9,35 @@
 {% block content %}
 <h4>Bills for <a href="{% url 'staff:members:detail' user.username %}">{{ user.get_full_name }}</a></h4>
 {% if bills %}
-<table>
-  <tr>
-    <th>ID</th>
-    <th>Created</th>
-    <th>Period Start</th>
-    <th>Period End</th>
-    <th>Membership</th>
-    <th>Lines</th>
-    <th class="amount">Amount</th>
-    <th class="amount">Paid</th>
-    <!-- <th>&nbsp;</th> -->
-  </tr>
-
-  {% for bill in bills %}
-    <tr class="{% cycle 'row-even' 'row-odd' %}">
-      <td><a href="{% url 'staff:billing:bill' bill.id %}">{{ bill.id }}</a></td>
-      <td>{{ bill.created_ts|date:"m/d/y" }}</a></td>
-      <td>{{ bill.period_start }}</td>
-      <td>{{ bill.period_end }}</td>
-      <td>{{ bill.membership.package }}</td>
-      <td>{{ bill.line_items.all | length }}</td>
-      <td class="amount">${{ bill.amount }}</td>
-      <td class="amount">${{ bill.total_paid }}</td>
-      <!-- <td><a href="{{ bill.get_admin_url }}">edit</a></td> -->
+  <table>
+    <tr>
+      <th>ID</th>
+      <th>Created</th>
+      <th>Period Start</th>
+      <th>Period End</th>
+      <th>Membership</th>
+      <th>Lines</th>
+      <th class="amount">Amount</th>
+      <th class="amount">Paid</th>
+      <!-- <th>&nbsp;</th> -->
     </tr>
-  {% endfor %}
-</table>
+
+    {% for bill in bills %}
+      <tr class="{% cycle 'row-even' 'row-odd' %}">
+        <td><a href="{% url 'staff:billing:bill' bill.id %}">{{ bill.id }}</a></td>
+        <td>{{ bill.created_ts|date:"m/d/y" }}</a></td>
+        <td>{{ bill.period_start }}</td>
+        <td>{{ bill.period_end }}</td>
+        <td>{{ bill.membership.package }}</td>
+        <td>{{ bill.line_items.all | length }}</td>
+        <td class="amount">${{ bill.amount }}</td>
+        <td class="amount">${{ bill.total_paid }}</td>
+        <!-- <td><a href="{{ bill.get_admin_url }}">edit</a></td> -->
+      </tr>
+    {% endfor %}
+  </table>
+{% else %}
+  <h5 style='text-align: center; margin-top: 5%;'>There are no bills for this user</h5>
 {% endif %}
-<h5 style='text-align: center; margin-top: 5%;'>There are no bills for this user</h5>
 
 {% endblock %}
