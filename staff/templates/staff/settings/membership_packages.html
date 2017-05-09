@@ -70,7 +70,7 @@
     {% for package in packages %}
       <form action='.' method='GET'>
         {% ifchanged package.package.name %}
-          <tr class='pkgInfo-{{ package.id }} pkg-row' >
+          <tr class='pkgInfo-{{ package.package.id }} pkg-row' >
             <td style='width:15%;'>
                 <strong>{{ package.package.name }}</strong>
             </td>
@@ -163,6 +163,9 @@
       $('.name-input').css('border-bottom', 'none');
       $('.pkg-table input').attr('required', false);
       $('.pkg-table select').attr('required', false);
+      $('html, body').animate({
+        scrollTop: $('.edit-' + id).offset().top
+      });
       // $('.edit-' + id).css('border', '1px solid RGBA(176, 188, 196, 1.00)');
     }
 
