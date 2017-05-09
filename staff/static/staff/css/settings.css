@@ -13,6 +13,10 @@ table td {
   width: 40%;
 }
 
+.edit-pkg .rate {
+  width: 10%;
+}
+
 .error {
   text-align: center;
   font-weight: bold;

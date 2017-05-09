@@ -80,31 +80,36 @@
             <input type='hidden' name='package' value='{{ package.package.id }}' />
             <td><button action='submit'>Edit</button></td>
           </tr>
+        </form>
           <form action='.' method='POST'>
             {{ package_formset.management_form }}
             {% for package_form in package_formset %}
-            <tr class='edit-pkg {% cycle "row-odd" "row-even" %}' id='edit-{{ package.id }}'>
+            <tr class='edit-pkg edit-{{ package.id }}'>
               <td style='width:10%;'>
-                {{ package_form.name }}
+                {% ifchanged package.package.name %}
+                  {{ package_form.name }}
+                {% endifchanged %}
                 {{ package_form.sub_id }}
                 {{ package_form.package }}
               </td>
-              <td>{{ package_form.enabled }} <label class='extra-label' for='enabled'>Enabled</label></td>
+              <td>{{ package_form.enabled }}</td>
               <td>
                 {{ package_form.resource }}
               </td>
-              <td>
+              <td class='rate'>
                 {{ package_form.allowance }}
               </td>
-              <td>
+              <td class='rate'>
                 {{ package_form.monthly_rate }}
               </td>
-              <td>
+              <td class='rate'>
                 {{ package_form.overage_rate }}
               </td>
               <td>
-                <button type='submit'>Update</button>
-                <a class='cancel'>Cancel</a>
+                {% ifchanged package.package.name %}
+                  <button type='submit'>Update</button>
+                  <a class='cancel'>Cancel</a>
+                {% endifchanged %}
               </td>
               {% csrf_token %}
             </tr>
@@ -140,12 +145,13 @@
     $('.edit-pkg').hide();
     $('.select-pkg').val('{{ package }}');
 
-
     var id = '{{ package }}';
     if(id != 'None') {
-      $('#edit-' + id).show();
+      $('.edit-' + id).show();
       $('#pkgInfo-' + id).hide();
       $('.create-pkg-form').remove();
+      $('.name-input').attr('disabled', 'disabled');
+      $('.name-input').css('border-bottom', 'none');
     }
 
     $('.package_formset').formset({
@@ -155,15 +161,9 @@
 
     $('.delete-row').appendTo($('#del-td'));
 
-    // $('.edit-package').click(function(e) {
-    //   e.preventDefault();
-    //   id = $(this).val();
-    //   $('#edit-' +  id).toggle();
-    // })
-
-    $('.cancel').click(function(e) {
+    $('.cancel').on('click', function(e) {
       e.preventDefault();
-      $('.edit-pkg').hide();
+      window.location.replace("{% url 'staff:settings:membership_packages' %}");
     })
 
     {% for message in messages %}

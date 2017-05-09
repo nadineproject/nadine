@@ -54,6 +54,7 @@ def membership_packages(request):
         pkg = MembershipPackage.objects.get(id=package)
         sub_defaults = SubscriptionDefault.objects.filter(package=pkg)
         sub_data = [{'name':pkg.name,'sub_id': s.id, 'package': pkg.id, 'enabled': pkg.enabled, 'resource': s.resource.id, 'allowance': s.allowance, 'monthly_rate': s.monthly_rate, 'overage_rate': s.overage_rate} for s in sub_defaults]
+        print sub_data
         enabled = pkg.enabled
 
     if request.method == 'POST':
@@ -63,7 +64,8 @@ def membership_packages(request):
                 if package_formset.is_valid():
                     for p in package_formset:
                         if p.cleaned_data.get('name') != None:
-                            p.save()
+                            if p.cleaned_data.get('monthly_rate') != None:
+                                p.save()
                     return HttpResponseRedirect(reverse('staff:settings:membership_packages'))
                 else:
                     print package_formset.errors
