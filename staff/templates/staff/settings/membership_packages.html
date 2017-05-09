@@ -81,42 +81,42 @@
             <td><button action='submit'>Edit</button></td>
           </tr>
         </form>
-          <form action='.' method='POST'>
-            {{ package_formset.management_form }}
-            {% for package_form in package_formset %}
-            <tr class='edit-pkg edit-{{ package.id }}'>
-              <td style='width:10%;'>
-                {% ifchanged package.package.name %}
-                  {{ package_form.name }}
-                {% endifchanged %}
-                {{ package_form.sub_id }}
-                {{ package_form.package }}
-              </td>
-              <td>{{ package_form.enabled }}</td>
-              <td>
-                {{ package_form.resource }}
-              </td>
-              <td class='rate'>
-                {{ package_form.allowance }}
-              </td>
-              <td class='rate'>
-                {{ package_form.monthly_rate }}
-              </td>
-              <td class='rate'>
-                {{ package_form.overage_rate }}
-              </td>
-              <td>
-                {% ifchanged package.package.name %}
-                  <button type='submit'>Update</button>
-                  <a class='cancel'>Cancel</a>
-                {% endifchanged %}
-              </td>
-              {% csrf_token %}
-            </tr>
-            {% endfor %}
-          </form>
+        <form action='.' method='POST'>
+          {{ package_formset.management_form }}
+          {% for package_form in package_formset %}
+          <tr class='edit-pkg edit-{{ package.package.id }}'>
+            <td style='width:10%;'>
+              {% ifchanged package.package.name %}
+                {{ package_form.name }}
+              {% endifchanged %}
+              {{ package_form.sub_id }}
+              {{ package_form.package }}
+            </td>
+            <td>{{ package_form.enabled }}</td>
+            <td>
+              {{ package_form.resource }}
+            </td>
+            <td class='rate'>
+              {{ package_form.allowance }}
+            </td>
+            <td class='rate'>
+              {{ package_form.monthly_rate }}
+            </td>
+            <td class='rate'>
+              {{ package_form.overage_rate }}
+            </td>
+            <td>
+              {% ifchanged package.package.name %}
+                <button type='submit'>Update</button>
+                <a class='cancel'>Cancel</a>
+              {% endifchanged %}
+            </td>
+            {% csrf_token %}
+          </tr>
+          {% endfor %}
+        </form>
         {% else %}
-          <tr class="{% cycle 'row-even' 'row-odd' %}"  id='pkgInfo-{{ package.id }}' >
+          <tr class="{% cycle 'row-even' 'row-odd' %}"  id='pkgInfo-{{ package.package.id }}' >
             <td></td>
             <td>{{ package.package.enabled }}</td>
             <td>{{ package.resource }}</td>
@@ -130,9 +130,9 @@
         {% csrf_token %}
       </form>
     {% empty %}
-          <tr>
-            <td colspan="5"><i>No Membership Packages</i></td>
-          </tr>
+      <tr>
+        <td colspan="5"><i>No Membership Packages</i></td>
+      </tr>
     {% endfor %}
       </table>
 {% endblock %}

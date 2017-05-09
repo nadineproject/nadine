@@ -52,9 +52,9 @@ def membership_packages(request):
     enabled = False
     if package != None:
         pkg = MembershipPackage.objects.get(id=package)
+        print('Package id is %s' % pkg.id)
         sub_defaults = SubscriptionDefault.objects.filter(package=pkg)
         sub_data = [{'name':pkg.name,'sub_id': s.id, 'package': pkg.id, 'enabled': pkg.enabled, 'resource': s.resource.id, 'allowance': s.allowance, 'monthly_rate': s.monthly_rate, 'overage_rate': s.overage_rate} for s in sub_defaults]
-        print sub_data
         enabled = pkg.enabled
 
     if request.method == 'POST':
