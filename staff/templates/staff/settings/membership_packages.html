@@ -152,6 +152,7 @@
     if(id != 'None') {
       $('.edit-' + id).show();
       $('.pkgInfo-' + id).hide();
+      $('.package-id').val(id)
       $('.create-pkg-form').remove();
       $('.name-input').attr('disabled', 'disabled');
       $('.name-input').css('border-bottom', 'none');

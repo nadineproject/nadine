@@ -607,7 +607,7 @@ class DocUploadForm(forms.Form):
 class PackageForm(forms.Form):
     name = forms.CharField(widget=forms.TextInput(attrs={'class': 'name-input'}), max_length=128, required=False)
     sub_id = forms.IntegerField(required=False, widget=forms.HiddenInput)
-    package = forms.IntegerField(required=False, widget=forms.HiddenInput)
+    package = forms.IntegerField(required=False, widget=forms.HiddenInput(attrs={'class':'package-id'}))
     enabled = forms.ChoiceField(choices=((True, 'Yes'), (False, 'No')), required=False)
     resource = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), label='Choose a Resource', queryset=Resource.objects.all(), required=False)
     allowance = forms.IntegerField(min_value=1, required=False)
@@ -642,8 +642,13 @@ class PackageForm(forms.Form):
                 sub_default.overage_rate = overage_rate
                 sub_default.save()
             else:
-                p = MembershipPackage(name=name, enabled=enabled)
-                p.save()
+                if MembershipPackage.objects.get(id=package):
+                    p = MembershipPackage.objects.get(id=package)
+                    p.enabled = enabled
+                    p.save()
+                else:
+                    p = MembershipPackage(name=name, enabled=enabled)
+                    p.save()
 
                 sub_default = SubscriptionDefault(package=p, resource=resource, allowance=allowance, monthly_rate=monthly_rate, overage_rate=overage_rate)
                 sub_default.save()
