@@ -636,7 +636,7 @@ class PackageForm(forms.Form):
                 p.enabled = enabled
                 p.save()
 
-                sub_default = ResourceSubscription.objects.get(id=self.cleaned_data['sub_id'])
+                sub_default = SubscriptionDefault.objects.get(id=self.cleaned_data['sub_id'])
                 sub_default.allowance = allowance
                 sub_default.monthly_rate = monthly_rate
                 sub_default.overage_rate = overage_rate

@@ -8,7 +8,7 @@
       {% for new_package_form in package_formset %}
         <table style='width: 70%;'>
           <tr>
-            <td style='width: 12%;'>
+            <td style='width: 17%;'>
               <strong>Package Name:</strong>
             </td>
             <td class='select-td'>
@@ -120,7 +120,7 @@
         {% else %}
           <tr class="{% cycle 'row-even' 'row-odd' %} pkgInfo-{{ package.package.id }} pkg-row" style='border-top: none;'>
             <td></td>
-            <td>{{ package.package.enabled }}</td>
+            <td>{{ package.package.enabled|yesno:"Yes,No" }}</td>
             <td>{{ package.resource }}</td>
             <td>{{ package.allowance }}</td>
             <td>{{ package.monthly_rate }}</td>
