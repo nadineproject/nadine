@@ -20,7 +20,7 @@
             </td>
           </tr>
         </table>
-        <table>
+        <table class='new_package'>
           <tr class='package_formset'>
             <td>
               <strong>Resource:</strong>
@@ -147,6 +147,8 @@
     $('.collapsible').collapsible();
     $('.edit-pkg').hide();
     $('.select-pkg').val('{{ package }}');
+    $('.new_package input').attr('required', 'required');
+    $('.new_package select').attr('required', 'required');
 
     var id = '{{ package }}';
     if(id != 'None') {
@@ -156,6 +158,8 @@
       $('.create-pkg-form').remove();
       $('.name-input').attr('disabled', 'disabled');
       $('.name-input').css('border-bottom', 'none');
+      $('.new_package input').attr('required', false);
+      $('.new_package select').attr('required', false);
       // $('.edit-' + id).css('border', '1px solid RGBA(176, 188, 196, 1.00)');
     }
 

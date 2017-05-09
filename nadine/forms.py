@@ -610,7 +610,7 @@ class PackageForm(forms.Form):
     package = forms.IntegerField(required=False, widget=forms.HiddenInput(attrs={'class':'package-id'}))
     enabled = forms.ChoiceField(choices=((True, 'Yes'), (False, 'No')), required=False)
     resource = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), label='Choose a Resource', queryset=Resource.objects.all(), required=False)
-    allowance = forms.IntegerField(min_value=1, required=False)
+    allowance = forms.IntegerField(min_value=0, required=False)
     monthly_rate = forms.IntegerField(min_value=0, required=False)
     overage_rate = forms.IntegerField(min_value=0, required=False)
 
@@ -642,7 +642,10 @@ class PackageForm(forms.Form):
                 sub_default.overage_rate = overage_rate
                 sub_default.save()
             else:
-                if MembershipPackage.objects.get(id=package):
+                if MembershipPackage.objects.filter(name=name):
+                    raise Exception('A membership package with this name already exists.')
+                    
+                if package:
                     p = MembershipPackage.objects.get(id=package)
                     p.enabled = enabled
                     p.save()
@@ -654,6 +657,7 @@ class PackageForm(forms.Form):
                 sub_default.save()
 
             return sub_default
-
+        else:
+            print('Well that did not work!')
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

@@ -65,6 +65,7 @@ def membership_packages(request):
                         if p.cleaned_data.get('name') != None:
                             if p.cleaned_data.get('monthly_rate') != None:
                                 p.save()
+                    messages.success(request, 'Created new membership package.')
                     return HttpResponseRedirect(reverse('staff:settings:membership_packages'))
                 else:
                     print package_formset.errors
