@@ -69,7 +69,6 @@ def membership_packages(request):
                     print package_formset.errors
         except IntegrityError as e:
             print('There was an ERROR: %s' % e.message)
-            print(request.POST)
             messages.error(request, 'There was an error creating the new membership package')
     else:
         package_formset = PackageFormset(initial=sub_data)

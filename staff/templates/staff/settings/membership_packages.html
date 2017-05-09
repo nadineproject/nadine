@@ -6,50 +6,50 @@
     <div class='pkg-table'>
       {{ package_formset.management_form }}
       {% for new_package_form in package_formset %}
-      <table style='width: 70%;'>
-        <tr>
-          <td style='width: 12%;'>
-            <strong>Package Name:</strong>
-          </td>
-          <td class='select-td'>
-            {{ new_package_form.name }}
-          </td>
-          <td style='padding-left: 5%;'>
-            <label for='enabled'>Enable?</label>
-            {{ new_package_form.enabled }}
-          </td>
-        </tr>
-      </table>
-      <table>
-        <tr class='package_formset'>
-          <td>
-            <strong>Resource:</strong>
-          </td>
-          <td>
-            {{ new_package_form.resource }}
-          </td>
-          <td>
-            <strong>Allowance:</strong>
-          </td>
-          <td style='width: 10%;'>
-            {{ new_package_form.allowance }}
-          </td>
-          <td>
-            <strong>Monthly Rate:</strong>
-          </td>
-          <td style='width: 10%;'>
-            {{ new_package_form.monthly_rate }}
-          </td>
-          <td >
-            <strong>Overage Rate:</strong>
-          </td>
-          <td id='overage-td' style='width: 10%;'>
-            {{ new_package_form.overage_rate}}
-          </td>
-          <td id='del-td'>
-          </td>
-        </tr>
-      </table>
+        <table style='width: 70%;'>
+          <tr>
+            <td style='width: 12%;'>
+              <strong>Package Name:</strong>
+            </td>
+            <td class='select-td'>
+              {{ new_package_form.name }}
+            </td>
+            <td style='padding-left: 5%;'>
+              <label for='enabled'>Enable?</label>
+              {{ new_package_form.enabled }}
+            </td>
+          </tr>
+        </table>
+        <table>
+          <tr class='package_formset'>
+            <td>
+              <strong>Resource:</strong>
+            </td>
+            <td>
+              {{ new_package_form.resource }}
+            </td>
+            <td>
+              <strong>Allowance:</strong>
+            </td>
+            <td style='width: 10%;'>
+              {{ new_package_form.allowance }}
+            </td>
+            <td>
+              <strong>Monthly Rate:</strong>
+            </td>
+            <td style='width: 10%;'>
+              {{ new_package_form.monthly_rate }}
+            </td>
+            <td >
+              <strong>Overage Rate:</strong>
+            </td>
+            <td id='overage-td' style='width: 10%;'>
+              {{ new_package_form.overage_rate}}
+            </td>
+            <td id='del-td'>
+            </td>
+          </tr>
+        </table>
       {% endfor %}
     </div>
     <button type='submit'>Create</button>
@@ -67,57 +67,68 @@
     </tr>
     {% for package in packages %}
       <form action='.' method='GET'>
-        <tr class="{% cycle 'row-even' 'row-odd' %}"  id='pkgInfo-{{ package.id }}' >
-          <td>
-            {% ifchanged %}
-              {{ package.package.name }}
-            {% endifchanged %}
-          </td>
-          <td>{{ package.package.enabled }}</td>
-          <td>{{ package.resource }}</td>
-          <td>{{ package.allowance }}</td>
-          <td>{{ package.monthly_rate }}</td>
-          <td style='text-align: center;'>{{ package.overage_rate }}</td>
-          <input type='hidden' name='package' value='{{ package.package.id }}' />
-          <td><button action='submit'>Edit</button></td>
-          {% csrf_token %}
-        </tr>
-      </form>
-      <form action='.' method='POST'>
-        {{ package_formset.management_form }}
-        {% for package_form in package_formset %}
-        <tr class='edit-pkg {% cycle "row-odd" "row-even" %}' id='edit-{{ package.id }}'>
-            <td style='width:10%;'>
-              {{ package_form.name }}
-              {{ package_form.sub_id }}
-              {{ package_form.package }}
-            </td>
-            <td>{{ package_form.enabled }} <label class='extra-label' for='enabled'>Enabled</label></td>
+        {% ifchanged package.package.name %}
+          <tr class="{% cycle 'row-even' 'row-odd' %}"  id='pkgInfo-{{ package.id }}' >
             <td>
-              {{ package_form.resource }}
+                {{ package.package.name }}
             </td>
-            <td>
-              {{ package_form.allowance }}
-            </td>
-            <td>
-              {{ package_form.monthly_rate }}
-            </td>
-            <td>
-              {{ package_form.overage_rate }}
-            </td>
-            <td>
-              <button type='submit'>Update</button>
-              <a class='cancel'>Cancel</a>
-            </td>
-            {% csrf_token %}
+            <td>{{ package.package.enabled }}</td>
+            <td>{{ package.resource }}</td>
+            <td>{{ package.allowance }}</td>
+            <td>{{ package.monthly_rate }}</td>
+            <td style='text-align: center;'>{{ package.overage_rate }}</td>
+            <input type='hidden' name='package' value='{{ package.package.id }}' />
+            <td><button action='submit'>Edit</button></td>
+          </tr>
+          <form action='.' method='POST'>
+            {{ package_formset.management_form }}
+            {% for package_form in package_formset %}
+            <tr class='edit-pkg {% cycle "row-odd" "row-even" %}' id='edit-{{ package.id }}'>
+              <td style='width:10%;'>
+                {{ package_form.name }}
+                {{ package_form.sub_id }}
+                {{ package_form.package }}
+              </td>
+              <td>{{ package_form.enabled }} <label class='extra-label' for='enabled'>Enabled</label></td>
+              <td>
+                {{ package_form.resource }}
+              </td>
+              <td>
+                {{ package_form.allowance }}
+              </td>
+              <td>
+                {{ package_form.monthly_rate }}
+              </td>
+              <td>
+                {{ package_form.overage_rate }}
+              </td>
+              <td>
+                <button type='submit'>Update</button>
+                <a class='cancel'>Cancel</a>
+              </td>
+              {% csrf_token %}
+            </tr>
+            {% endfor %}
           </form>
-        </tr>
-        {% endfor %}
-        {% empty %}
+        {% else %}
+          <tr class="{% cycle 'row-even' 'row-odd' %}"  id='pkgInfo-{{ package.id }}' >
+            <td></td>
+            <td>{{ package.package.enabled }}</td>
+            <td>{{ package.resource }}</td>
+            <td>{{ package.allowance }}</td>
+            <td>{{ package.monthly_rate }}</td>
+            <td style='text-align: center;'>{{ package.overage_rate }}</td>
+            <input type='hidden' name='package' value='{{ package.package.id }}' />
+            <td></td>
+          </tr>
+        {% endifchanged %}
+        {% csrf_token %}
+      </form>
+    {% empty %}
           <tr>
             <td colspan="5"><i>No Membership Packages</i></td>
           </tr>
-        {% endfor %}
+    {% endfor %}
       </table>
 {% endblock %}
 
@@ -128,6 +139,7 @@
     $('.collapsible').collapsible();
     $('.edit-pkg').hide();
     $('.select-pkg').val('{{ package }}');
+
 
     var id = '{{ package }}';
     if(id != 'None') {
@@ -143,20 +155,6 @@
 
     $('.delete-row').appendTo($('#del-td'));
 
-    // if($('.select-pkg').val() != null) {
-    //   $('.select-form').hide();
-    // }
-
-    // $('.select-pkg').on('change', function(){
-    //   var value = $('.select-pkg').val();
-    //   if(value == 'new') {
-    //     $('.select-td').empty();
-    //     $('.select-td').append("<input class='pkg-name' type='text' maxlength='128' name='name' placeholder='Enter Package Name Here' />");
-    //   } else {
-    //     $('.select-form').submit();
-    //   }
-    // })
-
     // $('.edit-package').click(function(e) {
     //   e.preventDefault();
     //   id = $(this).val();
@@ -166,7 +164,6 @@
     $('.cancel').click(function(e) {
       e.preventDefault();
       $('.edit-pkg').hide();
-      // $('.create-pkg-form').show();
     })
 
     {% for message in messages %}
