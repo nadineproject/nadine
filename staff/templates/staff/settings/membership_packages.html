@@ -52,9 +52,11 @@
         </table>
       {% endfor %}
     </div>
-    <button type='submit'>Create</button>
+    <button class='btn create-btn' type='submit'>Create</button>
     {% csrf_token %}
   </form>
+  <div class='existing-pkgs'>
+  <h5>Existing Membership Packages</h5>
   <table>
     <tr>
       <th>Package Name</th>
@@ -68,15 +70,15 @@
     {% for package in packages %}
       <form action='.' method='GET'>
         {% ifchanged package.package.name %}
-          <tr class="{% cycle 'row-even' 'row-odd' %}"  id='pkgInfo-{{ package.id }}' >
-            <td>
-                {{ package.package.name }}
+          <tr class='pkgInfo-{{ package.id }} pkg-row' >
+            <td style='width:15%;'>
+                <strong>{{ package.package.name }}</strong>
             </td>
-            <td>{{ package.package.enabled }}</td>
+            <td>{{ package.package.enabled|yesno:"Yes,No" }}</td>
             <td>{{ package.resource }}</td>
-            <td>{{ package.allowance }}</td>
-            <td>{{ package.monthly_rate }}</td>
-            <td style='text-align: center;'>{{ package.overage_rate }}</td>
+            <td class='rate'>{{ package.allowance }}</td>
+            <td class='rate'>{{ package.monthly_rate }}</td>
+            <td class='rate' style='text-align: center;'>{{ package.overage_rate }}</td>
             <input type='hidden' name='package' value='{{ package.package.id }}' />
             <td><button action='submit'>Edit</button></td>
           </tr>
@@ -85,7 +87,7 @@
           {{ package_formset.management_form }}
           {% for package_form in package_formset %}
           <tr class='edit-pkg edit-{{ package.package.id }}'>
-            <td style='width:10%;'>
+            <td style='width:15%;'>
               {% ifchanged package.package.name %}
                 {{ package_form.name }}
               {% endifchanged %}
@@ -116,7 +118,7 @@
           {% endfor %}
         </form>
         {% else %}
-          <tr class="{% cycle 'row-even' 'row-odd' %}"  id='pkgInfo-{{ package.package.id }}' >
+          <tr class="{% cycle 'row-even' 'row-odd' %} pkgInfo-{{ package.package.id }} pkg-row" style='border-top: none;'>
             <td></td>
             <td>{{ package.package.enabled }}</td>
             <td>{{ package.resource }}</td>
@@ -135,6 +137,7 @@
       </tr>
     {% endfor %}
       </table>
+    </div>
 {% endblock %}
 
 {% block extrajs %}
@@ -148,10 +151,11 @@
     var id = '{{ package }}';
     if(id != 'None') {
       $('.edit-' + id).show();
-      $('#pkgInfo-' + id).hide();
+      $('.pkgInfo-' + id).hide();
       $('.create-pkg-form').remove();
       $('.name-input').attr('disabled', 'disabled');
       $('.name-input').css('border-bottom', 'none');
+      // $('.edit-' + id).css('border', '1px solid RGBA(176, 188, 196, 1.00)');
     }
 
     $('.package_formset').formset({

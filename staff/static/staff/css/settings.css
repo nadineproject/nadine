@@ -13,6 +13,14 @@ table td {
   width: 40%;
 }
 
+.create-btn {
+  margin-left: 45%;
+}
+
+.doc-btn {
+  margin-left: 40%;
+}
+
 .edit-pkg .rate {
   width: 10%;
 }
@@ -23,8 +31,14 @@ table td {
   margin-top: 2%;
 }
 
-.doc-btn {
-  margin-left: 40%;
+
+.existing-pkgs {
+  border-top: 1px solid RGBA(238, 238, 238, 1.00);
+  margin-top: 4%;
+}
+
+.existing-pkgs h5 {
+  padding-bottom: 2%;
 }
 
 .helptext-form, .other-helps {
@@ -60,6 +74,15 @@ table td {
 /*.pkg-table {
   width: 70%;
 }*/
+
+.pkg-row {
+  background-color:RGBA(238, 238, 238, 1.00);
+  border-top: 1px solid RGBA(176, 188, 196, 1.00);
+}
+
+.pkg-row:first-of-type {
+  border: none;
+}
 
 .preview-tr {
   display: none;
