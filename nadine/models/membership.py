@@ -846,8 +846,8 @@ class OldMembership(models.Model):
         from monthdelta import monthmod
         if not target_date:
             target_date = localtime(now()).date()
-        day_difference = monthmod(self.start_date, target_date)[1]
-        return target_date - day_difference
+        difference = relativedelta(target_date, self.start_date)
+        return self.start_date + relativedelta(years=difference.years, months=difference.months)
 
     def next_billing_date(self, target_date=None):
         if not target_date:
