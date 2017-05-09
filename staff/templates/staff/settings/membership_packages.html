@@ -94,7 +94,10 @@
               {{ package_form.sub_id }}
               {{ package_form.package }}
             </td>
-            <td>{{ package_form.enabled }}</td>
+            <td>{% ifchanged package.package.name %}
+              {{ package_form.enabled }}
+              {% endifchanged %}
+            </td>
             <td>
               {{ package_form.resource }}
             </td>
@@ -147,8 +150,8 @@
     $('.collapsible').collapsible();
     $('.edit-pkg').hide();
     $('.select-pkg').val('{{ package }}');
-    $('.new_package input').attr('required', 'required');
-    $('.new_package select').attr('required', 'required');
+    $('.pkg-table input').attr('required', 'required');
+    $('.pkg-table select').attr('required', 'required');
 
     var id = '{{ package }}';
     if(id != 'None') {
@@ -158,8 +161,8 @@
       $('.create-pkg-form').remove();
       $('.name-input').attr('disabled', 'disabled');
       $('.name-input').css('border-bottom', 'none');
-      $('.new_package input').attr('required', false);
-      $('.new_package select').attr('required', false);
+      $('.pkg-table input').attr('required', false);
+      $('.pkg-table select').attr('required', false);
       // $('.edit-' + id).css('border', '1px solid RGBA(176, 188, 196, 1.00)');
     }
 
