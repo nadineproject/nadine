@@ -629,35 +629,31 @@ class PackageForm(forms.Form):
         else:
             enabled = True
 
-        if resource and allowance and monthly_rate and overage_rate:
+        if self.cleaned_data['sub_id']:
+            p = MembershipPackage.objects.get(id=package)
+            p.enabled = enabled
+            p.save()
 
-            if self.cleaned_data['sub_id']:
+            sub_default = SubscriptionDefault.objects.get(id=self.cleaned_data['sub_id'])
+            sub_default.allowance = allowance
+            sub_default.monthly_rate = monthly_rate
+            sub_default.overage_rate = overage_rate
+            sub_default.save()
+        else:
+            if MembershipPackage.objects.filter(name=name):
+                raise Exception('A membership package with this name already exists.')
+            if package:
                 p = MembershipPackage.objects.get(id=package)
                 p.enabled = enabled
                 p.save()
-
-                sub_default = SubscriptionDefault.objects.get(id=self.cleaned_data['sub_id'])
-                sub_default.allowance = allowance
-                sub_default.monthly_rate = monthly_rate
-                sub_default.overage_rate = overage_rate
-                sub_default.save()
             else:
-                if MembershipPackage.objects.filter(name=name):
-                    raise Exception('A membership package with this name already exists.')
-                    
-                if package:
-                    p = MembershipPackage.objects.get(id=package)
-                    p.enabled = enabled
-                    p.save()
-                else:
-                    p = MembershipPackage(name=name, enabled=enabled)
-                    p.save()
+                p = MembershipPackage(name=name, enabled=enabled)
+                p.save()
 
-                sub_default = SubscriptionDefault(package=p, resource=resource, allowance=allowance, monthly_rate=monthly_rate, overage_rate=overage_rate)
-                sub_default.save()
+            sub_default = SubscriptionDefault(package=p, resource=resource, allowance=allowance, monthly_rate=monthly_rate, overage_rate=overage_rate)
+            print('Default is %s' % sub_default)
+            sub_default.save()
 
-            return sub_default
-        else:
-            print('Well that did not work!')
+        return sub_default
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
