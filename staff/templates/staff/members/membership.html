@@ -81,6 +81,9 @@
             <option value='today'>
               Today
             </option>
+            <option value='yesterday'>
+              Yesterday
+            </option>
             <option class='end-eop' value='eop'>
               End of This Bill Period
             </option>
@@ -101,50 +104,53 @@
 
 <div id='change-package'>
   <h6>Change Membership Package</h6>
-  <table class='end-table'>
-    <tr>
-      <td id='end-header'>
-        <strong>When do you want the changes to go in effect?</strong>
-      </td>
-      <td id='select-end-td'>
-        <select name='ending' id='target-input'>
-          <option disabled selected="true">
-            Select One
-          </option>
-          <option value='today'>
-            Today
-          </option>
-          <option class='change-eop' value='eop'>
-          </option>
-          <option value='other'>
-            Other
-          </option>
-        </select>
-      </td>
-      <td style='width:30%;'>
-        <input id='sub-end' name='date-end' class='datepicker' placeholder="Select Date" />
-      </td>
-    </tr>
-  </table>
-  <form class='change-form' action='.' method='GET'>
-    <input type='hidden' name='target_date' id='target_date' />
-    <table class='sub-table'>
+    <table class='end-table'>
       <tr>
         <td id='end-header'>
-          <strong>Choose a New Package: </strong>
+          <strong>When do you want the changes to go in effect?</strong>
         </td>
-        <td id='new-package'>
-          {{ package_form.package }}
+        <td id='select-end-td'>
+          <select name='ending' id='target-input'>
+            <option disabled selected="true">
+              Select One
+            </option>
+            <option value='today'>
+              Today
+            </option>
+            <option value='yesterday'>
+              Yesterday
+            </option>
+            <option class='change-eop' value='eop'>
+            </option>
+            <option value='other'>
+              Other
+            </option>
+          </select>
         </td>
-          {{ package_form.bill_day }}
-          {{ package_form.username }}
-        <td style='width:30%; vertical-align: middle;'></td>
+        <td style='width:30%;'>
+          <input id='sub-end' name='date-end' class='datepicker' placeholder="Select Date" />
+        </td>
       </tr>
     </table>
-  </form>
-  <div style='margin-left:45%;'>
-    <span class='cancel'>Cancel</span>
-  </div>
+    <form class='change-form' action='.' method='GET'>
+      <table class='sub-table'>
+        <tr>
+          <td id='end-header'>
+            <strong>Choose a New Package: </strong>
+          </td>
+          <td id='new-package'>
+            {{ package_form.package }}
+          </td>
+            {{ package_form.bill_day }}
+            {{ package_form.username }}
+          <td style='width:30%; vertical-align: middle;'></td>
+        </tr>
+      </table>
+      <button style='margin-left:45%; margin-top: 2%;' class='btn' type='submit'>Start</button>
+      <span display='inline-block' class='cancel'>Cancel</span>
+      <input type='hidden' name='target_date' id='target_date' />
+    </form>
+
   <form class='sub-form' action='.' method='POST'>
     <table class='sub-table change-table'>
       {% if subscriptions %}
@@ -253,6 +259,13 @@
     return today;
   }
 
+  function getYesterday() {
+    var date = new Date();
+    date.setDate(date.getDate() - 1);
+    var yesterday = formatDate(date);
+    return yesterday;
+  }
+
   function getEop() {
     var d = new Date();
     var bd = '{{ bill_day }}';
@@ -301,11 +314,9 @@
     if (day < 10) {
       day = '0' + day;
     }
-
     if(bd_month < 10) {
       bd_month = '0' + bd_month;
     }
-
     if(bd < 10) {
       bd = '0' + bd;
     }
@@ -367,7 +378,7 @@
     $('.sub-input .end_date').addClass('datepicker');
     $('.datepicker').datepicker({
       dateFormat: 'yy-mm-dd',
-      minDate: 0
+      minDate: 0,
     });
 
     $('#id_created_by').val('{{ request.user }}');
@@ -379,7 +390,7 @@
     $('.disabled input.start_date').datepicker('destroy');
 
     var today = getToday();
-
+    var yesterday = getYesterday();
     var eopDate = getEop()[0];
     var bdDate = getEop()[1];
     $('.change-eop').text('Start of Next Bill Period:   ' + bdDate);
@@ -454,7 +465,6 @@
           $(this).attr('selected', 'selected');
         }
       })
-      $('.change-form').submit();
     });
 
     $('#id_bill_day').on('change', function() {
@@ -494,6 +504,7 @@
 
     $('#sub-end').on('change', function() {
       $('#target_date').val($('#sub-end').val());
+      targetDate = $('#sub-end').val();
       if (action == 'update') {
         $('.curr-sub').hide();
         $('.sub-form').show();
@@ -510,12 +521,11 @@
 
     $('#target-input').on('change', function() {
       var period = $('#target-input').val();
-
       if(period == 'other') {
         $('#sub-end').show();
         $('#sub-end').datepicker('show');
-      }
-      if (period == 'today') {
+      } else if (period == 'today') {
+        targetDate = today;
         $('#target_date').val(today);
         if (action == 'update') {
           $('.curr-sub').hide();
@@ -529,7 +539,23 @@
             }
           })
         }
+      } else if (period == 'yesterday') {
+        targetDate = yesterday;
+        $('#target_date').val(yesterday);
+        if (action == 'update') {
+          $('.curr-sub').hide();
+          $('.sub-form').show();
+          $('.end-table').hide();
+          $('#start_date_td input').each(function() {
+            if(!($(this).attr('readonly'))) {
+              $(this).val(yesterday);
+              $(this).attr('readonly', 'readonly');
+              $(this).datepicker('destroy');
+            }
+          })
+        }
       } else if (period == 'eop') {
+        targetDate = bdDate;
           $('#target_date').val(bdDate);
           if (action == 'update') {
             $('.curr-sub').hide();

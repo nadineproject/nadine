@@ -293,7 +293,7 @@ def membership(request, username):
 
     if package != old_pkg:
         subscriptions = SubscriptionDefault.objects.filter(package=package)
-        sub_data=[{'s_id': None, 'resource': s.resource, 'allowance':s.allowance, 'start_date':today, 'end_date': None, 'username': user.username, 'created_by': request.user, 'monthly_rate': s.monthly_rate, 'overage_rate': s.overage_rate, 'paid_by': None} for s in subscriptions]
+        sub_data=[{'s_id': None, 'resource': s.resource, 'allowance':s.allowance, 'start_date': today, 'end_date': None, 'username': user.username, 'created_by': request.user, 'monthly_rate': s.monthly_rate, 'overage_rate': s.overage_rate, 'paid_by': None} for s in subscriptions]
     else:
         subscriptions = user.membership.active_subscriptions()
         sub_data=[{'s_id': s.id, 'resource': s.resource, 'allowance':s.allowance, 'start_date':s.start_date, 'end_date': s.end_date, 'username': user.username, 'created_by': s.created_by, 'monthly_rate': s.monthly_rate, 'overage_rate': s.overage_rate, 'paid_by': s.paid_by} for s in subscriptions]
