@@ -1479,7 +1479,7 @@ dl dd:last-child:after {
 
 /*Event and Room Booking Styling*/
 #booking_form {
-	background-color: RGBA(239, 238, 231, 1);
+	background-color: RGBA(242, 242, 242, 1.00);
 	padding: 2%;
 	margin-left: 15%;
 	width: 70%;
@@ -1495,7 +1495,7 @@ dl dd:last-child:after {
 }
 
 .booking-box {
-	background-color: RGBA(239, 238, 231, 1);
+	background-color: RGBA(242, 242, 242, 1.00);
 	border-radius: 2px;
 	padding: 2%;
 	min-width: 800px;
