@@ -71,9 +71,9 @@ table td {
   margin-top: 2%;
 }
 
-/*.pkg-table {
-  width: 70%;
-}*/
+.pkg-table {
+  margin-top: 2%;
+}
 
 .pkg-row {
   background-color:RGBA(238, 238, 238, 1.00);

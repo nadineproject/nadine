@@ -432,7 +432,7 @@ def confirm_membership(request, username, package, end_target, new_subs):
                     user.membership.end_all(end_target)
                     PaymentAPI().disable_recurring(username)
                 messages.success(request, "You have updated the subscriptions for %s" % username)
-                return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}))
+                return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}) + '#tabs-1')
         except IntegrityError as e:
             print('There was an ERROR: %s' % e.message)
             messages.error(request, 'There was an error setting new membership package')
