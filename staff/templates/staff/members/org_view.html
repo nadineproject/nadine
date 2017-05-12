@@ -1,9 +1,119 @@
 {% extends "staff/members/base.html" %}
+{% load imagetags %}
+{% load integrated_systems %}
+{% load static %}
 
 {% block sub-title %}Members{% endblock %}
 
 {% block content %}
+<div class='member-photo'>
+  {% if organization.photo %}
+    <a href='{{ organization.photo.url }}'><img src='{{ organization.photo.url }}' style='height: 170px; width: 170px;'/></a>
+  {% else %}
+    <img src="{% static 'BlankIcon150x150.jpg' %}" />
+  {% endif %}
+</div>
 
-<h4>{{ organization.name }}</h4>
+<div class='row' id='member-detail'>
+  <h4>{{ organization.name }}</h4>
+  <div id='detail-links'>
+    {% if integrations.usaepay %}
+      <a href="{% url 'staff:billing:user_payment' organization.lead.username %}">usaepay</a> |
+    {% endif %}
+    {% if integrations.xero %}
+      <a href="{% url 'staff:billing:xero' organization.lead.username %}">xero</a> |
+    {% endif %}
+    <a href="{{ organization.get_admin_url }}">admin</a> | <a href="{% url 'member:org:view' organization.id %}">view profile</a>|
+    <a href="{% url 'member:org:edit' organization.id %}">edit profile</a>
+  </div>
+</div>
+<div class="clearfix"></div>
 
+<div>
+  <ul class='tabs'>
+    <li class='tab'><a href='#tabs-0'>Details</a></li>
+    <li class='tab'><a href='#tabs-1'>Memberships</a></li>
+    <li class='tab'><a href='#tabs-2'>Billing</a></li>
+    <li class='tab'><a href='#tabs-3'>Tasks</a></li>
+    <li class='tab'><a href='#tabs-4'>Notes</a></li>
+  </ul>
+</div>
+
+<div id='tabs-0'>
+  <h6>Organization Details</h6>
+  <table class='detail-table'>
+    <tr>
+      <td class='detail-title'>Lead</td>
+      <td class='detail-data'><a href='{{ organization.lead.profile.get_staff_url }}'>{{ organization.lead.get_full_name }}</a></td>
+    </tr>
+    <tr>
+      <td class='detail-title'>Locked?</td>
+      <td class='detail-data'>{{ organization.locked|yesno:"Yes,No" }}</td>
+    </tr>
+    <tr>
+      <td class='detail-title'># of Active Members</td>
+      <td class='detail-data'>{{ organization.active_members|length }}</td>
+    </tr>
+    <tr>
+      <td class='detail-title'>Members</td>
+      <td class='detail-data'></td>
+    </tr>
+    {% for m in organization.members %}
+      {% if m != organization.lead %}
+        <tr>
+          <td class='detail-title'></td>
+          <td class='detail-data'><a href='{{ m.profile.get_staff_url }}'>{{ m.get_full_name }}</a></td>
+        </tr>
+      {% endif %}
+    {% endfor %}
+  </table>
+  {% if organization.active_members %}
+    <table>
+      <tr>
+        <td class='detail-title'>Active Members</td>
+        <td class='detail-data'></td>
+      </tr>
+      {% for a in organization.active_members %}
+      <tr>
+        <td class='detail-title'></td>
+        <td class='detail-data'><a href='{{ a.profile.get_staff_url }}'>{{ a.get_full_name }}</a></td>
+      </tr>
+      {% endfor %}
+    </table>
+  {% endif %}
+</div>
+<div id='tabs-1'>
+  <h6>Memberships</h6>
+</div>
+
+<div id='tabs-3'>
+  <h6>Organization Notes</h6>
+  {% for o in organization.notes %}
+    {{ o }}
+  {% endfor %}
+</div>
+{% endblock %}
+
+{% block extrajs %}
+<script>
+  $(document).ready(function() {
+    $('.button-collapse').sideNav();
+		$('.collapsible').collapsible();
+    $('#tabs').tabs();
+
+    {% for message in messages %}
+      {% if message.tags == 'error' %}
+        Materialize.toast('{{ message }}', 60000, 'error-msg msg');
+      {% else %}
+        Materialize.toast('{{ message }}', 3000, '{{ message.tags }}-msg msg');
+      {% endif %}
+    {% endfor %}
+
+    $(document).on('click', '#toast-container .toast', function() {
+      $(this).fadeOut(function(){
+        $(this).remove();
+      });
+    });
+  })
+</script>
 {% endblock %}

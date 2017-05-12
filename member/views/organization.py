@@ -206,7 +206,6 @@ def org_edit_photo(request, org_id):
     if request.method == 'POST':
         form = OrganizationForm(request.POST, request.FILES)
         org.photo = request.FILES.get('photo', None)
-
         org.save()
 
         return HttpResponseRedirect(reverse('member:org:view', kwargs={'org_id': org.id}))
