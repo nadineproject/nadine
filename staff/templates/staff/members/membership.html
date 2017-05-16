@@ -19,25 +19,29 @@
   </div>
 </div>
 <div class='select-pkg'>
-  <table class='sub-table'>
-    <tr>
-      <th>
-        <strong>Select a New Package: </strong>
-      </th>
-      <td id='new-package'>
-        {{ package_form.package }}
-      </td>
-    </tr>
-  </table>
+  <form class='change-form' action='.' method='GET'>
+    <table>
+      <tr>
+        <th>
+          <strong>Select a New Package: </strong>
+        </th>
+        <td id='new-package'>
+          {{ package_form.package }}
+        </td>
+        <td style='width:30%;'></td>
+      </tr>
+    </table>
+    <input type='hidden' name='target_date' id='target_date' />
+  </form>
 </div>
 <div class='select-date'>
   <table class='date-table'>
     <tr>
       <th>
-        <strong>When do you want the changes to go in effect?</strong>
+        <strong>Effective Date?</strong>
       </th>
       <td id='select-end-td'>
-        <select name='ending' id='target-input'>
+        <select id='target-input'>
           <option disabled selected="true">
             Select One
           </option>
@@ -58,7 +62,6 @@
         <input id='sub-end' name='date-end' class='datepicker' placeholder="Select Date" />
       </td>
     </tr>
-    <input type='hidden' name='target_date' id='target_date' />
   </table>
 </div>
 <div class='curr-sub'>
@@ -353,6 +356,30 @@
 
     return [eopDate, bdDate];
   }
+
+  function dateFiller(date) {
+    $('#change-package').show();
+    $('.curr-sub').hide();
+    $('#start_date_td input').each(function() {
+      if(!($(this).attr('readonly'))) {
+        $(this).val(date);
+        $(this).attr('readonly', 'readonly');
+        $(this).datepicker('destroy');
+      }
+    })
+  }
+
+  function startChange(action) {
+    if ($('#id_package').val() && $('#target-input').val() && action == 'change') {
+      $('.change-form').submit();
+    }
+  }
+
+  function endPackage(period) {
+    $('.subs').before("<input type='hidden' name='ending' value=" + period + " />");
+    $('.sub-form').submit();
+  }
+
   (function() {
     var availableUsers = [
 			{% for u in active_members %}
@@ -389,11 +416,7 @@
     var action = '';
 
     $('#change-package').hide();
-    // $('#end-package').hide();
-    // $('#date-end').hide();
     $('#sub-end').hide();
-    // $('.sub-form').hide();
-    // $('#id_bill_day').hide();
 
     $('.select-pkg').hide();
     $('.select-date').hide();
@@ -445,11 +468,8 @@
       e.preventDefault();
       action = 'change';
       $('.modal').hide();
-
       $('.select-date').show();
       $('.select-pkg').show();
-      // $('#change-package').show();
-      // $('.change-form').show();
     })
 
     //Formset functionality for changing membership package
@@ -467,9 +487,8 @@
 
     // Setting up the view if there is a selected package
     if(targetDate != 'None') {
-      $('.end-table').hide();
-      $('.change-form').hide();
       $('#change-package').show();
+      $('.modal').hide();
       $('.sub-form').show();
       $('#new-package').val('{{ package }}');
       $('#id_bill_day').val('{{ bill_day }}');
@@ -553,25 +572,18 @@
       })
     }
 
-    function dateFiller(date) {
-      $('#change-package').show();
-      $('.curr-sub').hide();
-      $('#start_date_td input').each(function() {
-        if(!($(this).attr('readonly'))) {
-          $(this).val(date);
-          $(this).attr('readonly', 'readonly');
-          $(this).datepicker('destroy');
-        }
-      })
-    }
-
     $('#sub-end').on('change', function() {
       if(action == 'update') {
         $('#target_date').val($('#sub-end').val());
         targetDate = $('#sub-end').val();
+        end = targetDate;
         if (action == 'update') {
           dateFiller($('#sub-end').val());
         }
+        if (action == 'end') {
+          endPackage(period);
+        }
+        startChange(action);
       }
     })
 
@@ -582,16 +594,26 @@
         $('#sub-end').datepicker('show');
       } else if (period == 'today') {
         targetDate = today;
+        end = targetDate;
         $('#target_date').val(today);
         if (action == 'update') {
           dateFiller(today);
         }
+        if (action == 'end') {
+          endPackage(period);
+        }
+        startChange(action);
       } else if (period == 'yesterday') {
         targetDate = yesterday;
+        end = targetDate;
         $('#target_date').val(yesterday);
         if (action == 'update') {
           dateFiller(yesterday);
         }
+        if (action == 'end') {
+          endPackage(period);
+        }
+        startChange(action);
       } else if (period == 'eop') {
         targetDate = bdDate;
         end = eopDate;
@@ -599,24 +621,28 @@
         if (action == 'update') {
           dateFiller(bdDate);
         }
+        if (action == 'end') {
+          $('.subs').before("<input type='hidden' name='date-end' value=" + end + " />");
+          endPackage(period);
+        }
+        startChange(action);
       }
     })
 
   //JS for ending membership package
     $('#end').on('click', function(e) {
-      action = 'end';
       e.preventDefault();
-      $('#end-package').show();
-      $('#change-package').hide();
-      $('.mem-details-table').hide();
+      action = 'end';
+      $('.select-date').show();
+      $('.modal').hide();
     })
 
-    $('#select-end').change(function(){
-      if ($('#select-end').val() == 'other') {
-        $('#date-end').show();
-        $('#date-end').datepicker('show');
-      }
-    })
+    // $('#select-end').change(function(){
+    //   if ($('#select-end').val() == 'other') {
+    //     $('#date-end').show();
+    //     $('#date-end').datepicker('show');
+    //   }
+    // })
 
     $('.cancel').on('click', function(e) {
       e.preventDefault();

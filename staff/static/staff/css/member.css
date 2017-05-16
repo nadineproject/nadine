@@ -586,6 +586,12 @@ table.mem-details-table {
 	font-weight: bold;
 }
 
+.select-pkg th, .select-date th {
+  text-align: right !important;
+  vertical-align: middle !important;
+  font-size: 1.2em;
+}
+
 .special_form {
   margin-bottom: 15%;
 }

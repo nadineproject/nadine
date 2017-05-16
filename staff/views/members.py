@@ -303,6 +303,9 @@ def membership(request, username):
             if request.POST['ending'] == 'today':
                 end_date = today
                 end_target = end_date.strftime('%Y-%m-%d')
+            elif request.POST['ending'] == 'yesterday':
+                end_date = today - timedelta(days=1)
+                end_target = end_date.strftime('%Y-%m-%d')
             elif request.POST['ending'] == 'eop':
                 ps, end_date = user.membership.get_period()
                 end_target = end_date.strftime('%Y-%m-%d')
