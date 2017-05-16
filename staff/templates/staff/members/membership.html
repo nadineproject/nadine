@@ -4,9 +4,62 @@
 
 
 {% block content %}
-<h4>Membership for <a href="{% url 'staff:members:detail' entity.username %}">{{ entity.get_full_name }}</a></h4>
-<div class='hi'>
+<h4 id='membership-h4'>Membership for <a href="{% url 'staff:members:detail' entity.username %}">{{ entity.get_full_name }}</a></h4>
 
+<div id='promptModal' class='modal'>
+  <div class='modal-content'>
+    <div class='modal-body'>
+      <h5>What do you want to do?</h5>
+      <div class='sub-chips'>
+        <a id='change' class='chip'>New Package</a>
+        | <a id='update' class='chip'>Update Current Subscriptions</a>
+        | <a id='end' class='chip'>End Current Package</a>
+      </div>
+    </div>
+  </div>
+</div>
+<div class='select-pkg'>
+  <table class='sub-table'>
+    <tr>
+      <th>
+        <strong>Select a New Package: </strong>
+      </th>
+      <td id='new-package'>
+        {{ package_form.package }}
+      </td>
+    </tr>
+  </table>
+</div>
+<div class='select-date'>
+  <table class='date-table'>
+    <tr>
+      <th>
+        <strong>When do you want the changes to go in effect?</strong>
+      </th>
+      <td id='select-end-td'>
+        <select name='ending' id='target-input'>
+          <option disabled selected="true">
+            Select One
+          </option>
+          <option value='yesterday'>
+            Yesterday
+          </option>
+          <option value='today'>
+            Today
+          </option>
+          <option class='change-eop' value='eop'>
+          </option>
+          <option value='other'>
+            Other
+          </option>
+        </select>
+      </td>
+      <td style='width:30%;'>
+        <input id='sub-end' name='date-end' class='datepicker' placeholder="Select Date" />
+      </td>
+    </tr>
+    <input type='hidden' name='target_date' id='target_date' />
+  </table>
 </div>
 <div class='curr-sub'>
   <h6>Current Subscriptions</h6>
@@ -42,7 +95,7 @@
   </table>
 </div>
 
-<div class='curr-sub'>
+<!-- <div class='curr-sub'>
   <h6 class='mem-details-table'>Current Package Details</h6>
   <table class='mem-details-table'>
     <tr>
@@ -66,9 +119,9 @@
       </form>
     </tr>
   </table>
-</div>
+</div> -->
 
-<div id='end-package'>
+<!-- <div id='end-package'>
   <h6>End All Current Subscriptions</h6>
   <form method='POST' action='.' class='end-sub-form'>
     <table>
@@ -100,10 +153,8 @@
     {% csrf_token %}
     <button class='btn' type='submit' style='display:inline-block; margin-right: 5%; margin-left:40%; margin-top: 2%;'>End All</button><span class='cancel' style='margin-top:2%;'>Cancel</span>
   </form>
-</div>
-
-<div id='change-package'>
-  <h6>Change Membership Package</h6>
+</div> -->
+  <!-- <h6>Change Membership Package</h6>
     <table class='end-table'>
       <tr>
         <td id='end-header'>
@@ -149,8 +200,8 @@
       <button style='margin-left:45%; margin-top: 2%;' class='btn' type='submit'>Start</button>
       <span display='inline-block' class='cancel'>Cancel</span>
       <input type='hidden' name='target_date' id='target_date' />
-    </form>
-
+    </form> -->
+<div id='change-package'>
   <form class='sub-form' action='.' method='POST'>
     <table class='sub-table change-table'>
       {% if subscriptions %}
@@ -201,7 +252,6 @@
             {{ sub_form.org }}
           {% endif %}
           {{ sub_form.created_by}}
-          <!-- <input type='hidden' name='created_by' value="{{ request.user }}" /> -->
         </td>
 			</tr>
       {% endfor %}
@@ -211,29 +261,6 @@
     <button class='btn' type='submit' style='display:inline-block; margin-right: 5%; margin-left:40%;'>Update</button><span class='cancel'>Cancel</span>
   </form>
 </div>
-
-<!-- Active Guest Memberships -->
-<!-- TODO This is the old way... needs to be ported to the new way -->
-<!--
-{% if user.profile.guests %}
-  <h5>Active Guests:</h5>
-    <table>
-      <tr>
-        <th>Name</th>
-        <th>Membership</th>
-        <th>First Visit</th>
-      </tr>
-
-      {% for guest in user.profile.guests %}
-        <tr class="{% cycle 'row-even' 'row-odd' %}">
-          <td nowrap><a href="{% url 'staff:members:detail' guest.username %}">{{ guest.get_full_name }}</a></td>
-          <td>{{ guest.profile.active_membership.membership_plan }}</td>
-          <td class='centered'>{{ guest.profile.first_visit }}</td>
-        </tr>
-      {% endfor %}
-    </table>
-{% endif %}
--->
 {% endblock %}
 
 {% block extrajs %}
@@ -361,18 +388,31 @@
     var end = '';
     var action = '';
 
+    $('#change-package').hide();
+    // $('#end-package').hide();
+    // $('#date-end').hide();
+    $('#sub-end').hide();
+    // $('.sub-form').hide();
+    // $('#id_bill_day').hide();
+
+    $('.select-pkg').hide();
+    $('.select-date').hide();
+
+    //If user has no active subscriptions, only allow to select new package
+    if ('{{ entity.profile.is_active }}' == 'True') {
+      $('.modal').show();
+    } else {
+      $('.modal').hide();
+      $('.curr-sub').hide();
+      $('.select-pkg').show();
+      $('.select-date').show();
+    }
+
     $('#id_package > option').each(function() {
       if ($(this).val() == '{{ package }}') {
         $(this).attr('selected', 'selected');
       }
     });
-
-    $('#change-package').hide();
-    $('#end-package').hide();
-    $('#date-end').hide();
-    $('#sub-end').hide();
-    $('.sub-form').hide();
-    $('#id_bill_day').hide();
 
     $('.sub-input .start_date').addClass('datepicker');
     $('.sub-input .end_date').addClass('datepicker');
@@ -400,14 +440,16 @@
       $('.start_date').val(targetDate);
     }
 
-
   //JS for changing package
     $('#change').on('click', function(e) {
-      action = 'change';
       e.preventDefault();
-      $('#change-package').show();
-      $('.change-form').show();
-      $('.mem-details-table').hide();
+      action = 'change';
+      $('.modal').hide();
+
+      $('.select-date').show();
+      $('.select-pkg').show();
+      // $('#change-package').show();
+      // $('.change-form').show();
     })
 
     //Formset functionality for changing membership package
@@ -453,8 +495,10 @@
     $('.delete-row').addClass('btn-floating btn-large btn');
     $('.delete-row').on('click', function(e) {
       e.preventDefault();
-      var val = $('#target_date').val();
-      $(this).parent().siblings('#end_date_td').children().val(val);
+      if(!(end)) {
+        end = $('#target_date').val();;
+      }
+      $(this).parent().siblings('#end_date_td').children().val(end);
       $(this).fadeOut("slow");
     });
 
@@ -467,6 +511,7 @@
       })
     });
 
+    //Needed???????????
     $('#id_bill_day').on('change', function() {
       $('.change-form').submit();
     })
@@ -495,27 +540,38 @@
   //Updating subscription functionality
     $('#update').on('click', function(e) {
       e.preventDefault();
-      action = 'update'
-      $('#change-package').show();
-      $('.mem-details-table').hide();
-      $('.change-form').hide();
-      $('.end-table').css('margin-bottom', '3%');
+      action = 'update';
+      $('.modal').hide();
+
+      $('.select-date').show();
+      // $('.end-table').css('margin-bottom', '3%');
     })
 
+    if(action == 'update') {
+      $('.select-date').on('change', function() {
+        $('#change-package').show();
+      })
+    }
+
+    function dateFiller(date) {
+      $('#change-package').show();
+      $('.curr-sub').hide();
+      $('#start_date_td input').each(function() {
+        if(!($(this).attr('readonly'))) {
+          $(this).val(date);
+          $(this).attr('readonly', 'readonly');
+          $(this).datepicker('destroy');
+        }
+      })
+    }
+
     $('#sub-end').on('change', function() {
-      $('#target_date').val($('#sub-end').val());
-      targetDate = $('#sub-end').val();
-      if (action == 'update') {
-        $('.curr-sub').hide();
-        $('.sub-form').show();
-        $('.end-table').hide();
-        $('#start_date_td input').each(function() {
-          if(!($(this).attr('readonly'))) {
-            $(this).val($('#sub-end').val());
-            $(this).attr('readonly', 'readonly');
-            $(this).datepicker('destroy');
-          }
-        })
+      if(action == 'update') {
+        $('#target_date').val($('#sub-end').val());
+        targetDate = $('#sub-end').val();
+        if (action == 'update') {
+          dateFiller($('#sub-end').val());
+        }
       }
     })
 
@@ -528,47 +584,21 @@
         targetDate = today;
         $('#target_date').val(today);
         if (action == 'update') {
-          $('.curr-sub').hide();
-          $('.sub-form').show();
-          $('.end-table').hide();
-          $('#start_date_td input').each(function() {
-            if(!($(this).attr('readonly'))) {
-              $(this).val(today);
-              $(this).attr('readonly', 'readonly');
-              $(this).datepicker('destroy');
-            }
-          })
+          dateFiller(today);
         }
       } else if (period == 'yesterday') {
         targetDate = yesterday;
         $('#target_date').val(yesterday);
         if (action == 'update') {
-          $('.curr-sub').hide();
-          $('.sub-form').show();
-          $('.end-table').hide();
-          $('#start_date_td input').each(function() {
-            if(!($(this).attr('readonly'))) {
-              $(this).val(yesterday);
-              $(this).attr('readonly', 'readonly');
-              $(this).datepicker('destroy');
-            }
-          })
+          dateFiller(yesterday);
         }
       } else if (period == 'eop') {
         targetDate = bdDate;
-          $('#target_date').val(bdDate);
-          if (action == 'update') {
-            $('.curr-sub').hide();
-            $('.sub-form').show();
-            $('.end-table').hide();
-            $('#start_date_td input').each(function() {
-              if(!($(this).attr('readonly'))) {
-                $(this).val(bdDate);
-                $(this).attr('readonly', 'readonly');
-                $(this).datepicker('destroy');
-              }
-            })
-          }
+        end = eopDate;
+        $('#target_date').val(bdDate);
+        if (action == 'update') {
+          dateFiller(bdDate);
+        }
       }
     })
 
