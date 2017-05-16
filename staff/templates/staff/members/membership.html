@@ -18,6 +18,36 @@
     </div>
   </div>
 </div>
+<div class='select-date'>
+  <table class='date-table'>
+    <tr>
+      <th>
+        <strong>Effective Date?</strong>
+      </th>
+      <td id='select-end-td'>
+        <select id='target-input'>
+          <option disabled>
+            Select One
+          </option>
+          <option value='yesterday'>
+            Yesterday
+          </option>
+          <option selected value='today'>
+            Today
+          </option>
+          <option class='change-eop' value='eop'>
+          </option>
+          <option value='other'>
+            Other
+          </option>
+        </select>
+      </td>
+      <td style='width:30%;'>
+        <input id='sub-end' name='date-end' class='datepicker' placeholder="Select Date" />
+      </td>
+    </tr>
+  </table>
+</div>
 <div class='select-pkg'>
   <form class='change-form' action='.' method='GET'>
     <table>
@@ -33,36 +63,6 @@
     </table>
     <input type='hidden' name='target_date' id='target_date' />
   </form>
-</div>
-<div class='select-date'>
-  <table class='date-table'>
-    <tr>
-      <th>
-        <strong>Effective Date?</strong>
-      </th>
-      <td id='select-end-td'>
-        <select id='target-input'>
-          <option disabled selected="true">
-            Select One
-          </option>
-          <option value='yesterday'>
-            Yesterday
-          </option>
-          <option value='today'>
-            Today
-          </option>
-          <option class='change-eop' value='eop'>
-          </option>
-          <option value='other'>
-            Other
-          </option>
-        </select>
-      </td>
-      <td style='width:30%;'>
-        <input id='sub-end' name='date-end' class='datepicker' placeholder="Select Date" />
-      </td>
-    </tr>
-  </table>
 </div>
 <div class='curr-sub'>
   <h6>Current Subscriptions</h6>
@@ -369,12 +369,6 @@
     })
   }
 
-  function startChange(action) {
-    if ($('#id_package').val() && $('#target-input').val() && action == 'change') {
-      $('.change-form').submit();
-    }
-  }
-
   function endPackage(period) {
     $('.subs').before("<input type='hidden' name='ending' value=" + period + " />");
     $('.sub-form').submit();
@@ -431,11 +425,11 @@
       $('.select-date').show();
     }
 
-    $('#id_package > option').each(function() {
-      if ($(this).val() == '{{ package }}') {
-        $(this).attr('selected', 'selected');
-      }
-    });
+    // $('#id_package > option').each(function() {
+    //   if ($(this).val() == '{{ package }}') {
+    //     $(this).attr('selected', 'selected');
+    //   }
+    // });
 
     $('.sub-input .start_date').addClass('datepicker');
     $('.sub-input .end_date').addClass('datepicker');
@@ -470,6 +464,13 @@
       $('.modal').hide();
       $('.select-date').show();
       $('.select-pkg').show();
+    })
+
+    $('#id_package').on('change', function() {
+      if(!($('#target_date').val())) {
+        $('#target_date').val(today);
+      }
+      $('.change-form').submit();
     })
 
     //Formset functionality for changing membership package
@@ -583,7 +584,6 @@
         if (action == 'end') {
           endPackage(period);
         }
-        startChange(action);
       }
     })
 
@@ -602,7 +602,6 @@
         if (action == 'end') {
           endPackage(period);
         }
-        startChange(action);
       } else if (period == 'yesterday') {
         targetDate = yesterday;
         end = targetDate;
@@ -613,7 +612,6 @@
         if (action == 'end') {
           endPackage(period);
         }
-        startChange(action);
       } else if (period == 'eop') {
         targetDate = bdDate;
         end = eopDate;
@@ -625,7 +623,6 @@
           $('.subs').before("<input type='hidden' name='date-end' value=" + end + " />");
           endPackage(period);
         }
-        startChange(action);
       }
     })
 
@@ -636,13 +633,6 @@
       $('.select-date').show();
       $('.modal').hide();
     })
-
-    // $('#select-end').change(function(){
-    //   if ($('#select-end').val() == 'other') {
-    //     $('#date-end').show();
-    //     $('#date-end').datepicker('show');
-    //   }
-    // })
 
     $('.cancel').on('click', function(e) {
       e.preventDefault();

@@ -288,8 +288,8 @@ def membership(request, username):
     else:
         bill_day = 1
     package = request.GET.get('package', old_pkg)
-    target_date = request.GET.get('target_date', None)
     today = localtime(now()).date()
+    target_date = request.GET.get('target_date', today)
 
     if package != old_pkg:
         subscriptions = SubscriptionDefault.objects.filter(package=package)
