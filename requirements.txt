@@ -1,9 +1,9 @@
 Django>=1.11,<2.0
-Pillow==4.1.0
+Pillow==4.1.1
 psycopg2==2.7.1
 django-localflavor==1.4.1
 django-localflavor-us==1.1
-django-taggit==0.22.0
+django-taggit==0.22.1
 django-taggit-templatetags2==1.6.1
 django-crontab==0.7.1
 mailchimp==2.0.9
@@ -40,7 +40,7 @@ feedparser
 #django-tastypie==0.12.2
 
 # For the documentation:
-sphinx==1.5.5
-sphinx-rtd-theme==0.1.9
+sphinx==1.6.1
+sphinx-rtd-theme==0.2.4
 recommonmark==0.4.0
-pycodestyle==2.3.0
+pycodestyle==2.3.1
