@@ -78,8 +78,8 @@ def device_logs_by_day(request, year, month, day):
 
 @staff_member_required
 def logins_today(request):
-    now = localtime(now())
-    return logins_by_day(request, str(now.year), str(now.month), str(now.day))
+    today = localtime(now())
+    return logins_by_day(request, str(today.year), str(today.month), str(today.day))
 
 
 def logins_by_day(request, year, month, day):
