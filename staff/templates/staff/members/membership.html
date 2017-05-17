@@ -360,11 +360,12 @@
   function dateFiller(date) {
     $('#change-package').show();
     $('.curr-sub').hide();
-    $('#start_date_td input').each(function() {
-      if(!($(this).attr('readonly'))) {
-        $(this).val(date);
-        $(this).attr('readonly', 'readonly');
-        $(this).datepicker('destroy');
+    $('.resource').each(function() {
+      if(!($(this).attr('disabled'))) {
+        var els = $(this).parent().siblings('#start_date_td').children();
+        els.each(function() {
+          $(this).attr('readonly', 'false').val(date).attr('readonly', 'readonly').datepicker('destroy');
+        })
       }
     })
   }
@@ -441,7 +442,7 @@
     $('#id_created_by').val('{{ request.user }}');
     $('#id_bill_day').val('{{ bill_day }}');
     $('#id_username').val('{{ entity.username }}')
-    $('.created_by_td').val('{{ request.user }}');
+    // $('.created_by_td').val('{{ request.user }}');
     $('.disabled input').attr('readonly', 'readonly');
     $('.disabled input.end_date').datepicker('destroy');
     $('.disabled input.start_date').datepicker('destroy');
@@ -558,7 +559,7 @@
     // Review all this. What needs to change to match new functionality
     $('.add-row').on('click', function(e) {
 			$('.delete-row').addClass('btn-floating btn-large btn');
-      $('.username_td').val('{{ entity.username }}');
+      // $('.username_td').val('{{ entity.username }}');
       $('.created_by_td').val('{{ request.user }}');
       $('.ur_bill_day').val('{{ bill_day }}');
       $('.chosen_package').val('{{ package }}');
