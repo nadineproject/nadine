@@ -14,7 +14,7 @@ python-slugify==1.2.4
 
 # For document signing
 # Newer versions may not work so be cautious when upgrading
-html5lib==1.0b8
+html5lib==1.0b10
 xhtml2pdf>=0.0.6
 # Required for Python3
 #xhtml2pdf==0.1b2
