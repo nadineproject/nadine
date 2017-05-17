@@ -26,13 +26,13 @@
       </th>
       <td id='select-end-td'>
         <select id='target-input'>
-          <option disabled>
+          <option selected disabled>
             Select One
           </option>
           <option value='yesterday'>
             Yesterday
           </option>
-          <option selected value='today'>
+          <option value='today'>
             Today
           </option>
           <option class='change-eop' value='eop'>
@@ -261,7 +261,7 @@
     </table>
     {% endif %}
     {% csrf_token %}
-    <button class='btn' type='submit' style='display:inline-block; margin-right: 5%; margin-left:40%;'>Update</button><span class='cancel'>Cancel</span>
+    <button class='btn' type='submit' style='display:inline-block; margin-right: 5%; margin-left:40%;'>Update</button><span class='cancel'>Back</span>
   </form>
 </div>
 {% endblock %}
@@ -408,10 +408,10 @@
     var start = '';
     var end = '';
     var action = '';
+    var existing = [];
 
     $('#change-package').hide();
     $('#sub-end').hide();
-
     $('.select-pkg').hide();
     $('.select-date').hide();
 
@@ -466,13 +466,6 @@
       $('.select-pkg').show();
     })
 
-    $('#id_package').on('change', function() {
-      if(!($('#target_date').val())) {
-        $('#target_date').val(today);
-      }
-      $('.change-form').submit();
-    })
-
     //Formset functionality for changing membership package
     $('.sub-formset').formset({
       addText:'Add Another',
@@ -523,18 +516,44 @@
     });
 
     $('#id_package').on('change', function() {
+      if(!($('#target_date').val())) {
+        $('#target_date').val(today);
+      }
       package = $(this).val();
       $('#id_package > option').each(function() {
         if($(this).val() == package ) {
           $(this).attr('selected', 'selected');
         }
       })
+      $('.change-form').submit();
     });
 
-    //Needed???????????
-    $('#id_bill_day').on('change', function() {
-      $('.change-form').submit();
+    $('.resource').each(function() {
+      if($(this).val()) {
+        existing.push($(this).val())
+        $(this).attr('disabled', 'disabled');
+      }
+      if(!($(this).attr('disabled'))) {
+        $(this).children().each(function() {
+          for (var i = 0; i < existing.length; i++) {
+            if($(this).val() == existing[i]) {
+              $(this).hide();
+            }
+          }
+        })
+      }
     })
+
+    // $('.select-date').on('change', function() {
+    //   if($('.select-date').val().length && $('.select-pkg').val().length) {
+    //     console.log('Yup!');
+    //   }
+    // })
+
+    //Needed???????????
+    // $('#id_bill_day').on('change', function() {
+    //   $('.change-form').submit();
+    // })
 
     // Review all this. What needs to change to match new functionality
     $('.add-row').on('click', function(e) {
@@ -562,12 +581,11 @@
       e.preventDefault();
       action = 'update';
       $('.modal').hide();
-
       $('.select-date').show();
       // $('.end-table').css('margin-bottom', '3%');
     })
 
-    if(action == 'update') {
+    if (action == 'update') {
       $('.select-date').on('change', function() {
         $('#change-package').show();
       })
