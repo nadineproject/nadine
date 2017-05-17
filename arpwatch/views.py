@@ -58,8 +58,13 @@ def device(request, id):
 
 @staff_member_required
 def device_logs_today(request):
+<<<<<<< HEAD
     today = localtime(now())
     return device_logs_by_day(request, str(today.year), str(today.month), str(today.day))
+=======
+    now = localtime(now())
+    return device_logs_by_day(request, str(now.year), str(now.month), str(now.day))
+>>>>>>> master
 
 
 @staff_member_required

@@ -34,7 +34,7 @@ pysnmp-mibs==0.1.6
 sphinx==1.6.1
 sphinx-rtd-theme==0.2.4
 recommonmark==0.4.0
-pycodestyle==2.3.0
+pycodestyle==2.3.1
 sphinx-autoapi==0.4.0
 
 # TODO - Evaluate use of these libraries
