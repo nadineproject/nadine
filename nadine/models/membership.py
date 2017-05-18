@@ -843,7 +843,6 @@ class OldMembership(models.Model):
         return OldMembership.objects.filter(user=self.user, end_date=self.start_date - timedelta(days=1)).count() > 0
 
     def prev_billing_date(self, target_date=None):
-        from monthdelta import monthmod
         if not target_date:
             target_date = localtime(now()).date()
         difference = relativedelta(target_date, self.start_date)
