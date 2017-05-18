@@ -278,6 +278,7 @@ def membership(request, username):
     subscriptions = None
     sub_data = None
     start = None
+    action = None
     active_members = User.helper.active_members()
     SubFormSet = formset_factory(SubForm)
     old_pkg = None
@@ -294,6 +295,7 @@ def membership(request, username):
     if package != old_pkg:
         subscriptions = SubscriptionDefault.objects.filter(package=package)
         sub_data=[{'s_id': None, 'resource': s.resource, 'allowance':s.allowance, 'start_date': today, 'end_date': None, 'username': user.username, 'created_by': request.user, 'monthly_rate': s.monthly_rate, 'overage_rate': s.overage_rate, 'paid_by': None} for s in subscriptions]
+        action = 'change'
     else:
         subscriptions = user.membership.active_subscriptions()
         sub_data=[{'s_id': s.id, 'resource': s.resource, 'allowance':s.allowance, 'start_date':s.start_date, 'end_date': s.end_date, 'username': user.username, 'created_by': s.created_by, 'monthly_rate': s.monthly_rate, 'overage_rate': s.overage_rate, 'paid_by': s.paid_by} for s in subscriptions]
@@ -320,7 +322,8 @@ def membership(request, username):
                 try:
                     with transaction.atomic():
                         new_subs = []
-                        membership = {'package': request.POST['package'], 'bill_day': bill_day}
+                        package = request.POST['package']
+                        membership = {'package': package, 'bill_day': bill_day}
                         for sub_form in sub_formset:
                             paid_by = None
                             s_id = sub_form.cleaned_data.get('s_id', None)
@@ -358,6 +361,7 @@ def membership(request, username):
         'sub_formset': sub_formset,
         'active_members': active_members,
         'target_date': target_date,
+        'action': action,
     }
     return render(request, 'staff/members/membership.html', context)
 
@@ -368,6 +372,11 @@ def confirm_membership(request, username, package, end_target, new_subs):
     package = unicodedata.normalize('NFKD', package).encode('ascii', 'ignore')
     subs = ast.literal_eval(new_subs)
     pkg = ast.literal_eval(package)
+    if pkg:
+        mem_package = MembershipPackage.objects.get(id=pkg['package'])
+        pkg_name = mem_package.name
+    else:
+        pkg_name = None
     if request.method == 'POST':
         try:
             with transaction.atomic():
@@ -375,7 +384,6 @@ def confirm_membership(request, username, package, end_target, new_subs):
                 membership = user.membership
                 if pkg:
                     # If there is a package, then make changes, else, we are ending all
-                    mem_package = MembershipPackage.objects.get(id=pkg['package'])
                     if user.membership.package != mem_package:
                         membership.package = mem_package
                         membership.bill_day = pkg['bill_day']
@@ -442,6 +450,7 @@ def confirm_membership(request, username, package, end_target, new_subs):
     context = {
         'user': user,
         'package': pkg,
+        'package_name': pkg_name,
         'new_subs': subs,
         'end_target': end_target,
     }

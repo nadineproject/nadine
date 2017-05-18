@@ -266,9 +266,13 @@ td.up-input.rate {
   font-size: .8em;
 }
 
-.cancel {
+.cancel, .back {
   margin-left: 5%;
   color: RGBA(28, 164, 230, 1.00);
+}
+
+.cancel {
+  vertical-align: sub;
 }
 
 .chip {
@@ -276,7 +280,7 @@ td.up-input.rate {
 }
 
 .confirm-btn {
-  margin-left: 35%;
+  margin-left: 40%;
   margin-top: 2%;
 }
 
@@ -371,7 +375,8 @@ td.up-input.rate {
 .ending-p {
   font-size: 1.3em;
   text-align: center;
-  margin-top: 3%;
+  margin-top: 3% !important;
+  margin-bottom: 3% !important;
   color: RGBA(158, 89, 88, 1.00);
 }
 
@@ -507,6 +512,10 @@ table.mem-details-table {
   text-align: center;
 }
 
+.new-table {
+  margin-top: 5%;
+}
+
 .new-package {
   width: 80%;
 }
@@ -620,6 +629,7 @@ table.mem-details-table {
 
 .sub-table {
   margin: 2%;
+  width: 96%;
   /*margin-bottom: 2%;*/
 }
 

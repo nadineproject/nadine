@@ -6,24 +6,24 @@
 {% block content %}
 <h5 style='margin-bottom: 3%;'>Confirm Membership Changes for <a href="{% url 'staff:members:detail' user.username %}">{{ user.get_full_name }}</a></h5>
 
-<div class='old-subs'>
-  <h6>Ending {{ user.membership.package.name }} Membership Package on {{ end_target }} </h6>
+<div class='old-pkg'>
+  <h6>Ending "{{ user.membership.package.name }}" Membership Package on {{ end_target }} </h6>
   <table class='sub-table' style='margin-top: 2%;'>
     <tr>
       <th class='sub-th'>Resource</th>
       <th class='sub-th'>Allowance</th>
-      <th class='sub-th'>Start Date</th>
-      <th class='sub-th'>Overage</th>
       <th class='sub-th'>Monthly</th>
+      <th class='sub-th'>Overage</th>
+      <th class='sub-th'>Start Date</th>
       <th class='sub-th'>Paid By</th>
     </tr>
     {% for s in user.membership.active_subscriptions %}
       <tr class='{% cycle "row-even" "row-odd" %}'>
         <td>{{ s.resource }}</td>
         <td>{{ s.allowance }}</td>
-        <td>{{ s.start_date|date:'Y-m-d' }}</td>
-        <td>${{ s.overage_rate }}</td>
         <td>${{ s.monthly_rate }}/month</td>
+        <td>${{ s.overage_rate }}</td>
+        <td>{{ s.start_date|date:'Y-m-d' }}</td>
         <td>{{ s.paid_by|default:"" }}</td>
       </tr>
     {% endfor %}
@@ -32,7 +32,7 @@
 
 <form action='.' method='POST'>
   {% if new_subs %}
-  <div class='ending-subs'>
+  <div class='ending-subs-table'>
     <h6>Subscriptions with End Dates</h6>
     <table class='sub-table'>
       <tr>
@@ -75,18 +75,81 @@
       {% endfor %}
       </table>
   </div>
-  <div class='new-table'>
-    <h6>New Subscriptions</h6>
+
+  <div class='new-subs-table'>
+    <h6>Adding these new subscriptions on <span id='start'></span></h6>
     <table class='sub-table'>
       <tr>
         <th class='sub-th'>Resource</th>
         <th class='allowance sub-th'>Allowance</th>
-        <th class='sub-th'>Start Date</th>
-        <th class='sub-th'>End Date</th>
         <th class='rate sub-th'>Monthly Rate</th>
         <th class='rate sub-th'>Overage rate</th>
         <th class='sub-th'>Paid By</th>
       </tr>
+      {% for n in new_subs %}
+        {% if n.end_date == None and n.s_id == None %}
+          <tr class="{% cycle 'row-even' 'row-odd' %}">
+            <td class='sub-td'>
+              {{ n.resource|resource_filter }}
+            </td>
+            <td class='sub-td'>
+              {{ n.allowance }}
+            </td>
+            <td class='sub-td'>
+              ${{ n.monthly_rate }}
+            </td>
+            <td class='sub-td'>
+              ${{ n.overage_rate }}
+            </td>
+            <td class='sub-td'>
+              {% if n.paid_by %}
+                {{ n.paid_by }}
+              {% endif %}
+            </td>
+          </tr>
+        {% endif %}
+      {% endfor %}
+    </table>
+  </div>
+
+  <div class='new-table'>
+    <h6>Membership Package For Next Bill Period:</h6>
+    {% if package_name %}
+      <h6 style='margin-top: 0;'>{{ package_name }}</h6>
+    {% endif %}
+    <table class='sub-table'>
+      <tr>
+        <th class='sub-th'>Resource</th>
+        <th class='allowance sub-th'>Allowance</th>
+        <th class='rate sub-th'>Monthly Rate</th>
+        <th class='rate sub-th'>Overage rate</th>
+        <th class='sub-th'>Paid By</th>
+      </tr>
+      {% for a in user.membership.active_subscriptions %}
+        {% for s in new_subs %}
+          {% if a.id == s.s_id and s.end_date == None %}
+            <tr class='{% cycle "row-even" "row-odd" %} ending-subs'>
+              <td class='sub-td'>
+                <strong>{{ a.resource }}</strong>
+              </td>
+              <td class='sub-td'>
+                {{ a.allowance }}
+              </td>
+              <td class='sub-td'>
+                $<span class='old-sub-rate'>{{ a.monthly_rate }}</span>
+              </td>
+              <td class='sub-td'>
+                ${{ a.overage_rate }}
+              </td>
+              <td class='sub-td'>
+                {% if a.paid_by %}
+                  {{ a.paid_by }}
+                {% endif %}
+              </td>
+            </tr>
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
       {% for ns in new_subs %}
         {% if ns.end_date == None and ns.s_id == None %}
           <tr class='{% cycle "row-even" "row-odd" %}'>
@@ -97,13 +160,7 @@
               {{ ns.allowance }}
             </td>
             <td class='sub-td'>
-              {{ ns.start_date }}
-            </td>
-            <td class='sub-td'>
-              {{ ns.end_date }}
-            </td>
-            <td class='sub-td'>
-              ${{ ns.monthly_rate }}
+              $<span class='new-sub-rate'>{{ ns.monthly_rate }}</span>
             </td>
             <td class='sub-td'>
               ${{ ns.overage_rate }}
@@ -116,15 +173,20 @@
           </tr>
         {% endif %}
       {% endfor %}
+      <tr>
+        <td></td>
+        <td><strong>Total:</strong></td>
+        <td><strong id='total-td'></strong></td>
+      </tr>
     </table>
   </div>
   {% else %}
-  <div class='end_pkg_table'>
-    <p class='ending-p'><strong>Ending this package and all subscrptions on: {{ end_target }} </strong></p>
+  <div class='end_pkg_p'>
+    <p class='ending-p'><strong>No new membership package for start of next bill period {{ user.membership.next_period_start|date:'Y-m-d' }}</strong></p>
   </div>
   {% endif %}
   {% csrf_token %}
-  <input class='btn confirm-btn' type='submit' value='Confirm Changes' />
+  <input class='btn confirm-btn' type='submit' value='Confirm Changes' /><span class='back' style='padding-top:3%;'>Back</span>
 </form>
 {% endblock %}
 
@@ -133,34 +195,67 @@
   $(document).ready(function() {
     $('.button-collapse').sideNav();
 		$('.collapsible').collapsible();
-    $('.old-subs').hide();
+    $('.old-pkg').hide();
 
     var newSubs = 0;
     var endingSubs = 0;
     var newPkg = '{{ package.package }}';
     var oldPkg = '{{ user.membership.package.id }}';
-
-    if (oldPkg != '' && oldPkg != newPkg) {
-      $('.old-subs').show()
-    }
+    var start = '';
+    var total = 0;
 
     {% for ns in new_subs %}
-      {% if ns.end_date == None and ns.s_id == None %}
-      newSubs ++;
+      console.log('{{ ns.end_date }}');
+    //actually, want to see subscriptions with end dates, just as long as they are before the next billing period?
+      {% if ns.s_id == None %}
+        newSubs ++;
+        start = '{{ ns.start_date }}';
       {% endif %}
     {% endfor %}
 
+    //Show start date in h6
+    if(start.length) {
+      $('#start').text(start);
+    }
+
     {% for ns in new_subs %}
-      {% if ns.end_date %}
+      {% if ns.end_date and ns.s_id != None %}
         endingSubs ++;
       {% endif %}
     {% endfor %}
 
+    //if there are no new subs then hide any of the new sub tables
     if (newSubs == 0) {
-      $('.new-table').hide();
-    } else if (endingSubs == 0) {
-      $('.ending-subs').hide();
+      $('.new-subs-table').hide();
+      $('.not-ending').hide()
     }
+
+    //if no subs are ending then hide the ending subs table
+    if (endingSubs == 0) {
+      $('.ending-subs-table').hide();
+    }
+
+    if (oldPkg == '') {
+      $('.old-pkg').hide();
+      $('.ending-subs').hide();
+      $('.ending-subs-table').hide();
+      $('.new-subs-table').hide();
+    }
+
+    //If ending a whole package
+    if (oldPkg != '' && oldPkg != newPkg) {
+      $('.old-pkg').show();
+      $('.ending-subs').hide();
+      $('.ending-subs-table').hide();
+      $('.new-subs-table').hide();
+    }
+
+    $('.old-sub-rate').each(function() {
+      var dollars = parseInt($(this).text());
+      total += dollars;
+    });
+
+    $('#total-td').text('$' + total+ '/month');
 
     {% for message in messages %}
         Materialize.toast('{{ message }}', 3000, '{{ message.tags }}-msg');

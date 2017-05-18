@@ -97,113 +97,6 @@
     </tr>
   </table>
 </div>
-
-<!-- <div class='curr-sub'>
-  <h6 class='mem-details-table'>Current Package Details</h6>
-  <table class='mem-details-table'>
-    <tr>
-      <th class='sub-th'>Billing Day</th>
-      <th class='sub-th'>Next Bill</th>
-      <th class='sub-th'>Package</th>
-      <th class='sub-th' style='text-align: center !important;'>What do you want to do?</th>
-    </tr>
-    <tr>
-      <td>{{ entity.membership.bill_day_str }}</td>
-      <td>{{ entity.membership.next_period_start }}</td>
-      <form>
-        <td id='package'>
-          {{ entity.membership.package }}
-        </td>
-        <td class='sub-chips'>
-          <a id='change' class='chip'>New Package</a>
-          | <a id='update' class='chip'>Update Current Subscriptions</a>
-          | <a id='end' class='chip'>End Current Package</a>
-        </td>
-      </form>
-    </tr>
-  </table>
-</div> -->
-
-<!-- <div id='end-package'>
-  <h6>End All Current Subscriptions</h6>
-  <form method='POST' action='.' class='end-sub-form'>
-    <table>
-      <tr>
-        <td id='end-header'>
-          <strong>When do you want to end?</strong>
-        </td>
-        <td id='select-end-td'>
-          <select name='ending' id='select-end'>
-            <option value='today'>
-              Today
-            </option>
-            <option value='yesterday'>
-              Yesterday
-            </option>
-            <option class='end-eop' value='eop'>
-              End of This Bill Period
-            </option>
-            <option value='other'>
-              Other
-            </option>
-          </select>
-        </td>
-        <td style='width:30%;'>
-          <input id='date-end' name='date-end' class='datepicker' placeholder="Select Date" />
-        </td>
-      </tr>
-    </table>
-    {% csrf_token %}
-    <button class='btn' type='submit' style='display:inline-block; margin-right: 5%; margin-left:40%; margin-top: 2%;'>End All</button><span class='cancel' style='margin-top:2%;'>Cancel</span>
-  </form>
-</div> -->
-  <!-- <h6>Change Membership Package</h6>
-    <table class='end-table'>
-      <tr>
-        <td id='end-header'>
-          <strong>When do you want the changes to go in effect?</strong>
-        </td>
-        <td id='select-end-td'>
-          <select name='ending' id='target-input'>
-            <option disabled selected="true">
-              Select One
-            </option>
-            <option value='today'>
-              Today
-            </option>
-            <option value='yesterday'>
-              Yesterday
-            </option>
-            <option class='change-eop' value='eop'>
-            </option>
-            <option value='other'>
-              Other
-            </option>
-          </select>
-        </td>
-        <td style='width:30%;'>
-          <input id='sub-end' name='date-end' class='datepicker' placeholder="Select Date" />
-        </td>
-      </tr>
-    </table>
-    <form class='change-form' action='.' method='GET'>
-      <table class='sub-table'>
-        <tr>
-          <td id='end-header'>
-            <strong>Choose a New Package: </strong>
-          </td>
-          <td id='new-package'>
-            {{ package_form.package }}
-          </td>
-            {{ package_form.bill_day }}
-            {{ package_form.username }}
-          <td style='width:30%; vertical-align: middle;'></td>
-        </tr>
-      </table>
-      <button style='margin-left:45%; margin-top: 2%;' class='btn' type='submit'>Start</button>
-      <span display='inline-block' class='cancel'>Cancel</span>
-      <input type='hidden' name='target_date' id='target_date' />
-    </form> -->
 <div id='change-package'>
   <form class='sub-form' action='.' method='POST'>
     <table class='sub-table change-table'>
@@ -243,6 +136,7 @@
           {% if sub_form.end_date.value %}
           {% elif sub_form.s_id.value  %}
             <a class='delete-row'>End</a>
+            <a class='cancel'>Cancel</a>
           {% else %}
           {% endif %}
           <input type='hidden' class='chosen_package' name='package' value="{{ package }}" />
@@ -261,7 +155,7 @@
     </table>
     {% endif %}
     {% csrf_token %}
-    <button class='btn' type='submit' style='display:inline-block; margin-right: 5%; margin-left:40%;'>Update</button><span class='cancel'>Back</span>
+    <button class='btn' type='submit' style='display:inline-block; margin-right: 5%; margin-left:40%;'>Update</button><span class='back'>Back</span>
   </form>
 </div>
 {% endblock %}
@@ -406,7 +300,7 @@
     $('.collapsible').collapsible();
     var package = '{{ package }}';
     var targetDate = '{{ target_date }}';
-    var start = '';
+    // var start = '';
     var end = '';
     var action = '';
     var existing = [];
@@ -415,6 +309,17 @@
     $('#sub-end').hide();
     $('.select-pkg').hide();
     $('.select-date').hide();
+    $('.cancel').hide();
+
+    if ('{{ action }}' == 'change') {
+      $('.select-pkg').show();
+      $('.select-date').show();
+      $('#id_package > option').each(function() {
+        if ($(this).val() == '{{ package }}') {
+          $(this).attr('selected', 'selected');
+        }
+      });
+    }
 
     //If user has no active subscriptions, only allow to select new package
     if ('{{ entity.profile.is_active }}' == 'True') {
@@ -425,12 +330,6 @@
       $('.select-pkg').show();
       $('.select-date').show();
     }
-
-    // $('#id_package > option').each(function() {
-    //   if ($(this).val() == '{{ package }}') {
-    //     $(this).attr('selected', 'selected');
-    //   }
-    // });
 
     $('.sub-input .start_date').addClass('datepicker');
     $('.sub-input .end_date').addClass('datepicker');
@@ -484,28 +383,26 @@
     if(targetDate != 'None') {
       $('#change-package').show();
       $('.modal').hide();
+      $('.curr-sub').hide();
       $('.sub-form').show();
       $('#new-package').val('{{ package }}');
       $('#id_bill_day').val('{{ bill_day }}');
-      $('.curr-sub').hide();
       $('#target_date').val(targetDate);
       $('#id_package > option').each(function() {
         if($(this).val() == '{{ package }}') {
           $(this).attr('selected', 'selected');
         }
       })
-
       if (action === '') {
         $('#start_date_td input').each(function() {
           if(!($(this).attr('readonly'))) {
-            $(this).attr('readonly', 'readonly');
-            $(this).datepicker('destroy');
+            $(this).attr('readonly', 'readonly').datepicker('destroy');
           }
         })
       }
     }
 
-    //End indv. subscription button function/look
+    //Insert indv. subscription end button function/look
     $('.delete-row').addClass('btn-floating btn-large btn');
     $('.delete-row').on('click', function(e) {
       e.preventDefault();
@@ -513,9 +410,19 @@
         end = $('#target_date').val();;
       }
       $(this).parent().siblings('#end_date_td').children().val(end);
-      $(this).fadeOut("slow");
+      $(this).fadeOut("slow", function() {
+        $(this).siblings('.cancel').show();
+      });
     });
 
+    $('.cancel').on('click', function(e) {
+      e.preventDefault();
+      $(this).parent().siblings('#end_date_td').children().val('');
+      $(this).hide()
+      $(this).siblings('.delete-row').show();
+    })
+
+    //When a user changes package selection, it prompts a form submit
     $('#id_package').on('change', function() {
       if(!($('#target_date').val())) {
         $('#target_date').val(today);
@@ -529,10 +436,11 @@
       $('.change-form').submit();
     });
 
+    //If the member already has subscription for a resource, don't show it as select option
     $('.resource').each(function() {
       if($(this).val()) {
         existing.push($(this).val())
-        $(this).attr('disabled', 'disabled');
+        $(this).attr('readonly', 'readonly');
       }
       if(!($(this).attr('disabled'))) {
         $(this).children().each(function() {
@@ -544,17 +452,6 @@
         })
       }
     })
-
-    // $('.select-date').on('change', function() {
-    //   if($('.select-date').val().length && $('.select-pkg').val().length) {
-    //     console.log('Yup!');
-    //   }
-    // })
-
-    //Needed???????????
-    // $('#id_bill_day').on('change', function() {
-    //   $('.change-form').submit();
-    // })
 
     // Review all this. What needs to change to match new functionality
     $('.add-row').on('click', function(e) {
@@ -574,6 +471,9 @@
         e.preventDefault();
         var val = $('#target_date').val();
         $(this).parent().siblings('#end_date_td').children().val(val);
+        $(this).fadeOut("slow", function() {
+          $(this).siblings('.cancel').show();
+        });
       });
 		});
 
@@ -583,15 +483,16 @@
       action = 'update';
       $('.modal').hide();
       $('.select-date').show();
-      // $('.end-table').css('margin-bottom', '3%');
     })
 
+    //When updating, if selected date changes, then show form to change subscriptions
     if (action == 'update') {
       $('.select-date').on('change', function() {
         $('#change-package').show();
       })
     }
 
+    //When a user using "other" for the date and inserts a date, insert the new date as needed
     $('#sub-end').on('change', function() {
       if(action == 'update') {
         $('#target_date').val($('#sub-end').val());
@@ -606,6 +507,7 @@
       }
     })
 
+    //Takes in date selection and applies it to the forms depending on the action previously selected
     $('#target-input').on('change', function() {
       var period = $('#target-input').val();
       if(period == 'other') {
@@ -645,7 +547,7 @@
       }
     })
 
-  //JS for ending membership package
+  //JS for when user selects to end a membership package
     $('#end').on('click', function(e) {
       e.preventDefault();
       action = 'end';
@@ -653,7 +555,8 @@
       $('.modal').hide();
     })
 
-    $('.cancel').on('click', function(e) {
+    //Hit the back button to restart this process
+    $('.back').on('click', function(e) {
       e.preventDefault();
       window.location.replace("{% url 'staff:members:membership' entity.username %}");
     })
