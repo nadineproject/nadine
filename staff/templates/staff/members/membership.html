@@ -354,6 +354,14 @@
           $(this).attr('selected', 'selected');
         }
       });
+
+      //If member already has a membership package, hide that option from the select package dropdown
+      $('#id_package > option').each(function() {
+        if($(this).val() == '{{ entity.membership.package.id }}') {
+          $(this).hide();
+        }
+      })
+
       var dates = [today, yesterday, bdDate];
       var val = ['today', 'yesterday', 'eop'];
       var match = false;

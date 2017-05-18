@@ -205,7 +205,6 @@
     var total = 0;
 
     {% for ns in new_subs %}
-      console.log('{{ ns.end_date }}');
     //actually, want to see subscriptions with end dates, just as long as they are before the next billing period?
       {% if ns.s_id == None %}
         newSubs ++;
