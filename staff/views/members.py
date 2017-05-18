@@ -373,6 +373,8 @@ def confirm_membership(request, username, package, end_target, new_subs):
     package = unicodedata.normalize('NFKD', package).encode('ascii', 'ignore')
     subs = ast.literal_eval(new_subs)
     pkg = ast.literal_eval(package)
+    pkg_match = None
+
     if pkg:
         mem_package = MembershipPackage.objects.get(id=pkg['package'])
         pkg_name = mem_package.name
@@ -454,6 +456,7 @@ def confirm_membership(request, username, package, end_target, new_subs):
         'package_name': pkg_name,
         'new_subs': subs,
         'end_target': end_target,
+        'pkg_match': pkg_match,
     }
     return render(request, 'staff/members/confirm.html', context)
 

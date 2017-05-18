@@ -222,6 +222,11 @@ input#id_bill_day {
     padding-left: 3rem;
 }
 
+.action-chips {
+  margin-top: 3%;
+  margin-left: 40%;
+}
+
 .add_date #id_start_date, .add_date #id_end_date {
   width: 100%;
 }
@@ -470,7 +475,6 @@ table.mem-details-table {
 }
 
 .modal {
-  /*display: none;*/
   position: fixed;
   z-index: 1;
   left: 0;

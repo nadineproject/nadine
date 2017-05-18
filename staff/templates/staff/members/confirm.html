@@ -4,6 +4,19 @@
 {% block sub-title %}Confirm Changes {% endblock %}
 
 {% block content %}
+<div id='promptModal' class='modal'>
+  <div class='modal-content'>
+    <div class='modal-body'>
+      <h5>What do you want to do?</h5>
+      <p style='text-align: center; color: RGBA(46, 78, 107, 1.00); font-size: 1.1em;'><strong>
+        It appears that the subscriptions you selected match that of a different package. Would you rather change the membership package to {{ pkg_match }}?
+      </strong></p>
+      <div class='action-chips'>
+        <a id='yes' class='chip'>Yes</a><a id='no' class='chip'>No</a>
+      </div>
+    </div>
+  </div>
+</div>
 <h5 style='margin-bottom: 3%;'>Confirm Membership Changes for <a href="{% url 'staff:members:detail' user.username %}">{{ user.get_full_name }}</a></h5>
 
 <div class='old-pkg'>
@@ -196,6 +209,7 @@
     $('.button-collapse').sideNav();
 		$('.collapsible').collapsible();
     $('.old-pkg').hide();
+    $('.modal').show();
 
     var newSubs = 0;
     var endingSubs = 0;
@@ -203,6 +217,13 @@
     var oldPkg = '{{ user.membership.package.id }}';
     var start = '';
     var total = 0;
+
+    //Show modal if their subscriptions match a different membership package default
+    if ('{{ pkg_match }}' != 'None') {
+      $('.modal').show();
+    }
+
+    //TODO: If user hits yes, then change package to the one that matches the subscriptions
 
     {% for ns in new_subs %}
     //actually, want to see subscriptions with end dates, just as long as they are before the next billing period?
