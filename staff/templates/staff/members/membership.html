@@ -300,7 +300,6 @@
     $('.collapsible').collapsible();
     var package = '{{ package }}';
     var targetDate = '{{ target_date }}';
-    // var start = '';
     var end = '';
     var action = '';
     var existing = [];
@@ -310,16 +309,6 @@
     $('.select-pkg').hide();
     $('.select-date').hide();
     $('.cancel').hide();
-
-    if ('{{ action }}' == 'change') {
-      $('.select-pkg').show();
-      $('.select-date').show();
-      $('#id_package > option').each(function() {
-        if ($(this).val() == '{{ package }}') {
-          $(this).attr('selected', 'selected');
-        }
-      });
-    }
 
     //If user has no active subscriptions, only allow to select new package
     if ('{{ entity.profile.is_active }}' == 'True') {
@@ -352,12 +341,44 @@
     var bdDate = getEop()[1];
     $('.change-eop').text('Start of Next Bill Period:   ' + bdDate);
     $('.end-eop').text('End of this Bill Period:  ' + eopDate);
-
     if(targetDate != 'None') {
       $('.start_date').val(targetDate);
     }
 
-  //JS for changing package
+    //If the action is change, show date and package selection but preselect a package and date if user has already done so.
+    if ('{{ action }}' == 'change') {
+      $('.select-pkg').show();
+      $('.select-date').show();
+      $('#id_package > option').each(function() {
+        if ($(this).val() == '{{ package }}') {
+          $(this).attr('selected', 'selected');
+        }
+      });
+      var dates = [today, yesterday, bdDate];
+      var val = ['today', 'yesterday', 'eop'];
+      var match = false;
+      for (var i = 0; i < dates.length; i++) {
+        if (targetDate == dates[i]) {
+          $('#target-input > option').each(function() {
+            if($(this).val() == val[i]) {
+              $(this).attr('selected', 'selected');
+              match = true;
+            }
+          })
+        }
+      }
+      if (match == false) {
+        $('#target-input > option').each(function() {
+          if($(this).val() == 'other') {
+            $(this).attr('selected', 'selected');
+            $('#sub-end').show().val(targetDate);
+          }
+        })
+      }
+    }
+
+
+    //When 'change package' is selected, show package and date dropdowns
     $('#change').on('click', function(e) {
       e.preventDefault();
       action = 'change';
@@ -494,16 +515,14 @@
 
     //When a user using "other" for the date and inserts a date, insert the new date as needed
     $('#sub-end').on('change', function() {
-      if(action == 'update') {
-        $('#target_date').val($('#sub-end').val());
-        targetDate = $('#sub-end').val();
-        end = targetDate;
-        if (action == 'update') {
-          dateFiller($('#sub-end').val());
-        }
-        if (action == 'end') {
-          endPackage(period);
-        }
+      $('#target_date').val($('#sub-end').val());
+      targetDate = $('#sub-end').val();
+      end = targetDate;
+      if (action == 'update') {
+        dateFiller($('#sub-end').val());
+      }
+      if (action == 'end') {
+        endPackage(period);
       }
     })
 
@@ -514,6 +533,7 @@
         $('#sub-end').show();
         $('#sub-end').datepicker('show');
       } else if (period == 'today') {
+        $('#sub-end').hide();
         targetDate = today;
         end = targetDate;
         $('#target_date').val(today);
@@ -524,6 +544,7 @@
           endPackage(period);
         }
       } else if (period == 'yesterday') {
+        $('#sub-end').hide();
         targetDate = yesterday;
         end = targetDate;
         $('#target_date').val(yesterday);
@@ -534,6 +555,7 @@
           endPackage(period);
         }
       } else if (period == 'eop') {
+        $('#sub-end').hide();
         targetDate = bdDate;
         end = eopDate;
         $('#target_date').val(bdDate);
