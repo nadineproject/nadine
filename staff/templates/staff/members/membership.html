@@ -155,6 +155,7 @@
     </table>
     {% endif %}
     {% csrf_token %}
+    <input type='hidden' id='date-end' name='date-end' />
     <button class='btn' type='submit' style='display:inline-block; margin-right: 5%; margin-left:40%;'>Update</button><span class='back'>Back</span>
   </form>
 </div>
@@ -255,7 +256,8 @@
     $('#change-package').show();
     $('.curr-sub').hide();
     $('.resource').each(function() {
-      if(!($(this).attr('disabled'))) {
+      var s_id = $(this).parent().siblings('.s_id').val();
+      if(!(s_id)) {
         var els = $(this).parent().siblings('#start_date_td').children();
         els.each(function() {
           $(this).attr('readonly', 'false').val(date).attr('readonly', 'readonly').datepicker('destroy');
@@ -264,8 +266,11 @@
     })
   }
 
-  function endPackage(period) {
+  function endPackage(period, targetDate) {
     $('.subs').before("<input type='hidden' name='ending' value=" + period + " />");
+    if (period == 'other') {
+      $('#date-end').val(targetDate);
+    }
     $('.sub-form').submit();
   }
 
@@ -318,6 +323,7 @@
       $('.curr-sub').hide();
       $('.select-pkg').show();
       $('.select-date').show();
+      action = 'change';
     }
 
     $('.sub-input .start_date').addClass('datepicker');
@@ -526,11 +532,14 @@
       $('#target_date').val($('#sub-end').val());
       targetDate = $('#sub-end').val();
       end = targetDate;
+      if (action == 'change' && $('#id_package').val()) {
+        $('.change-form').submit();
+      }
       if (action == 'update') {
         dateFiller($('#sub-end').val());
       }
       if (action == 'end') {
-        endPackage(period);
+        endPackage('other', targetDate);
       }
     })
 
@@ -545,34 +554,43 @@
         targetDate = today;
         end = targetDate;
         $('#target_date').val(today);
+        if (action == 'change' && $('#id_package').val()) {
+          $('.change-form').submit();
+        }
         if (action == 'update') {
           dateFiller(today);
         }
         if (action == 'end') {
-          endPackage(period);
+          endPackage(period, targetDate);
         }
       } else if (period == 'yesterday') {
         $('#sub-end').hide();
         targetDate = yesterday;
         end = targetDate;
         $('#target_date').val(yesterday);
+        if (action == 'change' && $('#id_package').val()) {
+          $('.change-form').submit();
+        }
         if (action == 'update') {
           dateFiller(yesterday);
         }
         if (action == 'end') {
-          endPackage(period);
+          endPackage(period, targetDate);
         }
       } else if (period == 'eop') {
         $('#sub-end').hide();
         targetDate = bdDate;
         end = eopDate;
         $('#target_date').val(bdDate);
+        if (action == 'change' && $('#id_package').val()) {
+          $('.change-form').submit();
+        }
         if (action == 'update') {
           dateFiller(bdDate);
         }
         if (action == 'end') {
           $('.subs').before("<input type='hidden' name='date-end' value=" + end + " />");
-          endPackage(period);
+          endPackage(period, targetDate);
         }
       }
     })

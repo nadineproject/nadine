@@ -259,6 +259,11 @@
     {% for message in messages %}
         Materialize.toast('{{ message }}', 3000, '{{ message.tags }}-msg');
     {% endfor %}
+
+    $('.back').on('click', function(e) {
+      e.preventDefault();
+      window.location.replace("{% url 'staff:members:membership' user.username %}");
+    })
   });
   </script>
 {% endblock %}

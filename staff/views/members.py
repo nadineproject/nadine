@@ -312,6 +312,7 @@ def membership(request, username):
                 ps, end_date = user.membership.get_period()
                 end_target = end_date.strftime('%Y-%m-%d')
             else:
+                print(request.POST)
                 end_target = request.POST['date-end']
 
             return HttpResponseRedirect(reverse('staff:members:confirm', kwargs={'username': username, 'package': None, 'new_subs': None, 'end_target': end_target}))
@@ -391,10 +392,10 @@ def confirm_membership(request, username, package, end_target, new_subs):
                         user.membership.end_all(end_target)
 
                         """When a membership is created, add the user to any opt-out mailing lists"""
-                        if user.membership.package == None:
-                            mailing_lists = MailingList.objects.filter(is_opt_out=True)
-                            for ml in mailing_lists:
-                                ml.subscribers.add(membership.user)
+                        # if user.membership.package == None:
+                        #     mailing_lists = MailingList.objects.filter(is_opt_out=True)
+                        #     for ml in mailing_lists:
+                        #         ml.subscribers.add(membership.user)
 
                     # Review all subscriptions to see if adding or ending
                     for sub in subs:
@@ -437,11 +438,11 @@ def confirm_membership(request, username, package, end_target, new_subs):
                             rs = ResourceSubscription(created_by=created_by, created_ts=created_ts, resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=paid_by, membership=membership)
                             rs.save()
                     """When first subscriptions is created, invite the user to Slack & add to membership"""
-                    if ResourceSubscription.objects.filter(membership=user.membership.id).count() == len(subs):
-                        SlackAPI().invite_user_quiet(user)
+                    # if ResourceSubscription.objects.filter(membership=user.membership.id).count() == len(subs):
+                        # SlackAPI().invite_user_quiet(user)
                 else:
                     user.membership.end_all(end_target)
-                    PaymentAPI().disable_recurring(username)
+                    # PaymentAPI().disable_recurring(username)
                 messages.success(request, "You have updated the subscriptions for %s" % username)
                 return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}) + '#tabs-1')
         except IntegrityError as e:
