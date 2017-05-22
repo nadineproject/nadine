@@ -294,18 +294,28 @@ class Membership(models.Model):
         # If we've made it this far, it's a match
         return True
 
-    def matching_package(self, target_date=None):
+
+    def matching_package(self, target_date=None, subscriptions=None):
         ''' Calculates which package matches the subscriptions. '''
-        subscriptions = self.active_subscriptions(target_date)
+        if not subscriptions:
+            if not target_date:
+                target_date = localtime(now()).date()
+            subscriptions = self.active_subscriptions(target_date)
+        count = 0
 
         # Loop through all the subscriptions and compile a list of possible matches
         possible_matches = list(MembershipPackage.objects.filter(enabled=True))
         for s in subscriptions:
-            matches = SubscriptionDefault.objects.filter(resource = s.resource, allowance = s.allowance, monthly_rate = s.monthly_rate, overage_rate = s.overage_rate).values_list('package', flat=True)
+            if type(s) is dict:
+                matches = SubscriptionDefault.objects.filter(resource = s['resource'], allowance = s['allowance'], monthly_rate = s['monthly_rate'], overage_rate = s['overage_rate']).values_list('package', flat=True)
+                count = count + 1
+            else:
+                matches = SubscriptionDefault.objects.filter(resource = s.resource, allowance = s.allowance, monthly_rate = s.monthly_rate, overage_rate = s.overage_rate).values_list('package', flat=True)
+                count = count + 1
             possible_matches = [p for p in possible_matches if p.id in matches]
 
         # For all possible matches, check the number of subscriptions against the defaults
-        possible_matches = [p for p in possible_matches if p.defaults.count() == subscriptions.count()]
+        possible_matches = [p for p in possible_matches if p.defaults.count() == count]
 
         # If there is only one, we have a match
         if len(possible_matches) == 1:

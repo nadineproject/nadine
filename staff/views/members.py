@@ -2,6 +2,7 @@ import os
 import ast
 import unicodedata
 from datetime import date, datetime, timedelta
+from collections import namedtuple
 from dateutil.relativedelta import relativedelta
 
 from django.conf import settings
@@ -372,11 +373,14 @@ def confirm_membership(request, username, package, end_target, new_subs):
     new_subs = unicodedata.normalize('NFKD', new_subs).encode('ascii', 'ignore')
     package = unicodedata.normalize('NFKD', package).encode('ascii', 'ignore')
     subs = ast.literal_eval(new_subs)
+    matches_package = user.membership.matching_package(subscriptions=subs)
     pkg = ast.literal_eval(package)
-    pkg_match = None
+    match = None
 
     if pkg:
         mem_package = MembershipPackage.objects.get(id=pkg['package'])
+        if matches_package and matches_package.id != mem_package.id:
+            match = matches_package
         pkg_name = mem_package.name
     else:
         pkg_name = None
@@ -456,7 +460,7 @@ def confirm_membership(request, username, package, end_target, new_subs):
         'package_name': pkg_name,
         'new_subs': subs,
         'end_target': end_target,
-        'pkg_match': pkg_match,
+        'match': match,
     }
     return render(request, 'staff/members/confirm.html', context)
 

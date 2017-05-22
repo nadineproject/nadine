@@ -209,7 +209,6 @@
     $('.button-collapse').sideNav();
 		$('.collapsible').collapsible();
     $('.old-pkg').hide();
-    $('.modal').show();
 
     var newSubs = 0;
     var endingSubs = 0;
@@ -219,11 +218,19 @@
     var total = 0;
 
     //Show modal if their subscriptions match a different membership package default
-    if ('{{ pkg_match }}' != 'None') {
+    if ('{{ match }}' != 'None') {
       $('.modal').show();
+
     }
 
     //TODO: If user hits yes, then change package to the one that matches the subscriptions
+    $('#yes').on('click', function(e) {
+      $('.modal').hide();
+    })
+
+    $('#no').on('click', function(e) {
+      $('.modal').hide();
+    })
 
     {% for ns in new_subs %}
     //actually, want to see subscriptions with end dates, just as long as they are before the next billing period?
