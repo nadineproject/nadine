@@ -130,7 +130,7 @@
           <td class='sub-input' id='end_date_td'>{{ sub_form.end_date  }}</td>
           <td class='sub-input rate monthly_rate'>{{ sub_form.monthly_rate  }}</td>
           <td class='sub-input rate'>{{ sub_form.overage_rate }}</td>
-          <td class='sub-input'>{{ sub_form.paid_by  }}</td>
+          <td class='sub-input paid-by'>{{ sub_form.paid_by  }}</td>
         {% endif %}
         <td class='sub-input'>
           {% if sub_form.end_date.value %}
@@ -351,6 +351,14 @@
       $('.start_date').val(targetDate);
     }
 
+    if('{{ package }}' == 10) {
+      $('.resource').each(function() {
+        if($(this).val()) {
+          $(this).parent().siblings('.paid-by').children().attr('required', 'required');
+        }
+      })
+    }
+
     //If the action is change, show date and package selection but preselect a package and date if user has already done so.
     if ('{{ action }}' == 'change') {
       $('.select-pkg').show();
@@ -390,7 +398,6 @@
         })
       }
     }
-
 
     //When 'change package' is selected, show package and date dropdowns
     $('#change').on('click', function(e) {
