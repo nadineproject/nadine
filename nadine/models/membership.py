@@ -307,11 +307,10 @@ class Membership(models.Model):
         possible_matches = list(MembershipPackage.objects.filter(enabled=True))
         for s in subscriptions:
             if type(s) is dict:
-                matches = SubscriptionDefault.objects.filter(resource = s['resource'], allowance = s['allowance'], monthly_rate = s['monthly_rate'], overage_rate = s['overage_rate']).values_list('package', flat=True)
-                count = count + 1
+                 matches = SubscriptionDefault.objects.filter(resource = s['resource'], allowance = s['allowance'], monthly_rate = s['monthly_rate'], overage_rate = s['overage_rate']).values_list('package', flat=True)
             else:
                 matches = SubscriptionDefault.objects.filter(resource = s.resource, allowance = s.allowance, monthly_rate = s.monthly_rate, overage_rate = s.overage_rate).values_list('package', flat=True)
-                count = count + 1
+            count = count + 1
             possible_matches = [p for p in possible_matches if p.id in matches]
 
         # For all possible matches, check the number of subscriptions against the defaults

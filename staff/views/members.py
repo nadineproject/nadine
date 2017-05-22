@@ -373,6 +373,7 @@ def confirm_membership(request, username, package, end_target, new_subs):
     new_subs = unicodedata.normalize('NFKD', new_subs).encode('ascii', 'ignore')
     package = unicodedata.normalize('NFKD', package).encode('ascii', 'ignore')
     subs = ast.literal_eval(new_subs)
+    working = user.membership.matching_package()
     matches_package = user.membership.matching_package(subscriptions=subs)
     pkg = ast.literal_eval(package)
     match = None
@@ -391,6 +392,8 @@ def confirm_membership(request, username, package, end_target, new_subs):
                 membership = user.membership
                 if pkg:
                     # If there is a package, then make changes, else, we are ending all
+                    if request.POST.get('match'):
+                        mem_package = MembershipPackage.objects.get(id=request.POST.get('match'))
                     if user.membership.package != mem_package:
                         membership.package = mem_package
                         membership.bill_day = pkg['bill_day']

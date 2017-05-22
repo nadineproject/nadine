@@ -9,7 +9,9 @@
     <div class='modal-body'>
       <h5>What do you want to do?</h5>
       <p style='text-align: center; color: RGBA(46, 78, 107, 1.00); font-size: 1.1em;'><strong>
-        It appears that the subscriptions you selected match that of a different package. Would you rather change the membership package to {{ pkg_match }}?
+        It appears that the subscriptions you selected match that of a different package.
+        <br />
+        Would you rather change the membership package to {{ match }}?
       </strong></p>
       <div class='action-chips'>
         <a id='yes' class='chip'>Yes</a><a id='no' class='chip'>No</a>
@@ -128,7 +130,7 @@
   <div class='new-table'>
     <h6>Membership Package For Next Bill Period:</h6>
     {% if package_name %}
-      <h6 style='margin-top: 0;'>{{ package_name }}</h6>
+      <h6 id='package-name' style='margin-top: 0;'>{{ package_name }}</h6>
     {% endif %}
     <table class='sub-table'>
       <tr>
@@ -199,7 +201,7 @@
   </div>
   {% endif %}
   {% csrf_token %}
-  <input class='btn confirm-btn' type='submit' value='Confirm Changes' /><span class='back' style='padding-top:3%;'>Back</span>
+  <input class='btn confirm-btn' type='submit' value='Confirm Changes' /><a class='back' onclick="history.go(-1)" style='padding-top:3%;'>Back</a>
 </form>
 {% endblock %}
 
@@ -226,6 +228,8 @@
     //TODO: If user hits yes, then change package to the one that matches the subscriptions
     $('#yes').on('click', function(e) {
       $('.modal').hide();
+      $('.confirm-btn').append("<input type='hidden' name='match' value={{ match.id }} />");
+      $('#package-name').text('{{ match }}')
     })
 
     $('#no').on('click', function(e) {
@@ -288,10 +292,10 @@
         Materialize.toast('{{ message }}', 3000, '{{ message.tags }}-msg');
     {% endfor %}
 
-    $('.back').on('click', function(e) {
-      e.preventDefault();
-      window.location.replace("{% url 'staff:members:membership' user.username %}");
-    })
+    // $('.back').on('click', function(e) {
+    //   e.preventDefault();
+    //   window.location.replace("{% url 'staff:members:membership' user.username %}");
+    // })
   });
   </script>
 {% endblock %}
