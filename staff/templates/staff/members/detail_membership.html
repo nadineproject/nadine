@@ -1,16 +1,32 @@
 {% load static %}
+<script>$(document).ready(function() {
+  var payer = '{{ payer.get_full_name }}';
+
+  if(payer != 'None') {
+    $('.payer').text(payer);
+
+  }
+})</script>
 <h5>Details</h5>
 <table class='mem-details-table'>
   <tr class='row-even'>
     <th class='sub-th'>Billing Day</th>
     <th class='sub-th'>Next Bill</th>
     <th class='sub-th'>Package</th>
+    {% if user.profile.is_guest %}
+      <th class='sub-th'>Paid By</th>
+    {% endif %}
+    <th class='sub-th'>Monthly Rate</th>
     <th class='sub-th'></th>
   </tr>
   <tr>
     <td>{{ membership.bill_day_str }}</td>
     <td>{{ membership.next_period_start }}</td>
     <td>{{ membership.package }}</td>
+    {% if user.profile.is_guest %}
+      <td class='payer'></td>
+    {% endif %}
+    <td>${{ membership.monthly_rate }}</td>
     <td class='sub-chips'>
       <!-- <form style='display:inline;' class='genbill-form' action='.' method='POST'>
         <input type='hidden' name='gen_bill' value='true' />
@@ -81,6 +97,26 @@
 <h6 style='text-align: center; margin-top: 5%;'>
   No current subscriptions.
 </h6>
+{% endif %}
+
+{% if user.profile.guests %}
+<h5>Paying for The Following Memberships</h5>
+<table class='sub-table'>
+  <tr>
+    <th class='sub-th'>User</th>
+    <th class='sub-th'>Membership Package</th>
+    <th class='sub-th'>Start Date</th>
+    <th class='sub-th'>Monthly Rate</th>
+  </tr>
+  {% for g in user.profile.guests %}
+  <tr>
+    <td><a href='{% url "staff:members:detail" g.username %}'>{{ g.get_full_name }}</a></td>
+    <td>{{ g.membership.package }}</td>
+    <td>{{ g.membership.start_date }}</td>
+    <td>{{ g.membership.monthly_rate }}</td>
+  </tr>
+  {% endfor %}
+</table>
 {% endif %}
 
 {% if user.membership.subscriptions.past_subscriptions %}

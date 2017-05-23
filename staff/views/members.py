@@ -46,6 +46,10 @@ def detail(request, username):
     # membership = user.
     email_logs = SentEmailLog.objects.filter(user=user).order_by('created').reverse()
     member_notes = user.get_member_notes()
+    payer = None
+    for s in user.membership.active_subscriptions():
+        if s.paid_by:
+            payer = s.paid_by
 
     if request.method == 'POST':
         if 'send_manual_email' in request.POST:
@@ -84,6 +88,7 @@ def detail(request, username):
         'staff_members':staff_members,
         'settings': settings,
         'member_notes': member_notes,
+        'payer': payer,
     }
     return render(request, 'staff/members/detail.html', context)
 
