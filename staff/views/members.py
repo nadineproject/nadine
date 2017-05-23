@@ -318,7 +318,6 @@ def membership(request, username):
                 ps, end_date = user.membership.get_period()
                 end_target = end_date.strftime('%Y-%m-%d')
             else:
-                print(request.POST)
                 end_target = request.POST['date-end']
 
             return HttpResponseRedirect(reverse('staff:members:confirm', kwargs={'username': username, 'package': None, 'new_subs': None, 'end_target': end_target}))
