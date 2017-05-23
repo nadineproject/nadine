@@ -280,7 +280,7 @@ def membership(request, username):
     sub_data = None
     start = None
     action = None
-    active_members = User.helper.active_members()
+    active_members = User.objects.filter(profile__valid_billing=True).order_by('first_name')
     SubFormSet = formset_factory(SubForm)
     old_pkg = None
     if user.membership.package:

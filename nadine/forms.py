@@ -482,11 +482,11 @@ class SubForm(forms.Form):
     created_by = forms.CharField(required=False, widget=forms.HiddenInput({'class':'created_by_td'}))
     s_id = forms.IntegerField(required=False, widget=forms.HiddenInput(attrs={'class':'s_id'}))
     resource = forms.ModelChoiceField(queryset=Resource.objects.all(), required=False, widget=forms.Select(attrs={'class': 'resource'}))
-    allowance = forms.IntegerField(required=False)
+    allowance = forms.IntegerField(min_value=0, required=False)
     start_date = forms.DateField(widget=forms.TextInput(attrs={'class': 'start_date'}), required=False)
     end_date = forms.DateField(widget=forms.TextInput(attrs={'class': 'end_date'}), required=False)
-    monthly_rate = forms.IntegerField(required=False)
-    overage_rate = forms.IntegerField(required=False)
+    monthly_rate = forms.DecimalField(min_value=0, decimal_places=2, required=False)
+    overage_rate = forms.DecimalField(required=False, decimal_places=2, min_value=0)
     paid_by = forms.CharField(widget=forms.TextInput(attrs={'class': 'paying_user'}), max_length=128, required=False)
 
     def save(self):

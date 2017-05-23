@@ -111,10 +111,10 @@
               {{ n.allowance }}
             </td>
             <td class='sub-td'>
-              ${{ n.monthly_rate }}
+              ${{ n.monthly_rate|floatformat:2 }}
             </td>
             <td class='sub-td'>
-              ${{ n.overage_rate }}
+              ${{ n.overage_rate|floatformat:2 }}
             </td>
             <td class='sub-td'>
               {% if n.paid_by %}
@@ -151,10 +151,10 @@
                 {{ a.allowance }}
               </td>
               <td class='sub-td'>
-                $<span class='old-sub-rate'>{{ a.monthly_rate }}</span>
+                $<span class='old-sub-rate'>{{ a.monthly_rate|floatformat:2 }}</span>
               </td>
               <td class='sub-td'>
-                ${{ a.overage_rate }}
+                ${{ a.overage_rate|floatformat:2 }}
               </td>
               <td class='sub-td'>
                 {% if a.paid_by %}
@@ -175,10 +175,10 @@
               {{ ns.allowance }}
             </td>
             <td class='sub-td'>
-              $<span class='new-sub-rate'>{{ ns.monthly_rate }}</span>
+              $<span class='new-sub-rate'>{{ ns.monthly_rate|floatformat:2 }}</span>
             </td>
             <td class='sub-td'>
-              ${{ ns.overage_rate }}
+              ${{ ns.overage_rate|floatformat:2 }}
             </td>
             <td class='sub-td'>
               {% if ns.paid_by %}

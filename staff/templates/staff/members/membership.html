@@ -129,7 +129,7 @@
           <td class='sub-input' id='start_date_td'>{{ sub_form.start_date  }}</td>
           <td class='sub-input' id='end_date_td'>{{ sub_form.end_date  }}</td>
           <td class='sub-input rate monthly_rate'>{{ sub_form.monthly_rate  }}</td>
-          <td class='sub-input rate'>{{ sub_form.overage_rate }}</td>
+          <td class='sub-input rate overage'>{{ sub_form.overage_rate }}</td>
           <td class='sub-input paid-by'>{{ sub_form.paid_by  }}</td>
         {% endif %}
         <td class='sub-input'>
@@ -482,7 +482,7 @@
     $('.resource').each(function() {
       if($(this).val()) {
         existing.push($(this).val())
-        $(this).attr('readonly', 'readonly');
+        $(this).attr('disabled', 'disabled');
       }
       if(!($(this).attr('disabled'))) {
         $(this).children().each(function() {
@@ -531,8 +531,20 @@
     if (action == 'update') {
       $('.select-date').on('change', function() {
         $('#change-package').show();
-      })
+      });
+
     }
+
+    $('.resource').on('change', function() {
+      if (action == 'update' && '{{ package }}' == 10) {
+        if($(this).val()) {
+          $(this).parent().siblings('.paid-by').children().attr('required', 'required');
+        }
+      }
+      $(this).parent().siblings('.overage').children().attr('value', 0);
+      $(this).parent().siblings('.allowance').children().attr('required', 'true');
+      $(this).parent().siblings('.monthly_rate').children().attr('required', 'true');
+    })
 
     //When a user using "other" for the date and inserts a date, insert the new date as needed
     $('#sub-end').on('change', function() {
@@ -601,6 +613,10 @@
         }
       }
     })
+
+    $('form').bind('submit', function () {
+      $(this).find(':input').prop('disabled', false);
+    });
 
   //JS for when user selects to end a membership package
     $('#end').on('click', function(e) {
