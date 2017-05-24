@@ -457,7 +457,8 @@ def confirm_membership(request, username, package, end_target, new_subs):
                         # SlackAPI().invite_user_quiet(user)
                 else:
                     user.membership.end_all(end_target)
-                    user.membership.package = None
+                    # TODO: Can this be a task? Set package to none once end date passes
+                    # user.membership.package = None
                     user.membership.save()
                     # PaymentAPI().disable_recurring(username)
                 messages.success(request, "You have updated the subscriptions for %s" % username)
