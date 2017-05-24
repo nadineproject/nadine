@@ -1,4 +1,17 @@
 {% load static %}
+<script>
+var total = 0;
+
+{% for u in user.profile.guests %}
+  var cost = '{{ u.membership.monthly_rate }}';
+  var val = parseInt(cost).toFixed(2);
+  total += parseInt(val);
+{% endfor %}
+
+$(document).ready(function() {
+  $('.payee-total').text('$' + total);
+})
+</script>
 <h5>Details</h5>
 <table class='mem-details-table'>
   <tr class='row-even'>
@@ -112,7 +125,7 @@
     <td></td>
     <td></td>
     <td>Total:</td>
-    <td></td>
+    <td><strong class='payee-total'></strong></td>
   </tr>
 </table>
 {% endif %}
