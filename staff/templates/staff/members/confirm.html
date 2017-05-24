@@ -151,7 +151,7 @@
                 {{ a.allowance }}
               </td>
               <td class='sub-td'>
-                $<span class='old-sub-rate'>{{ a.monthly_rate|floatformat:2 }}</span>
+                $<span class='old-sub-rate add-me'>{{ a.monthly_rate|floatformat:2 }}</span>
               </td>
               <td class='sub-td'>
                 ${{ a.overage_rate|floatformat:2 }}
@@ -166,7 +166,7 @@
         {% endfor %}
       {% endfor %}
       {% for ns in new_subs %}
-        {% if ns.end_date == None and ns.s_id == None %}
+        {% if ns.s_id == None %}
           <tr class='{% cycle "row-even" "row-odd" %}'>
             <td class='sub-td'>
               <strong>{{ ns.resource|resource_filter }}</strong>
@@ -175,7 +175,7 @@
               {{ ns.allowance }}
             </td>
             <td class='sub-td'>
-              $<span class='new-sub-rate'>{{ ns.monthly_rate|floatformat:2 }}</span>
+              $<span class='new-sub-rate add-me'>{{ ns.monthly_rate|floatformat:2 }}</span>
             </td>
             <td class='sub-td'>
               ${{ ns.overage_rate|floatformat:2 }}
@@ -218,12 +218,17 @@
     var oldPkg = '{{ user.membership.package.id }}';
     var start = '';
     var total = 0;
+    var costs = [];
 
     //Show modal if their subscriptions match a different membership package default
     if ('{{ match }}' != 'None') {
       $('.modal').show();
-
     }
+
+    $('.add-me').map(function() {
+      var val = parseInt($(this).text());
+      total += val;
+    });
 
     //If user hits yes, then change package to the one that matches the subscriptions
     $('#yes').on('click', function(e) {
