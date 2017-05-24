@@ -5,6 +5,7 @@
 		<th id='photo-th' class='centered'>Photo</th>
 		<th class='left'>Name</th>
 		<th>Billing Date</th>
+		<th>Membership Package</th>
 		<th>Quicklinks</th>
 		<th>Guests</th>
 	</tr>
@@ -16,6 +17,11 @@
 			</td>
 			<td nowrap class='left'><a href="{% url 'staff:members:detail' user.username %}">{{ user.get_full_name }}</a></td>
 			<td>{{ user.profile.last_membership.start_date|date:"M d, Y" }}</td>
+			<td style='text-align: center;'>
+				{% if user.membership.active_subscriptions %}
+					{{ user.membership.package }}
+				{% endif %}
+			</td>
 			<td class='centered'>
 				<a href="{% url 'staff:activity:user' user.username %}">activity</a> |
 				<a href="{% url 'staff:members:files' user.username %}">files</a> |
