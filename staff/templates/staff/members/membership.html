@@ -1,6 +1,6 @@
 {% extends "staff/members/base.html" %}
 
-{% block sub-title %}Edit Membership | {% endblock %}
+{% block sub-title %}Edit Membership {% endblock %}
 
 
 {% block content %}
@@ -346,7 +346,6 @@
     var eopDate = getEop()[0];
     var bdDate = getEop()[1];
     $('.change-eop').text('Start of Next Bill Period:   ' + bdDate);
-    $('.end-eop').text('End of this Bill Period:  ' + eopDate);
     if(targetDate != 'None') {
       $('.start_date').val(targetDate);
     }
@@ -481,8 +480,8 @@
     //If the member already has subscription for a resource, don't show it as select option
     $('.resource').each(function() {
       if($(this).val()) {
-        existing.push($(this).val())
-        $(this).attr('disabled', 'disabled');
+        existing.push($(this).val());
+        $(this).attr('readonly', 'readonly');
       }
       if(!($(this).attr('disabled'))) {
         $(this).children().each(function() {
@@ -525,6 +524,22 @@
       action = 'update';
       $('.modal').hide();
       $('.select-date').show();
+
+      $('.resource').each(function() {
+        if($(this).val()) {
+          existing.push($(this).val());
+          $(this).attr('disabled', 'disabled');
+        }
+        if(!($(this).attr('disabled'))) {
+          $(this).children().each(function() {
+            for (var i = 0; i < existing.length; i++) {
+              if($(this).val() == existing[i]) {
+                $(this).hide();
+              }
+            }
+          })
+        }
+      })
     })
 
     //When updating, if selected date changes, then show form to change subscriptions
@@ -532,7 +547,6 @@
       $('.select-date').on('change', function() {
         $('#change-package').show();
       });
-
     }
 
     $('.resource').on('change', function() {
@@ -624,6 +638,7 @@
       action = 'end';
       $('.select-date').show();
       $('.modal').hide();
+      $('.change-eop').text('End of this Bill Period:  ' + eopDate);
     })
 
     //Hit the back button to restart this process

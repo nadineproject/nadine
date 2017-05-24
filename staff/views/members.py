@@ -47,6 +47,7 @@ def detail(request, username):
     email_logs = SentEmailLog.objects.filter(user=user).order_by('created').reverse()
     member_notes = user.get_member_notes()
     payer = None
+    payer_url = None
     for s in user.membership.active_subscriptions():
         if s.paid_by:
             payer = s.paid_by
@@ -79,6 +80,7 @@ def detail(request, username):
     staff_members = User.objects.filter(is_staff=True).order_by('id').reverse()
     email_keys = email.valid_message_keys()
     email_keys.remove("all")
+    print payer
 
     context = {
         'user': user,

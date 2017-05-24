@@ -1,12 +1,4 @@
 {% load static %}
-<script>$(document).ready(function() {
-  var payer = '{{ payer.get_full_name }}';
-
-  if(payer != 'None') {
-    $('.payer').text(payer);
-
-  }
-})</script>
 <h5>Details</h5>
 <table class='mem-details-table'>
   <tr class='row-even'>
@@ -24,7 +16,7 @@
     <td>{{ membership.next_period_start }}</td>
     <td>{{ membership.package }}</td>
     {% if user.profile.is_guest %}
-      <td class='payer'></td>
+      <td class='payer'><a href="{% url 'staff:members:detail' payer.username %}">{{ payer.get_full_name}}</a></td>
     {% endif %}
     <td>${{ membership.monthly_rate }}</td>
     <td class='sub-chips'>
@@ -85,7 +77,7 @@
       <td>{{ s.end_date |default:"-" }}</td>
       <td>${{ s.overage_rate }}</td>
       <td>${{ s.monthly_rate }}/month</td>
-      <td>{{ s.paid_by|default:"" }}</td>
+      <td>{{ s.paid_by.get_full_name|default:"" }}</td>
     </tr>
   {% endfor %}
   <tr>
@@ -109,13 +101,19 @@
     <th class='sub-th'>Monthly Rate</th>
   </tr>
   {% for g in user.profile.guests %}
-  <tr>
-    <td><a href='{% url "staff:members:detail" g.username %}'>{{ g.get_full_name }}</a></td>
+  <tr class="{% cycle 'row-even' 'row-odd' %}">
+    <td><a href='{% url "staff:members:membership" g.username %}'>{{ g.get_full_name }}</a></td>
     <td>{{ g.membership.package }}</td>
     <td>{{ g.membership.start_date }}</td>
-    <td>{{ g.membership.monthly_rate }}</td>
+    <td class='payee-rate'>${{ g.membership.monthly_rate }}</td>
   </tr>
   {% endfor %}
+  <tr>
+    <td></td>
+    <td></td>
+    <td>Total:</td>
+    <td></td>
+  </tr>
 </table>
 {% endif %}
 
