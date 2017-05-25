@@ -152,6 +152,7 @@ INSTALLED_APPS = [
     'taggit_templatetags2',
     'taggit',
     'django_crontab',
+    # 'django_extensions',
 ]
 
 # Multimail settings
