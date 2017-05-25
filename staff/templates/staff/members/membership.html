@@ -18,6 +18,19 @@
     </div>
   </div>
 </div>
+<div id='teamModal' class='modal'>
+  <div class='modal-content'>
+    <div class='modal-body'>
+      <h5>This is a Team Lead!</h5>
+      <p><strong>
+        There are members with active team memberships paid for by this member. Please end those memberships before you end this one.
+      </strong></p>
+      <div class='okChip'>
+        <a id='ok' class='chip'>Got It</a>
+      </div>
+    </div>
+  </div>
+</div>
 <div class='select-date'>
   <table class='date-table'>
     <tr>
@@ -314,12 +327,13 @@
     $('.select-pkg').hide();
     $('.select-date').hide();
     $('.cancel').hide();
+    $('#teamModal').hide();
 
     //If user has no active subscriptions, only allow to select new package
     if ('{{ entity.profile.is_active }}' == 'True') {
-      $('.modal').show();
+      $('#promptModal').show();
     } else {
-      $('.modal').hide();
+      $('#promptModal').hide();
       $('.curr-sub').hide();
       $('.select-pkg').show();
       $('.select-date').show();
@@ -636,9 +650,27 @@
     $('#end').on('click', function(e) {
       e.preventDefault();
       action = 'end';
+      $('#promptModal').hide();
+
+      if ( 7 <= '{{ entity.membership.package.id }}' && '{{ entity.membership.package.id }}' <= 9) {
+        //if any member has a team membership paid_by this member, then throw error
+        {% for a in active_members %}
+          {% if a.membership.package.id == 10 %}
+            {% for s in a.membership.active_subscriptions %}
+              {% if s.paid_by == entity %}
+                $('#teamModal').show();
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+      }
       $('.select-date').show();
-      $('.modal').hide();
       $('.change-eop').text('End of this Bill Period:  ' + eopDate);
+    })
+
+    $('#ok').on('click', function(e) {
+      e.preventDefault();
+      window.location.replace("{% url 'staff:members:detail' entity.username %}" + "#tabs-1");
     })
 
     //Hit the back button to restart this process

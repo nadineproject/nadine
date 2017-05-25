@@ -457,9 +457,9 @@ def confirm_membership(request, username, package, end_target, new_subs):
                 else:
                     user.membership.end_all(end_target)
                     # TODO: Can this be a task? Set package to none once end date passes
-                    if datetime.strptime(end_target, '%Y-%m-%d').date() <= localtime(now()).date():
-                        user.membership.package = None
-                        user.membership.save()
+                    # if datetime.strptime(end_target, '%Y-%m-%d').date() <= localtime(now()).date():
+                    #     user.membership.package = None
+                    #     user.membership.save()
                     # PaymentAPI().disable_recurring(username)
                 messages.success(request, "You have updated the subscriptions for %s" % username)
                 return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}) + '#tabs-1')

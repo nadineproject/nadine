@@ -209,6 +209,17 @@ input#id_bill_day {
   margin-left: 20%;
 }
 
+#teamModal .modal-content {
+  height: 30%;
+}
+
+#teamModal p {
+  margin-top: 5%;
+  font-size: 1.2em;
+  text-align: center;
+  color: RGBA(46, 78, 107, 1.00);
+}
+
 #toast-container .error-msg {
     cursor: pointer;
 }
@@ -508,11 +519,11 @@ table.mem-details-table {
 	padding-top: 2%;
 }
 
-#promptModal .modal-body {
+#promptModal .modal-body, #teamModal .modal-body {
   margin-left: 10%;
 }
 
-#promptModal .modal-body h5 {
+#promptModal .modal-body h5, #teamModal .modal-body h5 {
   text-align: center;
 }
 
@@ -548,6 +559,10 @@ table.mem-details-table {
 
 .notes-table th {
   text-align: left !important;
+}
+
+.okChip .chip {
+  margin-left: 40%;
 }
 
 .org_name_td {
@@ -609,11 +624,11 @@ table.mem-details-table {
   margin-bottom: 15%;
 }
 
-.sub-chips {
+.sub-chips, .okChip {
   margin-top: 6%;
 }
 
-.sub-chips .chip {
+.sub-chips .chip, .okChip .chip {
   background-color: RGBA(16, 91, 99, .70);
   color: white;
   font-weight: bold;
@@ -708,7 +723,7 @@ table.mem-details-table {
     width: 60%;
   }
 
-  #promptModal .modal-body {
+  #promptModal .modal-body, #teamModal .modal-body {
     margin-left: 10%;
   }
 
