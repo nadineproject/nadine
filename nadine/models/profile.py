@@ -348,7 +348,7 @@ class UserProfile(models.Model):
         active = self.active_organization_memberships(target_date)
         return Organization.objects.filter(id__in=active.values('organization'))
 
-    def open_bills(self):
+    def outstanding_bills(self):
         """Returns all open bills for this user """
         from nadine.models.billing import UserBill
         return UserBill.objects.unpaid(user=self.user)
@@ -357,7 +357,7 @@ class UserProfile(models.Model):
     def open_bills_amount(self):
         """Returns total of all open bills for this user """
         total = 0
-        for b in self.open_bills():
+        for b in self.outstanding_bills():
             total += b.total_owed
         return total
 

@@ -101,7 +101,7 @@ def outstanding(request):
         if pay_bills_form.is_valid():
             user = User.objects.get(username=pay_bills_form.cleaned_data['username'])
             users_bills = {}
-            for bill in user.profile.open_bills():
+            for bill in user.profile.outstanding_bills():
                 users_bills[bill.id] = bill
             bill_ids = [int(bill_id) for bill_id in request.POST.getlist('bill_id')]
             if action == "set_paid":
@@ -147,7 +147,7 @@ def outstanding_old(request):
         if pay_bills_form.is_valid():
             user = User.objects.get(username=pay_bills_form.cleaned_data['username'])
             users_bills = {}
-            for bill in user.profile.open_bills():
+            for bill in user.profile.outstanding_bills():
                 users_bills[bill.id] = bill
             bill_ids = [int(bill_id) for bill_id in request.POST.getlist('bill_id')]
             if action == "set_paid":
@@ -177,7 +177,7 @@ def outstanding_old(request):
     unpaid = models.Q(bill__isnull=False, bill__transactions=None, bill__paid_by__isnull=True)
     unpaid_guest = models.Q(guest_bills__isnull=False, guest_bills__transactions=None)
     for u in User.objects.filter(unpaid | unpaid_guest).distinct().order_by('last_name'):
-        last_bill = u.profile.open_bills()[0]
+        last_bill = u.profile.outstanding_bills()[0]
         if last_bill.in_progress:
             bucket = bills_in_progress
         else:
@@ -207,7 +207,7 @@ def bills_pay_all(request, username):
     if amount > 0:
         transaction = Transaction(user=user, status='closed', amount=amount)
         transaction.save()
-        for bill in user.profile.open_bills():
+        for bill in user.profile.outstanding_bills():
             transaction.bills.add(bill)
 
     # Where to next?

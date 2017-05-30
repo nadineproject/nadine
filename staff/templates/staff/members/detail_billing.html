@@ -1,6 +1,6 @@
 <!-- Billing Profile -->
 <h5>Outstanding Bills (<a href="{% url 'staff:billing:user_bills' user.username %}">view all</a>)</h5>
-{{ user.profile.open_bills }}
+{{ user.profile.outstanding_bills }}
 
 <h5>Billing Profile</h5>
 {% include "member/profile/profile_billing_frag.html" %}
