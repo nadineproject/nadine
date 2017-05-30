@@ -96,6 +96,16 @@ def detail(request, username):
 
 
 @staff_member_required
+def regenerate_bills(request, bill_id):
+    # TODO - Write 
+    bill = user.membership.generate_bill(created_by=request.user)
+    if bill and len(bill.keys()) == 1:
+        return HttpResponseRedirect(reverse('staff:billing:bill', kwargs={'bill_id': bill[bill.keys()[0]]['bill'].id}))
+    else:
+        return HttpResponseRedirect(reverse('staff:billing:user_bills', kwargs={'username': user.username }))
+
+
+@staff_member_required
 def members(request, group=None):
     if not group:
         first_package = MembershipPackage.objects.filter(enabled=True).order_by('name').first()
