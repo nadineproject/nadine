@@ -287,6 +287,10 @@
     $('.sub-form').submit();
   }
 
+  function allEnding(el, idx, arr) {
+    return el == 0;
+  }
+
   (function() {
     var availableUsers = [
 			{% for u in active_billing %}
@@ -321,6 +325,7 @@
     var end = '';
     var action = '';
     var existing = [];
+    var allow_ending = [];
 
     $('#change-package').hide();
     $('#sub-end').hide();
@@ -352,6 +357,20 @@
     if(targetDate != 'None') {
       $('.start_date').val(targetDate);
     }
+
+    {% for a in entity.membership.active_subscriptions %}
+      {% if a.end_date %}
+        allow_ending.push('{{ a.end_date }}');
+      {% else %}
+        allow_ending.push(0);
+      {% endif %}
+    {% endfor %}
+
+    if (!(allow_ending.every(allEnding))) {
+      $('#end').attr('id', 'ending-chip');
+      $('#ending-chip').css('background-color', 'RGBA(176, 188, 196, 1.00)');
+      $('#ending-chip').css('text-decoration', 'none');
+    };
 
     //If user has no active subscriptions, only allow to select new package
     if ('{{ entity.profile.is_active }}' == 'True') {
