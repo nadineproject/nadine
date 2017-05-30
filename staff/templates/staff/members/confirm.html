@@ -21,6 +21,7 @@
 </div>
 <h5 style='margin-bottom: 3%;'>Confirm Membership Changes for <a href="{% url 'staff:members:detail' user.username %}">{{ user.get_full_name }}</a></h5>
 
+{% if ending_pkg == True %}
 <div class='old-pkg'>
   <h6>Ending "{{ user.membership.package.name }}" Membership Package on {{ end_target }} </h6>
   <table class='sub-table' style='margin-top: 2%;'>
@@ -44,6 +45,7 @@
     {% endfor %}
   </table>
 </div>
+{% endif %}
 
 <form action='.' method='POST'>
   {% if new_subs %}
@@ -99,10 +101,11 @@
         <th class='allowance sub-th'>Allowance</th>
         <th class='rate sub-th'>Monthly Rate</th>
         <th class='rate sub-th'>Overage rate</th>
+        <th class='sub-th'>End Date</th>
         <th class='sub-th'>Paid By</th>
       </tr>
       {% for n in new_subs %}
-        {% if n.end_date == None and n.s_id == None %}
+        {% if n.s_id == None %}
           <tr class="{% cycle 'row-even' 'row-odd' %}">
             <td class='sub-td'>
               {{ n.resource|resource_filter }}
@@ -117,6 +120,13 @@
               ${{ n.overage_rate|floatformat:2 }}
             </td>
             <td class='sub-td'>
+              {% if n.end_date %}
+                {{ n.end_date }}
+                {% else %}
+                  None
+              {% endif %}
+            </td>
+            <td class='sub-td'>
               {% if n.paid_by %}
                 {{ n.paid_by }}
               {% endif %}
@@ -128,7 +138,7 @@
   </div>
 
   <div class='new-table'>
-    <h6>Membership Package For Next Bill Period:</h6>
+    <h6>Membership Package For Next Bill Period Following {{ end_target }}:</h6>
     {% if package_name %}
       <h6 id='package-name' style='margin-top: 0;'>{{ package_name }}</h6>
     {% endif %}
@@ -138,6 +148,7 @@
         <th class='allowance sub-th'>Allowance</th>
         <th class='rate sub-th'>Monthly Rate</th>
         <th class='rate sub-th'>Overage rate</th>
+        <th class='sub-th'>End Date</th>
         <th class='sub-th'>Paid By</th>
       </tr>
       {% for a in user.membership.active_subscriptions %}
@@ -155,6 +166,13 @@
               </td>
               <td class='sub-td'>
                 ${{ a.overage_rate|floatformat:2 }}
+              </td>
+              <td class='sub-td'>
+                {% if n.end_date %}
+                  {{ n.end_date }}
+                  {% else %}
+                    None
+                {% endif %}
               </td>
               <td class='sub-td'>
                 {% if a.paid_by %}
@@ -179,6 +197,13 @@
             </td>
             <td class='sub-td'>
               ${{ ns.overage_rate|floatformat:2 }}
+            </td>
+            <td class='sub-td'>
+              {% if n.end_date %}
+                {{ n.end_date }}
+                {% else %}
+                  None
+              {% endif %}
             </td>
             <td class='sub-td'>
               {% if ns.paid_by %}

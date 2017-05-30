@@ -289,7 +289,7 @@
 
   (function() {
     var availableUsers = [
-			{% for u in active_members %}
+			{% for u in active_billing %}
 				 "{{ u.username }}",
 			{% endfor %}
 		];
@@ -329,17 +329,6 @@
     $('.cancel').hide();
     $('#teamModal').hide();
 
-    //If user has no active subscriptions, only allow to select new package
-    if ('{{ entity.profile.is_active }}' == 'True') {
-      $('#promptModal').show();
-    } else {
-      $('#promptModal').hide();
-      $('.curr-sub').hide();
-      $('.select-pkg').show();
-      $('.select-date').show();
-      action = 'change';
-    }
-
     $('.sub-input .start_date').addClass('datepicker');
     $('.sub-input .end_date').addClass('datepicker');
     $('.datepicker').datepicker({
@@ -362,6 +351,17 @@
     $('.change-eop').text('Start of Next Bill Period:   ' + bdDate);
     if(targetDate != 'None') {
       $('.start_date').val(targetDate);
+    }
+
+    //If user has no active subscriptions, only allow to select new package
+    if ('{{ entity.profile.is_active }}' == 'True') {
+      $('#promptModal').show();
+    } else {
+      $('#promptModal').hide();
+      $('.curr-sub').hide();
+      $('.select-pkg').show();
+      $('.select-date').show();
+      action = 'change';
     }
 
     if('{{ package }}' == 10) {
@@ -448,7 +448,7 @@
           $(this).attr('selected', 'selected');
         }
       })
-      if (action === '') {
+      if (action === 'change' || action === '') {
         $('#start_date_td input').each(function() {
           if(!($(this).attr('readonly'))) {
             $(this).attr('readonly', 'readonly').datepicker('destroy');
@@ -564,14 +564,16 @@
     }
 
     $('.resource').on('change', function() {
-      if (action == 'update' && '{{ package }}' == 10) {
-        if($(this).val()) {
-          $(this).parent().siblings('.paid-by').children().attr('required', 'required');
+      if($(this).val()) {
+        if (action == 'update' && '{{ package }}' == 10) {
+          if($(this).val()) {
+            $(this).parent().siblings('.paid-by').children().attr('required', 'required');
+          }
         }
+        $(this).parent().siblings('.overage').children().attr('value', 0);
+        $(this).parent().siblings('.allowance').children().attr('required', 'true');
+        $(this).parent().siblings('.monthly_rate').children().attr('required', 'true');
       }
-      $(this).parent().siblings('.overage').children().attr('value', 0);
-      $(this).parent().siblings('.allowance').children().attr('required', 'true');
-      $(this).parent().siblings('.monthly_rate').children().attr('required', 'true');
     })
 
     //When a user using "other" for the date and inserts a date, insert the new date as needed
