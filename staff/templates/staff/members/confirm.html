@@ -346,7 +346,7 @@
       $('.new-subs-table').hide();
     }
 
-    $('#total-td').text('$' + total+ '/month');
+    $('#total-td').text('$' + total.toFixed(2) + '/month');
 
     {% for message in messages %}
         Materialize.toast('{{ message }}', 3000, '{{ message.tags }}-msg');

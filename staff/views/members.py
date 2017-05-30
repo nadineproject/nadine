@@ -443,10 +443,10 @@ def confirm_membership(request, username, package, end_target, new_subs):
                         user.membership.end_all(end_target)
 
                         """When a membership is created, add the user to any opt-out mailing lists"""
-                        # if user.membership.package == None:
-                        #     mailing_lists = MailingList.objects.filter(is_opt_out=True)
-                        #     for ml in mailing_lists:
-                        #         ml.subscribers.add(membership.user)
+                        if user.membership.package == None:
+                            mailing_lists = MailingList.objects.filter(is_opt_out=True)
+                            for ml in mailing_lists:
+                                ml.subscribers.add(membership.user)
 
                     # Review all subscriptions to see if adding or ending
                     for sub in subs:
