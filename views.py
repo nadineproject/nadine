@@ -93,7 +93,7 @@ def email_add(request):
     user = get_object_or_404(User, username=request.POST.get("username"))
     email = request.POST.get("email")
     if email:
-        e = EmailAddress(user=user, email=email)
+        e = EmailAddress(user=user, email=email.lower())
         e.save(verify=True)
     if 'HTTP_REFERER' in request.META:
         return redirect(request.META['HTTP_REFERER'])
