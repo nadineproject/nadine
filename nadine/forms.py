@@ -51,7 +51,7 @@ class OrganizationForm(forms.Form):
             #self.initial['locked'] = self.instance.locked
 
     org_id = forms.IntegerField(required=True, widget=forms.HiddenInput)
-    name = forms.CharField(max_length=128, label="Organization Name", required=True, widget=forms.TextInput(attrs={'autocapitalize': "words"}))
+    name = forms.CharField(min_length=1, max_length=128, label="Organization Name", required=True, widget=forms.TextInput(attrs={'autocapitalize': "words"}))
     blurb = forms.CharField(widget=forms.Textarea, max_length=112, required=False)
     bio = forms.CharField(widget=forms.Textarea, max_length=512, required=False)
     photo = forms.FileField(required=False)

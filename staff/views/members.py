@@ -80,7 +80,6 @@ def detail(request, username):
     staff_members = User.objects.filter(is_staff=True).order_by('id').reverse()
     email_keys = email.valid_message_keys()
     email_keys.remove("all")
-    print payer
 
     context = {
         'user': user,
@@ -326,9 +325,11 @@ def membership(request, username):
     sub_data = None
     start = None
     action = None
-    active_members = User.objects.filter(profile__valid_billing=True).order_by('first_name')
+    active_members = User.helper.active_members()
+    active_billing = User.objects.filter(profile__valid_billing=True).order_by('first_name')
     SubFormSet = formset_factory(SubForm)
     old_pkg = None
+
     if user.membership.package:
         old_pkg = user.membership.package.id
     if user.membership.bill_day:
@@ -407,6 +408,7 @@ def membership(request, username):
         'bill_day': bill_day,
         'sub_formset': sub_formset,
         'active_members': active_members,
+        'active_billing': active_billing,
         'target_date': target_date,
         'action': action,
     }
@@ -422,6 +424,11 @@ def confirm_membership(request, username, package, end_target, new_subs):
     matches_package = user.membership.matching_package(subscriptions=subs)
     pkg = ast.literal_eval(package)
     match = None
+
+    if len(user.membership.active_subscriptions(end_target)):
+        ending_pkg = True
+    else:
+        ending_pkg = False
 
     if pkg:
         mem_package = MembershipPackage.objects.get(id=pkg['package'])
@@ -446,22 +453,24 @@ def confirm_membership(request, username, package, end_target, new_subs):
                         user.membership.end_all(end_target)
 
                         """When a membership is created, add the user to any opt-out mailing lists"""
-                        # if user.membership.package == None:
-                        #     mailing_lists = MailingList.objects.filter(is_opt_out=True)
-                        #     for ml in mailing_lists:
-                        #         ml.subscribers.add(membership.user)
+                        if user.membership.package == None:
+                            mailing_lists = MailingList.objects.filter(is_opt_out=True)
+                            for ml in mailing_lists:
+                                ml.subscribers.add(membership.user)
 
                     # Review all subscriptions to see if adding or ending
                     for sub in subs:
                         sub_id = sub['s_id']
-                        if sub_id != None:
-                            if sub_id and sub['end_date']:
+                        """ End any existing subscriptions that do not already have end dates """
+                        if sub_id != None and sub['end_date']:
+                            to_end = user.membership.active_subscriptions().get(id=sub_id)
+                            if to_end.end_date == None:
                                 end_date = sub['end_date']
-                                to_end = user.membership.active_subscriptions().get(id=sub_id)
                                 to_end.end_date = sub['end_date']
                                 to_end.save()
                                 slack = None
                         else:
+                            """ If not ending then create subscriptions """
                             paid_by = None
                             created_ts = localtime(now())
                             created_by = request.user
@@ -478,7 +487,7 @@ def confirm_membership(request, username, package, end_target, new_subs):
                                 p_username = sub['paid_by']
                                 paid_by = User.objects.get(username=p_username)
 
-                            # Check to see if it is a unique resource and end if it is not
+                            """ Check to see if it is a unique resource and end if it is not """
                             already_have = user.membership.active_subscriptions().filter(resource=resource).filter(paid_by=paid_by)
                             if len(already_have) > 0:
                                 p_id = already_have[0].id
@@ -497,8 +506,9 @@ def confirm_membership(request, username, package, end_target, new_subs):
                 else:
                     user.membership.end_all(end_target)
                     # TODO: Can this be a task? Set package to none once end date passes
-                    # user.membership.package = None
-                    user.membership.save()
+                    # if datetime.strptime(end_target, '%Y-%m-%d').date() <= localtime(now()).date():
+                    #     user.membership.package = None
+                    #     user.membership.save()
                     # PaymentAPI().disable_recurring(username)
                 messages.success(request, "You have updated the subscriptions for %s" % username)
                 return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}) + '#tabs-1')
@@ -512,6 +522,7 @@ def confirm_membership(request, username, package, end_target, new_subs):
         'new_subs': subs,
         'end_target': end_target,
         'match': match,
+        'ending_pkg': ending_pkg,
     }
     return render(request, 'staff/members/confirm.html', context)
 

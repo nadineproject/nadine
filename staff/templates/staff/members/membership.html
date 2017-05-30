@@ -18,6 +18,19 @@
     </div>
   </div>
 </div>
+<div id='teamModal' class='modal'>
+  <div class='modal-content'>
+    <div class='modal-body'>
+      <h5>This is a Team Lead!</h5>
+      <p><strong>
+        There are members with active team memberships paid for by this member. Please end those memberships before you end this one.
+      </strong></p>
+      <div class='okChip'>
+        <a id='ok' class='chip'>Got It</a>
+      </div>
+    </div>
+  </div>
+</div>
 <div class='select-date'>
   <table class='date-table'>
     <tr>
@@ -274,9 +287,13 @@
     $('.sub-form').submit();
   }
 
+  function allEnding(el, idx, arr) {
+    return el == 0;
+  }
+
   (function() {
     var availableUsers = [
-			{% for u in active_members %}
+			{% for u in active_billing %}
 				 "{{ u.username }}",
 			{% endfor %}
 		];
@@ -308,23 +325,14 @@
     var end = '';
     var action = '';
     var existing = [];
+    var allow_ending = [];
 
     $('#change-package').hide();
     $('#sub-end').hide();
     $('.select-pkg').hide();
     $('.select-date').hide();
     $('.cancel').hide();
-
-    //If user has no active subscriptions, only allow to select new package
-    if ('{{ entity.profile.is_active }}' == 'True') {
-      $('.modal').show();
-    } else {
-      $('.modal').hide();
-      $('.curr-sub').hide();
-      $('.select-pkg').show();
-      $('.select-date').show();
-      action = 'change';
-    }
+    $('#teamModal').hide();
 
     $('.sub-input .start_date').addClass('datepicker');
     $('.sub-input .end_date').addClass('datepicker');
@@ -348,6 +356,31 @@
     $('.change-eop').text('Start of Next Bill Period:   ' + bdDate);
     if(targetDate != 'None') {
       $('.start_date').val(targetDate);
+    }
+
+    {% for a in entity.membership.active_subscriptions %}
+      {% if a.end_date %}
+        allow_ending.push('{{ a.end_date }}');
+      {% else %}
+        allow_ending.push(0);
+      {% endif %}
+    {% endfor %}
+
+    if (!(allow_ending.every(allEnding))) {
+      $('#end').attr('id', 'ending-chip');
+      $('#ending-chip').css('background-color', 'RGBA(176, 188, 196, 1.00)');
+      $('#ending-chip').css('text-decoration', 'none');
+    };
+
+    //If user has no active subscriptions, only allow to select new package
+    if ('{{ entity.profile.is_active }}' == 'True') {
+      $('#promptModal').show();
+    } else {
+      $('#promptModal').hide();
+      $('.curr-sub').hide();
+      $('.select-pkg').show();
+      $('.select-date').show();
+      action = 'change';
     }
 
     if('{{ package }}' == 10) {
@@ -434,7 +467,7 @@
           $(this).attr('selected', 'selected');
         }
       })
-      if (action === '') {
+      if (action === 'change' || action === '') {
         $('#start_date_td input').each(function() {
           if(!($(this).attr('readonly'))) {
             $(this).attr('readonly', 'readonly').datepicker('destroy');
@@ -550,14 +583,16 @@
     }
 
     $('.resource').on('change', function() {
-      if (action == 'update' && '{{ package }}' == 10) {
-        if($(this).val()) {
-          $(this).parent().siblings('.paid-by').children().attr('required', 'required');
+      if($(this).val()) {
+        if (action == 'update' && '{{ package }}' == 10) {
+          if($(this).val()) {
+            $(this).parent().siblings('.paid-by').children().attr('required', 'required');
+          }
         }
+        $(this).parent().siblings('.overage').children().attr('value', 0);
+        $(this).parent().siblings('.allowance').children().attr('required', 'true');
+        $(this).parent().siblings('.monthly_rate').children().attr('required', 'true');
       }
-      $(this).parent().siblings('.overage').children().attr('value', 0);
-      $(this).parent().siblings('.allowance').children().attr('required', 'true');
-      $(this).parent().siblings('.monthly_rate').children().attr('required', 'true');
     })
 
     //When a user using "other" for the date and inserts a date, insert the new date as needed
@@ -636,9 +671,27 @@
     $('#end').on('click', function(e) {
       e.preventDefault();
       action = 'end';
+      $('#promptModal').hide();
+
+      if ( 7 <= '{{ entity.membership.package.id }}' && '{{ entity.membership.package.id }}' <= 9) {
+        //if any member has a team membership paid_by this member, then throw error
+        {% for a in active_members %}
+          {% if a.membership.package.id == 10 %}
+            {% for s in a.membership.active_subscriptions %}
+              {% if s.paid_by == entity %}
+                $('#teamModal').show();
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+      }
       $('.select-date').show();
-      $('.modal').hide();
       $('.change-eop').text('End of this Bill Period:  ' + eopDate);
+    })
+
+    $('#ok').on('click', function(e) {
+      e.preventDefault();
+      window.location.replace("{% url 'staff:members:detail' entity.username %}" + "#tabs-1");
     })
 
     //Hit the back button to restart this process
