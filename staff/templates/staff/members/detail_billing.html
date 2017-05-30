@@ -1,0 +1,76 @@
+<div id="quick-links">
+    <strong>More Info:</strong>
+    <a class='chip' href="{% url 'staff:billing:user_bills' user.username %}">bills</a> |
+    <a class='chip' href="{% url 'staff:billing:user_transactions' user.username %}">transactions</a>
+</div>
+
+<!-- Billing Profile -->
+<h5>Billing Profile</h5>
+{% include "member/profile/profile_billing_frag.html" %}
+<div>
+  <form method=POST action="{% url 'staff:billing:toggle_bill' user.username %}" onSubmit="return confirm('Are you sure?');">
+    <input type="hidden" name="back" value="{{ request.get_full_path }}" >
+    {% if user.profile.has_valid_billing %}
+        <input type="submit" value="Flag Invalid Billing Profile" style='margin-left:2em; margin-top: 2%;' />
+    {% else %}
+        <input type="submit" value="Clear Invalid Billing Flag" style='margin-left:2em; margin-top: 2%;' />
+    {% endif %}
+    {% csrf_token %}
+  </form>
+</div>
+{% if integrations.usaepay %}
+<div class='epay-link'>
+    [ <a href="{{ settings.USA_EPAY_FORM }}{{ settings.USA_EPAY_FORM_KEY }}/?UMdescription=Office%20Nomads%20Billing%20Authorization&UMcustid={{ user.username }}&UMcommand=AuthOnly&UMamount=1.00&UMaddcustomer=yes&UMschedule=disabled">payment link</a> ]
+</div>
+{% endif %}
+
+<!-- Security Deposits -->
+<h5>Security Deposits:</h5>
+<div>
+  {% if user.profile.deposits %}
+    <table>
+        <tr>
+            <th>Received</th>
+            <th>Returned</th>
+            <th>Amount</th>
+            <th>Note</th>
+            <th>Action</th>
+        </tr>
+        {% for deposit in user.securitydeposit_set.all %}
+            <tr class="{% cycle 'row-even' 'row-odd' %}">
+                <td>{{ deposit.received_date }}</td>
+                <td>{% if deposit.returned_date %}{{ deposit.returned_date }}{% endif %}</td>
+                <td>${{ deposit.amount }}</td>
+                <td>{% if deposit.note %}{{ deposit.note }}{% endif %}</td>
+                <td style="text-align:right;">{% if not deposit.returned_date %}
+                    <form action="{% url 'staff:members:deposits' %}" method="POST" onSubmit="return confirm('Are you sure?');">
+                        <input name="username" value="{{ user.username }}" type="hidden" />
+                        <input name="deposit_id" value="{{ deposit.id }}" type="hidden" />
+                        <input name="mark_returned" type="submit" Value="Mark Returned" />
+                        {% csrf_token %}
+                    </form>
+                {% endif %}</td>
+            </tr>
+        {% endfor %}
+    </table>
+  {% endif %}
+<table>
+  <tr>
+      <th></th>
+      <th>Amount</th>
+      <th>Note</th>
+      <th>Action</th>
+  </tr>
+  <tr>
+    <form action="{% url 'staff:members:deposits' %}" method="POST">
+      <input name="username" value="{{ user.username }}" type="hidden" />
+      <td><strong>Record New Deposit:</strong></th>
+      <td><input name="amount" placeholder='Enter Amount Here'/></td>
+      <td><input name="note" placeholder='i.e. Key deposit for two members'/></td>
+      <td class='centered'><input name="add_deposit" type="submit" Value="Record Deposit" /></td>
+  {% csrf_token %}
+</tr>
+</form>
+
+</table>
+</div>
