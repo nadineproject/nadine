@@ -25,7 +25,7 @@ from nadine.models.profile import MemberNote, SentEmailLog, FileUpload, SpecialD
 from nadine.models.resource import Resource
 from nadine.models.organization import Organization
 from interlink.models import MailingList
-from nadine.forms import MemberSearchForm, MembershipForm, EventForm
+from nadine.forms import MemberSearchForm, MembershipForm, EventForm, NewUserForm
 from nadine.utils.slack_api import SlackAPI
 from nadine.utils.payment_api import PaymentAPI
 from nadine.settings import TIME_ZONE
@@ -162,6 +162,35 @@ def bcc_tool(request, group=None):
     group_list = MemberGroups.get_member_groups()
     context = {'group': group, 'group_name': group_name, 'group_list': group_list, 'users': users}
     return render(request, 'staff/members/bcc_tool.html', context)
+
+
+@staff_member_required
+def new_user(request):
+    # First process our form
+    if request.method == "POST":
+        form = NewUserForm(request.POST)
+        try:
+            if form.is_valid():
+                user = form.save()
+                messages.info(request, "User: '%s' created." % user.username)
+        except Exception as e:
+            messages.error(request, str(e))
+    else:
+        form = NewUserForm()
+
+    # Grab all the new users in the past X days
+    today = localtime(now())
+    days_back = 30
+    if 'days_back' in request.GET:
+        days_back = int(request.GET.get('days_back'))
+    new_users = User.objects.filter(date_joined__range=(today - timedelta(days=days_back), today)).order_by('-date_joined')
+
+    context = {
+        'new_user_form': form,
+        'new_users': new_users,
+        'days_back': days_back,
+    }
+    return render(request, 'staff/members/new_user.html', context)
 
 
 @staff_member_required
