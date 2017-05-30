@@ -319,7 +319,6 @@ def membership(request, username):
     active_billing = User.objects.filter(profile__valid_billing=True).order_by('first_name')
     SubFormSet = formset_factory(SubForm)
     old_pkg = None
-    print user.membership.package.id
 
     if user.membership.package:
         old_pkg = user.membership.package.id
@@ -415,6 +414,7 @@ def confirm_membership(request, username, package, end_target, new_subs):
     matches_package = user.membership.matching_package(subscriptions=subs)
     pkg = ast.literal_eval(package)
     match = None
+
     if len(user.membership.active_subscriptions(end_target)):
         ending_pkg = True
     else:
