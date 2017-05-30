@@ -1,10 +1,7 @@
-<div id="quick-links">
-    <strong>More Info:</strong>
-    <a class='chip' href="{% url 'staff:billing:user_bills' user.username %}">bills</a> |
-    <a class='chip' href="{% url 'staff:billing:user_transactions' user.username %}">transactions</a>
-</div>
-
 <!-- Billing Profile -->
+<h5>Outstanding Bills (<a href="{% url 'staff:billing:user_bills' user.username %}">view all</a>)</h5>
+{{ user.profile.open_bills }}
+
 <h5>Billing Profile</h5>
 {% include "member/profile/profile_billing_frag.html" %}
 <div>

@@ -90,6 +90,7 @@ function gotoEmailReset(emailAddress){
     <li class='tab'><a href="#notes">Notes</a></li>
   </ul>
 
+<!-- Details -->
 <div id="details">
     <h6>Member Details</h6>
     <table class='detail-table'>
@@ -229,8 +230,6 @@ function gotoEmailReset(emailAddress){
                 <td class='detail-data'>{{ o }}</td>
             </tr>
         {% endfor %}
-
-
     </table>
 
     <div class='emergency_contact detail-table'>
@@ -267,10 +266,12 @@ function gotoEmailReset(emailAddress){
   {% endwith %}
 </div>
 
+<!-- Billing -->
 <div id="billing">
   {% include "staff/members/detail_billing.html" %}
 </div>
 
+<!-- Emails  -->
 <div id="emails">
     <!-- Email Logs -->
     <div id="quick-links">
@@ -310,16 +311,8 @@ function gotoEmailReset(emailAddress){
     </div>
 </div>
 
+<!-- Tasks -->
 <div id="tasks">
-
-    {% if messages %}
-    <div class="page-message">
-        {% for message in messages %}
-            <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
-        {% endfor %}
-    </div>
-    {% endif %}
-
     {% with user.profile.open_alerts as alerts and True as description and False as member %}
       {% if alerts %}
         <h5>Action Required</h5>
@@ -358,6 +351,7 @@ function gotoEmailReset(emailAddress){
     </table>
 </div>
 
+<!-- Notes -->
 <div id="notes">
     <h5>Notes</h5>
     <div>
@@ -473,7 +467,6 @@ function gotoEmailReset(emailAddress){
 </div>
 
 </div>
-
 {% endblock %}
 
 
