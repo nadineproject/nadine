@@ -233,6 +233,16 @@ input#id_bill_day {
     padding-left: 3rem;
 }
 
+#yes, #no {
+  background-color: RGBA(87, 140, 145, 1.00);
+  font-weight: bold;
+  color: white;
+}
+
+#yes {
+  margin-right: 10%;
+}
+
 .action-chips {
   margin-top: 3%;
   margin-left: 40%;
@@ -727,6 +737,32 @@ table.mem-details-table {
     margin-left: 10%;
   }
 
+}
+
+
+@media only screen and (max-width: 1100px) {
+  #promptModal .modal-body {
+    margin-left: 15%;
+  }
+
+  #promptModal .modal-content {
+    width: 75%;
+  }
+}
+
+@media only screen and (max-width: 900px) {
+  #promptModal .modal-body {
+    margin-left: 10%;
+  }
+
+  #promptModal .modal-content {
+    height: 30%;
+  }
+
+  .modal-body .chip {
+    font-weight: normal;
+    font-size: 10px;
+  }
 }
 
 @media only screen and (max-width: 700px) {
