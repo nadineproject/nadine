@@ -11,6 +11,7 @@ urlpatterns = [
      url(r'^deposits/$', members.security_deposits, name='deposits'),
      url(r'^export/$', members.export_users, name='export_users'),
      url(r'^search/$', members.member_search, name='search'),
+     url(r'^new_user/$', members.new_user, name='new_user'),
      url(r'^user_reports/$', members.view_user_reports, name='user_reports'),
      url(r'^slack_users/$', members.slack_users, name='slack_users'),
      url(r'^membership/(?P<username>[^/]+)/$', members.membership, name='membership'),
