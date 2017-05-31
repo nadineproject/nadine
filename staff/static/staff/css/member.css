@@ -39,6 +39,10 @@ textarea.bcc-textarea {
   vertical-align: middle;
 }
 
+#change, #update {
+  margin-right: 2%;
+}
+
 #current-package {
   margin-top: 2%;
   font-size: 13px;
@@ -192,6 +196,10 @@ input#id_bill_day {
   float: right;
   width: 180px;
   min-height: 200px;
+}
+
+#update, #end {
+  margin-left: 2%;
 }
 
 #select-end-td {
@@ -522,7 +530,7 @@ table.mem-details-table {
   border: 1px solid #888;
 	border-radius: 4px;
 	height: 25%;
-  width: 50%;
+  width: 60%;
   /*box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);*/
   -webkit-animation-name: animatetop;
   -webkit-animation-duration: 0.4s;
@@ -534,9 +542,6 @@ table.mem-details-table {
 	padding-top: 2%;
 }
 
-#promptModal .modal-body, #teamModal .modal-body {
-  margin-left: 10%;
-}
 
 #promptModal .modal-body h5, #teamModal .modal-body h5 {
   text-align: center;
@@ -641,6 +646,7 @@ table.mem-details-table {
 
 .sub-chips, .okChip {
   margin-top: 6%;
+  margin-left: 10%;
 }
 
 .sub-chips .chip, .okChip .chip {
@@ -738,33 +744,31 @@ table.mem-details-table {
   color: green;
 }
 
-@media only screen and (max-width: 1300px) {
+
+@media only screen and (min-width: 1300px) {
   .modal-content {
-    width: 60%;
+    width: 50%;
   }
 
-  #promptModal .modal-body, #teamModal .modal-body {
-    margin-left: 10%;
+  .sub-chips {
+    margin-left: 20%;
   }
 
+  #promptModal .modal-content {
+    width: 65%;
+  }
 }
 
 
 @media only screen and (max-width: 1100px) {
-  #promptModal .modal-body {
-    margin-left: 15%;
-  }
 
   #promptModal .modal-content {
     width: 75%;
   }
+
 }
 
 @media only screen and (max-width: 900px) {
-  #promptModal .modal-body {
-    margin-left: 10%;
-  }
-
   #promptModal .modal-content {
     height: 30%;
   }
