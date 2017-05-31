@@ -401,6 +401,11 @@
         }
       });
 
+      $(document).on('click', function(e) {
+        e.preventDefault();
+        console.log($(this));
+      })
+
       //If member already has a membership package, hide that option from the select package dropdown
       $('#id_package > option').each(function() {
         if($(this).val() == '{{ entity.membership.package.id }}') {
@@ -475,6 +480,16 @@
         })
       }
     }
+
+    $('.add-row').on('click', function(e) {
+      e.preventDefault();
+        $('#start_date_td input').each(function() {
+          if(!($(this).val())) {
+            $(this).val(targetDate);
+            $(this).attr('readonly', 'readonly').datepicker('destroy');
+          }
+        })
+    })
 
     //Insert indv. subscription end button function/look
     $('.delete-row').addClass('btn-floating btn-large btn');
@@ -678,7 +693,7 @@
         {% for a in active_members %}
           {% if a.membership.package.id == 10 %}
             {% for s in a.membership.active_subscriptions %}
-              {% if s.paid_by == entity %}
+              {% if s.paid_by == entity and s.end_date == None %}
                 $('#teamModal').show();
               {% endif %}
             {% endfor %}
