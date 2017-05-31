@@ -348,7 +348,7 @@ class UserProfile(models.Model):
         active = self.active_organization_memberships(target_date)
         return Organization.objects.filter(id__in=active.values('organization'))
 
-    def open_bills(self):
+    def outstanding_bills(self):
         """Returns all open bills for this user """
         from nadine.models.billing import UserBill
         return UserBill.objects.unpaid(user=self.user)
@@ -357,7 +357,7 @@ class UserProfile(models.Model):
     def open_bills_amount(self):
         """Returns total of all open bills for this user """
         total = 0
-        for b in self.open_bills():
+        for b in self.outstanding_bills():
             total += b.total_owed
         return total
 
@@ -419,14 +419,6 @@ class UserProfile(models.Model):
         for l in CoworkingDay.objects.filter(paid_by=self.user, payment='Bill', visit_date__gte=month_start):
             activity.append(l)
         return activity
-
-    # def activity(self):
-    #     # TODO - Evaluate
-    #     return CoworkingDay.objects.filter(user=self.user)
-    #
-    # def paid_count(self):
-    #     # TODO - Evaluate
-    #     return self.activity().filter(payment='Bill').count()
 
     def all_emails(self):
         # Done in two queries so that the primary email address is always on top.

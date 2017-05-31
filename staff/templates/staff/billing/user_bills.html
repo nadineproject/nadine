@@ -13,26 +13,32 @@
     <tr>
       <th>ID</th>
       <th>Created</th>
+      <th>Due</th>
       <th>Period Start</th>
       <th>Period End</th>
       <th>Membership</th>
       <th>Lines</th>
       <th class="amount">Amount</th>
       <th class="amount">Paid</th>
-      <!-- <th>&nbsp;</th> -->
     </tr>
 
     {% for bill in bills %}
       <tr class="{% cycle 'row-even' 'row-odd' %}">
         <td><a href="{% url 'staff:billing:bill' bill.id %}">{{ bill.id }}</a></td>
         <td>{{ bill.created_ts|date:"m/d/y" }}</a></td>
+        <td>{{ bill.due_date|date:"m/d/y" }}</a></td>
         <td>{{ bill.period_start }}</td>
         <td>{{ bill.period_end }}</td>
         <td>{{ bill.membership.package }}</td>
         <td>{{ bill.line_items.all | length }}</td>
         <td class="amount">${{ bill.amount }}</td>
-        <td class="amount">${{ bill.total_paid }}</td>
-        <!-- <td><a href="{{ bill.get_admin_url }}">edit</a></td> -->
+        <td class="amount">
+          {% if bill.is_paid %}
+            ${{ bill.total_paid }}
+          {% else %}
+            <span style='color:red;'>${{ bill.total_paid }}</span>
+          {% endif %}
+        </td>
       </tr>
     {% endfor %}
   </table>

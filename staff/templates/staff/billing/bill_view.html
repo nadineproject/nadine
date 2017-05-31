@@ -3,12 +3,18 @@
 
 {% block sub-title %}Bill | {{ bill.user.get_full_name }}{% endblock %}
 
-<!-- SHOW GUEST DROP_INS & OVERAGES -->
-
 {% block content %}
 
 <h4>Bill {{ bill.id }}: <a href="{% url 'staff:members:detail' bill.user.username %}">{{ bill.user.get_full_name }}</a></h4>
-<span>[ <a href="{{ bill.get_absolute_url }}">view receipt </a> | <a href="{{ bill.get_admin_url }}">admin</a> ]</span>
+
+<span>[
+  <a href="{% url 'staff:billing:user_bills' bill.user.username %}">bill list </a> |
+  {% if bill.total_paid == 0 %}
+    <a href="">regenerate</a> |
+  {% endif %}
+  <a href="{{ bill.get_absolute_url }}">view receipt </a> |
+  <a href="{{ bill.get_admin_url }}">admin</a>
+]</span>
 
 <h5>Detail</h5>
 <table class='bill-id-table'>
@@ -26,12 +32,12 @@
 </table>
 <table class='bill-id-table'>
   <tr>
+    <th>Due Date:</th>
+    <td>{{ bill.due_date|date:"m/d/y"  }}</td>
     <th>Period:</th>
     <td>
       {{ bill.period_start|date:"m/d/y" }} to {{ bill.period_end|date:"m/d/y" }}
     </td>
-    <th>Due Date:</th>
-    <td>{{ bill.due_date|date:"m/d/y"  }}</td>
   </tr>
 </table>
 <table class='bill-id-table bill-id-table-2'>

@@ -30,7 +30,7 @@
 
           <div class="bill-details" id="bill-details-{{u.id}}">
 
-            {% for bill in u.profile.open_bills %}
+            {% for bill in u.profile.outstanding_bills %}
               <h6>
                 <input name="bill_id" value="{{ bill.id }}" type="checkbox" checked="checked" />
                 <a href="{% url 'staff:billing:bill' bill.id %}">Bill on {{ bill.bill_date|date:"m/d" }}</a>
