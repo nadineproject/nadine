@@ -363,7 +363,7 @@ function gotoEmailReset(emailAddress){
                 <th></th>
             </tr>
             {% for note in member_notes %}
-                <tr>
+                <tr class='{% cycle "row-even" "row-odd" %}'>
                     <td class='note-date'>{{ note.created|date:"M d, Y"}}</td>
                     <td class='note-by'>{% if note.created_by %}{{ note.created_by }} {% endif %}</td>
                     <td class='left note'>{{ note.note }}</td>

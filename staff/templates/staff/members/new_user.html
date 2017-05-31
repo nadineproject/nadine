@@ -13,7 +13,7 @@
         {{ field }}
       <div style="align:center; color: #933;">{{ field.errors }}</div>
     {% endfor %}
-    <input type="submit" value="Create"/>
+    <input class='btn confirm-btn' type="submit" value="Create" style='margin-bottom: 2%;'/>
     {% csrf_token %}
   </form>
 </div>
@@ -73,7 +73,7 @@
         });
       });
     })();
-    
+
     $(document).ready(function() {
       $('.button-collapse').sideNav();
       $('.collapsible').collapsible();
