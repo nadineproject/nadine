@@ -420,14 +420,6 @@ class UserProfile(models.Model):
             activity.append(l)
         return activity
 
-    # def activity(self):
-    #     # TODO - Evaluate
-    #     return CoworkingDay.objects.filter(user=self.user)
-    #
-    # def paid_count(self):
-    #     # TODO - Evaluate
-    #     return self.activity().filter(payment='Bill').count()
-
     def all_emails(self):
         # Done in two queries so that the primary email address is always on top.
         primary = self.user.emailaddress_set.filter(is_primary=True)

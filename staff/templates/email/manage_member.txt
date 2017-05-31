@@ -8,7 +8,7 @@ Action Needed
 {% endif %}
 
 Recent Activity
-{% for log in user.profile.activity|slice:":10" %}
+{% for log in user.coworkingday_set.all|slice:":10" %}
  - {{ log.visit_date|date:"M d, Y" }}: {{ log.payment }}
 {% endfor %}
 

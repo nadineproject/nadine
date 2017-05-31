@@ -39,7 +39,7 @@
 		<th style="border-bottom: 1px solid gray; text-align:left;">Guest of</th>
 		<th style="border-bottom: 1px solid gray; text-align:left;">Notes</th>
 	</tr>
-	{% for log in user.profile.activity|slice:":10" %}
+	{% for log in user.coworkingday_set.all|slice:":10" %}
 		<tr>
 			<td style="border-bottom: 1px solid gray; text-align:left;">{{ log.visit_date|date:"M d, Y" }}</td>
 			<td style="border-bottom: 1px solid gray; text-align:left;">{{ log.payment }}</td>

@@ -37,8 +37,8 @@ class Command(BaseCommand):
             data['has_kids'] = user.profile.has_kids
             data['self_employed'] = user.profile.self_employed
             data['first_visit'] = user.profile.first_visit
-            data['coworking_days'] = user.profile.activity().count()
-            data['billable_days'] = user.profile.paid_count()
+            data['coworking_days'] = user.coworkingday_set.all().count()
+            data['billable_days'] = user.coworkingday_set.filter(payment='Bill').count()
             data['hosted_days'] = user.profile.hosted_days().count()
             data['has_photo'] = str(user.profile.photo) != ''
             data['emails'] = len(user.profile.all_emails())
