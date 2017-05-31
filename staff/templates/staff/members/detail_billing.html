@@ -1,6 +1,3 @@
-<!-- Billing Profile -->
-<h5>Outstanding Bills (<a href="{% url 'staff:billing:user_bills' user.username %}">view all</a>)</h5>
-{{ user.profile.outstanding_bills }}
 
 <h5>Billing Profile</h5>
 {% include "member/profile/profile_billing_frag.html" %}
@@ -21,53 +18,75 @@
 </div>
 {% endif %}
 
+<!-- Billing Profile -->
+<h5>Outstanding Bills (<a href="{% url 'staff:billing:user_bills' user.username %}">view all</a>)</h5>
+<table class='sub-table'>
+  <tr>
+    <th class='sub-th'>ID</th>
+    <th class='sub-th'>Due</th>
+    <th class='sub-th'>Period Start</th>
+    <th class='sub-th'>Period End</th>
+    <th class='sub-th'>Amount</th>
+  </tr>
+  {% for bill in user.profile.outstanding_bills %}
+    <tr class='{% cycle "row-even" "row-odd" %}'>
+      <td><a href="{% url 'staff:billing:bill' bill.id %}">{{ bill.id }}</a></td>
+      <td>{{ bill.due_date }}</td>
+      <td>{{ bill.period_start }}</td>
+      <td>{{ bill.period_end }}</td>
+      <td>${{ bill.amount }}</td>
+    </tr>
+  {% endfor %}
+</table>
+
+
 <!-- Security Deposits -->
-<h5>Security Deposits:</h5>
-<div>
-  {% if user.profile.deposits %}
-    <table>
-        <tr>
-            <th>Received</th>
-            <th>Returned</th>
-            <th>Amount</th>
-            <th>Note</th>
-            <th>Action</th>
+<h5>Security Deposits</h5>
+  {% if user.securitydeposit_set.all %}
+    <table class='sub-table'>
+      <tr>
+        <th class='sub-th'>Received</th>
+        <th class='sub-th'>Returned</th>
+        <th class='sub-th'>Amount</th>
+        <th class='sub-th'>Note</th>
+        <th class='sub-th'></th>
+      </tr>
+      {% for deposit in user.securitydeposit_set.all %}
+        <tr class="{% cycle 'row-even' 'row-odd' %}">
+            <td>{{ deposit.received_date }}</td>
+            <td>{% if deposit.returned_date %}{{ deposit.returned_date }}{% endif %}</td>
+            <td>${{ deposit.amount }}</td>
+            <td>{% if deposit.note %}{{ deposit.note }}{% endif %}</td>
+            <td style="text-align:right;">
+              {% if not deposit.returned_date %}
+                <form action="{% url 'staff:members:deposits' %}" method="POST" onSubmit="return confirm('Are you sure?');">
+                    <input name="username" value="{{ user.username }}" type="hidden" />
+                    <input name="deposit_id" value="{{ deposit.id }}" type="hidden" />
+                    <input name="mark_returned" type="submit" Value="Mark Returned" />
+                    {% csrf_token %}
+                </form>
+              {% endif %}
+            </td>
         </tr>
-        {% for deposit in user.securitydeposit_set.all %}
-            <tr class="{% cycle 'row-even' 'row-odd' %}">
-                <td>{{ deposit.received_date }}</td>
-                <td>{% if deposit.returned_date %}{{ deposit.returned_date }}{% endif %}</td>
-                <td>${{ deposit.amount }}</td>
-                <td>{% if deposit.note %}{{ deposit.note }}{% endif %}</td>
-                <td style="text-align:right;">{% if not deposit.returned_date %}
-                    <form action="{% url 'staff:members:deposits' %}" method="POST" onSubmit="return confirm('Are you sure?');">
-                        <input name="username" value="{{ user.username }}" type="hidden" />
-                        <input name="deposit_id" value="{{ deposit.id }}" type="hidden" />
-                        <input name="mark_returned" type="submit" Value="Mark Returned" />
-                        {% csrf_token %}
-                    </form>
-                {% endif %}</td>
-            </tr>
-        {% endfor %}
+      {% endfor %}
     </table>
   {% endif %}
-<table>
-  <tr>
-      <th></th>
-      <th>Amount</th>
-      <th>Note</th>
-      <th>Action</th>
-  </tr>
-  <tr>
-    <form action="{% url 'staff:members:deposits' %}" method="POST">
-      <input name="username" value="{{ user.username }}" type="hidden" />
-      <td><strong>Record New Deposit:</strong></th>
-      <td><input name="amount" placeholder='Enter Amount Here'/></td>
-      <td><input name="note" placeholder='i.e. Key deposit for two members'/></td>
-      <td class='centered'><input name="add_deposit" type="submit" Value="Record Deposit" /></td>
-  {% csrf_token %}
-</tr>
-</form>
 
-</table>
-</div>
+  <table class='sub-table'>
+    <tr>
+        <th class='sub-th'></th>
+        <th class='sub-th'>Amount</th>
+        <th class='sub-th'>Note</th>
+        <th class='sub-th'></th>
+    </tr>
+    <tr>
+      <form action="{% url 'staff:members:deposits' %}" method="POST">
+        <input name="username" value="{{ user.username }}" type="hidden" />
+        <td><strong>Record New Deposit:</strong></th>
+        <td><input name="amount" placeholder='Enter Amount Here'/></td>
+        <td><input name="note" placeholder='i.e. Key deposit for two members'/></td>
+        <td class='right'><input name="add_deposit" type="submit" Value="Record Deposit" /></td>
+        {% csrf_token %}
+      </form>
+    </tr>
+  </table>
