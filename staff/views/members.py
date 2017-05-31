@@ -172,7 +172,8 @@ def new_user(request):
         try:
             if form.is_valid():
                 user = form.save()
-                messages.info(request, "User: '%s' created." % user.username)
+                messages.success(request, "User: '%s' created." % user.username)
+                return HttpResponseRedirect(reverse('staff:members:new_user'))
         except Exception as e:
             messages.error(request, str(e))
     else:

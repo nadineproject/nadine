@@ -199,8 +199,8 @@
               ${{ ns.overage_rate|floatformat:2 }}
             </td>
             <td class='sub-td'>
-              {% if n.end_date %}
-                {{ n.end_date }}
+              {% if ns.end_date %}
+                {{ ns.end_date }}
                 {% else %}
                   None
               {% endif %}

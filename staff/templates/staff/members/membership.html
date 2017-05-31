@@ -143,7 +143,7 @@
           <td class='sub-input' id='end_date_td'>{{ sub_form.end_date  }}</td>
           <td class='sub-input rate monthly_rate'>{{ sub_form.monthly_rate  }}</td>
           <td class='sub-input rate overage'>{{ sub_form.overage_rate }}</td>
-          <td class='sub-input paid-by'>{{ sub_form.paid_by  }}</td>
+          <td class='sub-input paid-by tooltipped' data-position='bottom' data-delay='50' data-tooltip='Search Users with Valid Billing Profiles'>{{ sub_form.paid_by  }}</td>
         {% endif %}
         <td class='sub-input'>
           {% if sub_form.end_date.value %}

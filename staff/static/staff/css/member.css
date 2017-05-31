@@ -239,6 +239,11 @@ input#id_bill_day {
   color: white;
 }
 
+#yes:hover, #no:hover {
+  background: RGBA(38, 166, 154, 1.00);
+  text-decoration: none;
+}
+
 #yes {
   margin-right: 10%;
 }
@@ -642,6 +647,11 @@ table.mem-details-table {
   background-color: RGBA(16, 91, 99, .70);
   color: white;
   font-weight: bold;
+}
+
+.sub-chips .chip:hover, .okChip .chip:hover {
+  background-color: RGBA(38, 166, 154, 1.00);
+  text-decoration: none;
 }
 
 .sub-input {

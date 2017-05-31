@@ -4,15 +4,6 @@
 {% block sub-title %}Members{% endblock %}
 
 {% block content %}
-
-{% if messages %}
-<div class="page-message">
-    {% for message in messages %}
-        <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
-    {% endfor %}
-</div>
-{% endif %}
-
 <h5>Create a New User</h5>
 <div id="visitor-form">
   <form action="." method="POST">
@@ -22,7 +13,7 @@
         {{ field }}
       <div style="align:center; color: #933;">{{ field.errors }}</div>
     {% endfor %}
-    <input type="submit" value="Create"/>
+    <input class='btn confirm-btn' type="submit" value="Create" style='margin-bottom: 2%;'/>
     {% csrf_token %}
   </form>
 </div>
@@ -63,4 +54,29 @@
   </table>
 {% endif %}
 
+{% endblock %}
+
+{% block extrajs %}
+  <script>
+    (function() {
+      {% for message in messages %}
+        {% if message.tags == 'error' %}
+          Materialize.toast('{{ message }}', 60000, 'error-msg msg');
+        {% else %}
+          Materialize.toast('{{ message }}', 5000, '{{ message.tags }}-msg msg');
+        {% endif %}
+      {% endfor %}
+
+      $(document).on('click', '#toast-container .toast', function() {
+        $(this).fadeOut(function(){
+          $(this).remove();
+        });
+      });
+    })();
+
+    $(document).ready(function() {
+      $('.button-collapse').sideNav();
+      $('.collapsible').collapsible();
+    });
+  </script>
 {% endblock %}
