@@ -93,6 +93,7 @@ def detail(request, username):
     }
     return render(request, 'staff/members/detail.html', context)
 
+
 @staff_member_required
 def members(request, group=None):
     if not group:
