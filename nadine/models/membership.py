@@ -337,7 +337,7 @@ class Membership(models.Model):
         subscriptions = {}
         for s in self.active_subscriptions(target_date):
             key = s.payer.username
-            if not hasattr(subscriptions, key):
+            if not key in subscriptions:
                 subscriptions[key] = []
             subscriptions[key].append(s)
         return subscriptions
