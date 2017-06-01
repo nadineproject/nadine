@@ -386,7 +386,7 @@
     if('{{ package }}' == 10) {
       $('.resource').each(function() {
         if($(this).val()) {
-          $(this).parent().siblings('.paid-by').children().attr('required', 'required');
+          $(this).parent().siblings('.paid-by').children().prop('required', 'required');
         }
       })
     }
@@ -514,7 +514,7 @@
       package = $(this).val();
       $('#id_package > option').each(function() {
         if($(this).val() == package ) {
-          $(this).attr('selected', 'selected');
+          $(this).prop('selected', 'selected');
         }
       })
       $('.change-form').submit();
@@ -526,11 +526,11 @@
         existing.push($(this).val());
         $(this).attr('readonly', 'readonly');
       }
-      if(!($(this).attr('disabled'))) {
+      if(!($(this).is('disabled'))) {
         $(this).children().each(function() {
           for (var i = 0; i < existing.length; i++) {
             if($(this).val() == existing[i]) {
-              $(this).hide();
+              $(this).remove();
             }
           }
         })
@@ -573,11 +573,11 @@
           existing.push($(this).val());
           $(this).attr('disabled', 'disabled');
         }
-        if(!($(this).attr('disabled'))) {
+        if(!($(this).prop('disabled'))) {
           $(this).children().each(function() {
             for (var i = 0; i < existing.length; i++) {
               if($(this).val() == existing[i]) {
-                $(this).hide();
+                $(this).remove();
               }
             }
           })
@@ -596,12 +596,12 @@
       if($(this).val()) {
         if (action == 'update' && '{{ package }}' == 10) {
           if($(this).val()) {
-            $(this).parent().siblings('.paid-by').children().attr('required', 'required');
+            $(this).parent().siblings('.paid-by').children().prop('required', 'required');
           }
         }
-        $(this).parent().siblings('.overage').children().attr('value', 0);
-        $(this).parent().siblings('.allowance').children().attr('required', 'true');
-        $(this).parent().siblings('.monthly_rate').children().attr('required', 'true');
+        $(this).parent().siblings('.overage').children().prop('value', 0);
+        $(this).parent().siblings('.allowance').children().prop('required', 'true');
+        $(this).parent().siblings('.monthly_rate').children().prop('required', 'true');
       }
     })
 
