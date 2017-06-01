@@ -366,11 +366,11 @@
       {% endif %}
     {% endfor %}
 
-    if (!(allow_ending.every(allEnding))) {
-      $('#end').attr('id', 'ending-chip');
-      $('#ending-chip').css('background-color', 'RGBA(176, 188, 196, 1.00)');
-      $('#ending-chip').css('text-decoration', 'none');
-    };
+    // if (!(allow_ending.every(allEnding))) {
+    //   $('#end').attr('id', 'ending-chip');
+    //   $('#ending-chip').css('background-color', 'RGBA(176, 188, 196, 1.00)');
+    //   $('#ending-chip').css('text-decoration', 'none');
+    // };
 
     //If user has no active subscriptions, only allow to select new package
     if ('{{ entity.profile.is_active }}' == 'True') {
@@ -400,11 +400,6 @@
           $(this).attr('selected', 'selected');
         }
       });
-
-      $(document).on('click', function(e) {
-        e.preventDefault();
-        console.log($(this));
-      })
 
       //If member already has a membership package, hide that option from the select package dropdown
       $('#id_package > option').each(function() {
