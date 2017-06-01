@@ -397,7 +397,7 @@
       $('.select-date').show();
       $('#id_package > option').each(function() {
         if ($(this).val() == '{{ package }}') {
-          $(this).attr('selected', 'selected');
+          $(this).prop('selected', 'selected');
         }
       });
 
@@ -415,7 +415,7 @@
         if (targetDate == dates[i]) {
           $('#target-input > option').each(function() {
             if($(this).val() == val[i]) {
-              $(this).attr('selected', 'selected');
+              $(this).prop('selected', 'selected');
               match = true;
             }
           })
@@ -424,7 +424,7 @@
       if (match == false) {
         $('#target-input > option').each(function() {
           if($(this).val() == 'other') {
-            $(this).attr('selected', 'selected');
+            $(this).prop('selected', 'selected');
             $('#sub-end').show().val(targetDate);
           }
         })
@@ -464,12 +464,12 @@
       $('#target_date').val(targetDate);
       $('#id_package > option').each(function() {
         if($(this).val() == '{{ package }}') {
-          $(this).attr('selected', 'selected');
+          $(this).prop('selected', 'selected');
         }
       })
       if (action === 'change' || action === '') {
         $('#start_date_td input').each(function() {
-          if(!($(this).attr('readonly'))) {
+          if(!($(this).prop('readonly'))) {
             $(this).attr('readonly', 'readonly').datepicker('destroy');
           }
         })
