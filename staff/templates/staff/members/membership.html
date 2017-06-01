@@ -338,7 +338,7 @@
     $('.sub-input .end_date').addClass('datepicker');
     $('.datepicker').datepicker({
       dateFormat: 'yy-mm-dd',
-      minDate: 0,
+      minDate: -7,
     });
 
     $('#id_created_by').val('{{ request.user }}');
@@ -548,7 +548,7 @@
 
       $('.datepicker').datepicker({
         dateFormat: 'yy-mm-dd',
-        minDate: 0
+        minDate: -7
       });
 
       $('.delete-row').on('click', function(e) {
