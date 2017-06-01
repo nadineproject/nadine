@@ -20,37 +20,6 @@ from nadine.models import *
 from nadine import email
 from nadine.forms import PayBillsForm, DateRangeForm
 from staff.views.activity import date_range_from_request, START_DATE_PARAM, END_DATE_PARAM
-from staff import billing
-
-
-# TODO - Remove
-@staff_member_required
-def transactions(request):
-    start, end = date_range_from_request(request)
-    date_range_form = DateRangeForm({START_DATE_PARAM: start, END_DATE_PARAM: end})
-    transactions = Transaction.objects.filter(transaction_date__range=(start, end)).order_by('-transaction_date')
-    context = {"transactions": transactions, 'date_range_form': date_range_form}
-    return render(request, 'staff/billing/transactions.html', context)
-
-
-# TODO - Remove
-@staff_member_required
-def transaction(request, id):
-    transaction = get_object_or_404(Transaction, pk=id)
-    return render(request, 'staff/billing/transaction.html', {"transaction": transaction})
-
-
-# TODO - Remove
-def run_billing(request):
-    run_billing_form = RunBillingForm(initial={'run_billing': True})
-    if request.method == 'POST':
-        run_billing_form = RunBillingForm(request.POST)
-        if run_billing_form.is_valid():
-            billing.run_billing()
-            messages.success(request, 'At your request, I have run <a href="%s">the bills</a>.' % (reverse('staff:billing:outstanding', args=[], kwargs={}),))
-    logs = BillingLog.objects.all()[:10]
-    context = {'run_billing_form': run_billing_form, "billing_logs": logs}
-    return render(request, 'staff/billing/run_billing.html', context)
 
 
 @staff_member_required
@@ -136,66 +105,6 @@ def outstanding(request):
         'invalid_members': invalids,
     }
     return render(request, 'staff/billing/outstanding.html', context)
-
-
-# TODO - Remove
-@staff_member_required
-def outstanding_old(request):
-    if request.method == 'POST':
-        action = request.POST.get("action", "Set Paid")
-        pay_bills_form = PayBillsForm(request.POST)
-        if pay_bills_form.is_valid():
-            user = User.objects.get(username=pay_bills_form.cleaned_data['username'])
-            users_bills = {}
-            for bill in user.profile.outstanding_bills():
-                users_bills[bill.id] = bill
-            bill_ids = [int(bill_id) for bill_id in request.POST.getlist('bill_id')]
-            if action == "set_paid":
-                amount = pay_bills_form.cleaned_data['amount']
-                transaction = Transaction(user=user, status='closed', amount=Decimal(amount))
-                transaction.note = pay_bills_form.cleaned_data['transaction_note']
-                transaction.save()
-                for bill_id in bill_ids:
-                    transaction.bills.add(users_bills[bill_id])
-                transaction_url = reverse('staff:billing:transaction', args=[], kwargs={'id': transaction.id})
-                messages.success(request, 'Created a <a href="%s">transaction for %s</a>' % (transaction_url, user.get_full_name()))
-            elif action == "mark_in_progress":
-                for bill_id in bill_ids:
-                    bill = users_bills[bill_id]
-                    bill.in_progress = True
-                    bill.save()
-                    messages.success(request, "Bills marked 'In Progress'")
-            elif action == "clear_in_progress":
-                for bill_id in bill_ids:
-                    bill = users_bills[bill_id]
-                    bill.in_progress = False
-                    bill.save()
-                    messages.success(request, "Bills updated")
-
-    bills = {}
-    bills_in_progress = {}
-    unpaid = models.Q(bill__isnull=False, bill__transactions=None, bill__paid_by__isnull=True)
-    unpaid_guest = models.Q(guest_bills__isnull=False, guest_bills__transactions=None)
-    for u in User.objects.filter(unpaid | unpaid_guest).distinct().order_by('last_name'):
-        last_bill = u.profile.outstanding_bills()[0]
-        if last_bill.in_progress:
-            bucket = bills_in_progress
-        else:
-            bucket = bills
-        if not last_bill.bill_date in bucket:
-            bucket[last_bill.bill_date] = []
-        bucket[last_bill.bill_date].append(u)
-
-    ordered_bills = OrderedDict(sorted(bills.items(), key=lambda t: t[0]))
-    ordered_bills_in_progress = OrderedDict(sorted(bills_in_progress.items(), key=lambda t: t[0]))
-    invalids = User.helper.invalid_billing()
-
-    context = {
-        'bills': ordered_bills,
-        'bills_in_progress': bills_in_progress,
-        'invalid_members': invalids,
-    }
-    return render(request, 'staff/billing/outstanding_old.html', context)
 
 
 @staff_member_required
@@ -311,14 +220,6 @@ def user_bills(request, username):
     user = get_object_or_404(User, username=username)
     bills = user.bills.all().order_by('-due_date')
     return render(request, 'staff/billing/user_bills.html', {'user':user, 'bills':bills})
-
-
-# TODO - Remove
-@staff_member_required
-def user_transactions(request, username):
-    user = get_object_or_404(User, username=username)
-    transactions = user.transaction_set.all()
-    return render(request, 'staff/billing/user_transactions.html', {'user':user, 'transactions':transactions})
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

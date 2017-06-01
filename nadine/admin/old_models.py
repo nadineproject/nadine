@@ -1,8 +1,7 @@
 from django.contrib import admin
 
 from nadine.admin.core import StyledAdmin
-from nadine.models.payment import Transaction, OldBill, BillingLog
-from nadine.models.membership import OldMembership
+from nadine.models.old_models import *
 
 
 class TransactionAdmin(StyledAdmin):
@@ -19,9 +18,10 @@ class OldBillAdmin(StyledAdmin):
 admin.site.register(OldBill, OldBillAdmin)
 
 
-class BillingLogAdmin(StyledAdmin):
-    list_display = ('started', 'ended', 'note', 'successful')
-admin.site.register(BillingLog, BillingLogAdmin)
+# We don't really care about this one --JLS
+# class BillingLogAdmin(StyledAdmin):
+#     list_display = ('started', 'ended', 'note', 'successful')
+# admin.site.register(BillingLog, BillingLogAdmin)
 
 
 class OldMembershipAdmin(StyledAdmin):

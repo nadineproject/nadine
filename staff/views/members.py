@@ -18,14 +18,12 @@ from django.urls import reverse
 from django.contrib import messages
 from django.utils.timezone import localtime, now
 
-from nadine.forms import MembershipForm, MembershipPackageForm, SubForm
-from nadine.models.membership import OldMembership, MembershipPlan
+from nadine.forms import MembershipPackageForm, SubForm, MemberSearchForm, EventForm, NewUserForm
 from nadine.models.membership import MemberGroups, Membership, MembershipPackage, ResourceSubscription, SubscriptionDefault, SecurityDeposit
 from nadine.models.profile import MemberNote, SentEmailLog, FileUpload, SpecialDay
 from nadine.models.resource import Resource
 from nadine.models.organization import Organization
 from interlink.models import MailingList
-from nadine.forms import MemberSearchForm, MembershipForm, EventForm, NewUserForm
 from nadine.utils.slack_api import SlackAPI
 from nadine.utils.payment_api import PaymentAPI
 from nadine.settings import TIME_ZONE
@@ -36,6 +34,7 @@ from staff import user_reports
 
 from arpwatch import arp
 from arpwatch.models import ArpLog
+
 
 @staff_member_required
 def detail(request, username):
@@ -395,6 +394,7 @@ def membership(request, username):
     }
     return render(request, 'staff/members/membership.html', context)
 
+
 @staff_member_required
 def confirm_membership(request, username, package, end_target, new_subs):
     user = get_object_or_404(User, username=username)
@@ -506,71 +506,6 @@ def confirm_membership(request, username, package, end_target, new_subs):
         'ending_pkg': ending_pkg,
     }
     return render(request, 'staff/members/confirm.html', context)
-
-
-################################################################################
-# TODO - deprecated
-################################################################################
-
-
-@staff_member_required
-def old_add_membership(request, username):
-    user = get_object_or_404(User, username=username)
-
-    start = today = localtime(now()).date()
-    last_membership = user.profile.last_membership()
-    if last_membership and last_membership.end_date and last_membership.end_date > today - timedelta(days=10):
-        start = (last_membership.end_date + timedelta(days=1))
-    last = start + relativedelta(months=1) - timedelta(days=1)
-
-    if request.method == 'POST':
-      membership_form = MembershipForm(request.POST, request.FILES)
-      try:
-          if membership_form.is_valid():
-              membership_form.created_by = request.user
-              membership_form.save()
-              return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}))
-      except Exception as e:
-          messages.add_message(request, messages.ERROR, e)
-    else:
-      membership_form = MembershipForm(initial={'username': username, 'start_date': start})
-
-    # Send them to the update page if we don't have an end date
-    if (last_membership and not last_membership.end_date):
-      return HttpResponseRedirect(reverse('staff:members:membership', kwargs={'membership_id': last_membership.id}))
-
-    plans = MembershipPlan.objects.filter(enabled=True).order_by('name')
-    context = {'user':user, 'membership_plans': plans,
-      'membership_form': membership_form, 'today': today.isoformat(),
-      'last': last.isoformat()}
-    return render(request, 'staff/members/old_membership.html', context)
-
-
-@staff_member_required
-def old_membership(request, membership_id):
-    membership = get_object_or_404(Membership, pk=membership_id)
-
-    if request.method == 'POST':
-        membership_form = MembershipForm(request.POST, request.FILES)
-        try:
-            if membership_form.is_valid():
-                membership_form.save()
-                return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': membership.user.username}))
-        except Exception as e:
-            messages.add_message(request, messages.ERROR, e)
-    else:
-        membership_form = MembershipForm(initial={'membership_id': membership.id, 'username': membership.user.username, 'membership_plan': membership.membership_plan,
-                                              'start_date': membership.start_date, 'end_date': membership.end_date, 'monthly_rate': membership.monthly_rate, 'dropin_allowance': membership.dropin_allowance,
-                                              'daily_rate': membership.daily_rate, 'has_desk': membership.has_desk, 'has_key': membership.has_key, 'has_mail': membership.has_mail,
-                                              'paid_by': membership.paid_by})
-
-    today = localtime(now()).date()
-    last = membership.next_billing_date() - timedelta(days=1)
-
-    context = {'user': membership.user, 'membership': membership,
-        'membership_plans': MembershipPlan.objects.all(), 'membership_form': membership_form,
-        'today': today.isoformat(), 'last': last.isoformat()}
-    return render(request, 'staff/members/old_membership.html', context)
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

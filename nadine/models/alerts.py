@@ -15,7 +15,6 @@ from django.utils.timezone import localtime, now
 
 from nadine.models.profile import UserProfile, FileUpload
 from nadine.models.membership import Membership, IndividualMembership
-from nadine.models.membership import OldMembership
 from nadine.utils import mailgun
 
 logger = logging.getLogger(__name__)
@@ -73,7 +72,8 @@ class MemberAlertManager(models.Manager):
         #			if not alert.user in active_users:
         #				alert.mute(None, note="membership ended")
 
-    def trigger_exiting_membership(self, user, day=None):
+    # TODO - Port to Membership
+    def trigger_exiting_membership(self, membership, day=None):
         if day == None:
             day = localtime(now())
 
@@ -117,7 +117,8 @@ class MemberAlertManager(models.Manager):
             mailgun.send_manage_member(user, subject=subject)
 
 
-    def trigger_new_membership(self, user):
+    # TODO - Port to Membership
+    def trigger_new_membership(self, membership):
         logger.debug("trigger_new_membership: %s" % user)
 
         # Pull a bunch of data so we don't keep hitting the database
@@ -307,17 +308,17 @@ class MemberAlert(models.Model):
         app_label = 'nadine'
 
 
-# TODO - convert to ResourceSubscription
 def membership_callback(sender, **kwargs):
     #print("membership_callback")
     membership = kwargs['instance']
     created = kwargs['created']
     if created:
-        MemberAlert.objects.trigger_new_membership(membership.user)
+        MemberAlert.objects.trigger_new_membership(membership)
     else:
         # If this membership is older then a week
         # we'll go straight to exiting member logic
         window_start = localtime(now()) - timedelta(days=5)
         if membership.end_date and membership.end_date < window_start.date():
-            MemberAlert.objects.trigger_exiting_membership(membership.user)
-post_save.connect(membership_callback, sender=OldMembership)
+            MemberAlert.objects.trigger_exiting_membership(membership)
+# TODO - Turn back on!!!
+# post_save.connect(membership_callback, sender=Membership)

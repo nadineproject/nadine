@@ -6,7 +6,6 @@ import datetime
 import json
 
 from nadine.models.membership import Membership
-from nadine.models.membership import OldMembership
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand, CommandError
 from collections import OrderedDict
@@ -48,13 +47,13 @@ class Command(BaseCommand):
             for tag in user.profile.tags.all():
                 data['tags'].append(str(tag))
             data['memberships'] = []
-            for m in OldMembership.objects.filter(user=user).order_by('start_date'):
-                m_data = OrderedDict()
-                m_data['plan'] = m.membership_plan.name
-                m_data['start_date'] = m.start_date
-                m_data['end_date'] = m.end_date
-                m_data['monthly_rate'] = m.monthly_rate
-                data['memberships'].append(m_data)
+            # for m in OldMembership.objects.filter(user=user).order_by('start_date'):
+            #     m_data = OrderedDict()
+            #     m_data['plan'] = m.membership_plan.name
+            #     m_data['start_date'] = m.start_date
+            #     m_data['end_date'] = m.end_date
+            #     m_data['monthly_rate'] = m.monthly_rate
+            #     data['memberships'].append(m_data)
             user_data.append(data)
 
         print("Writing JSON data to: %s" % output)

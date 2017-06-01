@@ -39,7 +39,7 @@ BILLING_EMAIL_ADDRESS = "billing@example.com"
 
 # Team Settings
 TEAM_EMAIL_ADDRESS = "team@officenomads.com"
-TEAM_MEMBERSHIP_PLAN = "ON Team"
+TEAM_MEMBERSHIP_PACKAGE = "ON Team"
 
 # Make this unique, and don't share it with anybody.
 # http://www.miniwebtool.com/django-secret-key-generator/

@@ -16,7 +16,7 @@ from django.conf import settings
 from django.utils.timezone import localtime, now
 
 from nadine.models.core import Neighborhood
-from nadine.models.membership import Membership, MembershipPlan, ResourceSubscription
+from nadine.models.membership import Membership, MembershipPackage, ResourceSubscription
 from nadine.models.usage import CoworkingDay
 from nadine.forms import DateRangeForm
 
@@ -65,12 +65,12 @@ def calculate_dropins(start_date, end_date):
     return (all_logs.filter(payment='Visit').distinct().count(), all_logs.filter(payment='Trial').distinct().count(), all_logs.filter(payment='Waive').distinct().count(), all_logs.filter(payment='Bill').distinct().count())
 
 
-def calculate_monthly_low_high(plan_id, dates):
+def calculate_monthly_low_high(package, dates):
     """returns a tuple of (min, max) for number of memberships in the date range of dates"""
     high = 0
     low = 100000000
     for working_date in dates:
-        num_residents = Membership.objects.active_memberships(working_date).filter(package=plan_id).count()
+        num_residents = Membership.objects.active_memberships(working_date).filter(package=package).count()
         high = max(high, num_residents)
         low = min(low, num_residents)
         avg = int(round((low + high) / 2))
@@ -130,12 +130,12 @@ def memberships(request):
     for month in month_histories:
         dates = [date(month.year, month.month, i) for i in range(1, month.days_in_month + 1)]
 
-        for plan in MembershipPlan.objects.filter(enabled=True):
-            data = calculate_monthly_low_high(plan.id, dates)
+        for package in MembershipPackage.objects.filter(enabled=True):
+            data = calculate_monthly_low_high(package.id, dates)
             if average_only:
-                month.data[plan.name] = data[2]
+                month.data[package.name] = data[2]
             else:
-                month.data[plan.name] = '%s - %s' % (data[0], data[1])
+                month.data[package.name] = '%s - %s' % (data[0], data[1])
 
         month.data['visits'], month.data['trial'], month.data['waive'], month.data['billed'] = calculate_dropins(month.start_date, month.end_date)
 

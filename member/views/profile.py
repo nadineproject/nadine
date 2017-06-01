@@ -19,7 +19,6 @@ from nadine import email
 from nadine.models.profile import UserProfile, FileUpload
 from nadine.models.usage import CoworkingDay, Event
 from nadine.models.billing import UserBill
-from nadine.models.payment import Transaction
 from nadine.models.alerts import MemberAlert
 from nadine.models.organization import Organization, OrganizationMember
 from nadine.models.membership import Membership, ResourceSubscription
@@ -231,23 +230,6 @@ def edit_profile(request, username):
 
     context = {'user': user, 'profile_form': profile_form, 'link_formset': link_formset}
     return render(request, 'member/profile/profile_edit.html', context)
-
-
-@login_required
-def receipt(request, username, id):
-    user = get_object_or_404(User, username=username)
-    if not user == request.user:
-        if not request.user.is_staff:
-            return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': request.user.username}))
-
-    transaction = get_object_or_404(Transaction, id=id)
-    if not user == transaction.user:
-        if not request.user.is_staff:
-            return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': request.user.username}))
-    bills = transaction.bills.all()
-
-    context = {'user': user, 'transaction': transaction, 'bills': bills, 'settings': settings}
-    return render(request, 'member/profile/receipt.html', context)
 
 
 @login_required
