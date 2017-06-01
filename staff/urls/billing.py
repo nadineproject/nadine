@@ -18,6 +18,7 @@ urlpatterns = [
     # Actions
     url(r'^pay_all/(?P<username>[^/]+)/$', billing.bills_pay_all, name='bills_paid'),
     url(r'^toggle_billing_flag/(?P<username>[^/]+)/$', billing.toggle_billing_flag, name='toggle_bill'),
+    url(r'^generate_bill/(?P<membership_id>[^/]+)/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', billing.generate_bill, name='generate_bill'),
 
     # TODO - Old and should be removed
     url(r'^run/$', billing.run_billing, name='run'),

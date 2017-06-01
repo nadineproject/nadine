@@ -265,6 +265,25 @@ def toggle_billing_flag(request, username):
 
 
 @staff_member_required
+def generate_bill(request, membership_id, year, month, day):
+    membership = get_object_or_404(Membership, id=membership_id)
+    target_date = date(year=int(year), month=int(month), day=int(day))
+    bills = membership.generate_bill(target_date=target_date, created_by=request.user)
+    if bills:
+        bill_count = len(bills.keys())
+        messages.add_message(request, messages.SUCCESS, "%d Bill(s) Generated" % bill_count)
+        if bill_count == 1:
+            # If there is only one bill, send them to the bill view page
+            bill_id = bills[bills.keys()[0]]['bill'].id
+            return HttpResponseRedirect(reverse('staff:billing:bill', kwargs={'bill_id': bill_id}))
+    else:
+        messages.add_message(request, messages.ERROR, "0 Bills Generated")
+
+    # If there are multiple bills or nothing happend, go to the bill list
+    return HttpResponseRedirect(reverse('staff:billing:bills'))
+
+
+@staff_member_required
 def bill_view(request, bill_id):
     bill = get_object_or_404(UserBill, id=bill_id)
     if bill.membership:

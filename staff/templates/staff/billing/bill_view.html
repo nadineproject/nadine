@@ -10,7 +10,7 @@
 <span>[
   <a href="{% url 'staff:billing:user_bills' bill.user.username %}">bill list </a> |
   {% if bill.total_paid == 0 %}
-    <a href="">regenerate</a> |
+    <a href="{{ bill.get_regenerate_url }}">regenerate</a> |
   {% endif %}
   <a href="{{ bill.get_absolute_url }}">view receipt </a> |
   <a href="{{ bill.get_admin_url }}">admin</a>
