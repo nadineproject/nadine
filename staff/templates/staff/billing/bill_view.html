@@ -68,7 +68,7 @@
     <th>Description</th>
     <th>Amount</th>
   </tr>
-  {% for line_item in bill.line_items.all %}
+  {% for line_item in line_items %}
       <tr class='{% cycle "row-odd" "row-even" %}'>
           <td>{{ line_item.description }} {% if benefactor %} - For {{ benefactor.get_full_name }}{% endif %}</td>
           <td style="text-align: right;">${{ line_item.amount|floatformat:2 }}</td>

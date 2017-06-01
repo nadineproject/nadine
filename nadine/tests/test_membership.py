@@ -198,6 +198,34 @@ class MembershipTestCase(TestCase):
         )
         self.assertEqual(date(2016,1,1), membership.start_date)
 
+    def test_end_date(self):
+        membership = Membership.objects.create(bill_day=1)
+        # No subscriptions = no end_date
+        self.assertEqual(None, membership.end_date)
+        # Add a subscription with no end date
+        s1 = ResourceSubscription.objects.create(
+            membership = membership,
+            resource = self.test_resource,
+            start_date = date(2016,1,1),
+            monthly_rate = 100,
+            overage_rate = 20,
+        )
+        self.assertEqual(None, membership.end_date)
+        # Add an end date
+        s1.end_date = date(2016,6,1)
+        s1.save()
+        self.assertEqual(date(2016,6,1), membership.end_date)
+        # Create another subscription that ends before the last one
+        ResourceSubscription.objects.create(
+            membership = membership,
+            resource = self.test_resource,
+            start_date = date(2016,6,1),
+            end_date = date(2016,5,1),
+            monthly_rate = 200,
+            overage_rate = 20,
+        )
+        self.assertEqual(date(2016,6,1), membership.end_date)
+
     def test_inactive_period(self):
         self.assertEquals((None, None), self.membership1.get_period(target_date=yesterday))
         self.assertEquals((None, None), self.membership2.get_period(target_date=yesterday))

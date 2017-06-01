@@ -40,10 +40,8 @@ from nadine.utils.payment_api import PaymentAPI
 from nadine.utils.slack_api import SlackAPI
 from nadine.models.core import GENDER_CHOICES, HowHeard, Industry, Neighborhood, Website, URLType
 from nadine.models.membership import Membership, ResourceSubscription, SecurityDeposit
-from nadine.models.membership import OldMembership, MembershipPlan
 from nadine.models.resource import Resource
 from nadine.models.usage import CoworkingDay
-from nadine.models.payment import OldBill
 from nadine.models.organization import Organization
 from nadine import email
 
@@ -234,12 +232,11 @@ class UserQueryHelper():
         return self.active_members().filter(profile__tags__name__in=[tag])
 
     def managers(self, include_future=False):
-        # TODO - port
-        if hasattr(settings, 'TEAM_MEMBERSHIP_PLAN'):
-            management_plan = MembershipPlan.objects.filter(name=settings.TEAM_MEMBERSHIP_PLAN).first()
-            memberships = Membership.objects.active_memberships().filter(membership_plan=management_plan).distinct()
+        if hasattr(settings, 'TEAM_MEMBERSHIP_PACKAGE'):
+            management_package = MembershipPackage.objects.filter(name=settings.TEAM_MEMBERSHIP_PACKAGE).first()
+            memberships = Membership.objects.active_memberships().filter(package=management_package).distinct()
             if include_future:
-                memberships = memberships | Membership.objects.future_memberships().filter(membership_plan=management_plan).distinct()
+                memberships = memberships | Membership.objects.future_memberships().filter(package=management_package).distinct()
             return User.objects.filter(id__in=memberships.values('user'))
         return None
 
@@ -369,33 +366,6 @@ class UserProfile(models.Model):
     def pay_bills_form(self):
         from nadine.forms import PayBillsForm
         return PayBillsForm(initial={'username': self.user.username, 'amount': self.open_bills_amount})
-
-    def membership_history(self):
-        # TODO - port
-        return OldMembership.objects.filter(user=self.user).order_by('-start_date', 'end_date')
-
-    def membership_on_date(self, day):
-        # TODO - port
-        return OldMembership.objects.filter(user=self.user, start_date__lte=day).filter(Q(end_date__isnull=True) | Q(end_date__gte=day)).first()
-
-    def last_membership(self):
-        # TODO - remove
-        """Returns the latest membership, even if it has an end date, or None if none exists"""
-        memberships = OldMembership.objects.filter(user=self.user).order_by('-start_date', 'end_date')[0:]
-        if memberships == None or len(memberships) == 0:
-            return None
-        return memberships[0]
-
-    def active_membership(self):
-        # TODO - remove
-        for membership in self.membership_history():
-            if membership.is_active():
-                return membership
-        return None
-
-    def membership_for_day(self, day):
-        # TODO - remove
-        return Membership.objects.active_memberships(target_date=day).filter(user=self.user).first()
 
     def activity_this_month(self, target_date=None):
         if not target_date:
@@ -654,9 +624,8 @@ class UserProfile(models.Model):
         return total_days
 
     def average_bill(self):
-        # TODO - Evaluate
-        from nadine.models.payment import OldBill
-        bills = OldBill.objects.filter(user=self.user)
+        from nadine.models.billing import UserBill
+        bills = UserBill.objects.filter(user=self.user)
         if bills:
             bill_totals = 0
             for b in bills:
@@ -665,15 +634,9 @@ class UserProfile(models.Model):
         return 0
 
     def is_manager(self):
-        # TODO - Port
         if self.user.is_staff: return True
-        if hasattr(settings, 'TEAM_MEMBERSHIP_PLAN'):
-            management_plan = MembershipPlan.objects.filter(name=settings.TEAM_MEMBERSHIP_PLAN).first()
-            if management_plan:
-                active_membership = self.active_membership()
-                if active_membership:
-                    return active_membership.membership_plan == management_plan
-        return False
+        managers = User.helper.managers(include_future=True)
+        return self in managers
 
     def __str__(self): return '%s %s' % (smart_str(self.user.first_name), smart_str(self.user.last_name))
 

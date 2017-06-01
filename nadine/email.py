@@ -112,9 +112,8 @@ def subscribe_to_newsletter(user):
 
 def send_new_membership(user):
     site = Site.objects.get_current()
-    membership = user.profile.last_membership()
-    subject = "New %s Membership" % membership.membership_plan.name
-    message = render_to_string('email/new_membership.txt', context={'user': user, 'membership': membership, 'site': site})
+    subject = "New %s Membership" % user.membership.package.name
+    message = render_to_string('email/new_membership.txt', context={'user': user, 'membership': user.membership, 'site': site})
     send(user.email, subject, message)
     announce_new_membership(user)
 
@@ -218,16 +217,15 @@ def announce_free_trial(user):
 
 
 def announce_new_membership(user):
-    membership = user.profile.last_membership()
-    subject = "New %s: %s" % (membership.membership_plan.name, user.get_full_name())
-    message = "Team,\r\n\r\n \t%s has a new %s membership! %s" % (user.get_full_name(), membership.membership_plan.name, team_signature(user))
+    subject = "New %s: %s" % (user.membership.package.name, user.get_full_name())
+    message = "Team,\r\n\r\n \t%s has a new %s membership! %s" % (user.get_full_name(), user.membership.package.name, team_signature(user))
     send_quietly(settings.TEAM_EMAIL_ADDRESS, subject, message)
 
 
 def announce_member_checkin(user):
     membership = user.profile.last_membership()
     subject = "Member Check-in - %s" % (user.get_full_name())
-    message = "Team,\r\n\r\n \t%s has been a %s member for almost a month!  Someone go see how they are doing. %s" % (user.get_full_name(), membership.membership_plan.name, team_signature(user))
+    message = "Team,\r\n\r\n \t%s has been a %s member for almost a month!  Someone go see how they are doing. %s" % (user.get_full_name(), user.membership.package.name, team_signature(user))
     send_quietly(settings.TEAM_EMAIL_ADDRESS, subject, message)
 
 

@@ -226,6 +226,14 @@ class Membership(models.Model):
             return None
         return first_subscription.start_date
 
+    @property
+    def end_date(self):
+        subscriptions = self.subscriptions.all()
+        open_subscriptions = self.subscriptions.filter(end_date=None)
+        if not subscriptions or open_subscriptions:
+            return None
+        return subscriptions.order_by('end_date').last().end_date
+
     def user_list(self, target_date=None):
         if not target_date:
             target_date = localtime(now()).date()
@@ -337,7 +345,7 @@ class Membership(models.Model):
         subscriptions = {}
         for s in self.active_subscriptions(target_date):
             key = s.payer.username
-            if not hasattr(subscriptions, key):
+            if not key in subscriptions:
                 subscriptions[key] = []
             subscriptions[key].append(s)
         return subscriptions
@@ -745,143 +753,6 @@ class SecurityDeposit(models.Model):
     returned_date = models.DateField(blank=True, null=True)
     amount = models.PositiveSmallIntegerField(default=0)
     note = models.CharField(max_length=128, blank=True, null=True)
-
-
-################################################################################
-# Deprecated Models TODO - remove
-################################################################################
-
-
-class MembershipPlan(models.Model):
-
-    """Options for monthly membership"""
-    name = models.CharField(max_length=16)
-    description = models.CharField(max_length=128, blank=True, null=True)
-    monthly_rate = models.IntegerField(default=0)
-    daily_rate = models.IntegerField(default=0)
-    dropin_allowance = models.IntegerField(default=0)
-    has_desk = models.NullBooleanField(default=False)
-    enabled = models.BooleanField(default=True)
-
-    def __str__(self): return self.name
-
-    def get_admin_url(self):
-        return reverse('admin:nadine_membershipplan_change', args=[self.id])
-
-    class Meta:
-        app_label = 'nadine'
-        verbose_name = "Membership Plan"
-        verbose_name_plural = "Membership Plans"
-
-
-class OldMembershipManager(models.Manager):
-
-    def create_with_plan(self, user, start_date, end_date, membership_plan, rate=-1, paid_by=None):
-        if rate < 0:
-            rate = membership_plan.monthly_rate
-        self.create(user=user, start_date=start_date, end_date=end_date, membership_plan=membership_plan,
-                    monthly_rate=rate, daily_rate=membership_plan.daily_rate, dropin_allowance=membership_plan.dropin_allowance,
-                    has_desk=membership_plan.has_desk, paid_by=paid_by)
-
-    def active_memberships(self, target_date=None):
-        if not target_date:
-            target_date = localtime(now()).date()
-        current = Q(start_date__lte=target_date)
-        unending = Q(end_date__isnull=True)
-        future_ending = Q(end_date__gte=target_date)
-        return self.select_related('user', 'user__profile').filter(current & (unending | future_ending)).distinct()
-
-    def future_memberships(self):
-        today = localtime(now()).date()
-        return self.filter(start_date__gte=today)
-
-
-class OldMembership(models.Model):
-
-    """A membership level which is billed monthly"""
-    objects = OldMembershipManager()
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="+", on_delete=models.CASCADE)
-    membership_plan = models.ForeignKey(MembershipPlan, null=True, on_delete=models.CASCADE)
-    start_date = models.DateField(db_index=True)
-    end_date = models.DateField(blank=True, null=True, db_index=True)
-    monthly_rate = models.IntegerField(default=0)
-    dropin_allowance = models.IntegerField(default=0)
-    daily_rate = models.IntegerField(default=0)
-    has_desk = models.BooleanField(default=False)
-    has_key = models.BooleanField(default=False)
-    has_mail = models.BooleanField(default=False)
-    paid_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, related_name="guest_membership", on_delete=models.CASCADE)
-    new_membership = models.ForeignKey(Membership, null=True, blank=True, on_delete=models.CASCADE)
-
-    @property
-    def guest_of(self):
-        if self.paid_by:
-            return self.paid_by.profile
-        return None
-
-    def save(self, *args, **kwargs):
-        if OldMembership.objects.active_memberships(self.start_date).exclude(pk=self.pk).filter(user=self.user).count() != 0:
-            raise Exception('Already have a Membership for that start date')
-        if self.end_date and OldMembership.objects.active_memberships(self.end_date).exclude(pk=self.pk).filter(user=self.user).count() != 0:
-            raise Exception('Already have a Membership for that end date')
-        if self.end_date and self.start_date > self.end_date:
-            raise Exception('A Membership cannot start after it ends')
-        super(OldMembership, self).save(*args, **kwargs)
-
-    def is_active(self, target_date=None):
-        if not target_date:
-            target_date = localtime(now()).date()
-        if self.start_date > target_date:
-            return False
-        return self.end_date == None or self.end_date >= target_date
-
-    def is_anniversary_day(self, target_date):
-        # Do something smarter if we're at the end of February
-        if target_date.month == 2 and target_date.day == 28:
-            if self.start_date.day >= 29:
-                return True
-
-        # 30 days has September, April, June, and November
-        if self.start_date.day == 31 and target_date.day == 30:
-            if target_date.month in [9, 4, 6, 11]:
-                return True
-        return target_date.day == self.start_date.day
-
-    def is_change(self):
-        # If there is a membership ending the day before this one began then this one is a change
-        return OldMembership.objects.filter(user=self.user, end_date=self.start_date - timedelta(days=1)).count() > 0
-
-    def prev_billing_date(self, target_date=None):
-        if not target_date:
-            target_date = localtime(now()).date()
-        difference = relativedelta(target_date, self.start_date)
-        return self.start_date + relativedelta(years=difference.years, months=difference.months)
-
-    def next_billing_date(self, target_date=None):
-        if not target_date:
-            target_date = localtime(now()).date()
-        return self.prev_billing_date(target_date) + relativedelta(months=1)
-
-    def get_allowance(self):
-        if self.paid_by:
-            m = self.paid_by.profile.active_membership()
-            if m:
-                return m.dropin_allowance
-            else:
-                return 0
-        return self.dropin_allowance
-
-    def __str__(self):
-        return '%s - %s - %s' % (self.start_date, self.user, self.membership_plan)
-
-    def get_admin_url(self):
-        return reverse('admin:nadine_membership_change', args=[self.id])
-
-    class Meta:
-        app_label = 'nadine'
-        verbose_name = "OldMembership"
-        verbose_name_plural = "OldMemberships"
-        ordering = ['start_date']
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

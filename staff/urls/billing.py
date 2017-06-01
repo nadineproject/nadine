@@ -20,13 +20,6 @@ urlpatterns = [
     url(r'^toggle_billing_flag/(?P<username>[^/]+)/$', billing.toggle_billing_flag, name='toggle_bill'),
     url(r'^generate_bill/(?P<membership_id>[^/]+)/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', billing.generate_bill, name='generate_bill'),
 
-    # TODO - Old and should be removed
-    url(r'^run/$', billing.run_billing, name='run'),
-    url(r'^bills/outstanding_old/$', billing.outstanding_old, name='outstanding_old'),
-    url(r'^transactions/$', billing.transactions, name='transactions'),
-    url(r'^transaction/(?P<id>\d+)/$', billing.transaction, name='transaction'),
-    url(r'^transactions/(?P<username>[^/]+)/$', billing.user_transactions, name='user_transactions'),
-
     # Integerations
     url(r'^usaepay/m/$', payment.usaepay_members, name='payments_members'),
     url(r'^usaepay/void/$', payment.usaepay_void, name='payment_void'),

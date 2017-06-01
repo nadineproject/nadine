@@ -20,7 +20,6 @@ from nadine.models.profile import UserProfile
 from nadine.models.usage import CoworkingDay
 from nadine.models.billing import UserBill
 # from nadine.models.resource import Room
-# from nadine.models.payment import Transaction
 from nadine.models.alerts import MemberAlert
 from nadine.forms import MemberSearchForm, NewUserForm, EditProfileForm
 from member.models import HelpText

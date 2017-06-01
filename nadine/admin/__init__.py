@@ -12,14 +12,13 @@ from user import *
 from organization import *
 from billing import *
 from membership import *
-from old_billing import *
+from old_models import *
 
 
 # Register the objects with the admin interface
 admin.site.register(Neighborhood)
 admin.site.register(Industry)
 admin.site.register(HowHeard)
-admin.site.register(MembershipPlan)
 admin.site.register(Room)
 admin.site.register(Event)
 admin.site.register(Resource)

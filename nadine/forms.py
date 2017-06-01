@@ -20,7 +20,7 @@ from localflavor.ca.ca_provinces import PROVINCE_CHOICES
 from nadine import email
 from nadine.models.core import HowHeard, Industry, Neighborhood, URLType, GENDER_CHOICES, Documents
 from nadine.models.profile import UserProfile, MemberNote, user_photo_path
-from nadine.models.membership import Membership, MembershipPlan, MembershipPackage, ResourceSubscription, IndividualMembership, SubscriptionDefault
+from nadine.models.membership import Membership, MembershipPackage, ResourceSubscription, IndividualMembership, SubscriptionDefault
 from nadine.models.usage import PAYMENT_CHOICES, CoworkingDay
 from nadine.models.resource import Room, Resource
 from nadine.models.organization import Organization, OrganizationMember
@@ -405,76 +405,77 @@ class CoworkingDayForm(forms.Form):
         return day
 
 
-class MembershipForm(forms.Form):
-    username = forms.CharField(required=True, widget=forms.HiddenInput)
-    plan_list = MembershipPlan.objects.filter(enabled=True).order_by('name')
-    membership_id = forms.IntegerField(required=False, min_value=0, widget=forms.HiddenInput)
-    membership_plan = forms.ModelChoiceField(queryset=plan_list, required=True)
-    start_date = forms.DateField(initial=datetime.date.today)
-    end_date = forms.DateField(required=False)
-    monthly_rate = forms.IntegerField(required=True, min_value=0)
-    dropin_allowance = forms.IntegerField(required=True, min_value=0)
-    daily_rate = forms.IntegerField(required=True, min_value=0)
-    has_desk = forms.BooleanField(initial=False, required=False)
-    has_key = forms.BooleanField(initial=False, required=False)
-    has_mail = forms.BooleanField(initial=False, required=False)
-    paid_by = forms.ModelChoiceField(queryset=User.helper.active_members(), required=False)
-    # These are for the MemberNote
-    note = forms.CharField(required=False, widget=forms.Textarea)
-    created_by = None
-
-    def save(self):
-        if not self.is_valid():
-            raise Exception('The form must be valid in order to save')
-        membership_id = self.cleaned_data['membership_id']
-
-        adding = False
-        membership = None
-        if membership_id:
-            # Editing
-            membership = Membership.objects.get(id=membership_id)
-        else:
-            # Adding
-            adding = True
-            membership = Membership()
-
-        username = self.cleaned_data['username']
-        membership.user = User.objects.get(username=username)
-        membership.member = membership.user.profile
-
-        # Any change triggers disabling of the automatic billing
-        try:
-            api = PaymentAPI()
-            api.disable_recurring(username)
-            logger.debug("Automatic Billing Disabled for '%s'" % username)
-        except Exception as e:
-            logger.error(e)
-
-        # We need to look at their last membership but we'll wait until after the save
-        last_membership = membership.user.profile.last_membership()
-
-        # Save this membership
-        membership.membership_plan = self.cleaned_data['membership_plan']
-        membership.start_date = self.cleaned_data['start_date']
-        membership.end_date = self.cleaned_data['end_date']
-        membership.monthly_rate = self.cleaned_data['monthly_rate']
-        membership.dropin_allowance = self.cleaned_data['dropin_allowance']
-        membership.daily_rate = self.cleaned_data['daily_rate']
-        membership.has_desk = self.cleaned_data['has_desk']
-        membership.has_key = self.cleaned_data['has_key']
-        membership.has_mail = self.cleaned_data['has_mail']
-        membership.paid_by = self.cleaned_data['paid_by']
-        membership.save()
-
-        # Save the note if we were given one
-        note = self.cleaned_data['note']
-        if note:
-            MemberNote.objects.create(user=membership.user, created_by=self.created_by, note=note)
-
-        if adding:
-            email.send_new_membership(membership.user)
-
-        return membership
+# TODO - Remove -- IS this used at all?
+# class MembershipForm(forms.Form):
+#     username = forms.CharField(required=True, widget=forms.HiddenInput)
+#     plan_list = MembershipPlan.objects.filter(enabled=True).order_by('name')
+#     membership_id = forms.IntegerField(required=False, min_value=0, widget=forms.HiddenInput)
+#     membership_plan = forms.ModelChoiceField(queryset=plan_list, required=True)
+#     start_date = forms.DateField(initial=datetime.date.today)
+#     end_date = forms.DateField(required=False)
+#     monthly_rate = forms.IntegerField(required=True, min_value=0)
+#     dropin_allowance = forms.IntegerField(required=True, min_value=0)
+#     daily_rate = forms.IntegerField(required=True, min_value=0)
+#     has_desk = forms.BooleanField(initial=False, required=False)
+#     has_key = forms.BooleanField(initial=False, required=False)
+#     has_mail = forms.BooleanField(initial=False, required=False)
+#     paid_by = forms.ModelChoiceField(queryset=User.helper.active_members(), required=False)
+#     # These are for the MemberNote
+#     note = forms.CharField(required=False, widget=forms.Textarea)
+#     created_by = None
+#
+#     def save(self):
+#         if not self.is_valid():
+#             raise Exception('The form must be valid in order to save')
+#         membership_id = self.cleaned_data['membership_id']
+#
+#         adding = False
+#         membership = None
+#         if membership_id:
+#             # Editing
+#             membership = Membership.objects.get(id=membership_id)
+#         else:
+#             # Adding
+#             adding = True
+#             membership = Membership()
+#
+#         username = self.cleaned_data['username']
+#         membership.user = User.objects.get(username=username)
+#         membership.member = membership.user.profile
+#
+#         # Any change triggers disabling of the automatic billing
+#         try:
+#             api = PaymentAPI()
+#             api.disable_recurring(username)
+#             logger.debug("Automatic Billing Disabled for '%s'" % username)
+#         except Exception as e:
+#             logger.error(e)
+#
+#         # We need to look at their last membership but we'll wait until after the save
+#         last_membership = membership.user.profile.last_membership()
+#
+#         # Save this membership
+#         membership.membership_plan = self.cleaned_data['membership_plan']
+#         membership.start_date = self.cleaned_data['start_date']
+#         membership.end_date = self.cleaned_data['end_date']
+#         membership.monthly_rate = self.cleaned_data['monthly_rate']
+#         membership.dropin_allowance = self.cleaned_data['dropin_allowance']
+#         membership.daily_rate = self.cleaned_data['daily_rate']
+#         membership.has_desk = self.cleaned_data['has_desk']
+#         membership.has_key = self.cleaned_data['has_key']
+#         membership.has_mail = self.cleaned_data['has_mail']
+#         membership.paid_by = self.cleaned_data['paid_by']
+#         membership.save()
+#
+#         # Save the note if we were given one
+#         note = self.cleaned_data['note']
+#         if note:
+#             MemberNote.objects.create(user=membership.user, created_by=self.created_by, note=note)
+#
+#         if adding:
+#             email.send_new_membership(membership.user)
+#
+#         return membership
 
 class SubForm(forms.Form):
     username = forms.CharField(required=False, widget=forms.HiddenInput({'class':'username_td'}))
