@@ -75,6 +75,15 @@ class UserBill(models.Model):
     def get_absolute_url(self):
         return reverse('member:receipt', kwargs={'bill_id': self.id})
 
+    def get_regenerate_url(self):
+        kwargs={
+            'membership_id': self.membership.id,
+            'year': self.period_start.year,
+            'month': self.period_start.month,
+            'day': self.period_start.day,
+        }
+        return reverse('staff:billing:generate_bill', kwargs=kwargs)
+
     def get_staff_url(self):
         return reverse('staff:billing:bill', kwargs={'bill_id': self.id})
 

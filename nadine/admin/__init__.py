@@ -27,6 +27,7 @@ admin.site.register(Resource)
 
 class CoworkingDayAdmin(StyledAdmin):
     list_display = ('visit_date', 'user', 'paid_by', 'created_ts')
+    raw_id_fields = ('user', 'paid_by')
     search_fields = ('user__first_name', 'user__last_name', 'paid_by__first_name', 'paid_by__last_name')
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "paid_by":
