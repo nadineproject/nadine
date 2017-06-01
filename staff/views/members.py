@@ -40,9 +40,6 @@ from arpwatch.models import ArpLog
 def detail(request, username):
     user = get_object_or_404(User, username=username)
     emergency_contact = user.get_emergency_contact()
-    # memberships = OldMembership.objects.filter(user=user).order_by('start_date').reverse()
-    # subscriptions = user.membership.first().active_subscriptions()
-    # membership = user.
     email_logs = SentEmailLog.objects.filter(user=user).order_by('created').reverse()
     member_notes = user.get_member_notes()
     payer = None
@@ -67,13 +64,6 @@ def detail(request, username):
                 year = None
             desc = request.POST.get('description')
             SpecialDay.objects.create(user=user, month=month, day=day, year=year, description=desc)
-        elif 'gen_bill' in request.POST:
-            bill = user.membership.generate_bill(created_by=request.user)
-            if bill and len(bill.keys()) == 1:
-                return HttpResponseRedirect(reverse('staff:billing:bill', kwargs={'bill_id': bill[bill.keys()[0]]['bill'].id}))
-            else:
-                return HttpResponseRedirect(reverse('staff:billing:user_bills', kwargs={'username': user.username }))
-            messages.add_message(request, messages.SUCCESS, "Bill Generated")
         else:
             print(request.POST)
     staff_members = User.objects.filter(is_staff=True).order_by('id').reverse()
@@ -404,7 +394,6 @@ def membership(request, username):
     }
     return render(request, 'staff/members/membership.html', context)
 
-
 @staff_member_required
 def confirm_membership(request, username, package, end_target, new_subs):
     user = get_object_or_404(User, username=username)
@@ -516,6 +505,7 @@ def confirm_membership(request, username, package, end_target, new_subs):
         'ending_pkg': ending_pkg,
     }
     return render(request, 'staff/members/confirm.html', context)
+
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
