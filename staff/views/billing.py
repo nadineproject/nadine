@@ -296,7 +296,13 @@ def bill_view(request, bill_id):
     diff = localtime(now()).date() - bill.period_end
     if diff.days < 1:
         diff = None
-    context = {"bill": bill, "diff": diff, "benefactor": benefactor}
+    line_items = bill.line_items.all().order_by('id')
+    context = {
+        "bill": bill,
+        "line_items": line_items,
+        "diff": diff,
+        "benefactor": benefactor,
+    }
     return render(request, 'staff/billing/bill_view.html', context)
 
 
