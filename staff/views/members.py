@@ -41,6 +41,9 @@ from arpwatch.models import ArpLog
 def detail(request, username):
     user = get_object_or_404(User, username=username)
     emergency_contact = user.get_emergency_contact()
+    # memberships = OldMembership.objects.filter(user=user).order_by('start_date').reverse()
+    # subscriptions = user.membership.first().active_subscriptions()
+    # membership = user.
     email_logs = SentEmailLog.objects.filter(user=user).order_by('created').reverse()
     member_notes = user.get_member_notes()
     payer = None
@@ -65,6 +68,13 @@ def detail(request, username):
                 year = None
             desc = request.POST.get('description')
             SpecialDay.objects.create(user=user, month=month, day=day, year=year, description=desc)
+        elif 'gen_bill' in request.POST:
+            bill = user.membership.generate_bill(created_by=request.user)
+            if bill and len(bill.keys()) == 1:
+                return HttpResponseRedirect(reverse('staff:billing:bill', kwargs={'bill_id': bill[bill.keys()[0]]['bill'].id}))
+            else:
+                return HttpResponseRedirect(reverse('staff:billing:user_bills', kwargs={'username': user.username }))
+            messages.add_message(request, messages.SUCCESS, "Bill Generated")
         else:
             print(request.POST)
     staff_members = User.objects.filter(is_staff=True).order_by('id').reverse()
@@ -442,14 +452,14 @@ def confirm_membership(request, username, package, end_target, new_subs):
                     # Review all subscriptions to see if adding or ending
                     for sub in subs:
                         sub_id = sub['s_id']
-                        """ End any existing subscriptions that do not already have end dates """
-                        if sub_id != None and sub['end_date']:
-                            to_end = user.membership.active_subscriptions().get(id=sub_id)
-                            if to_end.end_date == None:
-                                end_date = sub['end_date']
-                                to_end.end_date = sub['end_date']
-                                to_end.save()
-                                slack = None
+                        if sub_id != None:
+                            if sub_id and sub['end_date']:
+                                to_end = user.membership.active_subscriptions().get(id=sub_id)
+                                if to_end.end_date == None:
+                                    end_date = sub['end_date']
+                                    to_end.end_date = sub['end_date']
+                                    to_end.save()
+                                    slack = None
                         else:
                             """ If not ending then create subscriptions """
                             paid_by = None
