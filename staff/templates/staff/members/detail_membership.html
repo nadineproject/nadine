@@ -9,7 +9,7 @@ var total = 0;
 {% endfor %}
 
 $(document).ready(function() {
-  $('.payee-total').text('$' + total);
+  $('.payee-total').text('$' + total.toFixed(2));
 })
 </script>
 <h5>At a Glance</h5>
