@@ -46,12 +46,6 @@ class CoworkingDay(models.Model):
         verbose_name = "Coworking Day"
         ordering = ['-visit_date', '-created_ts']
 
-def sign_in_callback(sender, **kwargs):
-    log = kwargs['instance']
-    from nadine.models.alerts import MemberAlert
-    MemberAlert.objects.trigger_sign_in(log.user)
-post_save.connect(sign_in_callback, sender=CoworkingDay)
-
 
 class Event(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
