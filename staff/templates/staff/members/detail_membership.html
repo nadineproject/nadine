@@ -25,7 +25,13 @@ $(document).ready(function() {
     <th class='sub-th'></th>
   </tr>
   <tr>
-    <td>{{ membership.bill_day_str }}</td>
+    <td class='center'>
+      {% if user.profile.is_active %}
+        {{ membership.bill_day_str }}
+      {% else %}
+        -
+      {% endif %}
+    </td>
     <td>{{ membership.next_period_start }}</td>
     <td>{{ membership.package }}</td>
     {% if user.profile.is_guest %}
@@ -49,7 +55,7 @@ $(document).ready(function() {
   </tr>
   {% for g in user.profile.guests %}
   <tr class="{% cycle 'row-even' 'row-odd' %}">
-    <td><a href='{% url "staff:members:membership" g.username %}'>{{ g.get_full_name }}</a></td>
+    <td><a href='{% url "staff:members:detail" g.username %}'>{{ g.get_full_name }}</a></td>
     <td>{{ g.membership.package }}</td>
     <td>{{ g.membership.start_date }}</td>
     <td class='payee-rate'>${{ g.membership.monthly_rate }}</td>

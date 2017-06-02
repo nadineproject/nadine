@@ -256,8 +256,6 @@
           </tr>
         {% endfor %}
       </table>
-    {% else %}
-      <p class='ending-p'><strong>No new membership package for start of next bill period {{ user.membership.next_period_start|date:'Y-m-d' }}</strong></p>
     {% endif %}
   </div>
   {% endif %}

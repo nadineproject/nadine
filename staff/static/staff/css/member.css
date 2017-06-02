@@ -314,6 +314,10 @@ td.up-input.rate {
   vertical-align: sub;
 }
 
+.center {
+  text-align: center;
+}
+
 .chip {
   color: RGBA(28, 164, 230, 1.00);
 }
