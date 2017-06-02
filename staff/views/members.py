@@ -430,7 +430,6 @@ def confirm_membership(request, username, package, end_target, new_subs):
                     if user.membership.package != mem_package:
                         membership.package = mem_package
                         membership.save()
-                        user.membership.end_all(end_target)
                     if user.membership.bill_day != pkg['bill_day']:
                         membership.bill_day = pkg['bill_day']
                         membership.save()
