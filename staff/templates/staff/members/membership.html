@@ -9,7 +9,9 @@
 <div id='promptModal' class='modal'>
   <div class='modal-content'>
     <div class='modal-body'>
-      <h5>What do you want to do?</h5>
+      <span style='margin-left: 94%;'><a href="{% url 'staff:members:detail' user.username %}#membership">[ X ]</a></span>
+      <h5>Edit Subscriptions</h5>
+      <h6 style='text-align: center; margin-top: 3%;'>What do you want to do?</h6>
       <div class='sub-chips'>
         <a id='change' class='chip'>New Package</a>
         | <a id='update' class='chip'>Update Current Subscriptions</a>
@@ -701,7 +703,7 @@
 
     $('#ok').on('click', function(e) {
       e.preventDefault();
-      window.location.replace("{% url 'staff:members:detail' entity.username %}" + "#tabs-1");
+      window.location.replace("{% url 'staff:members:detail' entity.username %}" + "#membership");
     })
 
     //Hit the back button to restart this process
