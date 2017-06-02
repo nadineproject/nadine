@@ -95,7 +95,7 @@ class MemberAlertManager(models.Manager):
         if not FileUpload.MEMBER_INFO in existing_files:
             if not MemberAlert.PAPERWORK in open_alerts:
                 MemberAlert.objects.create(user=user, key=MemberAlert.PAPERWORK)
-            if not MemberAlert.PAPERWORK in open_alerts:
+            if not MemberAlert.MEMBER_INFO in open_alerts:
                 MemberAlert.objects.create(user=user, key=MemberAlert.MEMBER_INFO)
 
         # Membership Agreement
@@ -109,7 +109,7 @@ class MemberAlertManager(models.Manager):
                 MemberAlert.objects.create(user=user, key=MemberAlert.TAKE_PHOTO)
             if not MemberAlert.UPLOAD_PHOTO in open_alerts:
                 MemberAlert.objects.create(user=user, key=MemberAlert.UPLOAD_PHOTO)
-        if not new_membership.is_change() and not MemberAlert.POST_PHOTO in open_alerts:
+        if not MemberAlert.POST_PHOTO in open_alerts:
             MemberAlert.objects.create(user=user, key=MemberAlert.POST_PHOTO)
 
         # New Member Orientation
@@ -223,8 +223,9 @@ def subscription_callback(sender, **kwargs):
 
     # If this is a new subscription and they were not an active member yesterday,
     # than this is a new membership!
-    if created and not user.profile.is_active(subscription.start_date - timedelta(days=1)):
-        MemberAlert.objects.trigger_new_membership(user)
+    # yesterday = subscription.start_date - timedelta(days=1)
+    # if created and not user.profile.is_active(yesterday):
+    #     MemberAlert.objects.trigger_new_membership(user)
 
 
 ############################################################################
