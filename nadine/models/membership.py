@@ -234,6 +234,18 @@ class Membership(models.Model):
             return None
         return subscriptions.order_by('end_date').last().end_date
 
+    def has_resource(self, resource, target_date=None):
+        return self.active_subscriptions(target_date).filter(resource=resource).count() > 0
+
+    def has_key(self, target_date=None):
+        return self.has_resource(Resource.objects.key_resource, target_date)
+
+    def has_desk(self, target_date=None):
+        return self.has_resource(Resource.objects.desk_resource, target_date)
+
+    def has_mail(self, target_date=None):
+        return self.has_resource(Resource.objects.mail_resource, target_date)
+
     def user_list(self, target_date=None):
         if not target_date:
             target_date = localtime(now()).date()
@@ -676,14 +688,18 @@ class ResourceSubscription(models.Model):
         return "%d %s%s %s at $%s/month" % (self.allowance, self.resource, sfx, desc, self.monthly_rate)
 
     @property
-    def payer(self):
-        if self.paid_by:
-            return self.paid_by
+    def user(self):
         if hasattr(self.membership, 'individualmembership'):
             return self.membership.individualmembership.user
         if hasattr(self.membership, 'organizationmembership'):
             return self.membership.organizationmembership.organization.lead
         return None
+
+    @property
+    def payer(self):
+        if self.paid_by:
+            return self.paid_by
+        return self.user
 
     def is_active(self, target_date=None):
         if not target_date:
