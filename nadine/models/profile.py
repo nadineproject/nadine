@@ -138,7 +138,7 @@ class UserQueryHelper():
 
         not_signed_in = []
         for u in self.here_today(target_date):
-            if not u in signed_in and not u.profile.has_desk(target_date):
+            if not u in signed_in and not u.membership.has_desk(target_date):
                 not_signed_in.append({'user':u, 'day':target_date})
 
         return not_signed_in
@@ -539,13 +539,6 @@ class UserProfile(models.Model):
 
     def is_active(self, target_date=None):
         return self.active_subscriptions(target_date).count() > 0
-
-    def has_desk(self, target_date=None):
-        # TODO - port
-        if not target_date:
-            target_date = localtime(now()).date()
-        m = self.membership_on_date(target_date)
-        return m and m.has_desk
 
     def is_guest(self, target_date=None):
         for s in self.active_subscriptions(target_date):
