@@ -529,7 +529,7 @@ class SubForm(forms.Form):
 class MembershipPackageForm(forms.Form):
     username = forms.CharField(required=False, widget=forms.HiddenInput)
     org = forms.CharField(required=False, widget=forms.HiddenInput)
-    package = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), label='Choose a Package', queryset=MembershipPackage.objects.filter(enabled=True), required=True)
+    package = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), label='Choose a Package', queryset=MembershipPackage.objects.filter(enabled=True).order_by('name'), required=True)
     bill_day = forms.IntegerField(min_value=1, max_value=31, required=True)
 
     def save(self):

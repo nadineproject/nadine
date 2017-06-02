@@ -9,7 +9,7 @@ var total = 0;
 {% endfor %}
 
 $(document).ready(function() {
-  $('.payee-total').text('$' + total);
+  $('.payee-total').text('$' + total.toFixed(2));
 })
 </script>
 <h5>At a Glance</h5>
@@ -25,7 +25,13 @@ $(document).ready(function() {
     <th class='sub-th'></th>
   </tr>
   <tr>
-    <td>{{ membership.bill_day_str }}</td>
+    <td class='center'>
+      {% if user.profile.is_active %}
+        {{ membership.bill_day_str }}
+      {% else %}
+        -
+      {% endif %}
+    </td>
     <td>{{ membership.next_period_start }}</td>
     <td>{{ membership.package }}</td>
     {% if user.profile.is_guest %}
@@ -33,10 +39,37 @@ $(document).ready(function() {
     {% endif %}
     <td>${{ membership.monthly_rate }}</td>
     <td class='sub-chips'>
-      <a class='chip' href="{% url 'staff:members:membership' user.username %}">Edit Membership</a>
+      <a class='chip' href="{% url 'staff:members:membership' user.username %}">Edit Subscriptions</a>
     </td>
   </tr>
 </table>
+
+{% if user.profile.guests %}
+<h5>Paying for The Following Memberships</h5>
+<table class='sub-table'>
+  <tr>
+    <th class='sub-th'>User</th>
+    <th class='sub-th'>Membership Package</th>
+    <th class='sub-th'>Start Date</th>
+    <th class='sub-th'>Monthly Rate</th>
+  </tr>
+  {% for g in user.profile.guests %}
+  <tr class="{% cycle 'row-even' 'row-odd' %}">
+    <td><a href='{% url "staff:members:detail" g.username %}'>{{ g.get_full_name }}</a></td>
+    <td>{{ g.membership.package }}</td>
+    <td>{{ g.membership.start_date }}</td>
+    <td class='payee-rate'>${{ g.membership.monthly_rate }}</td>
+  </tr>
+  {% endfor %}
+  <tr>
+    <td></td>
+    <td></td>
+    <td>Total:</td>
+    <td><strong class='payee-total'></strong></td>
+  </tr>
+</table>
+{% endif %}
+
 
 {% if user.membership.subscriptions.future_subscriptions %}
 <h5>Future Subscriptions</h5>
@@ -96,32 +129,6 @@ $(document).ready(function() {
 <h6 style='text-align: center; margin-top: 5%;'>
   No current subscriptions.
 </h6>
-{% endif %}
-
-{% if user.profile.guests %}
-<h5>Paying for The Following Memberships</h5>
-<table class='sub-table'>
-  <tr>
-    <th class='sub-th'>User</th>
-    <th class='sub-th'>Membership Package</th>
-    <th class='sub-th'>Start Date</th>
-    <th class='sub-th'>Monthly Rate</th>
-  </tr>
-  {% for g in user.profile.guests %}
-  <tr class="{% cycle 'row-even' 'row-odd' %}">
-    <td><a href='{% url "staff:members:membership" g.username %}'>{{ g.get_full_name }}</a></td>
-    <td>{{ g.membership.package }}</td>
-    <td>{{ g.membership.start_date }}</td>
-    <td class='payee-rate'>${{ g.membership.monthly_rate }}</td>
-  </tr>
-  {% endfor %}
-  <tr>
-    <td></td>
-    <td></td>
-    <td>Total:</td>
-    <td><strong class='payee-total'></strong></td>
-  </tr>
-</table>
 {% endif %}
 
 {% if user.membership.subscriptions.past_subscriptions %}

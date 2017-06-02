@@ -653,6 +653,15 @@ class SubscriptionManager(models.Manager):
             target_date = localtime(now()).date()
         return self.filter(end_date__lt=target_date)
 
+    def subscriptions_paid_by_user(self, user=None, target_date=None):
+        ''' Return total dollar amount of monthly subscriptions paid by a particular user '''
+        if not target_date:
+            target_date = localtime(now()).date()
+        own_subs = self.active_subscriptions().filter(paid_by=None)
+        guest_subs = ResourceSubscription.objects.active_subscriptions().filter(paid_by=user)
+        subscription_totals = (own_subs | guest_subs).aggregate(Sum('monthly_rate'))
+        return subscription_totals
+
 
 class ResourceSubscription(models.Model):
     objects = SubscriptionManager()

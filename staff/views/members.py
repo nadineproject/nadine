@@ -351,6 +351,7 @@ def membership(request, username):
                     with transaction.atomic():
                         new_subs = []
                         package = request.POST['package']
+                        bill_day = request.POST['bill_day']
                         membership = {'package': package, 'bill_day': bill_day}
                         for sub_form in sub_formset:
                             paid_by = None
@@ -394,7 +395,6 @@ def membership(request, username):
     }
     return render(request, 'staff/members/membership.html', context)
 
-
 @staff_member_required
 def confirm_membership(request, username, package, end_target, new_subs):
     user = get_object_or_404(User, username=username)
@@ -429,9 +429,14 @@ def confirm_membership(request, username, package, end_target, new_subs):
                         mem_package = MembershipPackage.objects.get(id=request.POST.get('match'))
                     if user.membership.package != mem_package:
                         membership.package = mem_package
+                        membership.save()
+                        for s in user.membership.active_subscriptions():
+                            if s.end_date == None:
+                                s.end_date = end_target
+                                s.save()
+                    if user.membership.bill_day != pkg['bill_day']:
                         membership.bill_day = pkg['bill_day']
                         membership.save()
-                        user.membership.end_all(end_target)
 
                         """When a membership is created, add the user to any opt-out mailing lists"""
                         if user.membership.package == None:
@@ -442,14 +447,14 @@ def confirm_membership(request, username, package, end_target, new_subs):
                     # Review all subscriptions to see if adding or ending
                     for sub in subs:
                         sub_id = sub['s_id']
-                        """ End any existing subscriptions that do not already have end dates """
-                        if sub_id != None and sub['end_date']:
-                            to_end = user.membership.active_subscriptions().get(id=sub_id)
-                            if to_end.end_date == None:
-                                end_date = sub['end_date']
-                                to_end.end_date = sub['end_date']
-                                to_end.save()
-                                slack = None
+                        if sub_id != None:
+                            if sub_id and sub['end_date']:
+                                to_end = user.membership.active_subscriptions().get(id=sub_id)
+                                if to_end.end_date == None:
+                                    end_date = sub['end_date']
+                                    to_end.end_date = sub['end_date']
+                                    to_end.save()
+                                    slack = None
                         else:
                             """ If not ending then create subscriptions """
                             paid_by = None
@@ -506,6 +511,7 @@ def confirm_membership(request, username, package, end_target, new_subs):
         'ending_pkg': ending_pkg,
     }
     return render(request, 'staff/members/confirm.html', context)
+
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

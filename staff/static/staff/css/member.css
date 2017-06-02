@@ -314,6 +314,10 @@ td.up-input.rate {
   vertical-align: sub;
 }
 
+.center {
+  text-align: center;
+}
+
 .chip {
   color: RGBA(28, 164, 230, 1.00);
 }
@@ -476,6 +480,7 @@ td.up-input.rate {
 table.mem-details-table {
   margin-left: 2%;
   margin-top: 2%;
+  width: 96%;
 }
 
 .mem-details-table th, .mem-details-table td, .sub-table th, .sub-table td, .up-table th {
@@ -529,7 +534,7 @@ table.mem-details-table {
   padding: 0;
   border: 1px solid #888;
 	border-radius: 4px;
-	height: 25%;
+	height: 35%;
   width: 60%;
   /*box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);*/
   -webkit-animation-name: animatetop;
@@ -541,7 +546,6 @@ table.mem-details-table {
 .modal .modal-content {
 	padding-top: 2%;
 }
-
 
 #promptModal .modal-body h5, #teamModal .modal-body h5 {
   text-align: center;
@@ -645,7 +649,7 @@ table.mem-details-table {
 }
 
 .sub-chips, .okChip {
-  margin-top: 6%;
+  margin-top: 3%;
   margin-left: 10%;
 }
 
