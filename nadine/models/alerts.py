@@ -159,12 +159,11 @@ class MemberAlertManager(models.Manager):
 
     def trigger_new_key(self, user):
         logger.debug("trigger_new_key: %s" % user)
+        # No need to return the door key if they now have a key
+        user.profile.resolve_alerts(MemberAlert.RETURN_DOOR_KEY)
         # Check for a key agreement
         if not FileUpload.KEY_AGMT in user.profile.files_by_type():
             MemberAlert.objects.create_if_not_open(user=user, key=MemberAlert.KEY_AGREEMENT)
-        # No need to return the door key if they now have a key
-        user.profile.resolve_alerts(MemberAlert.RETURN_DOOR_KEY)
-        print("fucker")
 
     def trigger_ending_key(self, user, end_date):
         logger.debug("trigger_ending_key: %s" % user)
@@ -221,12 +220,15 @@ def subscription_callback(sender, **kwargs):
         elif ending and not user.has_mail(subscription.end_date + timedelta(days=1)):
             MemberAlert.objects.trigger_ending_mail(user, subscription.end_dat)
 
-    # If this is a new subscription and they were not an active member yesterday,
-    # than this is a new membership!
-    # yesterday = subscription.start_date - timedelta(days=1)
-    # if created and not user.profile.is_active(yesterday):
-    #     MemberAlert.objects.trigger_new_membership(user)
-
+    # If this is a new subscription and they were not an active member
+    # the day before this, than this is a new membership!
+    if created:
+        # TODO - figure out why sometimes start_date comes in as an str
+        if type(subscription.start_date) is str:
+            subscription.start_date = datetime.strptime(subscription.start_date, '%Y-%m-%d').date()
+        the_day_before = subscription.start_date - timedelta(days=1)
+        if not user.membership.is_active(the_day_before):
+            MemberAlert.objects.trigger_new_membership(user)
 
 ############################################################################
 # Models
