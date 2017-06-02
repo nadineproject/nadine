@@ -351,6 +351,7 @@ def membership(request, username):
                     with transaction.atomic():
                         new_subs = []
                         package = request.POST['package']
+                        bill_day = request.POST['bill_day']
                         membership = {'package': package, 'bill_day': bill_day}
                         for sub_form in sub_formset:
                             paid_by = None

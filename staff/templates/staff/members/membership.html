@@ -9,7 +9,7 @@
 <div id='promptModal' class='modal'>
   <div class='modal-content'>
     <div class='modal-body'>
-      <span style='margin-left: 94%;'><a href="{% url 'staff:members:detail' user.username %}#membership">[ X ]</a></span>
+      <span style='margin-left: 94%;'><a href="{% url 'staff:members:detail' user.username %}#membership"> X </a></span>
       <h5>Edit Subscriptions</h5>
       <h6 style='text-align: center; margin-top: 3%;'>What do you want to do?</h6>
       <div class='sub-chips'>
@@ -114,6 +114,10 @@
 </div>
 <div id='change-package'>
   <form class='sub-form' action='.' method='POST'>
+    <div class='bill-day-div' style='margin-left: 2%;'>
+      <h6 style='display: inline; padding-right: 2%;'>Monthly Bill Day:</h6>
+      <input min='1' max='31' type='number' class='ur_bill_day' name='bill_day' value="{{ bill_day }}" style='display: inline; width: 5%; vertical-align: baseline;'/><span style='vertical-align: baseline; padding-left: 1%;'>of the month</span>
+    </div>
     <table class='sub-table change-table'>
       {% if subscriptions %}
       <tr>
@@ -155,7 +159,6 @@
           {% else %}
           {% endif %}
           <input type='hidden' class='chosen_package' name='package' value="{{ package }}" />
-          <input type='hidden' class='ur_bill_day' name='bill_day' value="{{ bill_day }}" />
           {% if entity.username %}
             <input type='hidden' class='thr_username' name='username' value="{{ entity.username }}" />
             {{ sub_form.username}}
@@ -340,7 +343,6 @@
     $('.sub-input .end_date').addClass('datepicker');
     $('.datepicker').datepicker({
       dateFormat: 'yy-mm-dd',
-      minDate: -7,
     });
 
     $('#id_created_by').val('{{ request.user }}');
@@ -532,7 +534,7 @@
         $(this).children().each(function() {
           for (var i = 0; i < existing.length; i++) {
             if($(this).val() == existing[i]) {
-              $(this).remove();
+              $(this).hide();
             }
           }
         })
@@ -550,7 +552,6 @@
 
       $('.datepicker').datepicker({
         dateFormat: 'yy-mm-dd',
-        minDate: -7
       });
 
       $('.delete-row').on('click', function(e) {
