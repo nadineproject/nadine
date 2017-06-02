@@ -267,8 +267,8 @@ def coworking_day_callback(sender, **kwargs):
 
 @receiver(post_save, sender=ResourceSubscription)
 def subscription_callback(sender, **kwargs):
-    print("subscription_callback kwargs: ")
-    print kwargs
+    # print("subscription_callback kwargs: ")
+    # print kwargs
     subscription = kwargs['instance']
     user = subscription.user
     created = kwargs['created']
@@ -305,7 +305,8 @@ def membership_callback(sender, **kwargs):
         window_start = localtime(now()) - timedelta(days=5)
         if membership.end_date and membership.end_date < window_start.date():
             MemberAlert.objects.trigger_exiting_membership(membership)
-post_save.connect(membership_callback, sender=Membership)
+# TODO - connect
+# post_save.connect(membership_callback, sender=Membership)
 
 
 ############################################################################
