@@ -60,7 +60,7 @@ class MemberAlertManager(models.Manager):
             # Only trigger exiting membership if no exit alerts were created in the last week
             start = localtime(now()) - timedelta(days=5)
             if MemberAlert.objects.filter(user=u, key__in=MemberAlert.PERSISTENT_ALERTS, created_ts__gte=start).count() == 0:
-                self.trigger_exiting_membership(u, exit_date)
+                self.trigger_ending_membership(u, exit_date)
 
         # Check for stale membership
         smd = User.helper.stale_member_date()
@@ -69,69 +69,27 @@ class MemberAlertManager(models.Manager):
             if not existing_alerts:
                 MemberAlert.objects.create_if_not_open(user=u, key=MemberAlert.STALE_MEMBER)
 
-        # Expire old and unresolved alerts
-        #active_users = UserProfile.objects.active_users()
-        #exiting_users = exiting_members.values('user')
-        # to_clean = [MemberAlert.PAPERWORK, MemberAlert.MEMBER_INFO, MemberAlert.MEMBER_AGREEMENT, MemberAlert.TAKE_PHOTO,
-        #	MemberAlert.UPLOAD_PHOTO, MemberAlert.POST_PHOTO, MemberAlert.ORIENTATION, MemberAlert.KEY_AGREEMENT]
-        # for key in to_clean:
-        #	for alert in self.unresolved(key):
-        #		if not alert.user in exiting_users:
-        #			if not alert.user in active_users:
-        #				alert.mute(None, note="membership ended")
-
-    def trigger_exiting_membership(self, membership, target_date=None):
+    def trigger_ending_membership(self, user, target_date=None):
         if target_date == None:
             target_date = localtime(now())
 
-        new_alerts = False
-        open_alerts = user.profile.alerts_by_key(include_resolved=False)
-
-        # if membership.has_key(target_date):
-        #     if MemberAlert.objects.create_if_new(user, MemberAlert.RETURN_DOOR_KEY, membership.start_date):
-        #         new_alerts = True
-        # if membership.has_desk(target_date):
-        #     if MemberAlert.ASSIGN_CABINET in open_alerts:
-        #         # We never assigned a mailbox so we can just resolve that now
-        #         user.profile.resolve_alerts(MemberAlert.ASSIGN_CABINET)
-        #     if not MemberAlert.objects.filter(user=user, key=MemberAlert.RETURN_DESK_KEY, created_ts__gte=membership.start_date):
-        #         MemberAlert.objects.create(user=user, key=MemberAlert.RETURN_DESK_KEY)
-        #         new_alerts = True
-        # if membership.has_mail(target_date):
-        #     if MemberAlert.ASSIGN_MAILBOX in open_alerts:
-        #         # We never assigned a mailbox so we can just resolve that now
-        #         user.profile.resolve_alerts(MemberAlert.ASSIGN_MAILBOX)
-        #     elif not MemberAlert.objects.filter(user=user, key=MemberAlert.REMOVE_MAILBOX, created_ts__gte=membership.start_date):
-        #         MemberAlert.objects.create(user=user, key=MemberAlert.REMOVE_MAILBOX)
-        #         new_alerts = True
-
-        # Take down their photo.
+        # If they have a photo, take it down and stop nagging us to take one
         if user.profile.photo:
-            if MemberAlert.POST_PHOTO in open_alerts:
-                user.profile.resolve_alerts(MemberAlert.POST_PHOTO)
-            elif not MemberAlert.REMOVE_PHOTO in open_alerts:
-                MemberAlert.objects.create(user=user, key=MemberAlert.REMOVE_PHOTO)
-                new_alerts = True
+            user.profile.resolve_alerts(MemberAlert.POST_PHOTO)
+            MemberAlert.objects.create_if_not_open(user=user, key=MemberAlert.REMOVE_PHOTO)
 
         # Send an email to the team announcing their exit
-        if new_alerts:
-            end = membership.end_date
-            subject = "Exiting Member: %s/%s/%s" % (end.month, end.day, end.year)
-            mailgun.send_manage_member(user, subject=subject)
+        end = user.membership.end_date
+        subject = "Exiting Member: %s/%s/%s" % (end.month, end.day, end.year)
+        mailgun.send_manage_member(user, subject=subject)
 
-
-    # TODO - Port to Membership
-    def trigger_new_membership(self, membership):
+    def trigger_new_membership(self, user):
         logger.debug("trigger_new_membership: %s" % user)
 
         # Pull a bunch of data so we don't keep hitting the database
         open_alerts = user.profile.alerts_by_key(include_resolved=False)
         all_alerts = user.profile.alerts_by_key(include_resolved=True)
         existing_files = user.profile.files_by_type()
-        # existing_memberships = user.membership_set.all().order_by('start_date')
-        # TODO - Convert to NEW
-        existing_memberships = OldMembership.objects.filter(user=user).order_by('start_date')
-        new_membership = existing_memberships.last()
 
         # Member Information
         if not FileUpload.MEMBER_INFO in existing_files:
@@ -157,33 +115,6 @@ class MemberAlertManager(models.Manager):
         # New Member Orientation
         if not MemberAlert.ORIENTATION in all_alerts:
             MemberAlert.objects.create(user=user, key=MemberAlert.ORIENTATION)
-
-        # Key?  Check for a key agreement
-        # Moved to trigger_new_key
-        # if new_membership.has_key:
-        #     if not FileUpload.KEY_AGMT in existing_files:
-        #         if not MemberAlert.KEY_AGREEMENT in open_alerts:
-        #             MemberAlert.objects.create(user=user, key=MemberAlert.KEY_AGREEMENT)
-
-        # Assign a mailbox if this membership comes with mail
-        # Moved to trigger_new_desk
-        # if new_membership.has_desk:
-        #     if MemberAlert.RETURN_DESK_KEY in open_alerts:
-        #         # No need to return the key since their new membership has a desk
-        #         user.profile.resolve_alerts(MemberAlert.RETURN_DESK_KEY)
-        #     else:
-        #         if not MemberAlert.ASSIGN_CABINET in open_alerts:
-        #             MemberAlert.objects.create(user=user, key=MemberAlert.ASSIGN_CABINET)
-
-        # Assign a mailbox if this membership comes with mail
-        # Moved to trigger_new_mail
-        # if new_membership.has_mail:
-        #     if MemberAlert.REMOVE_MAILBOX in open_alerts:
-        #         # No need to remove the mailbox since their new membership has mail
-        #         user.profile.resolve_alerts(MemberAlert.REMOVE_MAILBOX)
-        #     else:
-        #         if not MemberAlert.ASSIGN_MAILBOX in open_alerts:
-        #             MemberAlert.objects.create(user=user, key=MemberAlert.ASSIGN_MAILBOX)
 
     def trigger_profile_save(self, profile):
         logger.debug("trigger_profile_save: %s" % profile)
@@ -267,8 +198,6 @@ def coworking_day_callback(sender, **kwargs):
 
 @receiver(post_save, sender=ResourceSubscription)
 def subscription_callback(sender, **kwargs):
-    # print("subscription_callback kwargs: ")
-    # print kwargs
     subscription = kwargs['instance']
     user = subscription.user
     created = kwargs['created']
@@ -292,21 +221,10 @@ def subscription_callback(sender, **kwargs):
         elif ending and not user.has_mail(subscription.end_date + timedelta(days=1)):
             MemberAlert.objects.trigger_ending_mail(user, subscription.end_dat)
 
-
-def membership_callback(sender, **kwargs):
-    #print("membership_callback")
-    membership = kwargs['instance']
-    created = kwargs['created']
-    if created:
-        MemberAlert.objects.trigger_new_membership(membership)
-    else:
-        # If this membership is older then a week
-        # we'll go straight to exiting member logic
-        window_start = localtime(now()) - timedelta(days=5)
-        if membership.end_date and membership.end_date < window_start.date():
-            MemberAlert.objects.trigger_exiting_membership(membership)
-# TODO - connect
-# post_save.connect(membership_callback, sender=Membership)
+    # If this is a new subscription and they were not an active member yesterday,
+    # than this is a new membership!
+    if created and not user.profile.is_active(subscription.start_date - timedelta(days=1))
+        MemberAlert.objects.trigger_new_membership(user)
 
 
 ############################################################################
