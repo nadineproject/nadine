@@ -490,7 +490,10 @@ def confirm_membership(request, username, package, end_target, new_subs):
                     # if ResourceSubscription.objects.filter(membership=user.membership.id).count() == len(subs):
                         # SlackAPI().invite_user_quiet(user)
                 else:
-                    user.membership.end_all(end_target)
+                    for a in user.membership.active_subscriptions():
+                        if a.end_date == None:
+                            a.end_date = end_target
+                            a.save()
                     # TODO: Can this be a task? Set package to none once end date passes
                     # if datetime.strptime(end_target, '%Y-%m-%d').date() <= localtime(now()).date():
                     #     user.membership.package = None
