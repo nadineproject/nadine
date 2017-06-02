@@ -223,7 +223,7 @@ def subscription_callback(sender, **kwargs):
 
     # If this is a new subscription and they were not an active member yesterday,
     # than this is a new membership!
-    if created and not user.profile.is_active(subscription.start_date - timedelta(days=1))
+    if created and not user.profile.is_active(subscription.start_date - timedelta(days=1)):
         MemberAlert.objects.trigger_new_membership(user)
 
 
