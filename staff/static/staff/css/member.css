@@ -476,6 +476,7 @@ td.up-input.rate {
 table.mem-details-table {
   margin-left: 2%;
   margin-top: 2%;
+  width: 96%;
 }
 
 .mem-details-table th, .mem-details-table td, .sub-table th, .sub-table td, .up-table th {

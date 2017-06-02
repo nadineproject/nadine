@@ -429,9 +429,11 @@ def confirm_membership(request, username, package, end_target, new_subs):
                         mem_package = MembershipPackage.objects.get(id=request.POST.get('match'))
                     if user.membership.package != mem_package:
                         membership.package = mem_package
-                        membership.bill_day = pkg['bill_day']
                         membership.save()
                         user.membership.end_all(end_target)
+                    if user.membership.bill_day != pkg['bill_day']:
+                        membership.bill_day = pkg['bill_day']
+                        membership.save()
 
                         """When a membership is created, add the user to any opt-out mailing lists"""
                         if user.membership.package == None:
