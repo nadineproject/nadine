@@ -249,7 +249,7 @@ class Membership(models.Model):
     def user_list(self, target_date=None):
         if not target_date:
             target_date = localtime(now()).date()
-        return self.users_in_period(target_date, target_date)
+        return self.users_in_period(period_start=target_date, period_end=target_date)
 
     def users_in_period(self, period_start, period_end):
         if self.is_individual:
@@ -313,7 +313,6 @@ class Membership(models.Model):
 
         # If we've made it this far, it's a match
         return True
-
 
     def matching_package(self, target_date=None, subscriptions=None):
         ''' Calculates which package matches the subscriptions. '''
