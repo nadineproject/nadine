@@ -330,7 +330,7 @@
     var package = '{{ package }}';
     var targetDate = '{{ target_date }}';
     var end = '';
-    var action = '';
+    var action = '{{ action }}';
     var existing = [];
     var allow_ending = [];
 
@@ -351,7 +351,6 @@
     $('#id_bill_day').val('{{ bill_day }}');
     $('#id_username').val('{{ entity.username }}')
     $('.action').val(action)
-    // $('.created_by_td').val('{{ request.user }}');
     $('.disabled input').attr('readonly', 'readonly');
     $('.disabled input.end_date').datepicker('destroy');
     $('.disabled input.start_date').datepicker('destroy');
@@ -474,7 +473,7 @@
           $(this).prop('selected', 'selected');
         }
       })
-      if (action === 'change' || action === '') {
+      if (action === 'change' || action === 'None') {
         $('#start_date_td input').each(function() {
           if(!($(this).prop('readonly'))) {
             $(this).attr('readonly', 'readonly').datepicker('destroy');
@@ -630,7 +629,7 @@
     //Takes in date selection and applies it to the forms depending on the action previously selected
     $('#target-input').on('change', function() {
       var period = $('#target-input').val();
-      if(period == 'other') {
+      if (period == 'other') {
         $('#sub-end').show();
         $('#sub-end').datepicker('show');
       } else if (period == 'today') {
