@@ -34,7 +34,6 @@ class AlertTestCase(TestCase):
             monthly_rate = 100.00,
             overage_rate = 0,
         )
-        self.assertTrue(user.profile.alerts().count() == 0)
         self.assertFalse(MemberAlert.STALE_MEMBER in user.profile.alerts_by_key())
 
         # Trigger the period check and we should see this membership is stale
