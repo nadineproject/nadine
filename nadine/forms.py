@@ -477,7 +477,8 @@ class CoworkingDayForm(forms.Form):
 #
 #         return membership
 
-class SubForm(forms.Form):
+
+class SubscriptionForm(forms.Form):
     username = forms.CharField(required=False, widget=forms.HiddenInput({'class':'username_td'}))
     created_ts = forms.DateField(required=False, widget=forms.HiddenInput)
     created_by = forms.CharField(required=False, widget=forms.HiddenInput({'class':'created_by_td'}))
@@ -526,7 +527,7 @@ class SubForm(forms.Form):
 
         return sub
 
-class MembershipPackageForm(forms.Form):
+class MembershipForm(forms.Form):
     username = forms.CharField(required=False, widget=forms.HiddenInput)
     org = forms.CharField(required=False, widget=forms.HiddenInput)
     package = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), label='Choose a Package', queryset=MembershipPackage.objects.filter(enabled=True).order_by('name'), required=True)
@@ -605,7 +606,7 @@ class DocUploadForm(forms.Form):
 
         return doc
 
-class PackageForm(forms.Form):
+class MembershipPackageForm(forms.Form):
     name = forms.CharField(widget=forms.TextInput(attrs={'class': 'name-input'}), max_length=128, required=False)
     sub_id = forms.IntegerField(required=False, widget=forms.HiddenInput)
     package = forms.IntegerField(required=False, widget=forms.HiddenInput(attrs={'class':'package-id'}))

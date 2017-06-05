@@ -24,7 +24,7 @@ from nadine.models.core import Documents
 from nadine.models.profile import FileUpload
 from nadine.models.resource import Resource
 from nadine.utils import network
-from nadine.forms import HelpTextForm, MOTDForm, DocUploadForm, PackageForm
+from nadine.forms import HelpTextForm, MOTDForm, DocUploadForm, MembershipPackageForm
 from nadine.settings import MOTD_TIMEOUT
 from member.models import HelpText, MOTD
 
@@ -46,7 +46,7 @@ def index(request):
 @staff_member_required
 def membership_packages(request):
     packages = SubscriptionDefault.objects.all().order_by('package')
-    PackageFormset = formset_factory(PackageForm)
+    PackageFormset = formset_factory(MembershipPackageForm)
     package = request.GET.get('package', None)
     sub_data = None
     enabled = False
@@ -74,7 +74,7 @@ def membership_packages(request):
             messages.error(request, 'There was an error creating the new membership package')
     else:
         package_formset = PackageFormset(initial=sub_data)
-        package_form = PackageForm()
+        package_form = MembershipPackageForm()
     context = {'packages':packages,
                'package': package,
                'package_formset': package_formset,
