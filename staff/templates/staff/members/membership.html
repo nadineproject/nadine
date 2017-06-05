@@ -305,7 +305,8 @@
 		];
 
     $(".paying_user").autocomplete({
-			source: availableUsers
+			source: availableUsers,
+      autoFocus: true,
 		});
 
     {% for message in messages %}
