@@ -77,6 +77,7 @@
       </tr>
     </table>
     <input type='hidden' name='target_date' id='target_date' />
+    <input type='hidden' name='action' class='action' />
   </form>
 </div>
 <div class='curr-sub'>
@@ -348,6 +349,7 @@
     $('#id_created_by').val('{{ request.user }}');
     $('#id_bill_day').val('{{ bill_day }}');
     $('#id_username').val('{{ entity.username }}')
+    $('.action').val(action)
     // $('.created_by_td').val('{{ request.user }}');
     $('.disabled input').attr('readonly', 'readonly');
     $('.disabled input.end_date').datepicker('destroy');

@@ -18,7 +18,7 @@ from django.urls import reverse
 from django.contrib import messages
 from django.utils.timezone import localtime, now
 
-from nadine.forms import MembershipPackageForm, SubForm, MemberSearchForm, EventForm, NewUserForm
+from nadine.forms import MembershipForm, SubscriptionForm, MemberSearchForm, EventForm, NewUserForm
 from nadine.models.membership import MemberGroups, Membership, MembershipPackage, ResourceSubscription, SubscriptionDefault, SecurityDeposit
 from nadine.models.profile import MemberNote, SentEmailLog, FileUpload, SpecialDay
 from nadine.models.resource import Resource
@@ -304,10 +304,10 @@ def membership(request, username):
     subscriptions = None
     sub_data = None
     start = None
-    action = None
+    action = request.GET.get('action', None)
     active_members = User.helper.active_members()
     active_billing = User.objects.filter(profile__valid_billing=True).order_by('first_name')
-    SubFormSet = formset_factory(SubForm)
+    SubFormSet = formset_factory(SubscriptionForm)
     old_pkg = None
 
     if user.membership.package:
@@ -344,7 +344,7 @@ def membership(request, username):
 
             return HttpResponseRedirect(reverse('staff:members:confirm', kwargs={'username': username, 'package': None, 'new_subs': None, 'end_target': end_target}))
         else:
-            package_form = MembershipPackageForm(request.POST)
+            package_form = MembershipForm(request.POST)
             sub_formset = SubFormSet(request.POST)
             if sub_formset.is_valid() and package_form.is_valid():
                 try:
@@ -379,7 +379,7 @@ def membership(request, username):
                 print sub_formset.errors
                 messages.error(request, 'There was an error updating the subscriptions')
     else:
-        package_form = MembershipPackageForm()
+        package_form = MembershipForm()
         sub_formset = SubFormSet(initial=sub_data)
     context = {
         'entity': user,
@@ -490,7 +490,10 @@ def confirm_membership(request, username, package, end_target, new_subs):
                     # if ResourceSubscription.objects.filter(membership=user.membership.id).count() == len(subs):
                         # SlackAPI().invite_user_quiet(user)
                 else:
-                    user.membership.end_all(end_target)
+                    for a in user.membership.active_subscriptions():
+                        if a.end_date == None:
+                            a.end_date = end_target
+                            a.save()
                     # TODO: Can this be a task? Set package to none once end date passes
                     # if datetime.strptime(end_target, '%Y-%m-%d').date() <= localtime(now()).date():
                     #     user.membership.package = None
