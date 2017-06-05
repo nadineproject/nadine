@@ -203,7 +203,7 @@ class UserQueryHelper():
         return self.active_members().filter(profile__photo="").order_by('first_name')
 
     def members_by_package(self, package, target_date=None):
-        active_subscriptions = ResourceSubscription.objects.active_subscriptions_with_username(target_date).filter(membership__package=package)
+        active_subscriptions = ResourceSubscription.objects.active_subscriptions_with_username(target_date).filter(package_name=package.name)
         return User.objects.filter(username__in=active_subscriptions.values('username'))
 
     def members_by_resource(self, resource, target_date=None):
@@ -514,14 +514,20 @@ class UserProfile(models.Model):
     @property
     def membership_type(self):
         membership_type = ""
-        # Grab the first one.  This will be the individual membership even if they have an org membership
+        # Grab the first membership associated with this user.
+        # This will be the individual membership even if they have an org membership.
         membership = Membership.objects.for_user(self.user.username).first()
         if not membership.is_active():
             membership_type += "Ex "
         if hasattr(membership, 'organizationmembership'):
             membership_type += "Org "
-        if membership.package:
-            membership_type += membership.package.name
+
+        # Evaluate our package name
+        package_name = membership.package_name()
+        if package_name:
+            membership_type += package_name
+            if not membership.package_is_pure():
+                membership_type += " *"
         if len(membership_type) > 0:
             return membership_type
 

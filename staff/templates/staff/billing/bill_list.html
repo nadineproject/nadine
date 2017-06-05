@@ -34,7 +34,7 @@
 				<td>{{ bill.period_end }}</td>
 				<td>
 					{% if bill.membership %}
-						<a href="{% url 'staff:members:membership' user.username %}">{{ bill.membership.package }}</a>
+						<a href="{% url 'staff:members:membership' user.username %}">{{ bill.membership.package_name }}</a>
 					{% else %}
 						None
 					{% endif %}

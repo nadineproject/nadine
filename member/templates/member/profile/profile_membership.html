@@ -1,7 +1,7 @@
 
 {% if memberships %}
   {% if user.membership.active_subscriptions %}
-  <h3 class='header-font'>Current Package: {{ user.membership.package }}</h3>
+  <h3 class='header-font'>Current Package: {{ user.membership.package_name }}</h3>
   <table class='sub-table'>
     <tr>
       <th class='sub-th'>Resource</th>

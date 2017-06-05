@@ -9,11 +9,13 @@ from django.db import migrations, models
 from django.utils import timezone
 import django.db.models.deletion
 
+
 def update_created_ts(subscription, created_date):
     tz = timezone.get_current_timezone()
     new_created = datetime.combine(created_date, datetime.min.time())
     subscription.created_ts = timezone.make_aware(new_created, tz)
     subscription.save()
+
 
 def forward(apps, schema_editor):
     User = apps.get_model(settings.AUTH_USER_MODEL)
@@ -38,21 +40,40 @@ def forward(apps, schema_editor):
     PACKAGE_MAP = {}
     for plan in MembershipPlan.objects.all():
         package = MembershipPackage.objects.create(name=plan.name, enabled=plan.enabled)
-        SubscriptionDefault.objects.create(
-            package = package,
-            resource = DAY,
-            allowance = plan.dropin_allowance,
-            monthly_rate = plan.monthly_rate,
-            overage_rate=plan.daily_rate
-        )
         if plan.has_desk:
+            # If there is a desk we'll put the monthly_rate on the DESK subscription
             SubscriptionDefault.objects.create(
                 package = package,
                 resource = DESK,
                 allowance = 1,
-                monthly_rate = 0,
+                monthly_rate = plan.monthly_rate,
                 overage_rate = 0
             )
+            SubscriptionDefault.objects.create(
+                package = package,
+                resource = DAY,
+                allowance = plan.dropin_allowance,
+                monthly_rate = 0,
+                overage_rate=plan.daily_rate
+            )
+        else:
+            # No desk?  Put the monthly_rate on the DAY subscription
+            SubscriptionDefault.objects.create(
+                package = package,
+                resource = DAY,
+                allowance = plan.dropin_allowance,
+                monthly_rate = plan.monthly_rate,
+                overage_rate = plan.daily_rate
+            )
+        if plan.has_key:
+            SubscriptionDefault.objects.create(
+                package = package,
+                resource = KEY,
+                allowance = 1,
+                monthly_rate = 0,
+                overage_rate = 0,
+            )
+        # Build up a map to find this new package from the old plan
         PACKAGE_MAP[plan] = package
 
     print("    Migrating Memberships...")
@@ -60,11 +81,9 @@ def forward(apps, schema_editor):
         new_membership = IndividualMembership.objects.create(user = user)
         old_memberships = OldMembership.objects.filter(user=user).order_by('start_date')
         if old_memberships:
-            # Set the bill_day and package based on the last membership found
+            # Set the bill_day based on the last membership found
             last_membership = old_memberships.last()
-            last_package = PACKAGE_MAP[last_membership.membership_plan]
             new_membership.bill_day = last_membership.start_date.day
-            new_membership.package = last_package
             new_membership.save()
 
             for m in old_memberships:
@@ -72,10 +91,17 @@ def forward(apps, schema_editor):
                 m.new_membership = new_membership
                 m.save()
 
+                # Figure out what package from the old membership plan
+                package = PACKAGE_MAP[m.membership_plan]
+                package_name = None
+                if package:
+                    package_name = package.name
+
                 # Create ResourceSubscriptions based on the parameters of the old membership
                 if m.has_desk:
                     s = ResourceSubscription.objects.create(
                         membership = new_membership,
+                        package_name = package_name,
                         resource = DESK,
                         start_date = m.start_date,
                         end_date = m.end_date,
@@ -87,6 +113,7 @@ def forward(apps, schema_editor):
                     update_created_ts(s, m.start_date)
                     s = ResourceSubscription.objects.create(
                         membership = new_membership,
+                        package_name = package_name,
                         resource = DAY,
                         start_date = m.start_date,
                         end_date = m.end_date,
@@ -99,6 +126,7 @@ def forward(apps, schema_editor):
                 else:
                     s = ResourceSubscription.objects.create(
                         membership = new_membership,
+                        package_name = package_name,
                         resource = DAY,
                         start_date = m.start_date,
                         end_date = m.end_date,
@@ -119,6 +147,9 @@ def forward(apps, schema_editor):
                         overage_rate = 0,
                         paid_by = m.paid_by,
                     )
+                    if m.membership_plan.has_mail:
+                        s.package_name = package_name
+                        s.save()
                     update_created_ts(s, m.start_date)
                 if m.has_key:
                     s = ResourceSubscription.objects.create(
@@ -131,6 +162,9 @@ def forward(apps, schema_editor):
                         overage_rate = 0,
                         paid_by = m.paid_by,
                     )
+                    if m.membership_plan.has_key:
+                        s.package_name = package_name
+                        s.save()
                     update_created_ts(s, m.start_date)
 
 
@@ -146,7 +180,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-
         migrations.CreateModel(
             name='MembershipPackage',
             fields=[
@@ -159,7 +192,6 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('bill_day', models.SmallIntegerField(default=1)),
-                ('package', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='nadine.MembershipPackage')),
             ],
         ),
         migrations.CreateModel(
@@ -168,6 +200,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=64, unique=True)),
                 ('key', models.CharField(max_length=8, blank=True, null=True, unique=True)),
+                ('default_rate', models.DecimalField(decimal_places=2, default=0, max_digits=7)),
                 ('tracker_class', models.CharField(max_length=64, blank=True, null=True)),
             ],
         ),
@@ -204,6 +237,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_ts', models.DateTimeField(auto_now_add=True)),
                 ('created_by', models.ForeignKey(null=True, blank=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL)),
+                ('package_name', models.CharField(blank=True, max_length=64, null=True)),
                 ('description', models.CharField(blank=True, max_length=64, null=True)),
                 ('allowance', models.IntegerField(default=0)),
                 ('start_date', models.DateField(db_index=True)),

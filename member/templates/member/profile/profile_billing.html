@@ -104,7 +104,7 @@ function togglePaymentDetails(){
     <tr class="{% cycle 'row-even' 'row-odd' %}">
         <td nowrap>{{ bill.due_date|date:"M d, Y" }}</td>
         <td>${{ bill.amount }}</td>
-        <td nowrap>{% if bill.membership %}{{ bill.membership.package }}{% endif %}</td>
+        <td nowrap>{% if bill.membership %}{{ bill.membership.package_name }}{% endif %}</td>
         <!-- All of this below is related to old bill model. Is this info needed? Should we rewrite for new models? - AKS 4/24/17 -->
         <td>
             <b><a href='{{ bill.get_absolute_url}}'>{{ bill.id }}</a></b>

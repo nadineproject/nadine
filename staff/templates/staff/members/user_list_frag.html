@@ -4,8 +4,8 @@
 	<tr>
 		<th id='photo-th' class='centered'>Photo</th>
 		<th class='left'>Name</th>
-		<th>Billing Date</th>
-		<th>Membership Package</th>
+		<th>Next Bill</th>
+		<th>Membership</th>
 		<th>Quicklinks</th>
 		<th>Guests</th>
 	</tr>
@@ -16,10 +16,10 @@
 				{% if user.profile.photo %}<a href="{% url 'staff:members:detail' user.username %}"><img class="member-table-photo" src="{{ user.profile.photo.url|fit_image:"48x48"}}" /></a>{% endif %}
 			</td>
 			<td nowrap class='left'><a href="{% url 'staff:members:detail' user.username %}">{{ user.get_full_name }}</a></td>
-			<td>{{ user.profile.last_membership.start_date|date:"M d, Y" }}</td>
+			<td>{{ user.membership.next_period_start|date:"M d, Y" }}</td>
 			<td style='text-align: center;'>
 				{% if user.membership.active_subscriptions %}
-					{{ user.membership.package }}
+					{{ user.membership.package_name }}
 				{% endif %}
 			</td>
 			<td class='centered'>

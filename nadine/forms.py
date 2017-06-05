@@ -549,7 +549,7 @@ class MembershipForm(forms.Form):
         else:
             raise Exception('A user or organization is required to save a membership.')
         membership = to_update.membership
-        membership.package = package
+        # membership.package = package
         membership.bill_day = bill_day
         membership.save()
 
