@@ -198,11 +198,16 @@ def coworking_day_callback(sender, **kwargs):
 @receiver(post_save, sender=ResourceSubscription)
 def subscription_callback(sender, **kwargs):
     subscription = kwargs['instance']
-    user = subscription.user
     created = kwargs['created']
     updated_fields = kwargs['update_fields']
     ending = updated_fields and 'end_date' in updated_fields and subscription.end_date
 
+    # Who's subscription is this anyway?
+    # Sometimes this is None (testing) so we can skip all this madness
+    if not subscription.user:
+        return
+    user = subscription.user
+    
     # Filter to appropriate trigger depending on resource and if it's new or ending
     if subscription.resource == Resource.objects.desk_resource:
         if created:

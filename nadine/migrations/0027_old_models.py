@@ -7,6 +7,28 @@ from django.db import migrations, models
 import django.db.models.deletion
 
 
+def forward(apps, schema_editor):
+    # Explicitly set a few plans to have mail and keys --JLS
+    # This only applies to Office Nomads but won't cause problems to other data.
+    User = apps.get_model(settings.AUTH_USER_MODEL)
+    MembershipPlan = apps.get_model("nadine", "MembershipPlan")
+    # Resident gets mail and key
+    resident_plan = MembershipPlan.objects.filter(name="Resident").first()
+    if resident_plan:
+        resident_plan.has_key = True
+        resident_plan.has_mail = True
+        resident_plan.save()
+    # ON Team gets a key
+    on_team_plan = MembershipPlan.objects.filter(name="ON Team").first()
+    if on_team_plan:
+        on_team_plan.has_key = True
+        on_team_plan.save()
+
+
+def reverse(apps, schema_editor):
+    pass
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -34,6 +56,16 @@ class Migration(migrations.Migration):
             name='membership',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='nadine.OldMembership'),
         ),
+        migrations.AddField(
+            model_name='membershipplan',
+            name='has_key',
+            field=models.NullBooleanField(default=False),
+        ),
+        migrations.AddField(
+            model_name='membershipplan',
+            name='has_mail',
+            field=models.NullBooleanField(default=False),
+        ),
 
         # Rename old Bill model
         migrations.RenameModel(
@@ -46,4 +78,5 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='old_bill', to=settings.AUTH_USER_MODEL),
         ),
 
+        migrations.RunPython(forward, reverse),
     ]

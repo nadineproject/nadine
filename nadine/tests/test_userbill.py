@@ -29,7 +29,7 @@ def print_all_bills(user):
 def print_bill(bill):
     print("UserBill %d" % bill.id)
     print("  due_date: %s" % bill.due_date)
-    print("  package: %s" % bill.membership.package)
+    print("  package name: %s" % bill.membership.package_name())
     print("  amount: $%s" % bill.amount)
     print("  line_items:")
     for line_item in bill.line_items.all().order_by('id'):

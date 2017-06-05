@@ -37,7 +37,7 @@
       <td><a href="{{ row.membership.who_url }}">{{ row.membership.who }}</a></td>
       <td>
         {% if date > row.membership.last_change.date %}
-          {{ row.membership.package }}
+          {{ row.membership.package_name }}
         {% else %}
           {{ row.matching_package|default:'' }}
         {% endif %}

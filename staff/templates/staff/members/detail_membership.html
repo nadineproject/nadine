@@ -33,7 +33,7 @@ $(document).ready(function() {
       {% endif %}
     </td>
     <td>{{ membership.next_period_start }}</td>
-    <td>{{ membership.package }}</td>
+    <td>{{ membership.package_name }}</td>
     {% if user.profile.is_guest %}
       <td class='payer'><a href="{% url 'staff:members:detail' payer.username %}">{{ payer.get_full_name}}</a></td>
     {% endif %}
@@ -56,7 +56,7 @@ $(document).ready(function() {
   {% for g in user.profile.guests %}
   <tr class="{% cycle 'row-even' 'row-odd' %}">
     <td><a href='{% url "staff:members:detail" g.username %}'>{{ g.get_full_name }}</a></td>
-    <td>{{ g.membership.package }}</td>
+    <td>{{ g.membership.package_name }}</td>
     <td>{{ g.membership.start_date }}</td>
     <td class='payee-rate'>${{ g.membership.monthly_rate }}</td>
   </tr>
@@ -75,6 +75,7 @@ $(document).ready(function() {
 <h5>Future Subscriptions</h5>
 <table class='sub-table'>
   <tr>
+    <th class='sub-th'>Membership Package</th>
     <th class='sub-th'>Resource</th>
     <th class='sub-th'>Allowance</th>
     <th class='sub-th'>Start Date</th>
@@ -85,6 +86,7 @@ $(document).ready(function() {
   </tr>
   {% for f in user.membership.subscriptions.future_subscriptions %}
     <tr class='{% cycle "row-even" "row-odd" %}'>
+      <td>{{ f.package_name }}</td>
       <td>{{ f.resource }}</td>
       <td>{{ f.allowance }}</td>
       <td>{{ f.start_date }}</td>
@@ -101,6 +103,7 @@ $(document).ready(function() {
 <h5>Current Subscriptions</h5>
 <table class='sub-table'>
   <tr>
+    <th class='sub-th'>Membership Package</th>
     <th class='sub-th'>Resource</th>
     <th class='sub-th'>Allowance</th>
     <th class='sub-th'>Start Date</th>
@@ -111,6 +114,7 @@ $(document).ready(function() {
   </tr>
   {% for s in membership.active_subscriptions %}
     <tr class='{% cycle "row-even" "row-odd" %}'>
+      <td>{{ s.package_name }}</td>
       <td>{{ s.resource }}</td>
       <td>{{ s.allowance }}</td>
       <td>{{ s.start_date }}</td>
@@ -135,6 +139,7 @@ $(document).ready(function() {
 <h5>Past Subscriptions</h5>
 <table class='sub-table'>
   <tr>
+    <th class='sub-th'>Package</th>
     <th class='sub-th'>Resource</th>
     <th class='sub-th'>Allowance</th>
     <th class='sub-th'>Start Date</th>
@@ -145,6 +150,7 @@ $(document).ready(function() {
   </tr>
   {% for p in user.membership.subscriptions.past_subscriptions|dictsort:'start_date' %}
     <tr class='{% cycle "row-even" "row-odd" %}'>
+      <td>{{ p.package_name }}</td>
       <td>{{ p.resource }}</td>
       <td>{{ p.allowance }}</td>
       <td>{{ p.start_date }}</td>

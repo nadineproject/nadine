@@ -181,8 +181,6 @@ class MembershipManager(models.Manager):
 class Membership(models.Model):
     objects = MembershipManager()
     bill_day = models.SmallIntegerField(default=1)
-    package = models.ForeignKey(MembershipPackage, null=True, blank=True, on_delete=models.CASCADE)
-    # subscriptions = FK on ResourceSubscription
 
     @property
     def who(self):
@@ -234,6 +232,19 @@ class Membership(models.Model):
             return None
         return subscriptions.order_by('end_date').last().end_date
 
+    def package_name(self, target_date=None):
+        ''' Determine the package name from the active ResourceSubscriptions '''
+        packaged_subscriptions = self.active_subscriptions(target_date).filter(package_name__isnull=False)
+        if packaged_subscriptions:
+            return packaged_subscriptions.first().package_name
+        return None
+
+    def package_is_pure(self, target_date=None):
+        ''' True if we have one and only one package name and no blank package names '''
+        package_count = self.active_subscriptions(target_date).values('package_name').count()
+        no_package_subscriptions = self.active_subscriptions(target_date).filter(package_name=None).count()
+        return package_count == 1 and no_package_subscriptions == 0
+
     def has_resource(self, resource, target_date=None):
         return self.active_subscriptions(target_date).filter(resource=resource).count() > 0
 
@@ -249,7 +260,7 @@ class Membership(models.Model):
     def user_list(self, target_date=None):
         if not target_date:
             target_date = localtime(now()).date()
-        return self.users_in_period(target_date, target_date)
+        return self.users_in_period(period_start=target_date, period_end=target_date)
 
     def users_in_period(self, period_start, period_end):
         if self.is_individual:
@@ -279,13 +290,13 @@ class Membership(models.Model):
         # Save the package
         if bill_day:
             self.bill_day = bill_day
-        self.package = package
         self.save()
 
         # Add subscriptions for each of the defaults
         for default in package.defaults.all():
             ResourceSubscription.objects.create(
                 membership = self,
+                package_name = package.name,
                 start_date = start_date,
                 end_date = end_date,
                 paid_by = paid_by,
@@ -297,23 +308,28 @@ class Membership(models.Model):
 
     def matches_package(self, target_date=None):
         ''' Calculates if the subscriptions match the package. '''
-        if not self.package:
+
+        # Pull the package name and the coresponding package
+        package_name = self.package_name(target_date)
+        if not package_name:
+            return False
+        package = MembershipPackage.objects.filter(name=package_name).first()
+        if not package:
             return False
 
-        # First check the count of subscripitions with the default
+        # Check the count of subscripitions with the default
         subscriptions = self.active_subscriptions(target_date)
-        if self.package.defaults.count() != subscriptions.count():
+        if package.defaults.count() != subscriptions.count():
             return False
 
         # For every subscription, there should be one default that matches
         for s in subscriptions:
-            matches = SubscriptionDefault.objects.filter(package = self.package, resource = s.resource, allowance = s.allowance, monthly_rate = s.monthly_rate, overage_rate = s.overage_rate)
+            matches = SubscriptionDefault.objects.filter(package = package, resource = s.resource, allowance = s.allowance, monthly_rate = s.monthly_rate, overage_rate = s.overage_rate)
             if matches.count() != 1:
                 return False
 
         # If we've made it this far, it's a match
         return True
-
 
     def matching_package(self, target_date=None, subscriptions=None):
         ''' Calculates which package matches the subscriptions. '''
@@ -344,7 +360,7 @@ class Membership(models.Model):
         ''' Return the active subscriptions on a given day. '''
         if not target_date:
             target_date = localtime(now()).date()
-        return self.subscriptions_for_period(target_date, target_date)
+        return self.subscriptions_for_period(period_start=target_date, period_end=target_date)
 
     def subscriptions_for_period(self, period_start, period_end):
         ''' Return the active subscriptions for a given period. '''
@@ -670,6 +686,7 @@ class ResourceSubscription(models.Model):
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="+", null=True, blank=True, on_delete=models.CASCADE)
     resource = models.ForeignKey(Resource, on_delete=models.CASCADE)
     membership = models.ForeignKey(Membership, related_name="subscriptions", on_delete=models.CASCADE)
+    package_name = models.CharField(max_length=64, blank=True, null=True)
     description = models.CharField(max_length=64, blank=True, null=True)
     allowance = models.IntegerField(default=0)
     start_date = models.DateField(db_index=True)

@@ -33,6 +33,8 @@ class MembershipPlan(models.Model):
     daily_rate = models.IntegerField(default=0)
     dropin_allowance = models.IntegerField(default=0)
     has_desk = models.NullBooleanField(default=False)
+    has_key = models.NullBooleanField(default=False)
+    has_mail = models.NullBooleanField(default=False)
     enabled = models.BooleanField(default=True)
 
     def __str__(self): return self.name

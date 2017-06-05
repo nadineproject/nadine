@@ -461,7 +461,7 @@ class MembershipTestCase(TestCase):
 
         # Set this membership to our Test Package
         membership.set_to_package(self.test_package, today)
-        self.assertEqual(membership.package, self.test_package)
+        self.assertEqual(membership.package_name(), self.test_package.name)
         self.assertEqual(membership.monthly_rate(), self.test_package.monthly_rate())
         self.assertTrue(membership.matches_package())
 
@@ -475,7 +475,7 @@ class MembershipTestCase(TestCase):
             overage_rate = 0,
         )
         self.assertFalse(membership.matches_package())
-        self.assertEqual(membership.package, self.test_package)
+        self.assertEqual(membership.package_name(), self.test_package.name)
         self.assertTrue(membership.monthly_rate(), self.test_package.monthly_rate() + 100)
 
     def test_subscription_payer(self):

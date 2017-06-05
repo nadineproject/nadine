@@ -82,6 +82,7 @@ def profile_documents(request, username):
     context = {'user': user}
     return render(request, 'member/profile/profile_documents.html', context)
 
+
 @login_required
 def profile_events(request, username):
     user = get_object_or_404(User, username=username)
@@ -102,20 +103,6 @@ def profile_events(request, username):
                'total': total,
                 }
     return render(request, 'member/profile/profile_events.html', context)
-
-@login_required
-def user_activity_json(request, username):
-    user = get_object_or_404(User.objects.select_related('profile'), username=username)
-    response_data = {}
-    active_membership = user.profile.active_membership()
-    if active_membership:
-        response_data['is_active'] = True
-        response_data['allowance'] = active_membership.get_allowance()
-    activity_this_month = user.profile.activity_this_month()
-    # response_data['activity_this_month'] = serializers.serialize('json', activity_this_month)
-    response_data['usage_this_month'] = len(activity_this_month)
-    # response_data['coworkingdays'] = serializers.serialize('json', user.coworkingday_set.all())
-    return JsonResponse(response_data)
 
 
 @login_required
