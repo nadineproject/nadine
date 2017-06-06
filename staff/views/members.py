@@ -310,9 +310,9 @@ def membership(request, username):
     SubFormSet = formset_factory(SubscriptionForm)
     old_pkg = None
 
-    if user.membership.package_name:
-        old_pkg_name = user.membership.package_name
-        pld_pkg = MembershipPackage.objects.filter(name=old_pkg_name)
+    if user.membership.package_name and user.membership.active_subscriptions():
+        old_pkg_name = user.membership.package_name()
+        old_pkg = MembershipPackage.objects.get(name=old_pkg_name).id
     if user.membership.bill_day:
         bill_day = user.membership.bill_day
     else:
@@ -327,7 +327,8 @@ def membership(request, username):
         action = 'change'
     else:
         subscriptions = user.membership.active_subscriptions()
-        sub_data=[{'s_id': s.id, 'resource': s.resource, 'allowance':s.allowance, 'start_date':s.start_date, 'end_date': s.end_date, 'username': user.username, 'created_by': s.created_by, 'monthly_rate': s.monthly_rate, 'overage_rate': s.overage_rate, 'paid_by': s.paid_by} for s in subscriptions]
+        sub_data=[{'s_id': s.id, 'package_name': s.package_name, 'resource': s.resource, 'allowance':s.allowance, 'start_date':s.start_date, 'end_date': s.end_date, 'username': user.username, 'created_by': s.created_by, 'monthly_rate': s.monthly_rate, 'overage_rate': s.overage_rate, 'paid_by': s.paid_by} for s in subscriptions]
+
 
     if request.method == 'POST':
         if 'ending' in request.POST:
@@ -353,7 +354,7 @@ def membership(request, username):
                         new_subs = []
                         package = request.POST['package']
                         bill_day = request.POST['bill_day']
-                        membership = {'package_name': package ,'bill_day': bill_day}
+                        membership = {'package_name': package, 'bill_day': bill_day}
                         for sub_form in sub_formset:
                             paid_by = None
                             package_name = MembershipPackage.objects.get(id=package).name
@@ -371,8 +372,8 @@ def membership(request, username):
                             overage_rate = sub_form.cleaned_data.get('overage_rate', None)
                             paid_by = sub_form.cleaned_data.get('paid_by', None)
                             if resource and start_date:
-                                new_subs.append({'s_id': s_id,'resource':resource.id,
-                                'package_name':package_name, 'allowance':allowance, 'start_date':start_date, 'end_date':end_date, 'monthly_rate': monthly_rate, 'overage_rate':overage_rate, 'paid_by':paid_by, 'membership':None})
+                                new_subs.append({'s_id': s_id, 'resource':resource.id,
+                                'package_name': package_name, 'allowance':allowance, 'start_date':start_date, 'end_date':end_date, 'monthly_rate': monthly_rate, 'overage_rate':overage_rate, 'paid_by':paid_by, 'membership':None})
                         end_target = start - timedelta(days=1)
                         return HttpResponseRedirect(reverse('staff:members:confirm', kwargs={'username': username, 'package': membership, 'end_target': end_target, 'new_subs': new_subs}))
 
@@ -380,6 +381,7 @@ def membership(request, username):
                     messages.error(request, 'There was an error updating the subscriptions')
             else:
                 print sub_formset.errors
+                print package_form.errors
                 messages.error(request, 'There was an error updating the subscriptions')
     else:
         package_form = MembershipForm()
@@ -404,7 +406,7 @@ def confirm_membership(request, username, package, end_target, new_subs):
     new_subs = unicodedata.normalize('NFKD', new_subs).encode('ascii', 'ignore')
     package = unicodedata.normalize('NFKD', package).encode('ascii', 'ignore')
     subs = ast.literal_eval(new_subs)
-    matches_package = user.membership.matching_package(subscriptions=subs).name
+    matches_package = user.membership.matching_package(subscriptions=subs)
     pkg = ast.literal_eval(package)
     match = None
 
@@ -415,7 +417,7 @@ def confirm_membership(request, username, package, end_target, new_subs):
 
     if pkg:
         pkg_name = MembershipPackage.objects.get(id=pkg['package_name']).name
-        if matches_package and matches_package != mem_package:
+        if matches_package and matches_package.name != pkg_name:
             match = matches_package
     else:
         pkg_name = None
@@ -429,7 +431,7 @@ def confirm_membership(request, username, package, end_target, new_subs):
                     # If there is a package, then make changes, else, we are ending all
                     if request.POST.get('match'):
                         pkg_name = MembershipPackage.objects.get(id=request.POST.get('match')).name
-                    if user.membership.package_name != pkg_name:
+                    if user.membership.package_name() != pkg_name:
                         for s in user.membership.active_subscriptions():
                             if s.end_date == None:
                                 s.end_date = end_target
@@ -450,7 +452,7 @@ def confirm_membership(request, username, package, end_target, new_subs):
                         sub_id = sub['s_id']
                         if sub_id != None:
                             if sub_id and sub['end_date']:
-                                to_end = user.membership.active_subscriptions().get(id=sub_id)
+                                to_end = ResourceSubscription.objects.get(id=sub_id)
                                 if to_end.end_date == None:
                                     end_date = sub['end_date']
                                     to_end.end_date = sub['end_date']

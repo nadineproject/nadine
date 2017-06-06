@@ -29,6 +29,7 @@ class SubscriptionInline(admin.StackedInline):
     readonly_fields = ('is_active', )
     fields = [
         ('resource', 'start_date', 'end_date'),
+        ('package_name'),
         ('allowance', 'monthly_rate', 'overage_rate'),
         ('description', 'paid_by', 'is_active'),
     ]
@@ -82,7 +83,7 @@ class MembershipAdmin(StyledAdmin):
     inlines = [SubscriptionInline, ]
     list_display = ('id', 'who', 'bill_day', next_bill, active_subscriptions, bills)
     readonly_fields = ['who']
-    fields = ['who', 'bill_day', 'package']
+    fields = ['who', 'bill_day']
     list_select_related = ('individualmembership', 'organizationmembership')
     search_fields = ('individualmembership__user__username', 'organizationmembership__organization__name')
     # actions= ['end_membership_yesterday', 'end_membership_at_period_end', 'generate_bill', 'generate_all_bills']
