@@ -239,7 +239,7 @@ class UserQueryHelper():
                 lname_query = lname_query | Q(last_name__icontains=term)
             user_query = user_query.filter(fname_query | lname_query)
 
-        return user_query.order_by('first_name')
+        return user_query.order_by('first_name', 'last_name')
 
     def by_email(self, email):
         email_address = EmailAddress.objects.filter(email=email).first()
