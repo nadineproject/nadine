@@ -35,13 +35,7 @@
     {% endif %}
     <tr class="{% cycle 'row-even' 'row-odd' %}">
       <td><a href="{{ row.membership.who_url }}">{{ row.membership.who }}</a></td>
-      <td>
-        {% if date > row.membership.last_change.date %}
-          {{ row.membership.package_name }}
-        {% else %}
-          {{ row.matching_package|default:'' }}
-        {% endif %}
-      </td>
+      <td>{{ row.membership.package_name }}</td>
       <td class='rate'>${{ row.monthly_rate }}</td>
       <td>
         {% for bill in row.bills %}
