@@ -35,8 +35,8 @@ def daily_billing(request, year, month, day):
     for m in Membership.objects.ready_for_billing(target_date=d):
         memberships.append({
             'membership': m,
+            'package_name': m.package_name(target_date=d),
             'monthly_rate': m.monthly_rate(target_date=d),
-            'matching_package': m.matching_package(target_date=d),
             'bills': m.bills_for_period(target_date=d),
             'bill_totals': m.bill_totals(target_date=d),
             'payment_totals': m.payment_totals(target_date=d),
