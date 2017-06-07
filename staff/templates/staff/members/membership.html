@@ -389,7 +389,8 @@
       action = 'change';
     }
 
-    if('{{ package }}' == 10) {
+
+    if('{{ package }}' == 9) {
       $('.resource').each(function() {
         if($(this).val()) {
           $(this).parent().siblings('.paid-by').children().prop('required', 'required');
@@ -599,7 +600,7 @@
 
     $('.resource').on('change', function() {
       if($(this).val()) {
-        if (action == 'update' && '{{ package }}' == 10) {
+        if (action == 'update' && '{{ package }}' == 9) {
           if($(this).val()) {
             $(this).parent().siblings('.paid-by').children().prop('required', 'required');
           }
@@ -688,10 +689,10 @@
       action = 'end';
       $('#promptModal').hide();
 
-      if ( 7 <= '{{ entity.membership.package.id }}' && '{{ entity.membership.package.id }}' <= 9) {
+      if ( 6 <= '{{ entity.membership.package_name }}' && '{{ entity.membership.package.id }}' <= 8) {
         //if any member has a team membership paid_by this member, then throw error
         {% for a in active_members %}
-          {% if a.membership.package.id == 10 %}
+          {% if a.membership.package_name == 'Team' %}
             {% for s in a.membership.active_subscriptions %}
               {% if s.paid_by == entity and s.end_date == None %}
                 $('#teamModal').show();

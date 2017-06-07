@@ -23,7 +23,7 @@
 
 {% if ending_pkg == True %}
 <div class='old-pkg'>
-  <h6>Ending "{{ user.membership.package.name }}" Membership Package on {{ end_target }} </h6>
+  <h6>Ending "{{ user.membership.package_name }}" Membership Package on {{ end_target }} </h6>
   <table class='sub-table' style='margin-top: 2%;'>
     <tr>
       <th class='sub-th'>Resource</th>
@@ -138,7 +138,7 @@
   </div>
 
   <div class='new-table'>
-    <h6>Membership Package For Next Bill Period Following {{ end_target }}:</h6>
+    <h6>Membership Package For Bill Period Following {{ end_target }}:</h6>
     {% if package_name %}
       <h6 id='package-name' style='margin-top: 0;'>{{ package_name }}</h6>
     {% endif %}
@@ -273,8 +273,8 @@
 
     var newSubs = 0;
     var endingSubs = 0;
-    var newPkg = '{{ package.package_name }}';
-    var oldPkg = '{{ user.membership.package.id }}';
+    var newPkg = '{{ package }}';
+    var oldPkg = '{{ old_pkg }}';
     var start = '';
     var total = 0;
 

@@ -409,6 +409,9 @@ def confirm_membership(request, username, package, end_target, new_subs):
     matches_package = user.membership.matching_package(subscriptions=subs)
     pkg = ast.literal_eval(package)
     match = None
+    old_pkg = None
+    if user.membership.package_name():
+        old_pkg = MembershipPackage.objects.get(name=user.membership.package_name())
 
     if len(user.membership.active_subscriptions(end_target)):
         ending_pkg = True
@@ -441,11 +444,10 @@ def confirm_membership(request, username, package, end_target, new_subs):
                         membership.save()
 
                         """When a membership is created, add the user to any opt-out mailing lists"""
-                        # TODO: Change logic for new models:
-                        # if user.membership.package == None:
-                        #     mailing_lists = MailingList.objects.filter(is_opt_out=True)
-                        #     for ml in mailing_lists:
-                        #         ml.subscribers.add(membership.user)
+                        if user.membership.package_name() == None:
+                            mailing_lists = MailingList.objects.filter(is_opt_out=True)
+                            for ml in mailing_lists:
+                                ml.subscribers.add(membership.user)
 
                     # Review all subscriptions to see if adding or ending
                     for sub in subs:
@@ -466,7 +468,7 @@ def confirm_membership(request, username, package, end_target, new_subs):
                             resource = Resource.objects.get(id=sub['resource'])
                             allowance = sub['allowance']
                             start_date = sub['start_date']
-                            package_name = sub['package_name']
+                            package_name = pkg_name
                             if sub['end_date']:
                                 end_date = sub['end_date']
                             else:
@@ -518,6 +520,7 @@ def confirm_membership(request, username, package, end_target, new_subs):
         'user': user,
         'package': pkg,
         'package_name': pkg_name,
+        'old_pkg': old_pkg,
         'new_subs': subs,
         'end_target': end_target,
         'match': match,
