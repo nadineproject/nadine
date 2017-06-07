@@ -50,7 +50,6 @@ def forward(apps, schema_editor):
             bill = bill,
             description = "Coworking Membership",
             amount = o.amount,
-            custom = True,
         )
 
         # Add all the dropins
