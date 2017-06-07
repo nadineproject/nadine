@@ -24,14 +24,14 @@
     <!-- Status -->
     <tr>
         <td class='td-title'>Membership Rate:</td>
-        <td>{{ user.profile.membership_type }}{% if user.profile.is_active %} at ${{ user.profile.last_membership.monthly_rate }}/month{% endif %}</td>
+        <td>{{ user.profile.membership_type }}{% if user.profile.is_active %} at ${{ user.membership.monthly_rate }}/month{% endif %}</td>
     </tr>
 
-    <!-- Anniversary Date -->
+    <!-- Billing Date -->
     {% if user.profile.is_active %}
     <tr>
-        <td class='td-title'>Anniversary date:</td>
-        <td>{{ user.profile.last_membership.start_date|date:"M d, Y" }}</td>
+        <td class='td-title'>Billing Day:</td>
+        <td>{{ user.membership.bill_day_str }}</td>
     </tr>
     {% endif %}
 
