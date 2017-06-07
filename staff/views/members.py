@@ -354,7 +354,7 @@ def membership(request, username):
                         new_subs = []
                         package = request.POST['package']
                         bill_day = request.POST['bill_day']
-                        membership = {'package_name': package, 'bill_day': bill_day}
+                        membership = {'package': package, 'bill_day': bill_day}
                         for sub_form in sub_formset:
                             paid_by = None
                             package_name = MembershipPackage.objects.get(id=package).name
@@ -420,7 +420,7 @@ def confirm_membership(request, username, package, end_target, new_subs):
         ending_pkg = False
 
     if pkg:
-        pkg_name = MembershipPackage.objects.get(id=pkg['package_name']).name
+        pkg_name = MembershipPackage.objects.get(id=pkg['package']).name
         if matches_package and matches_package.name != pkg_name:
             match = matches_package
     else:
