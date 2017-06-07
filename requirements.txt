@@ -13,9 +13,8 @@ suds-jurko==0.6
 python-slugify==1.2.4
 
 # For document signing
-# Newer versions may not work so be cautious when upgrading
+#xhtml2pdf==0.2b2
 html5lib==1.0b10
-xhtml2pdf==0.2b2
 reportlab==3.4.0
 django-easy-pdf==0.1.1
 django-jsignature==0.8
