@@ -245,6 +245,9 @@ class Membership(models.Model):
         no_package_subscriptions = self.active_subscriptions(target_date).filter(package_name=None).count()
         return package_count == 1 and no_package_subscriptions == 0
 
+    def allowance_by_resource(self, resource, target_date=None):
+        return self.active_subscriptions(target_date).filter(resource=resource).aggregate(Sum('allowance'))['allowance__sum']
+
     def has_resource(self, resource, target_date=None):
         return self.active_subscriptions(target_date).filter(resource=resource).count() > 0
 
