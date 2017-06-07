@@ -1,14 +1,14 @@
 Django>=1.11,<2.0
 Pillow==4.1.1
 psycopg2==2.7.1
-django-localflavor==1.4.1
+django-localflavor==1.5
 django-localflavor-us==1.1
 django-taggit==0.22.1
 django-taggit-templatetags2==1.6.1
 django-crontab==0.7.1
 mailchimp==2.0.9
-requests==2.14.2
-cryptography==1.8.1
+requests==2.17.3
+cryptography==1.9
 suds-jurko==0.6
 python-slugify==1.2.4
 
@@ -26,10 +26,10 @@ pip-review
 
 # Libraries for Xero
 pyxero==0.8.0
-PyJWT==1.4.2
+PyJWT==1.5.0
 
 # Libraries for Arpwatch
-pysnmp==4.3.5
+pysnmp==4.3.7
 pysnmp-mibs==0.1.6
 
 # TODO - Evaluate use of these libraries
@@ -38,7 +38,7 @@ feedparser
 #django-tastypie==0.12.2
 
 # For the documentation:
-sphinx==1.6.1
+sphinx==1.6.2
 sphinx-rtd-theme==0.2.4
 recommonmark==0.4.0
 pycodestyle==2.3.1
