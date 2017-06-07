@@ -15,21 +15,19 @@
 		</div>
 		<div class="ui-block-b">
 			<h2>{{ user.get_full_name }}</h2>
-			<h3>Billing Day: <span style="font-weight:normal;">{{ user.profile.active_membership.start_date|date:"jS" }}</span></h3>
+			<h3>Billing Day: <span style="font-weight:normal;">{{ user.membership.bill_day_str }}</span></h3>
 
 			{% if not user.profile.has_valid_billing %}
 				<h3 style="color:red;">Please update your billing profile.</h3>
 			{% endif %}
 
-			{% if membership %}
-				<h3>Visits This Cycle:
-					<span style="font-weight:normal;">{{ user.profile.activity_this_month | length }}
-						{% if membership.get_allowance %}
-							of {{ membership.get_allowance }}
-						{% endif %}
-					</span>
-				</h3>
-			{% endif %}
+			<h3>Visits This Period:
+				<span style="font-weight:normal;">{{ days_this_period }}
+					{% if day_allowance %}
+						of {{ day_allowance }}
+					{% endif %}
+				</span>
+			</h3>
 
 			<h3><a href="{% url 'tablet:document_list' user.username %}">Sign Documents</a></h3>
 

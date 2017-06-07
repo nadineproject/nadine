@@ -22,6 +22,7 @@ from nadine import email
 from nadine.utils import mailgun
 from nadine.models.profile import FileUpload
 from nadine.models.usage import CoworkingDay
+from nadine.models.resource import Resource
 from nadine.utils.slack_api import SlackAPI
 from nadine.forms import NewUserForm, MemberSearchForm
 from member.models import MOTD
@@ -82,16 +83,14 @@ def user_profile(request, username):
 
 def user_signin(request, username):
     user = get_object_or_404(User, username=username)
-    membership = user.profile.active_membership()
 
     can_signin = True
-    active_membership = user.profile.active_membership()
-    if active_membership and active_membership.has_desk:
+    if user.membership.has_desk():
         # They have a desk so they can't sign in
         can_signin = False
     else:
-        signins_today = CoworkingDay.objects.filter(user=user, visit_date=localtime(now()).date())
-        if signins_today.count() > 0:
+        signins_today = user.coworkingday_set.filter(visit_date=localtime(now()).date()).count()
+        if signins_today > 0:
             can_signin = False
 
     search_results = None
@@ -103,12 +102,24 @@ def user_signin(request, username):
         member_search_form = MemberSearchForm()
 
     # Look up previous hosts for his user
-    guest_days = CoworkingDay.objects.filter(user=user, paid_by__isnull=False).values("paid_by")
+    guest_days = user.coworkingday_set.filter(paid_by__isnull=False).values("paid_by")
     previous_hosts = User.helper.active_members().filter(id__in=guest_days)
 
-    context = {'user': user, 'can_signin': can_signin, 'membership': membership,
-        'previous_hosts':previous_hosts, 'member_search_form': member_search_form,
-        'search_results': search_results}
+    # Pull up how many days were used this period
+    period = user.membership.get_period()
+    # TODO - This doesn't take in to account guest days or OrganizationMembership days
+    days_this_period = user.coworkingday_set.filter(visit_date__range=period).count()
+    day_allowance = user.membership.allowance_by_resource(Resource.objects.day_resource)
+
+    context = {
+        'user': user,
+        'can_signin': can_signin,
+        'days_this_period': days_this_period,
+        'day_allowance': day_allowance,
+        'previous_hosts':previous_hosts,
+        'member_search_form': member_search_form,
+        'search_results': search_results,
+    }
     return render(request, 'tablet/user_signin.html', context)
 
 
