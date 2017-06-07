@@ -410,6 +410,7 @@ def confirm_membership(request, username, package, end_target, new_subs):
     pkg = ast.literal_eval(package)
     match = None
     old_pkg = None
+
     if user.membership.package_name():
         old_pkg = MembershipPackage.objects.get(name=user.membership.package_name())
 

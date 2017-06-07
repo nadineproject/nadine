@@ -185,7 +185,7 @@
       {% endfor %}
       {% for ns in new_subs %}
         {% if ns.s_id == None %}
-          <tr class='{% cycle "row-even" "row-odd" %}'>
+          <tr class='{% cycle "row-odd" "row-even" %}'>
             <td class='sub-td'>
               <strong>{{ ns.resource|resource_filter }}</strong>
             </td>
@@ -273,8 +273,8 @@
 
     var newSubs = 0;
     var endingSubs = 0;
-    var newPkg = '{{ package }}';
-    var oldPkg = '{{ old_pkg }}';
+    var newPkg = "{{ package_name }}";
+    var oldPkg = '{{ user.membership.package_name }}';
     var start = '';
     var total = 0;
 
@@ -300,7 +300,6 @@
     })
 
     {% for ns in new_subs %}
-    //actually, want to see subscriptions with end dates, just as long as they are before the next billing period?
       {% if ns.s_id == None %}
         newSubs ++;
         start = '{{ ns.start_date }}';

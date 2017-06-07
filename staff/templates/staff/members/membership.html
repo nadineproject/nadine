@@ -689,7 +689,7 @@
       action = 'end';
       $('#promptModal').hide();
 
-      if ( 6 <= '{{ entity.membership.package_name }}' && '{{ entity.membership.package.id }}' <= 8) {
+      if ( 6 <= '{{ package }}' && '{{ package }}' <= 8) {
         //if any member has a team membership paid_by this member, then throw error
         {% for a in active_members %}
           {% if a.membership.package_name == 'Team' %}
