@@ -223,7 +223,6 @@ def announce_new_membership(user):
 
 
 def announce_member_checkin(user):
-    membership = user.profile.last_membership()
     subject = "Member Check-in - %s" % (user.get_full_name())
     message = "Team,\r\n\r\n \t%s has been a %s member for almost a month!  Someone go see how they are doing. %s" % (user.get_full_name(), user.membership.package.name, team_signature(user))
     send_quietly(settings.TEAM_EMAIL_ADDRESS, subject, message)

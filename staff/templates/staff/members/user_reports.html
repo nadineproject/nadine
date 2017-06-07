@@ -35,7 +35,7 @@
 		<th>Joined</th>
 		<th>Billing</th>
 		<th>{% if integrations.usaepay %} Auto-Bill {% endif %} </th>
-		<th>Plan</th>
+		<th>Package</th>
 		<th>Start</th>
 		<th>End</th>
 		<th></th>
@@ -59,9 +59,9 @@
 			{% else %}
 				<td></td>
 			{% endif %}
-			<td>{{ user.profile.last_membership.membership_plan }}</td>
-			<td>{{ user.profile.last_membership.start_date|date:"M d, Y" }}</td>
-			<td>{{ user.profile.last_membership.end_date|date:"M d, Y" }}</td>
+			<td>{{ user.membership.package_name }}</td>
+			<td>{{ user.membership.start_date|date:"M d, Y" }}</td>
+			<td>{{ user.membership.end_date|date:"M d, Y" }}</td>
 			<td></td>
 		</tr>
 	{% endfor %}
