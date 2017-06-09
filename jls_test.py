@@ -21,6 +21,8 @@ jacob = User.objects.get(username='jacob')
 j = jacob
 user = jacob
 
+on = Organization.objects.get(name="Office Nomads")
+
 # Make sure you've run the old billing engine first
 # ./manage run_billing
 def test_new_bills():
