@@ -202,7 +202,6 @@ class BackupManager(object):
         ]]
         for user in User.helper.active_members():
             ec = EmergencyContact.objects.filter(user=user).first()
-            membership = user.profile.active_membership()
             row = [
                 user.username,
                 user.first_name,
@@ -217,7 +216,7 @@ class BackupManager(object):
                 user.profile.zipcode,
             ]
 
-            if membership.has_key:
+            if user.membership.has_key():
                 row.append('True')
             else:
                 row.append('')
