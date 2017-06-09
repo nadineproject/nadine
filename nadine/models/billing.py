@@ -150,6 +150,8 @@ class UserBill(models.Model):
         for activity in self.membership.resource_activity_for_period(resource, period_start, period_end):
             activity_count = len(line_items) + 1
             description = "%s %s (%d)" % (activity.activity_date, resource.name, activity_count)
+            if activity.user != self.membership.user:
+                description += " - " + activity.user.username
             amount = overage_rate
             if allowance_left > 0:
                 amount = 0
