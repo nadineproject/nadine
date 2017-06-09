@@ -202,13 +202,6 @@ function gotoEmailReset(emailAddress){
       </table>
       <h6>Coworking Details/Stats</h6>
       <table class='detail-table'>
-        <!-- Plan Start -->
-        {% if user.profile.active_membership %}
-        <tr>
-            <td class='detail-title'>Bill Date</td>
-            <td class='detail-data'>{{ user.profile.active_membership.start_date|date:"jS" }}</td>
-        </tr>
-        {% endif %}
         <!-- Stats -->
         <tr>
             <td class='detail-title'>First Visit</td>

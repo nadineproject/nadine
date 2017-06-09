@@ -52,8 +52,7 @@
 						<td class='guest-info'>
 							<a href="{% url 'staff:members:detail' guest.username %}">{{ guest.get_full_name }}</a>
 						</td>
-						<td class='guest-info'>{{ guest.profile.active_membership.membership_plan }}</td>
-						<td class='guest-info'>{{ guest.profile.active_membership.start_date }}</td>
+						<td class='guest-info'>{{ guest.membership.package_name }}</td>
 					</tr>
 				{% endfor %}
 			</table></td>
