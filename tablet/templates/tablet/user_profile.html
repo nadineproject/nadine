@@ -15,19 +15,20 @@
 		<div class="ui-block-b">
 			<h2>{{ user.get_full_name }}</h2>
 			{% include "member/profile/profile_public.html" %}
-			{% if membership %}
-				<h3>Visits This Cycle:
-					<span style="font-weight:normal;">{{ user.profile.activity_this_month | length }} of {{ membership.get_allowance }}</span>
-				</h3>
-			{% endif %}
-			<h3>Profile Tags:</h3>
+			<h3>This Period:
+				<span style="font-weight:normal;">{{ period_start|date:'M d' }} to {{ period_end|date:'M d' }}</span>
+			</h3>
+			<h3>Visits This Period:
+				<span style="font-weight:normal;">{{ days_this_period | length }} of {{ day_allowance }}</span>
+			</h3>
+			<!-- <h3>Profile Tags:</h3>
 			{% if tags %}
 				<ul>{% for tag in tags %}
 					<li>{{ tag }}</li>
 				{% endfor %}</ul>
 			{% else %}
 				<ul>None</ul>
-			{% endif %}
+			{% endif %} -->
 		</div>
 	</div>
 {% endblock %}

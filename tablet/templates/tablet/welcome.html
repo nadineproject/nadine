@@ -4,19 +4,16 @@
 
 {% block content %}
 	<div style="font-size: 150%;">Welcome {{user.first_name}} {{user.last_name}}!</div>
-	{% if membership %}
 	<div style="font-weight:bold; padding:1em; font-size:200%">
 		As of today, you have used
 		<span style="color: {{ usage_color }}">
-			{{ user.profile.activity_this_month | length }}
-			{% if membership.get_allowance %}
-				of {{ membership.get_allowance }}
-				{% endif %}
+			{{ days_this_period }} {% if day_allowance %} of {{ day_allowance }} {% endif %}
 		</span>
 		days.
-		<div style="padding-top:1em; font-weight:normal;">Your billing day is the {{ user.profile.active_membership.start_date|date:"jS" }}.</div>
+
+		<div style="padding-top:1em; font-weight:normal;">Your billing day is the {{ bill_day_str }}.</div>
 	</div>
-	{% endif %}
+
 	<div style="font-size:150%;">
 		{% autoescape off %}
 			{% if motd %}
@@ -26,9 +23,6 @@
 			</div>
 			{% endif %}
 		{% endautoescape %}
-		<!-- <p style="padding-left:3em;">
-			 The Office Nomads Team
-		</p> -->
 	</div>
 
 

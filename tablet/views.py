@@ -22,7 +22,6 @@ from nadine import email
 from nadine.utils import mailgun
 from nadine.models.profile import FileUpload
 from nadine.models.usage import CoworkingDay
-from nadine.models.resource import Resource
 from nadine.utils.slack_api import SlackAPI
 from nadine.forms import NewUserForm, MemberSearchForm
 from member.models import MOTD
@@ -76,9 +75,18 @@ def search(request):
 
 def user_profile(request, username):
     user = get_object_or_404(User, username=username)
-    membership = user.profile.active_membership()
     tags = user.profile.tags.order_by('name')
-    return render(request, 'tablet/user_profile.html', {'user': user, 'membership': membership, 'tags': tags})
+    period_start, period_end = user.membership.get_period()
+    days, allowed = user.profile.days_used()
+    context = {
+        'user': user,
+        'days_this_period': days,
+        'day_allowance': allowed,
+        'period_start': period_start,
+        'period_end': period_end,
+        'tags': tags
+    }
+    return render(request, 'tablet/user_profile.html', context)
 
 
 def user_signin(request, username):
@@ -106,16 +114,13 @@ def user_signin(request, username):
     previous_hosts = User.helper.active_members().filter(id__in=guest_days)
 
     # Pull up how many days were used this period
-    period = user.membership.get_period()
-    # TODO - This doesn't take in to account guest days or OrganizationMembership days
-    days_this_period = user.coworkingday_set.filter(visit_date__range=period).count()
-    day_allowance = user.membership.allowance_by_resource(Resource.objects.day_resource)
+    days, allowed = user.profile.days_used()
 
     context = {
         'user': user,
         'can_signin': can_signin,
-        'days_this_period': days_this_period,
-        'day_allowance': day_allowance,
+        'days_this_period': days,
+        'day_allowance': allowed,
         'previous_hosts':previous_hosts,
         'member_search_form': member_search_form,
         'search_results': search_results,
@@ -156,11 +161,11 @@ def signin_user_guest(request, username, paid_by):
     day.user = user
     day.visit_date = localtime(now()).date()
     # Only proceed if they haven't signed in already
-    if CoworkingDay.objects.filter(user=user, visit_date=day.visit_date).count() == 0:
+    if user.coworkingday_set.filter(visit_date=day.visit_date).count() == 0:
         if paid_by:
             host = get_object_or_404(User, username=paid_by)
             day.paid_by = host
-        if CoworkingDay.objects.filter(user=user).count() == 0:
+        if user.coworkingday_set.count() == 0:
             day.payment = 'Trial'
         else:
             day.payment = 'Bill'
@@ -183,19 +188,24 @@ def signin_user_guest(request, username, paid_by):
 def welcome(request, username):
     usage_color = "black"
     user = get_object_or_404(User, username=username)
-    membership = user.profile.active_membership()
-    if membership:
-        days = len(user.profile.activity_this_month())
-        allowed = membership.get_allowance()
+    if user.membership.is_active():
+        days, allowed = user.profile.days_used()
         if days > allowed:
             usage_color = "red"
         elif days == allowed:
             usage_color = "orange"
         else:
             usage_color = "green"
+    bill_day_str = user.membership.bill_day_str
     motd = MOTD.objects.for_today()
-    context = {'user': user, 'membership': membership, 'motd': motd,
-        'usage_color': usage_color}
+    context = {
+        'user': user,
+        'days_this_period': days,
+        'day_allowance': allowed,
+        'usage_color': usage_color,
+        'bill_day_str':bill_day_str,
+        'motd': motd,
+    }
     return render(request, 'tablet/welcome.html', context)
 
 
