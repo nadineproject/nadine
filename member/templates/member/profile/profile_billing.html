@@ -1,40 +1,11 @@
 {% load list_tags %}
 
-<script>
-    $(function () {
-        $("#payment-details").hide();
-        $("#bill-details").hide();
-    });
-</script>
-
-<script>
-function toggleBillDetails(){
-    if($("#bill-details").is(':hidden')) {
-        $("#bill-details").show();
-        $("#bill-details-toggle").html('[-]');
-    } else {
-        $("#bill-details").hide();
-        $("#bill-details-toggle").html('[+]');
-    }
-}
-
-function togglePaymentDetails(){
-    if($("#payment-details").is(':hidden')) {
-        $("#payment-details").show();
-        $("#payment-details-toggle").html('[-]');
-    } else {
-        $("#payment-details").hide();
-        $("#payment-details-toggle").html('[+]');
-    }
-}
-</script>
-
 <table width="65%">
 <tr>
     <td>{% include "member/profile/profile_billing_frag.html" %}</td>
     <td>
         <div style="margin-bottom: .5em; text-align:left;">
-            Automatic Billing: <span id="auto_billing" style="color:green;">The {{ active_membership.start_date|date:"jS" }}</span>
+            Automatic Billing: <span id="auto_billing" style="color:green;">The {{ user.membership.bill_day_str }}</span>
         </div>
         <form id="disable_billing_form" action="{% url 'member:profile:disable_billing' user.username %}">
             <input class='billing-btn btn' id="disable_billing_button" type="submit" value="Disable Automatic Billing" />
@@ -57,37 +28,7 @@ function togglePaymentDetails(){
     </script>
 {% endif %}
 
-<h3>Payments <a target="_self" id="payment-details-toggle" href="." onclick="togglePaymentDetails(); return false;">[+]</a></h3>
-<div id="payment-details">
-{% if payments %}
-<table>
- <thead>
-    <tr>
-        <th>Date</th>
-        <th align="center">Amount</th>
-        <th align="left">Bills</th>
-    </tr>
- </thead>
- <tbody>
-    {% for transaction in payments %}
-    <tr class="{% cycle 'row-even' 'row-odd' %}">
-        <td nowrap><a target="_self" href="{% url 'member:profile:receipt' user.username transaction.id %}">{{ transaction.transaction_date | date:"M d, Y" }}</a></td>
-        <td>${{ transaction.amount }}</td>
-        <td>
-            {% for bill in transaction.bills.all %}
-              {{ bill.bill_date|date:"M d, Y" }} (${{ bill.amount }}){% loop_comma %}
-            {% endfor %}
-        </td>
-    </tr>
-     {% endfor %}
- </tbody>
-</table>
-{% else %}
-    No payments...
-{% endif %}
-</div>
-
-<h3>Bills <a target="_self" id="bill-details-toggle" href="." onclick="toggleBillDetails(); return false;">[+]</a></h3>
+<h3>Recent Bills</h3>
 <div id="bill-details">
 {% if bills %}
 <table>
@@ -95,8 +36,9 @@ function togglePaymentDetails(){
         <tr>
             <th>Date</th>
             <th>Amount</th>
-            <th>Plan</th>
-            <th align="left">Receipt</th>
+            <th>Payments</th>
+            <th>Membership</th>
+            <th></td>
         </tr>
   </thead>
   <tbody>
@@ -104,31 +46,9 @@ function togglePaymentDetails(){
     <tr class="{% cycle 'row-even' 'row-odd' %}">
         <td nowrap>{{ bill.due_date|date:"M d, Y" }}</td>
         <td>${{ bill.amount }}</td>
+        <td>${{ bill.total_paid }}</td>
         <td nowrap>{% if bill.membership %}{{ bill.membership.package_name }}{% endif %}</td>
-        <!-- All of this below is related to old bill model. Is this info needed? Should we rewrite for new models? - AKS 4/24/17 -->
-        <td>
-            <b><a href='{{ bill.get_absolute_url}}'>{{ bill.id }}</a></b>
-            <!-- {% if bill.paid_by %}
-            <b>For {{ bill.user.get_full_name }}</b>
-            {% endif %}
-            {% if bill.new_member_deposit %}
-            <b class="bill-info">Deposit: ${{ bill.new_member_deposit }}</b>
-            {% endif %}
-            {% if bill.dropins.all %}
-            <b class="bill-info">Drop-ins:
-                {% for dropin in bill.dropins.all %}
-                    {{ dropin.visit_date|date:"m/d" }}{% loop_comma %}
-                {% endfor %}
-            </b>
-            {% endif %}
-            {% if bill.guest_dropins.all %}
-            <b class="bill-info">Guest Drop-ins:
-                {% for dropin in bill.guest_dropins.all %}
-                    {{ dropin.user.get_full_name }} on {{ dropin.visit_date|date:"m/d" }}{% loop_comma %}
-                {% endfor %}
-            </b>
-            {% endif %} -->
-        </td>
+        <td><a href='{{ bill.get_absolute_url}}'>receipt</a></td>
     </tr>
 {% endfor %}
 </tbody>

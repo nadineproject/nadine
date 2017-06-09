@@ -126,16 +126,12 @@ def profile_activity(request, username):
 @login_required
 def profile_billing(request, username):
     user = get_object_or_404(User.objects.prefetch_related('transaction_set'), username=username)
-    six_months_ago = localtime(now()) - relativedelta(months=6)
-    active_membership = user.profile.active_membership()
-    bills = UserBill.objects.filter(user=user).filter(due_date__gte=six_months_ago)
-    payments = user.transaction_set.prefetch_related('bills').filter(transaction_date__gte=six_months_ago)
-    context = {'user': user,
-               'active_membership': active_membership,
-               'bills': bills,
-               'payments': payments,
-               'settings': settings
-               }
+    bills = UserBill.objects.filter(user=user).order_by('-due_date')[:10]
+    context = {
+        'user': user,
+        'bills': bills,
+        'settings': settings,
+    }
     return render(request, 'member/profile/profile_billing.html', context)
 
 
