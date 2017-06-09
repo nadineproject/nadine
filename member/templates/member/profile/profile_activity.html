@@ -1,29 +1,40 @@
 <h3>
-    Activity This Cycle
-    {% if is_active %}
-        ({{ activity | length}} {% if allowance %} of {{ allowance }} Days{% endif %})
-    {% endif %}
+  This Period:
+  {{ period_start|date:'M d' }} to {{ period_end|date:'M d' }}
 </h3>
 
-{% if activity %}
-    <table>
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th align="center">Payment</th>
-          <th align="left">Paid by</th>
-        </tr>
-      </thead>
-      <tbody>
-          {% for d in activity %}
-              <tr class="{% cycle 'row-even' 'row-odd' %}">
-                 <td nowrap class="date-cell">{{ d.visit_date|date:"M d, Y" }}</td>
-                 <td align="center">{{ d.payment }}</td>
-                 <td align="left">{% if d.paid_by %}{{ d.paid_by.get_full_name }}{% endif %}</td>
-              </tr>
-          {% endfor %}
-      </tbody>
-    </table>
-    {% else %}
-        No activity...
-    {% endif %}
+<h3>
+  Activity This Period:
+  {{ days_this_period | length}} {% if allowance %} of {{ allowance }} Days{% endif %}
+</h3>
+
+{% if days_this_period %}
+  <table>
+    <thead>
+      <tr>
+        {% if show_user %}
+          <th>User</th>
+        {% endif %}
+        <th>Date</th>
+        <th align="center">Billable</th>
+        {% if show_paid %}
+          <th>Paid by</th>
+        {% endif %}
+      </tr>
+    </thead>
+    <tbody>
+        {% for d in days_this_period %}
+          <tr class="{% cycle 'row-even' 'row-odd' %}">
+            {% if show_user %}
+              <td>{{ d.user.get_full_name }}
+            {% endif %}
+            <td nowrap class="date-cell">{{ d.visit_date|date:"M d, Y" }}</td>
+            <td align="center">{{ d.payment }}</td>
+            {% if show_paid %}
+              <td>{% if d.paid_by %}{{ d.paid_by.get_full_name }}{% endif %}</td>
+            {% endif %}
+          </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+{% endif %}

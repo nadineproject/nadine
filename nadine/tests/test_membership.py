@@ -155,25 +155,57 @@ class MembershipTestCase(TestCase):
     # Tests
     ############################################################################
 
-    def test_user_list(self):
+    def test_users_in_period(self):
+        user1 = User.objects.create(username='user_gen1', first_name='Gen', last_name='One')
+        user2 = User.objects.create(username='user_gen2', first_name='Gen', last_name='Two')
+        subscription = ResourceSubscription.objects.create(
+            membership = user1.membership,
+            resource = self.test_resource,
+            start_date = date(2017, 6, 1),
+            monthly_rate = 100.00,
+            overage_rate = 0,
+        )
+        ps, pe = user1.membership.get_period(date(2017, 6, 1))
+        users = user1.membership.users_in_period(ps, pe)
+        self.assertEqual(1, len(users))
+        self.assertTrue(user1 in users)
+        self.assertFalse(user2 in users)
+
+        subscription = ResourceSubscription.objects.create(
+            membership = user2.membership,
+            resource = self.test_resource,
+            start_date = date(2017, 6, 1),
+            monthly_rate = 100.00,
+            overage_rate = 0,
+            paid_by = user1,
+        )
+        users = user1.membership.users_in_period(ps, pe)
+        self.assertEqual(2, len(users))
+        self.assertTrue(user1 in users)
+        self.assertTrue(user2 in users)
+
+    def test_users_in_period_organization(self):
+        # An organization membership should have all members of that org
         user1 = User.objects.create(username='user_one', first_name='User', last_name='One')
         user2 = User.objects.create(username='user_two', first_name='User', last_name='Two')
         user3 = User.objects.create(username='user_three', first_name='User', last_name='Three')
-
-        # An individual membership should have only the individual
-        user_list = user3.membership.user_list()
-        self.assertEqual(1, len(user_list))
-        self.assertEqual(user3, user_list[0])
-
-        # An organization membership should have all members of that org
         org1 = Organization.objects.create(lead=user1, name="Test Org", created_by=user1)
-        org1.add_member(user1)
-        org1.add_member(user2)
-        user_list = org1.membership.user_list()
-        self.assertEqual(2, len(user_list))
-        self.assertTrue(user1 in user_list)
-        self.assertTrue(user2 in user_list)
-        self.assertFalse(user3 in user_list)
+        org1.add_member(user1, start_date=date(2017, 6, 1))
+        org1.add_member(user2, start_date=date(2017, 6, 1))
+        # org1.membership = OrganizationMembership.objects.create(organization=org1)
+        subscription = ResourceSubscription.objects.create(
+            membership = org1.membership,
+            resource = self.test_resource,
+            start_date = date(2017, 6, 1),
+            monthly_rate = 100.00,
+            overage_rate = 0,
+        )
+        ps, pe = org1.membership.get_period(date(2017, 6, 1))
+        users = org1.membership.users_in_period(ps, pe)
+        self.assertEqual(2, len(users))
+        self.assertTrue(user1 in users)
+        self.assertTrue(user2 in users)
+        self.assertFalse(user3 in users)
 
     def test_start_date(self):
         # Our start date should be equal to the start of the first subscription
@@ -445,6 +477,52 @@ class MembershipTestCase(TestCase):
         self.assertEquals(0, membership.bills.count())
         membership.generate_all_bills()
         self.assertEquals(12, membership.bills.count())
+
+    def test_resource_activity(self):
+        from nadine.models.usage import CoworkingDay
+        day_resource = Resource.objects.day_resource
+        user1 = User.objects.create(username='user_gen1', first_name='Gen', last_name='One')
+        membership = user1.membership
+        subscription = ResourceSubscription.objects.create(
+            membership = membership,
+            resource = day_resource,
+            start_date = date(2017, 6, 1),
+            monthly_rate = 100.00,
+            overage_rate = 0,
+        )
+        activity = membership.resource_activity(day_resource, target_date=date(2017, 6, 1))
+        self.assertEqual(0, len(activity))
+
+        # User1 signs in for one day
+        day1 = CoworkingDay.objects.create(user=user1, visit_date=date(2017, 6, 1), payment="Bill")
+        activity = membership.resource_activity(day_resource, target_date=date(2017, 6, 1))
+        self.assertEqual(1, len(activity))
+        self.assertTrue(day1 in activity)
+
+        # User2 signs in as User1's guest
+        user2 = User.objects.create(username='user_gen2', first_name='Gen', last_name='Two')
+        day2 = CoworkingDay.objects.create(user=user2, paid_by=user1, visit_date=date(2017, 6, 1), payment="Bill")
+        activity = membership.resource_activity(day_resource, target_date=date(2017, 6, 1))
+        self.assertEqual(2, len(activity))
+        self.assertTrue(day1 in activity)
+        self.assertTrue(day2 in activity)
+
+        # User3 gets a membership paid for by User1
+        user3 = User.objects.create(username='user_gen3', first_name='Gen', last_name='Three')
+        subscription = ResourceSubscription.objects.create(
+            membership = user3.membership,
+            resource = day_resource,
+            start_date = date(2017, 6, 1),
+            monthly_rate = 100.00,
+            overage_rate = 0,
+            paid_by = user1,
+        )
+        day3 = CoworkingDay.objects.create(user=user3, visit_date=date(2017, 6, 1), payment="Bill")
+        activity = membership.resource_activity(day_resource, target_date=date(2017, 6, 1))
+        self.assertEqual(3, len(activity))
+        self.assertTrue(day1 in activity)
+        self.assertTrue(day2 in activity)
+        self.assertTrue(day3 in activity)
 
     def test_package_monthly_rate(self):
         # Only 1 subscription so the totals should match

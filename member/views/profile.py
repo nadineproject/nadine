@@ -18,6 +18,7 @@ from django.utils.timezone import localtime, now
 from nadine import email
 from nadine.models.profile import UserProfile, FileUpload
 from nadine.models.usage import CoworkingDay, Event
+from nadine.models.resource import Resource
 from nadine.models.billing import UserBill
 from nadine.models.alerts import MemberAlert
 from nadine.models.organization import Organization, OrganizationMember
@@ -108,18 +109,25 @@ def profile_events(request, username):
 @login_required
 def profile_activity(request, username):
     user = get_object_or_404(User.objects.select_related('profile'), username=username)
-    is_active = False
-    allowance = 0
-    active_membership = user.profile.active_membership()
-    if active_membership:
-        is_active = True
-        allowance = active_membership.get_allowance()
-    activity = user.profile.activity_this_month()
-    context = {'user': user,
-               'is_active': is_active,
-               'activity': activity,
-               'allowance': allowance
-               }
+    period_start, period_end = user.membership.get_period()
+    days_this_period = user.membership.resource_activity(Resource.objects.day_resource)
+    allowance = user.membership.allowance_by_resource(Resource.objects.day_resource)
+    show_user = False
+    show_paid = False
+    for d in days_this_period:
+        if d.user != user:
+            show_user = True
+        if d.paid_by:
+            show_paid = True
+    context = {
+        'user': user,
+        'period_start': period_start,
+        'period_end': period_end,
+        'show_user': show_user,
+        'show_paid': show_paid,
+        'days_this_period': days_this_period,
+        'allowance': allowance
+    }
     return render(request, 'member/profile/profile_activity.html', context)
 
 

@@ -367,28 +367,39 @@ class UserProfile(models.Model):
         from nadine.forms import PayBillsForm
         return PayBillsForm(initial={'username': self.user.username, 'amount': self.open_bills_amount})
 
-    def activity_this_month(self, target_date=None):
-        if not target_date:
-            target_date = localtime(now()).date()
-
-        membership = self.active_membership()
-        if membership:
-            if membership.paid_by:
-                # Return host's activity
-                host = membership.paid_by
-                return host.profile.activity_this_month()
-            month_start = membership.prev_billing_date(target_date)
+    def days_used(self):
+        # TODO - evaluate what it should do if this is an org member
+        membership = self.user.membership
+        days = len(membership.resource_activity(Resource.objects.day_resource))
+        if membership.is_active():
+            allowed = membership.allowance_by_resource(Resource.objects.day_resource)
         else:
-            # Just go back one month from this date since there isn't a membership to work with
-            month_start = target_date - relativedelta(months = 1)
+            allowed = 0
+        return (days, allowed)
 
-        activity = []
-        for h in [self.user] + self.guests():
-            for l in CoworkingDay.objects.filter(user=h, payment='Bill', visit_date__gte=month_start).exclude(paid_by__isnull=False):
-                activity.append(l)
-        for l in CoworkingDay.objects.filter(paid_by=self.user, payment='Bill', visit_date__gte=month_start):
-            activity.append(l)
-        return activity
+    # TODO - remove in favor of membership.resource_activity_for_period
+    # def activity_this_month(self, target_date=None):
+    #     if not target_date:
+    #         target_date = localtime(now()).date()
+    #
+    #     membership = self.active_membership()
+    #     if membership:
+    #         if membership.paid_by:
+    #             # Return host's activity
+    #             host = membership.paid_by
+    #             return host.profile.activity_this_month()
+    #         month_start = membership.prev_billing_date(target_date)
+    #     else:
+    #         # Just go back one month from this date since there isn't a membership to work with
+    #         month_start = target_date - relativedelta(months = 1)
+    #
+    #     activity = []
+    #     for h in [self.user] + self.guests():
+    #         for l in CoworkingDay.objects.filter(user=h, payment='Bill', visit_date__gte=month_start).exclude(paid_by__isnull=False):
+    #             activity.append(l)
+    #     for l in CoworkingDay.objects.filter(paid_by=self.user, payment='Bill', visit_date__gte=month_start):
+    #         activity.append(l)
+    #     return activity
 
     def all_emails(self):
         # Done in two queries so that the primary email address is always on top.
