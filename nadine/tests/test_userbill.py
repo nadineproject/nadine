@@ -159,13 +159,13 @@ class UserBillTestCase(TestCase):
         self.assertEqual(9, june_20_bill.resource_activity_count(Resource.objects.day_resource))
 
     def test_guest_membership_bills(self):
-        # User 6, 7 = PT-5 6/26/2008 - User 7 guest of User 6
+        # User 6 & 7 = PT-5 starting 1/1/2008 - User 7 guest of User 6
         user6 = User.objects.create(username='member_six', first_name='Member', last_name='Six')
-        user6.membership.set_to_package(self.pt5Package, start_date=date(2008, 6, 26), end_date=None, bill_day=26)
+        user6.membership.set_to_package(self.pt5Package, start_date=date(2008, 1, 1), end_date=None, bill_day=1)
+        user7 = User.objects.create(username='member_seven', first_name='Member', last_name='Seven')
+        user7.membership.set_to_package(self.pt5Package, start_date=date(2008, 1, 1), paid_by=user6, bill_day=1)
 
         # User 7 has daily activity 6/1/2010 through 6/15/2010
-        user7 = User.objects.create(username='member_seven', first_name='Member', last_name='Seven')
-        user7.membership.set_to_package(self.pt5Package, start_date=date(2008, 6, 26), paid_by=user6, bill_day=26)
         for day in range(1, 16):
             CoworkingDay.objects.create(user=user7, visit_date=date(2010, 6, day), payment='Bill')
 
@@ -175,25 +175,32 @@ class UserBillTestCase(TestCase):
         self.assertTrue(user7 in user6.profile.guests())
 
         # User 7 activity shows up for User 6
-        coworking_days = user6.profile.activity_this_month(date(2010, 6, 26))
+        coworking_days = user6.membership.resource_activity(Resource.objects.day_resource, target_date=date(2010, 6, 1))
         self.assertEqual(len(coworking_days), 15)
 
         # Start by generating only the bill for User 6
-        # User 6 = $75
+        # User 6, 6/1/2010 = $75
         self.assertEqual(0, user6.profile.open_bills_amount)
-        user6.membership.generate_bill(target_date=date(2010, 6, 26))
-        # user6_bill = user6.bills.get(period_start=date(2010, 6, 26))
-        # print_bill(user6_bill)
+        user6.membership.generate_bill(target_date=date(2010, 6, 1))
+        bill = user6.bills.get(period_start=date(2010, 6, 1))
+        print_bill(bill)
+        self.assertEqual(75, bill.amount)
         self.assertEqual(75, user6.profile.open_bills_amount)
 
-        # Now generate the bill for user 7
+        # Now generate the bill for 7/1/2010
+        # User 6 = $75 base rate
         # User 7 = $75 base rate + 10 overage days @ $20 = $275
+        user6.membership.generate_bill(target_date=date(2010, 7, 1))
+        bill = user6.bills.get(period_start=date(2010, 7, 1))
+        print_bill(bill)
+        self.assertEqual(275, bill.amount)
+
         # Total = User 6 + User 7 = $350
-        user7.membership.generate_bill()
-        print_all_bills(user6)
-        print_all_bills(user7)
-        self.assertEqual(0, user7.profile.open_bills_amount)
         self.assertEqual(350, user6.profile.open_bills_amount)
+
+        # User 7 should owe nothing
+        user7.membership.generate_bill()
+        self.assertEqual(0, user7.profile.open_bills_amount)
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
