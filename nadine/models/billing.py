@@ -144,49 +144,30 @@ class UserBill(models.Model):
         allowance = self.resource_allowance(resource)
         overage_rate = self.resource_overage_rate(resource)
         user_list = self.membership.users_in_period(period_start, period_end)
-        tracker = resource.get_tracker()
 
         line_items = []
         allowance_left = allowance
-        for user in user_list:
-            for activity in tracker.get_activity(user, period_start, period_end):
-                activity_count = len(line_items) + 1
-                description = "%s %s (%d)" % (activity.activity_date, resource.name, activity_count)
-                amount = overage_rate
-                if allowance_left > 0:
-                    amount = 0
-                    allowance_left = allowance_left - 1
+        for activity in self.membership.resource_activity_for_period(resource, period_start, period_end):
+            activity_count = len(line_items) + 1
+            description = "%s %s (%d)" % (activity.activity_date, resource.name, activity_count)
+            amount = overage_rate
+            if allowance_left > 0:
+                amount = 0
+                allowance_left = allowance_left - 1
 
-                line_item = BillLineItem(
-                    bill = self,
-                    description = description,
-                    amount = amount,
-                    resource = resource,
-                    activity_id = activity.id
+            line_item = BillLineItem(
+                bill = self,
+                description = description,
+                amount = amount,
+                resource = resource,
+                activity_id = activity.id
 
-                )
+            )
 
-                line_items.append(line_item)
+            line_items.append(line_item)
 
         if len(line_items) > 0:
             return line_items
-
-    # Not sure if I need this -- JLS
-    # def non_refund_payments(self):
-    #     return self.payments.filter(paid_amount__gt=0)
-    #
-    # Not sure if we need this either if we create them in the right order
-    # and pull them ordering by ID
-    # def ordered_line_items(self):
-    #     # return bill line items with custom items last
-    #     # custom items, then the fees
-    #     line_items = self.line_items.filter(custom=False)
-    #     custom_items = self.line_items.filter(custom=True)
-    #     return list(line_items) + list(custom_items)
-    #
-    # def delete_non_custom_items(self):
-    #     for i in self.line_items.filter(custom=False):
-    #         i.delete()
 
 
 class BillLineItem(models.Model):
@@ -199,12 +180,6 @@ class BillLineItem(models.Model):
 
     def __unicode__(self):
         return self.description
-
-
-#
-# I don't think this is the right way to go -- JLS
-# class CoworkingDayLineItem(BillLineItem):
-#     days = models.ManyToManyField('CoworkingDay', related_name='bill_line')
 
 
 class Payment(models.Model):
