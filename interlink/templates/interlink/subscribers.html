@@ -25,8 +25,8 @@
 {% for subscriber in mailing_list.subscribers.all|dictsort:"username.lower" %}
 	<tr>
 		<td>{{ subscriber.first_name }} {{ subscriber.last_name }}</td>
-		<td>{{ subscriber.profile.last_membership.start_date }}</td>
-		<td>{{ subscriber.profile.last_membership.end_date | default:'' }}</td>
+		<td>{{ subscriber.membership.start_date }}</td>
+		<td>{{ subscriber.membership.end_date | default:'' }}</td>
 		<td><a href="{%url 'interlink:unsubscribe' mailing_list.id subscriber.username%}">unsubscribe</a></td>
 	</tr>
 {% endfor %}
@@ -47,8 +47,8 @@
 {% for subscriber in not_subscribed %}
 	<tr>
 		<td>{{ subscriber.first_name }} {{ subscriber.last_name }}</td>
-		<td>{{ subscriber.profile.last_membership.start_date }}</td>
-		<td>{{ subscriber.profile.last_membership.end_date | default:''}}</td>
+		<td>{{ subscriber.profile.membership.start_date }}</td>
+		<td>{{ subscriber.profile.membership.end_date | default:''}}</td>
 		<td><a href="{%url 'interlink:subscribe' mailing_list.id subscriber.username %}">subscribe</a></td>
 	</tr>
 {% endfor %}
