@@ -260,16 +260,19 @@ class Membership(models.Model):
     def has_mail(self, target_date=None):
         return self.has_resource(Resource.objects.mail_resource, target_date)
 
-    def user_list(self, target_date=None):
-        if not target_date:
-            target_date = localtime(now()).date()
-        return self.users_in_period(period_start=target_date, period_end=target_date)
-
     def users_in_period(self, period_start, period_end):
+        users = set()
         if self.is_individual:
-            return [self.individualmembership.user]
+            # The user themselves
+            users.add(self.individualmembership.user)
+            guest_subscriptions = ResourceSubscription.objects.filter(paid_by=self.individualmembership.user)
+            for s in guest_subscriptions:
+                users = users.union(s.membership.users_in_period(period_start, period_end))
         elif self.is_organization:
-            return list(self.organizationmembership.organization.members_in_period(period_start, period_end))
+            organization = self.organizationmembership.organization
+            members = organization.members_in_period(period_start, period_end)
+            users = set(members)
+        return users
 
     def end_all(self, target_date=None):
         '''End all the active subscriptions.  Defaults to yesterday.'''
@@ -492,6 +495,16 @@ class Membership(models.Model):
         last_subscription = self.subscriptions.all().order_by('created_ts').last()
         return last_subscription.created_ts
 
+    def generate_all_bills(self, start_date=None, end_date=None):
+        if start_date is None:
+            start_date = self.start_date
+        if end_date is None:
+            end_date = localtime(now()).date()
+        period_start = start_date
+        while period_start and period_start < end_date:
+            self.generate_bill(target_date=period_start)
+            period_start = self.next_period_start(period_start)
+
     def generate_bill(self, target_date=None, created_by=None):
         if not target_date:
             target_date = localtime(now()).date()
@@ -597,6 +610,18 @@ class Membership(models.Model):
         # we might as well return it!
         return new_bills
 
+    def resource_activity(self, resource, target_date=None):
+        ps, pe = self.get_period(target_date)
+        return self.resource_activity_for_period(resource, ps, pe)
+
+    def resource_activity_for_period(self, resource, period_start, period_end):
+        activity_set = set()
+        tracker = resource.get_tracker()
+        for user in self.users_in_period(period_start, period_end):
+            for activity in tracker.get_activity(user, period_start, period_end):
+                activity_set.add(activity)
+        return activity_set
+
     def delete_unpaid_bills(self):
         for bill in self.bills.all():
             if bill.total_paid == 0:
@@ -607,16 +632,6 @@ class Membership(models.Model):
             if not bill.is_paid:
                 return True
         return False
-
-    def generate_all_bills(self, start_date=None, end_date=None):
-        if start_date is None:
-            start_date = self.start_date
-        if end_date is None:
-            end_date = localtime(now()).date()
-        period_start = start_date
-        while period_start and period_start < end_date:
-            self.generate_bill(target_date=period_start)
-            period_start = self.next_period_start(period_start)
 
 
 class IndividualMembership(Membership):
