@@ -10,7 +10,7 @@ from django.core import mail
 from django.contrib.auth.models import User
 from django.utils.timezone import localtime, now
 
-from nadine.models import Resource, Membership, MembershipPackage, SubscriptionDefault
+from nadine.models import Resource, MembershipPackage, SubscriptionDefault
 
 from interlink.tests.test_utils import create_user
 from interlink.models import MailingList, IncomingMail, OutgoingMail

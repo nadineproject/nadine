@@ -10,7 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404, HttpRequest, JsonResponse
 
 from nadine.models.profile import UserProfile
-from nadine.models.organization import Organization, OrganizationMember
+from nadine.models.organization import Organization
 
 from member.views.core import is_active_member
 

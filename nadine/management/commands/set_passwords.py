@@ -3,11 +3,8 @@ import time
 import csv
 import ConfigParser
 
-from django.template.defaultfilters import slugify
 from django.core.management.base import BaseCommand, CommandError
-from django.core.files import File
-
-from nadine.models import *
+from django.contrib.auth.models import User
 
 PROMPT = '> '
 

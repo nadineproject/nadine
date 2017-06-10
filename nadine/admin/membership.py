@@ -1,5 +1,3 @@
-from datetime import datetime, time, date, timedelta
-
 from django.contrib import admin
 from django.utils.timezone import localtime, now
 
