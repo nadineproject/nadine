@@ -9,7 +9,6 @@ from django.core.files.base import ContentFile
 from django.forms import modelformset_factory
 from django.forms.formsets import BaseFormSet
 from django.contrib.auth.models import User
-from django.utils.html import strip_tags
 from django.conf import settings
 from django.utils import timezone
 from django.core.files.base import ContentFile
