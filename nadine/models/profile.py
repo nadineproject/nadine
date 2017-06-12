@@ -364,8 +364,8 @@ class UserProfile(models.Model):
         return xero_api.get_open_invoices(self.user)
 
     def pay_bills_form(self):
-        from nadine.forms import PayBillsForm
-        return PayBillsForm(initial={'username': self.user.username, 'amount': self.open_bills_amount})
+        from nadine.forms import PaymentForm
+        return PaymentForm(initial={'username': self.user.username, 'amount': self.open_bills_amount})
 
     def days_used(self):
         # TODO - evaluate what it should do if this is an org member

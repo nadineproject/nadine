@@ -2,56 +2,9 @@
 
 {% block sub-title %}Bills{% endblock %}
 
-{% block sub-head %}
-	<script>
-		function toggleBillDetails(userID){
-			var detail_selector = '#bill-details-' + userID;
-			var detail_toggle_selector = '#bill-details-toggle-' + userID;
-			if($(detail_selector).is(':hidden')) {
-				$(detail_selector).show();
-				$(detail_toggle_selector).html('[-]');
-			} else {
-				$(detail_selector).hide();
-				$(detail_toggle_selector).html('[+]');
-			}
-		}
-
-		function initPage(){
-			$(".bill-details").hide();
-		}
-
-		$(document).ready(function() {
-			initPage();
-
-			{% for message in messages %}
-	      {% if message.tags == 'error' %}
-	        Materialize.toast('{{ message }}', 60000, 'error-msg msg');
-	      {% else %}
-	        Materialize.toast('{{ message }}', 3000, '{{ message.tags }}-msg msg');
-	      {% endif %}
-	    {% endfor %}
-
-	    $(document).on('click', '#toast-container .toast', function() {
-	      $(this).fadeOut(function(){
-	        $(this).remove();
-	      });
-	    });
-		});
-	</script>
-{% endblock %}
-
 {% block content %}
 
-<h4>Outstanding Bills</h4>
-
-{% if messages %}
-<div class="messages">
-	{% for message in messages %}
-		<div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
-	{% endfor %}
-</div>
-{% endif %}
-
+<h4>Outstanding Bills ({{ bills|length }})</h4>
 {% if bills %}
 	{% include "staff/billing/outstanding_table.html" %}
 {% else %}
@@ -59,13 +12,15 @@
 {% endif %}
 
 {% if bills_in_progress %}
-	<h4>In Progress</h4>
+	<h4>In Progress ({{ bills_in_progress|length }})</h4>
 	{% with bills_in_progress as bills and True as in_progress %}
 		{% include "staff/billing/outstanding_table.html" %}
 	{% endwith %}
 {% endif %}
 
-<h4>{{ invalid_members.count }} Invalid Billing Profiles</h4>
+<p></p>
+
+<h4>Invalid Billing Profiles ({{ invalid_members.count }})</h4>
 <table>
 	{% for u in invalid_members %}
 		<tr class="{% cycle 'row-odd' 'row-even' %}">

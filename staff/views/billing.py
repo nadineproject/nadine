@@ -18,7 +18,7 @@ from decimal import Decimal
 
 from nadine.models import *
 from nadine import email
-from nadine.forms import PayBillsForm, DateRangeForm
+from nadine.forms import PaymentForm, DateRangeForm
 from staff.views.activity import date_range_from_request, START_DATE_PARAM, END_DATE_PARAM
 
 
@@ -50,85 +50,6 @@ def daily_billing(request, year, month, day):
     return render(request, 'staff/billing/daily_billing.html', context)
 
 
-def group_bills_by_date(bill_query):
-    bills_by_date = {}
-    for bill in bill_query:
-        key = bill.created_ts.date()
-        if not key in bills_by_date:
-            bills_by_date[key] = []
-        bills_by_date[key].append(bill.user)
-    # Return an ordered dictionary by date
-    ordered_bills = OrderedDict(sorted(bills_by_date.items(), key=lambda t: t[0]))
-    return ordered_bills
-
-
-@staff_member_required
-def outstanding(request):
-    if request.method == 'POST':
-        action = request.POST.get("action", "Set Paid")
-        pay_bills_form = PayBillsForm(request.POST)
-        if pay_bills_form.is_valid():
-            user = User.objects.get(username=pay_bills_form.cleaned_data['username'])
-            users_bills = {}
-            for bill in user.profile.outstanding_bills():
-                users_bills[bill.id] = bill
-            bill_ids = [int(bill_id) for bill_id in request.POST.getlist('bill_id')]
-            if action == "set_paid":
-                amount = pay_bills_form.cleaned_data['amount']
-                transaction = Transaction(user=user, status='closed', amount=Decimal(amount))
-                transaction.note = pay_bills_form.cleaned_data['transaction_note']
-                transaction.save()
-                for bill_id in bill_ids:
-                    transaction.bills.add(users_bills[bill_id])
-                transaction_url = reverse('staff:billing:transaction', args=[], kwargs={'id': transaction.id})
-                messages.success(request, 'Created a <a href="%s">transaction for %s</a>' % (transaction_url, user.get_full_name()))
-            elif action == "mark_in_progress":
-                for bill_id in bill_ids:
-                    bill = users_bills[bill_id]
-                    bill.in_progress = True
-                    bill.save()
-                    messages.success(request, "Bills marked 'In Progress'")
-            elif action == "clear_in_progress":
-                for bill_id in bill_ids:
-                    bill = users_bills[bill_id]
-                    bill.in_progress = False
-                    bill.save()
-                    messages.success(request, "Bills updated")
-
-    bills = group_bills_by_date(UserBill.objects.unpaid(in_progress=False))
-    bills_in_progress = group_bills_by_date(UserBill.objects.unpaid(in_progress=True))
-    invalids = User.helper.invalid_billing()
-
-    context = {
-        'bills': bills,
-        'bills_in_progress': bills_in_progress,
-        'invalid_members': invalids,
-    }
-    return render(request, 'staff/billing/outstanding.html', context)
-
-
-@staff_member_required
-def bills_pay_all(request, username):
-    user = get_object_or_404(User, username=username)
-    amount = user.profile.open_bills_amount
-
-    # Save all the bills!
-    if amount > 0:
-        transaction = Transaction(user=user, status='closed', amount=amount)
-        transaction.save()
-        for bill in user.profile.outstanding_bills():
-            transaction.bills.add(bill)
-
-    # Where to next?
-    if request.method == 'POST':
-        if 'next' in request.POST:
-            next_url = request.POST.get("next")
-        else:
-            next_url = reverse('staff:billing:outstanding')
-
-    return HttpResponseRedirect(next_url)
-
-
 @staff_member_required
 def bill_list(request):
     start, end = date_range_from_request(request)
@@ -151,12 +72,87 @@ def bill_list(request):
 
 
 @staff_member_required
-def toggle_billing_flag(request, username):
-    user = get_object_or_404(User, username=username)
+def outstanding(request):
+    if request.method == 'POST':
+        action = request.POST.get("action", "Set Paid")
+        pay_bills_form = PaymentForm(request.POST)
+        if pay_bills_form.is_valid():
+            user = User.objects.get(username=pay_bills_form.cleaned_data['username'])
+            users_bills = {}
+            for bill in user.profile.outstanding_bills():
+                users_bills[bill.id] = bill
+            bill_ids = [int(bill_id) for bill_id in request.POST.getlist('bill_id')]
+            if action == "set_paid":
+                amount = pay_bills_form.cleaned_data['amount']
+                transaction = Transaction(user=user, status='closed', amount=Decimal(amount))
+                transaction.note = pay_bills_form.cleaned_data['transaction_note']
+                transaction.save()
+                for bill_id in bill_ids:
+                    transaction.bills.add(users_bills[bill_id])
+                transaction_url = reverse('staff:billing:transaction', args=[], kwargs={'id': transaction.id})
+                messages.success(request, 'Created a <a href="%s">transaction for %s</a>' % (transaction_url, user.get_full_name()))
 
-    messages.success(request, user.get_full_name() + " billing profile: ")
+    # bills = group_bills_by_date(UserBill.objects.unpaid(in_progress=False))
+    # bills_in_progress = group_bills_by_date(UserBill.objects.unpaid(in_progress=True))
+    bills = UserBill.objects.unpaid(in_progress=False).order_by('due_date')
+    bills_in_progress = UserBill.objects.unpaid(in_progress=True).order_by('due_date')
+    invalids = User.helper.invalid_billing()
+
+    context = {
+        'bills': bills,
+        'bills_in_progress': bills_in_progress,
+        'invalid_members': invalids,
+    }
+    return render(request, 'staff/billing/outstanding.html', context)
+
+
+@staff_member_required
+def set_user_paid(request, username):
+    ''' Mark all of the bills paid for this user '''
+    user = get_object_or_404(User, username=username)
+    for bill in user.profile.outstanding_bills():
+        payment = Payment.objects.create(bill=bill, user=user, amount=bill.amount)
+        messages.success(request, "Bill %d ($%s) paid" % (bill.id, bill.amount))
+    if 'next' in request.POST:
+        HttpResponseRedirect(request.POST.get("next"))
+    return HttpResponseRedirect(reverse('staff:billing:outstanding'))
+
+
+@staff_member_required
+def set_bill_paid(request, bill_id):
+    ''' Mark the bill paid '''
+    bill = get_object_or_404(Bill, id=bill_id)
+    payment = Payment.objects.create(bill=bill, user=bill.user, amount=bill.amount)
+    messages.success(request, "Bill %d ($%s) paid" % (bill.id, bill.amount))
+    if 'next' in request.POST:
+        HttpResponseRedirect(request.POST.get("next"))
+    return HttpResponseRedirect(reverse('staff:billing:outstanding'))
+
+
+@staff_member_required
+def toggle_bill_in_progress(request, bill_id):
+    ''' Turn on/off the in_progress flag of this bill '''
+    bill = get_object_or_404(Bill, id=bill_id)
+    if bill.in_progress:
+        bill.in_progress = False
+        bill.save()
+        messages.success(request, "Bill %d now 'in progress'" % bill_id)
+    else:
+        bill.in_progres = True
+        bill.save()
+        messages.success(request, "Bill %d no longer 'in progress'" % bill_id)
+    if 'next' in request.POST:
+        return HttpResponseRedirect(request.POST.get('next'))
+    return HttpResponseRedirect(reverse('staff:billing:outstanding'))
+
+
+@staff_member_required
+def toggle_billing_flag(request, username):
+    ''' Turn on/off the valid_billing flag of this user '''
+    user = get_object_or_404(User, username=username)
     if user.profile.valid_billing:
         user.profile.valid_billing = False
+        user.profile.save()
         messages.success(request, user.get_full_name() + " billing profile: Invalid")
         try:
             email.send_invalid_billing(user)
@@ -164,17 +160,16 @@ def toggle_billing_flag(request, username):
             messages.error(request, "Failed to send invalid billing email to: " + user.email)
     else:
         user.profile.valid_billing = True
+        user.profile.save()
         messages.success(request, user.get_full_name() + " billing profile: Valid")
-    user.profile.save()
-
-
-    if 'back' in request.POST:
-        return HttpResponseRedirect(request.POST.get('back'))
+    if 'next' in request.POST:
+        return HttpResponseRedirect(request.POST.get('next'))
     return HttpResponseRedirect(reverse('staff:billing:outstanding'))
 
 
 @staff_member_required
 def generate_bill(request, membership_id, year, month, day):
+    ''' Generate the bills for the given membership and date '''
     membership = get_object_or_404(Membership, id=membership_id)
     target_date = date(year=int(year), month=int(month), day=int(day))
     bills = membership.generate_bill(target_date=target_date, created_by=request.user)
@@ -187,7 +182,6 @@ def generate_bill(request, membership_id, year, month, day):
             return HttpResponseRedirect(reverse('staff:billing:bill', kwargs={'bill_id': bill_id}))
     else:
         messages.add_message(request, messages.ERROR, "0 Bills Generated")
-
     # If there are multiple bills or nothing happend, go to the bill list
     return HttpResponseRedirect(reverse('staff:billing:bills'))
 

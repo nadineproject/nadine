@@ -82,19 +82,19 @@ def forward(apps, schema_editor):
             p = Payment.objects.create(
                 bill = bill,
                 user = user,
-                paid_amount = t.amount,
+                amount = t.amount,
             )
             p.payment_date = t.transaction_date
             p.save()
 
 
-            # Move transaction notes to bill comments
+            # Move transaction notes to bill notes
             if t.note:
-                comment = ""
-                if bill.comment:
-                    comment = bill.comment
-                comment += t.note
-                bill.comment = comment
+                note = ""
+                if bill.note:
+                    note = bill.note
+                note += t.note
+                bill.note = note
                 bill.save()
 
 
@@ -126,11 +126,9 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('payment_date', models.DateTimeField(auto_now_add=True)),
-                ('payment_service', models.CharField(blank=True, help_text=b'e.g., Stripe, Paypal, Dwolla, etc. May be empty', max_length=200, null=True)),
-                ('payment_method', models.CharField(blank=True, help_text=b'e.g., Visa, cash, bank transfer', max_length=200, null=True)),
-                ('paid_amount', models.DecimalField(decimal_places=2, default=0, max_digits=7)),
-                ('transaction_id', models.CharField(blank=True, max_length=200, null=True)),
-                ('last4', models.IntegerField(blank=True, null=True)),
+                ('payment_service', models.CharField(max_length=64, blank=True, null=True)),
+                ('transaction_id', models.CharField(max_length=64, blank=True, null=True)),
+                ('amount', models.DecimalField(decimal_places=2, default=0, max_digits=7)),
             ],
         ),
         migrations.CreateModel(
@@ -144,19 +142,19 @@ class Migration(migrations.Migration):
                 ('due_date', models.DateField()),
                 ('in_progress', models.BooleanField(default=False)),
                 ('mark_paid', models.BooleanField(default=False)),
-                ('comment', models.TextField(blank=True, null=True)),
+                ('note', models.TextField(blank=True, null=True)),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='bills', to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.AddField(
             model_name='payment',
             name='bill',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='nadine.UserBill'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='nadine.UserBill'),
         ),
         migrations.AddField(
             model_name='payment',
             name='user',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
             model_name='billlineitem',

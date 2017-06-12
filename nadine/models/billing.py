@@ -24,7 +24,7 @@ class BillManager(models.Manager):
             query = query.filter(user=user)
         if in_progress != None:
             query = query.filter(in_progress=in_progress)
-        query = query.annotate(owed=Sum('line_items__amount') - Sum('payment__paid_amount'), payment_count=Count('payment'))
+        query = query.annotate(owed=Sum('line_items__amount') - Sum('payment__amount'), payment_count=Count('payment'))
         no_payments = Q(payment_count = 0)
         partial_payment = Q(owed__gt = 0)
         query = query.filter(no_payments | partial_payment)
@@ -40,7 +40,7 @@ class UserBill(models.Model):
     period_start = models.DateField()
     period_end = models.DateField()
     due_date = models.DateField()
-    comment = models.TextField(blank=True, null=True)
+    note = models.TextField(blank=True, null=True)
     in_progress = models.BooleanField(default=False, blank=False, null=False)
     mark_paid = models.BooleanField(default=False, blank=False, null=False)
 
@@ -49,7 +49,7 @@ class UserBill(models.Model):
 
     @property
     def total_paid(self):
-        return self.payment_set.aggregate(paid=Coalesce(Sum('paid_amount'), Value(0.00)))['paid']
+        return self.payment_set.aggregate(paid=Coalesce(Sum('amount'), Value(0.00)))['paid']
 
     @property
     def total_owed(self):
@@ -71,6 +71,24 @@ class UserBill(models.Model):
             return last_payment.payment_date
         else:
             return None
+
+    @property
+    def package_name(self):
+        if self.membership:
+            return self.membership.package_name(self.period_start)
+
+    @property
+    def monthly_rate(self):
+        if self.membership:
+            return self.membership.monthly_rate(self.period_start)
+
+    @property
+    def overage_amount(self):
+        if self.monthly_rate:
+            if self.amount < self.monthly_rate:
+                return 0
+            else:
+                return self.amount - self.monthly_rate
 
     def get_absolute_url(self):
         return reverse('member:receipt', kwargs={'bill_id': self.id})
@@ -185,14 +203,12 @@ class BillLineItem(models.Model):
 
 
 class Payment(models.Model):
-    bill = models.ForeignKey(UserBill, null=True, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)
+    bill = models.ForeignKey(UserBill, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     payment_date = models.DateTimeField(auto_now_add=True)
-    payment_service = models.CharField(max_length=200, blank=True, null=True, help_text="e.g., Stripe, Paypal, Dwolla, etc. May be empty")
-    payment_method = models.CharField(max_length=200, blank=True, null=True, help_text="e.g., Visa, cash, bank transfer")
-    paid_amount = models.DecimalField(max_digits=7, decimal_places=2, default=0)
-    transaction_id = models.CharField(max_length=200, null=True, blank=True)
-    last4 = models.IntegerField(null=True, blank=True)
+    payment_service = models.CharField(max_length=64, null=True, blank=True)
+    transaction_id = models.CharField(max_length=64, null=True, blank=True)
+    amount = models.DecimalField(max_digits=7, decimal_places=2, default=0)
 
     def __unicode__(self):
-        return "%s: %s - $%s" % (str(self.payment_date)[:16], self.user, self.paid_amount)
+        return "%s: %s - $%s" % (str(self.payment_date)[:16], self.user, self.amount)

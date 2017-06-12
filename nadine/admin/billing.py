@@ -20,7 +20,7 @@ class UserBillAdmin(StyledAdmin):
     search_fields = ('user__username', 'user__first_name')
     raw_id_fields = ('user', )
     readonly_fields = ('id', 'created_ts', 'created_by')
-    fields = ('id', 'user', 'created_ts', 'period_start', 'period_end', 'due_date')
+    fields = ('id', 'user', 'created_ts', 'period_start', 'period_end', 'due_date', 'in_progress')
     ordering = ['-period_start', ]
     inlines = [BillLineItemInline, PaymentInline]
 

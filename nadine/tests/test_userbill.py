@@ -122,7 +122,7 @@ class UserBillTestCase(TestCase):
     def test_unpaid_partial_payment(self):
         # Apply $1 to the last bill and make sure it's still in our unpaid set
         last_bill = UserBill.objects.unpaid().last()
-        Payment.objects.create(bill=last_bill, user=self.user1, paid_amount=1)
+        Payment.objects.create(bill=last_bill, user=self.user1, amount=1)
         self.assertTrue(last_bill.total_paid == 1)
         self.assertFalse(last_bill.is_paid)
         self.assertTrue(last_bill in UserBill.objects.unpaid())
