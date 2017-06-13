@@ -52,9 +52,9 @@
 {% if bill.created_by %}
   <table class='bill-id-table'>
     <tr>
-      <th style="width: 15%;">Bill Created:</th>
-      <td style="width: 25%;">{{ bill.created_ts|date:"m/d/y P" }}</td>
-      <th>By:</th>
+      <th style="width:15%;">Bill Created:</th>
+      <td style="width:20%;">{{ bill.created_ts|date:"m/d/y P" }}</td>
+      <th style="width:5%;">By:</th>
       <td>{{ bill.created_by.get_full_name }}</td>
     </tr>
   </table>
@@ -75,21 +75,39 @@
 </table>
 
 <h5>Payments</h5>
-<table>
+<table class="payment-table">
   <tr>
     <th class="left">Date</th>
     <th>Service</th>
     <th>Transaction ID</th>
     <th class="right">Amount</th>
+    <th></th>
   </tr>
   {% for payment in bill.payment_set.all %}
     <tr>
       <td>{{ payment.payment_date }}</td>
       <td>{{ payment.payment_service }}</td>
       <td>{{ payment.transaction_id }}</td>
-      <td class="right">${{ payment.amount }}</td>
+      <td class="amount-td">${{ payment.amount }}</td>
     </tr>
   {% endfor %}
+
+  {% if not bill.is_paid %}
+    <form method='POST' action='.'>
+      {{ payment_form.bill_id }}
+      {{ payment_form.username }}
+      {% csrf_token %}
+      <tr>
+        <td>{{ payment_form.payment_date }}</td>
+        <td>{{ payment_form.payment_service }}</td>
+        <td>{{ payment_form.transaction_id }}</td>
+        <td>{{ payment_form.amount }}</td>
+        <td>
+          <input type="submit" value="Add Payment"/>
+        </td>
+      </tr>
+    </form>
+  {% endif %}
 </table>
 
 {% endblock %}

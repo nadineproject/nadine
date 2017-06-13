@@ -171,6 +171,26 @@ def action_generate_bill(request, membership_id, year=None, month=None, day=None
 @staff_member_required
 def bill_view(request, bill_id):
     bill = get_object_or_404(UserBill, id=bill_id)
+
+    # Process our payment form
+    if request.method == 'POST':
+        payment_form = PaymentForm(request.POST)
+        try:
+            if payment_form.is_valid():
+                payment = payment_form.save()
+                messages.success(request, "payment created.")
+        except Exception as e:
+            messages.error(request, str(e))
+    # We always need a fresh form
+    initial_data = {
+        'bill_id': bill.id,
+        'username': bill.user.username,
+        'payment_date': localtime(now()),
+        'amount': bill.amount,
+    }
+    payment_form = PaymentForm(initial=initial_data)
+
+    # Who is this bill for?
     if bill.membership:
         bill_user = User.objects.get(membership = bill.membership)
     else:
@@ -178,19 +198,21 @@ def bill_view(request, bill_id):
     benefactor = None
     if bill_user != bill.user:
         benefactor = bill_user
+
     # Calculate how past due this bill is
     overdue = (localtime(now()).date() - bill.due_date).days
     if overdue < 1:
         overdue = None
+
     line_items = bill.line_items.all().order_by('id')
     context = {
-        "bill": bill,
-        "line_items": line_items,
-        "overdue": overdue,
-        "benefactor": benefactor,
+        'bill': bill,
+        'line_items': line_items,
+        'overdue': overdue,
+        'benefactor': benefactor,
+        'payment_form': payment_form,
     }
     return render(request, 'staff/billing/bill_view.html', context)
-
 
 @staff_member_required
 def user_bills(request, username):
