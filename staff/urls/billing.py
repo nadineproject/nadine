@@ -16,11 +16,11 @@ urlpatterns = [
     url(r'^daily/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', billing.daily_billing, name='daily_billing'),
 
     # Actions
-    url(r'^pay_user/(?P<username>[^/]+)/$', billing.set_user_paid, name='user_paid'),
-    url(r'^pay_bill/(?P<bill_id>\d+)/$', billing.set_bill_paid, name='bill_paid'),
-    url(r'^toggle_billing_flag/(?P<username>[^/]+)/$', billing.toggle_billing_flag, name='billing_flag'),
-    url(r'^toggle_bill_in_progress/(?P<bill_id>\d+)/$', billing.toggle_bill_in_progress, name='bill_in_progress'),
-    url(r'^generate_bill/(?P<membership_id>[^/]+)/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', billing.generate_bill, name='generate_bill'),
+    url(r'^user_paid/(?P<username>[^/]+)/$', billing.action_user_paid, name='user_paid'),
+    url(r'^bill_paid/(?P<bill_id>\d+)/$', billing.action_bill_paid, name='bill_paid'),
+    url(r'^billing_flag/(?P<username>[^/]+)/$', billing.action_billing_flag, name='billing_flag'),
+    url(r'^bill_delay/(?P<bill_id>\d+)/$', billing.action_bill_delay, name='bill_delay'),
+    url(r'^generate_bill/(?P<membership_id>[^/]+)/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', billing.action_generate_bill, name='generate_bill'),
 
     # Integerations
     url(r'^usaepay/m/$', payment.usaepay_members, name='payments_members'),

@@ -6,28 +6,28 @@
 
 <h4>Outstanding Bills ({{ bills|length }})</h4>
 {% if bills %}
-	{% include "staff/billing/outstanding_table.html" %}
+  {% include "staff/billing/outstanding_table.html" %}
 {% else %}
-	<p>There are no open bills!</p>
+  <p>There are no open bills!</p>
 {% endif %}
 
 {% if bills_in_progress %}
-	<h4>In Progress ({{ bills_in_progress|length }})</h4>
-	{% with bills_in_progress as bills and True as in_progress %}
-		{% include "staff/billing/outstanding_table.html" %}
-	{% endwith %}
+  <br/>
+  <h4>In Progress ({{ bills_in_progress|length }})</h4>
+  {% with bills_in_progress as bills and True as in_progress %}
+    {% include "staff/billing/outstanding_table.html" %}
+  {% endwith %}
 {% endif %}
 
-<p></p>
+<br/>
 
 <h4>Invalid Billing Profiles ({{ invalid_members.count }})</h4>
 <table>
-	{% for u in invalid_members %}
-		<tr class="{% cycle 'row-odd' 'row-even' %}">
-			<td nowrap class='left'><li><a href="{% url 'staff:members:detail' u.username %}">{{ u.get_full_name }}</a></li></td>
-			<td></td>
-		</tr>
-	{% endfor %}
+  {% for u in invalid_members %}
+    <tr class="{% cycle 'row-odd' 'row-even' %}">
+      <td nowrap class='left'><a href="{% url 'staff:members:detail' u.username %}">{{ u.get_full_name }}</a></td>
+    </tr>
+  {% endfor %}
 </table>
 
 {% endblock %}

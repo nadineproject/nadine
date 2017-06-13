@@ -107,7 +107,7 @@ def outstanding(request):
 
 
 @staff_member_required
-def set_user_paid(request, username):
+def action_user_paid(request, username):
     ''' Mark all of the bills paid for this user '''
     user = get_object_or_404(User, username=username)
     for bill in user.profile.outstanding_bills():
@@ -119,9 +119,9 @@ def set_user_paid(request, username):
 
 
 @staff_member_required
-def set_bill_paid(request, bill_id):
+def action_bill_paid(request, bill_id):
     ''' Mark the bill paid '''
-    bill = get_object_or_404(Bill, id=bill_id)
+    bill = get_object_or_404(UserBill, id=bill_id)
     payment = Payment.objects.create(bill=bill, user=bill.user, amount=bill.amount)
     messages.success(request, "Bill %d ($%s) paid" % (bill.id, bill.amount))
     if 'next' in request.POST:
@@ -130,24 +130,24 @@ def set_bill_paid(request, bill_id):
 
 
 @staff_member_required
-def toggle_bill_in_progress(request, bill_id):
+def action_bill_delay(request, bill_id):
     ''' Turn on/off the in_progress flag of this bill '''
-    bill = get_object_or_404(Bill, id=bill_id)
-    if bill.in_progress:
+    bill = get_object_or_404(UserBill, id=bill_id)
+    if bill.in_progress == True:
         bill.in_progress = False
         bill.save()
-        messages.success(request, "Bill %d now 'in progress'" % bill_id)
+        messages.success(request, "Bill %s no longer 'in progress'" % bill_id)
     else:
-        bill.in_progres = True
+        bill.in_progress = True
         bill.save()
-        messages.success(request, "Bill %d no longer 'in progress'" % bill_id)
+        messages.success(request, "Bill %s now 'in progress'" % bill_id)
     if 'next' in request.POST:
         return HttpResponseRedirect(request.POST.get('next'))
     return HttpResponseRedirect(reverse('staff:billing:outstanding'))
 
 
 @staff_member_required
-def toggle_billing_flag(request, username):
+def action_billing_flag(request, username):
     ''' Turn on/off the valid_billing flag of this user '''
     user = get_object_or_404(User, username=username)
     if user.profile.valid_billing:
@@ -168,7 +168,7 @@ def toggle_billing_flag(request, username):
 
 
 @staff_member_required
-def generate_bill(request, membership_id, year, month, day):
+def action_generate_bill(request, membership_id, year, month, day):
     ''' Generate the bills for the given membership and date '''
     membership = get_object_or_404(Membership, id=membership_id)
     target_date = date(year=int(year), month=int(month), day=int(day))

@@ -32,37 +32,10 @@
     </td>
     <td id='amount-td'><strong>${{ bill.amount }}</strong></td>
     <td>
-      <button onclick="$('#toggle_in_progress_{{ bill.id}}').submit(); return false;">
-        {% if bill.in_progress %}
-          Clear In Progress
-        {% else %}
-          Mark In Progress
-        {% endif %}
-      </button>
-      <button onclick="$('#toggle_valid_billing_{{ bill.user.username}}').submit(); return false;">
-        {% if bill.user.profile.has_valid_billing %}
-          Flag Invalid Billing
-        {% else %}
-          Clear Invalid Billing
-        {% endif %}
-      </button>
-      <button onclick="$('set_paid{{ bill.id}}').submit(); return false;">Set Paid</button>
+      {% include "staff/billing/action_bill_delay.html" %}
+      {% include "staff/billing/action_billing_flag.html" %}
+      {% include "staff/billing/action_bill_paid.html" %}
     </td>
   </tr>
-
-  <!-- Set Paid Form -->
-  <form id="#set_paid{{ bill.id}}" action="{% url 'staff:billing:bill_paid' bill.id %}" onSubmit="return confirm('Mark Bill {{ bill.id}} for {{ bill.user.get_full_name }} as PAID?');">
-    {% csrf_token %}
-  </form>
-
-  <!-- Bill In Progress Form -->
-  <form id="#toggle_in_progress_{{ bill.id}}" action="{% url 'staff:billing:bill_in_progress' bill.id %}" onSubmit="return confirm('Are you sure you want to toggle the billing flag for {{ bill.user.get_full_name }}?');">
-    {% csrf_token %}
-  </form>
-
-  <!-- Invalid Billing Form -->
-  <form id="toggle_valid_billing{{ bill.user.username }}" action="{% url 'staff:billing:billing_flag' bill.user.username %}" onSubmit="return confirm('Are you sure you want to toggle the billing flag for {{ bill.user.get_full_name }}?');">
-    {% csrf_token %}
-  </form>
 {% endfor %}
 </table>

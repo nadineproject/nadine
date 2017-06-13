@@ -21,5 +21,4 @@ See the License for the specific language governing permissions and limitations 
 ## Image Attribution
 
 Camera icon by Alfa Design from the Noun Project
-
-
+estimate by xwoodhillx from the Noun Project  
