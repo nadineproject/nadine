@@ -2,7 +2,7 @@
 <h5>Billing Profile</h5>
 {% include "member/profile/profile_billing_frag.html" %}
 <div>
-  <form method=POST action="{% url 'staff:billing:bill_delay' user.username %}" onSubmit="return confirm('Are you sure?');">
+  <form method="POST" action="{% url 'staff:billing:billing_flag' user.username %}" onSubmit="return confirm('Are you sure?');">
     <input type="hidden" name="back" value="{{ request.get_full_path }}" >
     {% if user.profile.has_valid_billing %}
         <input type="submit" value="Flag Invalid Billing Profile" style='margin-left:2em; margin-top: 2%;' />

@@ -136,7 +136,7 @@
       <tr class='sub-formset subs'>
         {{ sub_form.s_id }}
         {% if sub_form.s_id.value %}
-          <td class='sub-input disabled'>{{ sub_form.resource }}</td>
+          <td class='sub-input disabled resource_td'>{{ sub_form.resource }}</td>
           <td class='sub-input allowance disabled'>{{ sub_form.allowance  }}</td>
           <td class='sub-input disabled' id='start_date_td'>{{ sub_form.start_date }}</td>
           <td class='sub-input disabled' id='end_date_td'>{{ sub_form.end_date  }}</td>
@@ -144,7 +144,7 @@
           <td class='sub-input rate disabled'>{{ sub_form.overage_rate }}</td>
           <td class='sub-input disabled'>{{ sub_form.paid_by  }}</td>
         {% else %}
-          <td class='sub-input'>{{ sub_form.resource }}</td>
+          <td class='sub-input resource_td'>{{ sub_form.resource }}</td>
           <td class='sub-input allowance'>{{ sub_form.allowance  }}</td>
           <td class='sub-input' id='start_date_td'>{{ sub_form.start_date  }}</td>
           <td class='sub-input' id='end_date_td'>{{ sub_form.end_date  }}</td>
@@ -308,6 +308,8 @@
 			source: availableUsers,
       autoFocus: true,
 		});
+
+
 
     {% for message in messages %}
       {% if message.tags == 'error' %}
@@ -501,6 +503,21 @@
         end = $('#target_date').val();;
       }
       $(this).parent().siblings('#end_date_td').children().val(end);
+      $(this).parent().siblings('.resource_td').children().children().each(function() {
+        var resource_id, resource_name;
+        if($(this).attr('selected')) {
+          resource_id = $(this).val();
+          resource_name = $(this).text();
+          $('.resource').each(function() {
+            if(!($(this).val())) {
+              $(this).append(`<option value=${resource_id}>
+                ${resource_name}
+                </option>`);
+            }
+          })
+        }
+
+      });
       $(this).fadeOut("slow", function() {
         $(this).siblings('.cancel').show();
       });
@@ -547,7 +564,6 @@
     // Review all this. What needs to change to match new functionality
     $('.add-row').on('click', function(e) {
 			$('.delete-row').addClass('btn-floating btn-large btn');
-      // $('.username_td').val('{{ entity.username }}');
       $('.created_by_td').val('{{ request.user }}');
       $('.ur_bill_day').val('{{ bill_day }}');
       $('.chosen_package').val('{{ package }}');
