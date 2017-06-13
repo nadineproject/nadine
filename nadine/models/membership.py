@@ -554,7 +554,12 @@ class Membership(models.Model):
                 # if the bill already exists but the end date is different, it's because we need to prorate
                 if bill.period_end != period_end:
                     bill.period_end = period_end
-                    bill.save()
+                # Set the created_by if we were given one
+                if created_by:
+                    bill.created_by = created_by
+                # Update the timestamp
+                bill.created_ts = localtime(now())
+                bill.save()
 
                 # Save any custom line items before clearing out the old items
                 new_bill['custom_items'] = list(bill.line_items.filter(custom=True))

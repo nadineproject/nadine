@@ -178,14 +178,15 @@ def bill_view(request, bill_id):
     benefactor = None
     if bill_user != bill.user:
         benefactor = bill_user
-    diff = localtime(now()).date() - bill.period_end
-    if diff.days < 1:
-        diff = None
+    # Calculate how past due this bill is
+    overdue = (localtime(now()).date() - bill.due_date).days
+    if overdue < 1:
+        overdue = None
     line_items = bill.line_items.all().order_by('id')
     context = {
         "bill": bill,
         "line_items": line_items,
-        "diff": diff,
+        "overdue": overdue,
         "benefactor": benefactor,
     }
     return render(request, 'staff/billing/bill_view.html', context)
