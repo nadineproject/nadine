@@ -11,7 +11,7 @@ class Command(BaseCommand):
     def handle(self, **options):
         print("Generating Bills...")
         for m in Membership.objects.ready_for_billing():
-            print("  %s: %s" % (m.who, m.package))
+            print("  %s: %s" % (m.who, m.package_name()))
             bill_dict = m.generate_bill()
             if bill_dict:
                 for payer, row in bill_dict.items():
