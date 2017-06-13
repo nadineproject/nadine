@@ -1,0 +1,3 @@
+{% if settings.USA_EPAY_FORM_KEY %}
+  <a href="{{ settings.USA_EPAY_FORM }}{{ settings.USA_EPAY_FORM_KEY }}/?UMdescription=Office%20Nomads%20Billing%20Authorization&UMcustid={{ user.username }}&UMcommand=AuthOnly&UMamount=1.00&UMaddcustomer=yes&UMschedule=disabled">payment link</a>
+{% endif %}

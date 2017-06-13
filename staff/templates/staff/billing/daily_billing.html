@@ -13,14 +13,6 @@
   </span>
 </div>
 
-{% if messages %}
-  <div class="messages">
-    {% for message in messages %}
-      <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
-    {% endfor %}
-  </div>
-{% endif %}
-
 <table class='billing-today-tb'>
   {% for row in memberships %}
     {% if forloop.first %}
@@ -52,7 +44,7 @@
           -
         {% endif %}
       </td>
-      <td>
+      <!-- <td>
         <form method="POST" action=".">
           <input type="hidden" name="action" value="generate">
           {% if not row.bills %}
@@ -62,7 +54,7 @@
           {% endif %}
           {% csrf_token %}
         </form>
-      </td>
+      </td> -->
     </tr>
   {% empty %}
     <tr><th>No billing today</th></tr>

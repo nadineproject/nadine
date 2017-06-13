@@ -73,31 +73,9 @@ def bill_list(request):
 
 @staff_member_required
 def outstanding(request):
-    if request.method == 'POST':
-        action = request.POST.get("action", "Set Paid")
-        pay_bills_form = PaymentForm(request.POST)
-        if pay_bills_form.is_valid():
-            user = User.objects.get(username=pay_bills_form.cleaned_data['username'])
-            users_bills = {}
-            for bill in user.profile.outstanding_bills():
-                users_bills[bill.id] = bill
-            bill_ids = [int(bill_id) for bill_id in request.POST.getlist('bill_id')]
-            if action == "set_paid":
-                amount = pay_bills_form.cleaned_data['amount']
-                transaction = Transaction(user=user, status='closed', amount=Decimal(amount))
-                transaction.note = pay_bills_form.cleaned_data['transaction_note']
-                transaction.save()
-                for bill_id in bill_ids:
-                    transaction.bills.add(users_bills[bill_id])
-                transaction_url = reverse('staff:billing:transaction', args=[], kwargs={'id': transaction.id})
-                messages.success(request, 'Created a <a href="%s">transaction for %s</a>' % (transaction_url, user.get_full_name()))
-
-    # bills = group_bills_by_date(UserBill.objects.unpaid(in_progress=False))
-    # bills_in_progress = group_bills_by_date(UserBill.objects.unpaid(in_progress=True))
     bills = UserBill.objects.unpaid(in_progress=False).order_by('due_date')
     bills_in_progress = UserBill.objects.unpaid(in_progress=True).order_by('due_date')
     invalids = User.helper.invalid_billing()
-
     context = {
         'bills': bills,
         'bills_in_progress': bills_in_progress,
@@ -168,11 +146,14 @@ def action_billing_flag(request, username):
 
 
 @staff_member_required
-def action_generate_bill(request, membership_id, year, month, day):
+def action_generate_bill(request, membership_id, year=None, month=None, day=None):
     ''' Generate the bills for the given membership and date '''
     membership = get_object_or_404(Membership, id=membership_id)
-    target_date = date(year=int(year), month=int(month), day=int(day))
-    bills = membership.generate_bill(target_date=target_date, created_by=request.user)
+    if year and month and day:
+        target_date = date(year=int(year), month=int(month), day=int(day))
+    else:
+        target_date = localtime(now()).date()
+    bills = membership.generate_bills(target_date=target_date, created_by=request.user)
     if bills:
         bill_count = len(bills.keys())
         messages.add_message(request, messages.SUCCESS, "%d Bill(s) Generated" % bill_count)
@@ -182,7 +163,8 @@ def action_generate_bill(request, membership_id, year, month, day):
             return HttpResponseRedirect(reverse('staff:billing:bill', kwargs={'bill_id': bill_id}))
     else:
         messages.add_message(request, messages.ERROR, "0 Bills Generated")
-    # If there are multiple bills or nothing happend, go to the bill list
+    if 'next' in request.POST:
+        return HttpResponseRedirect(request.POST.get('next'))
     return HttpResponseRedirect(reverse('staff:billing:bills'))
 
 

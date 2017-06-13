@@ -24,10 +24,10 @@ class BillManager(models.Manager):
             query = query.filter(user=user)
         if in_progress != None:
             query = query.filter(in_progress=in_progress)
-        query = query.annotate(owed=Sum('line_items__amount') - Sum('payment__amount'), payment_count=Count('payment'))
+        query = query.annotate(bill_amount=Sum('line_items__amount'), owed=Sum('line_items__amount') - Sum('payment__amount'), payment_count=Count('payment'))
         no_payments = Q(payment_count = 0)
         partial_payment = Q(owed__gt = 0)
-        query = query.filter(no_payments | partial_payment)
+        query = query.filter(bill_amount__gt=0).filter(no_payments | partial_payment)
         return query.order_by('due_date')
 
 
@@ -100,7 +100,7 @@ class UserBill(models.Model):
             'month': self.period_start.month,
             'day': self.period_start.day,
         }
-        return reverse('staff:billing:generate_bill', kwargs=kwargs)
+        return reverse('staff:billing:generate_bills', kwargs=kwargs)
 
     def get_staff_url(self):
         return reverse('staff:billing:bill', kwargs={'bill_id': self.id})

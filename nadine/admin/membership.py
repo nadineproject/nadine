@@ -62,10 +62,10 @@ class MembershipAdmin(StyledAdmin):
             except Exception as e:
                 self.message_user(request, e)
 
-    def generate_bill(self, request, queryset):
+    def generate_bills(self, request, queryset):
         for res in queryset:
             try:
-                res.generate_bill()
+                res.generate_bills()
                 self.message_user(request, "bill generation complete")
             except Exception as e:
                 self.message_user(request, e)
@@ -84,8 +84,8 @@ class MembershipAdmin(StyledAdmin):
     fields = ['who', 'bill_day']
     list_select_related = ('individualmembership', 'organizationmembership')
     search_fields = ('individualmembership__user__username', 'organizationmembership__organization__name')
-    # actions= ['end_membership_yesterday', 'end_membership_at_period_end', 'generate_bill', 'generate_all_bills']
-    actions= ['end_membership_yesterday', 'end_membership_at_period_end', 'generate_bill']
+    # actions= ['end_membership_yesterday', 'end_membership_at_period_end', 'generate_bills', 'generate_all_bills']
+    actions= ['end_membership_yesterday', 'end_membership_at_period_end', 'generate_bills']
 
 admin.site.register(Membership, MembershipAdmin)
 

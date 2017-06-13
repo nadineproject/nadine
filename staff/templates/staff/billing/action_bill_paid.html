@@ -4,10 +4,6 @@
       action="{% url 'staff:billing:bill_paid' bill.id %}"
       onSubmit="return confirm('Bill {{ bill.id}} for {{ bill.user.get_full_name }}: ${{ bill.amount }}\r\nMark as PAID?');" >
   {% csrf_token %}
-
-  {% if next %}
-    <input type="hidden" name="next" value="{{ next }}"/>
-  {% endif %}
-
+  <input type="hidden" name="next" value="{{ request.get_full_path }}" >
   <input type="submit" value="Set Paid"/>
 </form>

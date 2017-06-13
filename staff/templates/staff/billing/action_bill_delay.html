@@ -4,11 +4,7 @@
       style="display:inline-block;"
       action="{% url 'staff:billing:bill_delay' bill.id %}">
   {% csrf_token %}
-
-  {% if next %}
-    <input type="hidden" name="next" value="{{ next }}"/>
-  {% endif %}
-
+  <input type="hidden" name="next" value="{{ request.get_full_path }}" >
   {% if bill.in_progress %}
     <input type="Submit" value="Clear In Progress"/>
   {% else %}

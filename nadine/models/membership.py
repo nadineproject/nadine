@@ -502,10 +502,10 @@ class Membership(models.Model):
             end_date = localtime(now()).date()
         period_start = start_date
         while period_start and period_start < end_date:
-            self.generate_bill(target_date=period_start)
+            self.generate_bills(target_date=period_start)
             period_start = self.next_period_start(period_start)
 
-    def generate_bill(self, target_date=None, created_by=None):
+    def generate_bills(self, target_date=None, created_by=None):
         if not target_date:
             target_date = localtime(now()).date()
 
@@ -513,7 +513,7 @@ class Membership(models.Model):
         period_start, period_end = self.get_period(target_date)
         if not period_start:
             return None
-        logger.debug('in generate_bill for target_date = %s and get_period = (%s, %s)' % (target_date, period_start, period_end))
+        logger.debug('in generate_bills for target_date = %s and get_period = (%s, %s)' % (target_date, period_start, period_end))
 
         # This method builds up a dictionary called new_bills
         # by looping through the membership/subscription data 4 times.
