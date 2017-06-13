@@ -60,7 +60,7 @@
   </table>
 {% endif %}
 
-
+<h5>Line Items</h5>
 <table class='item-table'>
   <tr>
     <th>Description</th>
@@ -75,5 +75,21 @@
 </table>
 
 <h5>Payments</h5>
+<table>
+  <tr>
+    <th class="left">Date</th>
+    <th>Service</th>
+    <th>Transaction ID</th>
+    <th class="right">Amount</th>
+  </tr>
+  {% for payment in bill.payment_set.all %}
+    <tr>
+      <td>{{ payment.payment_date }}</td>
+      <td>{{ payment.payment_service }}</td>
+      <td>{{ payment.transaction_id }}</td>
+      <td class="right">${{ payment.amount }}</td>
+    </tr>
+  {% endfor %}
+</table>
 
 {% endblock %}

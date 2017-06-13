@@ -142,10 +142,11 @@ class OrganizationMemberForm(forms.Form):
 class PaymentForm(forms.Form):
     bil_id = forms.IntegerField(required=True, widget=forms.HiddenInput)
     username = forms.CharField(required=True, widget=forms.HiddenInput)
+    payment_date = forms.DateField(required=True)
     payment_service = forms.CharField(max_length=64, required=False)
     transaction_id = forms.CharField(max_length=64, required=False)
     amount = forms.DecimalField(min_value=0, max_value=10000, required=True, max_digits=7, decimal_places=2)
-    bill_note = forms.CharField(required=False, widget=forms.Textarea)
+    # bill_note = forms.CharField(required=False, widget=forms.Textarea)
 
 
 class MemberSearchForm(forms.Form):
