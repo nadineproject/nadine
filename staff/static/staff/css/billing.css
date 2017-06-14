@@ -162,7 +162,7 @@ input.datepicker {
 
 .payment-amount #id_amount {
   width: 100%;
-  text-align: center;
+  text-align: right;
 }
 
 .transactions-sum span {

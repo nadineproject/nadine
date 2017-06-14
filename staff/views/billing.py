@@ -169,7 +169,7 @@ def action_generate_bill(request, membership_id, year=None, month=None, day=None
 
 
 @staff_member_required
-def record_payment(request):
+def action_record_payment(request):
     # Process our payment form
     bill_id = None
     if request.method == 'POST':

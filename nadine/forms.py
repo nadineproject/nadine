@@ -154,11 +154,10 @@ class PaymentForm(forms.Form):
         amount = self.cleaned_data['amount']
         if amount > bill.total_owed:
             raise Exception("Amount of $%s exceeds amount owed $%s" %(amount, bill.total_owed))
-        payment = Payment(bill=bill, user=user)
+        payment = Payment.objects.create(bill=bill, user=user)
         payment.created_ts = self.cleaned_data['payment_date']
         if created_by:
             payment.created_by = User.objects.get(username=created_by)
-        payment.created_ts = self.cleaned_data['payment_date']
         payment.note = self.cleaned_data['note']
         payment.amount = amount
         payment.save()
