@@ -42,8 +42,8 @@ class UserBill(models.Model):
     due_date = models.DateField()
     comment = models.TextField(blank=True, null=True, help_text="Public comments visable by the user")
     note = models.TextField(blank=True, null=True, help_text="Private notes about this bill")
-    in_progress = models.BooleanField(default=False, blank=False, null=False)
-    mark_paid = models.BooleanField(default=False, blank=False, null=False)
+    in_progress = models.BooleanField(default=False, blank=False, null=False, help_text="Mark a bill as 'in progress' indicating someone is working on it")
+    mark_paid = models.BooleanField(default=False, blank=False, null=False, help_text="Mark a bill as paid even if it is not")
 
     def __unicode__(self):
         return "Bill %d" % self.id
