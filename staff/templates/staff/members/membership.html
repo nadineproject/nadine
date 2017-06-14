@@ -297,6 +297,23 @@
     return el == 0;
   }
 
+  function updateResources(el) {
+    el.parent().siblings('.resource_td').children().children().each(function() {
+      var resource_id, resource_name;
+      if($(this).attr('selected')) {
+        resource_id = $(this).val();
+        resource_name = $(this).text();
+        $('.resource').each(function() {
+          if(!($(this).val())) {
+            $(this).append(`<option value=${resource_id}>
+              ${resource_name}
+              </option>`);
+          }
+        })
+      }
+    });
+  }
+
   (function() {
     var availableUsers = [
 			{% for u in active_billing %}
@@ -496,28 +513,20 @@
     })
 
     //Insert indv. subscription end button function/look
-    $('.delete-row').addClass('btn-floating btn-large btn');
+    $('.delete-row').each(function() {
+      if($(this).siblings('.cancel').css('display') == 'inline') {
+        $(this).hide();
+      } else {
+        $(this).addClass('btn-floating btn-large btn');
+      }
+    })
     $('.delete-row').on('click', function(e) {
       e.preventDefault();
       if(!(end)) {
         end = $('#target_date').val();;
       }
       $(this).parent().siblings('#end_date_td').children().val(end);
-      $(this).parent().siblings('.resource_td').children().children().each(function() {
-        var resource_id, resource_name;
-        if($(this).attr('selected')) {
-          resource_id = $(this).val();
-          resource_name = $(this).text();
-          $('.resource').each(function() {
-            if(!($(this).val())) {
-              $(this).append(`<option value=${resource_id}>
-                ${resource_name}
-                </option>`);
-            }
-          })
-        }
-
-      });
+      updateResources($(this));
       $(this).fadeOut("slow", function() {
         $(this).siblings('.cancel').show();
       });
@@ -545,29 +554,41 @@
     });
 
     //If the member already has subscription for a resource, don't show it as select option
-    $('.resource').each(function() {
-      if($(this).val()) {
-        existing.push($(this).val());
-        $(this).attr('readonly', 'readonly');
-      }
-      if(!($(this).is('disabled'))) {
-        $(this).children().each(function() {
-          for (var i = 0; i < existing.length; i++) {
-            if($(this).val() == existing[i]) {
-              $(this).hide();
+    function resourceCheck () {
+      $('.resource').each(function() {
+        if($(this).val()) {
+          existing.push($(this).val());
+          $(this).attr('readonly', 'readonly');
+        }
+        if(!($(this).is('disabled'))) {
+          $(this).children().each(function() {
+            for (var i = 0; i < existing.length; i++) {
+              if($(this).val() == existing[i]) {
+                $(this).hide();
+              }
             }
-          }
-        })
-      }
-    })
+          })
+        }
+      })
+    }
+
+    resourceCheck();
 
     // Review all this. What needs to change to match new functionality
     $('.add-row').on('click', function(e) {
-			$('.delete-row').addClass('btn-floating btn-large btn');
+      $('.delete-row').each(function() {
+        if($(this).siblings('.cancel').css('display') == 'inline') {
+          $(this).hide();
+        } else {
+          $(this).addClass('btn-floating btn-large btn');
+        }
+      })
+
       $('.created_by_td').val('{{ request.user }}');
       $('.ur_bill_day').val('{{ bill_day }}');
       $('.chosen_package').val('{{ package }}');
       $('.thr_username').val('{{ entity.username }}')
+      resourceCheck();
 
       $('.datepicker').datepicker({
         dateFormat: 'yy-mm-dd',
@@ -577,6 +598,7 @@
         e.preventDefault();
         var val = $('#target_date').val();
         $(this).parent().siblings('#end_date_td').children().val(val);
+        updateResources($(this));
         $(this).fadeOut("slow", function() {
           $(this).siblings('.cancel').show();
         });
