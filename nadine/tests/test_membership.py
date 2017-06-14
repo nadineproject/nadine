@@ -447,7 +447,7 @@ class MembershipTestCase(TestCase):
 
         # Assume that if we generate a bill we will have a bill
         self.assertEquals(0, membership.bills.count())
-        membership.generate_bill(target_date=today)
+        membership.generate_bills(target_date=today)
         self.assertEquals(1, membership.bills.count())
 
         # Check all the bill values
@@ -459,7 +459,7 @@ class MembershipTestCase(TestCase):
         self.assertEquals(pe, bill.period_end)
 
         # Run it again and test it doesn't create another bill
-        membership.generate_bill(target_date=today)
+        membership.generate_bills(target_date=today)
         self.assertEquals(1, membership.bills.count())
         self.assertEquals(membership.monthly_rate(), bill.amount)
 

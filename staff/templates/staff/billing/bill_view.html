@@ -17,19 +17,7 @@
 ]</span>
 
 <h5>Detail</h5>
-<table class='bill-id-table'>
-  <tr>
-    <th>Created:</th>
-    <td style="width: 30%;">{{ bill.created_ts|date:"m/d/y P" }}</td>
-    {% if bill.created_by %}
-      <th style="width: 15%;">Created By:</th>
-      <td>{{ bill.created_by.get_full_name }}</td>
-    {% else %}
-      <th style='width: 15%;'></th>
-      <td style='border-bottom: none;'></td>
-    {% endif %}
-  </tr>
-</table>
+
 <table class='bill-id-table'>
   <tr>
     <th>Due Date:</th>
@@ -57,10 +45,20 @@
       <td>${{ bill.total_paid }}</td>
     {% else %}
       <th style='color:red;' id='paid-th'>Paid:</th>
-      <td style='color:red;' >${{ bill.total_paid }} {% if diff %}({{ diff.days }} Days Past Due){% endif %}</td>
+      <td style='color:red;' >${{ bill.total_paid }} {% if overdue %}({{ overdue }} Days Past Due){% endif %}</td>
     {% endif %}
   </tr>
 </table>
+{% if bill.created_by %}
+  <table class='bill-id-table'>
+    <tr>
+      <th style="width:15%;">Bill Created:</th>
+      <td style="width:20%;">{{ bill.created_ts|date:"m/d/y P" }}</td>
+      <th style="width:5%;">By:</th>
+      <td>{{ bill.created_by.get_full_name }}</td>
+    </tr>
+  </table>
+{% endif %}
 
 <h5>Line Items</h5>
 <table class='item-table'>
@@ -74,6 +72,44 @@
           <td style="text-align: right;">${{ line_item.amount|floatformat:2 }}</td>
       </tr>
   {% endfor %}
+</table>
+
+<h5>Payments</h5>
+<table class="payment-table">
+  <tr>
+    <th class="left">Recorded</th>
+    <th>Note</th>
+    <th class="right">Amount</th>
+    <th></th>
+  </tr>
+  {% for payment in bill.payment_set.all %}
+    <tr>
+      <td>
+        {{ payment.created_ts }}
+        {% if payment.created_by %}
+          by {{ payment.created_by }}
+        {% endif %}
+      </td>
+      <td>{{ payment.note }}</td>
+      <td class="amount-td">${{ payment.amount }}</td>
+    </tr>
+  {% endfor %}
+
+  {% if not bill.is_paid %}
+    <form method='POST' action="{% url 'staff:billing:record_payment' %}">
+      {{ payment_form.bill_id }}
+      {{ payment_form.username }}
+      {% csrf_token %}
+      <tr>
+        <td>{{ payment_form.payment_date }}</td>
+        <td>{{ payment_form.note }}</td>
+        <td>{{ payment_form.amount }}</td>
+        <td>
+          <input type="submit" value="Record Payment"/>
+        </td>
+      </tr>
+    </form>
+  {% endif %}
 </table>
 
 {% endblock %}

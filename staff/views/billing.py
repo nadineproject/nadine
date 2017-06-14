@@ -73,31 +73,9 @@ def bill_list(request):
 
 @staff_member_required
 def outstanding(request):
-    if request.method == 'POST':
-        action = request.POST.get("action", "Set Paid")
-        pay_bills_form = PaymentForm(request.POST)
-        if pay_bills_form.is_valid():
-            user = User.objects.get(username=pay_bills_form.cleaned_data['username'])
-            users_bills = {}
-            for bill in user.profile.outstanding_bills():
-                users_bills[bill.id] = bill
-            bill_ids = [int(bill_id) for bill_id in request.POST.getlist('bill_id')]
-            if action == "set_paid":
-                amount = pay_bills_form.cleaned_data['amount']
-                transaction = Transaction(user=user, status='closed', amount=Decimal(amount))
-                transaction.note = pay_bills_form.cleaned_data['transaction_note']
-                transaction.save()
-                for bill_id in bill_ids:
-                    transaction.bills.add(users_bills[bill_id])
-                transaction_url = reverse('staff:billing:transaction', args=[], kwargs={'id': transaction.id})
-                messages.success(request, 'Created a <a href="%s">transaction for %s</a>' % (transaction_url, user.get_full_name()))
-
-    # bills = group_bills_by_date(UserBill.objects.unpaid(in_progress=False))
-    # bills_in_progress = group_bills_by_date(UserBill.objects.unpaid(in_progress=True))
     bills = UserBill.objects.unpaid(in_progress=False).order_by('due_date')
     bills_in_progress = UserBill.objects.unpaid(in_progress=True).order_by('due_date')
     invalids = User.helper.invalid_billing()
-
     context = {
         'bills': bills,
         'bills_in_progress': bills_in_progress,
@@ -122,7 +100,7 @@ def action_user_paid(request, username):
 def action_bill_paid(request, bill_id):
     ''' Mark the bill paid '''
     bill = get_object_or_404(UserBill, id=bill_id)
-    payment = Payment.objects.create(bill=bill, user=bill.user, amount=bill.amount)
+    payment = Payment.objects.create(bill=bill, user=bill.user, amount=bill.amount, created_by=request.user)
     messages.success(request, "Bill %d ($%s) paid" % (bill.id, bill.amount))
     if 'next' in request.POST:
         HttpResponseRedirect(request.POST.get("next"))
@@ -168,11 +146,14 @@ def action_billing_flag(request, username):
 
 
 @staff_member_required
-def action_generate_bill(request, membership_id, year, month, day):
+def action_generate_bill(request, membership_id, year=None, month=None, day=None):
     ''' Generate the bills for the given membership and date '''
     membership = get_object_or_404(Membership, id=membership_id)
-    target_date = date(year=int(year), month=int(month), day=int(day))
-    bills = membership.generate_bill(target_date=target_date, created_by=request.user)
+    if year and month and day:
+        target_date = date(year=int(year), month=int(month), day=int(day))
+    else:
+        target_date = localtime(now()).date()
+    bills = membership.generate_bills(target_date=target_date, created_by=request.user)
     if bills:
         bill_count = len(bills.keys())
         messages.add_message(request, messages.SUCCESS, "%d Bill(s) Generated" % bill_count)
@@ -182,13 +163,56 @@ def action_generate_bill(request, membership_id, year, month, day):
             return HttpResponseRedirect(reverse('staff:billing:bill', kwargs={'bill_id': bill_id}))
     else:
         messages.add_message(request, messages.ERROR, "0 Bills Generated")
-    # If there are multiple bills or nothing happend, go to the bill list
+    if 'next' in request.POST:
+        return HttpResponseRedirect(request.POST.get('next'))
     return HttpResponseRedirect(reverse('staff:billing:bills'))
 
 
 @staff_member_required
+def record_payment(request):
+    # Process our payment form
+    bill_id = None
+    if request.method == 'POST':
+        payment_form = PaymentForm(request.POST)
+        bill_id = payment_form['bill_id'].value()
+        try:
+            if payment_form.is_valid():
+                payment = payment_form.save(created_by=request.user.username)
+                messages.success(request, "Payment of $%s recorded." % payment.amount)
+        except Exception as e:
+            messages.error(request, str(e))
+    else:
+        raise Exception("Must be a POST!")
+    if 'next' in request.POST:
+        return HttpResponseRedirect(request.POST.get('next'))
+    if bill_id:
+        return HttpResponseRedirect(reverse('staff:billing:bill', kwargs={'bill_id': bill_id}))
+    return HttpResponseRedirect(reverse('staff:billing:bills'))
+
+@staff_member_required
 def bill_view(request, bill_id):
     bill = get_object_or_404(UserBill, id=bill_id)
+
+    # Process our payment form
+    if request.method == 'POST':
+        payment_form = PaymentForm(request.POST)
+        payemnt_form.created_by = request.user.username
+        try:
+            if payment_form.is_valid():
+                payment = payment_form.save()
+                messages.success(request, "payment created.")
+        except Exception as e:
+            messages.error(request, str(e))
+    # We always need a fresh form
+    initial_data = {
+        'bill_id': bill.id,
+        'username': bill.user.username,
+        'payment_date': localtime(now()),
+        'amount': bill.total_owed,
+    }
+    payment_form = PaymentForm(initial=initial_data)
+
+    # Who is this bill for?
     if bill.membership:
         bill_user = User.objects.get(membership = bill.membership)
     else:
@@ -196,18 +220,21 @@ def bill_view(request, bill_id):
     benefactor = None
     if bill_user != bill.user:
         benefactor = bill_user
-    diff = localtime(now()).date() - bill.period_end
-    if diff.days < 1:
-        diff = None
+
+    # Calculate how past due this bill is
+    overdue = (localtime(now()).date() - bill.due_date).days
+    if overdue < 1:
+        overdue = None
+
     line_items = bill.line_items.all().order_by('id')
     context = {
-        "bill": bill,
-        "line_items": line_items,
-        "diff": diff,
-        "benefactor": benefactor,
+        'bill': bill,
+        'line_items': line_items,
+        'overdue': overdue,
+        'benefactor': benefactor,
+        'payment_form': payment_form,
     }
     return render(request, 'staff/billing/bill_view.html', context)
-
 
 @staff_member_required
 def user_bills(request, username):

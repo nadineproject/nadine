@@ -83,19 +83,10 @@ def forward(apps, schema_editor):
                 bill = bill,
                 user = user,
                 amount = t.amount,
+                note = t.note,
             )
-            p.payment_date = t.transaction_date
+            p.created_ts = t.transaction_date
             p.save()
-
-
-            # Move transaction notes to bill notes
-            if t.note:
-                note = ""
-                if bill.note:
-                    note = bill.note
-                note += t.note
-                bill.note = note
-                bill.save()
 
 
 def reverse(apps, schema_editor):
@@ -125,10 +116,10 @@ class Migration(migrations.Migration):
             name='Payment',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('payment_date', models.DateTimeField(auto_now_add=True)),
-                ('payment_service', models.CharField(max_length=64, blank=True, null=True)),
-                ('transaction_id', models.CharField(max_length=64, blank=True, null=True)),
+                ('created_ts', models.DateTimeField(auto_now_add=True)),
+                ('created_by', models.ForeignKey(null=True, blank=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL)),
                 ('amount', models.DecimalField(decimal_places=2, default=0, max_digits=7)),
+                ('note', models.TextField(blank=True, null=True, help_text="Private notes about this payment")),
             ],
         ),
         migrations.CreateModel(
@@ -140,9 +131,10 @@ class Migration(migrations.Migration):
                 ('period_start', models.DateField()),
                 ('period_end', models.DateField()),
                 ('due_date', models.DateField()),
-                ('in_progress', models.BooleanField(default=False)),
-                ('mark_paid', models.BooleanField(default=False)),
-                ('note', models.TextField(blank=True, null=True)),
+                ('in_progress', models.BooleanField(default=False, help_text="Mark a bill as 'in progress' indicating someone is working on it")),
+                ('mark_paid', models.BooleanField(default=False, help_text="Mark a bill as paid even if it is not")),
+                ('comment', models.TextField(blank=True, null=True, help_text="Public comments visable by the user")),
+                ('note', models.TextField(blank=True, null=True, help_text="Private notes about this bill")),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='bills', to=settings.AUTH_USER_MODEL)),
             ],
         ),

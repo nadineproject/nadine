@@ -33,7 +33,9 @@
     <td id='amount-td'><strong>${{ bill.amount }}</strong></td>
     <td>
       {% include "staff/billing/action_bill_delay.html" %}
-      {% include "staff/billing/action_billing_flag.html" %}
+      {% with bill.user as user %}
+        {% include "staff/billing/action_billing_flag.html" %}
+      {% endwith %}
       {% include "staff/billing/action_bill_paid.html" %}
     </td>
   </tr>

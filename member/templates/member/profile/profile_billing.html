@@ -2,7 +2,20 @@
 
 <table width="65%">
 <tr>
-    <td>{% include "member/profile/profile_billing_frag.html" %}</td>
+    <td>
+      <div class='detail-billing'>
+        <strong>Current Profile:</strong>
+        {% if user.profile.has_valid_billing %}
+        	<font class='valid'>Valid</font>
+        	{% if user.profile.is_guest %}
+        		- Guest of: {{ user.profile.is_guest }}
+        	{% endif %}
+        {% else %}
+        	<font class='invalid'>Invalid</font>
+        {% endif %}
+      </div>
+      {% include "staff/billing/action_create_billing.html" %}
+    </td>
     <td>
         <div style="margin-bottom: .5em; text-align:left;">
             Automatic Billing: <span id="auto_billing" style="color:green;">The {{ user.membership.bill_day_str }}</span>

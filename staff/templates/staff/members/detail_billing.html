@@ -1,22 +1,36 @@
 
 <h5>Billing Profile</h5>
-{% include "member/profile/profile_billing_frag.html" %}
-<div>
-  <form method="POST" action="{% url 'staff:billing:billing_flag' user.username %}" onSubmit="return confirm('Are you sure?');">
-    <input type="hidden" name="back" value="{{ request.get_full_path }}" >
-    {% if user.profile.has_valid_billing %}
-        <input type="submit" value="Flag Invalid Billing Profile" style='margin-left:2em; margin-top: 2%;' />
-    {% else %}
-        <input type="submit" value="Clear Invalid Billing Flag" style='margin-left:2em; margin-top: 2%;' />
+<table class='sub-table'>
+  <tr>
+    <td>
+      <strong>Billing Profile:</strong>
+      {% if user.profile.has_valid_billing %}
+      	<font class='valid'>Valid</font>
+      	{% if user.profile.is_guest %}
+      		- Guest of: {{ user.profile.is_guest }}
+      	{% endif %}
+      {% else %}
+      	<font class='invalid'>Invalid</font>
+      {% endif %}
+    </td>
+    <td>
+      {% include "staff/billing/action_billing_flag.html" %}
+    </td>
+    <td>
+      {% with user.membership as membership %}
+        {% include "staff/billing/action_generate_bills.html" %}
+      {% endwith %}
+    </td>
+    {% if integrations.usaepay %}
+      <td>
+        {% include "staff/billing/action_create_billing.html" %}
+      </td>
+      <td>
+        [ {% include "staff/billing/action_payment_link.html" %} ]
+      </td>
     {% endif %}
-    {% csrf_token %}
-  </form>
-</div>
-{% if integrations.usaepay %}
-<div class='epay-link'>
-    [ <a href="{{ settings.USA_EPAY_FORM }}{{ settings.USA_EPAY_FORM_KEY }}/?UMdescription=Office%20Nomads%20Billing%20Authorization&UMcustid={{ user.username }}&UMcommand=AuthOnly&UMamount=1.00&UMaddcustomer=yes&UMschedule=disabled">payment link</a> ]
-</div>
-{% endif %}
+  </tr>
+</table>
 
 <!-- Billing Profile -->
 <h5>Outstanding Bills (<a href="{% url 'staff:billing:user_bills' user.username %}">view all</a>)</h5>
@@ -38,7 +52,6 @@
     </tr>
   {% endfor %}
 </table>
-
 
 <!-- Security Deposits -->
 <h5>Security Deposits</h5>

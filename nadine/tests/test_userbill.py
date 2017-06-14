@@ -140,7 +140,7 @@ class UserBillTestCase(TestCase):
 
         # May 20th bill = PT5 - No overage from previous period
         self.assertEqual(user8.membership.matching_package(date(2010, 5, 20)), self.pt5Package)
-        user8.membership.generate_bill(target_date=date(2010, 5, 20))
+        user8.membership.generate_bills(target_date=date(2010, 5, 20))
         may_20_bill = user8.bills.get(period_start=date(2010, 5, 20))
         print_bill(may_20_bill)
         self.assertTrue(may_20_bill != None)
@@ -150,7 +150,7 @@ class UserBillTestCase(TestCase):
 
         # June 20th bill = Basic + 4 over PT5 from previous period
         self.assertEqual(user8.membership.matching_package(date(2010, 6, 20)), self.basicPackage)
-        user8.membership.generate_bill(target_date=date(2010, 6, 20))
+        user8.membership.generate_bills(target_date=date(2010, 6, 20))
         june_20_bill = user8.bills.get(period_start=date(2010, 6, 20))
         print_bill(june_20_bill)
         self.assertTrue(june_20_bill != None)
@@ -181,7 +181,7 @@ class UserBillTestCase(TestCase):
         # Start by generating only the bill for User 6
         # User 6, 6/1/2010 = $75
         self.assertEqual(0, user6.profile.open_bills_amount)
-        user6.membership.generate_bill(target_date=date(2010, 6, 1))
+        user6.membership.generate_bills(target_date=date(2010, 6, 1))
         bill = user6.bills.get(period_start=date(2010, 6, 1))
         print_bill(bill)
         self.assertEqual(75, bill.amount)
@@ -190,7 +190,7 @@ class UserBillTestCase(TestCase):
         # Now generate the bill for 7/1/2010
         # User 6 = $75 base rate
         # User 7 = $75 base rate + 10 overage days @ $20 = $275
-        user6.membership.generate_bill(target_date=date(2010, 7, 1))
+        user6.membership.generate_bills(target_date=date(2010, 7, 1))
         bill = user6.bills.get(period_start=date(2010, 7, 1))
         print_bill(bill)
         self.assertEqual(275, bill.amount)
@@ -199,7 +199,7 @@ class UserBillTestCase(TestCase):
         self.assertEqual(350, user6.profile.open_bills_amount)
 
         # User 7 should owe nothing
-        user7.membership.generate_bill()
+        user7.membership.generate_bills()
         self.assertEqual(0, user7.profile.open_bills_amount)
 
 

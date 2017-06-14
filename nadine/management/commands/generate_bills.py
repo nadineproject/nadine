@@ -8,7 +8,7 @@ from nadine.models.billing import UserBill
 
 def generate(membership):
     print("  %s: %s" % (membership.who, membership.package_name()))
-    bill_dict = membership.generate_bill()
+    bill_dict = membership.generate_bills()
     if bill_dict:
         for payer, row in bill_dict.items():
             bill = row['bill']

@@ -1,0 +1,8 @@
+<form id="{{ bill.user.username }}"
+      method="POST"
+      style="display:inline-block;"
+      action="{% url 'staff:billing:generate_bills' membership.id %}">
+  {% csrf_token %}
+  <input type="hidden" name="next" value="{{ request.get_full_path }}" >
+  <input type="submit" value="Generate Bills"/>
+</form>

@@ -24,10 +24,10 @@ class BillManager(models.Manager):
             query = query.filter(user=user)
         if in_progress != None:
             query = query.filter(in_progress=in_progress)
-        query = query.annotate(owed=Sum('line_items__amount') - Sum('payment__amount'), payment_count=Count('payment'))
+        query = query.annotate(bill_amount=Sum('line_items__amount'), owed=Sum('line_items__amount') - Sum('payment__amount'), payment_count=Count('payment'))
         no_payments = Q(payment_count = 0)
         partial_payment = Q(owed__gt = 0)
-        query = query.filter(no_payments | partial_payment)
+        query = query.filter(bill_amount__gt=0).filter(no_payments | partial_payment)
         return query.order_by('due_date')
 
 
@@ -40,9 +40,10 @@ class UserBill(models.Model):
     period_start = models.DateField()
     period_end = models.DateField()
     due_date = models.DateField()
-    note = models.TextField(blank=True, null=True)
-    in_progress = models.BooleanField(default=False, blank=False, null=False)
-    mark_paid = models.BooleanField(default=False, blank=False, null=False)
+    comment = models.TextField(blank=True, null=True, help_text="Public comments visable by the user")
+    note = models.TextField(blank=True, null=True, help_text="Private notes about this bill")
+    in_progress = models.BooleanField(default=False, blank=False, null=False, help_text="Mark a bill as 'in progress' indicating someone is working on it")
+    mark_paid = models.BooleanField(default=False, blank=False, null=False, help_text="Mark a bill as paid even if it is not")
 
     def __unicode__(self):
         return "Bill %d" % self.id
@@ -100,7 +101,7 @@ class UserBill(models.Model):
             'month': self.period_start.month,
             'day': self.period_start.day,
         }
-        return reverse('staff:billing:generate_bill', kwargs=kwargs)
+        return reverse('staff:billing:generate_bills', kwargs=kwargs)
 
     def get_staff_url(self):
         return reverse('staff:billing:bill', kwargs={'bill_id': self.id})
@@ -203,12 +204,12 @@ class BillLineItem(models.Model):
 
 
 class Payment(models.Model):
+    created_ts = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="+", null=True, blank=True, on_delete=models.CASCADE)
     bill = models.ForeignKey(UserBill, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    payment_date = models.DateTimeField(auto_now_add=True)
-    payment_service = models.CharField(max_length=64, null=True, blank=True)
-    transaction_id = models.CharField(max_length=64, null=True, blank=True)
     amount = models.DecimalField(max_digits=7, decimal_places=2, default=0)
+    note = models.TextField(blank=True, null=True, help_text="Private notes about this payment")
 
     def __unicode__(self):
-        return "%s: %s - $%s" % (str(self.payment_date)[:16], self.user, self.amount)
+        return "%s: %s - $%s" % (str(self.created_ts)[:16], self.user, self.amount)
