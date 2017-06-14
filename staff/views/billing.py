@@ -179,6 +179,7 @@ def record_payment(request):
             if payment_form.is_valid():
                 payment = payment_form.save(created_by=request.user.username)
                 messages.success(request, "Payment of $%s recorded." % payment.amount)
+                return HttpResponseRedirect(reverse('staff:billing:outstanding'))
         except Exception as e:
             messages.error(request, str(e))
     else:

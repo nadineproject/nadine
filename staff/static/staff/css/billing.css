@@ -160,6 +160,11 @@ input.datepicker {
   width: 8em;
 }
 
+.payment-amount #id_amount {
+  width: 100%;
+  text-align: center;
+}
+
 .transactions-sum span {
   display: inline-block;
 }
