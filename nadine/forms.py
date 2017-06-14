@@ -143,20 +143,24 @@ class OrganizationMemberForm(forms.Form):
 class PaymentForm(forms.Form):
     bill_id = forms.IntegerField(required=True, widget=forms.HiddenInput)
     username = forms.CharField(required=True, widget=forms.HiddenInput)
+    # created_by = forms.CharField(required=False, widget=forms.HiddenInput)
     payment_date = forms.DateField(required=True, widget=forms.DateInput(attrs={'placeholder':'e.g. 12/28/16', 'class':'datepicker'}, format='%m/%d/%Y'))
-    payment_service = forms.CharField(max_length=64, required=False)
-    transaction_id = forms.CharField(max_length=64, required=False)
+    note = forms.CharField(max_length=256, required=False)
     amount = forms.DecimalField(min_value=0, max_value=10000, required=True, max_digits=7, decimal_places=2)
-    # bill_note = forms.CharField(required=False, widget=forms.Textarea)
 
-    def save(self):
+    def save(self, created_by=None):
         bill = UserBill.objects.get(pk=self.cleaned_data['bill_id'])
         user = User.objects.get(username=self.cleaned_data['username'])
-        payment_date = self.cleaned_data['payment_date']
-        payment = Payment(bill=bill, user=user, payment_date=payment_date)
-        payment.payment_service = self.cleaned_data['payment_service']
-        payment.transaction_id = self.cleaned_data['transaction_id']
-        payment.amount = self.cleaned_data['amount']
+        amount = self.cleaned_data['amount']
+        if amount > bill.total_owed:
+            raise Exception("Amount of $%s exceeds amount owed $%s" %(amount, bill.total_owed))
+        payment = Payment(bill=bill, user=user)
+        payment.created_ts = self.cleaned_data['payment_date']
+        if created_by:
+            payment.created_by = User.objects.get(username=created_by)
+        payment.created_ts = self.cleaned_data['payment_date']
+        payment.note = self.cleaned_data['note']
+        payment.amount = amount
         payment.save()
         return payment
 

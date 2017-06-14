@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^bill_delay/(?P<bill_id>\d+)/$', billing.action_bill_delay, name='bill_delay'),
     url(r'^generate_bills/(?P<membership_id>[^/]+)/$', billing.action_generate_bill, name='generate_bills'),
     url(r'^generate_bills/(?P<membership_id>[^/]+)/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', billing.action_generate_bill, name='generate_bills'),
+    url(r'^record_payment/$', billing.record_payment, name='record_payment'),
 
     # Integerations
     url(r'^usaepay/m/$', payment.usaepay_members, name='payments_members'),

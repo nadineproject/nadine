@@ -169,12 +169,34 @@ def action_generate_bill(request, membership_id, year=None, month=None, day=None
 
 
 @staff_member_required
+def record_payment(request):
+    # Process our payment form
+    bill_id = None
+    if request.method == 'POST':
+        payment_form = PaymentForm(request.POST)
+        bill_id = payment_form['bill_id'].value()
+        try:
+            if payment_form.is_valid():
+                payment = payment_form.save(created_by=request.user.username)
+                messages.success(request, "Payment of $%s recorded." % payment.amount)
+        except Exception as e:
+            messages.error(request, str(e))
+    else:
+        raise Exception("Must be a POST!")
+    if 'next' in request.POST:
+        return HttpResponseRedirect(request.POST.get('next'))
+    if bill_id:
+        return HttpResponseRedirect(reverse('staff:billing:bill', kwargs={'bill_id': bill_id}))
+    return HttpResponseRedirect(reverse('staff:billing:bills'))
+
+@staff_member_required
 def bill_view(request, bill_id):
     bill = get_object_or_404(UserBill, id=bill_id)
 
     # Process our payment form
     if request.method == 'POST':
         payment_form = PaymentForm(request.POST)
+        payemnt_form.created_by = request.user.username
         try:
             if payment_form.is_valid():
                 payment = payment_form.save()
@@ -186,7 +208,7 @@ def bill_view(request, bill_id):
         'bill_id': bill.id,
         'username': bill.user.username,
         'payment_date': localtime(now()),
-        'amount': bill.amount,
+        'amount': bill.total_owed,
     }
     payment_form = PaymentForm(initial=initial_data)
 

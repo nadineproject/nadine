@@ -40,7 +40,8 @@ class UserBill(models.Model):
     period_start = models.DateField()
     period_end = models.DateField()
     due_date = models.DateField()
-    note = models.TextField(blank=True, null=True)
+    comment = models.TextField(blank=True, null=True, help_text="Public comments visable by the user")
+    note = models.TextField(blank=True, null=True, help_text="Private notes about this bill")
     in_progress = models.BooleanField(default=False, blank=False, null=False)
     mark_paid = models.BooleanField(default=False, blank=False, null=False)
 
@@ -203,12 +204,12 @@ class BillLineItem(models.Model):
 
 
 class Payment(models.Model):
+    created_ts = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="+", null=True, blank=True, on_delete=models.CASCADE)
     bill = models.ForeignKey(UserBill, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    payment_date = models.DateTimeField(auto_now_add=True)
-    payment_service = models.CharField(max_length=64, null=True, blank=True)
-    transaction_id = models.CharField(max_length=64, null=True, blank=True)
     amount = models.DecimalField(max_digits=7, decimal_places=2, default=0)
+    note = models.TextField(blank=True, null=True, help_text="Private notes about this payment")
 
     def __unicode__(self):
-        return "%s: %s - $%s" % (str(self.payment_date)[:16], self.user, self.amount)
+        return "%s: %s - $%s" % (str(self.created_ts)[:16], self.user, self.amount)
