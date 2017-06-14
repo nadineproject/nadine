@@ -85,13 +85,14 @@
   {% for payment in bill.payment_set.all %}
     <tr>
       <td>
-        {{ payment.created_ts }}
+        {{ payment.created_ts|date:"m/d/y" }}
         {% if payment.created_by %}
           by {{ payment.created_by }}
         {% endif %}
       </td>
       <td>{{ payment.note }}</td>
-      <td class="amount-td">${{ payment.amount }}</td>
+      <td style="text-align:right;">${{ payment.amount }}</td>
+      <td></td>
     </tr>
   {% endfor %}
 
@@ -103,7 +104,7 @@
       <tr>
         <td>{{ payment_form.payment_date }}</td>
         <td>{{ payment_form.note }}</td>
-        <td>{{ payment_form.amount }}</td>
+        <td style="text-align:right; width:25%;">{{ payment_form.amount }}</td>
         <td>
           <input type="submit" value="Record Payment"/>
         </td>
