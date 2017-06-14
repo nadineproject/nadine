@@ -21,7 +21,12 @@
 <table class='bill-id-table'>
   <tr>
     <th>Due Date:</th>
-    <td>{{ bill.due_date|date:"m/d/y"  }}</td>
+    <td>
+      {{ bill.due_date|date:"m/d/y"  }}
+      {% if overdue %}
+        <span style='color:red;'>({{ overdue }} Days Past Due)</span>
+      {% endif %}
+    </td>
     <th>Period:</th>
     <td>
       {{ bill.period_start|date:"m/d/y" }} to {{ bill.period_end|date:"m/d/y" }}
@@ -40,13 +45,8 @@
     </td>
     <th>Amount:</th>
     <td>${{ bill.amount }}</td>
-    {% if bill.is_paid %}
-      <th id='paid-th'>Paid:</th>
-      <td>${{ bill.total_paid }}</td>
-    {% else %}
-      <th style='color:red;' id='paid-th'>Paid:</th>
-      <td style='color:red;' >${{ bill.total_paid }} {% if overdue %}({{ overdue }} Days Past Due){% endif %}</td>
-    {% endif %}
+    <th id='paid-th'>Paid:</th>
+    <td>${{ bill.total_paid }}</td>
   </tr>
 </table>
 {% if bill.created_by %}
@@ -90,7 +90,7 @@
           by {{ payment.created_by }}
         {% endif %}
       </td>
-      <td>{{ payment.note }}</td>
+      <td>{{ payment.note|default:'' }}</td>
       <td style="text-align:right;">${{ payment.amount }}</td>
       <td></td>
     </tr>
@@ -104,7 +104,7 @@
       <tr>
         <td>{{ payment_form.payment_date }}</td>
         <td>{{ payment_form.note }}</td>
-        <td style="text-align:right; width:25%;">{{ payment_form.amount }}</td>
+        <td style="text-align:right; width:25%">{{ payment_form.amount }}</td>
         <td>
           <input type="submit" value="Record Payment"/>
         </td>
