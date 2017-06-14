@@ -100,7 +100,7 @@ def action_user_paid(request, username):
 def action_bill_paid(request, bill_id):
     ''' Mark the bill paid '''
     bill = get_object_or_404(UserBill, id=bill_id)
-    payment = Payment.objects.create(bill=bill, user=bill.user, amount=bill.amount)
+    payment = Payment.objects.create(bill=bill, user=bill.user, amount=bill.amount, created_by=request.user)
     messages.success(request, "Bill %d ($%s) paid" % (bill.id, bill.amount))
     if 'next' in request.POST:
         HttpResponseRedirect(request.POST.get("next"))
