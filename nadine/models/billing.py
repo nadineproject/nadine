@@ -30,6 +30,8 @@ class BillManager(models.Manager):
         query = query.filter(bill_amount__gt=0).filter(no_payments | partial_payment)
         return query.order_by('due_date')
 
+    def non_zero(self):
+        return self.annotate(bill_amount=Sum('line_items__amount')).filter(bill_amount__gt=0)
 
 class UserBill(models.Model):
     objects = BillManager()
