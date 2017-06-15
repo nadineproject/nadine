@@ -47,6 +47,10 @@
     <td>${{ bill.amount }}</td>
     <th id='paid-th'>Paid:</th>
     <td>${{ bill.total_paid }}</td>
+    {% if not bill.is_paid and bill.total_paid > 0 %}
+      <th>Owed:</th>
+      <td>{{ bill.total_owed }}</td>
+    {% endif %}
   </tr>
 </table>
 {% if bill.created_by %}
@@ -92,7 +96,13 @@
       </td>
       <td>{{ payment.note|default:'' }}</td>
       <td style="text-align:right;">${{ payment.amount }}</td>
-      <td></td>
+      <td>
+        <form action="." method="POST" onSubmit="return confirm('Are you sure you want to delete this payment of ${{ payment.amount }}?'); return false;">
+          <input type="hidden" name="delete_payment_id" value="{{ payment.id}}"/>
+          <input type="submit" value="Delete Payment" >
+          {% csrf_token %}
+        </form>
+      </td>
     </tr>
   {% endfor %}
 

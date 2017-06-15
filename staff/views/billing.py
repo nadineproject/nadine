@@ -193,17 +193,16 @@ def action_record_payment(request):
 def bill_view(request, bill_id):
     bill = get_object_or_404(UserBill, id=bill_id)
 
-    # Process our payment form
     if request.method == 'POST':
-        payment_form = PaymentForm(request.POST)
-        payemnt_form.created_by = request.user.username
-        try:
-            if payment_form.is_valid():
-                payment = payment_form.save()
-                messages.success(request, "payment created.")
-        except Exception as e:
-            messages.error(request, str(e))
-    # We always need a fresh form
+        if 'delete_payment_id' in request.POST:
+            try:
+                payment_id = request.POST.get('delete_payment_id')
+                payment = Payment.objects.get(id=payment_id)
+                payment.delete()
+                messages.success(request, "Payment deleted.")
+            except Exception as e:
+                messages.error(request, str(e))
+
     initial_data = {
         'bill_id': bill.id,
         'username': bill.user.username,

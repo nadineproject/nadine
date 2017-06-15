@@ -13,6 +13,7 @@ from django.conf import settings
 
 from nadine.models.membership import Membership
 from nadine.models.resource import Resource
+from nadine.models.usage import CoworkingDay
 
 logger = logging.getLogger(__name__)
 
@@ -135,6 +136,15 @@ class UserBill(models.Model):
         if not subscriptions:
             return resource.default_rate
         return subscriptions.first().overage_rate
+
+    def included_resource_activity(self, resource):
+        ''' All the activity of a given resource included in this bill '''
+        activity_list = []
+        for line_item in self.line_items.filter(resource=resource):
+            if resource == Resource.objects.day_resource:
+                activity = CoworkingDay.objects.get(pk=line_item.activity_id)
+            activity_list.append(activity)
+        return activity_list
 
     def resource_activity_count(self, resource):
         return self.line_items.filter(resource=resource).count()
