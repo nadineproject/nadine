@@ -202,7 +202,6 @@ class UserBillTestCase(TestCase):
         user7.membership.generate_bills()
         self.assertEqual(0, user7.profile.open_bills_amount)
 
-
     def test_change_bill_day(self):
         # User 1 is a PT5 from 1/10/2010 billed on the 10th
         user = User.objects.create(username='test_user', first_name='Test', last_name='User')
@@ -229,6 +228,12 @@ class UserBillTestCase(TestCase):
         july_1_bill = user.bills.get(period_start=date(2010, 7, 1))
         self.assertFalse(day1 in july_1_bill.included_resource_activity(Resource.objects.day_resource))
         self.assertTrue(day2 in july_1_bill.included_resource_activity(Resource.objects.day_resource))
+
+    # def test_prorated_subscription(self):
+    #     # User 1 is a PT5 from 1/1/2010 1st
+    #     user = User.objects.create(username='test_user', first_name='Test', last_name='User')
+    #     user.membership.bill_day = 1
+    #     user.membership.set_to_package(self.pt5Package, start_date=date(2010, 1, 10))
 
 
 
