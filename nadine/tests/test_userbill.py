@@ -203,4 +203,34 @@ class UserBillTestCase(TestCase):
         self.assertEqual(0, user7.profile.open_bills_amount)
 
 
+    def test_change_bill_day(self):
+        # User 1 is a PT5 from 1/10/2010 billed on the 10th
+        user = User.objects.create(username='test_user', first_name='Test', last_name='User')
+        user.membership.bill_day = 10
+        user.membership.set_to_package(self.pt5Package, start_date=date(2010, 1, 10))
+        self.assertEqual(10, user.membership.bill_day)
+
+        # Two days of activity on 6/9 and 6/15
+        # First day is in the 6/10 bill, second is not
+        day1 = CoworkingDay.objects.create(user=user, visit_date=date(2010, 6, 9), payment='Bill')
+        day2 = CoworkingDay.objects.create(user=user, visit_date=date(2010, 6, 15), payment='Bill')
+        user.membership.generate_bills(target_date=date(2010, 6, 10))
+        june_10_bill = user.bills.get(period_start=date(2010, 6, 10))
+        self.assertTrue(day1 in june_10_bill.included_resource_activity(Resource.objects.day_resource))
+        self.assertFalse(day2 in june_10_bill.included_resource_activity(Resource.objects.day_resource))
+
+        # Change the bill date to the 1st
+        user.membership.bill_day = 1
+        user.membership.save()
+        self.assertEqual(1, user.membership.bill_day)
+
+        # Generate the July 1st bill and check that day2 is the in there.
+        user.membership.generate_bills(target_date=date(2010, 7, 1))
+        july_1_bill = user.bills.get(period_start=date(2010, 7, 1))
+        self.assertFalse(day1 in july_1_bill.included_resource_activity(Resource.objects.day_resource))
+        self.assertTrue(day2 in july_1_bill.included_resource_activity(Resource.objects.day_resource))
+
+
+
+
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
