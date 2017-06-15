@@ -27,7 +27,7 @@ from nadine.models.organization import Organization
 from interlink.models import MailingList
 from nadine.utils.slack_api import SlackAPI
 from nadine.utils.payment_api import PaymentAPI
-from nadine.settings import TIME_ZONE
+from nadine.settings import TIME_ZONE, DEFAULT_BILLING_DAY
 from nadine.utils import network
 from nadine import email
 
@@ -427,6 +427,8 @@ def confirm_membership(request, username, package, end_target, new_subs):
     else:
         pkg_name = None
 
+    print localtime(now()).day
+
     if request.method == 'POST':
         try:
             with transaction.atomic():
@@ -436,15 +438,19 @@ def confirm_membership(request, username, package, end_target, new_subs):
                     # If there is a package, then make changes, else, we are ending all
                     if request.POST.get('match'):
                         pkg_name = MembershipPackage.objects.get(id=request.POST.get('match')).name
+                    if user.membership.active_subscriptions() is None:
+                        if settings.DEFAULT_BILLING_DAY == 0:
+                            membership.bill_day = localtime(now()).day
+                            membership.save()
+                        else:
+                            membership.bill_day = settings.DEFAULT_BILLING_DAY
+                            membership.save()
+
                     if user.membership.package_name() != pkg_name:
                         for s in user.membership.active_subscriptions():
                             if s.end_date == None:
                                 s.end_date = end_target
                                 s.save()
-                    if user.membership.bill_day != pkg['bill_day']:
-                        membership.bill_day = pkg['bill_day']
-                        membership.save()
-
                         """When a membership is created, add the user to any opt-out mailing lists"""
                         if user.membership.package_name() == None:
                             mailing_lists = MailingList.objects.filter(is_opt_out=True)
@@ -535,7 +541,7 @@ def confirm_membership(request, username, package, end_target, new_subs):
 def edit_bill_day(request, username):
     user = get_object_or_404(User, username=username)
     today = localtime(now()).date()
-    future_bills = UserBill.objects.filter(user=user).filter(due_date__gt=today)
+    future_bills = UserBill.objects.unpaid().filter(user=user).filter(due_date__gte=today)
     membership = user.membership
     if request.method == 'POST':
         bill_day = request.POST.get('bill-date')[-2:]

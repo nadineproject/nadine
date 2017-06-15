@@ -5,6 +5,7 @@
 
 {% block content %}
 <h4 id='membership-h4'>Edit Bill Day for <a href="{% url 'staff:members:detail' user.username %}">{{ user.get_full_name }}</a></h4>
+<h5>Change the regular billing day for {{ user.get_full_name }}</h5>
 
 {% if future_bills %}
   <h6 style='display:inline;'>Future Bills*</h6> <span>-these will be deleted if you change the bill day</span>
