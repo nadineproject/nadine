@@ -234,6 +234,10 @@ ALLOW_ONLINE_REGISTRATION = False
 # Allows or does not allow for users to upload their own profile photo on the edit profile page.
 ALLOW_PHOTO_UPLOAD = False
 
+# Default billing day for new memberships.  Set to 0 to be the day of the membership.
+# DEFAULT_BILLING_DAY = 1
+DEFAULT_BILLING_DAY = 0
+
 # List of possible public calendar designations and the color for display. Color can in any color format (name, RGBA, Hex, etc)
 CALENDAR_DICT = {}
 
