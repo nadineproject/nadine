@@ -20,6 +20,7 @@ from django.utils.timezone import localtime, now
 
 from nadine.forms import MembershipForm, SubscriptionForm, MemberSearchForm, EventForm, NewUserForm
 from nadine.models.membership import MemberGroups, Membership, MembershipPackage, ResourceSubscription, SubscriptionDefault, SecurityDeposit
+from nadine.models.billing import UserBill
 from nadine.models.profile import MemberNote, SentEmailLog, FileUpload, SpecialDay
 from nadine.models.resource import Resource
 from nadine.models.organization import Organization
@@ -529,6 +530,30 @@ def confirm_membership(request, username, package, end_target, new_subs):
     }
     return render(request, 'staff/members/confirm.html', context)
 
+
+@staff_member_required
+def edit_bill_day(request, username):
+    user = get_object_or_404(User, username=username)
+    today = localtime(now()).date()
+    future_bills = UserBill.objects.filter(user=user).filter(due_date__gt=today)
+    membership = user.membership
+    if request.method == 'POST':
+        bill_day = request.POST.get('bill-date')[-2:]
+        try:
+            with transaction.atomic():
+                membership.bill_day = bill_day
+                membership.save()
+                for bill in future_bills:
+                    bill.delete()
+                return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}) + '#tabs-1')
+        except IntegrityError as e:
+            print('There was an ERROR: %s' % e.message)
+            messages.error(request, 'There was an error changing the bill date.')
+    context = {
+        'user': user,
+        'future_bills': future_bills,
+    }
+    return render(request, 'staff/members/edit_bill_day.html', context)
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

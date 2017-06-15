@@ -39,7 +39,8 @@ $(document).ready(function() {
     {% endif %}
     <td>${{ membership.monthly_rate }}</td>
     <td class='sub-chips'>
-      <a class='chip' href="{% url 'staff:members:membership' user.username %}">Edit Subscriptions</a>
+      <a class='chip' href="{% url 'staff:members:membership' user.username %}">Edit Subscriptions</a> |
+      <a class='chip' href="{% url 'staff:members:edit_bill_day' user.username %}">Change Bill Day</a>
     </td>
   </tr>
 </table>

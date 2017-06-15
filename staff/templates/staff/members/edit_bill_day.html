@@ -1,0 +1,83 @@
+{% extends 'staff/members/base.html' %}
+
+{% block sub-title %}Edit Bill Day {% endblock %}
+
+
+{% block content %}
+<h4 id='membership-h4'>Edit Bill Day for <a href="{% url 'staff:members:detail' user.username %}">{{ user.get_full_name }}</a></h4>
+
+{% if future_bills %}
+  <h6 style='display:inline;'>Future Bills*</h6> <span>-these will be deleted if you change the bill day</span>
+  <table>
+    <tr>
+      <th>ID</th>
+      <th>Due Date</th>
+      <th>User</th>
+      <th>Package</th>
+      <th>Monthly</th>
+      <th>Overage</th>
+      <th>Total</th>
+    </tr>
+    {% for bill in future_bills %}
+      <tr class="{% cycle 'row-odd' 'row-even' %}">
+        <td>
+          <a href="{{ bill.get_staff_url }}">{{ bill.id}}
+        </td>
+        <td>
+          {{ bill.due_date }}
+        </td>
+        <td>
+          {{ bill.package_name|default:'' }}
+        </td>
+        <td>
+          {{ bill.monthly_rate }}
+        </td>
+        <td>
+          {% if bill.overage_amount %}${{ bill.overage_amount }}{% endif %}
+        </td>
+        <td>
+          <td id='amount-td'><strong>${{ bill.amount }}</strong></td>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+{% endif %}
+
+<form action='.' method='POST'>
+  <table>
+    <tr>
+      <td>
+        <strong>Current Bill Day:</strong>
+      </td>
+      <td>
+        {{ user.membership.bill_day }}
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <strong>Select Next Bill Day:</strong>
+      </td>
+      <td>
+        <input name='bill-date' class='datepicker' placeholder="Select Date" />
+      </td>
+    </tr>
+  </table>
+  {% csrf_token %}
+  <input type='submit' class='btn' value='Submit' />
+</form>
+
+{% endblock %}
+
+{% block extrajs %}
+<script>
+  $(document).ready(function() {
+    $('.button-collapse').sideNav();
+    $('.collapsible').collapsible();
+
+    $('.datepicker').datepicker({
+      dateFormat: 'yy-mm-dd',
+      minDate:0
+    });
+  });
+</script>
+{% endblock %}

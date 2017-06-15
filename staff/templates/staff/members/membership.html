@@ -2,7 +2,6 @@
 
 {% block sub-title %}Edit Membership {% endblock %}
 
-
 {% block content %}
 <h4 id='membership-h4'>Membership for <a href="{% url 'staff:members:detail' entity.username %}">{{ entity.get_full_name }}</a></h4>
 
@@ -325,22 +324,6 @@
 			source: availableUsers,
       autoFocus: true,
 		});
-
-
-
-    {% for message in messages %}
-      {% if message.tags == 'error' %}
-        Materialize.toast('{{ message }}', 60000, 'error-msg msg');
-      {% else %}
-        Materialize.toast('{{ message }}', 3000, '{{ message.tags }}-msg msg');
-      {% endif %}
-    {% endfor %}
-
-    $(document).on('click', '#toast-container .toast', function() {
-      $(this).fadeOut(function(){
-        $(this).remove();
-      });
-    });
   })();
 
   $(document).ready(function() {
