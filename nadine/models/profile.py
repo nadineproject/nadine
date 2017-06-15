@@ -232,12 +232,13 @@ class UserQueryHelper():
         return self.active_members().filter(profile__tags__name__in=[tag])
 
     def managers(self, include_future=False):
+        ''' Return the users with active or future subscriptions of type TEAM_MEMBERSHIP_PACKAGE '''
         if hasattr(settings, 'TEAM_MEMBERSHIP_PACKAGE'):
-            management_package = MembershipPackage.objects.filter(name=settings.TEAM_MEMBERSHIP_PACKAGE).first()
-            memberships = Membership.objects.active_memberships().filter(package=management_package).distinct()
+            management_package = settings.TEAM_MEMBERSHIP_PACKAGE
+            subscriptions = ResourceSubscription.objects.active_subscriptions().filter(package_name=management_package).distinct()
             if include_future:
-                memberships = memberships | Membership.objects.future_memberships().filter(package=management_package).distinct()
-            return User.objects.filter(id__in=memberships.values('user'))
+                subscriptions = subscriptions | ResourceSubscription.objects.future_subscriptions().filter(package_name=management_package).distinct()
+            return User.objects.filter(id__in=subscriptions.values('membership__individualmembership__user')).distinct()
         return None
 
     def search(self, search_string, active_only=False):
@@ -622,7 +623,7 @@ class UserProfile(models.Model):
     def is_manager(self):
         if self.user.is_staff: return True
         managers = User.helper.managers(include_future=True)
-        return self in managers
+        return self.user in managers
 
     def __str__(self): return '%s %s' % (smart_str(self.user.first_name), smart_str(self.user.last_name))
 
