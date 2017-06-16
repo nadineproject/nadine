@@ -42,7 +42,7 @@
     <th class='sub-th'>Period End</th>
     <th class='sub-th'>Amount</th>
   </tr>
-  {% for bill in user.profile.outstanding_bills %}
+  {% for bill in user.profile.open_bills %}
     <tr class='{% cycle "row-even" "row-odd" %}'>
       <td><a href="{% url 'staff:billing:bill' bill.id %}">{{ bill.id }}</a></td>
       <td>{{ bill.due_date }}</td>

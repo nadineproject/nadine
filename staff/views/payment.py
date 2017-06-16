@@ -152,9 +152,11 @@ def usaepay_transactions(request, year, month, day):
             u = User.objects.filter(username = t['username']).first()
             if u:
                 t['user'] = u
-                # TODO - change to User
-                t['member'] = u.profile
-                t['open_bills_amount'] = u.profile.open_bills_amount
+                t['open_bills'] = u.profile.open_bills()
+                # If the amount matches and there is only one, mark this bill as a match
+                if len(t['open_bills']) == 1 and t['amount'] == t['open_bills'][0].amount:
+                    t['bill_match'] = t['open_bills'][0]
+                # Sort through our xero invoices and only show the ones that match this total
                 t['xero_invoices'] = open_xero_invoices.get(t['username'], [])
                 for i in t['xero_invoices']:
                     if i['AmountDue'] != t['amount']:
@@ -183,10 +185,18 @@ def usaepay_transactions(request, year, month, day):
     except Exception as e:
         messages.add_message(request, messages.ERROR, e)
 
-    context = {'date': d, 'amex': amex, 'visamc': visamc, 'ach':ach,
-        'open_batch':open_batch, 'other_transactions': other_transactions,
-        'settled_checks':settled_checks, 'totals':totals,
-        'next_date': d + timedelta(days=1), 'previous_date': d - timedelta(days=1)}
+    context = {
+        'date': d,
+        'amex': amex,
+        'visamc': visamc,
+        'ach':ach,
+        'open_batch':open_batch,
+        'other_transactions': other_transactions,
+        'settled_checks':settled_checks,
+        'totals':totals,
+        'previous_date': d - timedelta(days=1),
+        'next_date': d + timedelta(days=1),
+    }
     return render(request, 'staff/billing/charges.html', context)
 
 

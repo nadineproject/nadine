@@ -129,6 +129,7 @@ class XeroAPI:
         return self.xero.invoices.filter(Status="AUTHORISED")
 
     def get_open_invoices_by_user(self):
+        ''' One call to Xero to pull all open invoices and group them by user '''
         invoices = {}
         for i in self.get_open_invoices(user=None):
             contact_id = i['Contact']['ContactID']
