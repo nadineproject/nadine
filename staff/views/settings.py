@@ -186,11 +186,12 @@ def document_upload(request):
             return render(request, 'staff/settings/doc_preview.html', pdf_args)
         else:
             doc_form = DocUploadForm(request.POST, request.FILES)
-            name = slugify(request.POST.get('name'))
-            doc = request.POST.get('document')
+            # name = slugify(request.POST.get('name'))
+            # doc = request.POST.get('document')
             if doc_form.is_valid():
                 doc_form.save()
-                return HttpResponseRedirect(reverse('staff:tasks:todo'))
+                messages.success(request, 'Successfully uploaded new document.')
+                return HttpResponseRedirect(reverse('staff:settings:doc_upload'))
             else:
                 print doc_form.errors
                 messages.error(request, 'There was an error uploading your document')
