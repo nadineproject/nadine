@@ -314,10 +314,6 @@ def membership(request, username):
     if user.membership.package_name and user.membership.active_subscriptions():
         old_pkg_name = user.membership.package_name()
         old_pkg = MembershipPackage.objects.get(name=old_pkg_name).id
-    if user.membership.bill_day:
-        bill_day = user.membership.bill_day
-    else:
-        bill_day = 1
     package = request.GET.get('package', old_pkg)
     today = localtime(now()).date()
     target_date = request.GET.get('target_date', None)
@@ -354,8 +350,7 @@ def membership(request, username):
                     with transaction.atomic():
                         new_subs = []
                         package = request.POST['package']
-                        bill_day = request.POST['bill_day']
-                        membership = {'package': package, 'bill_day': bill_day}
+                        membership = {'package': package}
                         for sub_form in sub_formset:
                             paid_by = None
                             package_name = MembershipPackage.objects.get(id=package).name
@@ -392,7 +387,6 @@ def membership(request, username):
         'subscriptions':subscriptions,
         'package_form': package_form,
         'package': package,
-        'bill_day': bill_day,
         'sub_formset': sub_formset,
         'active_members': active_members,
         'active_billing': active_billing,
@@ -426,8 +420,6 @@ def confirm_membership(request, username, package, end_target, new_subs):
             match = matches_package
     else:
         pkg_name = None
-
-    print localtime(now()).day
 
     if request.method == 'POST':
         try:

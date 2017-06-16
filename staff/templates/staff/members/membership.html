@@ -114,10 +114,6 @@
 </div>
 <div id='change-package'>
   <form class='sub-form' action='.' method='POST'>
-    <div class='bill-day-div' style='margin-left: 2%;'>
-      <h6 style='display: inline; padding-right: 2%;'>Monthly Bill Day:</h6>
-      <input min='1' max='31' type='number' class='ur_bill_day' name='bill_day' value="{{ bill_day }}" style='display: inline; width: 5%; vertical-align: baseline;'/><span style='vertical-align: baseline; padding-left: 1%;'>of the month</span>
-    </div>
     <table class='sub-table change-table'>
       {% if subscriptions %}
       <tr>
@@ -350,7 +346,6 @@
     });
 
     $('#id_created_by').val('{{ request.user }}');
-    $('#id_bill_day').val('{{ bill_day }}');
     $('#id_username').val('{{ entity.username }}')
     $('.action').val(action)
     $('.disabled input').attr('readonly', 'readonly');
@@ -469,7 +464,6 @@
       $('.curr-sub').hide();
       $('.sub-form').show();
       $('#new-package').val('{{ package }}');
-      $('#id_bill_day').val('{{ bill_day }}');
       $('#target_date').val(targetDate);
       $('#id_package > option').each(function() {
         if($(this).val() == '{{ package }}') {
@@ -568,7 +562,6 @@
       })
 
       $('.created_by_td').val('{{ request.user }}');
-      $('.ur_bill_day').val('{{ bill_day }}');
       $('.chosen_package').val('{{ package }}');
       $('.thr_username').val('{{ entity.username }}')
       resourceCheck();
