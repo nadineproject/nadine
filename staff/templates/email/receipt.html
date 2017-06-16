@@ -1,4 +1,17 @@
 {% load static %}
+<style>
+  #site-phone:before {
+    content: '206-323-6500';
+  }
+
+  #site-address:before {
+    content: "1617 Boylston Ave, Seattle, WA 98122";
+  }
+
+  #site-email:before {
+    content: 'info@officenomads.com';
+  }
+</style>
 
 <body id='receipt-body'>
   <table cellspacing="0" cellpadding="0" border="0" style='width: 100%;'>
@@ -79,10 +92,8 @@
     </p>
     <footer style='position:fixed; bottom: 0; width:100%; text-align: center;'>
       <!-- This is for when more information about site is available -->
-      {% if site.phone %}
-        {{ site.phone }} - {{ site.address }} - {{ site.email }}
-      {% else %}
-        {{ site.name }}
-      {% endif %}
+      <span id='site-phone'></span> |
+      <span id='site-address'></span> |
+      <span id='site-email'></span>
     </footer>
 </body>
