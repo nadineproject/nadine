@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 from django.conf import settings
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 from nadine.models.profile import EmergencyContact
 

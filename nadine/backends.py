@@ -6,6 +6,7 @@ class EmailOrUsernameModelBackend(object):
 
     def authenticate(self, username=None, password=None):
         try:
+            username = username.lower()
             if '@' in username:
                 user = User.helper.by_email(username)
             else:

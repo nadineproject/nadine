@@ -18,7 +18,8 @@ class Command(BaseCommand):
     requires_system_checks = True
 
     def handle(self, *labels, **options):
-        MailingList.objects.fetch_all_mail(logger)
+        # MailingList.objects.fetch_all_mail(logger)
+        MailingList.objects.fetch_all_mail()
         IncomingMail.objects.process_incoming()
         OutgoingMail.objects.send_outgoing()
 

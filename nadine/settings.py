@@ -185,8 +185,9 @@ JSIGNATURE_RESET_BUTTON = False
 # USA_EPAY_SOAP_PIN = "YOUR_PIN"
 
 # Comlink Settings
-MAILGUN_UPLOAD_TO = "attachments/"
-MAILGUN_VERIFY_INCOMING = True
+COMLINK_UPLOAD_TO = "attachments/"
+COMLINK_VERIFY_INCOMING = True
+COMLINK_STRIP_EMAILS = False
 
 # Mailgun Settings
 #MAILGUN_API_KEY = "YOUR-MAILGUN-API-KEY"
@@ -224,6 +225,9 @@ CRONJOBS = [
     # Other Tasks
     ('30 8 * * *', 'django.core.management.call_command', ['announce_special_days']),
 ]
+CRONTAB_LOCK_JOBS = True
+CRONTAB_COMMAND_PREFIX = ""
+CRONTAB_COMMAND_SUFFIX = ""
 
 # Allows for the login page to include or not include the option for nonmembers to register and make a user account.
 ALLOW_ONLINE_REGISTRATION = False
@@ -287,6 +291,10 @@ LOGGING = {
             'handlers': ['file', 'console'],
             'level': 'INFO',
             'propagate': True,
+        },
+        'django_crontab': {
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
         },
         'nadine': {
             'handlers': ['console'],
