@@ -15,11 +15,21 @@
 		</div>
 		<div class="ui-block-b">
 			<h2>{{ user.get_full_name }}</h2>
-			<h3>Billing Day: <span style="font-weight:normal;">{{ user.profile.active_membership.start_date|date:"jS" }}</span></h3>
 
 			{% if not user.profile.has_valid_billing %}
 				<h3 style="color:red;">Please update your billing profile.</h3>
 			{% endif %}
+
+			{% if user.profile.open_alerts %}
+				<h4 style="color:red;">Check with {{ site.name }} staff about these required actions:</h4>
+				<ul>
+					{% for a in user.profile.open_alerts %}
+						<li style='color: red;'> {{ a.description }}</li>
+					{% endfor %}
+				</ul>
+			{% endif %}
+
+			<h3>Billing Day: <span style="font-weight:normal;">{{ user.profile.active_membership.start_date|date:"jS" }}</span></h3>
 
 			{% if membership %}
 				<h3>Visits This Cycle:
