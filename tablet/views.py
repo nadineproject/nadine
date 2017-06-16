@@ -3,6 +3,7 @@ import traceback
 import logging
 import uuid
 from datetime import date, datetime, time, timedelta
+from weasyprint import HTML, CSS
 
 from django.conf import settings
 from django.template import RequestContext
@@ -223,10 +224,14 @@ def signature_render(request, username, doc_type, signature_file):
     pdf_args = {'name': user.get_full_name, 'date': today, 'doc_type': doc_type, 'signature_file': signature_file}
     if 'save_file' in request.GET:
         # Save the PDF as a file and redirect them back to the document list
-        pdf_data = render_to_pdf('tablet/signature_render.html', pdf_args)
-        pdf_file = FileUpload.objects.pdf_from_string(user, pdf_data, doc_type, user)
+        htmltext = get_template('tablet/signature_render.html')
+        signature_html = htmltext.render(pdf_args)
+        pdf_file = HTML(string=signature_html, base_url=request.build_absolute_uri()).write_pdf()
+        upload_file = FileUpload.objects.pdf_from_string(user, pdf_file, doc_type, user)
         os.remove(os.path.join(settings.MEDIA_ROOT, "signatures/%s" % signature_file))
         return HttpResponseRedirect(reverse('tablet:document_list', kwargs={'username': user.username}))
+
     return render_to_pdf_response(request, 'tablet/signature_render.html', pdf_args)
+
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
