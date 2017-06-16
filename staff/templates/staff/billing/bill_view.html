@@ -124,3 +124,16 @@
 </table>
 
 {% endblock %}
+
+{% block extrajs %}
+<script>
+  $(document).ready(function() {
+    $('.button-collapse').sideNav();
+    $('.collapsible').collapsible();
+
+    $('.datepicker').datepicker({
+      dateFormat: 'yy-mm-dd',
+    });
+  })
+</script>
+{% endblock %}
