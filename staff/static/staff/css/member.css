@@ -301,6 +301,11 @@ td.up-input.rate {
   text-align: center;
 }
 
+.bill-day-table {
+  width: 60%;
+  margin: 2%;
+}
+
 .btn-floating {
   font-size: .8em;
 }
@@ -308,6 +313,10 @@ td.up-input.rate {
 .cancel, .back {
   margin-left: 5%;
   color: RGBA(28, 164, 230, 1.00);
+}
+
+.cancel:hover, .back:hover {
+  cursor: pointer;
 }
 
 .cancel {

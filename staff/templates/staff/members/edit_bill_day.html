@@ -45,26 +45,26 @@
 {% endif %}
 
 <form action='.' method='POST'>
-  <table>
+  <table class='bill-day-table'>
     <tr>
-      <td>
+      <td class='bill-day-th'>
         <strong>Current Bill Day:</strong>
       </td>
-      <td>
-        {{ user.membership.bill_day }}
+      <td class='bill-day-td'>
+        {{ user.membership.bill_day_str }} of each month
       </td>
     </tr>
     <tr>
-      <td>
+      <td class='bill-day-th'>
         <strong>Select Next Bill Day:</strong>
       </td>
-      <td>
+      <td class='bill-day-td'>
         <input name='bill-date' class='datepicker' placeholder="Select Date" />
       </td>
     </tr>
   </table>
   {% csrf_token %}
-  <input type='submit' class='btn' value='Submit' />
+  <input class='btn' type='submit' style='display:inline-block; margin-right: 5%; margin-left:40%;' /><span class='cancel'>Cancel</span>
 </form>
 
 {% endblock %}
@@ -77,8 +77,14 @@
 
     $('.datepicker').datepicker({
       dateFormat: 'yy-mm-dd',
-      minDate:0
+      minDate:0,
+      maxDate: 30
     });
+
+    $('.cancel').on('click', function(e) {
+      e.preventDefault();
+      window.location.replace("{% url 'staff:members:detail' user.username %}" + '#tabs1');
+    })
   });
 </script>
 {% endblock %}
