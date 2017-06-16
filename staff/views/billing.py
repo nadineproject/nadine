@@ -144,18 +144,19 @@ def action_generate_bill(request, membership_id, year=None, month=None, day=None
         target_date = date(year=int(year), month=int(month), day=int(day))
     else:
         target_date = localtime(now()).date()
+    bill_count = 0
     bills = membership.generate_bills(target_date=target_date, created_by=request.user)
     if bills:
         bill_count = len(bills.keys())
         messages.add_message(request, messages.SUCCESS, "%d Bill(s) Generated" % bill_count)
-        if bill_count == 1:
-            # If there is only one bill, send them to the bill view page
-            bill_id = bills[bills.keys()[0]]['bill'].id
-            return HttpResponseRedirect(reverse('staff:billing:bill', kwargs={'bill_id': bill_id}))
     else:
         messages.add_message(request, messages.ERROR, "0 Bills Generated")
     if 'next' in request.POST:
         return HttpResponseRedirect(request.POST.get('next'))
+    if bill_count == 1:
+        # If there is only one bill, send them to the bill view page
+        bill_id = bills[bills.keys()[0]]['bill'].id
+        return HttpResponseRedirect(reverse('staff:billing:bill', kwargs={'bill_id': bill_id}))
     return HttpResponseRedirect(reverse('staff:billing:bills'))
 
 
