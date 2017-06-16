@@ -49,7 +49,7 @@
     <td>${{ bill.total_paid }}</td>
     {% if not bill.is_paid and bill.total_paid > 0 %}
       <th>Owed:</th>
-      <td>{{ bill.total_owed }}</td>
+      <td>${{ bill.total_owed }}</td>
     {% endif %}
   </tr>
 </table>
@@ -87,19 +87,19 @@
     <th></th>
   </tr>
   {% for payment in bill.payment_set.all %}
-    <tr>
-      <td>
+    <tr class='payment-tr' style='border-bottom: none;'>
+      <td style='border-bottom: none;'>
         {{ payment.created_ts|date:"m/d/y" }}
         {% if payment.created_by %}
           by {{ payment.created_by }}
         {% endif %}
       </td>
-      <td>{{ payment.note|default:'' }}</td>
-      <td style="text-align:right;">${{ payment.amount }}</td>
-      <td>
+      <td style='border-bottom: none;'>{{ payment.note|default:'' }}</td>
+      <td style="text-align:right; border-bottom: none;">${{ payment.amount }}</td>
+      <td style='border-bottom: none;'>
         <form action="." method="POST" onSubmit="return confirm('Are you sure you want to delete this payment of ${{ payment.amount }}?'); return false;">
           <input type="hidden" name="delete_payment_id" value="{{ payment.id}}"/>
-          <input type="submit" value="Delete Payment" >
+          <input type="submit" class='btn' value="Delete Payment" >
           {% csrf_token %}
         </form>
       </td>
@@ -111,12 +111,12 @@
       {{ payment_form.bill_id }}
       {{ payment_form.username }}
       {% csrf_token %}
-      <tr>
+      <tr class='payment-tr'>
         <td>{{ payment_form.payment_date }}</td>
         <td>{{ payment_form.note }}</td>
         <td class='payment-amount'>{{ payment_form.amount }}</td>
         <td>
-          <input type="submit" value="Record Payment"/>
+          <input type="submit" class='btn' value="Record Payment"/>
         </td>
       </tr>
     </form>

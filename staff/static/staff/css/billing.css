@@ -163,6 +163,15 @@ input.datepicker {
 .payment-amount #id_amount {
   width: 100%;
   text-align: right;
+  margin-left: 10%;
+}
+
+.payment-table {
+  margin: 2%;
+}
+
+.payment-tr td {
+  vertical-align: middle;
 }
 
 .transactions-sum span {
@@ -228,6 +237,10 @@ input.datepicker {
 	width: 30%;
 	vertical-align: baseline;
 	padding-left: 3%;
+}
+
+#id_payment_date {
+  text-align: left;
 }
 
 #paid-th {
