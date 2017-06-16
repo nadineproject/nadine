@@ -85,24 +85,16 @@ def outstanding(request):
 
 
 @staff_member_required
-def action_user_paid(request, username):
-    user = get_object_or_404(User, username=username)
-    for bill in user.profile.open_bills():
-        payment = Payment.objects.create(bill=bill, user=user, amount=bill.amount)
-        messages.success(request, "Bill %d ($%s) paid" % (bill.id, bill.amount))
-    if 'next' in request.POST:
-        HttpResponseRedirect(request.POST.get("next"))
-    return HttpResponseRedirect(reverse('staff:billing:outstanding'))
-
-
-@staff_member_required
 def action_bill_paid(request, bill_id):
     ''' Mark the bill paid '''
     bill = get_object_or_404(UserBill, id=bill_id)
     payment = Payment.objects.create(bill=bill, user=bill.user, amount=bill.amount, created_by=request.user)
+    if 'payment_date' in request.POST:
+        payment.created_ts = datetime.strptime(request.POST['payment_date'], "%Y-%m-%d").date()
+        payment.save()
     messages.success(request, "Bill %d ($%s) paid" % (bill.id, bill.amount))
     if 'next' in request.POST:
-        HttpResponseRedirect(request.POST.get("next"))
+        return HttpResponseRedirect(request.POST['next'])
     return HttpResponseRedirect(reverse('staff:billing:outstanding'))
 
 

@@ -23,7 +23,7 @@
     <th>Due Date:</th>
     <td>
       {{ bill.due_date|date:"m/d/y"  }}
-      {% if overdue %}
+      {% if not bill.is_paid and overdue %}
         <span style='color:red;'>({{ overdue }} Days Past Due)</span>
       {% endif %}
     </td>
