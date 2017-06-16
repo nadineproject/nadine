@@ -543,6 +543,7 @@ def edit_bill_day(request, username):
                 membership.save()
                 for bill in future_bills:
                     bill.delete()
+                messages.success(request, 'Updated bill day for %s' % user)
                 return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}) + '#tabs-1')
         except IntegrityError as e:
             print('There was an ERROR: %s' % e.message)
