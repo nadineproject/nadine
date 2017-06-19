@@ -37,7 +37,7 @@ from recommonmark.parser import CommonMarkParser
 extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
-    'autoapi.extension',
+    # 'autoapi.extension',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
