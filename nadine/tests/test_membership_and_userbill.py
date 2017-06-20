@@ -38,19 +38,6 @@ class MembershipAndUserBillTestCase(TestCase):
         # Turn on logging for nadine models
         logging.getLogger('nadine.models').setLevel(logging.DEBUG)
 
-        self.user1 = User.objects.create(username='member_one', first_name='Member', last_name='One')
-        self.user2 = User.objects.create(username='member_two', first_name='Member', last_name='Two')
-        self.user3 = User.objects.create(username='member_three', first_name='Member', last_name='Three')
-
-        # Test membership
-        self.sub1 = ResourceSubscription.objects.create(
-            membership = self.user1.membership,
-            resource = Resource.objects.day_resource,
-            start_date = two_months_ago,
-            monthly_rate = 100.00,
-            overage_rate = 0,
-        )
-
         # Generate all the bills for user1
         # self.user1.membership.generate_all_bills()
 
@@ -121,7 +108,7 @@ class MembershipAndUserBillTestCase(TestCase):
 
     def test_start_package(self):
         #New user joins and starts a PT5 membership the same day
-        user = self.user1
+        user = User.objects.create(username='member_one', first_name='Member', last_name='One')
         user.membership.bill_day = 1
         user.membership.set_to_package(self.pt5Package, start_date=date(2017, 6, 1))
         self.assertEqual(1, user.membership.bill_day)
@@ -135,7 +122,7 @@ class MembershipAndUserBillTestCase(TestCase):
 
     def test_backdated_new_user_and_membership(self):
         # New user starts Advocate membership backdated 2 weeks
-        user = self.user2
+        user = User.objects.create(username='member_two', first_name='Member', last_name='Two')
         self.assertTrue('member_two', user.username)
         user.membership.bill_day = two_weeks_ago.day
         user.membership.set_to_package(self.advocatePackage, start_date=two_weeks_ago)
@@ -145,22 +132,23 @@ class MembershipAndUserBillTestCase(TestCase):
         # Generate bill at start of membership
         run_bills = user.membership.generate_bills(target_date=today)
         self.assertEqual(1, len(run_bills['member_two']['line_items']))
-        # self.assertTrue(date(2017, 5, 17), user.membership.period_start)
-        bill_today = user.bills.get(period_start=date(2017, 5, 17))
-        self.assertEqual(date(2017, 5, 17), bill_today.due_date)
+        bill_today = user.bills.get(period_start=two_weeks_ago)
+        self.assertEqual(two_weeks_ago, bill_today.due_date)
 
         # Generate the next month's bill
-        user.membership.generate_bills(target_date=date(2017, 6, 17))
-        june_bill = user.bills.get(period_start=date(2017, 6, 17))
-        self.assertEqual(date(2017, 6, 17), june_bill.due_date)
-        self.assertTrue(june_bill.amount == bill_today.amount)
-        self.assertEqual(30, june_bill.amount)
+        next_start_date = user.membership.next_period_start()
+        user.membership.generate_bills(target_date=next_start_date)
+        next_bill = user.bills.get(period_start=next_start_date)
+        self.assertEqual(next_start_date, next_bill.due_date)
+        self.assertTrue(next_bill.amount == bill_today.amount)
+        self.assertEqual(30, next_bill.amount)
 
     def test_new_user_new_membership_with_end_date(self):
-        user = self.user3
+        user = User.objects.create(username='member_three', first_name='Member', last_name='Three')
         self.assertEqual('member_three', user.username)
         self.assertFalse(user.membership.package_name() != None)
 
+        # Set end date one month from now
         end = one_month_from_now - timedelta(days=1)
 
         user.membership.bill_day = today.day
@@ -169,31 +157,50 @@ class MembershipAndUserBillTestCase(TestCase):
         self.assertEqual(10, user.membership.allowance_by_resource(Resource.objects.day_resource))
         self.assertTrue(user.membership.end_date != None)
 
+        # No bill generated the previous month
         run_last_months_bill = user.membership.generate_bills(target_date = one_month_ago)
         self.assertEqual(None, run_last_months_bill)
+
+        # Test for current bill
         run_current_bills = user.membership.generate_bills(target_date=today)
         self.assertEqual(1, len(run_current_bills['member_three']['line_items']))
         current_bill = user.bills.get(period_start=today)
         self.assertEqual(today, current_bill.due_date)
         self.assertTrue(current_bill.amount == 180)
 
+        # Due to end_date, there should be no bill next month
         run_next_month_bill = user.membership.generate_bills(target_date=one_month_from_now)
         self.assertTrue(run_next_month_bill == None)
 
     def test_backdated_new_membership_with_end_date(self):
+        # Membership start date of two weeks ago and ending in two weeks
         start = two_weeks_ago
-        end = two_weeks_from_now
-        user = User.objects.create(username='test_user', first_name='Test', last_name='User')
-        self.assertEqual('test_user', user.username)
+        end = (start + relativedelta(months=1)) - timedelta(days=1)
+        user = User.objects.create(username='member_four', first_name='Member', last_name='Four')
+        self.assertEqual('member_four', user.username)
         self.assertTrue(user.membership.package_name() == None)
 
+        # Start PT5 membership two weeks ago
         user.membership.bill_day = start.day
         user.membership.set_to_package(self.pt5Package, start_date=start, end_date=end)
         self.assertTrue(user.membership.package_name() == 'PT5')
+        self.assertEqual(5, user.membership.allowance_by_resource(Resource.objects.day_resource))
 
-        # run_may_bill = user.bills.generate_bills(target_date=date(2017, 4, 18))
-        # self.assertEqual(None, run_may_bill)
+        # No bill for previous month since there was no membership
+        run_prev_bill = user.membership.generate_bills(target_date=one_month_ago)
+        self.assertEqual(None, run_prev_bill)
 
+        # Test current bill
+        run_current_bill = user.membership.generate_bills(target_date=start)
+        current_bill = user.bills.get(period_start=start)
+        self.assertEqual(100, current_bill.amount)
+        self.assertEqual(1, current_bill.line_items.all().count())
+
+        # No bill for next month since there is end date at end of bill period
+        run_next_bill = user.membership.generate_bills(target_date=one_month_from_now)
+        self.assertEqual(None, run_next_bill)
+
+    def test_new_membership_package_paid_by_other_member(self):
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
