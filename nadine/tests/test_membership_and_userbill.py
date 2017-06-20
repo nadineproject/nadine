@@ -53,6 +53,13 @@ class MembershipAndUserBillTestCase(TestCase):
         # self.user1.membership.generate_all_bills()
 
         # Packages
+        self.advocatePackage = MembershipPackage.objects.create(name='Advocate')
+        SubscriptionDefault.objects.create(
+            package=self.advocatePackage,
+            resource = Resource.objects.day_resource,
+            monthly_rate = 30,
+            overage_rate = 20,
+        )
         self.pt5Package = MembershipPackage.objects.create(name="PT5")
         SubscriptionDefault.objects.create(
             package = self.pt5Package,
@@ -103,7 +110,7 @@ class MembershipAndUserBillTestCase(TestCase):
 
 
     def test_start_package(self):
-        user = User.objects.create(username='test_user', first_name='Test', last_name='User')
+        user = self.user1
         user.membership.bill_day = 1
         user.membership.set_to_package(self.pt5Package, start_date=date(2017, 6, 1))
         self.assertEqual(1, user.membership.bill_day)
@@ -114,6 +121,17 @@ class MembershipAndUserBillTestCase(TestCase):
         july_bill = user.bills.get(period_start=date(2017, 7, 1))
         self.assertTrue(july_bill != None)
         self.assertEqual(100, july_bill.amount)
-        
+
+    def test_backdated_new_user_and_membership(self):
+        today = date(2017, 6, 1)
+        user = self.user2
+        self.assertTrue('member_two', user.username)
+        user.membership.bill_day = 1
+        user.membership.set_to_package(self.advocatePackage, start_date=date(2017, 6, 18))
+        self.assertTrue(user.membership.package_name != None)
+        self.assertEquals('Advocate', user.membership.package_name())
+
+
+
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
