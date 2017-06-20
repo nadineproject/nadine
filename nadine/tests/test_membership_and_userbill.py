@@ -110,6 +110,7 @@ class MembershipAndUserBillTestCase(TestCase):
 
 
     def test_start_package(self):
+        #New user joins and starts a PT5 membership the same day
         user = self.user1
         user.membership.bill_day = 1
         user.membership.set_to_package(self.pt5Package, start_date=date(2017, 6, 1))
@@ -123,15 +124,27 @@ class MembershipAndUserBillTestCase(TestCase):
         self.assertEqual(100, july_bill.amount)
 
     def test_backdated_new_user_and_membership(self):
+        # New user starts Advocate membership backdated 2 weeks
         today = date(2017, 6, 1)
         user = self.user2
         self.assertTrue('member_two', user.username)
-        user.membership.bill_day = 1
-        user.membership.set_to_package(self.advocatePackage, start_date=date(2017, 6, 18))
+        user.membership.bill_day = 17
+        user.membership.set_to_package(self.advocatePackage, start_date=date(2017, 5, 17))
         self.assertTrue(user.membership.package_name != None)
-        self.assertEquals('Advocate', user.membership.package_name())
+        self.assertEqual('Advocate', user.membership.package_name())
 
+        # Generate bill at start of membership
+        run_bills = user.membership.generate_bills(target_date=today)
+        self.assertEqual(1, len(run_bills['member_two']['line_items']))
+        # self.assertTrue(date(2017, 5, 17), user.membership.period_start)
+        bill_today = user.bills.get(period_start=date(2017, 5, 17))
+        self.assertEqual(date(2017, 5, 17), bill_today.due_date)
 
-
+        # Generate the next month's bill
+        user.membership.generate_bills(target_date=date(2017, 6, 17))
+        june_bill = user.bills.get(period_start=date(2017, 6, 17))
+        self.assertEqual(date(2017, 6, 17), june_bill.due_date)
+        self.assertTrue(june_bill.amount == bill_today.amount)
+        self.assertEqual(30, june_bill.amount)
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
