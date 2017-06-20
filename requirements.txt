@@ -22,6 +22,10 @@ html5lib==1.0b10
 django-jsignature==0.8
 weasyprint==0.38
 
+# A few handy tools
+django-debug-toolbar
+pip-review
+
 # Libraries for Xero
 pyxero==0.8.0
 PyJWT==1.5.0
