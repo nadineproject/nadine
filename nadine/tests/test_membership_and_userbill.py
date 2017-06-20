@@ -20,6 +20,8 @@ tomorrow = today + timedelta(days=1)
 one_month_from_now = today + relativedelta(months=1)
 one_month_ago = today - relativedelta(months=1)
 two_months_ago = today - relativedelta(months=2)
+two_weeks_ago = today - timedelta(days=14)
+two_weeks_from_now = today + timedelta(days=14)
 
 def print_bill(bill):
     print("UserBill %d" % bill.id)
@@ -66,6 +68,14 @@ class MembershipAndUserBillTestCase(TestCase):
             resource = Resource.objects.day_resource,
             monthly_rate = 100,
             allowance = 5,
+            overage_rate = 20,
+        )
+        self.pt10Package = MembershipPackage.objects.create(name="PT10")
+        SubscriptionDefault.objects.create(
+            package = self.pt10Package,
+            resource = Resource.objects.day_resource,
+            monthly_rate = 180,
+            allowance = 10,
             overage_rate = 20,
         )
         self.pt15Package = MembershipPackage.objects.create(name="PT15")
@@ -125,12 +135,11 @@ class MembershipAndUserBillTestCase(TestCase):
 
     def test_backdated_new_user_and_membership(self):
         # New user starts Advocate membership backdated 2 weeks
-        today = date(2017, 6, 1)
         user = self.user2
         self.assertTrue('member_two', user.username)
-        user.membership.bill_day = 17
-        user.membership.set_to_package(self.advocatePackage, start_date=date(2017, 5, 17))
-        self.assertTrue(user.membership.package_name != None)
+        user.membership.bill_day = two_weeks_ago.day
+        user.membership.set_to_package(self.advocatePackage, start_date=two_weeks_ago)
+        self.assertTrue(user.membership.package_name() != None)
         self.assertEqual('Advocate', user.membership.package_name())
 
         # Generate bill at start of membership
@@ -146,5 +155,45 @@ class MembershipAndUserBillTestCase(TestCase):
         self.assertEqual(date(2017, 6, 17), june_bill.due_date)
         self.assertTrue(june_bill.amount == bill_today.amount)
         self.assertEqual(30, june_bill.amount)
+
+    def test_new_user_new_membership_with_end_date(self):
+        user = self.user3
+        self.assertEqual('member_three', user.username)
+        self.assertFalse(user.membership.package_name() != None)
+
+        end = one_month_from_now - timedelta(days=1)
+
+        user.membership.bill_day = today.day
+        self.assertEqual(today.day, user.membership.bill_day)
+        user.membership.set_to_package(self.pt10Package, start_date=today, end_date=end)
+        self.assertEqual(10, user.membership.allowance_by_resource(Resource.objects.day_resource))
+        self.assertTrue(user.membership.end_date != None)
+
+        run_last_months_bill = user.membership.generate_bills(target_date = one_month_ago)
+        self.assertEqual(None, run_last_months_bill)
+        run_current_bills = user.membership.generate_bills(target_date=today)
+        self.assertEqual(1, len(run_current_bills['member_three']['line_items']))
+        current_bill = user.bills.get(period_start=today)
+        self.assertEqual(today, current_bill.due_date)
+        self.assertTrue(current_bill.amount == 180)
+
+        run_next_month_bill = user.membership.generate_bills(target_date=one_month_from_now)
+        self.assertTrue(run_next_month_bill == None)
+
+    def test_backdated_new_membership_with_end_date(self):
+        start = two_weeks_ago
+        end = two_weeks_from_now
+        user = User.objects.create(username='test_user', first_name='Test', last_name='User')
+        self.assertEqual('test_user', user.username)
+        self.assertTrue(user.membership.package_name() == None)
+
+        user.membership.bill_day = start.day
+        user.membership.set_to_package(self.pt5Package, start_date=start, end_date=end)
+        self.assertTrue(user.membership.package_name() == 'PT5')
+
+        # run_may_bill = user.bills.generate_bills(target_date=date(2017, 4, 18))
+        # self.assertEqual(None, run_may_bill)
+
+
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
