@@ -17,12 +17,7 @@ from django.contrib.sites.models import Site
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.utils.timezone import localtime, now
-<<<<<<< HEAD
 from django.template.loader import get_template
-=======
-
-from weasyprint import HTML, CSS
->>>>>>> master
 
 from nadine import email
 from nadine.utils import mailgun
@@ -103,13 +98,8 @@ def user_signin(request, username):
         # They have a desk so they can't sign in
         can_signin = False
     else:
-<<<<<<< HEAD
         signins_today = user.coworkingday_set.filter(visit_date=localtime(now()).date()).count()
         if signins_today > 0:
-=======
-        signins_today = CoworkingDay.objects.filter(user=user, visit_date=localtime(now()).date())
-        if signins_today.count() > 0:
->>>>>>> master
             can_signin = False
 
     search_results = None
