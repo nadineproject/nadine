@@ -38,6 +38,8 @@ class MembershipAndUserBillTestCase(TestCase):
         # Turn on logging for nadine models
         logging.getLogger('nadine.models').setLevel(logging.DEBUG)
 
+        self.user1 = User.objects.create(username='user_one', first_name='User', last_name='One')
+
         # Generate all the bills for user1
         # self.user1.membership.generate_all_bills()
 
@@ -201,6 +203,36 @@ class MembershipAndUserBillTestCase(TestCase):
         self.assertEqual(None, run_next_bill)
 
     def test_new_membership_package_paid_by_other_member(self):
+        user = User.objects.create(username='member_five', first_name='Member', last_name='Five')
+        payer = self.user1
+        self.assertTrue(user.membership.package_name() == None)
+        payer.membership.bill_day = 12
 
+        # Payer has no active subscriptions
+        self.assertEqual(0, payer.membership.active_subscriptions().count())
+
+        # Set Resident membership package for user to be paid by another member 'payer'
+        user.membership.bill_day = today.day
+        user.membership.set_to_package(self.residentPackage, start_date=today, paid_by=payer)
+        self.assertTrue(user.membership.package_name() == 'Resident')
+        users_subscriptions = user.membership.active_subscriptions()
+
+        # Test that payer pays for each of the 3 active subscriptions for user
+        self.assertTrue(3, users_subscriptions.count())
+        for u in users_subscriptions:
+            self.assertEqual(u.paid_by, payer)
+
+        # Generate bills and 0 for user, but 1 for payer
+        run_user_bill = user.membership.generate_bills(target_date=today)
+        user_bill = UserBill.objects.filter(user=user).count()
+        self.assertEqual(0, user_bill)
+        payer_bill = payer.bills.get(period_start = today)
+        self.assertTrue(payer_bill.package_name == 'Resident')
+        self.assertTrue(payer_bill.amount == 395)
+
+        # Bill is for user membership and not that of payer
+        self.assertTrue(payer_bill.membership.id == user.membership.id)
+
+    def test_new_t40_team_member(self):
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
