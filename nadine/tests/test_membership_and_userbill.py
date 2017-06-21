@@ -269,4 +269,39 @@ class MembershipAndUserBillTestCase(TestCase):
             total = total + b.amount
         self.assertEqual(720, total)
 
+    def test_alter_future_subscriptions(self):
+        start = today + timedelta(days=7)
+        user = User.objects.create(username='member_seven', first_name='Member', last_name='Seven')
+        user.membership.bill_day = start.day
+        self.assertEqual('Member', user.first_name)
+
+        # Set membership package of PT5 to start in one week
+        user.membership.set_to_package(self.pt5Package, start_date=start)
+        self.assertTrue(len(user.membership.active_subscriptions()) == 0)
+
+        # Test no current bill but future bill will be for $100
+        bill_today = user.membership.generate_bills(target_date=today)
+        self.assertTrue(None == bill_today)
+        user.membership.generate_bills(target_date=start)
+        start_date_bill = user.bills.get(period_start=start)
+        self.assertEqual(100, start_date_bill.amount)
+        self.assertEqual(1, start_date_bill.line_items.all().count())
+
+        # Add key to future membership plan
+        ResourceSubscription.objects.create(resource=Resource.objects.key_resource, membership=user.membership, package_name='PT5', allowance=1, start_date=start, monthly_rate=100, overage_rate=0)
+        future_subs = user.membership.active_subscriptions(target_date=start)
+        self.assertEqual(2, len(future_subs))
+        self.assertTrue(ResourceSubscription.objects.get(resource=Resource.objects.key_resource) in future_subs)
+
+        # Run bill for start date again and test to make sure it will be $200
+        user.membership.generate_bills(target_date=start)
+        bill_with_key = user.bills.get(period_start=start)
+        self.assertEqual(200, bill_with_key.amount)
+        self.assertEqual(2, bill_with_key.line_items.all().count())
+        self.assertTrue(user.membership.generate_bills(target_date=one_month_from_now + timedelta(days=7)) is not None)
+
+    def test_returning_member_with_future_subscriptions_and_end_dates(self):
+        
+
+
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
