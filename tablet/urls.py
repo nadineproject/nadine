@@ -18,7 +18,7 @@ urlpatterns = [
     url(r'^(?P<username>[^/]+)/signin/$', views.signin_user, name='signin_user'),
     url(r'^(?P<username>[^/]+)/guestof/(?P<paid_by>[^/]+)$', views.signin_user_guest, name='signin_guest'),
     url(r'^(?P<username>[^/]+)/documents/$', views.document_list, name='document_list'),
-    url(r'^(?P<username>[^/]+)/document/(?P<doc_type>[^/]+)$', views.document_view, name='document_view'),
+    url(r'^(?P<username>[^/]+)/document/(?P<doc_type>[^/]+)/$', views.document_view, name='document_view'),
     url(r'^(?P<username>[^/]+)/signature/(?P<doc_type>[^/]+)/$', views.signature_capture, name='sig_capture'),
     url(r'^(?P<username>[^/]+)/signature/(?P<doc_type>[^/]+)/(?P<signature_file>[^/]+)$', views.signature_render, name='sig_render'),
 ]

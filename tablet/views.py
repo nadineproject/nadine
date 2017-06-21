@@ -3,10 +3,10 @@ import traceback
 import logging
 import uuid
 from datetime import date, datetime, time, timedelta
-from weasyprint import HTML, CSS
 
 from django.conf import settings
 from django.template import RequestContext
+from django.template.loader import get_template
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse, resolve
 from django.contrib.auth.decorators import login_required
@@ -14,7 +14,9 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.sites.models import Site
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
-from django.utils import timezone
+from django.utils.timezone import localtime, now
+
+from weasyprint import HTML, CSS
 
 from nadine import email
 from nadine.utils import mailgun
@@ -25,8 +27,6 @@ from nadine.utils.slack_api import SlackAPI
 from nadine.forms import NewUserForm, MemberSearchForm
 from members.models import MOTD
 from .forms import SignatureForm
-
-from easy_pdf.rendering import render_to_pdf, render_to_pdf_response
 
 logger = logging.getLogger(__name__)
 
@@ -90,7 +90,7 @@ def user_signin(request, username):
         # They have a desk so they can't sign in
         can_signin = False
     else:
-        signins_today = CoworkingDay.objects.filter(user=user, visit_date=timezone.localtime(timezone.now()).date())
+        signins_today = CoworkingDay.objects.filter(user=user, visit_date=localtime(now()).date())
         if signins_today.count() > 0:
             can_signin = False
 
@@ -143,7 +143,7 @@ def signin_user_guest(request, username, paid_by):
     user = get_object_or_404(User, username=username)
     day = CoworkingDay()
     day.user = user
-    day.visit_date = timezone.localtime(timezone.now()).date()
+    day.visit_date = localtime(now()).date()
     # Only proceed if they haven't signed in already
     if CoworkingDay.objects.filter(user=user, visit_date=day.visit_date).count() == 0:
         if paid_by:
@@ -209,7 +209,7 @@ def document_view(request, username, doc_type):
 
 def signature_capture(request, username, doc_type):
     user = get_object_or_404(User, username=username)
-    today = timezone.localtime(timezone.now()).date()
+    today = localtime(now()).date()
     form = SignatureForm(request.POST or None)
     if form and form.has_signature():
         signature_file = form.save_signature()
@@ -220,18 +220,17 @@ def signature_capture(request, username, doc_type):
 
 def signature_render(request, username, doc_type, signature_file):
     user = get_object_or_404(User, username=username)
-    today = timezone.localtime(timezone.now()).date()
+    today = localtime(now()).date()
     pdf_args = {'name': user.get_full_name, 'date': today, 'doc_type': doc_type, 'signature_file': signature_file}
+    htmltext = get_template('tablet/signature_render.html')
+    signature_html = htmltext.render(pdf_args)
+    pdf_file = HTML(string=signature_html, base_url=request.build_absolute_uri()).write_pdf()
     if 'save_file' in request.GET:
         # Save the PDF as a file and redirect them back to the document list
-        htmltext = get_template('tablet/signature_render.html')
-        signature_html = htmltext.render(pdf_args)
-        pdf_file = HTML(string=signature_html, base_url=request.build_absolute_uri()).write_pdf()
         upload_file = FileUpload.objects.pdf_from_string(user, pdf_file, doc_type, user)
         os.remove(os.path.join(settings.MEDIA_ROOT, "signatures/%s" % signature_file))
         return HttpResponseRedirect(reverse('tablet:document_list', kwargs={'username': user.username}))
-
-    return render_to_pdf_response(request, 'tablet/signature_render.html', pdf_args)
+    return HttpResponse(pdf_file, content_type='application/pdf')
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

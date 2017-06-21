@@ -148,7 +148,6 @@ INSTALLED_APPS = [
     'interlink',
     'doors.keymaster',
     # Other Applications
-    'easy_pdf',
     'jsignature',
     'taggit_templatetags2',
     'taggit',

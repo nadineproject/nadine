@@ -3,12 +3,21 @@
 
 <head>
 	<style>
-		@page {
-			size: letter portrait;
+		body {
+			margin-top: -50px;
+			margin-left: -100px;
+			margin-right: -100px;
+			margin-bottom: -50px;
+		}
+		.page img {
+			width:8.5in;
+		}
+		.signature_box table {
+			margin-left: 120px;
+			width: 500px;
 		}
 		.signature_box th {
-			margin-left: 100px;
-			width: 200px;
+			width: 100px;
 			vertical-align: bottom;
 		}
 		.signature_box td {
@@ -18,18 +27,18 @@
 			vertical-align: bottom;
 		}
 		.signature_box img{
-			zoom: 50%;
+			width: 200px;
 		}
 	</style>
 </head>
 
 <body>
-	<div id="page1_content">
-		<img src="/media/documents/{{doc_type}}1.png" width="100%"/>
+	<div class="page" id="page1_content">
+		<img src="/media/documents/{{doc_type}}1.png"/>
 	</div>
 	<pdf:nextpage>
-	<div id="page2_content">
-		<img src="/media/documents/{{doc_type}}2.png" width="100%"/>
+	<div class="page" id="page2_content">
+		<img src="/media/documents/{{doc_type}}2.png"/>
 		<div class="signature_box">
 			<table>
 				<tr>
