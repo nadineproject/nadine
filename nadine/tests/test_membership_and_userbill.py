@@ -18,6 +18,7 @@ from nadine.models.usage import CoworkingDay
 today = localtime(now()).date()
 yesterday = today - timedelta(days=1)
 tomorrow = today + timedelta(days=1)
+one_week_from_now = today + timedelta(days=7)
 one_month_from_now = today + relativedelta(months=1)
 one_month_ago = today - relativedelta(months=1)
 two_months_ago = today - relativedelta(months=2)
@@ -270,7 +271,7 @@ class MembershipAndUserBillTestCase(TestCase):
         self.assertEqual(720, total)
 
     def test_alter_future_subscriptions(self):
-        start = today + timedelta(days=7)
+        start = one_week_from_now
         user = User.objects.create(username='member_seven', first_name='Member', last_name='Seven')
         user.membership.bill_day = start.day
         self.assertEqual('Member', user.first_name)
@@ -281,7 +282,7 @@ class MembershipAndUserBillTestCase(TestCase):
 
         # Test no current bill but future bill will be for $100
         bill_today = user.membership.generate_bills(target_date=today)
-        self.assertTrue(None == bill_today)
+        self.assertTrue(bill_today is None)
         user.membership.generate_bills(target_date=start)
         start_date_bill = user.bills.get(period_start=start)
         self.assertEqual(100, start_date_bill.amount)
@@ -301,7 +302,88 @@ class MembershipAndUserBillTestCase(TestCase):
         self.assertTrue(user.membership.generate_bills(target_date=one_month_from_now + timedelta(days=7)) is not None)
 
     def test_returning_member_with_future_subscriptions_and_end_dates(self):
-        
+        user = User.objects.create(username='member_eight', first_name='Member', last_name='Eight')
+
+        # Start membership package in one week for a length of 2 weeks
+        start = one_week_from_now
+        end = start + relativedelta(weeks=2)
+        user.membership.bill_day = start.day
+        self.assertTrue(user.membership.package_name() is None)
+        user.membership.set_to_package(self.advocatePackage, start_date=start, end_date=end)
+
+        # Test that subscription starts in a week and then ends 2 weeks later
+        self.assertTrue(len(user.membership.active_subscriptions()) == 0)
+        self.assertTrue(len(user.membership.active_subscriptions(target_date=start)) is 1)
+        self.assertTrue(len(user.membership.active_subscriptions(target_date=one_month_from_now)) is 0)
+
+        # Test bills
+        bill_today = user.membership.generate_bills(target_date=today)
+        self.assertTrue(bill_today is None)
+        user.membership.generate_bills(target_date=start)
+        bill_on_start_date = user.bills.get(period_start=start)
+        self.assertTrue(bill_on_start_date is not None)
+        print_bill(bill_on_start_date)
+        # TODO: Do we want this prorated or not???
+        # self.assertEqual(bill_on_start_date.amount, 30)
+
+    def test_current_pt5_adds_key(self):
+        #Create user with PT5 membership package started 2 months ago
+        user = User.objects.create(username='member_nine', first_name='Member', last_name='Nine')
+        user.membership.bill_day = today.day
+        user.membership.set_to_package(self.pt5Package, start_date=two_months_ago)
+
+        # Confirm last month's bill for PT5
+        start = today
+        user.membership.generate_bills(target_date=one_month_ago)
+        last_months_bill = user.bills.get(period_start=one_month_ago)
+        self.assertEqual(100, last_months_bill.amount)
+        self.assertEqual('PT5', last_months_bill.membership.package_name())
+
+        # Add key subscription today
+        ResourceSubscription.objects.create(resource=Resource.objects.key_resource, membership=user.membership, package_name='PT5', allowance=1, start_date=start, monthly_rate=100, overage_rate=0)
+        self.assertTrue(len(user.membership.active_subscriptions()) is 2)
+        self.assertTrue(ResourceSubscription.objects.get(resource=Resource.objects.key_resource) in user.membership.active_subscriptions())
+
+        # Test new bill is $200 for PT5 with key
+        user.membership.generate_bills(target_date=start)
+        current_bill = user.bills.get(period_start=start)
+        self.assertEqual(200, current_bill.amount)
+        self.assertTrue(current_bill.line_items.all().count() is 2)
+
+    def test_resident_adds_5_coworking_days_today(self):
+        #Create user with Residet membership package started 2 months ago
+        user = User.objects.create(username='member_ten', first_name='Member', last_name='Ten')
+        user.membership.bill_day = today.day
+        user.membership.set_to_package(self.residentPackage, start_date=two_months_ago)
+
+        # self.assertIn(Resource.objects.day_resource, user.membership.active_subscriptions())
+        day_subscription = ResourceSubscription.objects.get(membership=user.membership, resource=Resource.objects.day_resource)
+        day_subscription
+        self.assertEqual(5, day_subscription.allowance)
+
+        # Test previous bill to be $395
+        user.membership.generate_bills(target_date=one_month_ago)
+        past_bill = user.bills.get(period_start=one_month_ago)
+        self.assertEqual(395, past_bill.amount)
+
+        # Change coworking day subscription from 5 to 10
+        day_subscription.end_date = today - timedelta(days=1)
+        day_subscription.save()
+        self.assertFalse(day_subscription.end_date is None)
+        ResourceSubscription.objects.create(resource=Resource.objects.day_resource, membership=user.membership, package_name='Resident', allowance=10, start_date=today, monthly_rate=0, overage_rate=0)
+        new_day_subscription = ResourceSubscription.objects.get(membership=user.membership, resource=Resource.objects.day_resource, end_date=None)
+        self.assertEqual(10, new_day_subscription.allowance)
+
+        # Test billing
+        user.membership.generate_bills(target_date=today)
+        current_bill = user.bills.get(period_start=today)
+        self.assertEqual(395, current_bill.amount)
+        self.assertTrue(current_bill.line_items.all().count() is 2)
+        user.membership.generate_bills(target_date=one_month_from_now)
+        future_bill = user.bills.get(period_start=one_month_from_now)
+        self.assertEqual(395, future_bill.amount)
+
+    
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
