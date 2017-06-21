@@ -96,6 +96,12 @@ def usaepay_user(request, username):
                 enabled = request.POST.get("enabled", "") == "on"
                 api.update_recurring(customer_id, enabled, next_date, description,comment, amount)
                 messages.add_message(request, messages.INFO, "Recurring billing updated for %s" % username)
+            elif action == "edit_billing_details":
+                address = request.POST.get("address")
+                zipcode = request.POST.get("zipcode")
+                email = request.POST.get("email")
+                api.update_billing_details(customer_id, address, zipcode, email)
+                messages.add_message(request, messages.INFO, "Billing detail updated for %s" % username)
         elif action == "email_receipt":
             transaction_id = request.POST.get("transaction_id")
             api.email_receipt(transaction_id, user.email)

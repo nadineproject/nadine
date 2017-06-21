@@ -96,15 +96,41 @@
     <div id="billing_detail_{{ customer.CustNum }}">
       <h5>Billing Detail ({{ customer.CustNum }})</h5>
       <div style="padding: 12px;">
-        <strong>Address: </strong>{{ customer.BillingAddress.Street }}
-        <strong>Zip: </strong>{{ customer.BillingAddress.Zip }}
-        <strong>Email: </strong>{{ customer.BillingAddress.Email }}
+        <form action="." method="POST">
+          <input type="hidden" name="customer_id" value="">
+          <input type="hidden" name="action" value="edit_billing_details">
+          <table>
+            <tr>
+              <th>Billing Address</th>
+              <th>Zipcode</th>
+              <th>Email for Receipts</th>
+              <th></th>
+            </tr>
+            <tr>
+              <td>
+                <input name="address" size="60" value="{{ customer.BillingAddress.Street }}"/>
+              </td>
+              <td>
+                <input name="zipcode" size="10" value="{{ customer.BillingAddress.Zip }}"/>
+              </td>
+              <td>
+                <input name="email" size="60" value="{{ customer.BillingAddress.Email }}"/>
+              </td>
+              <td>
+                <input type="submit" value="Edit">
+              </td>
+            </tr>
+          </table>
+          {% csrf_token %}
+        </form>
       </div>
+
       <h5>Billing History</h5>
       <table>
       <tr>
         <th>Date</th>
         <th>Description</th>
+
         <th>Status</th>
         <th>Type</th>
         <th style="text-align:right;">Amount</th>
