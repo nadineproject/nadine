@@ -98,6 +98,8 @@ class UserBill(models.Model):
         return reverse('member:receipt', kwargs={'bill_id': self.id})
 
     def get_regenerate_url(self):
+        if not self.membership:
+            return None
         kwargs={
             'membership_id': self.membership.id,
             'year': self.period_start.year,
