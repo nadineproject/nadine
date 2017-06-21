@@ -7,6 +7,7 @@ from django.test import TestCase, RequestFactory, Client
 from django.utils import timezone
 from django.utils.timezone import localtime, now
 from django.contrib.auth.models import User
+from django.db.models import Sum
 
 from nadine.models.billing import UserBill, Payment
 from nadine.models.membership import Membership, ResourceSubscription, MembershipPackage, SubscriptionDefault
@@ -31,6 +32,10 @@ def print_bill(bill):
     print("  line_items:")
     for line_item in bill.line_items.all().order_by('id'):
         print("    %s: $%s" % (line_item.description, line_item.amount))
+
+def print_all_bills(user):
+    for bill in UserBill.objects.filter(user=user):
+        print_bill(bill)
 
 class MembershipAndUserBillTestCase(TestCase):
 
@@ -234,5 +239,34 @@ class MembershipAndUserBillTestCase(TestCase):
         self.assertTrue(payer_bill.membership.id == user.membership.id)
 
     def test_new_t40_team_member(self):
+        # Creat team lead with T40 package
+        team_lead = User.objects.create(username='Team_Lead', first_name='Team', last_name='Lead')
+        team_lead.membership.bill_day = today.day
+        team_lead.membership.set_to_package(self.t40Package, start_date=one_month_ago)
+        self.assertTrue('T40' == team_lead.membership.package_name())
+
+        user = User.objects.create(username='Member_Six', first_name='Member', last_name='Six')
+        user.membership.bill_day = today.day
+        self.assertTrue(user.membership.bill_day is not None)
+        user.membership.set_to_package(self.teamPackage, start_date=today, paid_by=team_lead)
+        self.assertEqual(0, user.membership.allowance_by_resource(Resource.objects.day_resource))
+        users_subscriptions = user.membership.active_subscriptions()
+
+        # Test that payer pays for each of the 3 active subscriptions for user
+        self.assertTrue(1, users_subscriptions.count())
+        for u in users_subscriptions:
+            self.assertEqual(u.paid_by, team_lead)
+
+        # Test bill is for team_lead and not user for $720
+        run_user_bill = user.membership.generate_bills(target_date=today)
+        team_lead.membership.generate_bills(target_date=today)
+        self.assertEqual(1, len(run_user_bill))
+        team_lead_bill = team_lead.bills.filter(period_start=today)
+        print_all_bills(team_lead)
+        self.assertEquals(2, len(team_lead_bill))
+        total = 0
+        for b in team_lead_bill:
+            total = total + b.amount
+        self.assertEqual(720, total)
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
