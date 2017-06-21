@@ -355,8 +355,6 @@ class MembershipAndUserBillTestCase(TestCase):
         user = User.objects.create(username='member_ten', first_name='Member', last_name='Ten')
         user.membership.bill_day = today.day
         user.membership.set_to_package(self.residentPackage, start_date=two_months_ago)
-
-        # self.assertIn(Resource.objects.day_resource, user.membership.active_subscriptions())
         day_subscription = ResourceSubscription.objects.get(membership=user.membership, resource=Resource.objects.day_resource)
         day_subscription
         self.assertEqual(5, day_subscription.allowance)
@@ -383,7 +381,51 @@ class MembershipAndUserBillTestCase(TestCase):
         future_bill = user.bills.get(period_start=one_month_from_now)
         self.assertEqual(395, future_bill.amount)
 
-    
+    def test_resident_ends_key_subscription(self):
+        # Create user with Resident package with key started 2 months ago
+        user = User.objects.create(username='member_eleven', first_name='Member', last_name='Eleven')
+        user.membership.bill_day = today.day
+        user.membership.set_to_package(self.residentPackage, start_date=two_months_ago)
+        ResourceSubscription.objects.create(resource=Resource.objects.key_resource, membership=user.membership, package_name='Resident', allowance=10, start_date=two_months_ago, monthly_rate=100, overage_rate=0)
+        self.assertTrue(len(user.membership.active_subscriptions()) is 3)
+        key_subscription = ResourceSubscription.objects.get(membership=user.membership, resource=Resource.objects.key_resource)
+        self.assertTrue(key_subscription is not None)
+        user.membership.generate_bills(target_date=one_month_ago)
+        past_bill = user.bills.get(period_start=one_month_ago)
+        self.assertEqual(495, past_bill.amount)
 
+        # End subscription yesterday and test today's bill
+        key_subscription.end_date = today - timedelta(days=1)
+        key_subscription.save()
+        self.assertTrue(len(user.membership.active_subscriptions()) is 2)
+        user.membership.generate_bills(target_date=today)
+        current_bill = user.bills.get(period_start=today)
+        self.assertEqual(395, current_bill.amount)
+        user.membership.generate_bills(target_date=one_month_from_now)
+        future_bill = user.bills.get(period_start=one_month_from_now)
+        self.assertEqual(395, future_bill.amount)
+
+    def test_pt5_becomes_pt10_next_bill_period(self):
+        # Create user with PT5 package started 2 months ago
+        user = User.objects.create(username='member_twelve', first_name='Member', last_name='Twelve')
+        user.membership.bill_day = today.day
+        user.membership.set_to_package(self.pt5Package, start_date=two_months_ago)
+        self.assertEqual(user.membership.package_name(), 'PT5')
+        user.membership.generate_bills(target_date=today)
+        past_bill = user.bills.get(period_start=today)
+        self.assertEqual(past_bill.amount, 100)
+
+        # End current package and start PT 10 at new bill period_start
+        user.membership.end_at_period_end()
+        self.assertFalse(user.membership.active_subscriptions(target_date=one_month_from_now).exists())
+        user.membership.set_to_package(self.pt10Package, start_date=one_month_from_now)
+
+        # Run bill for next month
+        user.membership.generate_bills(target_date=one_month_from_now)
+        next_month_bill = user.bills.get(period_start=one_month_from_now)
+        self.assertTrue(next_month_bill.amount != past_bill.amount)
+        self.assertEqual(180, next_month_bill.amount)
+
+    
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
