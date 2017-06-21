@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import logging
 
 from datetime import datetime, time, date, timedelta
+from dateutil.relativedelta import relativedelta
 
 from django.db import models
 from django.db.models import Q
@@ -29,8 +30,10 @@ class MemberAlertManager(models.Manager):
             return True
         return False
 
-    def create_if_new(self, user, key, new_since):
-        old_alerts = MemberAlert.objects.filter(user=user, key=key, created_ts__gte=new_since)
+    def create_if_new(self, user, key, new_since=None):
+        old_alerts = MemberAlert.objects.filter(user=user, key=key)
+        if new_since:
+            old_alerts = old_alerts.filter(created_ts__gte=new_since)
         if old_alerts.count() == 0:
             MemberAlert.objects.create(user=user, key=key)
             return True
@@ -61,6 +64,12 @@ class MemberAlertManager(models.Manager):
             existing_alerts = MemberAlert.objects.filter(user=u, key=MemberAlert.STALE_MEMBER, created_ts__gte=smd)
             if not existing_alerts:
                 MemberAlert.objects.create_if_not_open(user=u, key=MemberAlert.STALE_MEMBER)
+
+        # Check for one month old memberships
+        for u in User.helper.active_members():
+            duration = u.profile.duration()
+            if not duration.years and duration.months == 1:
+                MemberAlert.objects.create_if_new(user=u, key=MemberAlert.ONE_MONTH)
 
         # Expire old and unresolved alerts
         #active_users = UserProfile.objects.active_users()
@@ -213,12 +222,14 @@ class MemberAlert(models.Model):
     UPLOAD_PHOTO = "upload_photo"
     POST_PHOTO = "post_photo"
     ORIENTATION = "orientation"
+    ONE_MONTH = "one_month"
     KEY_AGREEMENT = "key_agreement"
     STALE_MEMBER = "stale_member"
     #INVALID_BILLING = "invalid_billing"
     ASSIGN_CABINET = "assign_cabinet"
     ASSIGN_MAILBOX = "assign_mailbox"
     REMOVE_PHOTO = "remove_photo"
+    REMOVE_SLACK = "remove_slack"
     RETURN_DOOR_KEY = "return_door_key"
     RETURN_DESK_KEY = "return_desk_key"
     REMOVE_MAILBOX = "remove_mailbox"
@@ -231,12 +242,14 @@ class MemberAlert(models.Model):
         (UPLOAD_PHOTO, "Upload Photo"),
         (POST_PHOTO, "Print & Post Photo"),
         (ORIENTATION, "New Member Orientation"),
+        (ONE_MONTH, "One Month Check-in"),
         (KEY_AGREEMENT, "Key Training & Agreement"),
         (STALE_MEMBER, "Stale Membership"),
         #(INVALID_BILLING, "Missing Valid Billing"),
         (ASSIGN_CABINET, "Assign a File Cabinet"),
         (ASSIGN_MAILBOX, "Assign a Mailbox"),
         (REMOVE_PHOTO, "Remove Picture from Wall"),
+        # (REMOVE_SLACK, "Remove from Slack"),
         (RETURN_DOOR_KEY, "Take Back Keycard"),
         (RETURN_DESK_KEY, "Take Back File Cabinet Key"),
         (REMOVE_MAILBOX, "Remove Mailbox"),
