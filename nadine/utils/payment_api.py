@@ -84,6 +84,13 @@ class PaymentAPI(object):
             return clean_transaction(transaction)
         return transaction
 
+    def update_billing_details(self, customer_id, address, zipcode, email):
+        customer_object = self.entry_point.getCustomer(customer_id)
+        customer_object.BillingAddress.Street = address
+        customer_object.BillingAddress.Zip = zipcode
+        customer_object.BillingAddress.Email = email
+        return self.entry_point.updateCustomer(customer_object)
+
     def update_recurring(self, customer_id, enabled, next_date, description, comment, amount):
         customer_object = self.entry_point.getCustomer(customer_id)
         customer_object.Enabled = enabled
