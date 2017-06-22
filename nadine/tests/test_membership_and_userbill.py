@@ -24,6 +24,7 @@ one_month_ago = today - relativedelta(months=1)
 two_months_ago = today - relativedelta(months=2)
 two_weeks_ago = today - timedelta(days=14)
 two_weeks_from_now = today + timedelta(days=14)
+two_months_from_now = today + relativedelta(months=2)
 
 def print_bill(bill):
     print("UserBill %d" % bill.id)
@@ -547,6 +548,9 @@ class MembershipAndUserBillTestCase(TestCase):
         # Add key subscription
         ResourceSubscription.objects.create(resource=Resource.objects.key_resource, membership=user.membership, package_name='PT10', allowance=1, start_date=today, monthly_rate=100, overage_rate=0)
         self.assertEqual(2, user.membership.active_subscriptions().count())
+        day_subscription = ResourceSubscription.objects.get(membership=user.membership, resource=Resource.objects.day_resource)
+        day_subscription
+        self.assertEqual(10, day_subscription.allowance)
 
         # Generate bill with key
         user.membership.generate_bills(target_date=today)
@@ -557,7 +561,7 @@ class MembershipAndUserBillTestCase(TestCase):
         self.assertTrue(bill_next_month.amount == 280)
 
     def test_pt10_adds_key_halfway_through_bill_period(self):
-        # Create user with PT10 package started 2 months ago
+        # Create user with PT10 package started 2 weeks ago
         user = User.objects.create(username='member_twentyone', first_name='Member', last_name='Twentyone')
         user.membership.bill_day = two_weeks_ago.day
         user.membership.set_to_package(self.pt10Package, start_date=two_weeks_ago)
@@ -580,6 +584,96 @@ class MembershipAndUserBillTestCase(TestCase):
         # bill_with_key = user.bills.get(period_start=today)
         # print_bill(bill_with_key)
 
+    def test_change_some_end_dates_when_end_dates_already_exist(self):
+        # Create user with Resident package with key started one month ago and end_date at end of next bill period_end
+        start = one_month_ago
+        end = (start + relativedelta(months=2)) - timedelta(days=1)
+        user = User.objects.create(username='member_twentytwo', first_name='Member', last_name='Twentytwo')
+        user.membership.bill_day = one_month_ago.day
+        user.membership.set_to_package(self.residentPackage, start_date=start, end_date=end)
+        ResourceSubscription.objects.create(resource=Resource.objects.key_resource, membership=user.membership, package_name='Resident', allowance=1, start_date=start, end_date=end, monthly_rate=100, overage_rate=0)
+        self.assertTrue('Resident' == user.membership.package_name())
+        self.assertEqual(3, user.membership.active_subscriptions().count())
+        self.assertTrue(len(user.membership.active_subscriptions(target_date=two_months_from_now)) == 0)
+
+        # Generate bill at start date to check bills
+        user.membership.generate_bills(target_date=start)
+        start_bill = user.bills.get(period_start=start)
+        self.assertEqual(495, start_bill.amount)
+
+        # Generate bill for after currently set end_date (should not exist)
+        end_bill = user.membership.generate_bills(target_date=two_months_from_now)
+        self.assertTrue(end_bill == None)
+
+        # Change the end date everything except the key subscription
+        for a in user.membership.active_subscriptions():
+            if a.resource != Resource.objects.key_resource:
+                a.end_date = yesterday
+                a.save()
+        key_subscription = ResourceSubscription.objects.get(membership=user.membership, resource=Resource.objects.key_resource)
+        day_subscription = ResourceSubscription.objects.get(membership=user.membership, resource=Resource.objects.day_resource)
+        desk_subscription = ResourceSubscription.objects.get(membership=user.membership, resource=Resource.objects.desk_resource)
+        self.assertTrue(key_subscription.end_date == end)
+        self.assertTrue(key_subscription.end_date != desk_subscription.end_date)
+        self.assertTrue(key_subscription.end_date != day_subscription.end_date)
+        self.assertTrue(desk_subscription.end_date == day_subscription.end_date)
+
+        # Generate the bill for today to make bill of $100 for key subscription
+        user.membership.generate_bills(target_date=today)
+        bill_today = user.bills.get(period_start=today)
+        print_bill(bill_today)
+        self.assertEqual(100, bill_today.amount)
+        self.assertTrue(bill_today.package_name == 'Resident')
+        self.assertEqual(1, bill_today.line_items.all().count())
+
+        # Generate bill after end_date
+        future_bill = user.membership.generate_bills(target_date=two_months_from_now)
+        self.assertTrue(future_bill == None)
+
+    def test_change_all_end_dates_when_end_dates_already_exist(self):
+        # Create user with Resident package with key started one month ago and end_date at end of next bill period_end
+        start = one_month_ago
+        end = (start + relativedelta(months=2)) - timedelta(days=1)
+        user = User.objects.create(username='member_twentythree', first_name='Member', last_name='Twentythree')
+        user.membership.bill_day = one_month_ago.day
+        user.membership.set_to_package(self.residentPackage, start_date=start, end_date=end)
+        ResourceSubscription.objects.create(resource=Resource.objects.key_resource, membership=user.membership, package_name='Resident', allowance=1, start_date=start, end_date=end, monthly_rate=100, overage_rate=0)
+        self.assertTrue('Resident' == user.membership.package_name())
+        self.assertEqual(3, user.membership.active_subscriptions().count())
+        self.assertTrue(len(user.membership.active_subscriptions(target_date=two_months_from_now)) == 0)
+
+        # Generate bill for today to check bills
+        user.membership.generate_bills(target_date=today)
+        start_bill = user.bills.get(period_start=today)
+        self.assertEqual(495, start_bill.amount)
+
+        # Generate bill for after currently set end_date (should not exist)
+        end_bill = user.membership.generate_bills(target_date=two_months_from_now)
+        self.assertTrue(end_bill == None)
+
+        # Set end resource subscriptions for yesterday
+        user.membership.end_all(target_date= yesterday)
+        self.assertTrue(user.membership.active_subscriptions().count() == 0)
+
+        # There should now be no bill for today
+        ended_bill = user.membership.generate_bills(target_date=today)
+        self.assertTrue(ended_bill == None)
+
+
+    def test_ending_package_yesterday(self):
+        # Create Advocate package with start date of one month ago
+        start = one_month_ago
+        user = User.objects.create(username='member_twentythree', first_name='Member', last_name='Twentythree')
+        user.membership.bill_day = one_month_ago.day
+        user.membership.set_to_package(self.advocatePackage, start_date=start)
+
+    def test_ending_package_at_end_of_bill_period(self):
+        # Create PT10 package with start date of one month ago
+        print('boop')
+
+    def test_end_package_today(self):
+        # Create PT15 package with start date of one month ago
+        print('boop')
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
