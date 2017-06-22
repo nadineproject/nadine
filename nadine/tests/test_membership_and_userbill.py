@@ -77,7 +77,7 @@ class MembershipAndUserBillTestCase(TestCase):
         SubscriptionDefault.objects.create(
             package = self.pt15Package,
             resource = Resource.objects.day_resource,
-            monthly_rate = 225,
+            monthly_rate = 270,
             allowance = 15,
             overage_rate = 20,
         )
@@ -95,6 +95,14 @@ class MembershipAndUserBillTestCase(TestCase):
             monthly_rate = 0,
             allowance = 5,
             overage_rate = 20,
+        )
+        self.t20Package = MembershipPackage.objects.create(name="T20")
+        SubscriptionDefault.objects.create(
+            package = self.t20Package,
+            resource = Resource.objects.day_resource,
+            monthly_rate = 360,
+            allowance = 20,
+            overage_rate = 20
         )
         self.t40Package = MembershipPackage.objects.create(name="T40")
         SubscriptionDefault.objects.create(
@@ -426,6 +434,152 @@ class MembershipAndUserBillTestCase(TestCase):
         self.assertTrue(next_month_bill.amount != past_bill.amount)
         self.assertEqual(180, next_month_bill.amount)
 
-    
+    def test_pt15_changes_bill_day_mid_bill_period(self):
+        # Create user with PT15 package
+        user = User.objects.create(username='member_thirteen', first_name='Member', last_name='Thirteen')
+        user.membership.bill_day = two_weeks_ago.day
+        user.membership.set_to_package(self.pt15Package, start_date=two_months_ago)
+        self.assertEqual(user.membership.package_name(), 'PT15')
+        user.membership.generate_bills(target_date=two_weeks_ago)
+        original_bill = user.bills.get(period_start=two_weeks_ago)
+        self.assertTrue(original_bill.amount == 270)
+
+        user.membership.bill = today.day
+        user.membership.save()
+
+        user.membership.generate_bills(target_date=two_weeks_ago)
+        new_bill = user.bills.get(period_start=two_weeks_ago)
+        print_bill(new_bill)
+        # TODO How exactly do we want this to work?
+
+    def test_team_lead_changes_package(self):
+        # Create user with t40 package started 2 months ago
+        user = User.objects.create(username='member_fourteen', first_name='Member', last_name='Fourteen')
+        user.membership.bill_day = today.day
+        user.membership.set_to_package(self.t40Package, start_date=two_months_ago)
+
+        # Create team membership
+        team_1 = User.objects.create(username='member_fifteen', first_name='Member', last_name='Fifteen')
+        team_1.membership.bill_day = today.day
+        team_1.membership.set_to_package(self.teamPackage, start_date=two_months_ago, paid_by=user)
+        team_2 = User.objects.create(username='member_sixteen', first_name='Member', last_name='Sixteen')
+        team_2.membership.bill_day = today.day
+        team_2.membership.set_to_package(self.teamPackage, start_date=two_months_ago, paid_by=user)
+
+        user.membership.generate_bills(target_date=one_month_ago)
+        team_1_bill = team_1.membership.generate_bills(target_date=one_month_ago)
+        team_2_bill = team_2.membership.generate_bills(target_date=one_month_ago)
+        lead_original_bills = UserBill.objects.filter(user=user)
+        self.assertEqual(3, lead_original_bills.count())
+        total = 0
+        for b in lead_original_bills:
+            total = total + b.amount
+        self.assertEqual(720, total)
+
+        # Change lead's membership packge to T20 and check billing
+        user.membership.end_all()
+        user.membership.set_to_package(self.t20Package, start_date=today)
+        self.assertTrue('T20' == user.membership.package_name())
+        user.membership.generate_bills(target_date=today)
+        team_1_bill = team_1.membership.generate_bills(target_date=today)
+        team_2_bill = team_2.membership.generate_bills(target_date=today)
+        lead_new_bills = UserBill.objects.filter(user=user).filter(period_start__gte=today)
+        self.assertEqual(3, lead_new_bills.count())
+        new_total = 0
+        for l in lead_new_bills:
+            new_total = new_total + l.amount
+        self.assertEqual(360, new_total)
+
+    def test_team_lead_ends_package(self):
+        # Create user with t40 package started 2 months ago
+        lead = User.objects.create(username='member_seventeen', first_name='Member', last_name='Seventeen')
+        lead.membership.bill_day = today.day
+        lead.membership.set_to_package(self.t20Package, start_date=two_months_ago)
+
+        # Create team membership
+        team_1 = User.objects.create(username='member_eighteen', first_name='Member', last_name='Eighteen')
+        team_1.membership.bill_day = today.day
+        team_1.membership.set_to_package(self.teamPackage, start_date=two_months_ago, paid_by=lead)
+        resident = User.objects.create(username='member_nineteen', first_name='Member', last_name='Nineteen')
+        resident.membership.bill_day = today.day
+        resident.membership.set_to_package(self.residentPackage, start_date=two_months_ago, paid_by=lead)
+
+        lead.membership.generate_bills(target_date=one_month_ago)
+        team_1_bill = team_1.membership.generate_bills(target_date=one_month_ago)
+        resident_bill = resident.membership.generate_bills(target_date=one_month_ago)
+        lead_original_bills = UserBill.objects.filter(user=lead)
+        self.assertEqual(3, lead_original_bills.count())
+        total = 0
+        for b in lead_original_bills:
+            total = total + b.amount
+        self.assertEqual(755, total)
+
+        lead.membership.end_all()
+        team_1.membership.end_all()
+
+        # Lead and team member should have 0 active_subscriptions while Resident has 2
+        self.assertEqual(0, lead.membership.active_subscriptions().count())
+        self.assertEqual(0, team_1.membership.active_subscriptions().count())
+        self.assertEqual(2, resident.membership.active_subscriptions().count())
+
+        # Generate bills for all users. Should only be $395 to be paid by lead for the Resident
+        lead.membership.generate_bills(target_date=today)
+        team_1.membership.generate_bills(target_date=today)
+        resident.membership.generate_bills(target_date=today)
+        lead_new_bills = UserBill.objects.filter(user=lead).filter(period_start__gte=today)
+        self.assertEqual(1, lead_new_bills.count())
+        new_total = 0
+        for l in lead_new_bills:
+            new_total = new_total + l.amount
+        self.assertEqual(395, new_total)
+
+    def test_pt10_adds_key_next_bill_period(self):
+        # Create user with PT10 package started 2 months ago
+        user = User.objects.create(username='member_twenty', first_name='Member', last_name='Twenty')
+        user.membership.bill_day = today.day
+        user.membership.set_to_package(self.pt10Package, start_date=two_months_ago)
+        self.assertTrue('PT10' == user.membership.package_name())
+
+        user.membership.generate_bills(target_date=one_month_ago)
+        last_months_bill = user.bills.get(period_start=one_month_ago)
+        self.assertEqual(180, last_months_bill.amount)
+
+        # Add key subscription
+        ResourceSubscription.objects.create(resource=Resource.objects.key_resource, membership=user.membership, package_name='PT10', allowance=1, start_date=today, monthly_rate=100, overage_rate=0)
+        self.assertEqual(2, user.membership.active_subscriptions().count())
+
+        # Generate bill with key
+        user.membership.generate_bills(target_date=today)
+        user_bill_with_key = user.bills.get(period_start=today)
+        self.assertTrue(user_bill_with_key.amount == 280)
+        user.membership.generate_bills(target_date=one_month_from_now)
+        bill_next_month = user.bills.get(period_start=one_month_from_now)
+        self.assertTrue(bill_next_month.amount == 280)
+
+    def test_pt10_adds_key_halfway_through_bill_period(self):
+        # Create user with PT10 package started 2 months ago
+        user = User.objects.create(username='member_twentyone', first_name='Member', last_name='Twentyone')
+        user.membership.bill_day = two_weeks_ago.day
+        user.membership.set_to_package(self.pt10Package, start_date=two_weeks_ago)
+        self.assertTrue('PT10' == user.membership.package_name())
+        self.assertEqual(1, user.membership.active_subscriptions().count())
+
+        # Generate last bill and pay it.
+        user.membership.generate_bills(target_date=two_weeks_ago)
+        last_months_bill = user.bills.get(period_start=two_weeks_ago)
+        self.assertEqual(180, last_months_bill.amount)
+        Payment.objects.create(bill=last_months_bill, user=user, amount=last_months_bill.amount, created_by=user)
+        self.assertEqual(0, last_months_bill.total_owed)
+
+        # Add key subscription
+        ResourceSubscription.objects.create(resource=Resource.objects.key_resource, membership=user.membership, package_name='PT10', allowance=1, start_date=today, monthly_rate=100, overage_rate=0)
+        self.assertEqual(2, user.membership.active_subscriptions().count())
+
+        # TODO: ERROR, Cannot generate bill when payments are already applied!
+        # user.membership.generate_bills(target_date=today)
+        # bill_with_key = user.bills.get(period_start=today)
+        # print_bill(bill_with_key)
+
+
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
