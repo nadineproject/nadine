@@ -679,10 +679,8 @@ class MembershipAndUserBillTestCase(TestCase):
         self.assertTrue(user.membership.active_subscriptions().count() == 0)
 
         # Rerun billing now that subscriptions have been ended
-        user.membership.generate_bills(target_date=today)
-        new_bill = user.bills.get(period_start=today)
-        self.assertEqual(30, new_bill.amount)
-        self.assertTrue(new_bill.due_date == today)
+        ended_bill = user.membership.generate_bills(target_date=today)
+        self.assertTrue(ended_bill == None)
 
     def test_ending_package_at_end_of_bill_period(self):
         # Create PT10 package with start date of one month ago
@@ -692,13 +690,45 @@ class MembershipAndUserBillTestCase(TestCase):
         user.membership.set_to_package(self.pt10Package, start_date=start)
         self.assertEqual(1, user.membership.active_subscriptions().count())
 
-    def test_end_package_today(self):
-        # Create PT15 package with start date of one month ago
-        start = one_month_ago
+        # Generate today's bill if not end date
+        user.membership.generate_bills(target_date=today)
+        original_bill = user.bills.get(period_start=today)
+        self.assertEqual(180, original_bill.amount)
+        self.assertTrue(original_bill.due_date == today)
+
+        # End all subscriptions at end of bill period and test still have active subscriptions today
+        user.membership.end_all(target_date=(today + relativedelta(months=1)) - timedelta(days=1))
+        self.assertTrue(user.membership.active_subscriptions().count() == 1)
+
+        # Rerun billing now that subscriptions have been ended
+        user.membership.generate_bills(target_date=today)
+        new_bill = user.bills.get(period_start=today)
+        self.assertEqual(180, new_bill.amount)
+        self.assertTrue(new_bill.due_date == today)
+        end_bill = user.membership.generate_bills(target_date=one_month_from_now)
+        self.assertTrue(end_bill == None)
+
+    def test_ending_package_today(self):
+        # Create PT15 package with start date of one month ago with the next billing period starting tomorrow
+        start = one_month_ago + timedelta(days=1)
         user = User.objects.create(username='member_twentysix', first_name='Member', last_name='Twentysix')
-        user.membership.bill_day = one_month_ago.day
+        user.membership.bill_day = start.day
         user.membership.set_to_package(self.pt15Package, start_date=start)
         self.assertEqual(1, user.membership.active_subscriptions().count())
+
+        # Generate today's bill if not end date
+        user.membership.generate_bills(target_date=start)
+        original_bill = user.bills.get(period_start=start)
+        self.assertEqual(270, original_bill.amount)
+        self.assertTrue(original_bill.due_date == start)
+
+        # Set end date to today
+        user.membership.end_all(target_date=today)
+        self.assertTrue(user.membership.active_subscriptions(target_date=tomorrow).count() == 0)
+
+        # Check to make sure no bill will generate tomorrow
+        bill_after_end_date = user.membership.generate_bills(target_date=tomorrow)
+        self.assertTrue(bill_after_end_date == None)
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
