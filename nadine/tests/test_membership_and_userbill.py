@@ -663,17 +663,42 @@ class MembershipAndUserBillTestCase(TestCase):
     def test_ending_package_yesterday(self):
         # Create Advocate package with start date of one month ago
         start = one_month_ago
-        user = User.objects.create(username='member_twentythree', first_name='Member', last_name='Twentythree')
+        user = User.objects.create(username='member_twentyfour', first_name='Member', last_name='Twentyfour')
         user.membership.bill_day = one_month_ago.day
         user.membership.set_to_package(self.advocatePackage, start_date=start)
+        self.assertEqual(1, user.membership.active_subscriptions().count())
+
+        # Generate today's bill if not end date
+        user.membership.generate_bills(target_date=today)
+        original_bill = user.bills.get(period_start=today)
+        self.assertEqual(30, original_bill.amount)
+        self.assertTrue(original_bill.due_date == today)
+
+        # End all subscriptions yesterday
+        user.membership.end_all(target_date=yesterday)
+        self.assertTrue(user.membership.active_subscriptions().count() == 0)
+
+        # Rerun billing now that subscriptions have been ended
+        user.membership.generate_bills(target_date=today)
+        new_bill = user.bills.get(period_start=today)
+        self.assertEqual(30, new_bill.amount)
+        self.assertTrue(new_bill.due_date == today)
 
     def test_ending_package_at_end_of_bill_period(self):
         # Create PT10 package with start date of one month ago
-        print('boop')
+        start = one_month_ago
+        user = User.objects.create(username='member_twentyfive', first_name='Member', last_name='Twentyfive')
+        user.membership.bill_day = one_month_ago.day
+        user.membership.set_to_package(self.pt10Package, start_date=start)
+        self.assertEqual(1, user.membership.active_subscriptions().count())
 
     def test_end_package_today(self):
         # Create PT15 package with start date of one month ago
-        print('boop')
+        start = one_month_ago
+        user = User.objects.create(username='member_twentysix', first_name='Member', last_name='Twentysix')
+        user.membership.bill_day = one_month_ago.day
+        user.membership.set_to_package(self.pt15Package, start_date=start)
+        self.assertEqual(1, user.membership.active_subscriptions().count())
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

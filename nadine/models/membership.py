@@ -675,7 +675,7 @@ class SubscriptionManager(models.Manager):
         organization_user = F('membership__organizationmembership__organization__organizationmember__user__username')
         return self.active_subscriptions(target_date).annotate(username=Coalesce(individual_user, organization_user))
 
-    def all_subscriptions_by_member(self, target_ate=None):
+    def all_subscriptions_by_member(self, target_date=None):
         ''' Return set of subscriptions by member '''
         individual_user = F('membership__individualmembership__user__username')
         return self.all().annotate(username=individual_user)
