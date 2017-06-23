@@ -18,7 +18,7 @@ from localflavor.us.us_states import US_STATES
 from localflavor.ca.ca_provinces import PROVINCE_CHOICES
 
 from nadine import email
-from nadine.models.core import HowHeard, Industry, Neighborhood, URLType, GENDER_CHOICES, Documents
+from nadine.models.core import HowHeard, Industry, Neighborhood, URLType, GENDER_CHOICES
 from nadine.models.profile import UserProfile, MemberNote, user_photo_path
 from nadine.models.membership import Membership, MembershipPackage, ResourceSubscription, IndividualMembership, SubscriptionDefault
 from nadine.models.usage import PAYMENT_CHOICES, CoworkingDay
@@ -613,17 +613,20 @@ class MOTDForm(forms.Form):
 
         return motd
 
-class DocUploadForm(forms.Form):
-    name = forms.CharField(required=True)
-    document = forms.FileField(required=True)
 
-    def save(self):
-        name = self.cleaned_data['name']
-        document = self.cleaned_data['document']
-        doc = Documents(name=name, document=document)
-        doc.save()
+# TODO - Not quite ready yet --JLS
+# class DocUploadForm(forms.Form):
+#     name = forms.CharField(required=True)
+#     document = forms.FileField(required=True)
+#
+#     def save(self):
+#         name = self.cleaned_data['name']
+#         document = self.cleaned_data['document']
+#         doc = Documents(name=name, document=document)
+#         doc.save()
+#
+#         return doc
 
-        return doc
 
 class MembershipPackageForm(forms.Form):
     name = forms.CharField(widget=forms.TextInput(attrs={'class': 'name-input'}), max_length=128, required=False)

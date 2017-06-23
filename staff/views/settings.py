@@ -20,11 +20,10 @@ from django.utils.timezone import localtime, now
 from django.core.files.storage import FileSystemStorage
 
 from nadine.models.membership import MembershipPackage, SubscriptionDefault
-from nadine.models.core import Documents
 from nadine.models.profile import FileUpload
 from nadine.models.resource import Resource
 from nadine.utils import network
-from nadine.forms import HelpTextForm, MOTDForm, DocUploadForm, MembershipPackageForm
+from nadine.forms import HelpTextForm, MOTDForm, MembershipPackageForm
 from nadine.settings import MOTD_TIMEOUT
 from member.models import HelpText, MOTD
 
@@ -170,36 +169,38 @@ def motd(request):
                'message': message}
     return render(request, 'staff/settings/motd.html', context)
 
-@staff_member_required
-def document_upload(request):
-    doc_form = DocUploadForm()
-    # To be used to preview uploaded docs
-    # docs = FileUpload.objects.values_list('document_type', flat=True).distinct().exclude(document_type='None')
-    docs = Documents.objects.values_list('name', flat=True).distinct().exclude(name='None')
 
-    if request.method == 'POST':
-        if 'doc_type' in request.POST:
-            user = request.user
-            today = localtime(now()).date()
-            doc_type = request.POST.get('doc_type')
-            pdf_args = {'doc_type': doc_type}
-            return render(request, 'staff/settings/doc_preview.html', pdf_args)
-        else:
-            doc_form = DocUploadForm(request.POST, request.FILES)
-            # name = slugify(request.POST.get('name'))
-            # doc = request.POST.get('document')
-            if doc_form.is_valid():
-                doc_form.save()
-                messages.success(request, 'Successfully uploaded new document.')
-                return HttpResponseRedirect(reverse('staff:settings:doc_upload'))
-            else:
-                print doc_form.errors
-                messages.error(request, 'There was an error uploading your document')
-    context = {
-        'doc_form': doc_form,
-        'docs': docs,
-    }
-    return render(request, 'staff/settings/doc_upload.html', context)
+# TODO - Not quite ready yet --JLS
+# @staff_member_required
+# def document_upload(request):
+#     doc_form = DocUploadForm()
+#     # To be used to preview uploaded docs
+#     # docs = FileUpload.objects.values_list('document_type', flat=True).distinct().exclude(document_type='None')
+#     docs = Documents.objects.values_list('name', flat=True).distinct().exclude(name='None')
+#
+#     if request.method == 'POST':
+#         if 'doc_type' in request.POST:
+#             user = request.user
+#             today = localtime(now()).date()
+#             doc_type = request.POST.get('doc_type')
+#             pdf_args = {'doc_type': doc_type}
+#             return render(request, 'staff/settings/doc_preview.html', pdf_args)
+#         else:
+#             doc_form = DocUploadForm(request.POST, request.FILES)
+#             # name = slugify(request.POST.get('name'))
+#             # doc = request.POST.get('document')
+#             if doc_form.is_valid():
+#                 doc_form.save()
+#                 messages.success(request, 'Successfully uploaded new document.')
+#                 return HttpResponseRedirect(reverse('staff:settings:doc_upload'))
+#             else:
+#                 print doc_form.errors
+#                 messages.error(request, 'There was an error uploading your document')
+#     context = {
+#         'doc_form': doc_form,
+#         'docs': docs,
+#     }
+#     return render(request, 'staff/settings/doc_upload.html', context)
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
