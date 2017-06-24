@@ -20,11 +20,17 @@ PAYMENT_CHOICES = (
     ('Waive', 'Payment Waived'),
 )
 
+class CoworkingDayManager(models.Manager):
+
+    def billable(self):
+        return self.filter(payment="Bill")
 
 class CoworkingDay(models.Model):
+    objects = CoworkingDayManager()
     user = models.ForeignKey(settings.AUTH_USER_MODEL, unique_for_date="visit_date", on_delete=models.CASCADE)
     visit_date = models.DateField("Date")
     payment = models.CharField("Payment", max_length=5, choices=PAYMENT_CHOICES)
+    bill = models.ForeignKey('UserBill', blank=True, null=True, on_delete=models.CASCADE)
     paid_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="guest_day", on_delete=models.CASCADE)
     note = models.CharField("Note", max_length=128, blank="True")
     created_ts = models.DateTimeField(auto_now_add=True)
@@ -34,6 +40,28 @@ class CoworkingDay(models.Model):
         if self.paid_by:
             return self.paid_by.profile
         return None
+
+    @property
+    def payer(self):
+        # It's easy if paid_by is set
+        if self.paid_by:
+            return self.paid_by
+
+        # Find out what subscriptions they had on this day
+        from nadine.models.resource import Resource
+        from nadine.models.membership import ResourceSubscription
+        day_subscriptions = ResourceSubscription.objects.get_for_user(self.user, self.visit_date).filter(resource=Resource.objects.day_resource)
+        if day_subscriptions:
+            # This is a quick and dirty way that does not consider
+            # which of these subscriptions we should use --JLS
+            return day_subscriptions.first().payer
+
+        # No one else is paying so the user is on the hook
+        return self.user
+
+    @property
+    def billable(self):
+        return self.payment == 'Bill'
 
     def __str__(self):
         return '%s - %s' % (self.visit_date, self.user)

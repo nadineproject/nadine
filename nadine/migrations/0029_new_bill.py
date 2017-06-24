@@ -7,6 +7,8 @@ from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.db import migrations, models
 from django.utils import timezone
+from django.utils.timezone import localtime, now
+
 import django.db.models.deletion
 
 
@@ -14,8 +16,10 @@ def forward(apps, schema_editor):
     User = apps.get_model(settings.AUTH_USER_MODEL)
     OldBill = apps.get_model("nadine", "OldBill")
     Transaction = apps.get_model("nadine", "Transaction")
+    BillingBatch = apps.get_model("nadine", "BillingBatch")
     UserBill = apps.get_model("nadine", "UserBill")
     BillLineItem = apps.get_model("nadine", "BillLineItem")
+    CoworkingDayLineItem = apps.get_model("nadine", "CoworkingDayLineItem")
     Payment = apps.get_model("nadine", "Payment")
     Resource = apps.get_model("nadine", "Resource")
     tz = timezone.get_current_timezone()
@@ -24,61 +28,75 @@ def forward(apps, schema_editor):
     # Pull our Coworking Day Resource
     DAY = Resource.objects.filter(key="day").first()
 
+    # Create a BillingBatch for all these new Bills
+    batch = BillingBatch.objects.create()
+
     print("    Migrating Old Bills...")
-    for o in OldBill.objects.all().order_by('bill_date'):
+    for old_bill in OldBill.objects.all().order_by('bill_date'):
         # OldBill -> UserBill
-        if o.paid_by:
-            user = o.paid_by
+        if old_bill.paid_by:
+            user = old_bill.paid_by
         else:
-            user = o.user
-        start = o.bill_date
+            user = old_bill.user
+        start = old_bill.bill_date
         end = start + relativedelta(months=1) - timedelta(days=1)
         bill = UserBill.objects.create(
             user = user,
             period_start = start,
             period_end = end,
-            due_date =  o.bill_date,
+            due_date =  old_bill.bill_date,
+            comment = 'Migrated bill',
         )
-        if o.membership:
-            bill.membership = o.membership.new_membership
-        bill_date = datetime.combine(o.bill_date, datetime.min.time())
+        # if old_bill.membership:
+        #     bill.membership = old_bill.membership.new_membership
+        bill_date = datetime.combine(old_bill.bill_date, datetime.min.time())
         bill.created_ts = timezone.make_aware(bill_date, tz)
         bill.save()
+
+        # Add this bill to our BillingBatch
+        batch.bills.add(bill)
 
         # We'll create one line item for the membership
         BillLineItem.objects.create(
             bill = bill,
             description = "Coworking Membership",
-            amount = o.amount,
+            amount = old_bill.amount,
         )
 
         # Add all the dropins
-        for day in o.dropins.all().order_by('visit_date'):
-            BillLineItem.objects.create(
+        for day in old_bill.dropins.all().order_by('visit_date'):
+            CoworkingDayLineItem.objects.create(
                 bill = bill,
                 description = "%s Coworking Day" % day.visit_date,
-                resource = DAY,
-                activity_id = day.id,
-                amount = 0
+                day = day,
+                amount = 0,
             )
+            # Associate this day with this bill
+            day.bill = bill
+            day.save()
+
         # Add all our guest dropins
-        for day in o.guest_dropins.all().order_by('visit_date'):
-            BillLineItem.objects.create(
+        for day in old_bill.guest_dropins.all().order_by('visit_date'):
+            CoworkingDayLineItem.objects.create(
                 bill = bill,
                 description = "%s Guest Coworking Day (%s)" % (day.visit_date, day.user.username),
-                resource = DAY,
-                activity_id = day.id,
-                amount = 0
+                day = day,
+                amount = 0,
             )
+            # Associate this day with this bill
+            day.bill = bill
+            day.save()
 
         # If there are any transactions on this bill
-        # we are going to manually mark this as paid
-        if o.transactions.count() > 0:
+        # we are going to manually mark this as closed and paid
+        if old_bill.transactions.count() > 0:
+            close_date = datetime.combine(bill.period_end, datetime.max.time())
+            bill.closed_ts = timezone.make_aware(close_date, tz)
             bill.mark_paid = True
             bill.save()
 
         # Transactions -> Payments
-        for t in o.transactions.all():
+        for t in old_bill.transactions.all():
             p = Payment.objects.create(
                 bill = bill,
                 user = user,
@@ -87,6 +105,11 @@ def forward(apps, schema_editor):
             )
             p.created_ts = t.transaction_date
             p.save()
+
+    # Close up this BillingBatch
+    batch.completed_ts = localtime(now())
+    batch.successful = True
+    batch.save()
 
 
 def reverse(apps, schema_editor):
@@ -108,9 +131,24 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('description', models.CharField(max_length=200)),
                 ('amount', models.DecimalField(decimal_places=2, default=0, max_digits=7)),
-                ('activity_id', models.IntegerField(default=0)),
                 ('custom', models.BooleanField(default=False)),
             ],
+        ),
+        migrations.CreateModel(
+            name='SubscriptionLineItem',
+            fields=[
+                ('billlineitem_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='nadine.BillLineItem')),
+                ('subscription', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='line_items', to='nadine.ResourceSubscription')),
+            ],
+            bases=('nadine.billlineitem',),
+        ),
+        migrations.CreateModel(
+            name='CoworkingDayLineItem',
+            fields=[
+                ('billlineitem_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='nadine.BillLineItem')),
+                ('day', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='line_items', to='nadine.CoworkingDay')),
+            ],
+            bases=('nadine.billlineitem',),
         ),
         migrations.CreateModel(
             name='Payment',
@@ -127,7 +165,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_ts', models.DateTimeField(auto_now_add=True)),
-                ('created_by', models.ForeignKey(null=True, blank=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL)),
+                ('closed_ts', models.DateTimeField(blank=True, null=True)),
                 ('period_start', models.DateField()),
                 ('period_end', models.DateField()),
                 ('due_date', models.DateField()),
@@ -137,6 +175,21 @@ class Migration(migrations.Migration):
                 ('note', models.TextField(blank=True, null=True, help_text="Private notes about this bill")),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='bills', to=settings.AUTH_USER_MODEL)),
             ],
+        ),
+        migrations.CreateModel(
+            name='BillingBatch',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('created_ts', models.DateTimeField(auto_now_add=True)),
+                ('completed_ts', models.DateTimeField(blank=True, null=True)),
+                ('exception', models.TextField(blank=True, null=True)),
+                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL)),
+                ('bills', models.ManyToManyField(to='nadine.UserBill')),
+            ],
+            options={
+                'ordering': ['-created_ts'],
+                'get_latest_by': 'created_ts',
+            },
         ),
         migrations.AddField(
             model_name='payment',
@@ -154,17 +207,14 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='line_items', to='nadine.UserBill'),
         ),
         migrations.AddField(
-            model_name='userbill',
-            name='membership',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='bills', to='nadine.Membership'),
-        ),
-        migrations.AddField(
-            model_name='billlineitem',
-            name='resource',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='nadine.Resource'),
+            model_name='coworkingday',
+            name='bill',
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='nadine.UserBill'),
         ),
 
         # Convert all the old bills to new ones
+        migrations.RunSQL('SET CONSTRAINTS ALL IMMEDIATE', reverse_sql=migrations.RunSQL.noop),
         migrations.RunPython(forward, reverse),
+        migrations.RunSQL(migrations.RunSQL.noop, reverse_sql='SET CONSTRAINTS ALL IMMEDIATE'),
 
     ]

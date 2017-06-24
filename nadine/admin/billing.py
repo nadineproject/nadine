@@ -31,9 +31,9 @@ class UserBillAdmin(StyledAdmin):
     list_display = ('id', 'user', 'period_start', 'period_end', 'amount', 'total_paid')
     search_fields = ('user__username', 'user__first_name')
     raw_id_fields = ('user', )
-    readonly_fields = ('id', 'created_ts', 'created_by')
+    readonly_fields = ('id', 'created_ts', )
     fields = (
-        ('id', 'created_ts', 'created_by'),
+        ('id', 'created_ts', 'closed_ts'),
         ('due_date', 'period_start', 'period_end'),
         'user',
         'in_progress',
