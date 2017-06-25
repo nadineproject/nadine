@@ -31,7 +31,6 @@ from django.contrib.sites.models import Site
 
 from resource import Resource
 from organization import Organization
-# from nadine.models import billing
 
 logger = logging.getLogger(__name__)
 
@@ -588,6 +587,18 @@ class SubscriptionManager(models.Manager):
     def for_user_and_date(self, user, target_date):
         ''' Get the active subscriptions for the given user on the given date. '''
         return self.active_subscriptions_with_username(target_date).filter(username=user.username)
+
+    def billed(self, target_date):
+        ''' Active subscriptions associated with a UserBill through a SubscriptionLineItem. '''
+        from nadine.models.billing import SubscriptionLineItem
+        line_items = SubscriptionLineItem.objects.filter(bill__period_start__lte = target_date, bill__period_end__gte = target_date)
+        return self.filter(id__in=line_items.values('subscription__id'))
+
+    def unbilled(self, target_date):
+        ''' Not associated with any bill. '''
+        billed = self.billed(target_date)
+        return self.active_subscriptions(billed)
+
 
 class ResourceSubscription(models.Model):
     objects = SubscriptionManager()
