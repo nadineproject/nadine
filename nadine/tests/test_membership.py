@@ -12,6 +12,7 @@ from nadine.models.membership import *
 from nadine.models.resource import Resource
 from nadine.models.organization import Organization
 
+
 today = localtime(now()).date()
 yesterday = today - timedelta(days=1)
 tomorrow = today + timedelta(days=1)
@@ -591,6 +592,35 @@ class MembershipTestCase(TestCase):
         m = Membership.objects.get(id=o.id)
         self.assertFalse(m.is_individual)
         self.assertTrue(m.is_organization)
+
+
+class SubscriptionTestCase(TestCase):
+
+    def test_unbilled(self):
+        user = User.objects.create(username='test_user', first_name='Test', last_name='User')
+        subscription = ResourceSubscription.objects.create(
+            resource = Resource.objects.day_resource,
+            membership = user.membership,
+            start_date = one_month_ago,
+            end_date = one_month_from_now,
+            monthly_rate = 100.00,
+            overage_rate = 0,
+        )
+
+        # Unbilled yesterday, today, and tomorrow
+        self.assertTrue(subscription in ResourceSubscription.objects.unbilled(yesterday))
+        self.assertTrue(subscription in ResourceSubscription.objects.unbilled(today))
+        self.assertTrue(subscription in ResourceSubscription.objects.unbilled(tomorrow))
+
+        # Create a bill for this subscription for today only
+        from nadine.models.billing import UserBill
+        bill = UserBill.objects.create_for_day(user, today)
+        bill.add_subscription(subscription)
+
+        # This bill should now be billed for today, but not yesterday or tomorrow
+        self.assertTrue(subscription in ResourceSubscription.objects.unbilled(yesterday))
+        self.assertFalse(subscription in ResourceSubscription.objects.unbilled(today))
+        self.assertTrue(subscription in ResourceSubscription.objects.unbilled(tomorrow))
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

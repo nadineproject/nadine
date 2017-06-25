@@ -78,7 +78,6 @@ class BillingBatch(models.Model):
             # Save all error messages
             self.error = str(e)
             logger.error(self.error)
-            raise(e)
         finally:
             self.completed_ts = localtime(now())
             self.save()

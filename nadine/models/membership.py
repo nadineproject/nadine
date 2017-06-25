@@ -588,16 +588,19 @@ class SubscriptionManager(models.Manager):
         ''' Get the active subscriptions for the given user on the given date. '''
         return self.active_subscriptions_with_username(target_date).filter(username=user.username)
 
-    def billed(self, target_date):
-        ''' Active subscriptions associated with a UserBill through a SubscriptionLineItem. '''
-        from nadine.models.billing import SubscriptionLineItem
-        line_items = SubscriptionLineItem.objects.filter(bill__period_start__lte = target_date, bill__period_end__gte = target_date)
-        return self.filter(id__in=line_items.values('subscription__id'))
-
     def unbilled(self, target_date):
-        ''' Not associated with any bill. '''
-        billed = self.billed(target_date)
-        return self.active_subscriptions(billed)
+        ''' Active subscriptions on date not associated with any bill. '''
+        # Grab all the line items for this day
+        from nadine.models.billing import SubscriptionLineItem
+        billed_line_items = SubscriptionLineItem.objects.filter(bill__period_start__lte = target_date, bill__period_end__gte = target_date)
+
+        active = self.active_subscriptions(target_date)
+        if not billed_line_items:
+            # No line items means everything is unbilled
+            return active
+
+        # Return all the subscriptions, excluding ones already billed
+        return active.exclude(id__in=billed_line_items.values('subscription__id'))
 
 
 class ResourceSubscription(models.Model):
