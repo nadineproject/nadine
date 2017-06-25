@@ -1,6 +1,4 @@
-import os
 import sys
-import time
 import urllib
 import logging
 import datetime
@@ -8,7 +6,6 @@ import datetime
 logger = logging.getLogger()
 
 from django.core.management.base import BaseCommand, CommandError
-from django.contrib.auth.models import User
 
 from interlink.models import MailingList, IncomingMail, OutgoingMail
 
@@ -17,7 +14,7 @@ class Command(BaseCommand):
     help = "Process all the mail from our MailingLists"
     requires_system_checks = True
 
-    def handle(self, *labels, **options):
+    def handle(self, *args, **options):
         # MailingList.objects.fetch_all_mail(logger)
         MailingList.objects.fetch_all_mail()
         IncomingMail.objects.process_incoming()

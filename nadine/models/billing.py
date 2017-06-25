@@ -130,12 +130,12 @@ class BillManager(models.Manager):
 
     def get_or_create_open_bill(self, user, period_start, period_end):
         ''' Get or create a UserBill for the given ResourceSubscription and date. '''
-        bill = UserBill.objects.get_open_bill(user, period_start, period_end)
+        bill = self.get_open_bill(user, period_start, period_end)
         if bill:
             return bill
 
         # If there is no bill for this specific period, find any open bill
-        last_open_bill = UserBill.objects.filter(user=user, closed_ts__isnull=True).order_by('due_date').last()
+        last_open_bill = self.filter(user=user, closed_ts__isnull=True).order_by('due_date').last()
         if last_open_bill:
             # Expand the period to include this visit
             if last_open_bill.period_start > period_start:
@@ -147,7 +147,7 @@ class BillManager(models.Manager):
 
         # Create a new UserBill
         if not bill:
-            bill = UserBill.objects.create(
+            bill = self.create(
                 user = user,
                 period_start = period_start,
                 period_end = period_end,
@@ -159,7 +159,7 @@ class BillManager(models.Manager):
         ''' Create a UserBill for the given user for one day only. '''
         if not target_date:
             target_date = localtime(now()).date()
-        bill = UserBill.objects.create(
+        bill = self.create(
             user = user,
             period_start = target_date,
             period_end = target_date,

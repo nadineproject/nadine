@@ -57,9 +57,9 @@ class EventProxy(threading.Thread):
             "event_type": event_type,
             "event_description": str(args),
         }
-        if "doorname" in args && args["doorname"] in self.doors:
+        if "doorname" in args and args["doorname"] in self.doors:
             new_args["door_id"] = self.doors[args["doorname"]]
-        if "lastname" in args && args["lastname"] in self.users:
+        if "lastname" in args and args["lastname"] in self.users:
             new_args["user_id"] = self.users[args["lastname"]]
         if "cardnumber" in args:
             new_args["code"] = args["cardnumber"]

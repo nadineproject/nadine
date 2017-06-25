@@ -5,7 +5,6 @@ import datetime
 import sys
 
 from django.core.management.base import BaseCommand, CommandError
-from django.conf import settings
 
 from nadine.utils.backup import BackupManager
 

@@ -21,11 +21,11 @@ class Command(BaseCommand):
     def print_usage(self):
         print('./manage.py subscribe_members <mailing-list-id>')
 
-    def handle(self, *labels, **options):
-        if len(labels) != 1:
+    def handle(self, *args, **options):
+        if len(args) != 1:
             self.print_usage()
             return
-        ml_id = labels[0]
+        ml_id = args[0]
         if not MailingList.objects.filter(pk=ml_id).exists():
             logger.error('Did not find find mailing list with id %s' % mk_id)
             return
