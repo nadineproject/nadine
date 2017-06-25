@@ -45,7 +45,7 @@ def forward(apps, schema_editor):
             period_start = start,
             period_end = end,
             due_date =  old_bill.bill_date,
-            comment = 'Migrated bill',
+            note = 'Migrated bill (Nadine 1.8)',
         )
         # if old_bill.membership:
         #     bill.membership = old_bill.membership.new_membership
