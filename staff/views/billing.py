@@ -73,8 +73,8 @@ def bill_list(request):
 
 @staff_member_required
 def outstanding(request):
-    bills = UserBill.objects.unpaid(in_progress=False).order_by('due_date')
-    bills_in_progress = UserBill.objects.unpaid(in_progress=True).order_by('due_date')
+    bills = UserBill.objects.outstanding().filter(in_progress=False).order_by('due_date')
+    bills_in_progress = UserBill.objects.outstanding().filter(in_progress=True).order_by('due_date')
     invalids = User.helper.invalid_billing()
     context = {
         'bills': bills,

@@ -155,9 +155,6 @@ class BillingTestCase(TestCase):
         # Run the billing batch for June only
         batch = BillingBatch.objects.run(start_date=date(2010, 6, 1), end_date=date(2010, 6, 30))
         self.assertTrue(batch.successful)
-        # self.assertEqual(3, batch.bills.count())
-        print_all_bills(user6)
-        print_all_bills(user7)
 
         # User 7 is a guest of User 6
         self.assertTrue(user7.profile.is_guest())
@@ -172,9 +169,9 @@ class BillingTestCase(TestCase):
         self.assertTrue(user8_visit in bill.coworking_days())
 
         # User 6 owes $270, User 7 and User 8 owe $0
-        self.assertEqual(270, user6.profile.open_bills_amount)
-        self.assertEqual(0, user7.profile.open_bills_amount)
-        self.assertEqual(0, user8.profile.open_bills_amount)
+        self.assertEqual(270, user6.profile.outstanding_amount)
+        self.assertEqual(0, user7.profile.outstanding_amount)
+        self.assertEqual(0, user8.profile.outstanding_amount)
 
     def test_change_bill_day(self):
         # PT5 from 1/10/2010 billed on the 10th

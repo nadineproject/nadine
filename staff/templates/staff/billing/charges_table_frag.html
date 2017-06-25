@@ -22,11 +22,11 @@
             <td>{{ t.description }}</td>
             <!--<td>{{ t.card_type }}</td>-->
             <td {% if t.status == "Authorized" %} class='authorized'{% endif %}>{{ t.status }}</td>
-            <td {% if t.open_bills and not t.bill_match %} class='open-bill' {% endif %}>
+            <td {% if t.outstanding_bills and not t.bill_match %} class='open-bill' {% endif %}>
                 {{ t.amount|floatformat:2 }}
             </td>
             <td>
-              {% for bill in t.open_bills %}
+              {% for bill in t.outstanding_bills %}
                 {% if not forloop.first %} | {% endif %}
                 <a href="{{ bill.get_staff_url }}">{{ bill.id }}</a>
                 {% if not t.bill_match %}

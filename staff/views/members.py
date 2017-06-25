@@ -533,7 +533,7 @@ def confirm_membership(request, username, package, end_target, new_subs):
 def edit_bill_day(request, username):
     user = get_object_or_404(User, username=username)
     today = localtime(now()).date()
-    future_bills = UserBill.objects.unpaid().filter(user=user).filter(due_date__gte=today)
+    future_bills = UserBill.objects.outstanding().filter(user=user).filter(due_date__gte=today)
     membership = user.membership
     if request.method == 'POST':
         bill_day = request.POST.get('bill-date')[-2:]

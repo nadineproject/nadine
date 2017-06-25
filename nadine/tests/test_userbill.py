@@ -45,30 +45,30 @@ class UserBillTestCase(TestCase):
 
         self.user1 = User.objects.create(username='member_one', first_name='Member', last_name='One')
 
-    def test_unpaid(self):
+    def test_outstanding(self):
         bill = UserBill.objects.create_for_day(self.user1, today)
         self.assertEqual(0, bill.amount)
         self.assertEqual(0, bill.total_owed)
-        self.assertFalse(bill in UserBill.objects.unpaid())
+        self.assertFalse(bill in UserBill.objects.outstanding())
         # Create a line item
         BillLineItem.objects.create(bill=bill, amount=10)
         self.assertEqual(10, bill.amount)
         self.assertEqual(10, bill.total_owed)
-        self.assertTrue(bill in UserBill.objects.unpaid())
+        self.assertTrue(bill in UserBill.objects.outstanding())
         # Pay the bill
         Payment.objects.create(bill=bill, user=self.user1, amount=10)
         self.assertEqual(0, bill.total_owed)
-        self.assertFalse(bill in UserBill.objects.unpaid())
+        self.assertFalse(bill in UserBill.objects.outstanding())
 
-    def test_unpaid_partial_payment(self):
-        # Apply $1 to the last bill and make sure it's still in our unpaid set
+    def test_outstanding_partial_payment(self):
+        # Apply $1 to the last bill and make sure it's still in our outstanding set
         bill = UserBill.objects.create_for_day(self.user1, today)
         BillLineItem.objects.create(bill=bill, amount=10)
         self.assertEqual(10, bill.amount)
         Payment.objects.create(bill=bill, user=self.user1, amount=1)
         self.assertTrue(bill.total_paid == 1)
         self.assertFalse(bill.is_paid)
-        self.assertTrue(bill in UserBill.objects.unpaid())
+        self.assertTrue(bill in UserBill.objects.outstanding())
 
     def test_open_and_closed(self):
         bill = UserBill.objects.create_for_day(self.user1, today)

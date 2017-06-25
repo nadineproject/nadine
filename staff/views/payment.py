@@ -158,10 +158,10 @@ def usaepay_transactions(request, year, month, day):
             u = User.objects.filter(username = t['username']).first()
             if u:
                 t['user'] = u
-                t['open_bills'] = u.profile.open_bills()
+                t['outstanding_bills'] = u.profile.outstanding_bills()
                 # If the amount matches and there is only one, mark this bill as a match
-                if len(t['open_bills']) == 1 and t['amount'] == t['open_bills'][0].amount:
-                    t['bill_match'] = t['open_bills'][0]
+                if len(t['outstanding_bills']) == 1 and t['amount'] == t['outstanding_bills'][0].amount:
+                    t['bill_match'] = t['outstanding_bills'][0]
                 # Sort through our xero invoices and only show the ones that match this total
                 t['xero_invoices'] = open_xero_invoices.get(t['username'], [])
                 for i in t['xero_invoices']:

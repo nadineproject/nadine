@@ -173,18 +173,12 @@ class BillManager(models.Manager):
     def closed(self):
         return self.filter(closed_ts__isnull=False)
 
-    def unpaid(self, user=None, in_progress=None):
-        # TODO - should take no arguments
+    def outstanding(self):
         query = self.filter(mark_paid=False)
-        if user != None:
-            query = query.filter(user=user)
-        if in_progress != None:
-            query = query.filter(in_progress=in_progress)
         query = query.annotate(bill_amount=Sum('line_items__amount'), owed=Sum('line_items__amount') - Sum('payment__amount'), payment_count=Count('payment'))
         no_payments = Q(payment_count = 0)
         partial_payment = Q(owed__gt = 0)
-        query = query.filter(bill_amount__gt=0).filter(no_payments | partial_payment)
-        return query.order_by('due_date')
+        return query.filter(bill_amount__gt=0).filter(no_payments | partial_payment)
 
     def non_zero(self):
         return self.annotate(bill_amount=Sum('line_items__amount')).filter(bill_amount__gt=0)
