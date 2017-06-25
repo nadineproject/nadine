@@ -54,7 +54,7 @@ class BillingBatch(models.Model):
 
     def run(self, start_date=None, end_date=None):
         ''' Run billing for every day since the last successful billing run. '''
-        logger.debug("run(start_date=%s, end_date=%s)" % (start_date, end_date))
+        logger.info("run(start_date=%s, end_date=%s)" % (start_date, end_date))
         try:
             # Make sure no other batches are running
             if BillingBatch.objects.filter(completed_ts=None).exclude(id=self.id).count() > 0:
@@ -62,13 +62,13 @@ class BillingBatch(models.Model):
 
             # If no end_date, go until today
             if not end_date:
-                end_date = localtime(now())
+                end_date = localtime(now()).date()
 
             # If no start_date, start from the last successful batch run
             target_date = start_date
             if not target_date:
                 last_batch = BillingBatch.objects.filter(error__isnull=True).order_by('created_ts').last()
-                target_date = last_batch.date()
+                target_date = last_batch.created_ts.date()
 
             # Run for each day in our range
             while target_date <= end_date:
@@ -78,6 +78,7 @@ class BillingBatch(models.Model):
             # Save all error messages
             self.error = str(e)
             logger.error(self.error)
+            raise(e)
         finally:
             self.completed_ts = localtime(now())
             self.save()
@@ -86,24 +87,23 @@ class BillingBatch(models.Model):
 
     def run_billing_for_day(self, target_date):
         ''' Run billing for a specific day. '''
-        logger.debug("run_billing_for_day(%s)" % target_date)
+        logger.info("run_billing_for_day(%s)" % target_date)
 
         # Check every active subscription on this day and add this if neccessary
-        for subscription in ResourceSubscription.objects.active_subscriptions(target_date):
-            # Pull the open bill for the membership period of this subscription
+        for subscription in ResourceSubscription.objects.unbilled(target_date):
+            # Find the open bill for the membership period of this subscription
             period_start, period_end = subscription.membership.get_period(target_date)
             bill = UserBill.objects.get_or_create_open_bill(subscription.payer, period_start, period_end)
             if not bill.has_subscription(subscription):
                 bill.add_subscription(subscription)
                 self.save_bill(bill)
 
-        # Pull and add all untracked CoworkingDays
-        for day in CoworkingDay.objects.filter(bill__isnull=True, visit_date__lte=target_date):
+        # Pull and add all past unbilled CoworkingDays
+        for day in CoworkingDay.objects.unbilled(target_date):
             # Find the open bill for the period of this one day
             bill = UserBill.objects.get_or_create_open_bill(day.payer, day.visit_date, day.visit_date)
-            if not bill.has_coworking_day(day):
-                bill.add_coworking_day(day)
-                self.save_bill(bill)
+            bill.add_coworking_day(day)
+            self.save_bill(bill)
 
         # Close all open bills that end on this day
         for bill in UserBill.objects.filter(closed_ts__isnull=True, period_end=target_date):
