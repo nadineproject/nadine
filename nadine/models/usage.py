@@ -50,7 +50,7 @@ class CoworkingDay(models.Model):
         # Find out what subscriptions they had on this day
         from nadine.models.resource import Resource
         from nadine.models.membership import ResourceSubscription
-        day_subscriptions = ResourceSubscription.objects.get_for_user(self.user, self.visit_date).filter(resource=Resource.objects.day_resource)
+        day_subscriptions = ResourceSubscription.objects.for_user_and_date(self.user, self.visit_date).filter(resource=Resource.objects.day_resource)
         if day_subscriptions:
             # This is a quick and dirty way that does not consider
             # which of these subscriptions we should use --JLS

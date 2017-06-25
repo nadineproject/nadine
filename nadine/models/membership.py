@@ -585,7 +585,7 @@ class SubscriptionManager(models.Manager):
             target_date = localtime(now()).date()
         return self.filter(end_date__lt=target_date)
 
-    def get_for_user(self, user, target_date):
+    def for_user_and_date(self, user, target_date):
         ''' Get the active subscriptions for the given user on the given date. '''
         return self.active_subscriptions_with_username(target_date).filter(username=user.username)
 

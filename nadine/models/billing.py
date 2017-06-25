@@ -21,8 +21,10 @@ class BatchManager(models.Manager):
 
     def run(self, start_date=None, end_date=None):
         batch = self.create()
-        batch.run(start_date, end_date)
-        return batch
+        if batch.run(start_date, end_date):
+            return batch
+        else:
+            raise Exception(batch.error)
 
 class BillingBatch(models.Model):
     """Gathers all untracked subscriptions and activity and associates it with a UserBill."""
@@ -30,7 +32,7 @@ class BillingBatch(models.Model):
     created_ts = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="+", null=True, blank=True, on_delete=models.CASCADE)
     completed_ts = models.DateTimeField(blank=True, null=True)
-    exception = models.TextField(blank=True, null=True)
+    error = models.TextField(blank=True, null=True)
     bills = models.ManyToManyField('UserBill')
 
     class Meta:
@@ -43,7 +45,7 @@ class BillingBatch(models.Model):
 
     @property
     def successful(self):
-        return self.exception == None
+        return self.error == None
 
     def save_bill(self, bill):
         if bill not in self.bills.all():
@@ -53,90 +55,106 @@ class BillingBatch(models.Model):
     def run(self, start_date=None, end_date=None):
         ''' Run billing for every day since the last successful billing run. '''
         logger.debug("run(start_date=%s, end_date=%s)" % (start_date, end_date))
-
-        # Make sure no other batches are running
-        if BillingBatch.objects.filter(completed_ts=None).exclude(id=self.id).count() > 0:
-            raise Exception("Found a BillingBatch that has not yet completed!")
-
         try:
+            # Make sure no other batches are running
+            if BillingBatch.objects.filter(completed_ts=None).exclude(id=self.id).count() > 0:
+                raise Exception("Found a BillingBatch that has not yet completed!")
+
+            # If no end_date, go until today
             if not end_date:
                 end_date = localtime(now())
 
+            # If no start_date, start from the last successful batch run
             target_date = start_date
             if not target_date:
-                # Pull the last successful batch run
-                last_batch = BillingBatch.objects.filter(successful=True).order_by('created_ts').last()
+                last_batch = BillingBatch.objects.filter(error__isnull=True).order_by('created_ts').last()
                 target_date = last_batch.date()
 
-            # Run every day since the last batch
+            # Run for each day in our range
             while target_date <= end_date:
                 self.run_billing_for_day(target_date)
                 target_date = target_date + timedelta(days=1)
         except Exception as e:
-            self.exception = str(e)
-            logger.error(e)
+            # Save all error messages
+            self.error = str(e)
+            logger.error(self.error)
         finally:
             self.completed_ts = localtime(now())
             self.save()
+        # Indicate if we ran successsfully or not
+        return self.successful
 
     def run_billing_for_day(self, target_date):
         ''' Run billing for a specific day. '''
         logger.debug("run_billing_for_day(%s)" % target_date)
 
-        # Check every active subscription on this day
+        # Check every active subscription on this day and add this if neccessary
         for subscription in ResourceSubscription.objects.active_subscriptions(target_date):
-            # Pull the coresponding bill
-            bill = UserBill.objects.get_or_create_from_subscription(subscription, target_date)
-            self.save_bill(bill)
+            # Pull the open bill for the membership period of this subscription
+            period_start, period_end = subscription.membership.get_period(target_date)
+            bill = UserBill.objects.get_or_create_open_bill(subscription.payer, period_start, period_end)
             if not bill.has_subscription(subscription):
                 bill.add_subscription(subscription)
+                self.save_bill(bill)
 
-        # Pull all untracked CoworkingDays
+        # Pull and add all untracked CoworkingDays
         for day in CoworkingDay.objects.filter(bill__isnull=True, visit_date__lte=target_date):
-            bill = UserBill.objects.get_or_create_from_coworkingday(day)
-            self.save_bill(bill)
+            # Find the open bill for the period of this one day
+            bill = UserBill.objects.get_or_create_open_bill(day.payer, day.visit_date, day.visit_date)
             if not bill.has_coworking_day(day):
                 bill.add_coworking_day(day)
+                self.save_bill(bill)
 
         # Close all open bills that end on this day
         for bill in UserBill.objects.filter(closed_ts__isnull=True, period_end=target_date):
             bill.close()
+            self.save_bill(bill)
 
 
 class BillManager(models.Manager):
 
-    def get_or_create_from_subscription(self, subscription, target_date):
+    def get_open_bill(self, user, period_start, period_end):
+        ''' Get one and only one open UserBill for a given user and period. '''
+        bills = self.filter(
+            user = user,
+            period_start__lte = period_start,
+            period_end__gte = period_end,
+            closed_ts__isnull = True,
+        )
+
+        # One and only one bill
+        if bills.count() > 1:
+            raise Exception("Found more than one bill!")
+
+        # Returns the one or None if we didn't find anything
+        return bills.first()
+
+    def get_or_create_open_bill(self, user, period_start, period_end):
         ''' Get or create a UserBill for the given ResourceSubscription and date. '''
-        bill = UserBill.objects.get_for_user(subscription.payer, target_date)
+        bill = UserBill.objects.get_open_bill(user, period_start, period_end)
+        if bill:
+            return bill
+
+        # If there is no bill for this specific period, find any open bill
+        last_open_bill = UserBill.objects.filter(user=user, closed_ts__isnull=True).order_by('due_date').last()
+        if last_open_bill:
+            # Expand the period to include this visit
+            if last_open_bill.period_start > period_start:
+                last_open_bill.period_start = period_start
+            if last_open_bill.period_end < period_end:
+                last_open_bill.period_end = period_end
+            last_open_bill.save()
+            return last_open_bill
+
+        # Create a new UserBill
         if not bill:
-            period_start, period_end = subscription.membership.get_period(target_date)
             bill = UserBill.objects.create(
-                user = subscription.payer,
+                user = user,
                 period_start = period_start,
                 period_end = period_end,
                 due_date = period_end,
             )
         return bill
-
-    def get_or_create_from_coworkingday(self, day):
-        ''' Get or create a UserBill for a given CoworkingDay and date. '''
-
-        # First see if there is an open bill for this user and date
-        bill = UserBill.objects.get_for_user(day.payer, day.visit_date)
-        if bill:
-            return bill
-
-        # Still looking?  Pull the last open bill
-        last_open_bill = UserBill.objects.open().filter(user=day.payer).order_by('due_date').last()
-        if last_open_bill:
-            if last_open_bill.period_end < day.visit_date:
-                # Expand the period to include this visit
-                last_open_bill.period_end = day.visit_date
-                last_open_bill.save()
-            return last_open_bill
-
-        # Finally, create a bill just for this one visit
-        return UserBill.objects.create_for_day(day.payer, day.visit_date)
 
     def create_for_day(self, user, target_date=None):
         ''' Create a UserBill for the given user for one day only. '''
@@ -149,17 +167,6 @@ class BillManager(models.Manager):
             due_date = target_date,
         )
         return bill
-
-    def get_for_user(self, user, target_date):
-        ''' Get a UserBill for a given user and date. '''
-        bills = self.filter(
-            user = user,
-            period_start__lte = target_date,
-            period_end__gte = target_date,
-        )
-        if bills.count() > 1:
-            raise Exception("More than one bill associated with %s on %s" % (user.username, target_date))
-        return bills.first()
 
     def open(self):
         return self.filter(closed_ts__isnull=True)
@@ -183,6 +190,7 @@ class BillManager(models.Manager):
     def non_zero(self):
         return self.annotate(bill_amount=Sum('line_items__amount')).filter(bill_amount__gt=0)
 
+
 class UserBill(models.Model):
     objects = BillManager()
     created_ts = models.DateTimeField(auto_now_add=True)
@@ -199,6 +207,10 @@ class UserBill(models.Model):
 
     def __unicode__(self):
         return "Bill %d" % self.id
+
+    ############################################################################
+    # Properties
+    ############################################################################
 
     @property
     def total_paid(self):
@@ -251,6 +263,10 @@ class UserBill(models.Model):
     def is_closed(self):
         return self.closed_ts != None
 
+    ############################################################################
+    # URL Methods
+    ############################################################################
+
     def get_absolute_url(self):
         return reverse('member:receipt', kwargs={'bill_id': self.id})
 
@@ -271,11 +287,9 @@ class UserBill(models.Model):
     def get_admin_url(self):
         return reverse('admin:nadine_userbill_change', args=[self.id])
 
-    def close(self):
-        if self.closed_ts != None:
-            raise Exception("Bill is already closed!")
-        self.closed_ts = localtime(now())
-        self.save()
+    ############################################################################
+    # Other Methods
+    ############################################################################
 
     def subscriptions(self):
         ''' Return all the ResourceSubscriptions associated with this bill. '''
@@ -291,19 +305,31 @@ class UserBill(models.Model):
         if self.has_subscription(subscription):
             return
 
-        desc = "Monthly " + subscription.resource.name + " "
+        # Start with a generic description
+        description = "Monthly " + subscription.resource.name + " "
+
+        # If there is already a description on the subscription, add that
         if subscription.description:
-            desc += subscription.description + " "
-        desc += "(%s to %s)" % (self.period_start, self.period_end)
-        logger.debug("description: %s" % desc)
+            description += subscription.description + " "
+
+        # If the subscription period falls outside this bill period,
+        # add the date range to the description
+        started_after = subscription.start_date > self.period_start
+        ended_before = subscription.end_date and subscription.end_date < self.period_start
+        ended_during = subscription.end_date and subscription.end_date < self.period_end
+        if started_after or ended_before or ended_during:
+            description += "(%s to %s)" % (self.period_start, self.period_end)
+
+        # Calculate our amount
         prorate = subscription.prorate_for_period(self.period_start, self.period_end)
-        logger.debug("prorate = %f" % prorate)
         amount = prorate * subscription.monthly_rate
+
+        # Create our new line item
         return SubscriptionLineItem.objects.create(
-            bill=self,
-            subscription=subscription,
-            description=desc,
-            amount=amount
+            bill = self,
+            subscription = subscription,
+            description = description,
+            amount = amount
         )
 
     def coworking_days(self):
@@ -335,7 +361,7 @@ class UserBill(models.Model):
 
         # Append the username if it's different from this bill
         if day.user != self.user:
-            description += " - " + day.user.username
+            description += " for " + day.user.username
 
         # Create the line item
         line_item = CoworkingDayLineItem.objects.create(
@@ -367,6 +393,12 @@ class UserBill(models.Model):
         if not subscriptions:
             return resource.default_rate
         return subscriptions.first().overage_rate
+
+    def close(self):
+        if self.closed_ts != None:
+            raise Exception("Bill is already closed!")
+        self.closed_ts = localtime(now())
+        self.save()
 
 
 class BillLineItem(models.Model):
