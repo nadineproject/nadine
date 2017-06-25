@@ -25,6 +25,14 @@ class CoworkingDayManager(models.Manager):
     def billable(self):
         return self.filter(payment="Bill")
 
+    def unbilled(self, target_date=None):
+        ''' Not associated with any bill. '''
+        if target_date:
+            # Only days prior to the given date
+            return self.filter(bill__isnull=True, visit_date__lte=target_date)
+        return self.filter(bill__isnull=True)
+
+
 class CoworkingDay(models.Model):
     objects = CoworkingDayManager()
     user = models.ForeignKey(settings.AUTH_USER_MODEL, unique_for_date="visit_date", on_delete=models.CASCADE)
