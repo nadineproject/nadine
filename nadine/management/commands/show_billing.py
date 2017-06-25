@@ -18,11 +18,11 @@ class Command(BaseCommand):
     args = "[username]"
     requires_system_checks = False
 
-    def handle(self, *labels, **options):
+    def handle(self, *args, **options):
         from staff.billing import Run
-        if not labels or len(labels) != 1:
+        if not args or len(args) != 1:
             raise CommandError('Enter one argument, a username.')
-        username = int(labels[0])
+        username = int(args[0])
         try:
             user = User.objects.get(username=username)
             start_date = timezone.localtime(timezone.now()) - timedelta(days=365)

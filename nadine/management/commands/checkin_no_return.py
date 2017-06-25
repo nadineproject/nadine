@@ -12,7 +12,7 @@ from nadine import email
 class Command(BaseCommand):
     help = "Check-in with users who have not returned after their Free Trial Day"
 
-    def handle(*args, **options):
+    def handle(self, *args, **options):
         # Pull all the free trials from 1 month ago and send an email if they haven't been back
         today = localtime(now()).date()
         one_month_ago = today - relativedelta(months=1)

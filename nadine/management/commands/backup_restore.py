@@ -18,7 +18,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('backup_file', nargs='+', type=str)
 
-    def handle(self, *labels, **options):
+    def handle(self, *args, **options):
         backup_file = options['backup_file'][0]
         manager = BackupManager()
         manager.restore_backup(backup_file)

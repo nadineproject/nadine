@@ -12,7 +12,7 @@ from nadine import email
 class Command(BaseCommand):
     help = "Check-in with users after their first day"
 
-    def handle(*args, **options):
+    def handle(self, *args, **options):
         today = localtime(now()).date()
         free_trials_today = CoworkingDay.objects.filter(visit_date=today, payment='Trial')
         for d in free_trials_today:

@@ -11,7 +11,7 @@ from nadine import email
 class Command(BaseCommand):
     help = "Check-in with users on their anniversary"
 
-    def handle(*args, **options):
+    def handle(self, *args, **options):
         for u in User.helper.active_members():
             d = u.profile.duration()
             if d.years and not d.months and not d.days:

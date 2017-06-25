@@ -18,7 +18,7 @@ class Command(BaseCommand):
     help = "System Setup"
     requires_system_checks = False
 
-    def handle(self, **options):
+    def handle(self, *args, **options):
         try:
             print
             print("###################################")

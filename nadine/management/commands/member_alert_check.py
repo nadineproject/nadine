@@ -11,7 +11,7 @@ from nadine.models.alerts import MemberAlert
 class Command(BaseCommand):
     help = "Check for any MemberAlerts that need to go out"
 
-    def handle(*args, **options):
+    def handle(self, *args, **options):
         MemberAlert.objects.trigger_periodic_check()
 
 

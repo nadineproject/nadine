@@ -14,7 +14,7 @@ class Command(BaseCommand):
 
     requires_system_checks = True
 
-    def handle(self, **options):
+    def handle(self, *args, **options):
         arp.import_all()
         arp.map_ip_to_mac(1)
 

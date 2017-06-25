@@ -23,7 +23,7 @@ class Command(BaseCommand):
     args = ""
     requires_system_checks = True
 
-    def handle(self, *labels, **options):
+    def handle(self, *args, **options):
         if settings.PRODUCTION:
             raise Exception('Will not install the demo on production.')
 

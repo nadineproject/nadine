@@ -14,7 +14,7 @@ class Command(BaseCommand):
 
     requires_system_checks = True
 
-    def handle(self, **options):
+    def handle(self, *args, **options):
         if xero_api.test_xero_connection():
             print("Xero connection is working properly")
         else:

@@ -15,11 +15,11 @@ class Command(BaseCommand):
     help = "Import Data File"
     args = "[model] [file_name]"
 
-    def handle(self, *labels, **options):
-        if not labels or len(labels) != 2:
+    def handle(self, *args, **options):
+        if not args or len(args) != 2:
             raise CommandError('Usage:  <model> <file_name>')
-        model_name = labels[0]
-        file_name = labels[1]
+        model_name = args[0]
+        file_name = args[1]
 
         # Grab our model
         Model = apps.get_model('nadine', model_name)

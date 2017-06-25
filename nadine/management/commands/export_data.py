@@ -22,7 +22,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('output', type=str)
 
-    def handle(self, *labels, **options):
+    def handle(self, *args, **options):
         output = options['output']
 
         user_data = []

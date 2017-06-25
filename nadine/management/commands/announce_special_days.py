@@ -12,7 +12,7 @@ from nadine import email
 class Command(BaseCommand):
     help = "Send announcement to team of SpecialDays for our members"
 
-    def handle(*args, **options):
+    def handle(self, *args, **options):
         today = localtime(now()).date()
         for u in User.helper.active_members():
             for sd in SpecialDay.objects.filter(user=u):

@@ -10,7 +10,7 @@ PROMPT = '> '
 
 class Command(BaseCommand):
     help = "Sets all user passwords."
-    def handle(self, **options):
+    def handle(self, *args, **options):
         print("What would you like to set all the passwords to?")
         passwd = raw_input(PROMPT).strip()
         if len(passwd) == 0:

@@ -12,6 +12,6 @@ class Command(BaseCommand):
     args = ""
     requires_system_checks = False
 
-    def handle(self, *labels, **options):
+    def handle(self, *args, **options):
         manager = BackupManager()
         manager.export_active_users()

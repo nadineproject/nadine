@@ -12,7 +12,7 @@ from nadine import email
 class Command(BaseCommand):
     help = "Check-in with users after two months"
 
-    def handle(*args, **options):
+    def handle(self, *args, **options):
         # Pull the memberships that started 2 months ago and send a survey
         # if they are still active and this was their first membership
         today = localtime(now()).date()

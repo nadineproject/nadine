@@ -12,7 +12,7 @@ from nadine import email
 class Command(BaseCommand):
     help = "Send User Notification Emails."
 
-    def handle(*args, **options):
+    def handle(self, *args, **options):
         here_today = list(User.helper.here_today())
         for n in UserNotification.objects.filter(sent_date__isnull=True):
             if n.notify_user in here_today:

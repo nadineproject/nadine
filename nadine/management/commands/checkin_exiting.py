@@ -12,7 +12,7 @@ from nadine import email
 class Command(BaseCommand):
     help = "Check-in with users who are leaving"
 
-    def handle(*args, **options):
+    def handle(self, *args, **options):
         # Send an exit survey to members that have been gone a week.
         today = localtime(now()).date()
         one_week_ago = today - relativedelta(weeks=1)

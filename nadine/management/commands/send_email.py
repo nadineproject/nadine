@@ -22,7 +22,7 @@ class Command(BaseCommand):
         for key in email.valid_message_keys():
             print("   " + key)
 
-    def handle(self, *labels, **options):
+    def handle(self, *args, **options):
         # Make sure we have a valid user
         user = None
         try:

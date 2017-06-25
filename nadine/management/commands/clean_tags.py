@@ -12,7 +12,7 @@ from taggit.models import *
 
 class Command(BaseCommand):
     help = "Clean all the tags"
-    def handle(self, **options):
+    def handle(self, *args, **options):
         print("Cleaning all the tags...")
         for tag in Tag.objects.all():
             clean = tag.name.strip().lower()
