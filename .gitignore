@@ -22,11 +22,14 @@ databases
 xero_privatekey.pem
 newrelic.ini
 newrelic-celery.ini
+.coverage
 gw_config.json
 .vagrant/
 __pycache__/
 docs/_build/*
 
+
 # Ignore Themes
 /themes/**
 !/themes/README.md
+
