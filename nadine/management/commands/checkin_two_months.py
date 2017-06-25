@@ -1,4 +1,3 @@
-from datetime import date, datetime, timedelta
 from dateutil.relativedelta import relativedelta
 
 from django.utils.timezone import localtime, now
@@ -17,9 +16,9 @@ class Command(BaseCommand):
         # if they are still active and this was their first membership
         today = localtime(now()).date()
         two_months_ago = today - relativedelta(months=2)
-        for membership in Membership.objects.filter(start_date=two_months_ago):
-            if Membership.objects.filter(user=membership.user, start_date__lt=two_months_ago).count() == 0:
-                if membership.user.profile.is_active():
+        for membership in Membership.objects.filter(subscriptions__start_date=two_months_ago):
+            if Membership.objects.filter(user=membership.user, subscription__start_date__lt=two_months_ago).count() == 0:
+                if membership.is_active():
                     email.send_member_survey(membership.user)
 
 
