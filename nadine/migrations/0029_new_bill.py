@@ -182,7 +182,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_ts', models.DateTimeField(auto_now_add=True)),
                 ('completed_ts', models.DateTimeField(blank=True, null=True)),
-                ('exception', models.TextField(blank=True, null=True)),
+                ('error', models.TextField(blank=True, null=True)),
                 ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL)),
                 ('bills', models.ManyToManyField(to='nadine.UserBill')),
             ],
