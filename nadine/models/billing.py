@@ -230,21 +230,10 @@ class UserBill(models.Model):
         else:
             return None
 
-    # TODO - remove
-    # @property
-    # def package_name(self):
-    #     if self.membership:
-    #         return self.membership.package_name(self.period_start)
-    #
-
     @property
     def monthly_rate(self):
         ''' Add up all rates for all the subscriptions. '''
-        rate = 0
-        subscriptions = self.subscriptions().filter()
-        for s in subscriptions:
-            rate += s.monthly_rate
-        return rate
+        return self.subscriptions().aggregate(rate=Coalesce(Sum('monthly_rate'), Value(0.00)))['rate']
 
     @property
     def overage_amount(self):
@@ -378,21 +367,22 @@ class UserBill(models.Model):
         return line_item
 
     def resource_allowance(self, resource):
-        ''' Add up all the allowances to see how much activity is allowed. '''
-        allowance = 0
-        subscriptions = self.subscriptions().filter(resource=resource)
-        for s in subscriptions:
-            allowance += s.allowance
-        return allowance
+        ''' Look at the subscriptions added to this bill to determine the allowance for the given resource. '''
+        return self.subscriptions().filter(resource=resource).aggregate(sum=Coalesce(Sum('allowance'), Value(0.00)))['sum']
 
     def resource_overage_rate(self, resource):
+        ''' Look at the subscriptions added to this bill and determin the overage rate for the given resource. '''
+
         # Assume the overage rate for all subscriptions is the same.
-        # This will cause problems if there are multiple subscriptions with different rates!!!
-        # But since this should not be the case 99% of the time I'm going to do it the simple way --JLS
+        # This will cause problems if there are multiple subscriptions
+        # with different rates!!! Since this should not be the case 99%
+        # of the time I'm going to do it the simple way --JLS
         subscriptions = self.subscriptions().filter(resource=resource)
-        if not subscriptions:
-            return resource.default_rate
-        return subscriptions.first().overage_rate
+        if subscriptions:
+            return subscriptions.first().overage_rate
+
+        # No subscriptions means we'll use the default rate
+        return resource.default_rate
 
     def close(self):
         if self.closed_ts != None:

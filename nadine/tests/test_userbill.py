@@ -102,6 +102,31 @@ class UserBillTestCase(TestCase):
         self.assertTrue(bill.has_coworking_day(day))
         self.assertEquals(bill, day.bill)
 
+    def test_monthly_rate(self):
+        bill = UserBill.objects.create_for_day(self.user1, today)
+        self.assertEqual(0, bill.resource_allowance(Resource.objects.day_resource))
+        subscription1 = ResourceSubscription.objects.create(
+            membership = self.user1.membership,
+            resource = Resource.objects.day_resource,
+            start_date = two_months_ago,
+            allowance = 10,
+            monthly_rate = Decimal(100.00),
+            overage_rate = 0,
+        )
+        bill.add_subscription(subscription1)
+        self.assertEqual(100.00, bill.monthly_rate)
+        # Add another subscription
+        subscription2 = ResourceSubscription.objects.create(
+            membership = self.user1.membership,
+            resource = Resource.objects.day_resource,
+            start_date = two_months_ago,
+            allowance = 8,
+            monthly_rate = Decimal(87.00),
+            overage_rate = 0,
+        )
+        bill.add_subscription(subscription2)
+        self.assertEqual(187.00, bill.monthly_rate)
+
     def test_resource_allowance(self):
         bill = UserBill.objects.create_for_day(self.user1, today)
         self.assertEqual(0, bill.resource_allowance(Resource.objects.day_resource))
