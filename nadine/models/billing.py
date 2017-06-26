@@ -295,7 +295,9 @@ class UserBill(models.Model):
             return
 
         # Start with a generic description
-        description = "Monthly " + subscription.resource.name + " "
+        if subscription.package_name:
+            description = subscription.package_name + " "
+        description = subscription.resource.name + " Subscription "
 
         # If there is already a description on the subscription, add that
         if subscription.description:
