@@ -170,12 +170,12 @@ class MembershipManager(models.Manager):
             target_date = localtime(now()).date()
         return self.filter(subscriptions__start_date__gt=target_date)
 
-    def for_user(self, username, target_date=None):
-        # user = User.objects.get(username=username)
-        individual = Q(individualmembership__user__username = username)
-        # TODO - This needs to take in to account the dates a member is active in the organization! --JLS
-        organization  = Q(organizationmembership__organization__organizationmember__user__username = username)
-        return self.filter(individual or organization)
+    def for_user(self, user, target_date=None):
+        ''' Return the one and only one membership for the given user on a given date. '''
+        org = Organization.objects.for_user(user, target_date)
+        if org:
+            return OrganizationMembership.objects.get(organization=org)
+        return IndividualMembership.objects.get(user=user)
 
 
 class Membership(models.Model):

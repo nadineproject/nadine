@@ -37,6 +37,14 @@ class OrganizationManager(models.Manager):
                 org_ids.append(m.organization.id)
         return Organization.objects.filter(id__in=org_ids).distinct()
 
+    def for_user(self, user, target_date=None):
+        ''' Return the active organization with this user as a member. '''
+        # TODO - convert to query for efficiency
+        for org in self.active_organizations(target_date):
+            if org.has_member(user):
+                return org
+        return None
+
     def with_tag(self, tag):
         return self.active_organizations().filter(tags__name__in=[tag])
 
