@@ -207,15 +207,6 @@ def bill_view(request, bill_id):
     }
     payment_form = PaymentForm(initial=initial_data)
 
-    # Who is this bill for?
-    if bill.membership:
-        bill_user = User.objects.get(membership = bill.membership)
-    else:
-        bill_user = bill.user
-    benefactor = None
-    if bill_user != bill.user:
-        benefactor = bill_user
-
     # Calculate how past due this bill is
     overdue = (localtime(now()).date() - bill.due_date).days
     if overdue < 1:
@@ -226,7 +217,6 @@ def bill_view(request, bill_id):
         'bill': bill,
         'line_items': line_items,
         'overdue': overdue,
-        'benefactor': benefactor,
         'payment_form': payment_form,
     }
     return render(request, 'staff/billing/bill_view.html', context)

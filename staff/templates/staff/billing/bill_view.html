@@ -35,14 +35,6 @@
 </table>
 <table class='bill-id-table bill-id-table-2'>
   <tr>
-    <th>Membership</th>
-    <td>
-      {% if bill.membership %}
-        <a href="{% url 'staff:members:membership' bill.user.username %}">{{ bill.membership.package_name }}</a>
-      {% else %}
-        None
-      {% endif %}
-    </td>
     <th>Amount:</th>
     <td>${{ bill.amount }}</td>
     <th id='paid-th'>Paid:</th>
@@ -72,7 +64,7 @@
   </tr>
   {% for line_item in line_items %}
       <tr class='{% cycle "row-odd" "row-even" %}'>
-          <td>{{ line_item.description }} {% if benefactor %} - For {{ benefactor.get_full_name }}{% endif %}</td>
+          <td>{{ line_item.description }}</td>
           <td style="text-align: right;">${{ line_item.amount|floatformat:2 }}</td>
       </tr>
   {% endfor %}

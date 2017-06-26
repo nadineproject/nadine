@@ -230,18 +230,25 @@ class UserBill(models.Model):
         else:
             return None
 
-    @property
-    def package_name(self):
-        if self.membership:
-            return self.membership.package_name(self.period_start)
+    # TODO - remove
+    # @property
+    # def package_name(self):
+    #     if self.membership:
+    #         return self.membership.package_name(self.period_start)
+    #
 
     @property
     def monthly_rate(self):
-        if self.membership:
-            return self.membership.monthly_rate(self.period_start)
+        ''' Add up all rates for all the subscriptions. '''
+        rate = 0
+        subscriptions = self.subscriptions().filter()
+        for s in subscriptions:
+            rate += s.monthly_rate
+        return rate
 
     @property
     def overage_amount(self):
+        ''' The difference between the month_rate and the amount. '''
         if self.monthly_rate:
             if self.amount < self.monthly_rate:
                 return 0

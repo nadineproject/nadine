@@ -6,7 +6,6 @@
     <th>ID</th>
     <th>Due Date</th>
     <th>User</th>
-    <th>Package</th>
     <th>Monthly</th>
     <th>Overage</th>
     <th>Total</th>
@@ -20,9 +19,6 @@
     <td>{{ bill.due_date}}</td>
     <td>
       <a href="{% url 'staff:members:detail' bill.user.username %}">{{ bill.user.get_full_name }}</a>
-    </td>
-    <td>
-      {{ bill.package_name|default:'' }}
     </td>
     <td id='amount-td'>
       {% if bill.monthly_rate %}${{ bill.monthly_rate }}{% endif %}
