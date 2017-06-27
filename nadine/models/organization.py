@@ -42,6 +42,8 @@ class OrganizationManager(models.Manager):
         # TODO - convert to query for efficiency
         for org in self.active_organizations(target_date):
             if org.has_member(user):
+                # TODO - this returns one and only one organization.
+                # A user can be in more than one organization. --JLS
                 return org
         return None
 

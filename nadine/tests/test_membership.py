@@ -434,51 +434,6 @@ class MembershipTestCase(TestCase):
         membership.bill_day = 31
         self.assertEquals("31st", membership.bill_day_str)
 
-    def test_generate_bill(self):
-        user1 = User.objects.create(username='user_gen1', first_name='Gen', last_name='One')
-        user2 = User.objects.create(username='user_gen2', first_name='Gen', last_name='Two')
-        membership = user1.membership
-        subscription = ResourceSubscription.objects.create(
-            membership = membership,
-            resource = self.test_resource,
-            start_date = two_months_ago,
-            monthly_rate = 100.00,
-            overage_rate = 0,
-        )
-
-        # Assume that if we generate a bill we will have a bill
-        self.assertEquals(0, membership.bills.count())
-        membership.generate_bills(target_date=today)
-        self.assertEquals(1, membership.bills.count())
-
-        # Check all the bill values
-        bill = membership.bills.first()
-        self.assertEquals(user1, bill.user)
-        self.assertEquals(membership.monthly_rate(), bill.amount)
-        ps, pe = membership.get_period(target_date=today)
-        self.assertEquals(ps, bill.period_start)
-        self.assertEquals(pe, bill.period_end)
-
-        # Run it again and test it doesn't create another bill
-        membership.generate_bills(target_date=today)
-        self.assertEquals(1, membership.bills.count())
-        self.assertEquals(membership.monthly_rate(), bill.amount)
-
-    def test_generate_all_bills(self):
-        user1 = User.objects.create(username='user_one', first_name='User', last_name='One')
-        membership = user1.membership
-        subscription = ResourceSubscription.objects.create(
-            membership = membership,
-            resource = self.test_resource,
-            start_date = date(year=2016, month=1, day=1),
-            end_date = date(year=2016, month=12, day=31),
-            monthly_rate = 100.00,
-            overage_rate = 0,
-        )
-        self.assertEquals(0, membership.bills.count())
-        membership.generate_all_bills()
-        self.assertEquals(12, membership.bills.count())
-
     def test_resource_activity(self):
         from nadine.models.usage import CoworkingDay
         day_resource = Resource.objects.day_resource

@@ -47,12 +47,7 @@ class BillingBatch(models.Model):
 
     @property
     def successful(self):
-        return self.error == None
-
-    def save_bill(self, bill):
-        if bill not in self.bills.all():
-            self.bills.add(bill)
-            self.save()
+        return self.completed_ts != None and self.error == None
 
     def run(self, start_date=None, end_date=None):
         ''' Run billing for every day since the last successful billing run. '''
@@ -90,26 +85,37 @@ class BillingBatch(models.Model):
         ''' Run billing for a specific day. '''
         logger.info("run_billing_for_day(%s)" % target_date)
 
+        # Keep track of which bills need to be recalculated
+        to_recalculate = set()
+
         # Check every active subscription on this day and add this if neccessary
         for subscription in ResourceSubscription.objects.unbilled(target_date):
             # Find the open bill for the membership period of this subscription
             period_start, period_end = subscription.membership.get_period(target_date)
-            bill = UserBill.objects.get_or_create_open_bill(subscription.payer, period_start, period_end)
+            bill = UserBill.objects.get_or_create_open_bill(subscription.payer, period_start, period_end, check_open_bills=False)
             if not bill.has_subscription(subscription):
                 bill.add_subscription(subscription)
-                self.save_bill(bill)
+                # If we have any activity for this resource, flag for recalculation
+                if bill.resource_activity(subscription.resource):
+                    to_recalculate.add(bill)
+                self.bills.add(bill)
+
 
         # Pull and add all past unbilled CoworkingDays
         for day in CoworkingDay.objects.unbilled(target_date):
             # Find the open bill for the period of this one day
             bill = UserBill.objects.get_or_create_open_bill(day.payer, day.visit_date, day.visit_date)
             bill.add_coworking_day(day)
-            self.save_bill(bill)
+            self.bills.add(bill)
+
+        # Recalculate all the bills that need it
+        for bill in to_recalculate:
+            bill.recalculate()
 
         # Close all open bills that end on this day
         for bill in UserBill.objects.filter(closed_ts__isnull=True, period_end=target_date):
+            self.bills.add(bill)
             bill.close()
-            self.save_bill(bill)
 
 
 class BillManager(models.Manager):
@@ -130,22 +136,23 @@ class BillManager(models.Manager):
         # Returns the one or None if we didn't find anything
         return bills.first()
 
-    def get_or_create_open_bill(self, user, period_start, period_end):
+    def get_or_create_open_bill(self, user, period_start, period_end, check_open_bills=True):
         ''' Get or create a UserBill for the given ResourceSubscription and date. '''
         bill = self.get_open_bill(user, period_start, period_end)
         if bill:
             return bill
 
         # If there is no bill for this specific period, find any open bill
-        last_open_bill = self.filter(user=user, closed_ts__isnull=True).order_by('due_date').last()
-        if last_open_bill:
-            # Expand the period to include this visit
-            if last_open_bill.period_start > period_start:
-                last_open_bill.period_start = period_start
-            if last_open_bill.period_end < period_end:
-                last_open_bill.period_end = period_end
-            last_open_bill.save()
-            return last_open_bill
+        if check_open_bills:
+            last_open_bill = self.filter(user=user, closed_ts__isnull=True).order_by('due_date').last()
+            if last_open_bill:
+                # Expand the period to include this visit
+                if last_open_bill.period_start > period_start:
+                    last_open_bill.period_start = period_start
+                if last_open_bill.period_end < period_end:
+                    last_open_bill.period_end = period_end
+                last_open_bill.save()
+                return last_open_bill
 
         # Create a new UserBill
         if not bill:
@@ -232,21 +239,10 @@ class UserBill(models.Model):
         else:
             return None
 
-    # TODO - remove
-    # @property
-    # def package_name(self):
-    #     if self.membership:
-    #         return self.membership.package_name(self.period_start)
-    #
-
     @property
     def monthly_rate(self):
         ''' Add up all rates for all the subscriptions. '''
-        rate = 0
-        subscriptions = self.subscriptions().filter()
-        for s in subscriptions:
-            rate += s.monthly_rate
-        return rate
+        return self.subscriptions().aggregate(rate=Coalesce(Sum('monthly_rate'), Value(0.00)))['rate']
 
     @property
     def overage_amount(self):
@@ -256,6 +252,18 @@ class UserBill(models.Model):
                 return 0
             else:
                 return self.amount - self.monthly_rate
+
+    @property
+    def package_name(self):
+        ''' If all subscriptions have the same package_name we'll assume that name for this bill as well. '''
+        package_name = None
+        for s in self.subscriptions():
+            if package_name:
+                if s.package_name != package_name:
+                    return None
+            else:
+                package_name = s.package_name
+        return package_name
 
     @property
     def is_open(self):
@@ -293,6 +301,30 @@ class UserBill(models.Model):
     # Other Methods
     ############################################################################
 
+    def recalculate(self):
+        ''' Recalculate bill by evaluating all subscriptions and activity. '''
+        logger.info("Recalculating bill %d for %s" % (self.id, self.user))
+
+        # Hold on to the existing data
+        subscriptions = self.subscriptions()
+        coworking_days = self.coworking_days()
+        custom_items = self.line_items.filter(custom=True)
+        total_before = self.amount
+
+        # Delete all the current line items
+        for line_item in self.line_items.all():
+            line_item.delete()
+
+        # Add everything back
+        for s in subscriptions:
+            self.add_subscription(s)
+        for d in coworking_days:
+            self.add_coworking_day(d)
+        for c in custom_items:
+            c.save()
+
+        logger.debug("Previous amount: %s, New amount: %s" % (total_before, self.amount))
+
     def subscriptions(self):
         ''' Return all the ResourceSubscriptions associated with this bill. '''
         subscription_ids = SubscriptionLineItem.objects.filter(bill=self).values('subscription')
@@ -308,7 +340,9 @@ class UserBill(models.Model):
             return
 
         # Start with a generic description
-        description = "Monthly " + subscription.resource.name + " "
+        if subscription.package_name:
+            description = subscription.package_name + " "
+        description = subscription.resource.name + " Subscription "
 
         # If there is already a description on the subscription, add that
         if subscription.description:
@@ -380,21 +414,27 @@ class UserBill(models.Model):
         return line_item
 
     def resource_allowance(self, resource):
-        ''' Add up all the allowances to see how much activity is allowed. '''
-        allowance = 0
-        subscriptions = self.subscriptions().filter(resource=resource)
-        for s in subscriptions:
-            allowance += s.allowance
-        return allowance
+        ''' Look at the subscriptions added to this bill to determine the allowance for the given resource. '''
+        return self.subscriptions().filter(resource=resource).aggregate(sum=Coalesce(Sum('allowance'), Value(0.00)))['sum']
 
     def resource_overage_rate(self, resource):
+        ''' Look at the subscriptions added to this bill and determin the overage rate for the given resource. '''
+
         # Assume the overage rate for all subscriptions is the same.
-        # This will cause problems if there are multiple subscriptions with different rates!!!
-        # But since this should not be the case 99% of the time I'm going to do it the simple way --JLS
+        # This will cause problems if there are multiple subscriptions
+        # with different rates!!! Since this should not be the case 99%
+        # of the time I'm going to do it the simple way --JLS
         subscriptions = self.subscriptions().filter(resource=resource)
-        if not subscriptions:
-            return resource.default_rate
-        return subscriptions.first().overage_rate
+        if subscriptions:
+            return subscriptions.first().overage_rate
+
+        # No subscriptions means we'll use the default rate
+        return resource.default_rate
+
+    def resource_activity(self, resource):
+        ''' Return all the activity for the given resource. '''
+        if resource == Resource.objects.day_resource:
+            return self.coworking_days()
 
     def close(self):
         if self.closed_ts != None:

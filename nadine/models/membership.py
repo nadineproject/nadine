@@ -374,28 +374,6 @@ class Membership(models.Model):
         future_ending = Q(end_date__gte=period_end)
         return self.subscriptions.filter(start_date__lte=period_start).filter(unending | future_ending).distinct()
 
-    # TODO - Evaluate
-    def subscriptions_by_payer(self, target_date=None):
-        ''' Pull the active subscriptions for given target_date and group them by payer '''
-        subscriptions = {}
-        for s in self.active_subscriptions(target_date):
-            key = s.payer.username
-            if not key in subscriptions:
-                subscriptions[key] = []
-            subscriptions[key].append(s)
-        return subscriptions
-
-    # TODO - Evaluate
-    def bills_by_payer(self, period_start, period_end):
-        ''' Pull the existing bills for a given period and group them by payer '''
-        bills = {}
-        from billing import UserBill
-        for b in UserBill.objects.filter(membership=self, period_start__lte=period_start, period_end__gte=period_end):
-            if hasattr(bills, b.user.username):
-                raise Exception('Error: multiple bills for one user/date')
-            bills[b.user.username] = b
-        return bills
-
     def is_active(self, target_date=None):
         return self.active_subscriptions(target_date).count() > 0
 
@@ -403,10 +381,7 @@ class Membership(models.Model):
         return self in Membership.objects.future_memberships(target_date)
 
     def monthly_rate(self, target_date=None):
-        rate = self.active_subscriptions(target_date).aggregate(Sum('monthly_rate'))['monthly_rate__sum']
-        if not rate:
-            rate = 0
-        return rate
+        return self.active_subscriptions(target_date).aggregate(rate=Coalesce(Sum('monthly_rate'), Value(0.00)))['rate']
 
     def bill_for_period(self, target_date=None):
         ''' Pull the UserBill associated with the start of this membership period '''
