@@ -47,11 +47,6 @@ class BillingBatch(models.Model):
     def successful(self):
         return self.error == None
 
-    def save_bill(self, bill):
-        if bill not in self.bills.all():
-            self.bills.add(bill)
-            self.save()
-
     def run(self, start_date=None, end_date=None):
         ''' Run billing for every day since the last successful billing run. '''
         logger.info("run(start_date=%s, end_date=%s)" % (start_date, end_date))
@@ -95,19 +90,19 @@ class BillingBatch(models.Model):
             bill = UserBill.objects.get_or_create_open_bill(subscription.payer, period_start, period_end)
             if not bill.has_subscription(subscription):
                 bill.add_subscription(subscription)
-                self.save_bill(bill)
+                self.bills.add(bill)
 
         # Pull and add all past unbilled CoworkingDays
         for day in CoworkingDay.objects.unbilled(target_date):
             # Find the open bill for the period of this one day
             bill = UserBill.objects.get_or_create_open_bill(day.payer, day.visit_date, day.visit_date)
             bill.add_coworking_day(day)
-            self.save_bill(bill)
+            self.bills.add(bill)
 
         # Close all open bills that end on this day
         for bill in UserBill.objects.filter(closed_ts__isnull=True, period_end=target_date):
+            self.bills.add(bill)
             bill.close()
-            self.save_bill(bill)
 
 
 class BillManager(models.Manager):
