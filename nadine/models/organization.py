@@ -38,14 +38,14 @@ class OrganizationManager(models.Manager):
         return Organization.objects.filter(id__in=org_ids).distinct()
 
     def for_user(self, user, target_date=None):
-        ''' Return the active organization with this user as a member. '''
-        # TODO - convert to query for efficiency
-        for org in self.active_organizations(target_date):
-            if org.has_member(user):
-                # TODO - this returns one and only one organization.
-                # A user can be in more than one organization. --JLS
-                return org
-        return None
+        ''' All organizations this user was a member of on the given date. '''
+        user_orgs = Organization.objects.filter(organizationmember__user=user)
+        if target_date:
+            started = Q(organizationmember__start_date__lte=target_date)
+            unending = Q(organizationmember__end_date__isnull=True)
+            future_ending = Q(organizationmember__end_date__gte=target_date)
+            user_orgs = user_orgs.filter(started).filter(unending | future_ending)
+        return user_orgs.distinct()
 
     def with_tag(self, tag):
         return self.active_organizations().filter(tags__name__in=[tag])

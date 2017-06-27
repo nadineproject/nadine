@@ -10,7 +10,9 @@ from nadine.models import *
 
 today = timezone.now().date()
 yesterday = today - timedelta(days=1)
+tomorrow = today + timedelta(days=1)
 last_month = today - timedelta(days=30)
+next_month = today + timedelta(days=30)
 
 class OrganiztionTestCase(TestCase):
 
@@ -85,6 +87,20 @@ class OrganiztionTestCase(TestCase):
         # Locked & Admin
         self.mem1.set_admin(True)
         self.assertTrue(self.org1.can_edit(self.user1))
+
+    def test_for_user(self):
+        # User1 is a member today, but wasn't yesterday
+        self.assertFalse(self.org1 in Organization.objects.for_user(self.user1, target_date=last_month))
+        self.assertFalse(self.org1 in Organization.objects.for_user(self.user1, target_date=yesterday))
+        self.assertTrue(self.org1 in Organization.objects.for_user(self.user1, target_date=today))
+        self.assertTrue(self.org1 in Organization.objects.for_user(self.user1, target_date=tomorrow))
+        self.assertTrue(self.org1 in Organization.objects.for_user(self.user1, target_date=next_month))
+        # User2 was a member yesterday but not today
+        self.assertTrue(self.org2 in Organization.objects.for_user(self.user2, target_date=last_month))
+        self.assertTrue(self.org2 in Organization.objects.for_user(self.user2, target_date=yesterday))
+        self.assertFalse(self.org2 in Organization.objects.for_user(self.user2, target_date=today))
+        self.assertFalse(self.org2 in Organization.objects.for_user(self.user2, target_date=tomorrow))
+        self.assertFalse(self.org2 in Organization.objects.for_user(self.user2, target_date=next_month))
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
