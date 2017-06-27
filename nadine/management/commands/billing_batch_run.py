@@ -1,12 +1,9 @@
 from __future__ import print_function
-from datetime import datetime, timedelta
+from datetime import datetime
 
-from django.core.management.base import BaseCommand, CommandError
-from django.utils.timezone import localtime, now
-from django.db.models import Sum
+from django.core.management.base import BaseCommand
 
-from nadine.models.membership import Membership
-from nadine.models.billing import BillingBatch, UserBill
+from nadine.models.billing import BillingBatch
 
 
 class Command(BaseCommand):
@@ -27,9 +24,6 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        today = localtime(now()).date()
-        yesterday = today - timedelta(days=1)
-
         start_date = None
         if options['start']:
             start_date = datetime.strptime(options['start'], "%Y-%m-%d").date()
