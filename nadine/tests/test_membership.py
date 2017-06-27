@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, date
 from dateutil.relativedelta import relativedelta
 from django.urls import reverse
 
-from django.test import TestCase, RequestFactory, Client
+from django.test import TestCase, override_settings
 from django.utils import timezone
 from django.utils.timezone import localtime, now
 from django.contrib.auth.models import User
@@ -20,6 +20,8 @@ one_month_from_now = today + relativedelta(months=1)
 one_month_ago = today - relativedelta(months=1)
 two_months_ago = today - relativedelta(months=2)
 
+
+@override_settings(SUSPEND_MEMBER_ALERTS=True)
 class MembershipTestCase(TestCase):
 
     def setUp(self):
@@ -549,6 +551,7 @@ class MembershipTestCase(TestCase):
         self.assertTrue(m.is_organization)
 
 
+@override_settings(SUSPEND_MEMBER_ALERTS=True)
 class SubscriptionTestCase(TestCase):
 
     def test_unbilled(self):

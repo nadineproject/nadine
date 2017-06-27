@@ -4,7 +4,7 @@ from dateutil.relativedelta import relativedelta
 from decimal import Decimal
 
 from django.urls import reverse
-from django.test import TestCase, RequestFactory, Client
+from django.test import TestCase, override_settings
 from django.utils import timezone
 from django.utils.timezone import localtime, now
 from django.contrib.auth.models import User
@@ -15,6 +15,7 @@ from nadine.models.membership import Membership, ResourceSubscription
 from nadine.models.organization import Organization
 from nadine.models.resource import Resource
 from nadine.models.usage import CoworkingDay
+
 
 today = localtime(now()).date()
 yesterday = today - timedelta(days=1)
@@ -36,6 +37,8 @@ def print_bill(bill):
     for line_item in bill.line_items.all().order_by('id'):
         print("    %s: $%s" % (line_item.description, line_item.amount))
 
+
+@override_settings(SUSPEND_MEMBER_ALERTS=True)
 class UserBillTestCase(TestCase):
 
     def setUp(self):

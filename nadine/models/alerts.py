@@ -24,6 +24,7 @@ from nadine.utils import mailgun
 
 logger = logging.getLogger(__name__)
 
+
 class MemberAlertManager(models.Manager):
 
     def create_if_not_open(self, user, key):
@@ -57,6 +58,8 @@ class MemberAlertManager(models.Manager):
     #######################################################################
 
     def trigger_periodic_check(self):
+        logger.debug("trigger_periodic_check")
+
         # Check for exiting members in the coming week
         exit_date = localtime(now()) + timedelta(days=5)
         exiting_members = User.helper.exiting_members(exit_date)
@@ -80,6 +83,7 @@ class MemberAlertManager(models.Manager):
                 MemberAlert.objects.create_if_new(user=u, key=MemberAlert.ONE_MONTH)
 
     def trigger_ending_membership(self, user, target_date=None):
+        logger.debug("trigger_ending_membership: %s, %s" % (user, target_date))
         if target_date == None:
             target_date = localtime(now())
 
@@ -201,12 +205,14 @@ class MemberAlertManager(models.Manager):
 
 @receiver(post_save, sender=CoworkingDay)
 def coworking_day_callback(sender, **kwargs):
+    if getattr(settings, 'SUSPEND_MEMBER_ALERTS', False): return
     coworking_day = kwargs['instance']
     MemberAlert.objects.trigger_sign_in(coworking_day.user)
 
 
 @receiver(post_save, sender=ResourceSubscription)
 def subscription_callback(sender, **kwargs):
+    if getattr(settings, 'SUSPEND_MEMBER_ALERTS', False): return
     subscription = kwargs['instance']
     created = kwargs['created']
     updated_fields = kwargs['update_fields']
