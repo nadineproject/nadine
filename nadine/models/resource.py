@@ -165,6 +165,11 @@ class Room(models.Model):
 
 
 class ResourceManager(models.Manager):
+    DAY_KEY = "day"
+    KEY_KEY = "key"
+    MAIL_KEY = "mail"
+    DESK_KEY = "desk"
+    ROOM_KEY = "room"
 
     def resource_by_key(self, key):
         # print("pulling '%s' resource" % key)
@@ -177,105 +182,33 @@ class ResourceManager(models.Manager):
 
     @property
     def day_resource(self):
-        return self.resource_by_key(Resource.DAY_KEY)
+        return self.resource_by_key(self.DAY_KEY)
 
     @property
     def key_resource(self):
-        return self.resource_by_key(Resource.KEY_KEY)
+        return self.resource_by_key(self.KEY_KEY)
 
     @property
     def mail_resource(self):
-        return self.resource_by_key(Resource.MAIL_KEY)
+        return self.resource_by_key(self.MAIL_KEY)
 
     @property
     def desk_resource(self):
-        return self.resource_by_key(Resource.DESK_KEY)
+        return self.resource_by_key(self.DESK_KEY)
 
     @property
     def room_resource(self):
-        return self.resource_by_key(Resource.ROOM_KEY)
+        return self.resource_by_key(self.ROOM_KEY)
 
 
 class Resource(models.Model):
-    DAY_KEY = "day"
-    KEY_KEY = "key"
-    MAIL_KEY = "mail"
-    DESK_KEY = "desk"
-    ROOM_KEY = "room"
-
+    objects = ResourceManager()
     name = models.CharField(max_length=64, unique=True)
     key = models.CharField(max_length=8, unique=True, null=True, blank=True)
     default_rate = models.DecimalField(max_digits=7, decimal_places=2, default=0)
-    tracker_class = models.CharField(max_length=64, null=True, blank=True)
-
-    objects = ResourceManager()
 
     def __str__(self):
         return self.name
-
-    def is_trackable(self):
-        return self.tracker_class is not None
-
-    def get_tracker(self):
-        if not self.tracker_class:
-            return None
-
-        try:
-            mod_index = self.tracker_class.rfind(".")
-            module_name = self.tracker_class[0:mod_index]
-            class_name = self.tracker_class[mod_index+1:]
-            logger.debug("Loading Class:  module_name='%s', class_name='%s'" % (module_name, class_name))
-            m = importlib.import_module(module_name)
-            loaded_class = getattr(m, class_name)
-            instance = loaded_class(self)
-            if not isinstance(instance, ResourceTrackerABC):
-                raise Exception("Tracker class not an instance of ResourceTrackerABC")
-            return instance
-        except Exception as e:
-            raise Exception("Could not load tracker class", e)
-
-    def save(self, *args, **kwargs):
-        # Try and get a tracker of this class and raise an Exception if it's invalid
-        self.get_tracker()
-        super(Resource, self).save(*args, **kwargs)
-
-
-################################################################################
-# Resource Trackers
-################################################################################
-
-
-class ResourceTrackerABC:
-    __metaclass__ = ABCMeta
-
-    def __init__(self, resource):
-        self.resource = resource
-
-    @abstractmethod
-    def get_activity(self, user, period_start, period_end):
-        # Return a list of line items for all activity in the given time period
-        pass
-
-
-class CoworkingDayTracker(ResourceTrackerABC):
-
-    def get_activity(self, user, period_start, period_end):
-        from nadine.models.usage import CoworkingDay
-        from nadine.models.billing import BillLineItem
-        logger.debug("get_activity(user=%s, period_start=%s, period_end=%s)" % (user, period_start, period_end))
-        # All coworking days associated with a bill
-        billed_coworking_days = BillLineItem.objects.filter(resource=Resource.objects.day_resource).values('activity_id')
-        # All billable coworking days not associated with a bill
-        billable_coworking_days = CoworkingDay.objects.filter(visit_date__range=(period_start, period_end), payment='Bill').exclude(id__in=billed_coworking_days).annotate(activity_date=F('visit_date'))
-        # Return the set of billable coworking days either for this user, or paid by this user
-        return billable_coworking_days.filter(Q(user=user) | Q(paid_by=user))
-
-
-class RoomBookingTracker(ResourceTrackerABC):
-
-    def get_activity(self, user, period_start, period_end):
-        # TODO - complete
-        return []
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
