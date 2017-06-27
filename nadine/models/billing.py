@@ -17,6 +17,7 @@ from nadine.models.usage import CoworkingDay
 
 logger = logging.getLogger(__name__)
 
+
 class BatchManager(models.Manager):
 
     def run(self, start_date=None, end_date=None):
@@ -25,6 +26,7 @@ class BatchManager(models.Manager):
             return batch
         else:
             raise Exception(batch.error)
+
 
 class BillingBatch(models.Model):
     """Gathers all untracked subscriptions and activity and associates it with a UserBill."""
