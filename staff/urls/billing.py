@@ -12,8 +12,6 @@ urlpatterns = [
     url(r'^bill/(?P<bill_id>\d+)/$', billing.bill_view, name='bill'),
     url(r'^bills/outstanding/$', billing.outstanding, name='outstanding'),
     url(r'^bills/(?P<username>[^/]+)/$', billing.user_bills, name='user_bills'),
-    url(r'^daily/$', billing.billing_today, name='billing_today'),
-    url(r'^daily/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', billing.daily_billing, name='daily_billing'),
 
     # Actions
     url(r'^bill_paid/(?P<bill_id>\d+)/$', billing.action_bill_paid, name='bill_paid'),

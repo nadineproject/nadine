@@ -23,34 +23,6 @@ from staff.views.activity import date_range_from_request, START_DATE_PARAM, END_
 
 
 @staff_member_required
-def billing_today(request):
-    today = localtime(now())
-    return HttpResponseRedirect(reverse('staff:billing:daily_billing', args=[], kwargs={'year': today.year, 'month': today.month, 'day': today.day}))
-
-
-@staff_member_required
-def daily_billing(request, year, month, day):
-    d = date(year=int(year), month=int(month), day=int(day))
-    memberships = []
-    for m in Membership.objects.ready_for_billing(target_date=d):
-        memberships.append({
-            'membership': m,
-            'package_name': m.package_name(target_date=d),
-            'monthly_rate': m.monthly_rate(target_date=d),
-            'bills': m.bills_for_period(target_date=d),
-            'bill_totals': m.bill_totals(target_date=d),
-            'payment_totals': m.payment_totals(target_date=d),
-        })
-    context = {
-        'memberships': memberships,
-        'date': d,
-        'previous_date': d - timedelta(days=1),
-        'next_date': d + timedelta(days=1),
-    }
-    return render(request, 'staff/billing/daily_billing.html', context)
-
-
-@staff_member_required
 def bill_list(request):
     start, end = date_range_from_request(request)
     date_range_form = DateRangeForm({START_DATE_PARAM: start, END_DATE_PARAM: end})
