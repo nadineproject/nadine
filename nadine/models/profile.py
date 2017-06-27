@@ -39,7 +39,7 @@ from nadine.settings import TIME_ZONE
 from nadine.utils.payment_api import PaymentAPI
 from nadine.utils.slack_api import SlackAPI
 from nadine.models.core import GENDER_CHOICES, HowHeard, Industry, Neighborhood, Website, URLType
-from nadine.models.membership import Membership, ResourceSubscription, SecurityDeposit
+from nadine.models.membership import Membership, IndividualMembership, ResourceSubscription, SecurityDeposit
 from nadine.models.resource import Resource
 from nadine.models.usage import CoworkingDay
 from nadine.models.organization import Organization
@@ -474,11 +474,12 @@ class UserProfile(models.Model):
         if first_day:
             if first_day.visit_date < first_visit:
                 first_visit = first_day.visit_date
-        all_memberships = Membership.objects.for_user(self.user.username)
-        first_subscription = ResourceSubscription.objects.filter(membership__in=all_memberships).order_by('start_date').first()
+        individual_membership = IndividualMembership.objects.get(user=self.user)
+        first_subscription = ResourceSubscription.objects.filter(membership=individual_membership).order_by('start_date').first()
         if first_subscription:
             if first_subscription.start_date < first_visit:
                 first_visit = first_subscription.start_date
+        # TODO - pull the first time we saw them in an organization
         if first_visit < date.max:
             return first_visit
         return None
@@ -490,11 +491,12 @@ class UserProfile(models.Model):
         if last_day:
             if last_day.visit_date > last_visit:
                 last_visit = last_day.visit_date
-        all_memberships = Membership.objects.for_user(self.user.username)
-        last_subscription = ResourceSubscription.objects.filter(membership__in=all_memberships).order_by('start_date').last()
+        individual_membership = IndividualMembership.objects.get(user=self.user)
+        last_subscription = ResourceSubscription.objects.filter(membership=individual_membership).order_by('start_date').last()
         if last_subscription and last_subscription.end_date:
             if last_subscription.end_date > last_visit:
                 last_visit = last_subscription.end_date
+        # TODO - pull the last time we saw them in an organization
         if last_visit > date.min:
             return last_visit
         return None
@@ -502,22 +504,21 @@ class UserProfile(models.Model):
     @property
     def membership_type(self):
         membership_type = ""
-        # Grab the first membership associated with this user.
-        # This will be the individual membership even if they have an org membership.
-        membership = Membership.objects.for_user(self.user.username).first()
-        if not membership.is_active():
-            membership_type += "Ex "
-        if hasattr(membership, 'organizationmembership'):
-            membership_type += "Org "
+        membership = Membership.objects.for_user(self.user)
+        if membership:
+            if not membership.is_active():
+                membership_type += "Ex "
+            if membership.is_organization:
+                membership_type += "Org "
 
-        # Evaluate our package name
-        package_name = membership.package_name()
-        if package_name:
-            membership_type += package_name
-            if not membership.package_is_pure():
-                membership_type += " *"
-        if len(membership_type) > 0:
-            return membership_type
+            # Evaluate our package name
+            package_name = membership.package_name()
+            if package_name:
+                membership_type += package_name
+                if not membership.package_is_pure():
+                    membership_type += " *"
+            if len(membership_type) > 0:
+                return membership_type
 
         # Now check daily logs
         drop_ins = CoworkingDay.objects.filter(user=self.user).count()
