@@ -292,11 +292,9 @@ class BillingTestCase(TestCase):
     def test_backdated_new_user_and_membership(self):
         # New user starts Advocate membership backdated 2 weeks
         user = User.objects.create(username='member_two', first_name='Member', last_name='Two')
-        self.assertTrue('member_two', user.username)
         user.membership.bill_day = two_weeks_ago.day
         user.membership.save()
         user.membership.set_to_package(self.advocatePackage, start_date=two_weeks_ago)
-        self.assertTrue(user.membership.package_name() != None)
         self.assertEqual('Advocate', user.membership.package_name())
         next_start_date = user.membership.next_period_start()
 
@@ -439,38 +437,37 @@ class BillingTestCase(TestCase):
         start = one_week_from_now
         end_of_this_period = start + relativedelta(months=1) - timedelta(days=1)
         user = User.objects.create(username='member_future', first_name='Member', last_name='Future')
-        user.membership.bill_day = start.day
-        self.assertEqual('Member', user.first_name)
 
         # Set membership package of PT5 to start in one week
-        user.membership.set_to_package(self.pt5Package, start_date=start)
-        self.assertTrue(len(user.membership.active_subscriptions()) == 0)
+        membership = Membership.objects.for_user(user)
+        membership.bill_day = start.day
+        membership.set_to_package(self.pt5Package, start_date=start)
+        self.assertEqual(0, membership.active_subscriptions().count())
 
         # Test no current bill but future bill will be for $75
         todays_bill_batch = BillingBatch.objects.run(start_date=today, end_date=today)
         self.assertTrue(todays_bill_batch.successful)
-        self.assertTrue(0 == len(user.bills.filter(period_start=today)))
-        future_bill_batch = BillingBatch.objects.run(start_date=start, end_date=end_of_this_period)
-        start_date_bill = user.bills.get(period_start=start)
-        self.assertEqual(75, start_date_bill.amount)
-        self.assertEqual(1, start_date_bill.line_items.all().count())
+        self.assertEqual(0, todays_bill_batch.bills.count())
+        self.assertEqual(0, user.bills.count())
+        future_bill_batch = BillingBatch.objects.run(start_date=start, end_date=start)
+        self.assertTrue(future_bill_batch.successful)
+        self.assertEqual(1, future_bill_batch.bills.count())
+        future_bill = user.bills.get(period_start=start)
+        self.assertEqual(75, future_bill.amount)
+        self.assertEqual(1, future_bill.line_items.count())
 
         # Add key to future membership plan
-        ResourceSubscription.objects.create(resource=Resource.objects.key_resource, membership=user.membership, package_name='PT5', allowance=1, start_date=start, monthly_rate=100, overage_rate=0)
-        future_subs = user.membership.active_subscriptions(target_date=start)
-        self.assertEqual(2, len(future_subs))
-        self.assertTrue(ResourceSubscription.objects.get(resource=Resource.objects.key_resource) in future_subs)
+        ResourceSubscription.objects.create(resource=Resource.objects.key_resource, membership=membership,  allowance=1, start_date=start, monthly_rate=100, overage_rate=0)
+        self.assertEqual(2, membership.active_subscriptions(target_date=start).count())
+        self.assertTrue(membership.has_key(target_date=start))
 
         # Run bill for start date again and test to make sure it will be $175
         altered_batch = BillingBatch.objects.run(start_date=start, end_date=start)
         self.assertTrue(altered_batch.successful)
-        # TODO: Do we want this to create a new bill or add another line to the open bill?
-        # Currently is making new bill
-        bill_with_key = user.bills.filter(period_start=start)
-        for b in bill_with_key:
-            print_bill(b)
-        # self.assertEqual(175, bill_with_key.amount)
-        # self.assertEqual(2, bill_with_key.line_items.all().count())
+        self.assertEqual(1, altered_batch.bills.count())
+        bill_with_key = user.bills.get(period_start=start)
+        self.assertEqual(175, bill_with_key.amount)
+        self.assertEqual(2, bill_with_key.line_items.count())
 
     def test_returning_member_with_future_subscriptions_and_end_dates(self):
         user = User.objects.create(username='member_returning', first_name='Member', last_name='Returning')
