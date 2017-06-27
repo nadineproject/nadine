@@ -781,7 +781,7 @@ class BillingTestCase(TestCase):
         # There should now be no bill for today
         # TODO - This isn't working correctly - returns a bill for 575 if start day is today. Works for yesterday
         # TODO - This is having the date issue!
-        new_end_batch = BillingBatch.objects.run(start_date=yesterday, end_date=today)
+        new_end_batch = BillingBatch.objects.run(start_date=today, end_date=today)
         self.assertTrue(new_end_batch.successful)
         new_end_bill = user.bills.filter(period_start=today)
         self.assertTrue(len(new_end_bill) == 0)
