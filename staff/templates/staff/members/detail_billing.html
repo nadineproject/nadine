@@ -33,6 +33,7 @@
 </table>
 
 <!-- Billing Profile -->
+{% if user.profile.outstanding_bills %}
 <h5>Outstanding Bills (<a href="{% url 'staff:billing:user_bills' user.username %}">view all</a>)</h5>
 <table class='sub-table'>
   <tr>
@@ -52,6 +53,9 @@
     </tr>
   {% endfor %}
 </table>
+{% else %}
+<h5><a href="{% url 'staff:billing:user_bills' user.username %}" style='margin-top: 2%; margin-bottom: 2%;'>View All Bills</a></h5>
+{% endif %}
 
 <!-- Security Deposits -->
 <h5>Security Deposits</h5>
