@@ -252,6 +252,18 @@ class UserBill(models.Model):
                 return self.amount - self.monthly_rate
 
     @property
+    def package_name(self):
+        ''' If all subscriptions have the same package_name we'll assume that name for this bill as well. '''
+        package_name = None
+        for s in self.subscriptions():
+            if package_name:
+                if s.package_name != package_name:
+                    return None
+            else:
+                package_name = s.package_name
+        return package_name
+
+    @property
     def is_open(self):
         return self.closed_ts == None
 
