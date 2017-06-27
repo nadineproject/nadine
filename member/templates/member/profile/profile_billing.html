@@ -47,10 +47,10 @@
 <table>
   <thead>
         <tr>
-            <th>Date</th>
+            <th>Due Date</th>
             <th>Amount</th>
             <th>Payments</th>
-            <th>Membership</th>
+            <th></th>
             <th></td>
         </tr>
   </thead>
@@ -60,7 +60,7 @@
         <td nowrap>{{ bill.due_date|date:"M d, Y" }}</td>
         <td>${{ bill.amount }}</td>
         <td>${{ bill.total_paid }}</td>
-        <td nowrap>{% if bill.membership %}{{ bill.membership.package_name }}{% endif %}</td>
+        <td>{% if bill.is_open %}Open{% endif %}</td>
         <td><a href='{{ bill.get_absolute_url}}'>receipt</a></td>
     </tr>
 {% endfor %}

@@ -148,6 +148,7 @@ class MembershipManager(models.Manager):
     def active_organization_memberships(self, target_date=None, package_name=None):
         return self.active_memberships(target_date, package_name).filter(organizationmembership__isnull=False)
 
+    # TODO - remove
     def ready_for_billing(self, target_date=None):
         ''' Return a set of memberships ready for billing.  This
         includes all active memberships that fall on this billing day,
@@ -171,10 +172,15 @@ class MembershipManager(models.Manager):
         return self.filter(subscriptions__start_date__gt=target_date)
 
     def for_user(self, user, target_date=None):
-        ''' Return the one and only one membership for the given user on a given date. '''
-        org = Organization.objects.for_user(user, target_date)
-        if org:
-            return OrganizationMembership.objects.get(organization=org)
+        ''' Return one and only one membership for the given user on a given date. '''
+        orgs = Organization.objects.for_user(user, target_date)
+        if orgs:
+            # TODO - with organization memberships you can actually have more than one membership!
+            # I'm going to punt for now and just grab the membership of the first org --JLS
+            org = orgs.first()
+            org_membership = OrganizationMembership.objects.filter(organization=org).first()
+            if org_membership:
+                return org_membership
         return IndividualMembership.objects.get(user=user)
 
 

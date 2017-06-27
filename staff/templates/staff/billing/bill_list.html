@@ -18,7 +18,6 @@
 			<th>Member</th>
 			<th>Period Start</th>
 			<th>Period End</th>
-			<th>Membership</th>
 			<th>Lines</th>
 			<th class="amount">Amount</th>
 			<th class="amount">Paid</th>
@@ -32,13 +31,6 @@
 				<td><a href="{% url 'staff:members:detail' bill.user.username %}">{{ bill.user.get_full_name }}</a></td>
 				<td>{{ bill.period_start }}</td>
 				<td>{{ bill.period_end }}</td>
-				<td>
-					{% if bill.membership %}
-						<a href="{% url 'staff:members:membership' user.username %}">{{ bill.membership.package_name }}</a>
-					{% else %}
-						None
-					{% endif %}
-				</td>
 				<td>{{ bill.line_items.all | length }}</td>
 				<td class="amount">${{ bill.amount }}</td>
 				<td class="amount">${{ bill.total_paid }}</td>
