@@ -45,7 +45,7 @@ class BillingBatch(models.Model):
 
     @property
     def successful(self):
-        return self.error == None
+        return self.completed_ts != None and self.error == None
 
     def run(self, start_date=None, end_date=None):
         ''' Run billing for every day since the last successful billing run. '''
