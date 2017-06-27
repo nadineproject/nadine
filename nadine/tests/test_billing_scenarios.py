@@ -226,46 +226,46 @@ class BillingTestCase(TestCase):
         self.assertEqual(0, user7.profile.outstanding_amount)
         self.assertEqual(0, user8.profile.outstanding_amount)
 
-    # def test_change_bill_day(self):
-    #     # PT5 from 1/10/2010 billed on the 10th
-    #     user = User.objects.create(username='test_user', first_name='Test', last_name='User')
-    #     user.membership.bill_day = 10
-    #     user.membership.set_to_package(self.pt5Package, start_date=date(2010, 1, 10))
-    #     self.assertEqual(10, user.membership.bill_day)
-    #
-    #     # Two days of activity on 6/9 and 6/15
-    #     # First day is in the 6/10 bill, second is not
-    #     day1 = CoworkingDay.objects.create(user=user, visit_date=date(2010, 6, 9), payment='Bill')
-    #     day2 = CoworkingDay.objects.create(user=user, visit_date=date(2010, 6, 15), payment='Bill')
-    #
-    #     # TODO - this section is breaking. Date issue?
-    #     batch = BillingBatch.objects.run(start_date=date(2010, 6, 9), end_date=date(2010, 6, 10))
-    #     self.assertTrue(batch.successful)
-    #     june_10_bill = user.bills.get(period_start=date(2010, 6, 10))
-    #     print_bill(june_10_bill)
-    #     self.assertTrue(day1 in june_10_bill.coworking_days())
-    #     self.assertEqual(june_10_bill, day1.bill)
-    #     self.assertFalse(day2 in june_10_bill.coworking_days())
-    #
-    #     # Before we change our bill day we need to remove outstanding bills
-    #     june_10_bill.delete()
-    #
-    #     # Change the bill date to the 1st
-    #     user.membership.bill_day = 1
-    #     user.membership.save()
-    #     self.assertEqual(1, user.membership.bill_day)
+    def test_change_bill_day(self):
+        # PT5 from 1/10/2010 billed on the 10th
+        user = User.objects.create(username='test_user', first_name='Test', last_name='User')
+        user.membership.bill_day = 10
+        user.membership.set_to_package(self.pt5Package, start_date=date(2010, 1, 10))
+        self.assertEqual(10, user.membership.bill_day)
 
-        # # Generate the July 1st bill
-        # batch = BillingBatch.objects.run(start_date=date(2010, 6, 1), end_date=date(2010, 7, 1))
-        # self.assertTrue(batch.successful)
-        #
-        # june_1_bill = user.bills.get(period_start=date(2010, 6, 1))
-        # self.assertTrue(day1 in june_1_bill.coworking_days())
-        # self.assertTrue(day2 in june_1_bill.coworking_days())
-        #
-        # july_1_bill = user.bills.get(period_start=date(2010, 7, 1))
-        # self.assertFalse(day1 in july_1_bill.coworking_days())
-        # self.assertFalse(day2 in july_1_bill.coworking_days())
+        # Two days of activity on 6/9 and 6/15
+        # First day is in the 6/10 bill, second is not
+        day1 = CoworkingDay.objects.create(user=user, visit_date=date(2010, 6, 9), payment='Bill')
+        day2 = CoworkingDay.objects.create(user=user, visit_date=date(2010, 6, 15), payment='Bill')
+
+        # TODO - this section is breaking. Date issue?
+        batch = BillingBatch.objects.run(start_date=date(2010, 6, 9), end_date=date(2010, 6, 10))
+        self.assertTrue(batch.successful)
+        june_10_bill = user.bills.get(period_start=date(2010, 6, 10))
+        print_bill(june_10_bill)
+        self.assertTrue(day1 in june_10_bill.coworking_days())
+        self.assertEqual(june_10_bill, day1.bill)
+        self.assertFalse(day2 in june_10_bill.coworking_days())
+
+        # Before we change our bill day we need to remove outstanding bills
+        june_10_bill.delete()
+
+        # Change the bill date to the 1st
+        user.membership.bill_day = 1
+        user.membership.save()
+        self.assertEqual(1, user.membership.bill_day)
+
+        # Generate the July 1st bill
+        batch = BillingBatch.objects.run(start_date=date(2010, 6, 1), end_date=date(2010, 7, 1))
+        self.assertTrue(batch.successful)
+
+        june_1_bill = user.bills.get(period_start=date(2010, 6, 1))
+        self.assertTrue(day1 in june_1_bill.coworking_days())
+        self.assertTrue(day2 in june_1_bill.coworking_days())
+
+        july_1_bill = user.bills.get(period_start=date(2010, 7, 1))
+        self.assertFalse(day1 in july_1_bill.coworking_days())
+        self.assertFalse(day2 in july_1_bill.coworking_days())
 
     # def test_prorated_subscription(self):
     #     # User 1 is a PT5 from 1/1/2010 1st
