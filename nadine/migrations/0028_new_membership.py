@@ -30,8 +30,8 @@ def forward(apps, schema_editor):
     print
 
     print("    Creating Resources...")
-    DAY = Resource.objects.create(name="Coworking Day", key="day", tracker_class="nadine.models.resource.CoworkingDayTracker" )
-    ROOM = Resource.objects.create(name="Room Booking", key="room", tracker_class="nadine.models.resource.RoomBookingTracker" )
+    DAY = Resource.objects.create(name="Coworking Day", key="day", default_rate=30)
+    ROOM = Resource.objects.create(name="Room Booking", key="room", default_rate=10)
     DESK = Resource.objects.create(name="Dedicated Desk", key="desk")
     MAIL = Resource.objects.create(name="Mail Service", key="mail")
     KEY = Resource.objects.create(name="Key", key="key")
@@ -201,7 +201,6 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=64, unique=True)),
                 ('key', models.CharField(max_length=8, blank=True, null=True, unique=True)),
                 ('default_rate', models.DecimalField(decimal_places=2, default=0, max_digits=7)),
-                ('tracker_class', models.CharField(max_length=64, blank=True, null=True)),
             ],
         ),
         migrations.CreateModel(

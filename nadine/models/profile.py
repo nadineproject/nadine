@@ -368,13 +368,11 @@ class UserProfile(models.Model):
         from nadine.forms import PaymentForm
         return PaymentForm(initial={'username': self.user.username, 'amount': self.open_bills_amount})
 
-    def days_used(self):
-        # TODO - evaluate what it should do if this is an org member
-        membership = self.user.membership
-        days = len(membership.resource_activity(Resource.objects.day_resource))
-        if membership.is_active():
-            allowed = membership.allowance_by_resource(Resource.objects.day_resource)
-        else:
+    def days_used(self, target_date=None):
+        membership = Membership.objects.for_user(self.user, target_date)
+        days = membership.resource_activity_in_period(Resource.objects.day_resource, target_date).count()
+        allowed = membership.allowance_by_resource(Resource.objects.day_resource, target_date)
+        if allowed == None:
             allowed = 0
         return (days, allowed)
 

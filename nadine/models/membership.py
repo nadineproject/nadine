@@ -148,24 +148,6 @@ class MembershipManager(models.Manager):
     def active_organization_memberships(self, target_date=None, package_name=None):
         return self.active_memberships(target_date, package_name).filter(organizationmembership__isnull=False)
 
-    # TODO - remove
-    def ready_for_billing(self, target_date=None):
-        ''' Return a set of memberships ready for billing.  This
-        includes all active memberships that fall on this billing day,
-        and the memberships that ended yesterday. '''
-        if not target_date:
-            target_date = localtime(now()).date()
-        ready = []
-        memberships_today = self.active_memberships(target_date)
-        for m in memberships_today:
-            (this_period_start, this_period_end) = m.get_period(target_date)
-            if this_period_start == target_date:
-                ready.append(m)
-        memberships_yesterday = Membership.objects.active_memberships(target_date - timedelta(days=1))
-        for m in memberships_yesterday.exclude(id__in=memberships_today.values('id')):
-            ready.append(m)
-        return ready
-
     def future_memberships(self, target_date=None):
         if not target_date:
             target_date = localtime(now()).date()
@@ -265,6 +247,14 @@ class Membership(models.Model):
 
     def has_mail(self, target_date=None):
         return self.has_resource(Resource.objects.mail_resource, target_date)
+
+    def resource_activity_in_period(self, resource, target_date=None):
+        ''' Get all the activity for this resource in this period. '''
+        period_start, period_end = self.get_period(target_date)
+        if resource == Resource.objects.day_resource:
+            users = self.users_in_period(period_start, period_end)
+            from nadine.models.usage import CoworkingDay
+            return CoworkingDay.objects.filter(user__in=users, visit_date__range=(period_start, period_end))
 
     def users_in_period(self, period_start, period_end):
         users = set()
@@ -389,28 +379,6 @@ class Membership(models.Model):
     def monthly_rate(self, target_date=None):
         return self.active_subscriptions(target_date).aggregate(rate=Coalesce(Sum('monthly_rate'), Value(0.00)))['rate']
 
-    def bill_for_period(self, target_date=None):
-        ''' Pull the UserBill associated with the start of this membership period '''
-        period_start, period_end = self.get_period(target_date)
-        bills = self.bills.filter(period_start=period_start)
-        if bills.count() > 1:
-            raise Exception("More than one bill associated with membership on %s" % period_start)
-        return bills.first()
-
-    def bill_totals(self, target_date=None):
-        ''' Return the sum of all bills due for this membership on a given date '''
-        total = 0
-        for b in self.bills_for_period(target_date):
-            total += b.amount
-        return total
-
-    def payment_totals(self, target_date=None):
-        ''' Return the sum of all bills due for this membership on a given date '''
-        total = 0
-        for b in self.bills_for_period(target_date):
-            total += b.total_paid
-        return total
-
     def get_period(self, target_date=None):
         ''' Get period associated with a certain date.
         Returns (None, None) if the membership is not active.'''
@@ -499,17 +467,6 @@ class Membership(models.Model):
         # if day < today
         # start_date =
         pass
-
-    def delete_unpaid_bills(self):
-        for bill in self.bills.all():
-            if bill.total_paid == 0:
-                bill.delete()
-
-    def has_unpaid_bills(self):
-        for bill in self.bills.all():
-            if not bill.is_paid:
-                return True
-        return False
 
 
 class IndividualMembership(Membership):

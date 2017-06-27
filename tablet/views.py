@@ -189,14 +189,13 @@ def signin_user_guest(request, username, paid_by):
 def welcome(request, username):
     usage_color = "black"
     user = get_object_or_404(User, username=username)
-    if user.membership.is_active():
-        days, allowed = user.profile.days_used()
-        if days > allowed:
-            usage_color = "red"
-        elif days == allowed:
-            usage_color = "orange"
-        else:
-            usage_color = "green"
+    days, allowed = user.profile.days_used()
+    if days > allowed:
+        usage_color = "red"
+    elif days == allowed:
+        usage_color = "orange"
+    else:
+        usage_color = "green"
     bill_day_str = user.membership.bill_day_str
     motd = MOTD.objects.for_today()
     context = {
