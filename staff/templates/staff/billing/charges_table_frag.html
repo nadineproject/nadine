@@ -27,7 +27,7 @@
             </td>
             <td>
               {% for bill in t.outstanding_bills %}
-                {% if not forloop.first %} | {% endif %}
+                {% if not forloop.first %} <br/> {% endif %}
                 <a href="{{ bill.get_staff_url }}">{{ bill.id }}</a>
                 {% if not t.bill_match %}
                   : ${{ bill.amount }}
@@ -37,7 +37,7 @@
             {% if integrations.xero %}
               <td>
                   {% for i in t.xero_invoices %}
-                      {% if not forloop.first %} | {% endif %}
+                      {% if not forloop.first %} <br/> {% endif %}
                       <a href="https://go.xero.com/AccountsReceivable/View.aspx?InvoiceID={{ i.InvoiceID }}" target="_new">{{ i.InvoiceNumber }}</a><br>
                   {% endfor %}
               </td>
