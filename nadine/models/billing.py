@@ -89,7 +89,8 @@ class BillingBatch(models.Model):
         # Check every active subscription on this day and add this if neccessary
         for subscription in ResourceSubscription.objects.unbilled(target_date):
             # Find the open bill for the membership period of this subscription
-            period_start, period_end = subscription.membership.get_period(target_date)
+            membership = Membership.objects.for_user(subscription.payer)
+            period_start, period_end = membership.get_period(target_date)
             bill = UserBill.objects.get_or_create_open_bill(subscription.payer, period_start, period_end, check_open_bills=False)
             if not bill.has_subscription(subscription):
                 bill.add_subscription(subscription)
