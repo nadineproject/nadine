@@ -782,8 +782,10 @@ class BillingTestCase(TestCase):
 
         # Generate bill for today to check bills
         # $575 = $475 (for Resident package) + $100 (for key)
-        original_bill_batch = BillingBatch.objects.run(start_date=one_month_ago, end_date=(one_month_ago - timedelta(days=1)))
+        original_bill_batch = BillingBatch.objects.run(start_date=one_month_ago, end_date=yesterday)
         self.assertTrue(original_bill_batch.successful)
+        for b in original_bill_batch.bills.all():
+            print_bill(b)
         original_bill = user.bills.get(period_start=one_month_ago)
         print_bill(original_bill)
         self.assertEqual(575, original_bill.amount)
