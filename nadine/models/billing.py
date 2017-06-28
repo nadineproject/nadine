@@ -129,6 +129,9 @@ class BillManager(models.Manager):
 
         # One and only one bill
         if bills.count() > 1:
+            logger.info("get_open_bill(%s, %s, %s)" % (user, period_start, period_end))
+            for bill in bills:
+                logger.info("Found %s" % bill)
             raise Exception("Found more than one bill!")
 
         # Returns the one or None if we didn't find anything
@@ -206,7 +209,7 @@ class UserBill(models.Model):
     mark_paid = models.BooleanField(default=False, blank=False, null=False, help_text="Mark a bill as paid even if it is not")
 
     def __unicode__(self):
-        return "Bill %d" % self.id
+        return "UserBill %d: %s %s to %s for $%s" % (self.id, self.user, self.period_start, self.period_end, self.amount)
 
     ############################################################################
     # Properties
@@ -304,9 +307,9 @@ class UserBill(models.Model):
         logger.info("Recalculating bill %d for %s" % (self.id, self.user))
 
         # Hold on to the existing data
-        subscriptions = self.subscriptions()
-        coworking_days = self.coworking_days()
-        custom_items = self.line_items.filter(custom=True)
+        subscriptions = list(self.subscriptions())
+        coworking_days = list(self.coworking_days())
+        custom_items = list(self.line_items.filter(custom=True))
         total_before = self.amount
 
         # Delete all the current line items
@@ -322,6 +325,32 @@ class UserBill(models.Model):
             c.save()
 
         logger.debug("Previous amount: %s, New amount: %s" % (total_before, self.amount))
+
+    def combine(self, bill):
+        ''' Combine the given bill with this bill. '''
+        if bill.user != self.user:
+            raise Exception("Can not combine bills from different users (%s and %s)" % (self.user, bill.user))
+
+        # Change the dates
+        if bill.period_start < self.period_start:
+            self.period_start = bill.period_start
+        if bill.period_end > self.period_end:
+            self.period_end = bill.period_end
+        if bill.due_date > self.due_date:
+            self.due_date = bill.due_date
+        self.save()
+
+        # Add all the subscriptions, days, and custom items
+        for s in bill.subscriptions():
+            self.add_subscription(s)
+        for d in bill.coworking_days():
+            self.add_coworking_day(d)
+        for line_item in bill.line_items.filter(custom=True):
+            line_item.bill = self
+            line_item.save()
+
+        bill.delete()
+        self.recalculate()
 
     def subscriptions(self):
         ''' Return all the ResourceSubscriptions associated with this bill. '''

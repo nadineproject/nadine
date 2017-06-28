@@ -31,7 +31,6 @@ def print_all_bills(user):
 def print_bill(bill):
     print("UserBill %d" % bill.id)
     print("  due_date: %s" % bill.due_date)
-    print("  package name: %s" % bill.membership.package_name())
     print("  amount: $%s" % bill.amount)
     print("  line_items:")
     for line_item in bill.line_items.all().order_by('id'):
@@ -157,5 +156,62 @@ class UserBillTestCase(TestCase):
         bill.add_subscription(subscription2)
         self.assertEqual(18, bill.resource_allowance(Resource.objects.day_resource))
 
+    def test_recalculate(self):
+        user = User.objects.create(username='test_user', first_name='Test', last_name='User')
+        membership = Membership.objects.for_user(user)
+        bill = UserBill.objects.create(user=user, period_start=one_month_ago, period_end=today, due_date=today)
+
+        # Add a day w/o any subscriptions and expect to be charged
+        day1 = CoworkingDay.objects.create(user=user, visit_date=yesterday, payment='Bill')
+        bill.add_coworking_day(day1)
+        self.assertEqual(bill.amount, Resource.objects.day_resource.default_rate)
+
+        # Add a day subscription and expect the amount to the one day and the monthly_rate
+        subscription = ResourceSubscription.objects.create(membership=membership, resource=Resource.objects.day_resource, allowance=3, start_date=one_month_ago, end_date=one_month_from_now, monthly_rate=Decimal(50.00), overage_rate=0)
+        bill.add_subscription(subscription)
+        self.assertEqual(bill.amount, subscription.monthly_rate + Resource.objects.day_resource.default_rate)
+
+        # Recalculate and expect the amount to be just the monthly_rate
+        bill.recalculate()
+        self.assertEqual(bill.amount, subscription.monthly_rate)
+
+    def test_combine(self):
+        user = User.objects.create(username='test_user', first_name='Test', last_name='User')
+        membership = Membership.objects.for_user(user)
+
+        # Bill1 is for last month and bill2 is for next month
+        bill1 = UserBill.objects.create(user=user, period_start=one_month_ago, period_end=today, due_date=today)
+        bill2 = UserBill.objects.create(user=user, period_start=tomorrow, period_end=one_month_from_now, due_date=one_month_from_now)
+
+        # Subscription1 is for a day and subscription2 is for a key
+        subscription1 = ResourceSubscription.objects.create(membership=membership, resource=Resource.objects.day_resource, start_date=one_month_ago, end_date=one_month_from_now, monthly_rate=Decimal(100.00), overage_rate=0)
+        subscription2 = ResourceSubscription.objects.create(membership=membership, resource=Resource.objects.key_resource, start_date=one_month_ago, end_date=one_month_from_now, monthly_rate=Decimal(100.00), overage_rate=0)
+        bill1.add_subscription(subscription1)
+        bill2.add_subscription(subscription2)
+        self.assertTrue(bill1.has_subscription(subscription1))
+        self.assertFalse(bill1.has_subscription(subscription2))
+        self.assertTrue(bill2.has_subscription(subscription2))
+        self.assertFalse(bill2.has_subscription(subscription1))
+
+        # Add a few coworking days
+        day1 = CoworkingDay.objects.create(user=user, visit_date=yesterday, payment='Bill')
+        day2 = CoworkingDay.objects.create(user=user, visit_date=tomorrow, payment='Bill')
+        bill1.add_coworking_day(day1)
+        bill2.add_coworking_day(day2)
+        self.assertTrue(bill1.has_coworking_day(day1))
+        self.assertFalse(bill1.has_coworking_day(day2))
+        self.assertTrue(bill2.has_coworking_day(day2))
+        self.assertFalse(bill2.has_coworking_day(day1))
+
+        # Combine the new bills
+        bill1.combine(bill2)
+        self.assertEqual(None, UserBill.objects.filter(id=bill2.id).first())
+        self.assertEqual(bill1.period_start, one_month_ago)
+        self.assertEqual(bill1.period_end, one_month_from_now)
+        self.assertEqual(bill1.due_date, one_month_from_now)
+        self.assertTrue(bill1.has_subscription(subscription1))
+        self.assertTrue(bill1.has_subscription(subscription2))
+        self.assertTrue(bill1.has_coworking_day(day1))
+        self.assertTrue(bill1.has_coworking_day(day2))
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
