@@ -1,0 +1,57 @@
+{% extends "staff/billing/base.html" %}
+
+{% block sub-title %}Batch Logs{% endblock %}
+
+{% block content %}
+
+<h4>Batch Logs</h4>
+
+{% if bill_id %}
+  <h6 style="margin:1em 0; ">
+    Batches Containing Bill
+    <a href="{% url 'staff:billing:bill' bill_id %}">{{ bill_id }}</a>:
+  </h6>
+{% else %}
+  <div class="columns clearfix date-range">
+    {% include "staff/date_range_form.html"%}
+  </div>
+{% endif %}
+
+<table>
+  <tr class='row-even'>
+    <th>ID</th>
+    <th>Created By</th>
+    <th>Started</th>
+    <th>Completed</th>
+    <th>Successful</th>
+    <th>Bills</th>
+  </tr>
+  {% for batch in batches %}
+    <tr class="{% cycle 'row-odd' 'row-even'%}">
+      <td>{{ batch.id }}</td>
+      <td>{{ batch.created_by|default:'System' }}</td>
+      <td>{{ batch.created_ts }}</td>
+      <td>{{ batch.completed_ts }}</td>
+      <td>{{ batch.successful }}</td>
+      <td>{{ batch.bills.count }}</td>
+    </tr>
+  {% empty %}
+    <tr>
+      <td colspan="6">No batches found</td>
+    </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}
+
+{% block extrajs %}
+  <script>
+    $(document).ready(function() {
+      $('#id_start').addClass('datepicker');
+      $('#id_end').addClass('datepicker');
+      $('.datepicker').datepicker({
+        dateFormat: 'yy-mm-dd',
+      });
+    });
+  </script>
+{% endblock %}

@@ -1,4 +1,5 @@
 import logging
+import traceback
 from decimal import Decimal
 from datetime import timedelta, date
 from dateutil.relativedelta import relativedelta
@@ -72,6 +73,7 @@ class BillingBatch(models.Model):
         except Exception as e:
             # Save all error messages
             self.error = str(e)
+            traceback.print_exc()
             logger.error(self.error)
         finally:
             self.completed_ts = localtime(now())
@@ -90,7 +92,7 @@ class BillingBatch(models.Model):
         for subscription in ResourceSubscription.objects.unbilled(target_date):
             # Find the open bill for the membership period of this subscription
             membership = Membership.objects.for_user(subscription.payer)
-            period_start, period_end = membership.get_period(target_date)
+            period_start, period_end = membership.get_period(target_date, include_inactive=True)
             bill = UserBill.objects.get_or_create_open_bill(subscription.payer, period_start, period_end, check_open_bills=False)
             if not bill.has_subscription(subscription):
                 bill.add_subscription(subscription)
@@ -121,6 +123,8 @@ class BillManager(models.Manager):
 
     def get_open_bill(self, user, period_start, period_end):
         ''' Get one and only one open UserBill for a given user and period. '''
+        logger.debug("get_open_bill(%s, %s, %s)" % (user, period_start, period_end))
+
         bills = self.filter(
             user = user,
             period_start__lte = period_start,
@@ -140,6 +144,8 @@ class BillManager(models.Manager):
 
     def get_or_create_open_bill(self, user, period_start, period_end, check_open_bills=True):
         ''' Get or create a UserBill for the given ResourceSubscription and date. '''
+        logger.debug("get_or_create_open_bill(%s, %s, %s, %s)" % (user, period_start, period_end, check_open_bills))
+
         bill = self.get_open_bill(user, period_start, period_end)
         if bill:
             return bill

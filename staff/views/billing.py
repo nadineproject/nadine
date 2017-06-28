@@ -1,6 +1,6 @@
-import time as timeo
 from datetime import date, datetime, timedelta
 from collections import OrderedDict
+from decimal import Decimal
 
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -14,31 +14,41 @@ from django.contrib import messages
 from django.db.models import Q, Sum
 from django.conf import settings
 
-from decimal import Decimal
-
 from nadine.models import *
 from nadine import email
 from nadine.forms import PaymentForm, DateRangeForm
-from staff.views.activity import date_range_from_request, START_DATE_PARAM, END_DATE_PARAM
+
+
+@staff_member_required
+def batch_logs(request):
+    date_range_form = DateRangeForm.from_request(request, days=7)
+    start_date, end_date = date_range_form.get_dates()
+    bill_id = request.GET.get("bill_id", None)
+    if bill_id:
+        batches = BillingBatch.objects.filter(bills__id=bill_id)
+    else:
+        batches = BillingBatch.objects.filter(created_ts__range=(start_date, end_date))
+    batches = batches.order_by('created_ts').reverse()
+    context = {
+        'batches': batches,
+        'date_range_form': date_range_form,
+        'start_date': start_date,
+        'end_date': end_date,
+        'bill_id': bill_id,
+    }
+    return render(request, 'staff/billing/batch_logs.html', context)
 
 
 @staff_member_required
 def bill_list(request):
-    start, end = date_range_from_request(request)
-    date_range_form = DateRangeForm({START_DATE_PARAM: start, END_DATE_PARAM: end})
-    starteo = timeo.strptime(start, "%Y-%m-%d")
-    start_date = date(year=starteo.tm_year, month=starteo.tm_mon, day=starteo.tm_mday)
-    endeo = timeo.strptime(end, "%Y-%m-%d")
-    end_date = date(year=endeo.tm_year, month=endeo.tm_mon, day=endeo.tm_mday)
+    date_range_form = DateRangeForm.from_request(request, days=30)
+    start_date, end_date = date_range_form.get_dates()
     bills = UserBill.objects.filter(period_start__range=(start_date, end_date)).order_by('period_start').reverse()
-    # total_amount = bills.aggregate(s=Sum('amount'))['s']
-    total_amount = 100.00
     context = {
         'bills': bills,
-        'total_amount': total_amount,
         'date_range_form': date_range_form,
         'start_date': start_date,
-        'end_date': end_date
+        'end_date': end_date,
     }
     return render(request, 'staff/billing/bill_list.html', context)
 

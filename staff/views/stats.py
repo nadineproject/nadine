@@ -1,5 +1,4 @@
 import calendar
-import time as timeo
 from datetime import date, datetime, timedelta
 from collections import namedtuple
 
@@ -20,7 +19,6 @@ from nadine.models.membership import Membership, MembershipPackage, ResourceSubs
 from nadine.models.usage import CoworkingDay
 from nadine.forms import DateRangeForm
 
-from staff.views.activity import date_range_from_request, START_DATE_PARAM, END_DATE_PARAM
 
 ################################################################################
 # Helper Methods
@@ -154,26 +152,19 @@ def memberships(request):
 
 @staff_member_required
 def history(request):
-    start, end = date_range_from_request(request)
-    date_range_form = DateRangeForm({START_DATE_PARAM: start, END_DATE_PARAM: end})
+    date_range_form = DateRangeForm.from_request(request, days=365)
+    start_date, end_date = date_range_form.get_dates()
     logs = [log for log in Membership.objects.all()]
-    end_date = timezone.now().date()
-    if len(logs) > 0:
-        start_date = logs[0].start_date
-    else:
-        start_date = end_date
-
     monthly_stats = [{'start_date': d, 'end_date': beginning_of_next_month(d) - timedelta(days=1)} for d in first_days_in_months(start_date, end_date)]
     for stat in monthly_stats:
         stat['monthly_total'] = Membership.objects.active_memberships(stat['end_date']).count()
         stat['started'] = Membership.objects.date_range(start=stat['start_date'], end=stat['end_date'], action='started').count()
         stat['ended'] = Membership.objects.date_range(start=stat['start_date'], end=stat['end_date'], action='ended').count()
-
     monthly_stats.reverse()
     context = {'monthly_stats': monthly_stats,
                'date_range_form': date_range_form,
-               'start': start,
-               'end': end}
+               'start_date': start_date,
+               'end_date': end_date}
     return render(request, 'staff/stats/history.html', context)
 
 
@@ -286,13 +277,8 @@ def gender(request):
 @staff_member_required
 def graph(request):
     graph = request.POST.get("graph", "members")
-    start, end = date_range_from_request(request)
-    date_range_form = DateRangeForm({START_DATE_PARAM: start, END_DATE_PARAM: end})
-    starteo = timeo.strptime(start, "%Y-%m-%d")
-    start_date = date(year=starteo.tm_year, month=starteo.tm_mon, day=starteo.tm_mday)
-    endeo = timeo.strptime(end, "%Y-%m-%d")
-    end_date = date(year=endeo.tm_year, month=endeo.tm_mon, day=endeo.tm_mday)
-
+    date_range_form = DateRangeForm.from_request(request, days=30)
+    start_date, end_date = date_range_form.get_dates()
     days = [{'date': start_date + timedelta(days=i)} for i in range((end_date - start_date).days)]
     if graph == "members":
         title = "Members by Day"
@@ -305,10 +291,14 @@ def graph(request):
         min_v, max_v, avg_v, days = graph_members(days)
     elif graph == "churn":
         title = "Membership Churn"
-
-    context = {'title':title, 'graph':graph,
-        'days': days, 'date_range_form': date_range_form, 'start': start, 'end': end,
-        'min': min_v, 'max': max_v, 'avg': avg_v}
+    context = {
+        'title':title,
+        'graph':graph,
+        'days': days,
+        'date_range_form': date_range_form,
+        'start_date': start_date, 'end_date': end_date,
+        'min': min_v, 'max': max_v, 'avg': avg_v,
+    }
     return render(request, 'staff/stats/graph.html', context)
 
 

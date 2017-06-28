@@ -1,6 +1,4 @@
-import time as timeo
 from datetime import date, datetime, timedelta
-
 
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -13,42 +11,16 @@ from django.urls import reverse
 from django.contrib import messages
 from django.conf import settings
 
-
 from doors.keymaster.models import DoorEvent
 from arpwatch.models import ArpLog
 from nadine.forms import CoworkingDayForm, DateRangeForm
 from nadine.models import CoworkingDay, Membership, ResourceSubscription
 
-START_DATE_PARAM = 'start'
-END_DATE_PARAM = 'end'
-
-
-def date_range_from_request(request, days=31):
-    # Pull the Start Date param
-    start = request.POST.get(START_DATE_PARAM, None)
-    if not start:
-        start = request.GET.get(START_DATE_PARAM, None)
-    if not start:
-        start_date = timezone.now().date() - timedelta(days=days)
-        start = start_date.isoformat()
-    end = request.POST.get(END_DATE_PARAM, None)
-    if not end:
-        end = request.GET.get(END_DATE_PARAM, None)
-    if not end:
-        tomorrow = timezone.now() + timedelta(days=1)
-        end = tomorrow.date().isoformat()
-
-    return (start, end)
-
 
 @staff_member_required
 def graph(request):
-    start, end = date_range_from_request(request)
-    date_range_form = DateRangeForm({START_DATE_PARAM: start, END_DATE_PARAM: end})
-    starteo = timeo.strptime(start, "%Y-%m-%d")
-    start_date = date(year=starteo.tm_year, month=starteo.tm_mon, day=starteo.tm_mday)
-    endeo = timeo.strptime(end, "%Y-%m-%d")
-    end_date = date(year=endeo.tm_year, month=endeo.tm_mon, day=endeo.tm_mday)
+    date_range_form = DateRangeForm.from_request(request, days=30)
+    start_date, end_date = date_range_form.get_dates()
     days = [{'date': start_date + timedelta(days=i)} for i in range((end_date - start_date).days)]
     days.reverse()
     for day in days:
@@ -84,32 +56,28 @@ def graph(request):
             day['daily_logs_percentage'] = int(day['daily_logs'] / float(max_daily_logs) * 100)
             day['daily_logs_size'] = int(graph_size * day['daily_logs'] / float(max_daily_logs))
             day['daily_logs_size_negative'] = graph_size - day['daily_logs_size']
-    context = {'days': days,
-               'graph_size': graph_size,
-               'max_has_desk': max_has_desk,
-               'max_membership': max_membership,
-               'max_daily_logs': max_daily_logs,
-               'max_total': max_total,
-               'total_daily_logs': total_daily_logs,
-               'date_range_form': date_range_form,
-               'start': start,
-               'end': end}
+    context = {
+        'days': days,
+        'graph_size': graph_size,
+        'max_has_desk': max_has_desk,
+        'max_membership': max_membership,
+        'max_daily_logs': max_daily_logs,
+        'max_total': max_total,
+        'total_daily_logs': total_daily_logs,
+        'date_range_form': date_range_form,
+    }
     return render(request, 'staff/activity/graph.html', context)
 
 
 @staff_member_required
 def list(request):
-    start, end = date_range_from_request(request)
-    date_range_form = DateRangeForm({START_DATE_PARAM: start, END_DATE_PARAM: end})
-    starteo = timeo.strptime(start, "%Y-%m-%d")
-    start_date = date(year=starteo.tm_year, month=starteo.tm_mon, day=starteo.tm_mday)
-    endeo = timeo.strptime(end, "%Y-%m-%d")
-    end_date = date(year=endeo.tm_year, month=endeo.tm_mon, day=endeo.tm_mday)
+    date_range_form = DateRangeForm.from_request(request, days=30)
+    start_date, end_date = date_range_form.get_dates()
     daily_logs = CoworkingDay.objects.filter(visit_date__range=(start_date, end_date))
-    context = {'daily_logs': daily_logs,
-               'date_range_form': date_range_form,
-               'start_date': start_date,
-               'end_date': end_date}
+    context = {
+        'daily_logs': daily_logs,
+        'date_range_form': date_range_form,
+    }
     return render(request, 'staff/activity/list.html', context)
 
 
@@ -151,17 +119,11 @@ def for_today(request):
 @staff_member_required
 def for_user(request, username):
     user = get_object_or_404(User, username=username)
-
-    tz = timezone.get_current_timezone()
-    start, end = date_range_from_request(request, days=10)
-    date_range_form = DateRangeForm({START_DATE_PARAM: start, END_DATE_PARAM: end})
-    start_date = timezone.make_aware(datetime.strptime(start, "%Y-%m-%d"), tz)
-    end_date = timezone.make_aware(datetime.strptime(end, "%Y-%m-%d"), tz)
-
+    date_range_form = DateRangeForm.from_request(request, days=30)
+    start_date, end_date = date_range_form.get_dates()
     arp_logs = ArpLog.objects.for_user(username, start_date, end_date)
     door_logs = DoorEvent.objects.filter(user=user, timestamp__range=(start_date, end_date))
     daily_logs = CoworkingDay.objects.filter(user=user, visit_date__range=(start_date, end_date)).reverse()
-
     context = {'user': user,
                'date_range_form': date_range_form,
                'arp_logs': arp_logs,

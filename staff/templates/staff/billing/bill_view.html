@@ -12,6 +12,7 @@
   {% if bill.total_paid == 0 and bill.get_regenerate_url %}
     <a href="{{ bill.get_regenerate_url }}">regenerate</a> |
   {% endif %}
+  <a href="{% url 'staff:billing:batch_logs' %}?bill_id={{ bill.id }}">batches</a> |
   <a href="{{ bill.get_absolute_url }}">view receipt </a> |
   <a href="{{ bill.get_admin_url }}">admin</a>
 ]</span>

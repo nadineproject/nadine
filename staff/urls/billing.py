@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'^bill/(?P<bill_id>\d+)/$', billing.bill_view, name='bill'),
     url(r'^bills/outstanding/$', billing.outstanding, name='outstanding'),
     url(r'^bills/(?P<username>[^/]+)/$', billing.user_bills, name='user_bills'),
+    url(r'^batch_logs/$', billing.batch_logs, name='batch_logs'),
 
     # Actions
     url(r'^bill_paid/(?P<bill_id>\d+)/$', billing.action_bill_paid, name='bill_paid'),

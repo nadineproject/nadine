@@ -3,7 +3,7 @@ import datetime
 import base64
 import uuid
 import os
-
+from datetime import datetime, timedelta
 
 from django import forms
 from django.core.files.base import ContentFile
@@ -11,8 +11,8 @@ from django.forms import modelformset_factory
 from django.forms.formsets import BaseFormSet
 from django.contrib.auth.models import User
 from django.conf import settings
-from django.utils import timezone
 from django.core.files.base import ContentFile
+from django.utils.timezone import localtime, now
 
 from localflavor.us.us_states import US_STATES
 from localflavor.ca.ca_provinces import PROVINCE_CHOICES
@@ -32,8 +32,37 @@ logger = logging.getLogger(__name__)
 
 
 class DateRangeForm(forms.Form):
+    START_DATE_PARAM = 'start'
+    END_DATE_PARAM = 'end'
+
     start = forms.DateField()
     end = forms.DateField()
+
+    @staticmethod
+    def from_request(request, days=31):
+        # Pull the start and end parameters
+        start_param = DateRangeForm.START_DATE_PARAM
+        end_param = DateRangeForm.END_DATE_PARAM
+        # Get our start date
+        start_str = request.POST.get(start_param, None)
+        if not start_str:
+            start_str = request.GET.get(start_param, None)
+        if not start_str:
+            start_date = localtime(now()).date() - timedelta(days=days)
+            start_str = start_date.isoformat()
+        # Get our end date
+        end_str = request.POST.get(end_param, None)
+        if not end_str:
+            end_str = request.GET.get(end_param, None)
+        if not end_str:
+            tomorrow = localtime(now()) + timedelta(days=1)
+            end_str = tomorrow.date().isoformat()
+        return DateRangeForm({start_param: start_str, end_param: end_str})
+
+    def get_dates(self):
+        if not self.is_valid():
+            return (None, None)
+        return (self.cleaned_data['start'], self.cleaned_data['end'])
 
 
 class OrganizationForm(forms.Form):
@@ -519,7 +548,7 @@ class SubscriptionForm(forms.Form):
         if self.cleaned_data['created_ts']:
             created_ts = self.cleaned_data['created_ts']
         else:
-            created_ts = timezone.now()
+            created_ts = localtime(now())
         if self.cleaned_data['s_id']:
             s_id = self.cleaned_data['id']
 
@@ -595,7 +624,8 @@ class HelpTextForm(forms.Form):
         return help_text
 
 class MOTDForm(forms.Form):
-    start_ts = forms.DateField(initial=datetime.date.today, required=True)
+    today = localtime(now()).date()
+    start_ts = forms.DateField(initial=today, required=True)
     end_ts = forms.DateField(required=False)
     message = forms.CharField(required=True)
     delay_ms = forms.IntegerField(required=True, widget=forms.HiddenInput)
