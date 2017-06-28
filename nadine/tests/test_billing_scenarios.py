@@ -257,7 +257,7 @@ class BillingTestCase(TestCase):
         june_10_bill.delete()
 
         # Change the bill date to the 1st
-        membership.bill_day = 1
+        membership.change_bill_day(day=1)
         membership.save()
         self.assertEqual(1, membership.bill_day)
 
@@ -385,15 +385,18 @@ class BillingTestCase(TestCase):
         membership = Membership.objects.for_user(user)
         payer_membership = Membership.objects.for_user(payer)
         self.assertTrue(membership.package_name() == None)
-        payer.membership.bill_day = 12
+        payer_membership.bill_day = 12
 
         # Payer has no active subscriptions
-        self.assertEqual(0, payer.membership.active_subscriptions().count())
+        self.assertEqual(0, payer_membership.active_subscriptions().count())
+        start, end = payer_membership.get_period()
 
         # Set Resident membership package for user to be paid by another member 'payer'
         membership.bill_day = today.day
+        membership.save()
         membership.set_to_package(self.residentPackage, start_date=today, paid_by=payer)
         self.assertTrue(membership.package_name() == 'Resident')
+        self.assertTrue(membership.bill_day == today.day)
         users_subscriptions = membership.active_subscriptions()
 
         # Test that payer pays for each of the 3 active subscriptions for user
@@ -404,13 +407,16 @@ class BillingTestCase(TestCase):
         # Generate bills and 0 for user, but 1 for payer
         run_bill_batch = BillingBatch.objects.run(start_date=today, end_date=today)
         self.assertTrue(run_bill_batch.successful)
+        for b in run_bill_batch.bills.all():
+            print_bill(b)
         user_bill_count = UserBill.objects.filter(user=user).count()
         self.assertEqual(0, user_bill_count)
+        user_bill = user.bills.get(period_start = today)
         payer_bill = payer.bills.get(period_start=today)
         for p in payer_bill.subscriptions():
             self.assertTrue('Resident' == p.package_name)
             # Bill is for user membership and not that of payer
-            self.assertTrue(payermembership.id == p.membership.id)
+            self.assertTrue(payer_membership.id == p.membership.id)
         self.assertTrue(payer_bill.amount == 475)
 
     def test_new_t40_team_member(self):
@@ -783,7 +789,7 @@ class BillingTestCase(TestCase):
 
         # Generate bill for today to check bills
         # $575 = $475 (for Resident package) + $100 (for key)
-        original_bill_batch = BillingBatch.objects.run(start_date=one_month_ago, end_date=(one_month_ago - timed(days=1)))
+        original_bill_batch = BillingBatch.objects.run(start_date=one_month_ago, end_date=(one_month_ago - timedelta(days=1)))
         self.assertTrue(original_bill_batch.successful)
         original_bill = user.bills.get(period_start=one_month_ago)
         print_bill(original_bill)

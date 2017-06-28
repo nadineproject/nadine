@@ -534,20 +534,12 @@ def edit_bill_day(request, username):
     user = get_object_or_404(User, username=username)
     today = localtime(now()).date()
     future_bills = UserBill.objects.outstanding().filter(user=user).filter(due_date__gte=today)
-    membership = user.membership
+    membership = Membership.objects.for_user(user)
     if request.method == 'POST':
-        bill_day = request.POST.get('bill-date')[-2:]
-        try:
-            with transaction.atomic():
-                membership.bill_day = bill_day
-                membership.save()
-                for bill in future_bills:
-                    bill.delete()
-                messages.success(request, 'Updated bill day for %s' % user)
-                return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}) + '#tabs-1')
-        except IntegrityError as e:
-            print('There was an ERROR: %s' % e.message)
-            messages.error(request, 'There was an error changing the bill date.')
+        day = request.POST.get('bill-date')[-2:]
+        membership.change_bill_day(day)
+        messages.success(request, 'Updated bill day for %s' % user)
+        return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}) + '#tabs-1')
     context = {
         'user': user,
         'future_bills': future_bills,

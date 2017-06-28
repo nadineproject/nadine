@@ -13,7 +13,7 @@ from datetime import datetime, time, date, timedelta
 from dateutil.relativedelta import relativedelta
 from decimal import Decimal
 
-from django.db import models
+from django.db import models, IntegrityError, transaction
 from django.db.models import F, Q, Count, Sum, Value
 from django.db.models.functions import Coalesce
 from django.contrib import admin
@@ -451,22 +451,23 @@ class Membership(models.Model):
             return last_subscription.created_ts
         return None
 
-    def change_bill_day(self, day):
-        # TODO - write
-        # future_bills = UserBill.objects.filter(user=user).filter(due_date__gte=today)
-        # membership = user.membership
-        # if request.method == 'POST':
-        #     bill_day = request.POST.get('bill-date')[-2:]
-        #     try:
-        #         with transaction.atomic():
-        #             membership.bill_day = bill_day
-        #             membership.save()
-        #             for bill in future_bills:
-        #                 bill.delete(
-        # today = localtime(now()).date()
-        # if day < today
-        # start_date =
-        pass
+    def change_bill_day(self, day=None):
+        if not day:
+            day = localtime(now()).day
+
+        today = localtime(now()).date()
+
+        future_bills = self.user.bills.filter(due_date__gte=today)
+        try:
+            with transaction.atomic():
+                self.bill_day = day
+                self.save()
+                for bill in future_bills:
+                    bill.delete()
+        except IntegrityError as e:
+            print('There was an ERROR: %s' % e.message)
+
+        return self.bill_day
 
 
 class IndividualMembership(Membership):
