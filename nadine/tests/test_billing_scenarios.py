@@ -150,10 +150,11 @@ class BillingTestCase(TestCase):
         # PT-5 5/20/2010 - 6/19/2010 & Basic since 6/20/2010
         # Daily activity 6/11/2010 through 6/25/2010
         user = User.objects.create(username='member_eight', first_name='Member', last_name='Eight')
-        user.membership.bill_day = 20
-        user.membership.save()
-        user.membership.set_to_package(self.pt5Package, start_date=date(2010, 5, 20), end_date=date(2010, 6, 19))
-        user.membership.set_to_package(self.basicPackage, start_date=date(2010, 6, 20))
+        membership = Membership.objects.for_user(user)
+        membership.bill_day = 20
+        membership.save()
+        membership.set_to_package(self.pt5Package, start_date=date(2010, 5, 20), end_date=date(2010, 6, 19))
+        membership.set_to_package(self.basicPackage, start_date=date(2010, 6, 20))
         days = {}
         for day in range(11, 25):
             visit_date = date(2010, 6, day)
@@ -167,7 +168,7 @@ class BillingTestCase(TestCase):
 
         # May 20th bill = PT5 with 9 days
         # Total = $75 + 4 * $20 = $155
-        self.assertEqual(user.membership.matching_package(date(2010, 5, 20)), self.pt5Package)
+        self.assertEqual(membership.matching_package(date(2010, 5, 20)), self.pt5Package)
         may_20_bill = user.bills.get(period_start=date(2010, 5, 20))
         self.assertTrue(may_20_bill != None)
         self.assertEqual(155.00, may_20_bill.amount)
@@ -192,9 +193,11 @@ class BillingTestCase(TestCase):
         # User 6 & 7 = PT-5 starting 1/1/2008
         # User 7 guest of User 6
         user6 = User.objects.create(username='member_six', first_name='Member', last_name='Six')
-        user6.membership.set_to_package(self.pt5Package, start_date=date(2008, 1, 1), end_date=None, bill_day=1)
+        user6_membership = Membership.objects.for_user(user6)
+        user6_membership.set_to_package(self.pt5Package, start_date=date(2008, 1, 1), end_date=None, bill_day=1)
         user7 = User.objects.create(username='member_seven', first_name='Member', last_name='Seven')
-        user7.membership.set_to_package(self.pt5Package, start_date=date(2008, 1, 1), paid_by=user6, bill_day=1)
+        user7_membership = Membership.objects.for_user(user7)
+        user7_membership.set_to_package(self.pt5Package, start_date=date(2008, 1, 1), paid_by=user6, bill_day=1)
         user8 = User.objects.create(username='member_eight', first_name='Member', last_name='Eight')
 
         # User 7 has daily activity 6/1/2010 through 6/15/2010
@@ -229,9 +232,10 @@ class BillingTestCase(TestCase):
     def test_change_bill_day(self):
         # PT5 from 1/10/2010 billed on the 10th
         user = User.objects.create(username='test_user', first_name='Test', last_name='User')
-        user.membership.bill_day = 10
-        user.membership.set_to_package(self.pt5Package, start_date=date(2010, 1, 10))
-        self.assertEqual(10, user.membership.bill_day)
+        membership = Membership.objects.for_user(user)
+        membership.bill_day = 10
+        membership.set_to_package(self.pt5Package, start_date=date(2010, 1, 10))
+        self.assertEqual(10, membership.bill_day)
 
         # Two days of activity on 6/9 and 6/15
         # First day is in the 6/10 bill, second is not
@@ -251,9 +255,9 @@ class BillingTestCase(TestCase):
         june_10_bill.delete()
 
         # Change the bill date to the 1st
-        user.membership.bill_day = 1
-        user.membership.save()
-        self.assertEqual(1, user.membership.bill_day)
+        membership.bill_day = 1
+        membership.save()
+        self.assertEqual(1, membership.bill_day)
 
         # Generate the July 1st bill
         batch = BillingBatch.objects.run(start_date=date(2010, 6, 1), end_date=date(2010, 7, 1))
@@ -276,11 +280,12 @@ class BillingTestCase(TestCase):
     def test_start_package(self):
         #New user joins and starts a PT5 membership the same day
         user = User.objects.create(username='member_one', first_name='Member', last_name='One')
-        user.membership.bill_day = 1
-        user.membership.set_to_package(self.pt5Package, start_date=date(2017, 6, 1))
-        self.assertEqual(1, user.membership.bill_day)
-        self.assertEqual(5, user.membership.allowance_by_resource(resource=1))
-        self.assertEqual('PT5', user.membership.package_name())
+        membership = Membership.objects.for_user(user)
+        membership.bill_day = 1
+        membership.set_to_package(self.pt5Package, start_date=date(2017, 6, 1))
+        self.assertEqual(1, membership.bill_day)
+        self.assertEqual(5, membership.allowance_by_resource(resource=1))
+        self.assertEqual('PT5', membership.package_name())
 
         # Generate the bill at start
         batch = BillingBatch.objects.run(start_date=date(2017, 6, 1), end_date=date(2017, 7, 1))
@@ -292,18 +297,19 @@ class BillingTestCase(TestCase):
     def test_backdated_new_user_and_membership(self):
         # New user starts Advocate membership backdated 2 weeks
         user = User.objects.create(username='member_two', first_name='Member', last_name='Two')
-        user.membership.bill_day = two_weeks_ago.day
-        user.membership.save()
-        user.membership.set_to_package(self.advocatePackage, start_date=two_weeks_ago)
-        self.assertEqual('Advocate', user.membership.package_name())
-        next_start_date = user.membership.next_period_start()
+        membership = Membership.objects.for_user(user)
+        membership.bill_day = two_weeks_ago.day
+        membership.save()
+        membership.set_to_package(self.advocatePackage, start_date=two_weeks_ago)
+        self.assertEqual('Advocate', membership.package_name())
+        next_start_date = membership.next_period_start()
 
         # Generate bill at start of membership
         batch = BillingBatch.objects.run(start_date=two_weeks_ago, end_date=two_weeks_ago)
         self.assertTrue(batch.successful)
         bill_today = user.bills.get(period_start=two_weeks_ago)
         self.assertEqual(30, bill_today.amount)
-        self.assertTrue((user.membership.next_period_start() - timedelta(days=1)) == bill_today.due_date)
+        self.assertTrue((membership.next_period_start() - timedelta(days=1)) == bill_today.due_date)
 
         # Generate the next month's bill
         batch = BillingBatch.objects.run(start_date=next_start_date, end_date=next_start_date)
@@ -314,17 +320,17 @@ class BillingTestCase(TestCase):
 
     def test_new_user_new_membership_with_end_date(self):
         user = User.objects.create(username='member_three', first_name='Member', last_name='Three')
-        self.assertEqual('member_three', user.username)
-        self.assertFalse(user.membership.package_name() != None)
+        membership = Membership.objects.for_user(user)
+        self.assertFalse(membership.package_name() != None)
 
         # Set end date one month from now
         end = one_month_from_now - timedelta(days=1)
 
-        user.membership.bill_day = today.day
-        self.assertEqual(today.day, user.membership.bill_day)
-        user.membership.set_to_package(self.pt10Package, start_date=today, end_date=end)
-        self.assertEqual(10, user.membership.allowance_by_resource(Resource.objects.day_resource))
-        self.assertTrue(user.membership.end_date != None)
+        membership.bill_day = today.day
+        self.assertEqual(today.day, membership.bill_day)
+        membership.set_to_package(self.pt10Package, start_date=today, end_date=end)
+        self.assertEqual(10, membership.allowance_by_resource(Resource.objects.day_resource))
+        self.assertTrue(membership.end_date != None)
 
         # No bill generate the previous month
         last_months_batch = BillingBatch.objects.run(start_date=one_month_ago, end_date=one_month_ago)
@@ -348,14 +354,14 @@ class BillingTestCase(TestCase):
         start = two_weeks_ago
         end = (start + relativedelta(months=1)) - timedelta(days=1)
         user = User.objects.create(username='member_four', first_name='Member', last_name='Four')
-        self.assertEqual('member_four', user.username)
-        self.assertTrue(user.membership.package_name() == None)
+        membership = Membership.objects.for_user(user)
+        self.assertTrue(membership.package_name() == None)
 
         # Start PT5 membership two weeks ago
-        user.membership.bill_day = start.day
-        user.membership.set_to_package(self.pt5Package, start_date=start, end_date=end)
-        self.assertTrue(user.membership.package_name() == 'PT5')
-        self.assertEqual(5, user.membership.allowance_by_resource(Resource.objects.day_resource))
+        membership.bill_day = start.day
+        membership.set_to_package(self.pt5Package, start_date=start, end_date=end)
+        self.assertTrue(membership.package_name() == 'PT5')
+        self.assertEqual(5, membership.allowance_by_resource(Resource.objects.day_resource))
 
         # No previous bill since there was no membership
         run_last_month_batch = BillingBatch.objects.run(start_date=one_month_ago, end_date=one_month_ago)
@@ -374,17 +380,19 @@ class BillingTestCase(TestCase):
     def test_new_membership_package_paid_by_other_member(self):
         user = User.objects.create(username='member_five', first_name='Member', last_name='Five')
         payer = User.objects.create(username='member_nine', first_name='Member', last_name='Nine')
-        self.assertTrue(user.membership.package_name() == None)
+        membership = Membership.objects.for_user(user)
+        payer_membership = Membership.objects.for_user(payer)
+        self.assertTrue(membership.package_name() == None)
         payer.membership.bill_day = 12
 
         # Payer has no active subscriptions
         self.assertEqual(0, payer.membership.active_subscriptions().count())
 
         # Set Resident membership package for user to be paid by another member 'payer'
-        user.membership.bill_day = today.day
-        user.membership.set_to_package(self.residentPackage, start_date=today, paid_by=payer)
-        self.assertTrue(user.membership.package_name() == 'Resident')
-        users_subscriptions = user.membership.active_subscriptions()
+        membership.bill_day = today.day
+        membership.set_to_package(self.residentPackage, start_date=today, paid_by=payer)
+        self.assertTrue(membership.package_name() == 'Resident')
+        users_subscriptions = membership.active_subscriptions()
 
         # Test that payer pays for each of the 3 active subscriptions for user
         self.assertTrue(3, users_subscriptions.count())
@@ -400,22 +408,24 @@ class BillingTestCase(TestCase):
         for p in payer_bill.subscriptions():
             self.assertTrue('Resident' == p.package_name)
             # Bill is for user membership and not that of payer
-            self.assertTrue(p.membership.id == user.membership.id)
+            self.assertTrue(payermembership.id == p.membership.id)
         self.assertTrue(payer_bill.amount == 475)
 
     def test_new_t40_team_member(self):
         # Creat team lead with T40 package
         team_lead = User.objects.create(username='Team_Lead', first_name='Team', last_name='Lead')
-        team_lead.membership.bill_day = today.day
-        team_lead.membership.set_to_package(self.t40Package, start_date=one_month_ago)
-        self.assertTrue('T40' == team_lead.membership.package_name())
+        lead_membership = Membership.objects.for_user(team_lead)
+        lead_membership.bill_day = today.day
+        lead_membership.set_to_package(self.t40Package, start_date=one_month_ago)
+        self.assertTrue('T40' == lead_membership.package_name())
 
         user = User.objects.create(username='Member_Test', first_name='Member', last_name='Test')
-        user.membership.bill_day = today.day
-        self.assertTrue(user.membership.bill_day is not None)
-        user.membership.set_to_package(self.teamPackage, start_date=today, paid_by=team_lead)
-        self.assertEqual(0, user.membership.allowance_by_resource(Resource.objects.day_resource))
-        users_subscriptions = user.membership.active_subscriptions()
+        user_membership = Membership.objects.for_user(user)
+        user_membership.bill_day = today.day
+        self.assertTrue(user_membership.bill_day is not None)
+        user_membership.set_to_package(self.teamPackage, start_date=today, paid_by=team_lead)
+        self.assertEqual(0, user_membership.allowance_by_resource(Resource.objects.day_resource))
+        users_subscriptions = user_membership.active_subscriptions()
 
         # Test that payer pays for each of the 3 active subscriptions for user
         self.assertTrue(1, users_subscriptions.count())
@@ -471,18 +481,19 @@ class BillingTestCase(TestCase):
 
     def test_returning_member_with_future_subscriptions_and_end_dates(self):
         user = User.objects.create(username='member_returning', first_name='Member', last_name='Returning')
+        membership = Membership.objects.for_user(user)
 
         # Start membership package in one week for a length of 2 weeks
         start = one_week_from_now
         end = start + relativedelta(weeks=2)
-        user.membership.bill_day = start.day
-        self.assertTrue(user.membership.package_name() is None)
-        user.membership.set_to_package(self.advocatePackage, start_date=start, end_date=end)
+        membership.bill_day = start.day
+        self.assertTrue(membership.package_name() is None)
+        membership.set_to_package(self.advocatePackage, start_date=start, end_date=end)
 
         # Test that subscription starts in a week and then ends 2 weeks later
-        self.assertTrue(len(user.membership.active_subscriptions()) == 0)
-        self.assertTrue(len(user.membership.active_subscriptions(target_date=start)) is 1)
-        self.assertTrue(len(user.membership.active_subscriptions(target_date=one_month_from_now)) is 0)
+        self.assertTrue(len(membership.active_subscriptions()) == 0)
+        self.assertTrue(len(membership.active_subscriptions(target_date=start)) is 1)
+        self.assertTrue(len(membership.active_subscriptions(target_date=one_month_from_now)) is 0)
 
         # Test bills
         todays_bill_batch = BillingBatch.objects.run(start_date=today, end_date=today)
@@ -493,14 +504,14 @@ class BillingTestCase(TestCase):
         start_date_bill = user.bills.get(period_start=start)
         self.assertTrue(start_date_bill is not None)
         # TODO: Do we want this prorated or not???
-        # Currently returning $14
         # self.assertEqual(bill_on_start_date.amount, 30)
 
     def test_current_pt5_adds_key(self):
         #Create user with PT5 membership package started 2 months ago
         user = User.objects.create(username='member_pt5', first_name='Member', last_name='PT5')
-        user.membership.bill_day = today.day
-        user.membership.set_to_package(self.pt5Package, start_date=two_months_ago)
+        membership = Membership.objects.for_user(user)
+        membership.bill_day = today.day
+        membership.set_to_package(self.pt5Package, start_date=two_months_ago)
 
         #Confirm last month's bill for PT5
         start = today
@@ -512,9 +523,9 @@ class BillingTestCase(TestCase):
             self.assertEqual('PT5', s.package_name)
 
         # Add key subscription today
-        ResourceSubscription.objects.create(resource=Resource.objects.key_resource, membership=user.membership, package_name='PT5', allowance=1, start_date=start, monthly_rate=100, overage_rate=0)
-        self.assertTrue(len(user.membership.active_subscriptions()) is 2)
-        self.assertTrue(ResourceSubscription.objects.get(resource=Resource.objects.key_resource) in user.membership.active_subscriptions())
+        ResourceSubscription.objects.create(resource=Resource.objects.key_resource, membership=membership, package_name='PT5', allowance=1, start_date=start, monthly_rate=100, overage_rate=0)
+        self.assertTrue(len(membership.active_subscriptions()) is 2)
+        self.assertTrue(ResourceSubscription.objects.get(resource=Resource.objects.key_resource) in membership.active_subscriptions())
 
         # Test new bill is $175 for PT5 with key
         adjusted_batch = BillingBatch.objects.run(start_date=start, end_date=start)
@@ -526,9 +537,10 @@ class BillingTestCase(TestCase):
     def test_resident_adds_5_coworking_days_today(self):
         #Create user with Residet membership package started 2 months ago
         user = User.objects.create(username='member_ten', first_name='Member', last_name='Ten')
-        user.membership.bill_day = today.day
-        user.membership.set_to_package(self.residentPackage, start_date=two_months_ago)
-        day_subscription = ResourceSubscription.objects.get(membership=user.membership, resource=Resource.objects.day_resource)
+        membership = Membership.objects.for_user(user)
+        membership.bill_day = today.day
+        membership.set_to_package(self.residentPackage, start_date=two_months_ago)
+        day_subscription = ResourceSubscription.objects.get(membership=membership, resource=Resource.objects.day_resource)
         day_subscription
         self.assertEqual(5, day_subscription.allowance)
 
@@ -542,9 +554,9 @@ class BillingTestCase(TestCase):
         day_subscription.end_date = today - timedelta(days=1)
         day_subscription.save()
         self.assertFalse(day_subscription.end_date is None)
-        ResourceSubscription.objects.create(resource=Resource.objects.day_resource, membership=user.membership, package_name='Resident', allowance=10, start_date=today, monthly_rate=0, overage_rate=0)
-        new_day_subscription = ResourceSubscription.objects.get(membership=user.membership, resource=Resource.objects.day_resource, end_date=None)
-        self.assertTrue(len(user.membership.active_subscriptions()) is 2)
+        ResourceSubscription.objects.create(resource=Resource.objects.day_resource, membership=membership, package_name='Resident', allowance=10, start_date=today, monthly_rate=0, overage_rate=0)
+        new_day_subscription = ResourceSubscription.objects.get(membership=membership, resource=Resource.objects.day_resource, end_date=None)
+        self.assertTrue(len(membership.active_subscriptions()) is 2)
         self.assertEqual(10, new_day_subscription.allowance)
 
         # Test billing with updated subscriptions
@@ -563,16 +575,19 @@ class BillingTestCase(TestCase):
     def test_team_lead_changes_package(self):
         # Create user with t40 package started 2 months ago
         lead = User.objects.create(username='member_fourteen', first_name='Member', last_name='Fourteen')
-        lead.membership.bill_day = today.day
-        lead.membership.set_to_package(self.t40Package, start_date=two_months_ago)
+        lead_membership = Membership.objects.for_user(lead)
+        lead_membership.bill_day = today.day
+        lead_membership.set_to_package(self.t40Package, start_date=two_months_ago)
 
         # Create team membership
         team_1 = User.objects.create(username='member_fifteen', first_name='Member', last_name='Fifteen')
-        team_1.membership.bill_day = today.day
-        team_1.membership.set_to_package(self.teamPackage, start_date=two_months_ago, paid_by=lead)
+        team_1_membership = Membership.objects.for_user(team_1)
+        team_1_membership.bill_day = today.day
+        team_1_membership.set_to_package(self.teamPackage, start_date=two_months_ago, paid_by=lead)
         team_2 = User.objects.create(username='member_sixteen', first_name='Member', last_name='Sixteen')
-        team_2.membership.bill_day = today.day
-        team_2.membership.set_to_package(self.teamPackage, start_date=two_months_ago, paid_by=lead)
+        team_2_membership = Membership.objects.for_user(team_2)
+        team_2_membership.bill_day = today.day
+        team_2_membership.set_to_package(self.teamPackage, start_date=two_months_ago, paid_by=lead)
 
         # Generate Bills for lead for one month ago
         # Should be 720 with 3 line items under the lead's billing
@@ -584,9 +599,9 @@ class BillingTestCase(TestCase):
         self.assertEqual(720, lead_original_bills.amount)
 
         # Change lead's membership packge to T20 and check billing
-        lead.membership.end_all()
-        lead.membership.set_to_package(self.t20Package, start_date=today)
-        self.assertTrue('T20' == lead.membership.package_name())
+        lead_membership.end_all()
+        lead_membership.set_to_package(self.t20Package, start_date=today)
+        self.assertTrue('T20' == lead_membership.package_name())
 
         #Should have bill with 3 line items and a total of $360
         updated_batch = BillingBatch.objects.run(start_date=today, end_date=today)
@@ -597,16 +612,19 @@ class BillingTestCase(TestCase):
     def test_team_lead_ends_package(self):
         # Create user with t40 package started 2 months ago
         lead = User.objects.create(username='member_seventeen', first_name='Member', last_name='Seventeen')
-        lead.membership.bill_day = today.day
-        lead.membership.set_to_package(self.t20Package, start_date=two_months_ago)
+        lead_membership = Membership.objects.for_user(lead)
+        lead_membership.bill_day = today.day
+        lead_membership.set_to_package(self.t20Package, start_date=two_months_ago)
 
         # Create team membership
         team_1 = User.objects.create(username='member_eighteen', first_name='Member', last_name='Eighteen')
-        team_1.membership.bill_day = today.day
-        team_1.membership.set_to_package(self.teamPackage, start_date=two_months_ago, paid_by=lead)
+        team_1_membership = Membership.objects.for_user(team_1)
+        team_1_membership.bill_day = today.day
+        team_1_membership.set_to_package(self.teamPackage, start_date=two_months_ago, paid_by=lead)
         resident = User.objects.create(username='member_nineteen', first_name='Member', last_name='Nineteen')
-        resident.membership.bill_day = today.day
-        resident.membership.set_to_package(self.residentPackage, start_date=two_months_ago, paid_by=lead)
+        resident_membership = Membership.objects.for_user(resident)
+        resident_membership.bill_day = today.day
+        resident_membership.set_to_package(self.residentPackage, start_date=two_months_ago, paid_by=lead)
 
         # Generate last months bills
         # Test for total of 360 + 0 + 475 = $835
@@ -617,13 +635,13 @@ class BillingTestCase(TestCase):
         self.assertEqual(835, lead_original_bills.amount)
 
         # End lead and team members' subscriptions but keep resident
-        lead.membership.end_all()
-        team_1.membership.end_all()
+        lead_membership.end_all()
+        team_1_membership.end_all()
 
         # Lead and team member should have 0 active_subscriptions while Resident has 2
-        self.assertEqual(0, lead.membership.active_subscriptions().count())
-        self.assertEqual(0, team_1.membership.active_subscriptions().count())
-        self.assertEqual(2, resident.membership.active_subscriptions().count())
+        self.assertEqual(0, lead_membership.active_subscriptions().count())
+        self.assertEqual(0, team_1_membership.active_subscriptions().count())
+        self.assertEqual(2, resident_membership.active_subscriptions().count())
 
         # Rerun billing - should only be $475 for the resident paid by lead
         updated_batch = BillingBatch.objects.run(start_date=today, end_date=today)
@@ -634,9 +652,10 @@ class BillingTestCase(TestCase):
     def test_pt10_adds_key_next_bill_period(self):
         # Create user with PT10 package started 2 months ago
         user = User.objects.create(username='member_twenty', first_name='Member', last_name='Twenty')
-        user.membership.bill_day = today.day
-        user.membership.set_to_package(self.pt10Package, start_date=two_months_ago)
-        self.assertTrue('PT10' == user.membership.package_name())
+        membership = Membership.objects.for_user(user)
+        membership.bill_day = today.day
+        membership.set_to_package(self.pt10Package, start_date=two_months_ago)
+        self.assertTrue('PT10' == membership.package_name())
 
         # Generate last month's bills
         # Should have one bill for user for $180
@@ -646,9 +665,9 @@ class BillingTestCase(TestCase):
         self.assertEqual(180, last_months_bill.amount)
 
         # Add key subscription
-        ResourceSubscription.objects.create(resource=Resource.objects.key_resource, membership=user.membership, package_name='PT10', allowance=1, start_date=today, monthly_rate=100, overage_rate=0)
-        self.assertEqual(2, user.membership.active_subscriptions().count())
-        day_subscription = ResourceSubscription.objects.get(membership=user.membership, resource=Resource.objects.day_resource)
+        ResourceSubscription.objects.create(resource=Resource.objects.key_resource, membership=membership, package_name='PT10', allowance=1, start_date=today, monthly_rate=100, overage_rate=0)
+        self.assertEqual(2, membership.active_subscriptions().count())
+        day_subscription = ResourceSubscription.objects.get(membership=membership, resource=Resource.objects.day_resource)
         day_subscription
         self.assertEqual(10, day_subscription.allowance)
 
@@ -668,10 +687,11 @@ class BillingTestCase(TestCase):
     def test_pt10_adds_key_halfway_through_bill_period(self):
         # Create user with PT10 package started 2 weeks ago
         user = User.objects.create(username='member_twentyone', first_name='Member', last_name='Twentyone')
-        user.membership.bill_day = two_weeks_ago.day
-        user.membership.set_to_package(self.pt10Package, start_date=two_weeks_ago)
-        self.assertTrue('PT10' == user.membership.package_name())
-        self.assertEqual(1, user.membership.active_subscriptions().count())
+        membership = Membership.objects.for_user(user)
+        membership.bill_day = two_weeks_ago.day
+        membership.set_to_package(self.pt10Package, start_date=two_weeks_ago)
+        self.assertTrue('PT10' == membership.package_name())
+        self.assertEqual(1, membership.active_subscriptions().count())
 
         # Generate bill from 2 weeks ago
         # $180 for PT10 membership
@@ -683,8 +703,8 @@ class BillingTestCase(TestCase):
         self.assertEqual(0, last_months_bill.total_owed)
 
         # Add key subscription
-        ResourceSubscription.objects.create(resource=Resource.objects.key_resource, membership=user.membership, package_name='PT10', allowance=1, start_date=today, monthly_rate=100, overage_rate=0)
-        self.assertEqual(2, user.membership.active_subscriptions().count())
+        ResourceSubscription.objects.create(resource=Resource.objects.key_resource, membership=membership, package_name='PT10', allowance=1, start_date=today, monthly_rate=100, overage_rate=0)
+        self.assertEqual(2, membership.active_subscriptions().count())
 
         # Generate bill with key
         # Total should be $180 + prorated key amount ($50-ish)
@@ -698,12 +718,13 @@ class BillingTestCase(TestCase):
         start = one_month_ago
         end = (start + relativedelta(months=2)) - timedelta(days=1)
         user = User.objects.create(username='member_twentytwo', first_name='Member', last_name='Twentytwo')
-        user.membership.bill_day = one_month_ago.day
-        user.membership.set_to_package(self.residentPackage, start_date=start, end_date=end)
-        ResourceSubscription.objects.create(resource=Resource.objects.key_resource, membership=user.membership, package_name='Resident', allowance=1, start_date=start, end_date=end, monthly_rate=100, overage_rate=0)
-        self.assertTrue('Resident' == user.membership.package_name())
-        self.assertEqual(3, user.membership.active_subscriptions().count())
-        self.assertTrue(len(user.membership.active_subscriptions(target_date=two_months_from_now)) == 0)
+        membership = Membership.objects.for_user(user)
+        membership.bill_day = one_month_ago.day
+        membership.set_to_package(self.residentPackage, start_date=start, end_date=end)
+        ResourceSubscription.objects.create(resource=Resource.objects.key_resource, membership=membership, package_name='Resident', allowance=1, start_date=start, end_date=end, monthly_rate=100, overage_rate=0)
+        self.assertTrue('Resident' == membership.package_name())
+        self.assertEqual(3, membership.active_subscriptions().count())
+        self.assertTrue(len(membership.active_subscriptions(target_date=two_months_from_now)) == 0)
 
         # Generate bill at start date to check bills
         # $575 = 475 + 100
@@ -719,13 +740,13 @@ class BillingTestCase(TestCase):
         self.assertTrue(len(original_end_bill) == 0)
 
         # Change the end date everything except the key subscription
-        for a in user.membership.active_subscriptions():
+        for a in membership.active_subscriptions():
             if a.resource != Resource.objects.key_resource:
                 a.end_date = yesterday
                 a.save()
-        key_subscription = ResourceSubscription.objects.get(membership=user.membership, resource=Resource.objects.key_resource)
-        day_subscription = ResourceSubscription.objects.get(membership=user.membership, resource=Resource.objects.day_resource)
-        desk_subscription = ResourceSubscription.objects.get(membership=user.membership, resource=Resource.objects.desk_resource)
+        key_subscription = ResourceSubscription.objects.get(membership=membership, resource=Resource.objects.key_resource)
+        day_subscription = ResourceSubscription.objects.get(membership=membership, resource=Resource.objects.day_resource)
+        desk_subscription = ResourceSubscription.objects.get(membership=membership, resource=Resource.objects.desk_resource)
         self.assertTrue(key_subscription.end_date == end)
         self.assertTrue(key_subscription.end_date != desk_subscription.end_date)
         self.assertTrue(key_subscription.end_date != day_subscription.end_date)
@@ -736,7 +757,7 @@ class BillingTestCase(TestCase):
         new_today_batch = BillingBatch.objects.run(start_date=today, end_date=today)
         new_today_bill = user.bills.get(period_start=today)
         self.assertEqual(100, new_today_bill.amount)
-        self.assertTrue(user.membership.package_name() == 'Resident')
+        self.assertTrue(membership.package_name() == 'Resident')
         self.assertEqual(1, new_today_bill.line_items.all().count())
 
         # Generate bill after end_date
@@ -750,12 +771,13 @@ class BillingTestCase(TestCase):
         start = one_month_ago
         end = (start + relativedelta(months=2)) - timedelta(days=1)
         user = User.objects.create(username='member_twentythree', first_name='Member', last_name='Twentythree')
-        user.membership.bill_day = one_month_ago.day
-        user.membership.set_to_package(self.residentPackage, start_date=start, end_date=end)
-        ResourceSubscription.objects.create(resource=Resource.objects.key_resource, membership=user.membership, package_name='Resident', allowance=1, start_date=start, end_date=end, monthly_rate=100, overage_rate=0)
-        self.assertTrue('Resident' == user.membership.package_name())
-        self.assertEqual(3, user.membership.active_subscriptions().count())
-        self.assertTrue(len(user.membership.active_subscriptions(target_date=two_months_from_now)) == 0)
+        membership = Membership.objects.for_user(user)
+        membership.bill_day = one_month_ago.day
+        membership.set_to_package(self.residentPackage, start_date=start, end_date=end)
+        ResourceSubscription.objects.create(resource=Resource.objects.key_resource, membership=membership, package_name='Resident', allowance=1, start_date=start, end_date=end, monthly_rate=100, overage_rate=0)
+        self.assertTrue('Resident' == membership.package_name())
+        self.assertEqual(3, membership.active_subscriptions().count())
+        self.assertTrue(len(membership.active_subscriptions(target_date=two_months_from_now)) == 0)
 
         # Generate bill for today to check bills
         # $575 = $475 (for Resident package) + $100 (for key)
@@ -772,8 +794,8 @@ class BillingTestCase(TestCase):
         original_end_bill = user.bills.filter(period_start=two_months_from_now)
 
         # Set end resource subscriptions for yesterday
-        user.membership.end_all(target_date = yesterday)
-        self.assertTrue(user.membership.active_subscriptions().count() == 0)
+        membership.end_all(target_date = yesterday)
+        self.assertTrue(membership.active_subscriptions().count() == 0)
 
         # There should now be no bill for today
         # TODO - This isn't working correctly - returns a bill for 575 if start day is today. Works for yesterday
@@ -787,9 +809,10 @@ class BillingTestCase(TestCase):
         # Create Advocate package with start date of one month ago
         start = one_month_ago
         user = User.objects.create(username='member_twentyfour', first_name='Member', last_name='Twentyfour')
-        user.membership.bill_day = one_month_ago.day
-        user.membership.set_to_package(self.advocatePackage, start_date=start)
-        self.assertEqual(1, user.membership.active_subscriptions().count())
+        membership = Membership.objects.for_user(user)
+        membership.bill_day = one_month_ago.day
+        membership.set_to_package(self.advocatePackage, start_date=start)
+        self.assertEqual(1, membership.active_subscriptions().count())
 
         # Generate today's bill if not end date
         original_bill_batch = BillingBatch.objects.run(start_date=one_month_ago, end_date=today)
@@ -799,8 +822,8 @@ class BillingTestCase(TestCase):
         self.assertEqual(30, original_bill.amount)
 
         # End all subscriptions yesterday
-        user.membership.end_all(target_date=yesterday)
-        self.assertTrue(user.membership.active_subscriptions().count() == 0)
+        membership.end_all(target_date=yesterday)
+        self.assertTrue(membership.active_subscriptions().count() == 0)
 
         # Rerun billing now that subscriptions have been ended
         # There should be NO new bill to be paid
@@ -816,9 +839,10 @@ class BillingTestCase(TestCase):
         start = one_month_ago
         end = (today + relativedelta(months=1)) - timedelta(days=1)
         user = User.objects.create(username='member_twentyfive', first_name='Member', last_name='Twentyfive')
-        user.membership.bill_day = one_month_ago.day
-        user.membership.set_to_package(self.pt10Package, start_date=start)
-        self.assertEqual(1, user.membership.active_subscriptions().count())
+        membership = Membership.objects.for_user(user)
+        membership.bill_day = one_month_ago.day
+        membership.set_to_package(self.pt10Package, start_date=start)
+        self.assertEqual(1, membership.active_subscriptions().count())
 
         # Generate today's bill
         original_bill_batch = BillingBatch.objects.run(start_date=today, end_date=today)
@@ -828,8 +852,8 @@ class BillingTestCase(TestCase):
         self.assertEqual(180, original_bill.amount)
 
         # End all subscriptions at end of bill period and test still have active subscriptions today
-        user.membership.end_all(target_date = end)
-        self.assertTrue(user.membership.active_subscriptions().count() == 1)
+        membership.end_all(target_date = end)
+        self.assertTrue(membership.active_subscriptions().count() == 1)
 
         # Rerun billing now that subscriptions have been ended
         # Return one bill for $180
@@ -847,9 +871,10 @@ class BillingTestCase(TestCase):
         # Create PT15 package with start date of one month ago with the next billing period starting tomorrow
         start = one_month_ago + timedelta(days=1)
         user = User.objects.create(username='member_twentysix', first_name='Member', last_name='Twentysix')
-        user.membership.bill_day = start.day
-        user.membership.set_to_package(self.pt15Package, start_date=start)
-        self.assertEqual(1, user.membership.active_subscriptions().count())
+        membership = Membership.objects.for_user(user)
+        membership.bill_day = start.day
+        membership.set_to_package(self.pt15Package, start_date=start)
+        self.assertEqual(1, membership.active_subscriptions().count())
 
         # Generate today's bill if not end date
         today_bill_batch = BillingBatch.objects.run(start_date=start, end_date=start)
@@ -858,8 +883,8 @@ class BillingTestCase(TestCase):
         self.assertEqual(225, original_bill.amount)
 
         # Set end date to today
-        user.membership.end_all(target_date=today)
-        self.assertTrue(user.membership.active_subscriptions(target_date=tomorrow).count() == 0)
+        membership.end_all(target_date=today)
+        self.assertTrue(membership.active_subscriptions(target_date=tomorrow).count() == 0)
 
         # Check to make sure no bill will generate tomorrow
         ended_bill_batch = BillingBatch.objects.run(start_date=tomorrow, end_date=tomorrow)
