@@ -436,39 +436,33 @@ class MembershipTestCase(TestCase):
         membership.bill_day = 31
         self.assertEquals("31st", membership.bill_day_str)
 
-    def test_resource_activity(self):
+    def test_coworking_days(self):
         from nadine.models.usage import CoworkingDay
         day_resource = Resource.objects.day_resource
         user1 = User.objects.create(username='user_gen1', first_name='Gen', last_name='One')
-        membership = user1.membership
-        subscription = ResourceSubscription.objects.create(
-            membership = membership,
-            resource = day_resource,
-            start_date = date(2017, 6, 1),
-            monthly_rate = 100.00,
-            overage_rate = 0,
-        )
-        activity = membership.resource_activity(day_resource, target_date=date(2017, 6, 1))
+        membership = Membership.objects.for_user(user1, date(2017, 6, 1))
+        activity = membership.coworking_days_in_period(target_date=date(2017, 6, 1))
         self.assertEqual(0, len(activity))
 
         # User1 signs in for one day
         day1 = CoworkingDay.objects.create(user=user1, visit_date=date(2017, 6, 1), payment="Bill")
-        activity = membership.resource_activity(day_resource, target_date=date(2017, 6, 1))
+        activity = membership.coworking_days_in_period(target_date=date(2017, 6, 1))
         self.assertEqual(1, len(activity))
         self.assertTrue(day1 in activity)
 
         # User2 signs in as User1's guest
         user2 = User.objects.create(username='user_gen2', first_name='Gen', last_name='Two')
         day2 = CoworkingDay.objects.create(user=user2, paid_by=user1, visit_date=date(2017, 6, 1), payment="Bill")
-        activity = membership.resource_activity(day_resource, target_date=date(2017, 6, 1))
+        activity = membership.coworking_days_in_period(target_date=date(2017, 6, 1))
         self.assertEqual(2, len(activity))
         self.assertTrue(day1 in activity)
         self.assertTrue(day2 in activity)
 
         # User3 gets a membership paid for by User1
         user3 = User.objects.create(username='user_gen3', first_name='Gen', last_name='Three')
+        membership3 = Membership.objects.for_user(user3, date(2017, 6, 1))
         subscription = ResourceSubscription.objects.create(
-            membership = user3.membership,
+            membership = membership3,
             resource = day_resource,
             start_date = date(2017, 6, 1),
             monthly_rate = 100.00,
@@ -476,7 +470,7 @@ class MembershipTestCase(TestCase):
             paid_by = user1,
         )
         day3 = CoworkingDay.objects.create(user=user3, visit_date=date(2017, 6, 1), payment="Bill")
-        activity = membership.resource_activity(day_resource, target_date=date(2017, 6, 1))
+        activity = membership.coworking_days_in_period(target_date=date(2017, 6, 1))
         self.assertEqual(3, len(activity))
         self.assertTrue(day1 in activity)
         self.assertTrue(day2 in activity)
@@ -497,7 +491,7 @@ class MembershipTestCase(TestCase):
 
         # Set this membership to our Test Package
         membership.set_to_package(self.test_package, today)
-        self.assertEqual(membership.package_name(), self.test_package.name)
+        self.assertEqual(membership.package_name(tomorrow), self.test_package.name)
         self.assertEqual(membership.monthly_rate(), self.test_package.monthly_rate())
         self.assertTrue(membership.matches_package())
 
