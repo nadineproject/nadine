@@ -1,5 +1,6 @@
 import traceback, logging
 from datetime import datetime, timedelta, date
+from decimal import Decimal
 from dateutil.relativedelta import relativedelta
 from django.urls import reverse
 
@@ -382,14 +383,13 @@ class BillingTestCase(TestCase):
 
         # Payer has no active subscriptions
         self.assertEqual(0, payer_membership.active_subscriptions().count())
-        start, end = payer_membership.get_period()
 
         # Set Resident membership package for user to be paid by another member 'payer'
-        membership.bill_day = today.day
+        membership.bill_day = 15
         membership.save()
-        membership.set_to_package(self.residentPackage, start_date=today, paid_by=payer)
+        membership.set_to_package(self.residentPackage, start_date=date(2010, 6, 15), paid_by=payer)
         self.assertTrue(membership.package_name() == 'Resident')
-        self.assertTrue(membership.bill_day == today.day)
+        self.assertTrue(membership.bill_day == 15)
         users_subscriptions = membership.active_subscriptions()
 
         # Test that payer pays for each of the 3 active subscriptions for user
@@ -398,19 +398,19 @@ class BillingTestCase(TestCase):
             self.assertEqual(u.paid_by, payer)
 
         # Generate bills and 0 for user, but 1 for payer
-        run_bill_batch = BillingBatch.objects.run(start_date=today, end_date=today)
+        run_bill_batch = BillingBatch.objects.run(start_date=date(2010, 6, 15), end_date=date(2010, 6, 15))
         self.assertTrue(run_bill_batch.successful)
         for b in run_bill_batch.bills.all():
             print_bill(b)
         user_bill_count = UserBill.objects.filter(user=user).count()
         self.assertEqual(0, user_bill_count)
-        user_bill = user.bills.get(period_start = today)
-        payer_bill = payer.bills.get(period_start=today)
+        # Will pull from the first since the payer is not an active member
+        payer_bill = payer.bills.get(period_start=date(2010, 6, 1))
         for p in payer_bill.subscriptions():
             self.assertTrue('Resident' == p.package_name)
             # Bill is for user membership and not that of payer
-            self.assertTrue(payer_membership.id == p.membership.id)
-        self.assertTrue(payer_bill.amount == 475)
+            self.assertFalse(payer_membership.id == p.membership.id)
+            self.assertTrue(membership.id == p.membership.id)
 
     def test_new_t40_team_member(self):
         # Creat team lead with T40 package
@@ -801,8 +801,6 @@ class BillingTestCase(TestCase):
         self.assertTrue(membership.active_subscriptions().count() == 0)
 
         # There should now be no bill for today
-        # TODO - This isn't working correctly - returns a bill for 575 if start day is today. Works for yesterday
-        # TODO - This is having the date issue!
         new_end_batch = BillingBatch.objects.run(start_date=today, end_date=today)
         self.assertTrue(new_end_batch.successful)
         new_end_bill = user.bills.filter(period_start=today)
