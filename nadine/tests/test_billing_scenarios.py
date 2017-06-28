@@ -817,7 +817,7 @@ class BillingTestCase(TestCase):
         self.assertEqual(1, membership.active_subscriptions().count())
 
         # Generate today's bill if not end date
-        original_bill_batch = BillingBatch.objects.run(start_date=one_month_ago, end_date=today)
+        original_bill_batch = BillingBatch.objects.run(start_date=one_month_ago, end_date=one_month_ago)
         self.assertTrue(original_bill_batch.successful)
         original_bill = user.bills.get(period_start=one_month_ago)
         print_bill(original_bill)
@@ -829,8 +829,7 @@ class BillingTestCase(TestCase):
 
         # Rerun billing now that subscriptions have been ended
         # There should be NO new bill to be paid
-        # TODO - currently generating new bill if start date is set to yesterday as opposed to today
-        ended_bill_batch = BillingBatch.objects.run(start_date=yesterday, end_date=today)
+        ended_bill_batch = BillingBatch.objects.run(start_date=today, end_date=today)
         self.assertTrue(ended_bill_batch.bills.count() == 0)
         self.assertTrue(ended_bill_batch.successful)
         new_end_bill = user.bills.filter(period_start=today)
