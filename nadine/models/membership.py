@@ -234,7 +234,13 @@ class Membership(models.Model):
         return package_count == 1 and no_package_subscriptions == 0
 
     def allowance_by_resource(self, resource, target_date=None):
-        return self.active_subscriptions(target_date).filter(resource=resource).aggregate(Sum('allowance'))['allowance__sum']
+        subscriptions = self.active_subscriptions(target_date).filter(resource=resource)
+        if subscriptions:
+            return subscriptions.aggregate(Sum('allowance'))['allowance__sum']
+        return 0
+
+    def coworking_day_allowance(self, target_date):
+        return self.allowance_by_resource(Resource.objects.day_resource, target_date)
 
     def has_resource(self, resource, target_date=None):
         return self.active_subscriptions(target_date).filter(resource=resource).count() > 0
@@ -248,13 +254,23 @@ class Membership(models.Model):
     def has_mail(self, target_date=None):
         return self.has_resource(Resource.objects.mail_resource, target_date)
 
+    def coworking_days_in_period(self, target_date):
+        from nadine.models.usage import CoworkingDay
+        period_start, period_end = self.get_period(target_date)
+        if not period_start:
+            # Indicates not active.  Use single day instead
+            period_start = target_date
+            period_end = target_date
+        users = self.users_in_period(period_start, period_end)
+        in_period = Q(visit_date__range=(period_start, period_end))
+        by_user = Q(user__in=users)
+        paid_by_user = Q(paid_by__in=users)
+        return CoworkingDay.objects.filter(in_period).filter(by_user | paid_by_user)
+
     def resource_activity_in_period(self, resource, target_date=None):
         ''' Get all the activity for this resource in this period. '''
-        period_start, period_end = self.get_period(target_date)
         if resource == Resource.objects.day_resource:
-            users = self.users_in_period(period_start, period_end)
-            from nadine.models.usage import CoworkingDay
-            return CoworkingDay.objects.filter(user__in=users, visit_date__range=(period_start, period_end))
+            return self.coworking_days_in_period(target_date)
 
     def users_in_period(self, period_start, period_end):
         users = set()
@@ -359,10 +375,14 @@ class Membership(models.Model):
             return possible_matches[0]
 
     def active_subscriptions(self, target_date=None):
-        ''' Return the active subscriptions on a given day. '''
-        if not target_date:
-            target_date = localtime(now()).date()
-        return self.subscriptions_for_period(period_start=target_date, period_end=target_date)
+        ''' Convert the given date to the full period and pull the active subscriptions. '''
+        # TODO - Figure out why this isn't doing what I expect it to --JLS
+        # period_start, period_end = self.get_period(target_date)
+        # if not period_start:
+        #     # Indicates inactive.  Return subscriptions for one day only
+        #     return self.subscriptions_for_day(target_date)
+        # return self.subscriptions_for_period(period_start=period_start, period_end=period_end)
+        return self.subscriptions_for_day(target_date)
 
     def subscriptions_for_period(self, period_start, period_end):
         ''' Return the active subscriptions for a given period. '''
@@ -370,8 +390,14 @@ class Membership(models.Model):
         future_ending = Q(end_date__gte=period_end)
         return self.subscriptions.filter(start_date__lte=period_start).filter(unending | future_ending).distinct()
 
+    def subscriptions_for_day(self, target_date=None):
+        ''' Return the active subscriptions on a given day. '''
+        if not target_date:
+            target_date = localtime(now()).date()
+        return self.subscriptions_for_period(target_date, target_date)
+
     def is_active(self, target_date=None):
-        return self.active_subscriptions(target_date).count() > 0
+        return self.subscriptions_for_day(target_date).count() > 0
 
     def in_future(self, target_date=None):
         return self in Membership.objects.future_memberships(target_date)
