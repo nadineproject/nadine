@@ -5,14 +5,17 @@ from django.test import TestCase
 from django.core import management
 from django.contrib.auth.models import User
 from django.conf import settings
-from django.utils import timezone
-from nadine.models import *
+from django.utils.timezone import localtime, now
 
-today = timezone.now().date()
+from nadine.models.organization import Organization
+
+
+today = localtime(now()).date()
 yesterday = today - timedelta(days=1)
 tomorrow = today + timedelta(days=1)
 last_month = today - timedelta(days=30)
 next_month = today + timedelta(days=30)
+
 
 class OrganiztionTestCase(TestCase):
 
