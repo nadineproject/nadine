@@ -1,7 +1,7 @@
 import traceback
 from datetime import datetime, timedelta, date
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.core import management
 from django.contrib.auth.models import User
 from django.conf import settings
@@ -9,6 +9,7 @@ from django.utils import timezone
 from nadine.models import *
 
 
+@override_settings(SUSPEND_MEMBER_ALERTS=True)
 class ProfileTestCase(TestCase):
 
     def setUp(self):
