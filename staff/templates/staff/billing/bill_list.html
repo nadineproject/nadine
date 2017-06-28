@@ -5,53 +5,52 @@
 {% block content %}
 
 <h4>Bill List</h4>
-{% url 'staff:bills' as date_range_form_action %}
 <div class="columns clearfix date-range">
-	{% include "staff/date_range_form.html"%}
+  {% include "staff/date_range_form.html"%}
 </div>
 
 {% if bills %}
-	<table>
-		<tr>
-			<th>ID</th>
-			<th>Created</th>
-			<th>Member</th>
-			<th>Period Start</th>
-			<th>Period End</th>
-			<th>Lines</th>
-			<th class="amount">Amount</th>
-			<th class="amount">Paid</th>
-			<!-- <th>&nbsp;</th> -->
-		</tr>
+  <table>
+    <tr class='row-even'>
+      <th>ID</th>
+      <th>Created</th>
+      <th>Member</th>
+      <th>Period Start</th>
+      <th>Period End</th>
+      <th>Lines</th>
+      <th class="amount">Amount</th>
+      <th class="amount">Paid</th>
+      <th></th>
+    </tr>
 
-		{% for bill in bills %}
-			<tr class="{% cycle 'row-even' 'row-odd' %}">
-				<td><a href="{% url 'staff:billing:bill' bill.id %}">{{ bill.id }}</a></td>
-				<td>{{ bill.created_ts|date:"m/d/y" }}</a></td>
-				<td><a href="{% url 'staff:members:detail' bill.user.username %}">{{ bill.user.get_full_name }}</a></td>
-				<td>{{ bill.period_start }}</td>
-				<td>{{ bill.period_end }}</td>
-				<td>{{ bill.line_items.all | length }}</td>
-				<td class="amount">${{ bill.amount }}</td>
-				<td class="amount">${{ bill.total_paid }}</td>
-				<!-- <td><a href="{{ bill.get_admin_url }}">edit</a></td> -->
-			</tr>
-		{% endfor %}
+    {% for bill in bills %}
+      <tr class="{% cycle 'row-odd' 'row-even' %}">
+        <td><a href="{% url 'staff:billing:bill' bill.id %}">{{ bill.id }}</a></td>
+        <td>{{ bill.created_ts|date:"m/d/y" }}</a></td>
+        <td><a href="{% url 'staff:members:detail' bill.user.username %}">{{ bill.user.get_full_name }}</a></td>
+        <td>{{ bill.period_start }}</td>
+        <td>{{ bill.period_end }}</td>
+        <td>{{ bill.line_items.all | length }}</td>
+        <td class="amount">${{ bill.amount }}</td>
+        <td class="amount">${{ bill.total_paid }}</td>
+        <td><a href="{{ bill.get_admin_url }}">edit</a></td>
+      </tr>
+    {% endfor %}
 {% else %}
-	<p>There are no bills for this period.</p>
+  <p>There are no bills for this period.</p>
 {% endif %}
+</table>
 
 {% endblock %}
 
 {% block extrajs %}
-<script>
-	$(document).ready(function() {
-		$('#id_start').addClass('datepicker');
-		$('#id_end').addClass('datepicker');
-
-		$('.datepicker').datepicker({
-      dateFormat: 'yy-mm-dd',
+  <script>
+    $(document).ready(function() {
+      $('#id_start').addClass('datepicker');
+      $('#id_end').addClass('datepicker');
+      $('.datepicker').datepicker({
+        dateFormat: 'yy-mm-dd',
+      });
     });
-	});
-</script>
+  </script>
 {% endblock %}

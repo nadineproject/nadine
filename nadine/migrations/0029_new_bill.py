@@ -20,6 +20,7 @@ def forward(apps, schema_editor):
     UserBill = apps.get_model("nadine", "UserBill")
     BillLineItem = apps.get_model("nadine", "BillLineItem")
     CoworkingDayLineItem = apps.get_model("nadine", "CoworkingDayLineItem")
+    CoworkingDay = apps.get_model("nadine", "CoworkingDay")
     Payment = apps.get_model("nadine", "Payment")
     Resource = apps.get_model("nadine", "Resource")
     tz = timezone.get_current_timezone()
@@ -106,11 +107,38 @@ def forward(apps, schema_editor):
             p.created_ts = t.transaction_date
             p.save()
 
+
+    # Handle CoworkingDays older than 2 months that were not billed yet
+    two_months_ago = localtime(now()).date() - relativedelta(months=2)
+    loose_days = CoworkingDay.objects.filter(bill__isnull=True, visit_date__lte=two_months_ago).order_by('visit_date')
+    user = User.objects.first()
+    # Only do this step if there is data in the system
+    if loose_days and user:
+        print("Associating %d unbilled days" % len(loose_days))
+        first_day = loose_days.first().visit_date
+        last_day = loose_days.last().visit_date
+        bill = UserBill.objects.create(user=user, period_start=first_day, period_end=last_day, due_date=last_day)
+        bill.note = "This bill includes all days unbilled before %s (Nadine 1.8)" % two_months_ago
+        for day in loose_days:
+            description = "Coworking Day on %s: %s (%s)" % (day.visit_date, day.user.username, day.payment)
+            CoworkingDayLineItem.objects.create(
+                bill = bill,
+                description = description,
+                amount = 0,
+                day = day,
+            )
+            day.bill = bill
+            day.save()
+        bill.mark_paid = True
+        bill.closed_ts = localtime(now())
+        bill.save()
+        print("UserBill %d: %s %s to %s" % (bill.id, bill.user.username, bill.period_start, bill.period_end))
+        batch.bills.add(bill)
+
     # Close up this BillingBatch
     batch.completed_ts = localtime(now())
     batch.successful = True
     batch.save()
-
 
 def reverse(apps, schema_editor):
     pass
