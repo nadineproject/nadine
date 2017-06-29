@@ -245,6 +245,7 @@ input#id_bill_day {
   background-color: RGBA(87, 140, 145, 1.00);
   font-weight: bold;
   color: white;
+  font-size: 1.4em;
 }
 
 #yes:hover, #no:hover {

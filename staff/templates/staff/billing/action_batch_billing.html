@@ -1,0 +1,10 @@
+<form method="POST"
+  {% if date %}
+    action="{% url 'staff:billing:batch_billing' date.year date.month date.day %}"
+  {% else %}
+    action="{% url 'staff:billing:batch_billing' %}"
+  {% endif %}>
+  {% csrf_token %}
+  <input type="hidden" name="next" value="{{ request.get_full_path }}" >
+  <input type='submit' value='Run Billing Batch' />
+</form>

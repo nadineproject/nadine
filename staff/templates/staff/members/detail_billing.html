@@ -1,6 +1,6 @@
 
 <h5>Billing Profile</h5>
-<table class='sub-table'>
+<table class='sub-table' style='margin-bottom: 3%;'>
   <tr>
     <td>
       <strong>Billing Profile:</strong>
@@ -54,7 +54,7 @@
   {% endfor %}
 </table>
 {% else %}
-<h5><a href="{% url 'staff:billing:user_bills' user.username %}" style='margin-top: 2%; margin-bottom: 2%;'>View All Bills</a></h5>
+<h5 style='margin-top: 2%; margin-bottom: 4%;'><a href="{% url 'staff:billing:user_bills' user.username %}">View All Bills</a></h5>
 {% endif %}
 
 <!-- Security Deposits -->

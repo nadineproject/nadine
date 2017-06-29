@@ -140,7 +140,7 @@
   <div class='new-table'>
     <h6>Membership Package For Bill Period Following {{ end_target }}:</h6>
     {% if package_name %}
-      <h6 id='package-name' style='margin-top: 0;'>{{ package_name }}</h6>
+      <h6 id='package-name' style='margin-top: 0; color: RGBA(76, 76, 76, 1.00);'>{{ package_name }}</h6>
     {% endif %}
     <table class='sub-table'>
       <tr>
@@ -185,7 +185,7 @@
       {% endfor %}
       {% for ns in new_subs %}
         {% if ns.s_id == None %}
-          <tr class='{% cycle "row-odd" "row-even" %}'>
+          <tr class='{% cycle  "row-even" "row-odd" %}'>
             <td class='sub-td'>
               <strong>{{ ns.resource|resource_filter }}</strong>
             </td>

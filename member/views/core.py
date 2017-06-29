@@ -150,8 +150,8 @@ def view_members(request):
 @login_required
 def bill_receipt(request, bill_id):
     bill = get_object_or_404(UserBill, id=bill_id)
-    if bill.membership:
-        bill_user = User.objects.get(membership = bill.membership)
+    if bill.user.membership:
+        bill_user = User.objects.get(membership = bill.user.membership)
     else:
         bill_user = bill.user
     benefactor = None
