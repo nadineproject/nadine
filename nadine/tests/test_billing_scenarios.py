@@ -485,8 +485,8 @@ class BillingTestCase(TestCase):
         membership = Membership.objects.for_user(user)
 
         # Start membership package in one week for a length of 2 weeks
-        start = one_week_from_now
-        end = start + relativedelta(weeks=2)
+        start = date(2010, 6, 7)
+        end = date(2010, 6, 21)
         membership.bill_day = start.day
         self.assertTrue(membership.package_name() is None)
         membership.set_to_package(self.advocatePackage, start_date=start, end_date=end)
@@ -497,15 +497,15 @@ class BillingTestCase(TestCase):
         self.assertTrue(len(membership.active_subscriptions(target_date=one_month_from_now)) is 0)
 
         # Test bills
-        todays_bill_batch = BillingBatch.objects.run(start_date=today, end_date=today)
+        todays_bill_batch = BillingBatch.objects.run(start_date=date(2010, 6, 1), end_date=date(2010, 6, 1))
         self.assertTrue(todays_bill_batch.successful)
         self.assertTrue(0 == len(user.bills.filter(period_start=today)))
         batch_on_start_date = BillingBatch.objects.run(start_date=start, end_date=end - timedelta(days=1))
         self.assertTrue(batch_on_start_date.successful)
         start_date_bill = user.bills.get(period_start=start)
         self.assertTrue(start_date_bill is not None)
-        # TODO: Do we want this prorated or not???
-        # self.assertEqual(bill_on_start_date.amount, 30)
+        # TODO: Coming back at about $14 but I think it should be 15
+        # self.assertEqual(bill_on_start_date.amount, 15)
 
     def test_current_pt5_adds_key(self):
         #Create user with PT5 membership package started 2 months ago
