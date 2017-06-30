@@ -4,7 +4,12 @@
 
 {% block content %}
 
+<div style="float:right;">
+<a class='chip' href="?run=true">Run New Batch</a>
+</div>
+
 <h4>Batch Logs</h4>
+
 
 {% if bill_id %}
   <h6 style="margin:1em 0; ">
@@ -20,7 +25,7 @@
 <table>
   <tr class='row-even'>
     <th>ID</th>
-    <th>Created By</th>
+    <th>Run By</th>
     <th>Started</th>
     <th>Completed</th>
     <th>Successful</th>
@@ -32,8 +37,51 @@
       <td>{{ batch.created_by|default:'System' }}</td>
       <td>{{ batch.created_ts }}</td>
       <td>{{ batch.completed_ts }}</td>
-      <td>{{ batch.successful }}</td>
-      <td>{{ batch.bills.count }}</td>
+      <td>
+        {% if batch.successful %}
+          {{ batch.successful }}
+        {% else %}
+          <a style="color:red;" onclick="$('#error{{ batch.id }}').toggle();">False</a>
+        {% endif %}
+      </td>
+      <td>
+        {% if batch.bills.count > 0 and batch.bills.count < 400 %}
+          <a onclick="$('#bills{{ batch.id }}').toggle();">{{ batch.bills.count }}</a>
+        {% else %}
+          {{ batch.bills.count }}
+        {% endif %}
+      </td>
+    </tr>
+    <tr id="error{{ batch.id }}" style="display:none;" class="{% cycle 'row-odd' 'row-even'%}">
+      <td style="background-color:pink;" colspan="6">
+        {{ batch.error }}
+      </td>
+    </tr>
+    {% if batch.bills.count < 400 %}
+      <tr id="bills{{ batch.id }}" style="display:none;" class="{% cycle 'row-odd' 'row-even'%}">
+        <td colspan="6">
+          <table>
+            <tr>
+              <th>ID</th>
+              <th>Member</th>
+              <th>Period Start</th>
+              <th>Period End</th>
+              <th>Amount</th>
+            </tr>
+            {% for bill in batch.bills.all %}
+              <tr>
+                <td><a href="{% url 'staff:billing:bill' bill.id %}">{{ bill.id }}</a></td>
+                <td><a href="{% url 'staff:members:detail' bill.user.username %}">{{ bill.user.get_full_name }}</a></td>
+                <td>{{ bill.period_start }}</td>
+                <td>{{ bill.period_end }}</td>
+                <td class="amount">${{ bill.amount }}</td>
+              </tr>
+            {% endfor %}
+          </table>
+        </td>
+      </tr>
+    {% endif %}
+    <tr>
     </tr>
   {% empty %}
     <tr>

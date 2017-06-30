@@ -23,6 +23,12 @@ from nadine.forms import PaymentForm, DateRangeForm
 def batch_logs(request):
     date_range_form = DateRangeForm.from_request(request, days=7)
     start_date, end_date = date_range_form.get_dates()
+    if request.GET.get("run", False):
+        batch = BillingBatch.objects.create(created_by=request.user)
+        batch.run()
+        if not batch.successful:
+            messages.error(request, batch.error)
+        return HttpResponseRedirect(reverse('staff:billing:batch_logs'))
     bill_id = request.GET.get("bill_id", None)
     if bill_id:
         batches = BillingBatch.objects.filter(bills__id=bill_id)
@@ -119,30 +125,6 @@ def action_billing_flag(request, username):
 
 
 @staff_member_required
-def action_generate_bill(request, membership_id, year=None, month=None, day=None):
-    ''' Generate the bills for the given membership and date '''
-    membership = get_object_or_404(Membership, id=membership_id)
-    if year and month and day:
-        target_date = date(year=int(year), month=int(month), day=int(day))
-    else:
-        target_date = localtime(now()).date()
-    bill_count = 0
-    bills = membership.generate_bills(target_date=target_date, created_by=request.user)
-    if bills:
-        bill_count = len(bills.keys())
-        messages.add_message(request, messages.SUCCESS, "%d Bill(s) Generated" % bill_count)
-    else:
-        messages.add_message(request, messages.ERROR, "0 Bills Generated")
-    if 'next' in request.POST:
-        return HttpResponseRedirect(request.POST.get('next'))
-    if bill_count == 1:
-        # If there is only one bill, send them to the bill view page
-        bill_id = bills[bills.keys()[0]]['bill'].id
-        return HttpResponseRedirect(reverse('staff:billing:bill', kwargs={'bill_id': bill_id}))
-    return HttpResponseRedirect(reverse('staff:billing:bills'))
-
-
-@staff_member_required
 def action_record_payment(request):
     # Process our payment form
     bill_id = None
@@ -180,6 +162,12 @@ def bill_view(request, bill_id):
             bill.mark_paid = True
             bill.save()
             messages.success(request, "Bill marked as paid.")
+        if 'close_bill' in request.POST:
+            bill.close()
+            messages.success(request, "Bill marked as closed.")
+        if 'recalculate' in request.POST:
+            bill.recalculate()
+            messages.success(request, "Bill recalculated.")
 
     initial_data = {
         'bill_id': bill.id,
@@ -194,10 +182,26 @@ def bill_view(request, bill_id):
     if overdue < 1:
         overdue = None
 
+    # Count up all the resources on this bill
+    resources = {}
+    if bill.has_coworking_days:
+        resources['days'] = {
+            'count': bill.coworking_day_count,
+            'allowance': bill.coworking_day_allowance,
+            'overage': bill.coworking_day_overage,
+        }
+    if bill.desk_allowance:
+        resources['desk'] = bill.desk_allowance
+    if bill.mail_allowance:
+        resources['mail'] = bill.mail_allowance
+    if bill.key_allowance:
+        resources['key'] = bill.key_allowance
+
     line_items = bill.line_items.all().order_by('id')
     context = {
         'bill': bill,
         'line_items': line_items,
+        'resources': resources,
         'overdue': overdue,
         'payment_form': payment_form,
     }

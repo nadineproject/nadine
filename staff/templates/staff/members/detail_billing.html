@@ -16,11 +16,6 @@
     <td>
       {% include "staff/billing/action_billing_flag.html" %}
     </td>
-    <td>
-      {% with user.membership as membership %}
-        {% include "staff/billing/action_generate_bills.html" %}
-      {% endwith %}
-    </td>
     {% if integrations.usaepay %}
       <td>
         {% include "staff/billing/action_create_billing.html" %}

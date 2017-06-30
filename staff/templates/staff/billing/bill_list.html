@@ -17,6 +17,7 @@
       <th>Member</th>
       <th>Period Start</th>
       <th>Period End</th>
+      <th>Closed</th>
       <th>Lines</th>
       <th class="amount">Amount</th>
       <th class="amount">Paid</th>
@@ -30,6 +31,7 @@
         <td><a href="{% url 'staff:members:detail' bill.user.username %}">{{ bill.user.get_full_name }}</a></td>
         <td>{{ bill.period_start }}</td>
         <td>{{ bill.period_end }}</td>
+        <td>{{ bill.closed_ts|default:'Open' }}</td>
         <td>{{ bill.line_items.all | length }}</td>
         <td class="amount">${{ bill.amount }}</td>
         <td class="amount">${{ bill.total_paid }}</td>

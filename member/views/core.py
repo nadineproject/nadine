@@ -10,9 +10,9 @@ from django.contrib.sites.models import Site
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404, HttpRequest
 from django.shortcuts import render, get_object_or_404
-from django.utils import timezone
 from django.template import Template, RequestContext
 from django.template.loader import get_template
+from django.utils.timezone import localtime, now
 
 from nadine import email
 from nadine.utils import mailgun
@@ -150,13 +150,6 @@ def view_members(request):
 @login_required
 def bill_receipt(request, bill_id):
     bill = get_object_or_404(UserBill, id=bill_id)
-    if bill.membership:
-        bill_user = User.objects.get(membership = bill.membership)
-    else:
-        bill_user = bill.user
-    benefactor = None
-    if bill_user != bill.user:
-        benefactor = bill_user
 
     # Only the bill's user or staff can view the receipt.
     # If anyone else wants it the user should print it out and send it
@@ -167,10 +160,9 @@ def bill_receipt(request, bill_id):
     # I want to render the receipt exactly like we do in the email
     htmltext = get_template('email/receipt.html')
     pdf_context = {
-        'today': timezone.localtime(timezone.now()),
         'bill': bill,
+        'today': localtime(now()),
         'site': Site.objects.get_current(),
-        'benefactor': benefactor,
         # 'bill_url': "http://" + Site.objects.get_current().domain + bill.get_absolute_url()
     }
     receipt_html = htmltext.render(pdf_context)
