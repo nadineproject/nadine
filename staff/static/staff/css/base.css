@@ -166,11 +166,15 @@ nav ul { list-style:none; box-shadow: none !important;}
 .dropdown-content a {font-size: 1.1em !important;}
 
 /*Specific sizing for dropdowns with longer page names*/
-#dropdown1, #dropdown4, #dropdown5, #dropdown9 {min-width: 170px;}
+#dropdown1 {min-width: 170px;}
 #dropdown2 {min-width: 190px;}
-#dropdown3  {min-width: 150px;}
-#dropdown6, #dropdown7 {min-width: 140px;}
+#dropdown3 {min-width: 150px;}
+#dropdown4 {min-width: 170px;}
+#dropdown5 {min-width: 190px;}
+#dropdown6 {min-width: 140px;}
+#dropdown7 {min-width: 140px;}
 #dropdown8 { min-width: 130px;}
+#dropdown9 { min-width: 220px;}
 #dropdown1 li a, #dropdown2 li a,#dropdown3 li a, #dropdown4 li a, #dropdown5 li a, #dropdown6 li a, #dropdown7 li a, #dropdown8 li a, #dropdown9 li a {width: 100%;}
 
 /*Mobile Nav Stylings*/
