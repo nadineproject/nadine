@@ -107,10 +107,6 @@ def user_signin(request, username):
     guest_days = CoworkingDay.objects.filter(user=user, paid_by__isnull=False).values("paid_by")
     previous_hosts = User.helper.active_members().filter(id__in=guest_days)
 
-
-    # Pull up how many days were used this period
-    days, allowed = user.profile.days_used()
-
     # Pull our open alerts
     alert_list = [MemberAlert.MEMBER_AGREEMENT, MemberAlert.TAKE_PHOTO, MemberAlert.ORIENTATION, MemberAlert.KEY_AGREEMENT, MemberAlert.ASSIGN_CABINET, MemberAlert.ASSIGN_MAILBOX, MemberAlert.RETURN_DOOR_KEY, MemberAlert.RETURN_DESK_KEY]
     open_alerts = user.profile.open_alerts().filter(key__in=alert_list)
