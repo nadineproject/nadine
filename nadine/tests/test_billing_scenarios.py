@@ -167,7 +167,6 @@ class BillingTestCase(TestCase):
         batch = BillingBatch.objects.run(start_date=date(2010, 5, 20), end_date=date(2010, 7, 20))
         self.assertTrue(batch.successful)
         self.assertEqual(3, batch.bills.count())
-        # print_all_bills(user)
 
         # May 20th bill = PT5 with 9 days
         # Total = $75 + 4 * $20 = $155
@@ -250,10 +249,10 @@ class BillingTestCase(TestCase):
         self.assertTrue(batch.successful)
         self.assertTrue(batch.bills.count() > 0)
         april_10_bill = user.bills.get(period_start=date(2010, 4, 10))
+        self.assertTrue(day1 in april_10_bill.coworking_days())
         may_10_bill = user.bills.get(period_start=date(2010, 5, 10))
         self.assertTrue(day2 in may_10_bill.coworking_days())
         self.assertFalse(day1 in may_10_bill.coworking_days())
-        self.assertTrue(day1 in april_10_bill.coworking_days())
 
         # Change the bill date to the 1st
         membership.change_bill_day(day=1)
@@ -400,10 +399,7 @@ class BillingTestCase(TestCase):
         # Generate bills and 0 for user, but 1 for payer
         run_bill_batch = BillingBatch.objects.run(start_date=date(2010, 6, 15), end_date=date(2010, 6, 15))
         self.assertTrue(run_bill_batch.successful)
-        for b in run_bill_batch.bills.all():
-            print_bill(b)
-        user_bill_count = UserBill.objects.filter(user=user).count()
-        self.assertEqual(0, user_bill_count)
+        self.assertEqual(0, user.bills.count())
         # Will pull from the first since the payer is not an active member
         payer_bill = payer.bills.get(period_start=date(2010, 6, 1))
         for p in payer_bill.subscriptions():
@@ -437,7 +433,6 @@ class BillingTestCase(TestCase):
         current_bill_batch = BillingBatch.objects.run(start_date=today, end_date=today)
         self.assertTrue(current_bill_batch.successful)
         team_lead_bill = team_lead.bills.filter(period_start=today)
-        print_all_bills(team_lead)
         self.assertEquals(1, len(team_lead_bill))
         total = 0
         for b in team_lead_bill:
@@ -504,8 +499,8 @@ class BillingTestCase(TestCase):
         self.assertTrue(batch_on_start_date.successful)
         start_date_bill = user.bills.get(period_start=start)
         self.assertTrue(start_date_bill is not None)
-        # TODO: Do we want this prorated or not???
-        # self.assertEqual(bill_on_start_date.amount, 30)
+        # Bill should be prorated
+        self.assertTrue(start_date_bill.amount < self.advocatePackage.monthly_rate)
 
     def test_current_pt5_adds_key(self):
         #Create user with PT5 membership package started 2 months ago
@@ -784,10 +779,7 @@ class BillingTestCase(TestCase):
         # $575 = $475 (for Resident package) + $100 (for key)
         original_bill_batch = BillingBatch.objects.run(start_date=one_month_ago, end_date=yesterday)
         self.assertTrue(original_bill_batch.successful)
-        for b in original_bill_batch.bills.all():
-            print_bill(b)
         original_bill = user.bills.get(period_start=one_month_ago)
-        print_bill(original_bill)
         self.assertEqual(575, original_bill.amount)
 
         # Generate bill for after currently set end_date (should not exist)
@@ -819,7 +811,6 @@ class BillingTestCase(TestCase):
         original_bill_batch = BillingBatch.objects.run(start_date=one_month_ago, end_date=one_month_ago)
         self.assertTrue(original_bill_batch.successful)
         original_bill = user.bills.get(period_start=one_month_ago)
-        print_bill(original_bill)
         self.assertEqual(30, original_bill.amount)
 
         # End all subscriptions yesterday
@@ -848,7 +839,6 @@ class BillingTestCase(TestCase):
         original_bill_batch = BillingBatch.objects.run(start_date=today, end_date=today)
         self.assertTrue(original_bill_batch.successful)
         original_bill = user.bills.get(period_start=today)
-        print_bill(original_bill)
         self.assertEqual(180, original_bill.amount)
 
         # End all subscriptions at end of bill period and test still have active subscriptions today
