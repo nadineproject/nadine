@@ -21,6 +21,7 @@ from django.template.loader import get_template
 
 from nadine import email
 from nadine.utils import mailgun
+from nadine.models.alerts import MemberAlert
 from nadine.models.profile import FileUpload
 from nadine.models.usage import CoworkingDay
 from nadine.utils.slack_api import SlackAPI
@@ -117,12 +118,17 @@ def user_signin(request, username):
     # Pull up how many days were used this period
     days, allowed = user.profile.days_used()
 
+    # Pull our open alerts
+    alert_list = [MemberAlert.MEMBER_AGREEMENT, MemberAlert.TAKE_PHOTO, MemberAlert.ORIENTATION, MemberAlert.KEY_AGREEMENT, MemberAlert.ASSIGN_CABINET, MemberAlert.ASSIGN_MAILBOX, MemberAlert.RETURN_DOOR_KEY, MemberAlert.RETURN_DESK_KEY]
+    open_alerts = user.profile.open_alerts().filter(key__in=alert_list)
+
     context = {
         'user': user,
         'can_signin': can_signin,
         'days_this_period': days,
         'day_allowance': allowed,
-        'previous_hosts':previous_hosts,
+        'previous_hosts' :previous_hosts,
+        'open_alerts': open_alerts,
         'member_search_form': member_search_form,
         'search_results': search_results,
     }
