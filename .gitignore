@@ -22,6 +22,7 @@ databases
 xero_privatekey.pem
 newrelic.ini
 newrelic-celery.ini
+.coverage
 gw_config.json
 .vagrant/
 __pycache__/
