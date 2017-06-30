@@ -20,10 +20,10 @@
 				<h3 style="color:red;">Please update your billing profile.</h3>
 			{% endif %}
 
-			{% if user.profile.open_alerts %}
+			{% if open_alerts %}
 				<h4 style="color:red;">Check with {{ site.name }} staff about these required actions:</h4>
 				<ul>
-					{% for a in user.profile.open_alerts %}
+					{% for a in open_alerts %}
 						<li style='color: red;'> {{ a.description }}</li>
 					{% endfor %}
 				</ul>
