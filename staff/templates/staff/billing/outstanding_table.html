@@ -9,6 +9,7 @@
     <th>Monthly</th>
     <th>Overage</th>
     <th>Total</th>
+    <th>Paid</th>
     <th>Action</th>
   </tr>
 {% for bill in bills %}
@@ -27,6 +28,11 @@
       {% if bill.overage_amount %}${{ bill.overage_amount }}{% endif %}
     </td>
     <td id='amount-td'><strong>${{ bill.amount }}</strong></td>
+    <td id='amount-td'>
+      {% if bill.total_paid %}
+        ${{ bill.total_paid }}
+      {% endif %}
+    </td>
     <td>
       {% include "staff/billing/action_bill_delay.html" %}
       {% with bill.user as user %}

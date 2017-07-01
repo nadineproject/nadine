@@ -191,7 +191,7 @@ class BillManager(models.Manager):
         return self.filter(closed_ts__isnull=False)
 
     def outstanding(self):
-        query = self.filter(mark_paid=False, closed_ts__isnull=False)
+        query = self.filter(mark_paid=False)
         query = query.annotate(bill_amount=Sum('line_items__amount'), owed=Sum('line_items__amount') - Sum('payment__amount'), payment_count=Count('payment'))
         no_payments = Q(payment_count = 0)
         partial_payment = Q(owed__gt = 0)
