@@ -239,38 +239,46 @@ class BillingTestCase(TestCase):
         membership.set_to_package(self.pt5Package, start_date=date(2010, 1, 10))
         self.assertEqual(10, membership.bill_day)
 
-        # Two days of activity on 6/9 and 6/15
-        # Second day is in the 5/10 bill, first is not
+        # Three days of activity on 5/9, 5/15, and 6/2
         day1 = CoworkingDay.objects.create(user=user, visit_date=date(2010, 5, 9), payment='Bill')
         day2 = CoworkingDay.objects.create(user=user, visit_date=date(2010, 5, 15), payment='Bill')
+        day3 = CoworkingDay.objects.create(user=user, visit_date=date(2010, 6, 2), payment='Bill')
 
-        # Generate April and May bills
-        batch = BillingBatch.objects.run(start_date=date(2010, 4, 10), end_date=date(2010, 6, 9))
+        # Generate bills for the three days we created
+        batch = BillingBatch.objects.run(start_date=date(2010, 5, 9), end_date=date(2010, 6, 2))
         self.assertTrue(batch.successful)
-        self.assertTrue(batch.bills.count() > 0)
+        self.assertEqual(2, batch.bills.count())
+        print_all_bills(user)
+
+        # Day 1 ended up on April 10th bill
         april_10_bill = user.bills.get(period_start=date(2010, 4, 10))
         self.assertTrue(day1 in april_10_bill.coworking_days())
+        self.assertFalse(day2 in april_10_bill.coworking_days())
+        self.assertFalse(day3 in april_10_bill.coworking_days())
+        # Days 2 and 3 aended up on May 10th bill
         may_10_bill = user.bills.get(period_start=date(2010, 5, 10))
-        self.assertTrue(day2 in may_10_bill.coworking_days())
         self.assertFalse(day1 in may_10_bill.coworking_days())
+        self.assertTrue(day2 in may_10_bill.coworking_days())
+        self.assertTrue(day3 in may_10_bill.coworking_days())
+
+        # April bill is closed, May bill is still open
+        self.assertTrue(april_10_bill.is_closed)
+        self.assertTrue(may_10_bill.is_open)
 
         # Change the bill date to the 1st
         membership.change_bill_day(day=1)
-        membership.save()
         self.assertEqual(1, membership.bill_day)
 
-        # Generate the June 1st bill
-        # Neither of May days should be on it but June 15th should
+        # Generate bills again
         batch = BillingBatch.objects.run(start_date=date(2010, 6, 1), end_date=date(2010, 6, 30))
+        self.assertTrue(batch.successful)
+        self.assertEqual(2, batch.bills.count())
+        print_all_bills(user)
+
         june_1_bill = user.bills.get(period_start=date(2010, 6, 1))
         self.assertFalse(day1 in june_1_bill.coworking_days())
         self.assertFalse(day2 in june_1_bill.coworking_days())
-
-    # def test_prorated_subscription(self):
-    #     # User 1 is a PT5 from 1/1/2010 1st
-    #     user = User.objects.create(username='test_user', first_name='Test', last_name='User')
-    #     user.membership.bill_day = 1
-    #     user.membership.set_to_package(self.pt5Package, start_date=date(2010, 1, 10))
+        self.assertTrue(day3 in june_1_bill.coworking_days())
 
     def test_start_package(self):
         #New user joins and starts a PT5 membership the same day
