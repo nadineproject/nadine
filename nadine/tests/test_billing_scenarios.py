@@ -377,36 +377,41 @@ class BillingTestCase(TestCase):
         payer = User.objects.create(username='member_nine', first_name='Member', last_name='Nine')
         membership = Membership.objects.for_user(user)
         payer_membership = Membership.objects.for_user(payer)
-        self.assertTrue(membership.package_name() == None)
-        payer_membership.bill_day = 12
 
-        # Payer has no active subscriptions
+        # Payer's bill date is the 12th and has no active subscriptions
+        payer_membership.bill_day = 12
+        payer_membership.save()
         self.assertEqual(0, payer_membership.active_subscriptions().count())
 
         # Set Resident membership package for user to be paid by another member 'payer'
         membership.bill_day = 15
         membership.save()
+        self.assertEqual(membership.package_name(), None)
         membership.set_to_package(self.residentPackage, start_date=date(2010, 6, 15), paid_by=payer)
-        self.assertTrue(membership.package_name() == 'Resident')
-        self.assertTrue(membership.bill_day == 15)
-        users_subscriptions = membership.active_subscriptions()
+        self.assertEqual(membership.package_name(), 'Resident')
+        self.assertEqual(membership.bill_day, 15)
 
         # Test that payer pays for each of the 3 active subscriptions for user
-        self.assertTrue(3, users_subscriptions.count())
+        users_subscriptions = membership.active_subscriptions()
+        self.assertEqual(2, users_subscriptions.count())
         for u in users_subscriptions:
             self.assertEqual(u.paid_by, payer)
+        print(users_subscriptions)
 
-        # Generate bills and 0 for user, but 1 for payer
-        run_bill_batch = BillingBatch.objects.run(start_date=date(2010, 6, 15), end_date=date(2010, 6, 15))
+        # Generate the bills from the 12th through the 15th
+        run_bill_batch = BillingBatch.objects.run(start_date=date(2010, 6, 12), end_date=date(2010, 6, 15))
         self.assertTrue(run_bill_batch.successful)
+        # Generate bills and check there are 0 for user, but 1 for payer
         self.assertEqual(0, user.bills.count())
-        # Will pull from the first since the payer is not an active member
-        payer_bill = payer.bills.get(period_start=date(2010, 6, 1))
-        for p in payer_bill.subscriptions():
-            self.assertTrue('Resident' == p.package_name)
+        self.assertEqual(1, payer.bills.count())
+
+        print_all_bills(payer)
+        payer_bill = payer.bills.get(period_start=date(2010, 6, 15))
+        for s in payer_bill.subscriptions():
+            self.assertEqual('Resident', s.package_name)
             # Bill is for user membership and not that of payer
-            self.assertFalse(payer_membership.id == p.membership.id)
-            self.assertTrue(membership.id == p.membership.id)
+            self.assertFalse(payer_membership.id == s.membership.id)
+            self.assertEqual(membership.id, s.membership.id)
 
     def test_new_t40_team_member(self):
         # Creat team lead with T40 package

@@ -90,20 +90,29 @@ class BillingBatch(models.Model):
 
         # Check every active subscription on this day and add this if neccessary
         for subscription in ResourceSubscription.objects.unbilled(target_date):
-            # Find the open bill for the membership period of this subscription
+            logger.debug("Found Subscription: %s %s, %s to %s" % (subscription.membership.who, subscription.package_name, subscription.start_date, subscription.end_date))
+            # Look at the membership of the payer to find the bill period
             membership = Membership.objects.for_user(subscription.payer)
-            period_start, period_end = membership.get_period(target_date, include_inactive=True)
+            period_start, period_end = membership.get_period(target_date)
+            if period_start is None:
+                # If we did not get a period, the payer is not active on this date
+                # Look instead at the membership for the individual
+                membership = Membership.objects.for_user(subscription.user)
+                period_start, period_end = membership.get_period(target_date)
+
+            # Find the open bill for this period and add this subscription
             bill = UserBill.objects.get_or_create_open_bill(subscription.payer, period_start, period_end, check_open_bills=False)
             if not bill.has_subscription(subscription):
                 bill.add_subscription(subscription)
-                # If we have any activity for this resource, flag for recalculation
-                if bill.resource_activity(subscription.resource):
-                    to_recalculate.add(bill)
                 self.bills.add(bill)
-
+                # If we have any activity for this resource, flag for recalculation
+                activity = bill.resource_activity(subscription.resource)
+                if activity and activity.count() > 0:
+                    to_recalculate.add(bill)
 
         # Pull and add all past unbilled CoworkingDays
         for day in CoworkingDay.objects.unbilled(target_date):
+            logger.debug("Found Coworking Day: %s %s %s" % (day.user, day.visit_date, day.payment))
             # Find the open bill for the period of this one day
             bill = UserBill.objects.get_or_create_open_bill(day.payer, day.visit_date, day.visit_date)
             bill.add_coworking_day(day)
@@ -113,10 +122,13 @@ class BillingBatch(models.Model):
         for bill in to_recalculate:
             bill.recalculate()
 
-        # Close all open bills that end on this day
+        # Close all open subscription based bills that end on this day
         for bill in UserBill.objects.filter(closed_ts__isnull=True, period_end=target_date):
-            self.bills.add(bill)
-            bill.close()
+            if bill.subscriptions().count() > 0:
+                # Only close bills that have subscriptions.
+                # Bills with only resource activity remain open until paid
+                bill.close()
+                self.bills.add(bill)
 
 
 class BillManager(models.Manager):
@@ -355,6 +367,11 @@ class UserBill(models.Model):
         if subscription.package_name:
             description = subscription.package_name + " "
         description = description + subscription.resource.name + " Subscription "
+
+        # Include the user if this is for an individual that is not the user of this bill
+        if subscription.membership.is_individual:
+            if subscription.membership.individualmembership.user != self.user:
+                description += "(" + subscription.membership.who + ") "
 
         # If there is already a description on the subscription, add that
         if subscription.description:
