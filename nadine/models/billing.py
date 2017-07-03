@@ -482,13 +482,14 @@ class UserBill(models.Model):
         custom_items = list(self.line_items.filter(custom=True))
         total_before = self.amount
 
-        # Delete all the current line items
-        for line_item in self.line_items.all():
-            if hasattr(line_item, 'day'):
-                line_item.day.bill = None
-                line_item.day.save()
-            line_item.delete()
+        # Disassociate all the coworking days from this bill
+        for day in self.coworking_days():
+            day.bill = None
+            day.save()
 
+        # Delete all the line items
+        for line_item in self.line_items.all():
+            line_item.delete()
 
         # Add everything back
         for s in subscriptions:
