@@ -691,7 +691,7 @@ class BillingTestCase(TestCase):
         membership = Membership.objects.for_user(user)
         membership.bill_day = two_weeks_ago.day
         membership.set_to_package(self.pt10Package, start_date=two_weeks_ago)
-        self.assertTrue('PT10' == membership.package_name())
+        self.assertEqual('PT10', membership.package_name())
         self.assertEqual(1, membership.active_subscriptions().count())
 
         # Generate bill from 2 weeks ago
@@ -702,10 +702,11 @@ class BillingTestCase(TestCase):
         self.assertEqual(180, last_months_bill.amount)
         Payment.objects.create(bill=last_months_bill, user=user, amount=last_months_bill.amount, created_by=user)
         self.assertEqual(0, last_months_bill.total_owed)
+        self.assertTrue(last_months_bill.is_open)
 
-        # Add key subscription
+        # Add key subscription today
         ResourceSubscription.objects.create(resource=Resource.objects.key_resource, membership=membership, package_name='PT10', allowance=1, start_date=today, monthly_rate=100, overage_rate=0)
-        self.assertEqual(2, membership.active_subscriptions().count())
+        self.assertEqual(2, membership.active_subscriptions(today).count())
 
         # Generate bill with key
         # Total should be $180 + prorated key amount ($50-ish)

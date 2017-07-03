@@ -374,27 +374,27 @@ class Membership(models.Model):
         if len(possible_matches) == 1:
             return possible_matches[0]
 
-    def active_subscriptions(self, target_date=None):
-        ''' Convert the given date to the full period and pull the active subscriptions. '''
-        # TODO - Figure out why this isn't doing what I expect it to --JLS
-        # period_start, period_end = self.get_period(target_date)
-        # if not period_start:
-        #     # Indicates inactive.  Return subscriptions for one day only
-        #     return self.subscriptions_for_day(target_date)
-        # return self.subscriptions_for_period(period_start=period_start, period_end=period_end)
-        return self.subscriptions_for_day(target_date)
-
     def subscriptions_for_period(self, period_start, period_end):
-        ''' Return the active subscriptions for a given period. '''
+        ''' Return all active subscriptions for a given period. '''
+        started = Q(start_date__lte=period_end)
         unending = Q(end_date__isnull=True)
-        future_ending = Q(end_date__gte=period_end)
-        return self.subscriptions.filter(start_date__lte=period_start).filter(unending | future_ending).distinct()
+        future_ending = Q(end_date__gte=period_start)
+        return self.subscriptions.filter(started).filter(unending | future_ending).distinct()
 
     def subscriptions_for_day(self, target_date=None):
         ''' Return the active subscriptions on a given day. '''
         if not target_date:
             target_date = localtime(now()).date()
         return self.subscriptions_for_period(target_date, target_date)
+
+    def active_subscriptions(self, target_date=None):
+        ''' Convert the given date to the full period and pull the active subscriptions. '''
+        period_start, period_end = self.get_period(target_date)
+        if not period_start:
+            # Indicates inactive.  Return subscriptions for one day only
+            return self.subscriptions_for_day(target_date)
+        return self.subscriptions_for_period(period_start=period_start, period_end=period_end)
+        # return self.subscriptions_for_day(target_date)
 
     def is_active(self, target_date=None):
         return self.subscriptions_for_day(target_date).count() > 0
