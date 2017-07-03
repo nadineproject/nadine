@@ -139,6 +139,7 @@ def forward(apps, schema_editor):
                 if m.has_mail:
                     s = ResourceSubscription.objects.create(
                         membership = new_membership,
+                        package_name = package_name,
                         resource = MAIL,
                         start_date = m.start_date,
                         end_date = m.end_date,
@@ -154,6 +155,7 @@ def forward(apps, schema_editor):
                 if m.has_key:
                     s = ResourceSubscription.objects.create(
                         membership = new_membership,
+                        package_name = package_name,
                         resource = KEY,
                         start_date = m.start_date,
                         end_date = m.end_date,
