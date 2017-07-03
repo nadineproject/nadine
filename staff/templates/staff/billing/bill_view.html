@@ -121,6 +121,10 @@
     <tr>
       <th nowrap>Coworking Days:</th>
       <td>{{ resources.days.count }}</td>
+      {% if resources.days.billable != resources.days.count %}
+        <th>Billable:</th>
+        <td>{{ resources.days.billable }}</td>
+      {% endif %}
       <th>Allowance:</th>
       <td>{{ resources.days.allowance }}</td>
       {% if resources.days.overage %}

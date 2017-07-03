@@ -230,7 +230,7 @@ class UserBill(models.Model):
         return "UserBill %d: %s %s to %s for $%s" % (self.id, self.user, self.period_start, self.period_end, self.amount)
 
     ############################################################################
-    # Properties
+    # Basic Properties
     ############################################################################
 
     @property
@@ -448,8 +448,13 @@ class UserBill(models.Model):
 
     @property
     def coworking_day_count(self):
-        ''' The number of coworking days associated with this bill. '''
+        ''' The number of coworking days on with this bill. '''
         return self.coworking_days().count()
+
+    @property
+    def coworking_day_billable_count(self):
+        ''' The number of billable coworking days on this bill. '''
+        return self.coworking_days().filter(payment="Bill").count()
 
     @property
     def coworking_day_allowance(self):
@@ -458,10 +463,10 @@ class UserBill(models.Model):
 
     @property
     def coworking_day_overage(self):
-        ''' The number of coworking days over our allowance. '''
-        if self.coworking_day_count < self.coworking_day_allowance:
+        ''' The number of billable coworking days over our allowance. '''
+        if self.coworking_day_billable_count < self.coworking_day_allowance:
             return 0
-        return self.coworking_day_count - self.coworking_day_allowance
+        return self.coworking_day_billable_count - self.coworking_day_allowance
 
     @property
     def has_coworking_days(self):

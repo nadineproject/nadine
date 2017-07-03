@@ -10,6 +10,7 @@
     <th>Overage</th>
     <th>Total</th>
     <th>Paid</th>
+    <th>Days</th>
     <th>Action</th>
   </tr>
 {% for bill in bills %}
@@ -31,6 +32,12 @@
     <td id='amount-td'>
       {% if bill.total_paid %}
         ${{ bill.total_paid }}
+      {% endif %}
+    </td>
+    <td>
+      {{ bill.coworking_day_count }}
+      {% if bill.coworking_day_count != bill.coworking_day_billable_count %}
+        ({{ bill.coworking_day_billable_count}})
       {% endif %}
     </td>
     <td>
