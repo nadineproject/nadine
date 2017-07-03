@@ -430,7 +430,7 @@ def confirm_membership(request, username, package, end_target, new_subs):
                     # If there is a package, then make changes, else, we are ending all
                     if request.POST.get('match'):
                         pkg_name = MembershipPackage.objects.get(id=request.POST.get('match')).name
-                    if user.membership.active_subscriptions() is None:
+                    if len(user.membership.active_subscriptions()) is 0:
                         if settings.DEFAULT_BILLING_DAY == 0:
                             membership.bill_day = localtime(now()).day
                             membership.save()
