@@ -190,6 +190,7 @@ def bill_view(request, bill_id):
     if bill.has_coworking_days:
         resources['days'] = {
             'count': bill.coworking_day_count,
+            'billable': bill.coworking_day_billable_count,
             'allowance': bill.coworking_day_allowance,
             'overage': bill.coworking_day_overage,
         }
