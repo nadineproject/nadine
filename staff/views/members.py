@@ -371,7 +371,7 @@ def membership(request, username):
                                 new_subs.append({'s_id': s_id, 'resource':resource.id,
                                 'package_name': package_name, 'allowance':allowance, 'start_date':start_date, 'end_date':end_date, 'monthly_rate': monthly_rate, 'overage_rate':overage_rate, 'paid_by':paid_by, 'membership':None})
                         end_target = start - timedelta(days=1)
-                        return HttpResponseRedirect(reverse('staff:members:confirm', kwargs={'username': username, 'package': membership, 'end_target': end_target, 'new_subs': new_subs}))
+                        return HttpResponseRedirect(reverse('staff:members:confirm', kwargs={'username': username, 'package': membership, 'end_target': end_target, 'start_target': start, 'new_subs': new_subs}))
 
                 except IntegrityError:
                     messages.error(request, 'There was an error updating the subscriptions')
@@ -396,8 +396,9 @@ def membership(request, username):
     return render(request, 'staff/members/membership.html', context)
 
 @staff_member_required
-def confirm_membership(request, username, package, end_target, new_subs):
+def confirm_membership(request, username, package, end_target, start_target, new_subs):
     user = get_object_or_404(User, username=username)
+    membership = Membership.objects.for_user(user)
     new_subs = unicodedata.normalize('NFKD', new_subs).encode('ascii', 'ignore')
     package = unicodedata.normalize('NFKD', package).encode('ascii', 'ignore')
     subs = ast.literal_eval(new_subs)
@@ -407,9 +408,9 @@ def confirm_membership(request, username, package, end_target, new_subs):
     old_pkg = None
 
     if user.membership.package_name():
-        old_pkg = MembershipPackage.objects.get(name=user.membership.package_name())
+        old_pkg = MembershipPackage.objects.get(name=membership.package_name())
 
-    if len(user.membership.active_subscriptions(end_target)):
+    if len(membership.active_subscriptions(datetime.strptime(end_target, '%Y-%m-%d'))):
         ending_pkg = True
     else:
         ending_pkg = False
@@ -425,14 +426,14 @@ def confirm_membership(request, username, package, end_target, new_subs):
         try:
             with transaction.atomic():
                 # Check to see if new membership package. If so, end all previous subscriptions
-                membership = user.membership
+                membership = Membership.objects.for_user(user)
                 if pkg:
                     # If there is a package, then make changes, else, we are ending all
                     if request.POST.get('match'):
                         pkg_name = MembershipPackage.objects.get(id=request.POST.get('match')).name
-                    if len(user.membership.active_subscriptions()) is 0:
+                    if len(membership.active_subscriptions()) == 0:
                         if settings.DEFAULT_BILLING_DAY == 0:
-                            membership.bill_day = localtime(now()).day
+                            membership.bill_day = start_target[-2:]
                             membership.save()
                         else:
                             membership.bill_day = settings.DEFAULT_BILLING_DAY
@@ -448,7 +449,6 @@ def confirm_membership(request, username, package, end_target, new_subs):
                             mailing_lists = MailingList.objects.filter(is_opt_out=True)
                             for ml in mailing_lists:
                                 ml.subscribers.add(membership.user)
-
                     # Review all subscriptions to see if adding or ending
                     for sub in subs:
                         sub_id = sub['s_id']
@@ -468,6 +468,7 @@ def confirm_membership(request, username, package, end_target, new_subs):
                             resource = Resource.objects.get(id=sub['resource'])
                             allowance = sub['allowance']
                             start_date = sub['start_date']
+                            starting_bill_day = start_date
                             package_name = pkg_name
                             if sub['end_date']:
                                 end_date = sub['end_date']
@@ -480,7 +481,7 @@ def confirm_membership(request, username, package, end_target, new_subs):
                                 paid_by = User.objects.get(username=p_username)
 
                             """ Check to see if it is a unique resource and end if it is not """
-                            already_have = user.membership.active_subscriptions().filter(resource=resource).filter(paid_by=paid_by)
+                            already_have = membership.active_subscriptions().filter(resource=resource).filter(paid_by=paid_by)
                             if len(already_have) > 0:
                                 p_id = already_have[0].id
                                 prev_rs = ResourceSubscription.objects.get(id=p_id)
