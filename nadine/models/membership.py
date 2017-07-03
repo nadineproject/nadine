@@ -405,7 +405,7 @@ class Membership(models.Model):
     def monthly_rate(self, target_date=None):
         return self.active_subscriptions(target_date).aggregate(rate=Coalesce(Sum('monthly_rate'), Value(0.00)))['rate']
 
-    def get_period(self, target_date=None, include_inactive=False):
+    def get_period(self, target_date=None):
         ''' Get period associated with a certain date.
         Returns (None, None) if the membership is not active.'''
         if not target_date:
@@ -413,7 +413,7 @@ class Membership(models.Model):
         # print("target_date=%s" % target_date)
 
         # Return None if they were not active on this date
-        if not self.is_active(target_date) and not include_inactive:
+        if not self.is_active(target_date):
             return (None, None)
 
         # The period starts on the bill_day of the month we're operating in.
