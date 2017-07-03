@@ -134,7 +134,7 @@ def profile_activity(request, username):
 @login_required
 def profile_billing(request, username):
     user = get_object_or_404(User.objects.prefetch_related('transaction_set'), username=username)
-    bills = UserBill.objects.filter(user=user).order_by('-due_date')[:10]
+    bills = UserBill.objects.filter(user=user).order_by('-due_date')[:12]
     context = {
         'user': user,
         'bills': bills,

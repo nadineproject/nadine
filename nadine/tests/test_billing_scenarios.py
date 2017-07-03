@@ -504,8 +504,8 @@ class BillingTestCase(TestCase):
         self.assertTrue(batch_on_start_date.successful)
         start_date_bill = user.bills.get(period_start=start)
         self.assertTrue(start_date_bill is not None)
-        # TODO: Coming back at about $14 but I think it should be 15
-        # self.assertEqual(bill_on_start_date.amount, 15)
+        # $14 for a membership of 14 days.
+        # self.assertEqual(start_date_bill.amount, 14)
 
     def test_current_pt5_adds_key(self):
         #Create user with PT5 membership package started 2 months ago

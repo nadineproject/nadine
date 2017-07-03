@@ -621,8 +621,8 @@ class ResourceSubscription(models.Model):
         if self.start_date > period_start:
             prorate_start = self.start_date
 
-        period_days = (period_end - period_start).days
         prorate_days = (prorate_end - prorate_start).days
+        period_days = (period_end - period_start).days
 
         # Don't divide by zero
         if period_days == 0:

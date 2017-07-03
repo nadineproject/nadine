@@ -42,6 +42,7 @@
 {% endif %}
 
 <h3>Recent Bills</h3>
+
 <div id="bill-details">
 {% if bills %}
 <table>
@@ -50,7 +51,7 @@
             <th>Due Date</th>
             <th>Amount</th>
             <th>Payments</th>
-            <th></th>
+            <th>Status</th>
             <th></td>
         </tr>
   </thead>
@@ -61,7 +62,7 @@
         <td>${{ bill.amount }}</td>
         <td>${{ bill.total_paid }}</td>
         <td>{% if bill.is_open %}Open{% endif %}</td>
-        <td><a href='{{ bill.get_absolute_url}}'>receipt</a></td>
+        <td><a href='{{ bill.get_absolute_url}}'>Receipt</a></td>
     </tr>
 {% endfor %}
 </tbody>
