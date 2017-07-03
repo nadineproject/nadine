@@ -38,7 +38,7 @@ class CoworkingDay(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, unique_for_date="visit_date", on_delete=models.CASCADE)
     visit_date = models.DateField("Date")
     payment = models.CharField("Payment", max_length=5, choices=PAYMENT_CHOICES)
-    bill = models.ForeignKey('UserBill', blank=True, null=True, on_delete=models.CASCADE)
+    bill = models.ForeignKey('UserBill', blank=True, null=True, on_delete=models.SET_NULL)
     paid_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="guest_day", on_delete=models.CASCADE)
     note = models.CharField("Note", max_length=128, blank="True")
     created_ts = models.DateTimeField(auto_now_add=True)

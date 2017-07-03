@@ -99,9 +99,9 @@ class UserBillTestCase(TestCase):
             visit_date = today
         )
         bill = UserBill.objects.create_for_day(self.user1, today)
-        self.assertFalse(bill.has_coworking_day(day))
+        self.assertFalse(bill.includes_coworking_day(day))
         bill.add_coworking_day(day)
-        self.assertTrue(bill.has_coworking_day(day))
+        self.assertTrue(bill.includes_coworking_day(day))
         self.assertEquals(bill, day.bill)
 
     def test_monthly_rate(self):
@@ -198,10 +198,10 @@ class UserBillTestCase(TestCase):
         day2 = CoworkingDay.objects.create(user=user, visit_date=tomorrow, payment='Bill')
         bill1.add_coworking_day(day1)
         bill2.add_coworking_day(day2)
-        self.assertTrue(bill1.has_coworking_day(day1))
-        self.assertFalse(bill1.has_coworking_day(day2))
-        self.assertTrue(bill2.has_coworking_day(day2))
-        self.assertFalse(bill2.has_coworking_day(day1))
+        self.assertTrue(bill1.includes_coworking_day(day1))
+        self.assertFalse(bill1.includes_coworking_day(day2))
+        self.assertTrue(bill2.includes_coworking_day(day2))
+        self.assertFalse(bill2.includes_coworking_day(day1))
 
         # Combine the new bills
         bill1.combine(bill2)
@@ -211,7 +211,7 @@ class UserBillTestCase(TestCase):
         self.assertEqual(bill1.due_date, one_month_from_now)
         self.assertTrue(bill1.has_subscription(subscription1))
         self.assertTrue(bill1.has_subscription(subscription2))
-        self.assertTrue(bill1.has_coworking_day(day1))
-        self.assertTrue(bill1.has_coworking_day(day2))
+        self.assertTrue(bill1.includes_coworking_day(day1))
+        self.assertTrue(bill1.includes_coworking_day(day2))
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

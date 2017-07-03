@@ -371,7 +371,7 @@ class UserProfile(models.Model):
     def days_used(self, target_date=None):
         membership = Membership.objects.for_user(self.user, target_date)
         days = membership.coworking_days_in_period(target_date).count()
-        allowed = membership.coworking_allowance(target_date)
+        allowed = membership.coworking_day_allowance(target_date)
         return (days, allowed)
 
     def all_emails(self):

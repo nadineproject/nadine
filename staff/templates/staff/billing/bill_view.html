@@ -8,14 +8,26 @@
 <h4>Bill {{ bill.id }}: <a href="{% url 'staff:members:detail' bill.user.username %}">{{ bill.user.get_full_name }}</a></h4>
 
 <span>[
-  <a href="{% url 'staff:billing:user_bills' bill.user.username %}">bill list </a> |
-  {% if bill.total_paid == 0 and bill.get_regenerate_url %}
-    <a href="{{ bill.get_regenerate_url }}">regenerate</a> |
-  {% endif %}
-  <a href="{% url 'staff:billing:batch_logs' %}?bill_id={{ bill.id }}">batches</a> |
+  <a href="{% url 'staff:billing:user_bills' bill.user.username %}">user bills </a> |
+  <a href="{% url 'staff:billing:batch_logs' %}?bill_id={{ bill.id }}">batch logs</a> |
   <a href="{{ bill.get_absolute_url }}">view receipt </a> |
   <a href="{{ bill.get_admin_url }}">admin</a>
 ]</span>
+
+
+<div style="float:right;">
+  <form style="display:inline-block;" action="." method="POST" onSubmit="return confirm('Are you sure you want to recalculate this bill?'); return false;">
+    <input name="recalculate" type="submit" class='btn' value="Recalculate" >
+    {% csrf_token %}
+  </form>
+
+  {% if bill.is_open %}
+    <form style="display:inline-block;" action="." method="POST" onSubmit="return confirm('Are you sure you want to mark this bill as closed?'); return false;">
+      <input name="close_bill" type="submit" class='btn' value="Close Bill" >
+      {% csrf_token %}
+    </form>
+  {% endif %}
+</div>
 
 <h5>Detail</h5>
 
@@ -24,16 +36,36 @@
     <th>Due Date:</th>
     <td>
       {{ bill.due_date|date:"m/d/y"  }}
-      {% if not bill.is_paid and overdue %}
-        <span style='color:red;'>({{ overdue }} Days Past Due)</span>
-      {% endif %}
     </td>
-    <th>Period:</th>
+    {% if not bill.is_paid and overdue %}
+      <td style='color:red;'>
+        ({{ overdue }} Days Past Due)
+      </td>
+    {% endif %}
+    </td>
+    {% if bill.closed_ts %}
+      <th>Closed:</th>
+      <td>{{ bill.closed_ts }}</td>
+    {% else %}
+      <th>Status:</th>
+      <td>Open</td>
+    {% endif %}
+  </tr>
+</table>
+
+<table class='bill-id-table'>
+  <tr>
+    <th nowrap>Period Start:</th>
     <td>
-      {{ bill.period_start|date:"m/d/y" }} to {{ bill.period_end|date:"m/d/y" }}
+      {{ bill.period_start|date:"m/d/y" }}
+    </td>
+    <th nowrap>Period End:</th>
+    <td>
+      {{ bill.period_end|date:"m/d/y" }}
     </td>
   </tr>
 </table>
+
 <table class='bill-id-table bill-id-table-2'>
   <tr>
     <th>Amount:</th>
@@ -46,25 +78,67 @@
     {% endif %}
   </tr>
 </table>
-{% if bill.created_by %}
+
+{% if bill.comment %}
   <table class='bill-id-table'>
     <tr>
-      <th style="width:15%;">Bill Created:</th>
-      <td style="width:20%;">{{ bill.created_ts|date:"m/d/y P" }}</td>
-      <th style="width:5%;">By:</th>
-      <td>{{ bill.created_by.get_full_name }}</td>
+      <th>Comment:</th>
+      <td>{{ bill.comment }}</td>
+    </tr>
+  </table>
+{% endif %}
+{% if bill.note %}
+  <table class='bill-id-table'>
+    <tr>
+      <th>Note:</th>
+      <td>{{ bill.note }}</td>
+    </tr>
+  </table>
+{% endif %}
+
+{% if resources %}
+  <h5>Resources</h5>
+{% endif %}
+<table class='bill-id-table'>
+  <tr>
+    {% if resources.desk  %}
+      <th nowrap>Desk:</th>
+      <td>{{ resources.desk }}</td>
+    {% endif %}
+    {% if resources.mail  %}
+      <th nowrap>Mail:</th>
+      <td>{{ resources.mail }}</td>
+    {% endif %}
+    {% if resources.key  %}
+      <th nowrap>Key:</th>
+      <td>{{ resources.key }}</td>
+    {% endif %}
+  </tr>
+</table>
+
+{% if resources.days  %}
+  <table class='bill-id-table'>
+    <tr>
+      <th nowrap>Coworking Days:</th>
+      <td>{{ resources.days.count }}</td>
+      <th>Allowance:</th>
+      <td>{{ resources.days.allowance }}</td>
+      {% if resources.days.overage %}
+        <th>Overage</th>
+        <td>{{ resources.days.overage }}</td>
+      {% endif %}
     </tr>
   </table>
 {% endif %}
 
 <h5>Line Items</h5>
 <table class='item-table'>
-  <tr>
+  <tr class="row-even">
     <th>Description</th>
     <th>Amount</th>
   </tr>
   {% for line_item in line_items %}
-      <tr class='{% cycle "row-odd" "row-even" %}'>
+      <tr class='{% cycle "row-odd" "row-even"  %}'>
           <td>{{ line_item.description }}</td>
           <td style="text-align: right;">${{ line_item.amount|floatformat:2 }}</td>
       </tr>

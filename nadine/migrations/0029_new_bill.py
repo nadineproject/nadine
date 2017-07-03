@@ -48,19 +48,21 @@ def forward(apps, schema_editor):
             due_date =  old_bill.bill_date,
             note = 'Migrated bill (Nadine 1.8)',
         )
-        # if old_bill.membership:
-        #     bill.membership = old_bill.membership.new_membership
         bill_date = datetime.combine(old_bill.bill_date, datetime.min.time())
         bill.created_ts = timezone.make_aware(bill_date, tz)
         bill.save()
+
 
         # Add this bill to our BillingBatch
         batch.bills.add(bill)
 
         # We'll create one line item for the membership
+        description = "Coworking Membership"
+        if old_bill.membership:
+            description = old_bill.membership.membership_plan.name + " " + description
         BillLineItem.objects.create(
             bill = bill,
-            description = "Coworking Membership",
+            description = description,
             amount = old_bill.amount,
         )
 
