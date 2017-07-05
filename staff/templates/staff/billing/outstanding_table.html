@@ -2,8 +2,8 @@
 {% load list_tags %}
 
 <table>
-  <tr>
-    <th>ID</th>
+  <tr class='item-table'>
+    <th>ID *</th>
     <th>Due Date</th>
     <th>User</th>
     <th>Monthly</th>
@@ -14,11 +14,11 @@
     <th>Action</th>
   </tr>
 {% for bill in bills %}
-  <tr class="{% cycle 'row-even' 'row-odd' %}">
+  <tr class="{% cycle 'row-odd' 'row-even' %}">
     <td>
-      <a href="{{ bill.get_staff_url }}">{{ bill.id}}
+      <a style="color:{% user_billing_color bill.user %};" href="{{ bill.get_staff_url }}">{{ bill.id}}
     </td>
-    <td>{{ bill.due_date}}</td>
+    <td nowrap>{{ bill.due_date}}</td>
     <td>
       <a href="{% url 'staff:members:detail' bill.user.username %}">{{ bill.user.get_full_name }}</a>
     </td>
@@ -40,7 +40,7 @@
         ({{ bill.coworking_day_billable_count}})
       {% endif %}
     </td>
-    <td>
+    <td nowrap>
       {% include "staff/billing/action_bill_delay.html" %}
       {% with bill.user as user %}
         {% include "staff/billing/action_billing_flag.html" %}
