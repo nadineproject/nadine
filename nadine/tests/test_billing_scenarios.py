@@ -255,7 +255,7 @@ class BillingTestCase(TestCase):
         self.assertTrue(day1 in april_10_bill.coworking_days())
         self.assertFalse(day2 in april_10_bill.coworking_days())
         self.assertFalse(day3 in april_10_bill.coworking_days())
-        # Days 2 and 3 aended up on May 10th bill
+        # Days 2 and 3 ended up on May 10th bill
         may_10_bill = user.bills.get(period_start=date(2010, 5, 10))
         self.assertFalse(day1 in may_10_bill.coworking_days())
         self.assertTrue(day2 in may_10_bill.coworking_days())
@@ -266,7 +266,7 @@ class BillingTestCase(TestCase):
         self.assertTrue(may_10_bill.is_open)
 
         # Change the bill date to the 1st
-        membership.change_bill_day(day=1)
+        membership.change_bill_day(day=1, target_date=date(2010, 5, 27))
         self.assertEqual(1, membership.bill_day)
 
         # Generate bills again
@@ -294,6 +294,7 @@ class BillingTestCase(TestCase):
         batch = BillingBatch.objects.run(start_date=date(2017, 6, 1), end_date=date(2017, 7, 1))
         self.assertTrue(batch.successful)
         july_bill = user.bills.get(period_start=date(2017, 7, 1))
+        print_bill(july_bill)
         self.assertTrue(july_bill != None)
         self.assertEqual(75, july_bill.amount)
 
@@ -313,6 +314,7 @@ class BillingTestCase(TestCase):
         bill_today = user.bills.get(period_start=two_weeks_ago)
         self.assertEqual(30, bill_today.amount)
         self.assertTrue((membership.next_period_start() - timedelta(days=1)) == bill_today.due_date)
+        self.assertTrue(bill_today.is_open)
 
         # Generate the next month's bill
         batch = BillingBatch.objects.run(start_date=next_start_date, end_date=next_start_date)

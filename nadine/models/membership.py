@@ -435,7 +435,7 @@ class Membership(models.Model):
                 if month_end < self.bill_day:
                     # We went too far, but now we know what to do
                     period_start = date(year, target_date.month, 1)
-                    period_end = date(year, target_date.month, self.bill_day - 1)
+                    period_end = date(year, target_date.month, int(self.bill_day) - 1)
                     return (period_start, period_end)
 
             # print("year=%d, month=%s, day=%s" % (year, month, day))
@@ -477,19 +477,24 @@ class Membership(models.Model):
             return last_subscription.created_ts
         return None
 
-    def change_bill_day(self, day=None):
+    def change_bill_day(self, day=None, target_date=None):
         if not day:
             day = localtime(now()).day
 
-        today = localtime(now()).date()
+        if not target_date:
+            target_date = localtime(now())
 
-        future_bills = self.user.bills.filter(due_date__gte=today)
+        future_bills = self.user.bills.filter(period_start__gte=target_date)
         try:
             with transaction.atomic():
                 self.bill_day = day
-                self.save()
-                for bill in future_bills:
-                    bill.delete()
+                self.save
+                next_start = self.next_period_start(target_date=target_date)
+                open_bills = self.user.bills.filter(due_date__gte=next_start)
+                open_bill = open_bills[0]
+                if open_bill.due_date > next_start:
+                    open_bill.delete()
+                    future_bills.delete()
         except IntegrityError as e:
             print('There was an ERROR: %s' % e.message)
 

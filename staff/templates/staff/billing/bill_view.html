@@ -143,8 +143,8 @@
   </tr>
   {% for line_item in line_items %}
       <tr class='{% cycle "row-odd" "row-even"  %}'>
-          <td>{{ line_item.description }}</td>
-          <td style="text-align: right;">${{ line_item.amount|floatformat:2 }}</td>
+          <td style='width:60%;'>{{ line_item.description }}</td>
+          <td style="text-align: right; width: 40%;">${{ line_item.amount|floatformat:2 }}</td>
       </tr>
   {% endfor %}
 </table>
