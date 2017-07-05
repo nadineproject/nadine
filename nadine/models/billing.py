@@ -539,6 +539,7 @@ class UserBill(models.Model):
         if self.closed_ts != None:
             raise Exception("Bill is already closed!")
         self.closed_ts = localtime(now())
+        self.in_progress = False
         self.save()
 
 
