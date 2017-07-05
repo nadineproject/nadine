@@ -302,6 +302,7 @@ def files(request, username):
 @staff_member_required
 def membership(request, username):
     user = get_object_or_404(User, username=username)
+    membership = Membership.objects.for_user(user)
     subscriptions = None
     sub_data = None
     start = None
@@ -310,9 +311,10 @@ def membership(request, username):
     active_billing = User.objects.filter(profile__valid_billing=True).order_by('first_name')
     SubFormSet = formset_factory(SubscriptionForm)
     old_pkg = None
+    bill_day = membership.bill_day
 
-    if user.membership.package_name and user.membership.active_subscriptions():
-        old_pkg_name = user.membership.package_name()
+    if membership.package_name and membership.active_subscriptions():
+        old_pkg_name = membership.package_name()
         old_pkg = MembershipPackage.objects.get(name=old_pkg_name).id
     package = request.GET.get('package', old_pkg)
     today = localtime(now()).date()
@@ -323,7 +325,7 @@ def membership(request, username):
         sub_data=[{'s_id': None, 'resource': s.resource, 'allowance':s.allowance, 'start_date': today, 'end_date': None, 'username': user.username, 'created_by': request.user, 'monthly_rate': s.monthly_rate, 'overage_rate': s.overage_rate, 'paid_by': None} for s in subscriptions]
         action = 'change'
     else:
-        subscriptions = user.membership.active_subscriptions()
+        subscriptions = membership.active_subscriptions()
         sub_data=[{'s_id': s.id, 'package_name': s.package_name, 'resource': s.resource, 'allowance':s.allowance, 'start_date':s.start_date, 'end_date': s.end_date, 'username': user.username, 'created_by': s.created_by, 'monthly_rate': s.monthly_rate, 'overage_rate': s.overage_rate, 'paid_by': s.paid_by} for s in subscriptions]
 
 
@@ -391,6 +393,7 @@ def membership(request, username):
         'active_members': active_members,
         'active_billing': active_billing,
         'target_date': target_date,
+        'bill_day': bill_day,
         'action': action,
     }
     return render(request, 'staff/members/membership.html', context)
@@ -433,7 +436,7 @@ def confirm_membership(request, username, package, end_target, start_target, new
                         pkg_name = MembershipPackage.objects.get(id=request.POST.get('match')).name
                     if len(membership.active_subscriptions()) == 0:
                         if settings.DEFAULT_BILLING_DAY == 0:
-                            membership.bill_day = start_target[-2:]
+                            membership.bill_day = int(start_target[-2:])
                             membership.save()
                         else:
                             membership.bill_day = settings.DEFAULT_BILLING_DAY
