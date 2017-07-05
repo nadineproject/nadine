@@ -12,6 +12,7 @@
         {% if integrations.xero %}
           <th id='invoice-th'>Invoice</th>
         {% endif %}
+        <th>Links</th>
         <th id='action-th'>Action</th>
     </tr>
 
@@ -19,7 +20,9 @@
         <!-- transaction_id: {{ t.transaction_id }} -->
         <tr>
             <td><a href="{% url 'staff:members:detail' t.username %}">{{ t.username }}</a></td>
-            <td>{{ t.description }}</td>
+            <td>
+              {{ t.description|truncatechars:60 }}
+            </td>
             <!--<td>{{ t.card_type }}</td>-->
             <td {% if t.status == "Authorized" %} class='authorized'{% endif %}>{{ t.status }}</td>
             <td {% if t.outstanding_bills and not t.bill_match %} class='open-bill' {% endif %}>
@@ -42,11 +45,13 @@
                   {% endfor %}
               </td>
             {% endif %}
+            <td>
+              <a href="{% url 'staff:billing:user_payment' t.username %}"><input type="button" value="U"></a>
+              {% if integrations.xero %}
+                <a href="{% url 'staff:billing:xero' t.username %}"><input type="button" value="X"></a>
+              {% endif %}
+            </td>
             <td class='centered'>
-                <a href="{% url 'staff:billing:user_payment' t.username %}"><input type="button" value="U"></a>
-                {% if integrations.xero %}
-                  <a href="{% url 'staff:billing:xero' t.username %}"><input type="button" value="X"></a>
-                {% endif %}
                 {% ifequal "Authorized" t.status %}
                     <form class='inline-form' action="{% url 'staff:billing:payment_void' %}" method="POST">
                         <input type="hidden" name="transaction_id" value="{{ t.transaction_id }}" />
@@ -68,6 +73,6 @@
         <td></td>
         <td><strong>Total</strong></td>
         <td>${{total|floatformat:2}}</td>
-        <td colspan="3"></td>
+        <td colspan="4"></td>
     </tr>
 </table>
