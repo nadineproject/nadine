@@ -141,6 +141,9 @@ input.datepicker {
 }
 
 .item-table th {
+  background-color: RGBA(76, 76, 76, 1.00);
+  color: white;
+  border-radius: 0px;
   font-size: 1.1em;
 }
 
@@ -176,6 +179,7 @@ input.datepicker {
 
 .payment-tr td {
   vertical-align: middle;
+  font-size: 1.1em;
 }
 
 .quarter-td {
