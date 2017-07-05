@@ -1,8 +1,8 @@
 {% load billing_tags %}
 {% load list_tags %}
 
-<table>
-  <tr class='item-table'>
+<table class='outstanding-table responsive-table'>
+  <tr>
     <th>ID *</th>
     <th>Due Date</th>
     <th>User</th>
@@ -25,11 +25,11 @@
     <td id='amount-td'>
       {% if bill.monthly_rate %}${{ bill.monthly_rate }}{% endif %}
     </td>
-    <td id='amount-td' style="color:red;">
+    <td id='amount-td' class='overage_td' style="color:red;">
       {% if bill.overage_amount %}${{ bill.overage_amount }}{% endif %}
     </td>
     <td id='amount-td'><strong>${{ bill.amount }}</strong></td>
-    <td id='amount-td'>
+    <td id='amount-td' class='paid_td'>
       {% if bill.total_paid %}
         ${{ bill.total_paid }}
       {% endif %}

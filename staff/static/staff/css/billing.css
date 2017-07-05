@@ -140,7 +140,7 @@ input.datepicker {
   margin: 2%;
 }
 
-.item-table th {
+.item-table th, .outstanding-table th {
   background-color: RGBA(76, 76, 76, 1.00);
   color: white;
   border-radius: 0px;
@@ -161,6 +161,10 @@ input.datepicker {
 
 .other-table th {
   vertical-align: baseline;
+}
+
+.outstanding-table {
+  margin: 2%;
 }
 
 .pay-bill-form input[type=text] {
@@ -314,10 +318,19 @@ input.datepicker {
     padding-bottom: 10%;
   }
 
+  .outstanding-table a {
+    font-size: 11.2px;
+  }
+
+  .outstanding-table .paid_td, .outstanding-table .overage_td {
+    min-height: 25px !important;
+  }
+
   .transactions-sum span {
     display: block;
     margin-left: 2%;
   }
+
 }
 
 @media only screen and (max-width: 450px) {

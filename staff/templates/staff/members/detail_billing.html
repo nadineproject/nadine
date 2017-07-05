@@ -3,7 +3,7 @@
 <table class='sub-table' style='margin-bottom: 3%;'>
   <tr>
     <td>
-      <strong>Billing Profile:</strong>
+      <strong style='font-size: 1.2em;'>Billing Profile:</strong>
       {% if user.profile.has_valid_billing %}
       	<font class='valid'>Valid</font>
       	{% if user.profile.is_guest %}
@@ -94,10 +94,10 @@
     <tr>
       <form action="{% url 'staff:members:deposits' %}" method="POST">
         <input name="username" value="{{ user.username }}" type="hidden" />
-        <td><strong>Record New Deposit:</strong></th>
+        <td><strong style='font-size: 1.2em;'>Record New Deposit:</strong></th>
         <td><input name="amount" placeholder='Enter Amount Here'/></td>
         <td><input name="note" placeholder='i.e. Key deposit for two members'/></td>
-        <td class='right'><input name="add_deposit" type="submit" Value="Record Deposit" /></td>
+        <td class='right'><input name="add_deposit" type="submit" Value="Record Deposit" style='margin-top: 10%;'/></td>
         {% csrf_token %}
       </form>
     </tr>
