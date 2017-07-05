@@ -2,7 +2,7 @@
 
 <h5>{{ name }}</h5>
 <table class='charges-table responsive-table'>
-    <tr class="row-even">
+    <tr class='item-table'>
         <th>Member</th>
         <th id='desc-th'>Description</th>
         <!--<th>Type</th>-->
@@ -12,13 +12,13 @@
         {% if integrations.xero %}
           <th id='invoice-th'>Invoice</th>
         {% endif %}
-        <th>Links</th>
+        <th id='links-th'>Links</th>
         <th id='action-th'>Action</th>
     </tr>
 
     {% for t in transactions %}
         <!-- transaction_id: {{ t.transaction_id }} -->
-        <tr>
+        <tr class="{% cycle 'row-odd' 'row-even' %}">
             <td><a href="{% url 'staff:members:detail' t.username %}">{{ t.username }}</a></td>
             <td>
               {{ t.description|truncatechars:60 }}
@@ -66,13 +66,15 @@
                 {% endif %}
             </td>
         </tr>
-    {% endfor %}
 
-    <tr class="row-even">
-        <td><strong>{{ transactions|length }} Transactions</strong></td>
-        <td></td>
-        <td><strong>Total</strong></td>
-        <td>${{total|floatformat:2}}</td>
-        <td colspan="4"></td>
-    </tr>
+        {% if forloop.last %}
+          <tr>
+              <td><strong>{{ transactions|length }} Transactions</strong></td>
+              <td></td>
+              <td><strong>Total</strong></td>
+              <td>${{total|floatformat:2}}</td>
+              <td colspan="4"></td>
+          </tr>
+        {% endif %}
+    {% endfor %}
 </table>
