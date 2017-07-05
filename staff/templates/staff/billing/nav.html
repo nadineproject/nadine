@@ -4,6 +4,9 @@
 <li>
   <a href="{% url 'staff:billing:outstanding' %}">Outstanding Bills</a>
 </li>
+<li>
+  <a href="{% url 'staff:billing:open_bills' %}">Open Bills</a>
+</li>
 {% if integrations.usaepay %}
 <li>
   <a href="{% url 'staff:billing:charges_today' %}">Daily Charges</a>

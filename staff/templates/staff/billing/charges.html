@@ -59,7 +59,7 @@
 {% if settled_checks %}
 <h5>Cleared ACH</h5>
 <table>
-	<tr>
+	<tr class='item-table'>
 		<th>Name</th>
 		<th>Amount</th>
 		<th>Status</th>
@@ -68,7 +68,7 @@
 	</tr>
 
 	{% for c in settled_checks %}
-		<tr class="{% cycle 'row-even' 'row-odd' %}">
+		<tr class="{% cycle 'row-odd' 'row-even' %}">
 			<td>{{ c.username }}</td>
 			<td>${{ c.amount|floatformat:2 }}</td>
 			<td>{{ c.status }}</td>
@@ -81,7 +81,7 @@
 
 {% if other_transactions %}
 <h5>Other Transactions</h5>
-<table class='other-table responsive-table'>
+<table class='other-table responsive-table item-table'>
 	<tr>
 		<th>Member</th>
 		<th>Description</th>
@@ -90,14 +90,14 @@
 		<th>Status</th>
 		<th>Note</th>
 		<th>Amount</th>
-		<th>Action</th>
+		<th>Links</th>
 	</tr>
 
 	{% for t in other_transactions %}
 	  <!-- transaction_id: {{ t.transaction_id }} -->
-		<tr class="{% cycle 'row-even' 'row-odd' %}">
+		<tr class="{% cycle 'row-odd' 'row-even' %}">
 			<td><a href="{% url 'staff:members:detail' t.username %}">{{ t.username }}</a></td>
-			<td>{{ t.description }}</td>
+			<td>{{ t.description|truncatechars:60 }}</td>
 			<td>{{ t.card_type }}</td>
 			<td>{{ t.transaction_type }}</td>
 			<td>

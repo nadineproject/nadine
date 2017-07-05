@@ -62,15 +62,23 @@ def bill_list(request):
 @staff_member_required
 def outstanding(request):
     outstanding = UserBill.objects.outstanding().filter(in_progress=False, closed_ts__isnull=False).order_by('due_date')
-    open_bills = None # Not sure I want to include this just yet --JLS
-    # open_bills = UserBill.objects.non_zero().filter(closed_ts__isnull=True, in_progress=False).order_by('due_date')
-    in_progress = UserBill.objects.outstanding().filter(in_progress=True).order_by('due_date')
-    invalids = User.helper.invalid_billing()
+    in_progress = UserBill.objects.outstanding().filter(in_progress=True, closed_ts__isnull=False).order_by('due_date')
     context = {
         'outstanding': outstanding,
+        'open_bills': None,
+        'in_progress': in_progress,
+    }
+    return render(request, 'staff/billing/outstanding.html', context)
+
+
+@staff_member_required
+def open_bills(request):
+    open_bills = UserBill.objects.non_zero().filter(closed_ts__isnull=True, in_progress=False).order_by('due_date')
+    in_progress = UserBill.objects.outstanding().filter(closed_ts__isnull=True, in_progress=True).order_by('due_date')
+    context = {
+        'outstanding': None,
         'open_bills': open_bills,
         'in_progress': in_progress,
-        'invalid_members': invalids,
     }
     return render(request, 'staff/billing/outstanding.html', context)
 

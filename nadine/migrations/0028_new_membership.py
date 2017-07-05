@@ -267,10 +267,12 @@ class Migration(migrations.Migration):
             name='enabled',
             field=models.BooleanField(default=True),
         ),
+
+        # Create a link from the old membership to the new membership
         migrations.AddField(
             model_name='oldmembership',
             name='new_membership',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='nadine.Membership'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='nadine.Membership'),
         ),
 
         # Convert all the old memberships to new ones
