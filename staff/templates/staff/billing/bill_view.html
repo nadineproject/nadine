@@ -15,7 +15,7 @@
 ]</span>
 
 
-<div style="float:right;">
+<div style="float:right; margin-top: 2%;">
   <form style="display:inline-block;" action="." method="POST" onSubmit="return confirm('Are you sure you want to recalculate this bill?'); return false;">
     <input name="recalculate" type="submit" class='btn' value="Recalculate" >
     {% csrf_token %}
@@ -34,21 +34,21 @@
 <table class='bill-id-table'>
   <tr>
     <th>Due Date:</th>
-    <td>
+    <td class='quarter-td'>
       {{ bill.due_date|date:"m/d/y"  }}
+      {% if not bill.is_paid and overdue %}
+        <span style='color:red;'>
+          ({{ overdue }} Days Past Due)
+        </span>
+      {% endif %}
     </td>
-    {% if not bill.is_paid and overdue %}
-      <td style='color:red;'>
-        ({{ overdue }} Days Past Due)
-      </td>
-    {% endif %}
     </td>
     {% if bill.closed_ts %}
       <th>Closed:</th>
-      <td>{{ bill.closed_ts }}</td>
+      <td class='quarter-td'>{{ bill.closed_ts }}</td>
     {% else %}
       <th>Status:</th>
-      <td>Open</td>
+      <td class='quarter-td'>Open</td>
     {% endif %}
   </tr>
 </table>
@@ -69,9 +69,9 @@
 <table class='bill-id-table bill-id-table-2'>
   <tr>
     <th>Amount:</th>
-    <td>${{ bill.amount }}</td>
+    <td class='quarter-td'>${{ bill.amount }}</td>
     <th id='paid-th'>Paid:</th>
-    <td>${{ bill.total_paid }}</td>
+    <td class='quarter-td'>${{ bill.total_paid }}</td>
     {% if not bill.is_paid and bill.total_paid > 0 %}
       <th>Owed:</th>
       <td>${{ bill.total_owed }}</td>
@@ -103,15 +103,15 @@
   <tr>
     {% if resources.desk  %}
       <th nowrap>Desk:</th>
-      <td>{{ resources.desk }}</td>
+      <td class='bill_resource_td'>{{ resources.desk }}</td>
     {% endif %}
     {% if resources.mail  %}
       <th nowrap>Mail:</th>
-      <td>{{ resources.mail }}</td>
+      <td class='bill_resource_td'>{{ resources.mail }}</td>
     {% endif %}
     {% if resources.key  %}
       <th nowrap>Key:</th>
-      <td>{{ resources.key }}</td>
+      <td class='bill_resource_td'>{{ resources.key }}</td>
     {% endif %}
   </tr>
 </table>
@@ -119,8 +119,8 @@
 {% if resources.days  %}
   <table class='bill-id-table'>
     <tr>
-      <th nowrap>Coworking Days:</th>
-      <td>{{ resources.days.count }}</td>
+      <th nowrap>Coworking Days Used:</th>
+      <td class='bill_resource_td'>{{ resources.days.count }}</td>
       {% if resources.days.billable != resources.days.count %}
         <th>Billable:</th>
         <td>{{ resources.days.billable }}</td>

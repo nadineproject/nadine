@@ -61,6 +61,10 @@ input.datepicker {
   width: 75% !important;
 }
 
+.bill-id-table tr {
+  padding-top: 2%;
+}
+
 .bill-info {
   margin-left: 40px;
 }
@@ -172,6 +176,10 @@ input.datepicker {
 
 .payment-tr td {
   vertical-align: middle;
+}
+
+.quarter-td {
+  width: 25%;
 }
 
 .transactions-sum span {
