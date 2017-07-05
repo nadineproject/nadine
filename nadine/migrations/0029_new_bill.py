@@ -99,7 +99,7 @@ def forward(apps, schema_editor):
             bill.save()
 
         # Transactions -> Payments
-        for t in old_bill.transactions.all():
+        for t in old_bill.transactions.filter(new_payment__isnull=True):
             p = Payment.objects.create(
                 bill = bill,
                 user = user,
@@ -108,6 +108,9 @@ def forward(apps, schema_editor):
             )
             p.created_ts = t.transaction_date
             p.save()
+            # Link to the new payment
+            t.new_payment = p
+            t.save()
 
 
     # Handle CoworkingDays older than 2 months that were not billed yet
@@ -116,7 +119,7 @@ def forward(apps, schema_editor):
     user = User.objects.first()
     # Only do this step if there is data in the system
     if loose_days and user:
-        print("Associating %d unbilled days" % len(loose_days))
+        print("    Associating %d unbilled days" % len(loose_days))
         first_day = loose_days.first().visit_date
         last_day = loose_days.last().visit_date
         bill = UserBill.objects.create(user=user, period_start=first_day, period_end=last_day, due_date=last_day)
@@ -240,6 +243,13 @@ class Migration(migrations.Migration):
             model_name='coworkingday',
             name='bill',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='nadine.UserBill'),
+        ),
+
+        # Create a link from the old transaction to the new payment
+        migrations.AddField(
+            model_name='transaction',
+            name='new_payment',
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='nadine.Payment'),
         ),
 
         # Convert all the old bills to new ones

@@ -111,7 +111,7 @@ class BillingBatch(models.Model):
                     to_recalculate.add(bill)
 
         # Pull and add all past unbilled CoworkingDays
-        for day in CoworkingDay.objects.unbilled(target_date):
+        for day in CoworkingDay.objects.unbilled(target_date).order_by('visit_date'):
             logger.debug("Found Coworking Day: %s %s %s" % (day.user, day.visit_date, day.payment))
             # Find the open bill for the period of this one day
             bill = UserBill.objects.get_or_create_open_bill(day.payer, day.visit_date, day.visit_date)
@@ -129,6 +129,9 @@ class BillingBatch(models.Model):
                 # Bills with only resource activity remain open until paid
                 bill.close()
                 self.bills.add(bill)
+
+    def run_billing_for_bill(self, bill):
+        pass
 
 
 class BillManager(models.Manager):

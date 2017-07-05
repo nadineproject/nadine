@@ -13,6 +13,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.conf import settings
 
+from nadine.models.billing import Payment
 from nadine.models.membership import Membership
 
 logger = logging.getLogger(__name__)
@@ -222,6 +223,7 @@ class Transaction(models.Model):
     bills = models.ManyToManyField(OldBill, related_name='transactions')
     amount = models.DecimalField(max_digits=7, decimal_places=2)
     note = models.TextField(blank=True, null=True)
+    new_payment = models.ForeignKey(Payment, null=True, blank=True, on_delete=models.CASCADE)
 
     class Meta:
         app_label = 'nadine'
