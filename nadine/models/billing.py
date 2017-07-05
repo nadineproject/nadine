@@ -379,11 +379,14 @@ class UserBill(models.Model):
 
         # If the subscription period falls outside this bill period,
         # add the date range to the description
-        started_after = subscription.start_date > self.period_start
-        ended_before = subscription.end_date and subscription.end_date < self.period_start
-        ended_during = subscription.end_date and subscription.end_date < self.period_end
-        if started_after or ended_before or ended_during:
-            description += "(%s to %s)" % (self.period_start, self.period_end)
+        description_start = self.period_start
+        if subscription.start_date > self.period_start:
+            description_start = subscription.start_date
+        description_end = self.period_end
+        if subscription.end_date and subscription.end_date < self.period_end:
+            description_end = subscription.end_date
+        if description_start != self.period_start or description_end != self.period_end:
+            description += "(%s to %s)" % (description_start, description_end)
 
         # Calculate our amount
         prorate = subscription.prorate_for_period(self.period_start, self.period_end)
