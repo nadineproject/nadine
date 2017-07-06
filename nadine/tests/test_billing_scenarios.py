@@ -271,6 +271,8 @@ class BillingTestCase(TestCase):
 
         # Generate bills again
         batch = BillingBatch.objects.run(start_date=date(2010, 6, 1), end_date=date(2010, 6, 30))
+        print('BILL DAY IS %s' % membership.bill_day)
+        self.assertEqual(1, membership.bill_day)
         self.assertTrue(batch.successful)
         self.assertEqual(2, batch.bills.count())
         print_all_bills(user)

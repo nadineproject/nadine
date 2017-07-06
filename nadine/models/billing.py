@@ -94,6 +94,7 @@ class BillingBatch(models.Model):
             # Look at the membership of the payer to find the bill period
             membership = Membership.objects.for_user(subscription.payer)
             period_start, period_end = membership.get_period(target_date)
+            print('Boopy boop in running_billing %s' % period_start)
             if period_start is None:
                 # If we did not get a period, the payer is not active on this date
                 # Look instead at the membership for the individual
