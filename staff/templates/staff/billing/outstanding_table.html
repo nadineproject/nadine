@@ -1,6 +1,19 @@
 {% load billing_tags %}
 {% load list_tags %}
 
+<script>
+  $(document).ready(function() {
+    var total = 0;
+    {% for bill in bills %}
+      var amount = parseFloat('{{ bill.amount }}');
+      console.log(amount);
+      total += amount;
+
+    {% endfor %}
+    $('#bills-total').text(total.toFixed(2))
+  })
+</script>
+
 <table class='outstanding-table responsive-table'>
   <tr>
     <th>ID *</th>
@@ -16,7 +29,7 @@
 {% for bill in bills %}
   <tr class="{% cycle 'row-odd' 'row-even' %}">
     <td>
-      <a style="color:{% user_billing_color bill.user %};" href="{{ bill.get_staff_url }}">{{ bill.id}}
+      <a style="color:{% user_billing_color bill.user %};" href="{{ bill.get_staff_url }}">{{ bill.id }}</a>
     </td>
     <td nowrap>{{ bill.due_date}}</td>
     <td>
@@ -49,4 +62,19 @@
     </td>
   </tr>
 {% endfor %}
+  <tr class='total-row'>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td><strong>Total:</strong></td>
+    <td>
+      <strong>$
+        <span id='bills-total'></span>
+      </strong>
+    </td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
 </table>

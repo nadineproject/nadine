@@ -5,10 +5,10 @@
       action="{% url 'staff:billing:billing_flag' user.username %}"
       onSubmit="return confirm('Are you sure you want to toggle the billing flag for {{ user.get_full_name }}?');">
   {% csrf_token %}
-  <input type="hidden" name="next" value="{{ request.get_full_path }}" >
+  <input type="hidden" name="next" value="{{ request.get_full_path }}" />
   {% if user.profile.has_valid_billing %}
-    <input type="submit" value="Flag Invalid Billing"/>
+    <input type="submit" value="Flag Invalid Billing" />
   {% else %}
-    <input type="submit" value="Clear Invalid Billing"/>
+    <input type="submit" value="Clear Invalid Billing" />
   {% endif %}
 </form>
