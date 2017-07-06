@@ -143,6 +143,7 @@ def action_record_payment(request):
         payment_form = PaymentForm(request.POST)
         bill_id = payment_form['bill_id'].value()
         try:
+
             if payment_form.is_valid():
                 payment = payment_form.save(created_by=request.user.username)
                 messages.success(request, "Payment of $%s recorded." % payment.amount)
@@ -159,7 +160,6 @@ def action_record_payment(request):
 @staff_member_required
 def bill_view(request, bill_id):
     bill = get_object_or_404(UserBill, id=bill_id)
-
     if request.method == 'POST':
         if 'delete_payment_id' in request.POST:
             try:
