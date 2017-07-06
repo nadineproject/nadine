@@ -100,7 +100,7 @@ $(document).ready(function() {
 </table>
 {% endif %}
 
-{% if membership.active_subscriptions %}
+{% if active_subscriptions %}
 <h5>Current Subscriptions</h5>
 <table class='sub-table'>
   <tr>
@@ -113,7 +113,7 @@ $(document).ready(function() {
     <th class='sub-th'>Monthly</th>
     <th class='sub-th'>Paid By</th>
   </tr>
-  {% for s in membership.active_subscriptions %}
+  {% for s in active_subscriptions %}
     <tr class='{% cycle "row-even" "row-odd" %}'>
       <td>{{ s.package_name }}</td>
       <td>{{ s.resource }}</td>

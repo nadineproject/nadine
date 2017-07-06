@@ -40,12 +40,14 @@ from arpwatch.models import ArpLog
 @staff_member_required
 def detail(request, username):
     user = get_object_or_404(User, username=username)
+    membership = Membership.objects.for_user(user)
+    active_subscriptions = membership.subscriptions_for_day(target_date=localtime(now()).date())
     emergency_contact = user.get_emergency_contact()
     email_logs = SentEmailLog.objects.filter(user=user).order_by('created').reverse()
     member_notes = user.get_member_notes()
     payer = None
     payer_url = None
-    for s in user.membership.active_subscriptions():
+    for s in membership.active_subscriptions():
         if s.paid_by:
             payer = s.paid_by
 
@@ -74,6 +76,7 @@ def detail(request, username):
     context = {
         'user': user,
         'emergency_contact': emergency_contact,
+        'active_subscriptions': active_subscriptions,
         'email_logs': email_logs,
         'email_keys': email_keys,
         'staff_members':staff_members,

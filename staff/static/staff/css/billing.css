@@ -322,7 +322,7 @@ input.datepicker {
     font-size: 11.2px;
   }
 
-  .outstanding-table .paid_td, .outstanding-table .overage_td {
+  .outstanding-table td, .outstanding-table th {
     min-height: 25px !important;
   }
 
