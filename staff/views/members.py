@@ -346,7 +346,7 @@ def membership(request, username):
             else:
                 end_target = request.POST['date-end']
 
-            return HttpResponseRedirect(reverse('staff:members:confirm', kwargs={'username': username, 'package': None, 'new_subs': None, 'end_target': end_target}))
+            return HttpResponseRedirect(reverse('staff:members:confirm', kwargs={'username': username, 'package': None, 'new_subs': None, 'end_target': end_target, 'start_target': None}))
         else:
             package_form = MembershipForm(request.POST)
             sub_formset = SubFormSet(request.POST)

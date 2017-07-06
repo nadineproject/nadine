@@ -422,7 +422,6 @@ class Membership(models.Model):
         else:
             month = target_date.month
             year = target_date.year
-            print('TRYING TO FIND OUT BILL _DAY %s' % self.bill_day)
             if target_date.day < self.bill_day:
                 # Go back one month
                 month = target_date.month - 1
@@ -445,8 +444,6 @@ class Membership(models.Model):
         period_end = period_start + relativedelta(months=1)
         if period_end.day == period_start.day:
             period_end = period_end - timedelta(days=1)
-
-        print period_start, period_end
 
         return (period_start, period_end)
 
