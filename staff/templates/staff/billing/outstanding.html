@@ -29,7 +29,7 @@ and overages are due at the end of the bill period.
       </td>
     </tr>
   </table>
-  {% with closed_bills as bills %}
+  {% with closed_bills as bills and closed_bills_total.amount as total %}
     {% include "staff/billing/outstanding_table.html" %}
   {% endwith %}
 {% endif %}
@@ -44,7 +44,7 @@ and overages are due at the end of the bill period.
       </td>
     </tr>
   </table>
-  {% with open_bills as bills %}
+  {% with open_bills as bills and open_bills_total.amount as total  %}
     {% include "staff/billing/outstanding_table.html" %}
   {% endwith %}
 {% endif %}
@@ -55,7 +55,7 @@ and overages are due at the end of the bill period.
 
 {% if in_progress %}
   <h6>In Progress ({{ in_progress|length }})</h6>
-  {% with in_progress as bills and True as in_progress %}
+  {% with in_progress as bills and True as in_progress and in_progress_total.amount as total  %}
     {% include "staff/billing/outstanding_table.html" %}
   {% endwith %}
 {% endif %}

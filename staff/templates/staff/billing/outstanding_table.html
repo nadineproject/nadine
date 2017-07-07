@@ -1,18 +1,6 @@
 {% load billing_tags %}
+{% load humanize %}
 {% load list_tags %}
-
-<script>
-  $(document).ready(function() {
-    var total = 0;
-    {% for bill in bills %}
-      var amount = parseFloat('{{ bill.amount }}');
-      total += amount;
-
-    {% endfor %}
-    $('#bills-total').text(total.toFixed(2))
-  })
-</script>
-
 <table class='outstanding-table responsive-table'>
   <tr>
     <th>ID *</th>
@@ -69,7 +57,7 @@
     <td><strong>{{ bills|length }} bill{{ bills|pluralize }}:</strong></td>
     <td>
       <strong>$
-        <span id='bills-total'></span>
+        <span id='bills-total'>{{ total|intcomma }}</span>
       </strong>
     </td>
     <td></td>
