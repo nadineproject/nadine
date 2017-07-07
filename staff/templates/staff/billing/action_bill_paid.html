@@ -2,7 +2,7 @@
       method="POST"
       style="display:inline-block;"
       action="{% url 'staff:billing:bill_paid' bill.id %}"
-      onSubmit="return confirm('Bill {{ bill.id}} for {{ bill.user.get_full_name }}: ${{ bill.amount }}\r\nMark as PAID?');" >
+      onSubmit="return confirm('Record Payment of ${{ bill.amount }} for Bill {{ bill.id}} ({{ bill.user.get_full_name }})');" >
   {% csrf_token %}
   {% if payment_date %}
     <input type="hidden" name="payment_date" value="{{ payment_date}}"/>

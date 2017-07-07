@@ -34,14 +34,22 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         today = localtime(now()).date()
 
-        # Delete all the open  bills
-        print("Deleting Open Bills...")
+        print("Examening Open Bills...")
         open_bills = UserBill.objects.open().order_by('period_start')
         for bill in open_bills:
-            print("Deleting %s" % bill)
-            if bill.payment_set.count() > 0:
-                print("  WARNING!  Bill has payments!")
-            bill.delete()
+            for another_bill in open_bills.filter(user=bill.user):
+                if another_bill != bill:
+                    print("   Combining bills for %s" % bill.user)
+                    bill.combine(another_bill, recalculate=False)
+                    for payment in another_bill.payment_set.all():
+                        print("   Moving payments to new bill")
+                        payment.bill = bill
+                        payment.save()
+
+        #     print("Deleting %s" % bill)
+        #     if bill.payment_set.count() > 0:
+        #         print("  WARNING!  Bill has payments!")
+        #     bill.delete()
 
         print("Starting our Billing Batch...")
         batch = BillingBatch.objects.create()

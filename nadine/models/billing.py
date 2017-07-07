@@ -76,8 +76,8 @@ class BillingBatch(models.Model):
             traceback.print_exc()
             logger.error(self.error)
         finally:
-            self.completed_ts = localtime(now())
-            self.save()
+            self.close()
+        
         # Indicate if we ran successsfully or not
         return self.successful
 
@@ -141,6 +141,10 @@ class BillingBatch(models.Model):
                 # Bills with only resource activity remain open until paid
                 bill.close()
                 self.bills.add(bill)
+
+    def close(self):
+        self.completed_ts = localtime(now())
+        self.save()
 
 
 class BillManager(models.Manager):
@@ -521,7 +525,7 @@ class UserBill(models.Model):
 
         logger.debug("Previous amount: %s, New amount: %s" % (total_before, self.amount))
 
-    def combine(self, bill):
+    def combine(self, bill, recalculate=True):
         ''' Combine the given bill with this bill. '''
         if bill.user != self.user:
             raise Exception("Can not combine bills from different users (%s and %s)" % (self.user, bill.user))
@@ -545,7 +549,8 @@ class UserBill(models.Model):
             line_item.save()
 
         bill.delete()
-        self.recalculate()
+        if recalculate:
+            self.recalculate()
 
     def close(self):
         if self.closed_ts != None:

@@ -1,12 +1,13 @@
 from django.contrib import admin
 
 from nadine.admin.core import StyledAdmin
-from nadine.models.billing import UserBill, Payment, BillLineItem
+from nadine.models.billing import BillingBatch, UserBill, Payment, BillLineItem
 
 
 class BillLineItemInline(admin.TabularInline):
     model = BillLineItem
     extra = 0
+
 
 class PaymentInline(admin.TabularInline):
     model = Payment
@@ -45,4 +46,5 @@ class UserBillAdmin(StyledAdmin):
     inlines = [BillLineItemInline, PaymentInline]
 
 
+admin.site.register(BillingBatch)
 admin.site.register(UserBill, UserBillAdmin)

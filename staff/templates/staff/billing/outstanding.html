@@ -3,18 +3,47 @@
 
 {% block sub-title %}Bills{% endblock %}
 
+{% block style %}
+    .help_text {
+        background:white;
+        padding: 2em;
+        display: none;
+    }
+{% endblock %}
+
 {% block content %}
 
-{% if outstanding %}
-<h4>Outstanding Bills ({{ outstanding|length }})</h4>
-  {% with outstanding as bills %}
+<h4>Outstanding Bills ({{ bill_count }})</h4>
+<p style="padding:1em;">
+A bill is outstanding if there is an amount owed on the bill.  Subscriptions are due at the start of the bill period,
+and overages are due at the end of the bill period.
+</p>
+
+{% if closed_bills %}
+<h6>Closed (<a onclick="$('#closed_help').toggle();">?</a>)</h6>
+  <table>
+    <tr id="closed_help" class="help_text">
+      <td>
+        If a bill is closed and outstanding it means the bill period has passed and there is an outstanding balance due.<br/>
+        This generally indicates someone went over their subscription allowances and needs to be charged overages.
+      </td>
+    </tr>
+  </table>
+  {% with closed_bills as bills %}
     {% include "staff/billing/outstanding_table.html" %}
   {% endwith %}
 {% endif %}
 
 {% if open_bills %}
-  <br/>
-  <h4>Open Bills ({{ open_bills|length }})</h4>
+  <h6>Open (<a onclick="$('#open_help').toggle();">?</a>)</h6>
+  <table>
+    <tr id="open_help" class="help_text">
+      <td>
+        If a bill is open and outstanding it most likely indicates the start of a new bill period when subscriptions are due.<br/>
+        This also includes non-member activity where a bill remains open until it is paid.
+      </td>
+    </tr>
+  </table>
   {% with open_bills as bills %}
     {% include "staff/billing/outstanding_table.html" %}
   {% endwith %}
@@ -25,8 +54,7 @@
 {% endif %}
 
 {% if in_progress %}
-  <br/>
-  <h4>In Progress ({{ in_progress|length }})</h4>
+  <h6>In Progress ({{ in_progress|length }})</h6>
   {% with in_progress as bills and True as in_progress %}
     {% include "staff/billing/outstanding_table.html" %}
   {% endwith %}
