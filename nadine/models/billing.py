@@ -85,8 +85,22 @@ class BillingBatch(models.Model):
         ''' Run billing for a specific day. '''
         logger.info("run_billing_for_day(%s)" % target_date)
 
+        # Gather up all the subscriptions
+        self.run_subscriptions(target_date)
+
+        # Gather up all the coworking days
+        self.run_coworking_days(target_date)
+
+        # Recalculate all the bills that need it
+        for bill in self.to_recalculate:
+            bill.recalculate()
+
+        # Close all open subscription based bills that end on this day
+        self.close_bills_at_end_of_period(target_date)
+
+    def run_subscriptions(self, target_date):
         # Keep track of which bills need to be recalculated
-        to_recalculate = set()
+        self.to_recalculate = set()
 
         # Check every active subscription on this day and add this if neccessary
         for subscription in ResourceSubscription.objects.unbilled(target_date):
@@ -108,8 +122,9 @@ class BillingBatch(models.Model):
                 # If we have any activity for this resource, flag for recalculation
                 activity = bill.resource_activity(subscription.resource)
                 if activity and activity.count() > 0:
-                    to_recalculate.add(bill)
+                    self.to_recalculate.add(bill)
 
+    def run_coworking_days(self, target_date):
         # Pull and add all past unbilled CoworkingDays
         for day in CoworkingDay.objects.unbilled(target_date).order_by('visit_date'):
             logger.debug("Found Coworking Day: %s %s %s" % (day.user, day.visit_date, day.payment))
@@ -118,20 +133,14 @@ class BillingBatch(models.Model):
             bill.add_coworking_day(day)
             self.bills.add(bill)
 
-        # Recalculate all the bills that need it
-        for bill in to_recalculate:
-            bill.recalculate()
-
-        # Close all open subscription based bills that end on this day
+    def close_bills_at_end_of_period(self, target_date):
+        ''' Close the open bills at the end of their period. '''
         for bill in UserBill.objects.filter(closed_ts__isnull=True, period_end=target_date):
             if bill.subscriptions().count() > 0:
                 # Only close bills that have subscriptions.
                 # Bills with only resource activity remain open until paid
                 bill.close()
                 self.bills.add(bill)
-
-    def run_billing_for_bill(self, bill):
-        pass
 
 
 class BillManager(models.Manager):

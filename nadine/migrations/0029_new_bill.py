@@ -113,9 +113,10 @@ def forward(apps, schema_editor):
             t.save()
 
 
-    # Handle CoworkingDays older than 2 months that were not billed yet
-    two_months_ago = localtime(now()).date() - relativedelta(months=2)
-    loose_days = CoworkingDay.objects.filter(bill__isnull=True, visit_date__lte=two_months_ago).order_by('visit_date')
+    # Handle CoworkingDays older than our cutoff that were not billed yet
+    # date_cutoff = localtime(now()).date() - timedelta(days=45)
+    date_cutoff = date(2017, 6, 1)
+    loose_days = CoworkingDay.objects.filter(bill__isnull=True, visit_date__lte=date_cutoff).order_by('visit_date')
     user = User.objects.first()
     # Only do this step if there is data in the system
     if loose_days and user:
@@ -123,7 +124,7 @@ def forward(apps, schema_editor):
         first_day = loose_days.first().visit_date
         last_day = loose_days.last().visit_date
         bill = UserBill.objects.create(user=user, period_start=first_day, period_end=last_day, due_date=last_day)
-        bill.note = "This bill includes all days unbilled before %s (Nadine 1.8)" % two_months_ago
+        bill.note = "This bill includes all days unbilled before %s (Nadine 1.8)" % date_cutoff
         for day in loose_days:
             description = "Coworking Day on %s: %s (%s)" % (day.visit_date, day.user.username, day.payment)
             CoworkingDayLineItem.objects.create(
