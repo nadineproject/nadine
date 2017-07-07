@@ -6,7 +6,6 @@
     var total = 0;
     {% for bill in bills %}
       var amount = parseFloat('{{ bill.amount }}');
-      console.log(amount);
       total += amount;
 
     {% endfor %}
@@ -67,7 +66,7 @@
     <td></td>
     <td></td>
     <td></td>
-    <td><strong>Total:</strong></td>
+    <td><strong>{{ bills|length }} bill{{ bills|pluralize }}:</strong></td>
     <td>
       <strong>$
         <span id='bills-total'></span>
