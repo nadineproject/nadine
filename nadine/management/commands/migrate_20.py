@@ -43,12 +43,15 @@ class Command(BaseCommand):
                 print("  WARNING!  Bill has payments!")
             bill.delete()
 
-        print("Running Batch...")
-        batch = BillingBatch.objects.run()
-        print("   Ran %d Bills" % batch.bills.count())
+        print("Starting our Billing Batch...")
+        batch = BillingBatch.objects.create()
 
+        # Run just our subscriptions.  This will create all the new bills for existing members
+        batch.run_subscriptions(today)
+
+        # Move any payments from the last migrated bill to our new bill
         for bill in batch.bills.all():
-            for another_bill  in UserBill.objects.filter(user=bill.user, period_start=bill.period_start, period_end=bill.period_end):
+            for another_bill in UserBill.objects.filter(user=bill.user, period_start=bill.period_start, period_end=bill.period_end):
                 if another_bill != bill:
                     print("Found matching bill for %s %s to %s" % (bill.user.username, bill.period_start, bill.period_end))
                     for payment in another_bill.payment_set.all():
@@ -57,21 +60,8 @@ class Command(BaseCommand):
                         payment.save()
                     another_bill.delete()
 
-        # Go through all the active memberships and combine bills if we need to
-        # for membership in Membership.objects.active_individual_memberships(today):
-        #     user = membership.individualmembership.user
-        #     print("  Migrating %s" % user.username)
-        #     last_bill = user.bills.last()
-        #     if last_bill:
-        #         for another_bill in UserBill.objects.filter(user=last_bill.user, period_start=last_bill.period_start, period_end=last_bill.period_end):
-        #             if another_bill != last_bill:
-        #                 print("    Combining Bill %s and %s" % (another_bill.id, last_bill.id))
-        #                 last_bill.combine(another_bill)
-        #         if last_bill.period_end < today:
-        #             last_bill.closed_ts = None
-        #             last_bill.save()
-
-
+        # Now run the full batch which will collect all the coworking days, and close bills as needed
+        batch.run()
 
 
 # Copyright 2017 Office Nomads LLC (http://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
