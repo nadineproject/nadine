@@ -1,5 +1,8 @@
 {% load static %}
 <style>
+  * {
+    font-family: 'Helvetica', sans-serif;
+  }
   #site-phone:before {
     content: '206-323-6500';
   }
@@ -16,10 +19,10 @@
 <body id='receipt-body'>
   <table cellspacing="0" cellpadding="0" border="0" style='width: 100%;'>
     <tr>
-      <td>
+      <td style="width: 50%; padding-left: 7%;">
         <img src="{% static 'img/logo.png' %}" style='width:150px; height:150px;'/>
       </td>
-      <td width="33%;" align="center" >
+      <td style="width: 50%; text-align: left;">
         <h1>{{ site.name }}</h1>
         <!-- Add functionality for site address and phone number -->
         <strong style="font-size:110%;">RECEIPT -
@@ -42,16 +45,16 @@
         <td>
           <table border="0" cellspacing="0" cellpadding="0" border="0">
             <tr>
-              <td width="20px"><strong>Due Date:</strong></td>
-              <td width="160px"> {{ bill.due_date|date:"M d, Y" }}</td>
+              <td style='font-size: 90%;' width="20px"><strong>Due Date:</strong></td>
+              <td style='font-size: 90%;' width="160px"> {{ bill.due_date|date:"M d, Y" }}</td>
             </tr>
             <tr>
-              <td width="20px"><strong>Location:</strong></td>
-              <td width="160px"> {{ site.name }}</td>
+              <td style='font-size: 90%;' width="20px"><strong>Location:</strong></td>
+              <td style='font-size: 90%;' width="160px"> {{ site.name }}</td>
             </tr>
             <tr>
-              <td width="20px"><strong>Period:</strong></td>
-              <td width="160px"> {{ bill.period_start }} <i>to</i> {{ bill.period_end }}</td>
+              <td style='font-size: 90%;' width="20px"><strong>Period:</strong></td>
+              <td style='font-size: 90%;' width="160px"> {{ bill.period_start }} <i>to</i> {{ bill.period_end }}</td>
             </tr>
             {% if bill_url %}
               <tr>

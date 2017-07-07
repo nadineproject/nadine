@@ -123,7 +123,7 @@
         <th class='sub-th'>End Date</th>
         <th class='rate sub-th'>Monthly Rate</th>
         <th class='rate sub-th'>Overage Rate</th>
-        <th class='sub-th'>Paid By</th>
+        <th class='sub-th'>Paid By*</th>
         <th class='sub-th'></th>
       </tr>
       {{ sub_formset.management_form }}
@@ -145,7 +145,7 @@
           <td class='sub-input' id='end_date_td'>{{ sub_form.end_date  }}</td>
           <td class='sub-input rate monthly_rate'>{{ sub_form.monthly_rate  }}</td>
           <td class='sub-input rate overage'>{{ sub_form.overage_rate }}</td>
-          <td class='sub-input paid-by tooltipped' data-position='bottom' data-delay='50' data-tooltip='Search Users with Valid Billing Profiles'>{{ sub_form.paid_by  }}</td>
+          <td class='sub-input paid-by'>{{ sub_form.paid_by  }}</td>
         {% endif %}
         <td class='sub-input'>
           {% if sub_form.end_date.value %}
@@ -171,6 +171,9 @@
     {% csrf_token %}
     <input type='hidden' id='date-end' name='date-end' />
     <button class='btn' type='submit' style='display:inline-block; margin-right: 5%; margin-left:40%;'>Update</button><span class='back'>Back</span>
+    <div id='paid-by-div'>
+      *Subscriptions can only be paid by a user with a valid billing profile
+    </div>
   </form>
 </div>
 {% endblock %}
