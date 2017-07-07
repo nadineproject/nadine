@@ -312,6 +312,14 @@
     });
   }
 
+  function editDate(date) {
+    var mm = date.getMonth() + 1;
+    var dd = date.getDate();
+    var yyyy = date.getFullYear();
+    return [yyyy, (mm>9 ? '' : '0') + mm,
+          (dd>9 ? '' : '0') + dd].join('-')
+  }
+
   (function() {
     var availableUsers = [
 			{% for u in active_billing %}
@@ -623,9 +631,20 @@
             $(this).parent().siblings('.paid-by').children().prop('required', 'required');
           }
         }
+        if (action == 'update' && ($('#target-input').val() != 'eop')) {
+          for (var i = 0; i < existing.length; i++) {
+            if($(this).val() == existing[i]) {
+              var t_date = new Date(targetDate)
+              var new_date = new Date(t_date.getTime() + 2*(24*60*60*1000));
+              var new_start_for_django = editDate(new_date)
+              $(this).parent().siblings('#start_date_td').children().attr('readonly', 'false').val(new_start_for_django).attr('readonly', 'readonly').datepicker('destroy');
+            }
+          }
+        }
         $(this).parent().siblings('.overage').children().prop('value', 0);
         $(this).parent().siblings('.allowance').children().prop('required', 'true');
         $(this).parent().siblings('.monthly_rate').children().prop('required', 'true');
+
       }
     })
 
