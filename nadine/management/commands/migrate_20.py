@@ -47,6 +47,7 @@ class Command(BaseCommand):
         #                 payment.save()
 
         # Delete open bills - SHOULD'T BE ANY!
+        open_bills = UserBill.objects.open().order_by('period_start')
         for bill in open_bills:
             print("Deleting %s" % bill)
             if bill.payment_set.count() > 0:
