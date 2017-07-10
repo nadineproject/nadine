@@ -20,11 +20,9 @@ from django.utils.timezone import localtime, now
 from django.template.loader import get_template
 
 from nadine import email
-from nadine.utils import mailgun
 from nadine.models.alerts import MemberAlert
 from nadine.models.profile import FileUpload
 from nadine.models.usage import CoworkingDay
-from nadine.utils.slack_api import SlackAPI
 from nadine.forms import NewUserForm, MemberSearchForm
 from member.models import MOTD
 from .forms import SignatureForm
@@ -178,17 +176,6 @@ def signin_user_guest(request, username, paid_by):
             day.payment = 'Bill'
         day.save()
 
-        if day.payment == 'Trial':
-            try:
-                email.announce_free_trial(user)
-                email.send_introduction(user)
-                email.subscribe_to_newsletter(user)
-                #SlackAPI().invite_user(user)
-            except:
-                logger.error("Could not send introduction email to %s" % user.email)
-        else:
-            if len(user.profile.open_alerts()) > 0:
-                mailgun.send_manage_member(user)
     return HttpResponseRedirect(reverse('tablet:welcome', kwargs={'username': username}))
 
 

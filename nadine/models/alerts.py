@@ -19,8 +19,11 @@ from nadine.models.profile import UserProfile, FileUpload
 from nadine.models.membership import Membership, IndividualMembership, ResourceSubscription
 from nadine.models.usage import CoworkingDay
 from nadine.models.resource import Resource
+from interlink.models import MailingList
 
+from nadine import email
 from nadine.utils import mailgun
+from nadine.utils.slack_api import SlackAPI
 
 logger = logging.getLogger(__name__)
 
@@ -97,6 +100,10 @@ class MemberAlertManager(models.Manager):
         subject = "Exiting Member: %s/%s/%s" % (end.month, end.day, end.year)
         mailgun.send_manage_member(user, subject=subject)
 
+        # Remove them from the mailing lists
+        for mailing_list in MailingList.objects.filter(is_opt_out=True):
+            mailing_list.subscribers.remove(user)
+
     def trigger_new_membership(self, user):
         logger.debug("trigger_new_membership: %s" % user)
 
@@ -130,6 +137,13 @@ class MemberAlertManager(models.Manager):
         if not MemberAlert.ORIENTATION in all_alerts:
             MemberAlert.objects.create(user=user, key=MemberAlert.ORIENTATION)
 
+        # Subscribe them to all the opt_out mailing lists
+        for mailing_list in MailingList.objects.filter(is_opt_out=True):
+            mailing_list.subscribers.add(user)
+
+        # Invite them to slack
+        SlackAPI().invite_user_quiet(user)
+
     def trigger_profile_save(self, profile):
         logger.debug("trigger_profile_save: %s" % profile)
         if profile.photo:
@@ -155,9 +169,22 @@ class MemberAlertManager(models.Manager):
 
     def trigger_sign_in(self, user):
         logger.debug("trigger_sign_in: %s" % user)
+
         # If they have signed in, they are not stale anymore
         user.profile.resolve_alerts(MemberAlert.STALE_MEMBER)
-        # TODO - Move Team Email Alert to here
+
+        # Send out a bunch of things the first time they sign in
+        if CoworkingDay.objects.filter(user=user).count() == 1:
+            try:
+                email.announce_free_trial(user)
+                email.send_introduction(user)
+                email.subscribe_to_newsletter(user)
+            except:
+                logger.error("Could not send introduction email to %s" % user.email)
+        else:
+            # If it's not their first day and they still have open alerts, message the team
+            if len(user.profile.open_alerts()) > 0:
+                mailgun.send_manage_member(user)
 
     def trigger_new_desk(self, user):
         logger.debug("trigger_new_desk: %s" % user)

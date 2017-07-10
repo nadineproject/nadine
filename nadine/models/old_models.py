@@ -86,7 +86,7 @@ class OldMembership(models.Model):
     has_key = models.BooleanField(default=False)
     has_mail = models.BooleanField(default=False)
     paid_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, related_name="guest_membership", on_delete=models.CASCADE)
-    new_membership = models.ForeignKey(Membership, null=True, blank=True, on_delete=models.CASCADE)
+    new_membership = models.ForeignKey(Membership, null=True, blank=True, on_delete=models.SET_NULL)
 
     @property
     def guest_of(self):
@@ -223,7 +223,7 @@ class Transaction(models.Model):
     bills = models.ManyToManyField(OldBill, related_name='transactions')
     amount = models.DecimalField(max_digits=7, decimal_places=2)
     note = models.TextField(blank=True, null=True)
-    new_payment = models.ForeignKey(Payment, null=True, blank=True, on_delete=models.CASCADE)
+    new_payment = models.ForeignKey(Payment, null=True, blank=True, on_delete=models.SET_NULL)
 
     class Meta:
         app_label = 'nadine'

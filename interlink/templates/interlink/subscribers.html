@@ -22,7 +22,7 @@
 		<th>End Date</th>
 		<th>Action</th>
 	</tr>
-{% for subscriber in mailing_list.subscribers.all|dictsort:"username.lower" %}
+{% for subscriber in mailing_list.subscribed|dictsort:"username.lower" %}
 	<tr>
 		<td>{{ subscriber.first_name }} {{ subscriber.last_name }}</td>
 		<td>{{ subscriber.membership.start_date }}</td>

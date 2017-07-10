@@ -24,7 +24,7 @@ def list_messages(request, list_id):
 @staff_member_required
 def list_subscribers(request, list_id):
     mailing_list = get_object_or_404(MailingList, pk=list_id)
-    not_subscribed = User.helper.active_members().exclude(id__in=mailing_list.subscribers.all())
+    not_subscribed = User.helper.active_members().exclude(id__in=mailing_list.subscribed())
     context = {'mailing_list': mailing_list, 'not_subscribed': not_subscribed}
     return render(request, 'interlink/subscribers.html', context)
 
@@ -35,7 +35,7 @@ def subscribe(request, list_id, username):
     user = get_object_or_404(User, username=username)
     if request.method == 'POST':
         if request.POST.get('confirm', 'No') == "Yes":
-            mailing_list.subscribers.add(user)
+            mailing_list.subscribe(user)
         return HttpResponseRedirect(reverse('interlink:subscribers', args=[list_id]))
     return render(request, 'interlink/subscribe.html', {'user': user, 'mailing_list': mailing_list})
 
@@ -46,7 +46,7 @@ def unsubscribe(request, list_id, username):
     user = get_object_or_404(User, username=username)
     if request.method == 'POST':
         if request.POST.get('confirm', 'No') == "Yes":
-            mailing_list.subscribers.remove(user)
+            mailing_list.unsubscribe(user)
         return HttpResponseRedirect(reverse('interlink:subscribers', args=[list_id]))
     return render(request, 'interlink/unsubscribe.html', {'user': user, 'mailing_list': mailing_list})
 
