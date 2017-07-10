@@ -45,11 +45,13 @@ class Command(BaseCommand):
         #                 print("   Moving payments to new bill")
         #                 payment.bill = bill
         #                 payment.save()
-# 
-        #     print("Deleting %s" % bill)
-        #     if bill.payment_set.count() > 0:
-        #         print("  WARNING!  Bill has payments!")
-        #     bill.delete()
+
+        # Delete open bills - SHOULD'T BE ANY!
+        for bill in open_bills:
+            print("Deleting %s" % bill)
+            if bill.payment_set.count() > 0:
+                print("  WARNING!  Bill has payments!")
+            bill.delete()
 
         print("Starting our Billing Batch...")
         batch = BillingBatch.objects.create()
@@ -58,12 +60,13 @@ class Command(BaseCommand):
         batch.run_subscriptions(today)
 
         # Move any payments from the last migrated bill to our new bill
+        print("Migrating Payments...")
         for bill in batch.bills.all():
             for another_bill in UserBill.objects.filter(user=bill.user, period_start=bill.period_start, period_end=bill.period_end):
                 if another_bill != bill:
-                    print("Found matching bill for %s %s to %s" % (bill.user.username, bill.period_start, bill.period_end))
+                    print("   Found matching bill for %s %s to %s" % (bill.user.username, bill.period_start, bill.period_end))
                     for payment in another_bill.payment_set.all():
-                        print("   Moving payments to new bill")
+                        print("      Moving payments to new bill")
                         payment.bill = bill
                         payment.save()
                     another_bill.delete()
