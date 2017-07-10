@@ -84,11 +84,14 @@ def outstanding(request):
 def action_bill_paid(request, bill_id):
     ''' Mark the bill paid '''
     bill = get_object_or_404(UserBill, id=bill_id)
-    payment = Payment.objects.create(bill=bill, user=bill.user, amount=bill.amount, created_by=request.user)
+    amount = bill.amount
+    if 'amount' in request.POST:
+        amount = request.POST['amount']
+    payment = Payment.objects.create(bill=bill, user=bill.user, amount=amount, created_by=request.user)
     if 'payment_date' in request.POST:
         payment.created_ts = datetime.strptime(request.POST['payment_date'], "%Y-%m-%d").date()
         payment.save()
-    messages.success(request, "Bill %d ($%s) paid" % (bill.id, bill.amount))
+    messages.success(request, "Bill %d ($%s) paid" % (bill.id, amount))
     if 'next' in request.POST:
         return HttpResponseRedirect(request.POST['next'])
     return HttpResponseRedirect(reverse('staff:billing:outstanding'))

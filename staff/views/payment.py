@@ -122,6 +122,23 @@ def usaepay_transactions_today(request):
     return HttpResponseRedirect(reverse('staff:billing:charges', args=[], kwargs={'year': today.year, 'month': today.month, 'day': today.day}))
 
 
+def add_bills_and_invoices(transactions, open_xero_invoices):
+    for t in transactions:
+        # Pull the member and the amount they owe
+        u = User.objects.filter(username = t['username']).first()
+        if u:
+            t['user'] = u
+            t['outstanding_bills'] = u.profile.outstanding_bills()
+            t['bill_count'] = len(t['outstanding_bills'])
+            # If the amount matches and there is only one, mark this bill as a match
+            if len(t['outstanding_bills']) == 1 and t['amount'] == t['outstanding_bills'][0].amount:
+                t['bill_match'] = t['outstanding_bills'][0]
+            # Sort through our xero invoices and only show the ones that match this total
+            t['xero_invoices'] = open_xero_invoices.get(t['username'], [])
+            for i in t['xero_invoices']:
+                if i['AmountDue'] != t['amount']:
+                    t['xero_invoices'].remove(i)
+
 @staff_member_required
 def usaepay_transactions(request, year, month, day):
     d = date(year=int(year), month=int(month), day=int(day))
@@ -131,7 +148,7 @@ def usaepay_transactions(request, year, month, day):
     ach = []
     settled_checks = []
     other_transactions = []
-    totals = {'amex_total':0, 'visamc_total':0, 'ach_total':0, 'total':0}
+    totals = {'amex_total':0, 'visamc_total':0, 'ach_total':0, 'settled_checks':0, 'total':0}
 
     open_xero_invoices = {}
     try:
@@ -147,28 +164,19 @@ def usaepay_transactions(request, year, month, day):
             api.close_current_batch()
             messages.add_message(request, messages.INFO, "Current batch closed")
 
-        transactions = api.get_transactions(year, month, day)
-        totals['total_count'] = len(transactions)
-
         # Pull the settled checks seperately
         settled_checks = api.get_checks_settled_by_date(year, month, day)
+        add_bills_and_invoices(settled_checks, open_xero_invoices)
+        for t in settled_checks:
+            totals['settled_checks'] = totals['settled_checks'] + t['amount']
 
+        # Pull the transactions and suplement the information
+        transactions = api.get_transactions(year, month, day)
+        add_bills_and_invoices(transactions, open_xero_invoices)
+
+        # Total up all the Settled transactions
+        totals['total_count'] = len(transactions) + len(settled_checks)
         for t in transactions:
-            # Pull the member and the amount they owe
-            u = User.objects.filter(username = t['username']).first()
-            if u:
-                t['user'] = u
-                t['outstanding_bills'] = u.profile.outstanding_bills()
-                # If the amount matches and there is only one, mark this bill as a match
-                if len(t['outstanding_bills']) == 1 and t['amount'] == t['outstanding_bills'][0].amount:
-                    t['bill_match'] = t['outstanding_bills'][0]
-                # Sort through our xero invoices and only show the ones that match this total
-                t['xero_invoices'] = open_xero_invoices.get(t['username'], [])
-                for i in t['xero_invoices']:
-                    if i['AmountDue'] != t['amount']:
-                        t['xero_invoices'].remove(i)
-
-            # Total up all the Settled transactions
             if t['transaction_type'] == "Sale" and t['status'] != "Declined" and t['status'] != "Error":
                 totals['total'] = totals['total'] + t['amount']
                 if t['card_type'] == "A":
@@ -186,8 +194,6 @@ def usaepay_transactions(request, year, month, day):
                     open_batch = True
             else:
                 other_transactions.append(t)
-
-
     except Exception as e:
         messages.add_message(request, messages.ERROR, e)
 
