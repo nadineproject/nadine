@@ -63,13 +63,29 @@ class UserBillTestCase(TestCase):
         self.assertFalse(bill in UserBill.objects.outstanding())
 
     def test_outstanding_partial_payment(self):
-        # Apply $1 to the last bill and make sure it's still in our outstanding set
+        # Apply $1 to a $10 bill and make sure it's still in our outstanding set
         bill = UserBill.objects.create_for_day(self.user1, today)
         BillLineItem.objects.create(bill=bill, amount=10)
         self.assertEqual(10, bill.amount)
         Payment.objects.create(bill=bill, user=self.user1, amount=1)
         self.assertTrue(bill.total_paid == 1)
         self.assertFalse(bill.is_paid)
+        self.assertEqual(9, bill.total_owed)
+        self.assertTrue(bill in UserBill.objects.outstanding())
+
+    def test_outstanding_partial_payment_bug300(self):
+        # A bug was identified where a bill with many line items doesn't
+        # show up as outstanding if there is a partial payment.
+        # Django Bug:  https://code.djangoproject.com/ticket/10060
+        # Nadine Bug:  https://github.com/nadineproject/nadine/issues/300
+        bill = UserBill.objects.create_for_day(self.user1, today)
+        for i in range(0, 10):
+            BillLineItem.objects.create(bill=bill, amount=1)
+        self.assertEqual(10, bill.amount)
+        Payment.objects.create(bill=bill, user=self.user1, amount=1)
+        self.assertTrue(bill.total_paid == 1)
+        self.assertFalse(bill.is_paid)
+        self.assertEqual(9, bill.total_owed)
         self.assertTrue(bill in UserBill.objects.outstanding())
 
     def test_open_and_closed(self):

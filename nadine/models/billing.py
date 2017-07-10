@@ -7,6 +7,7 @@ from dateutil.relativedelta import relativedelta
 from django.db import models
 from django.db.models import F, Q, Count, Sum, Value
 from django.db.models.functions import Coalesce
+from django.db.models.fields import DecimalField, FloatField, IntegerField
 from django.utils.timezone import localtime, now
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -77,7 +78,7 @@ class BillingBatch(models.Model):
             logger.error(self.error)
         finally:
             self.close()
-        
+
         # Indicate if we ran successsfully or not
         return self.successful
 
@@ -219,8 +220,17 @@ class BillManager(models.Manager):
         return self.filter(closed_ts__isnull=False)
 
     def outstanding(self):
-        query = self.filter(mark_paid=False)
-        query = query.annotate(bill_amount=Sum('line_items__amount'), owed=Sum('line_items__amount') - Sum('payment__amount'), payment_count=Count('payment'))
+        ''' Return a set of all outstanding bills. '''
+        # There is a known bug that results in a bill that has multiple line items
+        # and a partial payment not showing up in this set as it should.
+        # https://code.djangoproject.com/ticket/10060
+        # https://github.com/nadineproject/nadine/issues/300
+        query = self.filter(mark_paid=False) \
+            .annotate(bill_amount=Sum('line_items__amount', output_field=FloatField())) \
+            .annotate(line_count=Count('line_items', distinct=True)) \
+            .annotate(payment_amount=Sum('payment__amount', output_field=FloatField())) \
+            .annotate(payment_count=Count('payment', distinct=True)) \
+            .annotate(owed=F('bill_amount') - F('payment_amount'))
         no_payments = Q(payment_count = 0)
         partial_payment = Q(owed__gt = 0)
         return query.filter(bill_amount__gt=0).filter(no_payments | partial_payment)
