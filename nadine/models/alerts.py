@@ -234,7 +234,9 @@ class MemberAlertManager(models.Manager):
 def coworking_day_callback(sender, **kwargs):
     if getattr(settings, 'SUSPEND_MEMBER_ALERTS', False): return
     coworking_day = kwargs['instance']
-    MemberAlert.objects.trigger_sign_in(coworking_day.user)
+    created = kwargs['created']
+    if created:
+        MemberAlert.objects.trigger_sign_in(coworking_day.user)
 
 
 @receiver(post_save, sender=ResourceSubscription)
