@@ -265,32 +265,6 @@ def announce_special_day(user, special_day):
     send_quietly(settings.TEAM_EMAIL_ADDRESS, subject, message)
 
 
-# Unused and I'm not sure why this is here.
-# This was also implemented in mailgun.send_manage_member
-# def manage_member_email(user):
-#     subject = "Email Problem - %s" % (user.get_full_name())
-#     # Adjust the subject if we have a prefix
-#     if hasattr(settings, "EMAIL_SUBJECT_PREFIX"):
-#         subject = settings.EMAIL_SUBJECT_PREFIX.strip() + " " + subject
-#
-#     c = {
-#         'user': user,
-#         'domain': Site.objects.get_current().domain,
-#     }
-#     text_content, html_content = mailgun.render_templates(c, "manage_member")
-#     logger.debug("text_context: %s" % text_content)
-#     logger.debug("html_content: %s" % html_content)
-#
-#     mailgun_data = {"from": settings.EMAIL_ADDRESS,
-#                     #		"to": [settings.TEAM_EMAIL_ADDRESS, ],
-#                     "to": [settings.EMAIL_ADDRESS, ],
-#                     "subject": subject,
-#                     "text": text_content,
-#                     "html": html_content,
-#                     }
-#     mailgun.mailgun_send(mailgun_data)
-
-
 #####################################################################
 #                        Utilities
 #####################################################################

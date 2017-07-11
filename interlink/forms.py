@@ -9,17 +9,17 @@ class MailingListSubscriptionForm(forms.Form):
     mailing_list_id = forms.IntegerField(required=True, widget=forms.HiddenInput)
 
     def save(self, user):
-        list = MailingList.objects.get(pk=self.cleaned_data['mailing_list_id'])
-        if list.moderator_controlled:
+        mailing_list = MailingList.objects.get(pk=self.cleaned_data['mailing_list_id'])
+        if mailing_list.moderator_controlled:
             return False
 
         body = 'So says http://%s ' % Site.objects.get_current().domain
         if self.cleaned_data['subscribe'] == 'true' and (user.profile.is_active() or user.is_staff):
-            list.subscribers.add(user)
+            mailing_list.subscriber(user)
             subject = '%s subscribed to %s' % (user.get_full_name(), list.name)
             OutgoingMail.objects.create(mailing_list=list, subject=subject, body=body, moderators_only=True)
         elif self.cleaned_data['subscribe'] == 'false' and user in list.subscribers.all():
-            list.subscribers.remove(user)
+            mailing_list.unsubscribe(user)
             subject = '%s unsubscribed from %s' % (user.get_full_name(), list.name)
             OutgoingMail.objects.create(mailing_list=list, subject=subject, body=body, moderators_only=True)
         return True

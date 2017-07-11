@@ -57,26 +57,9 @@
 {% endif %}
 
 {% if settled_checks %}
-<h5>Cleared ACH</h5>
-<table>
-	<tr class='item-table'>
-		<th>Name</th>
-		<th>Amount</th>
-		<th>Status</th>
-		<th>Processed</th>
-		<th></th>
-	</tr>
-
-	{% for c in settled_checks %}
-		<tr class="{% cycle 'row-odd' 'row-even' %}">
-			<td>{{ c.username }}</td>
-			<td>${{ c.amount|floatformat:2 }}</td>
-			<td>{{ c.status }}</td>
-			<td>{{ c.transaction.CheckTrace.Processed }}</td>
-			<td></td>
-		</tr>
-	{% endfor %}
-</table>
+	{% with "Cleared ACH" as name and settled_checks as transactions and totals.settled_checks as total %}
+		{% include "staff/billing/charges_table_frag.html" %}
+	{% endwith %}
 {% endif %}
 
 {% if other_transactions %}

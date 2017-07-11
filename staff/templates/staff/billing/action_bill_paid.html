@@ -2,13 +2,15 @@
       method="POST"
       style="display:inline-block;"
       action="{% url 'staff:billing:bill_paid' bill.id %}"
-      onSubmit="return confirm('Record Payment of ${{ bill.amount }} for Bill {{ bill.id}} ({{ bill.user.get_full_name }})');" >
+      onSubmit="return confirm('Record Payment of ${{ amount }} for Bill {{ bill.id}} ({{ bill.user.get_full_name }})?');" >
   {% csrf_token %}
   {% if payment_date %}
     <input type="hidden" name="payment_date" value="{{ payment_date}}"/>
   {% endif %}
   {% if amount %}
     <input type="hidden" name="amount" value="{{ amount }}"/>
+  {% else %}
+    <input type="hidden" name="amount" value="{{ bill.amount }}"/>
   {% endif %}
   <input type="hidden" name="next" value="{{ request.get_full_path }}" >
   <input type="submit" value="Record Payment"/>

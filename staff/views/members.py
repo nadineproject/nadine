@@ -499,9 +499,6 @@ def confirm_membership(request, username, package, end_target, start_target, new
                             # Save new resource
                             rs = ResourceSubscription(created_by=created_by, created_ts=created_ts, package_name=package_name, resource=resource, allowance=allowance, start_date=start_date, end_date=end_date, monthly_rate=monthly_rate, overage_rate=overage_rate, paid_by=paid_by, membership=membership)
                             rs.save()
-                    """When first subscriptions is created, invite the user to Slack & add to membership"""
-                    # if ResourceSubscription.objects.filter(membership=user.membership.id).count() == len(subs):
-                        # SlackAPI().invite_user_quiet(user)
                 else:
                     arr = []
                     for a in user.membership.active_subscriptions():

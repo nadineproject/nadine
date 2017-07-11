@@ -59,8 +59,8 @@
                         {% csrf_token %}
                     </form>
                 {% endifequal %}
-                {% if t.bill_match %}
-                  {% with t.bill_match as bill and date.isoformat as payment_date %}
+                {% if t.bill_count == 1 %}
+                  {% with t.outstanding_bills.first as bill and date.isoformat as payment_date and t.amount as amount %}
                     {% include "staff/billing/action_bill_paid.html" %}
                   {% endwith %}
                 {% endif %}

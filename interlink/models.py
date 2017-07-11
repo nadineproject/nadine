@@ -18,7 +18,6 @@ from django.utils.timezone import localtime, now
 
 from nadine.models.profile import UserProfile
 from nadine.models.membership import Membership
-from nadine.utils.slack_api import SlackAPI
 from interlink.message import MailingListMessage
 import interlink
 
@@ -34,33 +33,6 @@ def unsubscribe_recent_dropouts():
             return
         else:
             MailingList.objects.unsubscribe_from_all(s)
-
-
-# This signal used to be triggered when we saved a Membership.
-# With 2.0 every user has one membership that has multiple subscriptions so
-# This no longer makes sense.  The logic will be moved to the view/form --JLS
-# def membership_save_callback(sender, **kwargs):
-#     """When a membership is created, add the user to any opt-out mailing lists"""
-#     membership = kwargs['instance']
-#     created = kwargs['created']
-#     if not created:
-#         return
-#
-#     # If the member is just switching from one membership to another, don't change subscriptions
-#     # But if this membership is created in the past there is no way to know what they want so subscribe them
-#     today = localtime(now()).date()
-#     if membership.start_date > today:
-#         if OldMembership.objects.filter(user=membership.user, end_date=membership.start_date - timedelta(days=1)).count() != 0:
-#             return
-#
-#     mailing_lists = MailingList.objects.filter(is_opt_out=True)
-#     for ml in mailing_lists:
-#         ml.subscribers.add(membership.user)
-#
-#     # If this is their first membership, also invite them to Slack
-#     if OldMembership.objects.filter(user=membership.user).count() == 1:
-#         SlackAPI().invite_user_quiet(membership.user)
-# post_save.connect(membership_save_callback, sender=OldMembership)
 
 
 def awaiting_moderation(user):
@@ -103,6 +75,7 @@ class MailingList(models.Model):
     smtp_port = models.IntegerField(default=587)
 
     subscribers = models.ManyToManyField(User, blank=True, related_name='subscribed_mailing_lists')
+    unsubscribed = models.ManyToManyField(User, blank=True, related_name='+')
     moderators = models.ManyToManyField(User, blank=True, related_name='moderated_mailing_lists', help_text='Users who will be sent moderation emails', limit_choices_to={'is_staff': True})
 
     throttle_limit = models.IntegerField(default=0, help_text='The number of recipients in 10 minutes this mailing list is limited to. Default is 0, which means no limit.')
@@ -141,13 +114,27 @@ class MailingList(models.Model):
     @property
     def subscriber_addresses(self):
         """Returns a tuple of email address strings, one for each subscribed address"""
-        return tuple([sub.email for sub in self.subscribers.all()])
+        return tuple([sub.email for sub in self.subscribed()])
 
     def __str__(self):
         return '%s' % self.name
 
+    def subscribed(self):
+        """ The subscribers minus the unsubscriberd. """
+        return self.subscribers.exclude(id__in=self.unsubscribed.all())
+
+    def subscribe(self, user):
+        """ Subscribe the given user to this mailing list. """
+        self.subscribers.add(user)
+        self.unsubscribed.remove(user)
+
+    def unsubscribe(self, user):
+        """ Unsubscribe the given user to this mailing list. """
+        self.subscribers.remove(user)
+        self.unsubscribed.add(user)
+
     def create_incoming(self, message, commit=True):
-        "Parses an email message and creates an IncomingMail from it."
+        """ Parses an email message and creates an IncomingMail from it."""
         _name, origin_address = email.utils.parseaddr(message['From'])
         time_struct = email.utils.parsedate(message['Date'])
         if time_struct:
