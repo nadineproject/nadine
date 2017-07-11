@@ -149,48 +149,55 @@
   {% endfor %}
 </table>
 
-<h5>Payments</h5>
-<table class="payment-table">
-  <tr>
-    <th class="left">Recorded</th>
-    <th>Note</th>
-    <th class="right">Amount</th>
-    <th></th>
-  </tr>
-  {% for payment in bill.payment_set.all %}
-    <tr class='payment-tr' style='border-bottom: none;'>
-      <td style='border-bottom: none;'>
-        {{ payment.created_ts|date:"m/d/y" }}
-        {% if payment.created_by %}
-          by {{ payment.created_by }}
-        {% endif %}
-      </td>
-      <td style='border-bottom: none;'>{{ payment.note|default:'' }}</td>
-      <td style="text-align:right; border-bottom: none;">${{ payment.amount }}</td>
-      <td style='border-bottom: none;'>
-        <form action="." method="POST" onSubmit="return confirm('Are you sure you want to delete this payment of ${{ payment.amount }}?'); return false;">
-          <input type="hidden" name="delete_payment_id" value="{{ payment.id}}"/>
-          <input type="submit" class='btn' value="Delete Payment" >
-          {% csrf_token %}
-        </form>
-      </td>
-    </tr>
-  {% endfor %}
 
-  {% if not bill.is_paid %}
-    <form method='POST' action="{% url 'staff:billing:record_payment' %}">
-      {{ payment_form.bill_id }}
-      {{ payment_form.username }}
-      {% csrf_token %}
-      <tr class='payment-tr'>
-        <td>{{ payment_form.payment_date }}</td>
-        <td>{{ payment_form.note }}</td>
-        <td class='payment-amount'>{{ payment_form.amount }}</td>
-        <td>
-          <input type="submit" class='btn' value="Record Payment"/>
+<h5>Payments</h5>
+{% if bill.payment_set.all or not bill.is_paid %}
+  <table class="payment-table">
+    <tr>
+      <th class="left">Recorded</th>
+      <th>Note</th>
+      <th class="right">Amount</th>
+      <th></th>
+    </tr>
+    {% for payment in bill.payment_set.all %}
+      <tr class='payment-tr' style='border-bottom: none;'>
+        <td style='border-bottom: none;'>
+          {{ payment.created_ts|date:"m/d/y" }}
+          {% if payment.created_by %}
+            by {{ payment.created_by }}
+          {% endif %}
+        </td>
+        <td style='border-bottom: none;'>{{ payment.note|default:'' }}</td>
+        <td style="text-align:right; border-bottom: none;">${{ payment.amount }}</td>
+        <td style='border-bottom: none;'>
+          <form action="." method="POST" onSubmit="return confirm('Are you sure you want to delete this payment of ${{ payment.amount }}?'); return false;">
+            <input type="hidden" name="delete_payment_id" value="{{ payment.id}}"/>
+            <input type="submit" class='btn' value="Delete Payment" >
+            {% csrf_token %}
+          </form>
         </td>
       </tr>
-    </form>
+    {% endfor %}
+
+    {% if not bill.is_paid %}
+      <form method='POST' action="{% url 'staff:billing:record_payment' %}">
+        {{ payment_form.bill_id }}
+        {{ payment_form.username }}
+        {% csrf_token %}
+        <tr class='payment-tr'>
+          <td>{{ payment_form.payment_date }}</td>
+          <td>{{ payment_form.note }}</td>
+          <td class='payment-amount'>{{ payment_form.amount }}</td>
+          <td>
+            <input type="submit" class='btn' value="Record Payment"/>
+          </td>
+        </tr>
+      </form>
+    {% endif %}
+  {% else %}
+    <p style='margin-left: 2%;'>
+      No payments to show and no payments may be applied to this bill as the total owed is $0.
+    </p>
   {% endif %}
 </table>
 
