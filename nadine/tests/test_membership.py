@@ -111,6 +111,24 @@ class MembershipTestCase(TestCase):
             monthly_rate = 1000.00,
         )
 
+        # PT5 Package
+        self.pt5Package = MembershipPackage.objects.create(name="PT5")
+        SubscriptionDefault.objects.create(
+            package = self.pt5Package,
+            resource = Resource.objects.day_resource,
+            monthly_rate = 100,
+            allowance = 5,
+            overage_rate = 20,
+        )
+        self.pt10Package = MembershipPackage.objects.create(name="PT10")
+        SubscriptionDefault.objects.create(
+            package = self.pt10Package,
+            resource = Resource.objects.day_resource,
+            monthly_rate = 180,
+            allowance = 10,
+            overage_rate = 20,
+        )
+
     ############################################################################
     # Helper Methods
     ############################################################################
@@ -543,6 +561,43 @@ class MembershipTestCase(TestCase):
         m = Membership.objects.get(id=o.id)
         self.assertFalse(m.is_individual)
         self.assertTrue(m.is_organization)
+
+    def test_bill_day_for_long_absent_member(self):
+        one_year_ago = today - relativedelta(years=1)
+        user = User.objects.create(username='longgone_user', first_name='Longgon', last_name='User')
+        membership = Membership.objects.for_user(user)
+        membership.bill_day = 12
+
+        # Set PT5 Package started a year ago and ended about a month ago
+        membership.set_to_package(self.pt5Package, start_date=one_year_ago, end_date=(one_month_ago - timedelta(days=1)))
+        self.assertTrue(membership.active_subscriptions(target_date=two_months_ago).count() == 1)
+        self.assertEqual(membership.package_name(target_date=two_months_ago), 'PT5')
+        self.assertTrue(membership.active_subscriptions().count() == 0)
+
+        # Set new membership package of PT5 starting today
+        membership.set_to_package(self.pt5Package, start_date=today)
+        self.assertTrue(membership.active_subscriptions().count() == 1)
+
+        # Since there had been no active_subscriptions, bill day should be today.day
+        self.assertEqual(membership.bill_day, today.day)
+
+    def test_bill_day_for_one_day_gap_in_active_subscriptions(self):
+        user = User.objects.create(username='returning_user', first_name='Returning', last_name='User')
+        membership = Membership.objects.for_user(user)
+        membership.bill_day = 12
+        self.assertEqual(12, membership.bill_day)
+
+        # Set membership_package of PT5 started a month ago and ended yesterday
+        membership.set_to_package(self.pt5Package, start_date=one_month_ago, end_date=yesterday)
+        self.assertTrue(membership.active_subscriptions().count() == 0)
+
+        # Start new package today
+        membership.set_to_package(self.pt10Package, start_date=today, end_date=None)
+        self.assertTrue(membership.subscriptions_for_day(target_date=today).count() == 1)
+        self.assertEqual('PT10', membership.package_name())
+
+        # Bill day should not have changed
+        self.assertEqual(12, membership.bill_day)
 
 
 @override_settings(SUSPEND_MEMBER_ALERTS=True)
