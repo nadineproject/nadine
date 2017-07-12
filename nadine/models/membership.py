@@ -506,6 +506,7 @@ class Membership(models.Model):
                             billed_day =open_bill.coworking_days().filter(id=c.id).delete()
                             c.save()
                         open_bill.recalculate()
+                        new_bill = self.user.bills.get_or_create_open_bill(user=self.user, period_start=next_start, period_end=(next_start+relativedelta(months=1) - timedelta(days=1)), check_open_bills=False)
                         future_bills.delete()
         except IntegrityError as e:
             print('There was an ERROR: %s' % e.message)
