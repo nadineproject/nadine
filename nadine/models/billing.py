@@ -238,7 +238,6 @@ class BillManager(models.Manager):
     def non_zero(self):
         return self.annotate(bill_amount=Sum('line_items__amount')).filter(bill_amount__gt=0)
 
-
 class UserBill(models.Model):
     objects = BillManager()
     created_ts = models.DateTimeField(auto_now_add=True)
@@ -474,6 +473,7 @@ class UserBill(models.Model):
         day.save()
 
         return line_item
+
 
     @property
     def coworking_day_count(self):

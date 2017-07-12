@@ -478,6 +478,7 @@ class Membership(models.Model):
         return None
 
     def change_bill_day(self, day=None, target_date=None):
+        from nadine.models.usage import CoworkingDay
         if not day:
             day = localtime(now()).day
 
@@ -488,12 +489,21 @@ class Membership(models.Model):
         try:
             with transaction.atomic():
                 self.bill_day = day
-                self.save
+                self.save()
                 next_start = self.next_period_start(target_date=target_date)
                 open_bills = self.user.bills.filter(due_date__gte=next_start)
                 open_bill = open_bills[0]
                 if open_bill.due_date > next_start:
-                    open_bill.delete()
+                    open_bill.due_date = next_start - timedelta(days=1)
+                    open_bill.period_end = next_start - timedelta(days=1)
+                    open_bill.save()
+                    cw_days = CoworkingDay.objects.filter(bill=open_bill.id).filter(visit_date__gte=next_start)
+                    cw_bill_days = open_bill.coworking_days()
+                    for c in cw_bill_days.all():
+                        c.bill = None
+                        billed_day =open_bill.coworking_days().filter(id=c.id).delete()
+                        c.save()
+                    open_bill.recalculate()
                     future_bills.delete()
         except IntegrityError as e:
             print('There was an ERROR: %s' % e.message)
