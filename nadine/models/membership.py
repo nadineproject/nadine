@@ -433,9 +433,10 @@ class Membership(models.Model):
                 # Make sure we are creating a valid date with these
                 month_start, month_end = calendar.monthrange(year, month)
                 if month_end < self.bill_day:
+                    bill_day = int(self.bill_day)
                     # We went too far, but now we know what to do
                     period_start = date(year, target_date.month, 1)
-                    period_end = date(year, target_date.month, int(self.bill_day) - 1)
+                    period_end = date(year, target_date.month, bill_day) - timedelta(days=1)
                     return (period_start, period_end)
 
             # print("year=%d, month=%s, day=%s" % (year, month, day))
@@ -492,19 +493,20 @@ class Membership(models.Model):
                 self.save()
                 next_start = self.next_period_start(target_date=target_date)
                 open_bills = self.user.bills.filter(due_date__gte=next_start)
-                open_bill = open_bills[0]
-                if open_bill.due_date > next_start:
-                    open_bill.due_date = next_start - timedelta(days=1)
-                    open_bill.period_end = next_start - timedelta(days=1)
-                    open_bill.save()
-                    cw_days = CoworkingDay.objects.filter(bill=open_bill.id).filter(visit_date__gte=next_start)
-                    cw_bill_days = open_bill.coworking_days()
-                    for c in cw_bill_days.all():
-                        c.bill = None
-                        billed_day =open_bill.coworking_days().filter(id=c.id).delete()
-                        c.save()
-                    open_bill.recalculate()
-                    future_bills.delete()
+                if open_bills:
+                    open_bill = open_bills[0]
+                    if open_bill.due_date > next_start:
+                        open_bill.due_date = next_start - timedelta(days=1)
+                        open_bill.period_end = next_start - timedelta(days=1)
+                        open_bill.save()
+                        cw_days = CoworkingDay.objects.filter(bill=open_bill.id).filter(visit_date__gte=next_start)
+                        cw_bill_days = open_bill.coworking_days()
+                        for c in cw_bill_days.all():
+                            c.bill = None
+                            billed_day =open_bill.coworking_days().filter(id=c.id).delete()
+                            c.save()
+                        open_bill.recalculate()
+                        future_bills.delete()
         except IntegrityError as e:
             print('There was an ERROR: %s' % e.message)
 
