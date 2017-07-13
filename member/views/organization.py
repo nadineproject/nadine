@@ -13,7 +13,7 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidde
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 
-from nadine.forms import OrganizationForm, OrganizationMemberForm, OrganizationSearchForm, LinkForm, BaseLinkFormSet
+from nadine.forms import OrganizationForm, OrganizationMemberForm, ProfileImageForm, OrganizationSearchForm, LinkForm, BaseLinkFormSet
 from nadine.models.organization import Organization, OrganizationMember
 
 from member.views.core import is_active_member
@@ -203,17 +203,24 @@ def org_edit_photo(request, org_id):
     org = get_object_or_404(Organization, id=org_id)
     if not (request.user.is_staff or org.can_edit(request.user)):
         return HttpResponseForbidden("Forbidden")
+
     if request.method == 'POST':
-        form = OrganizationForm(request.POST, request.FILES)
-        org.photo = request.FILES.get('photo', None)
-        org.save()
-
-        return HttpResponseRedirect(reverse('member:org:view', kwargs={'org_id': org.id}))
-
+        form = ProfileImageForm(request.POST, request.FILES)
+        try:
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect(reverse('member:org:view', kwargs={'org_id': org.id}))
+            else:
+                print form
+        except Exception as e:
+            messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
     else:
-        form = OrganizationForm(request.POST, request.FILES)
+        form = ProfileImageForm()
 
-    context = {'organization': org}
+    context = {
+        'organization': org,
+        'form': form,
+    }
     return render(request, 'member/organization/org_edit_photo.html', context)
 
 

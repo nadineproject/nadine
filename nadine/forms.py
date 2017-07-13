@@ -265,21 +265,33 @@ def get_state_choices():
 
 
 class ProfileImageForm(forms.Form):
-    username = forms.CharField(required=True, widget=forms.HiddenInput)
+    username = forms.CharField(required=False, widget=forms.HiddenInput)
+    organization = forms.IntegerField(required=False, widget=forms.HiddenInput)
     photo = forms.FileField(required=False)
     cropped_image_data = forms.CharField(widget=forms.HiddenInput())
 
     def save(self):
-        user = User.objects.get(username=self.cleaned_data['username'])
-        filename = "user_photos/%s.png" % self.cleaned_data['username']
         raw_img_data = self.cleaned_data['cropped_image_data']
         if not raw_img_data or len(raw_img_data) == 0:
             # Nothing to save here
             return
         img_data = base64.b64decode(raw_img_data)
-        if user.profile.photo:
-            user.profile.photo.delete()
-        user.profile.photo.save(filename, ContentFile(img_data))
+
+        if self.cleaned_data['username']:
+            user = User.objects.get(username=self.cleaned_data['username'])
+            filename = "user_photos/%s.png" % self.cleaned_data['username']
+
+            if user.profile.photo:
+                user.profile.photo.delete()
+            user.profile.photo.save(filename, ContentFile(img_data))
+        elif self.cleaned_data['organization']:
+            organization = Organization.objects.get(id=self.cleaned_data['organization'])
+            filename = "org_photos/%s.png" % self.cleaned_data['username']
+
+            if organization.photo:
+                organization.photo.delete()
+            organization.photo.save(filename, ContentFile(img_data))
+
 
 
 class BaseLinkFormSet(BaseFormSet):

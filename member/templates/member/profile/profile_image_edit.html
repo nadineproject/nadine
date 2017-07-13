@@ -20,7 +20,7 @@
      {% if user.profile.photo %}
        <img style='max-height: 350px;' class='user-img' id="image-preview" src="{{ user.profile.photo.url }}">
      {% else %}
-       <img style='max-height: 350px;' id="image-preview" src="{% static 'img/noun_160064_cc.png' %}">
+       <img style='max-height: 350px;' id="image-preview" src="{% static 'img/blank_person.png' %}">
      {% endif %}
    </div>
    <table>
