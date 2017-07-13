@@ -7,44 +7,14 @@
 <h4 id='membership-h4'>Edit Bill Day for <a href="{% url 'staff:members:detail' user.username %}">{{ user.get_full_name }}</a></h4>
 <h5>Change the regular billing day for {{ user.get_full_name }}</h5>
 
-{% if future_bills %}
-  <h6 style='display:inline;'>Future Bills*</h6> <span>-these will be deleted if you change the bill day</span>
-  <table>
-    <tr>
-      <th>ID</th>
-      <th>Due Date</th>
-      <th>User</th>
-      <th>Package</th>
-      <th>Monthly</th>
-      <th>Overage</th>
-      <th>Total</th>
-    </tr>
-    {% for bill in future_bills %}
-      <tr class="{% cycle 'row-odd' 'row-even' %}">
-        <td>
-          <a href="{{ bill.get_staff_url }}">{{ bill.id}}
-        </td>
-        <td>
-          {{ bill.due_date }}
-        </td>
-        <td>
-          {{ bill.package_name|default:'' }}
-        </td>
-        <td>
-          {{ bill.monthly_rate }}
-        </td>
-        <td>
-          {% if bill.overage_amount %}${{ bill.overage_amount }}{% endif %}
-        </td>
-        <td>
-          <td id='amount-td'><strong>${{ bill.amount }}</strong></td>
-        </td>
-      </tr>
-    {% endfor %}
-  </table>
-{% endif %}
+{% if open_bill %}
+  <p style='margin: 4%; font-size: 1.4em; color:RGBA(156, 88, 87, 1.00);'>
+    <strong>Since there is an open bill, you cannot change the bill day for this member. Please delete or close the open bill before changing the bill day.</strong>
+  </p>
+  <a href="{% url 'staff:billing:bill' open_bill.id %}" class='btn' style='margin-left: 35%;'>Go To Open Bill</a>
+{% else %}
 
-<form action='.' method='POST'>
+<form action='.' method='POST' onSubmit="return confirm('Are you sure you want to change this bill day?')">
   <table class='bill-day-table'>
     <tr>
       <td class='bill-day-th'>
@@ -66,19 +36,37 @@
   {% csrf_token %}
   <input class='btn' type='submit' style='display:inline-block; margin-right: 5%; margin-left:40%;' /><span class='cancel'>Cancel</span>
 </form>
-
+{% endif %}
 {% endblock %}
 
 {% block extrajs %}
 <script>
   $(document).ready(function() {
+    function daysInMonth(today) {
+      var month = today.getMonth() + 1;
+      var year = today.getFullYear();
+      return new Date(year, month, 0).getDate();
+    }
+
     $('.button-collapse').sideNav();
     $('.collapsible').collapsible();
 
+    function getMinDate() {
+      var period_end = '{{ period_end }}';
+      var today = new Date()
+      var this_date = today.getDate();
+      var day_difference = daysInMonth(today);
+      var num_days = period_end - this_date;
+
+      return (num_days);
+    }
+
+    var min_date = getMinDate()
+
     $('.datepicker').datepicker({
       dateFormat: 'yy-mm-dd',
-      minDate:0,
-      maxDate: 30
+      minDate: min_date + 1,
+      maxDate: (min_date * 2) + (30 - min_date) + 1
     });
 
     $('.cancel').on('click', function(e) {
