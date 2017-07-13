@@ -13,6 +13,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.utils.timezone import localtime, now
+from django.shortcuts import get_object_or_404
 
 from localflavor.us.us_states import US_STATES
 from localflavor.ca.ca_provinces import PROVINCE_CHOICES
@@ -278,14 +279,14 @@ class ProfileImageForm(forms.Form):
         img_data = base64.b64decode(raw_img_data)
 
         if self.cleaned_data['username']:
-            user = User.objects.get(username=self.cleaned_data['username'])
+            user = get_object_or_404(User, username=self.cleaned_data['username'])
             filename = "user_photos/%s.png" % self.cleaned_data['username']
 
             if user.profile.photo:
                 user.profile.photo.delete()
             user.profile.photo.save(filename, ContentFile(img_data))
         elif self.cleaned_data['organization']:
-            organization = Organization.objects.get(id=self.cleaned_data['organization'])
+            organization = get_object_or_404(Organization, id=self.cleaned_data['organization'])
             filename = "org_photos/%s.png" % self.cleaned_data['username']
 
             if organization.photo:
