@@ -280,14 +280,14 @@ class ProfileImageForm(forms.Form):
 
         if self.cleaned_data['username']:
             user = get_object_or_404(User, username=self.cleaned_data['username'])
-            filename = "user_photos/%s.png" % self.cleaned_data['username']
+            filename = "user_photos/%s.jpg" % self.cleaned_data['username']
 
             if user.profile.photo:
                 user.profile.photo.delete()
             user.profile.photo.save(filename, ContentFile(img_data))
         elif self.cleaned_data['organization']:
             organization = get_object_or_404(Organization, id=self.cleaned_data['organization'])
-            filename = "org_photos/%s.png" % self.cleaned_data['username']
+            filename = "org_photos/%s.jpg" % self.cleaned_data['username']
 
             if organization.photo:
                 organization.photo.delete()
