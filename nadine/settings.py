@@ -59,7 +59,7 @@ USE_I18N = True
 MEDIA_URL = '/media/'
 
 # 10 MB
-DATA_UPLOAD_MAX_MEMORY_SIZE = 11485760
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760
 
 # Arp Watch data directory (This must be in the MEDIA_ROOT)
 ARP_ROOT = 'arp_import/'
