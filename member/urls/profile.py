@@ -16,7 +16,6 @@ urlpatterns = [
     url(r'^(?P<username>[^/]+)/billing/$', profile.profile_billing, name='billing'),
     url(r'^(?P<username>[^/]+)/devices/$', profile.user_devices, name='devices'),
     url(r'^(?P<username>[^/]+)/edit/$', profile.edit_profile, name='edit'),
-    # url(r'^(?P<username>[^/]+)/edit_pic/$', profile.edit_pic, name='edit_pic'),
     url(r'^(?P<username>[^/]+)/edit_photo/$', profile.edit_photo, name='edit_photo'),
     url(r'^(?P<username>[^/]+)/disable_billing/$', profile.disable_billing, name='disable_billing'),
     url(r'^(?P<username>[^/]+)/file/(?P<disposition>[^/]+)/(?P<file_name>[^/]+)$', profile.file_view, name='file'),
