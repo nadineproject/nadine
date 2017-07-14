@@ -1,14 +1,36 @@
- {% load static %}
+  {% load static %}
 
- <h3 class='header-font' style='text-align: center;'>Edit Your Profile Image:</h3>
 
- <form id="profile_image_form" action="{% url 'member:profile:edit_photo' user.username %}" method="POST" enctype="multipart/form-data">
-   <input type='hidden' name='username' value='{{ user.username }}'  />
-   {{ form.cropped_image_data }}
+  <h3 class='header-font' style='text-align: center;'>
+    {% if organization %}
+      Edit Your Organization Logo:
+    {% else %}
+      Edit Your Profile Image:
+    {% endif %}
+  </h3>
+
+  <form id="profile_image_form"
+  {% if organization %}
+    action="{% url 'member:org:edit_photo' organization.id %}"
+  {% elif user %}
+    action="{% url 'member:profile:edit_photo' user.username %}"
+  {% endif %}
+    method="POST"
+    enctype="multipart/form-data">
+  {% if organization %}
+    <input type='hidden' name='organization' value='{{ organization.id }}' />
+  {% elif user %}
+    <input type='hidden' name='username' value='{{ user.username }}'  />
+  {% endif %}
+  {{ form.cropped_image_data }}
 
    <div id="form-errors">
     {{ form.photo.errors|safe }}
-    {{ form.username.errors }}
+    {% if organization %}
+      {{ form.organization.errors}}
+    {% elif user %}
+      {{ form.username.errors }}
+    {% endif %}
    </div>
 
    <div style='max-height: 800px;' id="img-cropper-wrapper">
@@ -17,8 +39,10 @@
    </div>
 
    <div style='max-height: 800px;' id="image-preview-wrapper">
-     {% if user.profile.photo %}
-       <img style='max-height: 350px;' class='user-img' id="image-preview" src="{{ user.profile.photo.url }}">
+     {% if organization.photo %}
+      <img style='max-height: 350px;' class='user-img' id='image-preview' src="{{ organization.photo.url }}" />
+     {% elif user.profile.photo %}
+      <img style='max-height: 350px;' class='user-img' id="image-preview" src="{{ user.profile.photo.url }}">
      {% else %}
        <img style='max-height: 350px;' id="image-preview" src="{% static 'img/blank_person.png' %}">
      {% endif %}
@@ -35,10 +59,10 @@
      </tr>
    </table>
    {% csrf_token %}
- </form>
+  </form>
 
- <script>
- (function() {
+  <script>
+  (function() {
    function showCropper() {
      $("#image-preview").cropper({
        aspectRatio: 1/1,
@@ -98,5 +122,5 @@
      $('#picModal').css('display', 'none');
    });
 
- })();
- </script>
+  })();
+  </script>
