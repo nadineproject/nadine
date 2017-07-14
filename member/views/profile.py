@@ -112,7 +112,7 @@ def profile_activity(request, username):
     membership = Membership.objects.for_user(user)
     period_start, period_end = membership.get_period()
     days_this_period = membership.coworking_days_in_period()
-    allowance = membership.allowance_by_resource(Resource.objects.day_resource)
+    days, allowance, billable = user.profile.days_used()
     show_user = False
     show_paid = False
     for d in days_this_period:
@@ -127,7 +127,9 @@ def profile_activity(request, username):
         'show_user': show_user,
         'show_paid': show_paid,
         'days_this_period': days_this_period,
-        'allowance': allowance
+        'allowance': allowance,
+        'billable': billable,
+
     }
     return render(request, 'member/profile/profile_activity.html', context)
 

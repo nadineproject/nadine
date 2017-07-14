@@ -32,7 +32,7 @@
 		<h3>Billing Day: <span style="font-weight:normal;">{{ user.membership.bill_day_str }}</span></h3>
 
 			<h3>Visits This Period:
-				<span style="font-weight:normal;">{{ days_this_period }}
+				<span style="font-weight:normal;">{{ billable }}
 					{% if day_allowance %}
 						of {{ day_allowance }}
 					{% endif %}

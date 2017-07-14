@@ -98,7 +98,7 @@ def user_profile(request, username):
     previous_hosts = User.helper.active_members().filter(id__in=guest_days)
 
     # Pull up how many days were used this period
-    days, allowed = user.profile.days_used()
+    days, allowed, billable = user.profile.days_used()
 
     # Pull our open alerts
     alert_list = [MemberAlert.MEMBER_AGREEMENT, MemberAlert.TAKE_PHOTO, MemberAlert.ORIENTATION, MemberAlert.KEY_AGREEMENT, MemberAlert.ASSIGN_CABINET, MemberAlert.ASSIGN_MAILBOX, MemberAlert.RETURN_DOOR_KEY, MemberAlert.RETURN_DESK_KEY]
@@ -109,6 +109,7 @@ def user_profile(request, username):
         'can_signin': can_signin,
         'days_this_period': days,
         'day_allowance': allowed,
+        'billable': billable,
         'previous_hosts' :previous_hosts,
         'open_alerts': open_alerts,
         'member_search_form': member_search_form,
@@ -166,7 +167,7 @@ def signin_user_guest(request, username, paid_by):
 def welcome(request, username):
     usage_color = "black"
     user = get_object_or_404(User, username=username)
-    days, allowed = user.profile.days_used()
+    days, allowed, billable = user.profile.days_used()
     if days > allowed:
         usage_color = "red"
     elif days == allowed:
@@ -179,6 +180,7 @@ def welcome(request, username):
         'user': user,
         'days_this_period': days,
         'day_allowance': allowed,
+        'billable': billable,
         'usage_color': usage_color,
         'bill_day_str':bill_day_str,
         'motd': motd,

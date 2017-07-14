@@ -370,9 +370,10 @@ class UserProfile(models.Model):
 
     def days_used(self, target_date=None):
         membership = Membership.objects.for_user(self.user, target_date)
-        days = membership.coworking_days_in_period(target_date).count()
+        days = membership.coworking_days_in_period(target_date)
+        billable = days.filter(payment="Bill")
         allowed = membership.coworking_day_allowance(target_date)
-        return (days, allowed)
+        return (days.count(), allowed, billable.count())
 
     def all_emails(self):
         # Done in two queries so that the primary email address is always on top.
