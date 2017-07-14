@@ -75,22 +75,6 @@ def search(request):
 
 def user_profile(request, username):
     user = get_object_or_404(User, username=username)
-    tags = user.profile.tags.order_by('name')
-    period_start, period_end = user.membership.get_period()
-    days, allowed = user.profile.days_used()
-    context = {
-        'user': user,
-        'days_this_period': days,
-        'day_allowance': allowed,
-        'period_start': period_start,
-        'period_end': period_end,
-        'tags': tags
-    }
-    return render(request, 'tablet/user_profile.html', context)
-
-
-def user_signin(request, username):
-    user = get_object_or_404(User, username=username)
 
     can_signin = True
     if user.membership.has_desk():
@@ -130,7 +114,7 @@ def user_signin(request, username):
         'member_search_form': member_search_form,
         'search_results': search_results,
     }
-    return render(request, 'tablet/user_signin.html', context)
+    return render(request, 'tablet/user_profile.html', context)
 
 
 def post_create(request, username):

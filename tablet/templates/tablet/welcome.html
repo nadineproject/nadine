@@ -14,18 +14,6 @@
 		<div style="padding-top:1em; font-weight:normal;">Your billing day is the {{ bill_day_str }}.</div>
 	</div>
 
-	<div style="font-size:150%;">
-		{% autoescape off %}
-			{% if motd %}
-			<div style='text-align:center;'>
-				<p><strong>Message of the Day</strong></p>
-				{{ motd.message }}
-			</div>
-			{% endif %}
-		{% endautoescape %}
-	</div>
-
-
 	<div style="width:100%; position:absolute; bottom:60px; text-align:center;">
 		<div id="page-coutdown" style="margin:0 auto; position:relative;">
 			<img src="{{ STATIC_URL }}images/b_dot_full.png" style="padding: 0 25px;"/>
