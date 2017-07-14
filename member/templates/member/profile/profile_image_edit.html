@@ -112,11 +112,12 @@
     });
 
    $("#profile_image_form").submit(function(){
-     var img = $("#image-preview").cropper('getCroppedCanvas').toDataURL().match(/data:image\/(png|jpeg);base64,(.*)$/)[2]
+     var img = $("#image-preview").cropper('getCroppedCanvas').toDataURL('image/jpeg').match(/data:image\/(png|jpeg);base64,(.*)$/)[2]
      // add the cropped image data to the form, then submit.
      $("#id_cropped_image_data").val(img);
 
    });
+
 
    $('.modal-btn').on('click', function() {
      $('#picModal').css('display', 'none');
