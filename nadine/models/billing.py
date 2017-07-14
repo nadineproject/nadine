@@ -5,7 +5,7 @@ from datetime import timedelta, date
 from dateutil.relativedelta import relativedelta
 
 from django.db import models
-from django.db.models import F, Q, Count, Sum, Value
+from django.db.models import F, Q, Count, Sum, Value, ExpressionWrapper
 from django.db.models.functions import Coalesce
 from django.db.models.fields import DecimalField, FloatField, IntegerField
 from django.utils.timezone import localtime, now
@@ -225,12 +225,15 @@ class BillManager(models.Manager):
         # and a partial payment not showing up in this set as it should.
         # https://code.djangoproject.com/ticket/10060
         # https://github.com/nadineproject/nadine/issues/300
+        # adjustment_expression = ExpressionWrapper(F('payment_amount') * F('payment_count_distinct'), output_field=FloatField()) / F('payment_count')
+        adjustment_expression = (F('payment_amount') * F('payment_count_distinct')) / F('payment_count')
         query = self.filter(mark_paid=False) \
             .annotate(bill_amount=Sum('line_items__amount', output_field=FloatField())) \
-            .annotate(line_count=Count('line_items', distinct=True)) \
             .annotate(payment_amount=Sum('payment__amount', output_field=FloatField())) \
-            .annotate(payment_count=Count('payment', distinct=True)) \
-            .annotate(owed=F('bill_amount') - F('payment_amount'))
+            .annotate(payment_count=Count('payment')) \
+            .annotate(payment_count_distinct=Count('payment', distinct=True)) \
+            .annotate(adjusted_amount=ExpressionWrapper(adjustment_expression, output_field=FloatField())) \
+            .annotate(owed=F('bill_amount') - F('adjusted_amount'))
         no_payments = Q(payment_count = 0)
         partial_payment = Q(owed__gt = 0)
         return query.filter(bill_amount__gt=0).filter(no_payments | partial_payment)
