@@ -282,32 +282,6 @@ def file_view(request, disposition, username, file_name):
     response['Content-Disposition'] = '%s; filename="%s"' % (disposition, file_upload.name)
     return response
 
-
-@login_required
-@user_passes_test(is_active_member, login_url='member_not_active')
-def edit_pic(request, username):
-    user = get_object_or_404(User, username=username)
-    if not user == request.user and not request.user.is_staff:
-        return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': request.user.username}))
-    if request.method == 'POST':
-        profile_form = EditProfileForm(request.POST, request.FILES)
-        profile = get_object_or_404(UserProfile, user=user)
-        profile.photo = request.FILES.get('photo', None)
-
-        profile.save()
-
-        return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': user.username}))
-    else:
-        profile_form = EditProfileForm()
-
-    ALLOW_PHOTO_UPLOAD = settings.ALLOW_PHOTO_UPLOAD
-    if request.user.is_staff:
-        ALLOW_PHOTO_UPLOAD = True
-
-    context = {'ALLOW_PHOTO_UPLOAD': ALLOW_PHOTO_UPLOAD, 'user': user}
-    return render(request, 'member/profile/edit_pic.html', context)
-
-
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')
 def edit_photo(request, username):

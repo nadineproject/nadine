@@ -13,7 +13,7 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidde
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 
-from nadine.forms import OrganizationForm, OrganizationMemberForm, OrganizationSearchForm, LinkForm, BaseLinkFormSet
+from nadine.forms import OrganizationForm, OrganizationMemberForm, ProfileImageForm, OrganizationSearchForm, LinkForm, BaseLinkFormSet
 from nadine.models.organization import Organization, OrganizationMember
 
 from member.views.core import is_active_member
@@ -203,18 +203,25 @@ def org_edit_photo(request, org_id):
     org = get_object_or_404(Organization, id=org_id)
     if not (request.user.is_staff or org.can_edit(request.user)):
         return HttpResponseForbidden("Forbidden")
+
     if request.method == 'POST':
-        form = OrganizationForm(request.POST, request.FILES)
-        org.photo = request.FILES.get('photo', None)
-        org.save()
-
-        return HttpResponseRedirect(reverse('member:org:view', kwargs={'org_id': org.id}))
-
+        form = ProfileImageForm(request.POST, request.FILES)
+        try:
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect(reverse('member:org:view', kwargs={'org_id': org.id}))
+            else:
+                print form
+        except Exception as e:
+            messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
     else:
-        form = OrganizationForm(request.POST, request.FILES)
+        form = ProfileImageForm()
 
-    context = {'organization': org}
-    return render(request, 'member/organization/org_edit_photo.html', context)
+    context = {
+        'organization': org,
+        'form': form,
+    }
+    return render(request, 'member/profile/profile_image_edit.html', context)
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

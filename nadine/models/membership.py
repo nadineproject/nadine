@@ -483,25 +483,14 @@ class Membership(models.Model):
         if not day:
             day = localtime(now()).day
 
-        if not target_date:
-            target_date = localtime(now())
-
-        future_bills = self.user.bills.filter(period_start__gte=target_date)
         try:
             with transaction.atomic():
                 self.bill_day = day
-                self.save
-                next_start = self.next_period_start(target_date=target_date)
-                open_bills = self.user.bills.filter(due_date__gte=next_start)
-                open_bill = open_bills[0]
-                if open_bill.due_date > next_start:
-                    open_bill.delete()
-                    future_bills.delete()
+                self.save()
         except IntegrityError as e:
             print('There was an ERROR: %s' % e.message)
 
         return self.bill_day
-
 
 class IndividualMembership(Membership):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="membership", on_delete=models.CASCADE)

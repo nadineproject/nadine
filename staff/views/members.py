@@ -536,9 +536,15 @@ def confirm_membership(request, username, package, end_target, start_target, new
 @staff_member_required
 def edit_bill_day(request, username):
     user = get_object_or_404(User, username=username)
-    today = localtime(now()).date()
-    future_bills = UserBill.objects.outstanding().filter(user=user).filter(due_date__gte=today)
     membership = Membership.objects.for_user(user)
+    today = localtime(now()).date()
+    ps, pe = membership.get_period(target_date=today)
+    last_bill_end = None
+    if UserBill.objects.filter(user=user):
+        last_bill_end = UserBill.objects.filter(user=user).filter(closed_ts__isnull=False).order_by('-due_date')[:1]
+        end_date = last_bill_end[0].due_date.day
+
+    open_bill = user.bills.get_open_bill(user=user, period_start=ps, period_end=pe)
     if request.method == 'POST':
         day = request.POST.get('bill-date')[-2:]
         membership.change_bill_day(day)
@@ -546,7 +552,8 @@ def edit_bill_day(request, username):
         return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}) + '#tabs-1')
     context = {
         'user': user,
-        'future_bills': future_bills,
+        'open_bill': open_bill,
+        'period_end': end_date,
     }
     return render(request, 'staff/members/edit_bill_day.html', context)
 

@@ -1,66 +1,100 @@
 {% load static %}
 
-<form enctype="multipart/form-data" action="{% url 'member:org:edit_photo' organization.id %}" method="POST">
+<h3 class='header-font' style='text-align: center;'>Edit Your Organization Logo:</h3>
+
+<form id='org_logo_form' enctype="multipart/form-data" action="{% url 'member:org:edit_photo' organization.id %}" method="POST">
+  {{ form.cropped_image_data }}
+  <input type='hidden' name='organization' value='{{ organization.id }}' />
+  <div id='form-errors'>
+    {{ form.photo.errors|safe }}
+  </div>
+
+  <div style='max-height: 600px;' id="img-cropper-wrapper">
+    {{ form.photo }}
+    <button class='btn rotate-btn'><img src="{% static 'img/rotate.png' %}" /></button>
+  </div>
+
+  <div style='max-height: 800px;' id="image-preview-wrapper">
+    {% if organization.photo %}
+      <img style='max-height: 350px;' class='user-img' id='image-preview' src="{{ organization.photo.url }}" />
+    {% else %}
+      <img style='max-height: 200px;' id="image-preview" src="{% static 'img/blank_person.png' %}">
+    {% endif %}
+  </div>
+
   <table>
-    <tr>
-      <td class='upload-input'>
-        <input class='pic-upload' type='file' name='photo' style='background-color:RGBA(255, 255, 255, 0);' id="imgInp" />
-      </td>
-      <td id='org-preview'>
-        {% if organization.photo %}
-        <div class='org-img'>
-          <img class='img-id' src="{{ organization.photo.url }}" />
-        </div>
-        {% else %}
-          <img class='img-id' src="{% static 'img/blank_person.png' %}" alt=" "/>
-        {% endif %}
-      </td>
-    </tr>
     <tr class='btn-row'>
-      <td><button type='submit' class='btn pic-btn'>Update</button></td>
+      <td><button type='submit' class='btn pic-btn'>Save</button></td>
       <td>
+
+      </td>
+      <td style='padding-top:3%;'>
         <a class='modal-btn' id='cancel-event'>Cancel</a>
       </td>
     </tr>
-    {% csrf_token %}
   </table>
+  {% csrf_token %}
 </form>
 
 <script>
-  $(document).ready(function() {
-    $('.modal-btn').on('click', function() {
-      $('#picModal').css('display', 'none');
-    });
-
-    function get_orientation(img) {
-      if (img.width() < img.height()) {
-        $('.img-id').addClass('portrait');
-      } else {
-        if ($('.img-id').hasClass('portrait')) {
-          $('.img-id').removeClass('portrait');
-        }
-      }
+  (function() {
+    function showCropper() {
+      $("#image-preview").cropper({
+        // aspectRatio: 1/1,
+        zoomable: true,
+        rotatable: true,
+        scalable: false,
+        guides: false,
+        dragCrop: false,
+      });
     }
-    get_orientation($('.img-id'));
 
-    $('.pic-btn').attr('disabled', 'disabled');
-
-    function readURL(input) {
+    function showImage(input) {
       if (input.files && input.files[0]) {
         var reader = new FileReader();
 
-        reader.onload = function(e) {
-          $('.img-id').attr('src', e.target.result);
-          get_orientation($('.img-id'));
+        reader.onload = function (e) {
+          $('#image-preview').fadeOut(300, function() {
+            $(this).attr('src',e.target.result);
+          }).fadeIn(400, showCropper);
         }
         reader.readAsDataURL(input.files[0]);
       }
     }
 
-    $("#imgInp").change(function(){
+    $('.pic-btn').attr('disabled', 'disabled');
+
+    $("#id_photo").change(function() {
       $('.pic-btn').attr('disabled', false);
-      var input = this;
-      readURL(input);
+      $("#image-preview").cropper('destroy');
+      if ($("#id_photo").val()) {
+        showImage(this);
+      }
     });
-  });
+
+    $('.rotate-btn').click(function(e){
+      e.preventDefault();
+      $('#image-preview').cropper({
+        aspectRatio: 1/1,
+        zoomable: false,
+        rotatable: true,
+        scalable: false,
+        guides: false,
+        dragCrop: false,
+      })
+      $('#image-preview').cropper('rotate', 90);
+      $('.pic-btn').attr('disabled', false);
+     });
+
+    $("#org_logo_form").submit(function(){
+      var img = $("#image-preview").cropper('getCroppedCanvas').toDataURL().match(/data:image\/(png|jpeg);base64,(.*)$/)[2]
+      // add the cropped image data to the form, then submit.
+      $("#id_cropped_image_data").val(img);
+      return true;
+    });
+
+    $('.modal-btn').on('click', function() {
+      $('#picModal').css('display', 'none');
+    });
+  })();
 </script>
