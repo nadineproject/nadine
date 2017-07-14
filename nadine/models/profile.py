@@ -898,7 +898,6 @@ def size_images(sender, instance, **kwargs):
         image = Image.open(instance.photo)
         old_x, old_y = image.size
         if old_x > UserProfile.MAX_PHOTO_SIZE or old_y > UserProfile.MAX_PHOTO_SIZE:
-            print("Resizing photo for %s" % instance.user.username)
             if old_y > old_x:
                 new_y = UserProfile.MAX_PHOTO_SIZE
                 new_x = int((float(new_y) / old_y) * old_x)
