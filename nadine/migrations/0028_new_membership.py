@@ -27,16 +27,16 @@ def forward(apps, schema_editor):
     SubscriptionDefault = apps.get_model("nadine", "SubscriptionDefault")
     ResourceSubscription = apps.get_model("nadine", "ResourceSubscription")
     Resource = apps.get_model("nadine", "Resource")
-    print
+    # print
 
-    print("    Creating Resources...")
+    # print("    Creating Resources...")
     DAY = Resource.objects.create(name="Coworking Day", key="day", default_rate=30)
     ROOM = Resource.objects.create(name="Room Booking", key="room", default_rate=10)
     DESK = Resource.objects.create(name="Dedicated Desk", key="desk")
     MAIL = Resource.objects.create(name="Mail Service", key="mail")
     KEY = Resource.objects.create(name="Key", key="key")
 
-    print("    Migrating Membership Plans to Packages...")
+    # print("    Migrating Membership Plans to Packages...")
     PACKAGE_MAP = {}
     for plan in MembershipPlan.objects.all():
         package = MembershipPackage.objects.create(name=plan.name, enabled=plan.enabled)
@@ -76,7 +76,7 @@ def forward(apps, schema_editor):
         # Build up a map to find this new package from the old plan
         PACKAGE_MAP[plan] = package
 
-    print("    Migrating Memberships...")
+    # print("    Migrating Memberships...")
     for user in User.objects.all().order_by('id'):
         new_membership = IndividualMembership.objects.create(user = user)
         old_memberships = OldMembership.objects.filter(user=user).order_by('start_date')
