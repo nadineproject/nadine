@@ -18,6 +18,6 @@
   {% endfor %}
 </table>
 <div class='booking-total'>
-  <strong><span class='header-font'>Total event and room bookings for current bill period:</span> {{ total }} hours</strong>
+  <strong>Total event and room bookings for current bill period: {{ total }} hours</strong>
 </div>
 <a class='btn booking-redirect' href='{% url "member:event:create_booking" %}'>Make a New Room Booking</a>
