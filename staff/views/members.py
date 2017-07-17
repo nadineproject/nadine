@@ -412,7 +412,6 @@ def confirm_membership(request, username, package, end_target, start_target, new
     pkg = ast.literal_eval(package)
     match = None
     old_pkg = None
-    print user.membership.package_name() == None
 
     if user.membership.package_name():
         old_pkg = MembershipPackage.objects.get(name=user.membership.package_name())
@@ -452,10 +451,10 @@ def confirm_membership(request, username, package, end_target, start_target, new
                                 s.end_date = end_target
                                 s.save()
                         """When a membership is created, add the user to any opt-out mailing lists"""
-                        if user.membership.package_name() == None:
-                            mailing_lists = MailingList.objects.filter(is_opt_out=True)
-                            for ml in mailing_lists:
-                                ml.subscriber(membership.user)
+                        # if user.membership.package_name() == None:
+                        #     mailing_lists = MailingList.objects.filter(is_opt_out=True)
+                        #     for ml in mailing_lists:
+                        #         ml.subscribe(membership.user)
                     # Review all subscriptions to see if adding or ending
                     for sub in subs:
                         sub_id = sub['s_id']

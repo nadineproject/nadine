@@ -43,7 +43,7 @@ def members(request):
 
 
 def here_today(request):
-    users_today = User.helper.here_today()
+    users_today = User.helper.here_today().order_by('first_name')
     return render(request, 'tablet/here_today.html', {'users_today': users_today})
 
 
