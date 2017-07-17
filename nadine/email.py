@@ -12,6 +12,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
 
+from nadine.models.membership import Membership
 from nadine.utils import mailgun
 from nadine.utils.slack_api import SlackAPI
 
@@ -112,8 +113,9 @@ def subscribe_to_newsletter(user):
 
 def send_new_membership(user):
     site = Site.objects.get_current()
-    subject = "New %s Membership" % user.membership.package.name
-    message = render_to_string('email/new_membership.txt', context={'user': user, 'membership': user.membership, 'site': site})
+    membership = Membership.objects.for_user(user)
+    subject = "New %s Membership" % membership.package_name()
+    message = render_to_string('email/new_membership.txt', context={'user': user, 'membership': membership, 'site': site})
     send(user.email, subject, message)
     announce_new_membership(user)
 
@@ -217,14 +219,17 @@ def announce_free_trial(user):
 
 
 def announce_new_membership(user):
-    subject = "New %s: %s" % (user.membership.package.name, user.get_full_name())
-    message = "Team,\r\n\r\n \t%s has a new %s membership! %s" % (user.get_full_name(), user.membership.package.name, team_signature(user))
+    membership = Membership.objects.for_user(user)
+    package_name = membership.package_name()
+    subject = "New %s: %s" % (package_name, user.get_full_name())
+    message = "Team,\r\n\r\n \t%s has a new %s membership! %s" % (user.get_full_name(), package_name, team_signature(user))
     send_quietly(settings.TEAM_EMAIL_ADDRESS, subject, message)
 
 
 def announce_member_checkin(user):
+    membership = Membership.objects.for_user(user)
     subject = "Member Check-in - %s" % (user.get_full_name())
-    message = "Team,\r\n\r\n \t%s has been a %s member for almost a month!  Someone go see how they are doing. %s" % (user.get_full_name(), user.membership.package.name, team_signature(user))
+    message = "Team,\r\n\r\n \t%s has been a %s member for almost a month!  Someone go see how they are doing. %s" % (user.get_full_name(), membership.package_name(), team_signature(user))
     send_quietly(settings.TEAM_EMAIL_ADDRESS, subject, message)
 
 
