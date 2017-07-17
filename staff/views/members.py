@@ -451,6 +451,7 @@ def confirm_membership(request, username, package, end_target, start_target, new
                                 s.end_date = end_target
                                 s.save()
                         """When a membership is created, add the user to any opt-out mailing lists"""
+                        # TODO Looks like this is being implemented in alerts. Erase?
                         # if user.membership.package_name() == None:
                         #     mailing_lists = MailingList.objects.filter(is_opt_out=True)
                         #     for ml in mailing_lists:
