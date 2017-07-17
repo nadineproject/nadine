@@ -326,7 +326,7 @@ def graph_income(days):
         membership_income = 0
         for membership in Membership.objects.active_memberships(day['date']):
             membership_count = membership_count + 1
-            membership_income = membership_income + membership.monthly_rate
+            membership_income = membership_income + membership.monthly_rate()
         income_total = income_total + membership_income
         if membership_income > income_max:
             income_max = membership_income

@@ -7,24 +7,12 @@
 	<div style="font-weight:bold; padding:1em; font-size:200%">
 		As of today, you have used
 		<span style="color: {{ usage_color }}">
-			{{ days_this_period }} {% if day_allowance %} of {{ day_allowance }} {% endif %}
+			{{ billable }} {% if day_allowance %} of {{ day_allowance }} {% endif %}
 		</span>
 		days.
 
 		<div style="padding-top:1em; font-weight:normal;">Your billing day is the {{ bill_day_str }}.</div>
 	</div>
-
-	<div style="font-size:150%;">
-		{% autoescape off %}
-			{% if motd %}
-			<div style='text-align:center;'>
-				<p><strong>Message of the Day</strong></p>
-				{{ motd.message }}
-			</div>
-			{% endif %}
-		{% endautoescape %}
-	</div>
-
 
 	<div style="width:100%; position:absolute; bottom:60px; text-align:center;">
 		<div id="page-coutdown" style="margin:0 auto; position:relative;">

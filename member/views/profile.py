@@ -109,9 +109,10 @@ def profile_events(request, username):
 @login_required
 def profile_activity(request, username):
     user = get_object_or_404(User.objects.select_related('profile'), username=username)
-    period_start, period_end = user.membership.get_period()
-    days_this_period = user.membership.resource_activity(Resource.objects.day_resource)
-    allowance = user.membership.allowance_by_resource(Resource.objects.day_resource)
+    membership = Membership.objects.for_user(user)
+    period_start, period_end = membership.get_period()
+    days_this_period = membership.coworking_days_in_period()
+    days, allowance, billable = user.profile.days_used()
     show_user = False
     show_paid = False
     for d in days_this_period:
@@ -126,7 +127,9 @@ def profile_activity(request, username):
         'show_user': show_user,
         'show_paid': show_paid,
         'days_this_period': days_this_period,
-        'allowance': allowance
+        'allowance': allowance,
+        'billable': billable,
+
     }
     return render(request, 'member/profile/profile_activity.html', context)
 

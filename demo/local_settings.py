@@ -16,7 +16,7 @@ SERVER_EMAIL = 'nadine@officenomads.com'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'nadinedb',
         'USER': 'postgres',
         #'PASSWORD': 'password',

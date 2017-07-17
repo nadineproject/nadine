@@ -206,7 +206,7 @@ class LocalSettings():
     def set_database(self, db_name=None, db_user=None, db_pass=None):
         self.settings.append("DATABASES = {\n")
         self.settings.append("    'default': {\n")
-        self.settings.append("        'ENGINE': 'django.db.backends.postgresql_psycopg2',\n")
+        self.settings.append("        'ENGINE': 'django.db.backends.postgresql',\n")
         if db_name:
             self.settings.append("         'NAME': '%s',\n" % db_name)
         if db_user:

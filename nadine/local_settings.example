@@ -15,7 +15,7 @@ ADMINS = (
 # Example Database Setup
 #DATABASES = {
 #    'default': {
-#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#        'ENGINE': 'django.db.backends.postgresql',
 #        'NAME': 'nadinedb',
 #        'USER': 'postgres',
 #        'PASSWORD': 'password'

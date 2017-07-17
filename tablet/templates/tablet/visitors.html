@@ -38,7 +38,7 @@
 		<div id="member-list">
 			<ul data-role="listview" data-inset="true" data-filter="false">
 				{% for u in search_results %}
-					<li><a href="{% url 'tablet:user_signin' u.username %}" data-transition="fade">{{ u.get_full_name }}</a></li>
+					<li><a href="{% url 'tablet:user_profile' u.username %}" data-transition="fade">{{ u.get_full_name }}</a></li>
 				{% endfor %}
 			</ul>
 		</div>
