@@ -90,6 +90,10 @@ def profile_events(request, username):
     today = localtime(now()).date()
     upcoming_events = Event.objects.filter(user=user).filter(start_ts__gte=today)
     upcoming = []
+    hours_subscriptions = 0
+    if ResourceSubscription.objects.filter(membership=user.membership, resource=Resource.objects.room_resource):
+        hours_subscriptions = ResourceSubscription.objects.get(membership=user.membership, resource=Resource.objects.room_resource).allowance
+
     for e in upcoming_events:
         total = ((e.end_ts - e.start_ts).total_seconds())/3600
         upcoming.append({'name': e.description, 'start_ts': e.start_ts, 'end_ts': e.end_ts, 'room': e.room, 'total': total})
@@ -102,6 +106,7 @@ def profile_events(request, username):
     context = {'user': user,
                'upcoming': upcoming,
                'total': total,
+               'hours_subscriptions': hours_subscriptions,
                 }
     return render(request, 'member/profile/profile_events.html', context)
 

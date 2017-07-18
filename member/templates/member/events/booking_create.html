@@ -158,10 +158,10 @@
               <button class='btn col s1 m1 l1 room-close'>X</p>
             </div>
             <ul>
-              <li>Seats: {{ room.seats }}</li>
-              <li>Max Capacity: {{ room.max_capacity }}</li>
-              <li>Has A/V?: {{ room.has_av }}</li>
-              <li>Has Phone: {{ room.has_phone }}</li>
+              <li><strong>Seats:</strong> {{ room.seats }}</li>
+              <li><strong>Max Capacity:</strong> {{ room.max_capacity }}</li>
+              <li><strong>Has A/V?:</strong> {{ room.has_av|yesno:"Yes, No" }}</li>
+              <li><strong>Has Phone:</strong> {{ room.has_phone|yesno:"Yes, No" }}</li>
             </ul>
             <p><strong>Description:</strong> {{ room.description }}</p>
           </div>

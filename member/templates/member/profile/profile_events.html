@@ -9,7 +9,7 @@
   </tr>
   {% for e in upcoming %}
     <tr>
-      <td>{{ e.name|title }}</td>
+      <td>{% if e.name %}{{ e.name|title }}{% else %} <i>Private Event</i> {% endif %}</td>
       <td>{{ e.start_ts }}</td>
       <td>{{ e.end_ts }}</td>
       <td>{{ e.room }}</td>
@@ -20,4 +20,14 @@
 <div class='booking-total'>
   <strong>Total event and room bookings for current bill period: {{ total }} hours</strong>
 </div>
+<div class='booking-total'>
+  <strong>Subscription Hours Remaining: <span class='remainder'></span></strong>
+</div>
 <a class='btn booking-redirect' href='{% url "member:event:create_booking" %}'>Make a New Room Booking</a>
+
+<script>
+  $(document).ready(function() {
+    var remainder = '{{ hours_subscriptions }}' - '{{ total }}';
+    $('.remainder').text(remainder);
+  })
+</script>
