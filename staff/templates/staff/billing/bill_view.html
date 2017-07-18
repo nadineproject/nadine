@@ -135,6 +135,21 @@
   </table>
 {% endif %}
 
+{% if resources.rooms %}
+<table class='bill-id-table'>
+  <tr>
+    <th nowrap>Room Booking Hours Used:</th>
+    <td class='bill_resource_td'>{{ resources.rooms.count }}</td>
+    <th>Allowance:</th>
+    <td>{{ resources.rooms.allowance }}</td>
+    {% if resources.rooms.overage %}
+      <th>Overage</th>
+      <td>{{ resources.rooms.overage }}</td>
+    {% endif %}
+  </tr>
+</table>
+{% endif %}
+
 <h5>Line Items</h5>
 <table class='item-table'>
   <tr class="row-even">

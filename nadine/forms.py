@@ -656,6 +656,40 @@ class MOTDForm(forms.Form):
 
         return motd
 
+class RoomForm(forms.Form):
+    name = forms.CharField(required=True, max_length=64)
+    location = forms.CharField(max_length=128, required=False)
+    description = forms.CharField(required=False)
+    floor = forms.IntegerField(min_value=1, max_value=100, required=True)
+    seats = forms.IntegerField(min_value=1, max_value=1000, required=True)
+    max_capacity = forms.IntegerField(min_value=1, max_value=1000, required=True)
+    has_av = forms.BooleanField(required=True)
+    has_phone = forms.BooleanField(required=True)
+    default_rate = forms.FloatField(required=True, min_value=0, max_value=None)
+    image = forms.FileField(required=False)
+
+    def save(self):
+        if not self.is_valid():
+            raise Exception('The form must be valid in order to save')
+        name = self.cleaned_data['name']
+        location = self.cleaned_data['location']
+        description = self.cleaned_data['description']
+        floor = self.cleaned_data['floor']
+        seats = self.cleaned_data['seats']
+        max_capacity = self.cleaned_data['max_capacity']
+        has_av = self.cleaned_data['has_av']
+        has_phone = self.cleaned_data['has_phone']
+
+        room = Room(name=name, location=location, description=desciption, floor=floor, seats=seats, max_capacity=max_capacity, has_av=has_av, has_phone=has_phone)
+        room.save()
+
+        if self.cleaned_data['image']:
+            image = self.cleaned_data['image']
+            room.image = image
+            room.save()
+
+        return room
+
 
 # TODO - Not quite ready yet --JLS
 # class DocUploadForm(forms.Form):
