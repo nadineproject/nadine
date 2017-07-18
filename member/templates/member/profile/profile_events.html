@@ -18,16 +18,16 @@
   {% endfor %}
 </table>
 <div class='booking-total'>
-  <strong>Total event and room bookings for current bill period: {{ total }} hours</strong>
+  <strong>Total Hours Used this Period: {{ total }} hours</strong>
 </div>
 <div class='booking-total'>
-  <strong>Subscription Hours Remaining: <span class='remainder'></span></strong>
+  <strong>Hours Remaining: <span class='remainder'></span></strong>
 </div>
 <a class='btn booking-redirect' href='{% url "member:event:create_booking" %}'>Make a New Room Booking</a>
 
 <script>
   $(document).ready(function() {
     var remainder = '{{ hours_subscriptions }}' - '{{ total }}';
-    $('.remainder').text(remainder);
+    $('.remainder').text(remainder.toFixed(1));
   })
 </script>
