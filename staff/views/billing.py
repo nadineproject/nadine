@@ -160,11 +160,6 @@ def action_record_payment(request):
 @staff_member_required
 def bill_view(request, bill_id):
     bill = get_object_or_404(UserBill, id=bill_id)
-    cwd = []
-    for l in bill.line_items.all():
-        if len(CoworkingDayLineItem.objects.filter(billlineitem_ptr_id = l.id)) > 0:
-            cwd_line_item = CoworkingDayLineItem.objects.get(id=l.id)
-            cwd.append({l.id : CoworkingDay.objects.get(id = cwd_line_item.day_id)})
 
     if request.method == 'POST':
         if 'delete_payment_id' in request.POST:
@@ -222,7 +217,6 @@ def bill_view(request, bill_id):
         'resources': resources,
         'overdue': overdue,
         'payment_form': payment_form,
-        'cwd': cwd,
     }
     return render(request, 'staff/billing/bill_view.html', context)
 
