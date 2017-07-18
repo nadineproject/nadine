@@ -90,6 +90,10 @@ def profile_events(request, username):
     today = localtime(now()).date()
     upcoming_events = Event.objects.filter(user=user).filter(start_ts__gte=today)
     upcoming = []
+    hours_subscriptions = 0
+    if ResourceSubscription.objects.filter(membership=user.membership, resource=Resource.objects.room_resource):
+        hours_subscriptions = ResourceSubscription.objects.get(membership=user.membership, resource=Resource.objects.room_resource).allowance
+
     for e in upcoming_events:
         total = ((e.end_ts - e.start_ts).total_seconds())/3600
         upcoming.append({'name': e.description, 'start_ts': e.start_ts, 'end_ts': e.end_ts, 'room': e.room, 'total': total})
@@ -102,6 +106,7 @@ def profile_events(request, username):
     context = {'user': user,
                'upcoming': upcoming,
                'total': total,
+               'hours_subscriptions': hours_subscriptions,
                 }
     return render(request, 'member/profile/profile_events.html', context)
 
@@ -109,9 +114,10 @@ def profile_events(request, username):
 @login_required
 def profile_activity(request, username):
     user = get_object_or_404(User.objects.select_related('profile'), username=username)
-    period_start, period_end = user.membership.get_period()
-    days_this_period = user.membership.resource_activity(Resource.objects.day_resource)
-    allowance = user.membership.allowance_by_resource(Resource.objects.day_resource)
+    membership = Membership.objects.for_user(user)
+    period_start, period_end = membership.get_period()
+    days_this_period = membership.coworking_days_in_period()
+    days, allowance, billable = user.profile.days_used()
     show_user = False
     show_paid = False
     for d in days_this_period:
@@ -126,7 +132,9 @@ def profile_activity(request, username):
         'show_user': show_user,
         'show_paid': show_paid,
         'days_this_period': days_this_period,
-        'allowance': allowance
+        'allowance': allowance,
+        'billable': billable,
+
     }
     return render(request, 'member/profile/profile_activity.html', context)
 
@@ -281,32 +289,6 @@ def file_view(request, disposition, username, file_name):
     response = HttpResponse(file_upload.file, content_type=file_upload.content_type)
     response['Content-Disposition'] = '%s; filename="%s"' % (disposition, file_upload.name)
     return response
-
-
-@login_required
-@user_passes_test(is_active_member, login_url='member_not_active')
-def edit_pic(request, username):
-    user = get_object_or_404(User, username=username)
-    if not user == request.user and not request.user.is_staff:
-        return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': request.user.username}))
-    if request.method == 'POST':
-        profile_form = EditProfileForm(request.POST, request.FILES)
-        profile = get_object_or_404(UserProfile, user=user)
-        profile.photo = request.FILES.get('photo', None)
-
-        profile.save()
-
-        return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': user.username}))
-    else:
-        profile_form = EditProfileForm()
-
-    ALLOW_PHOTO_UPLOAD = settings.ALLOW_PHOTO_UPLOAD
-    if request.user.is_staff:
-        ALLOW_PHOTO_UPLOAD = True
-
-    context = {'ALLOW_PHOTO_UPLOAD': ALLOW_PHOTO_UPLOAD, 'user': user}
-    return render(request, 'member/profile/edit_pic.html', context)
-
 
 @login_required
 @user_passes_test(is_active_member, login_url='member_not_active')

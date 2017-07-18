@@ -6,6 +6,9 @@
 <h3>
   Activity This Period:
   {{ days_this_period | length}} {% if allowance %} of {{ allowance }} Days{% endif %}
+  {% if days_this_period != billable %}
+    ({{ billable }} billable)
+  {% endif %}
 </h3>
 
 {% if days_this_period %}

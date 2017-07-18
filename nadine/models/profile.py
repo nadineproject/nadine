@@ -370,9 +370,10 @@ class UserProfile(models.Model):
 
     def days_used(self, target_date=None):
         membership = Membership.objects.for_user(self.user, target_date)
-        days = membership.coworking_days_in_period(target_date).count()
+        days = membership.coworking_days_in_period(target_date)
+        billable = days.filter(payment="Bill")
         allowed = membership.coworking_day_allowance(target_date)
-        return (days, allowed)
+        return (days.count(), allowed, billable.count())
 
     def all_emails(self):
         # Done in two queries so that the primary email address is always on top.
@@ -898,7 +899,6 @@ def size_images(sender, instance, **kwargs):
         image = Image.open(instance.photo)
         old_x, old_y = image.size
         if old_x > UserProfile.MAX_PHOTO_SIZE or old_y > UserProfile.MAX_PHOTO_SIZE:
-            print("Resizing photo for %s" % instance.user.username)
             if old_y > old_x:
                 new_y = UserProfile.MAX_PHOTO_SIZE
                 new_x = int((float(new_y) / old_y) * old_x)

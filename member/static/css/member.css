@@ -1736,13 +1736,15 @@ th.rotate span {
 /*Styling for room info slider in booking create page*/
 .slider {
 	overflow-y: hidden;
-	max-height: 300px; /* approximate max height */
+	/*max-height: 300px; /* approximate max height */*/
 	transition-property: all;
 	transition-duration: .7s;
 	transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
 	background-color: white;
 	padding-top: 1%;
 	border-radius: 2px;
+	width: 85% !important;
+	height: 100%;
 }
 
 .slider.closed {

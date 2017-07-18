@@ -140,12 +140,18 @@
   <tr class="row-even">
     <th>Description</th>
     <th>Amount</th>
+    <th></th>
   </tr>
   {% for line_item in line_items %}
-      <tr class='{% cycle "row-odd" "row-even"  %}'>
-          <td style='width:60%;'>{{ line_item.description }}</td>
-          <td style="text-align: right; width: 40%;">${{ line_item.amount|floatformat:2 }}</td>
-      </tr>
+    <tr class='{% cycle "row-odd" "row-even"  %}'>
+      <td style='width:60%;'>{{ line_item.description }}</td>
+      <td style="text-align: right; width: 40%;">${{ line_item.amount|floatformat:2 }}</td>
+      <td>
+      {% if line_item.coworkingdaylineitem %}
+        <a href="{{ line_item.coworkingdaylineitem.day.get_admin_url }}">Edit</a>
+      {% endif %}
+      </td>
+    </tr>
   {% endfor %}
 </table>
 

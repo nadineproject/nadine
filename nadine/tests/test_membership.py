@@ -213,7 +213,7 @@ class MembershipTestCase(TestCase):
         org1 = Organization.objects.create(lead=user1, name="Test Org", created_by=user1)
         org1.add_member(user1, start_date=date(2017, 6, 1))
         org1.add_member(user2, start_date=date(2017, 6, 1))
-        # org1.membership = OrganizationMembership.objects.create(organization=org1)
+        org1.membership = OrganizationMembership.objects.create(organization=org1)
         subscription = ResourceSubscription.objects.create(
             membership = org1.membership,
             resource = self.test_resource,
@@ -528,7 +528,7 @@ class MembershipTestCase(TestCase):
 
     def test_subscription_payer(self):
         # Start with an OrganizationMembership
-        org_membership = self.org3.membership
+        org_membership = OrganizationMembership.objects.create(organization=self.org3)
         subscription = ResourceSubscription.objects.create(
             membership = org_membership,
             resource = self.test_resource,
@@ -555,7 +555,7 @@ class MembershipTestCase(TestCase):
         self.assertFalse(m.is_organization)
 
     def test_is_organization(self):
-        o = self.org3.membership
+        o = OrganizationMembership.objects.create(organization=self.org3)
         self.assertFalse(o.is_individual)
         self.assertTrue(o.is_organization)
         m = Membership.objects.get(id=o.id)

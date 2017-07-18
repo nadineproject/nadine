@@ -254,7 +254,9 @@ class Membership(models.Model):
     def has_mail(self, target_date=None):
         return self.has_resource(Resource.objects.mail_resource, target_date)
 
-    def coworking_days_in_period(self, target_date):
+    def coworking_days_in_period(self, target_date=None):
+        if not target_date:
+            target_date = localtime(now()).date()
         from nadine.models.usage import CoworkingDay
         period_start, period_end = self.get_period(target_date)
         if not period_start:
@@ -490,7 +492,6 @@ class Membership(models.Model):
             print('There was an ERROR: %s' % e.message)
 
         return self.bill_day
-
 
 class IndividualMembership(Membership):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="membership", on_delete=models.CASCADE)

@@ -43,9 +43,9 @@ class RoomManager(models.Manager):
         rooms = self.all()
 
         if has_av != None:
-            rooms = rooms.filter(has_av=has_av)
+            rooms = rooms.filter(has_av=True)
         if has_phone != None:
-            rooms = rooms.filter(has_phone=has_phone)
+            rooms = rooms.filter(has_phone=True)
         if floor != None:
             rooms = rooms.filter(floor=floor)
         if seats != None:

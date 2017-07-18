@@ -9,11 +9,11 @@
 		{% for u in users_today %}
 			<div class="user-card">
 		      {% if u.profile.photo %}
-		         <a class="photo" href="{% url 'tablet:profile' u.username %}" data-transition="fade"><img src="{{ u.profile.photo.url|fit_image:"170x170" }}" /></a>
+		         <a class="photo" href="{% url 'tablet:user_profile' u.username %}" data-transition="fade"><img src="{{ u.profile.photo.url|fit_image:"170x170" }}" /></a>
 		      {% else %}
-		         <a class="photo" href="{% url 'tablet:profile' u.username %}" data-transition="fade">?</a>
+		         <a class="photo" href="{% url 'tablet:user_profile' u.username %}" data-transition="fade">?</a>
 		      {% endif %}
-		      <a href="{% url 'tablet:profile' u.username %}" data-transition="fade">{{ u.get_full_name }}</a>
+		      <a href="{% url 'tablet:user_profile' u.username %}" data-transition="fade">{{ u.get_full_name }}</a>
 			</div>
 		{% endfor %}
 	</div>

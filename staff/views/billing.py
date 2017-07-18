@@ -160,6 +160,7 @@ def action_record_payment(request):
 @staff_member_required
 def bill_view(request, bill_id):
     bill = get_object_or_404(UserBill, id=bill_id)
+
     if request.method == 'POST':
         if 'delete_payment_id' in request.POST:
             try:

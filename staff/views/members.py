@@ -414,7 +414,7 @@ def confirm_membership(request, username, package, end_target, start_target, new
     old_pkg = None
 
     if user.membership.package_name():
-        old_pkg = MembershipPackage.objects.get(name=membership.package_name())
+        old_pkg = MembershipPackage.objects.get(name=user.membership.package_name())
 
     if len(membership.active_subscriptions(datetime.strptime(end_target, '%Y-%m-%d'))):
         ending_pkg = True
@@ -451,10 +451,11 @@ def confirm_membership(request, username, package, end_target, start_target, new
                                 s.end_date = end_target
                                 s.save()
                         """When a membership is created, add the user to any opt-out mailing lists"""
-                        if user.membership.package_name() == None:
-                            mailing_lists = MailingList.objects.filter(is_opt_out=True)
-                            for ml in mailing_lists:
-                                ml.subscribers.add(membership.user)
+                        # TODO Looks like this is being implemented in alerts. Erase?
+                        # if user.membership.package_name() == None:
+                        #     mailing_lists = MailingList.objects.filter(is_opt_out=True)
+                        #     for ml in mailing_lists:
+                        #         ml.subscribe(membership.user)
                     # Review all subscriptions to see if adding or ending
                     for sub in subs:
                         sub_id = sub['s_id']

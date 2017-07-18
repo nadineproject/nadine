@@ -24,7 +24,7 @@ def forward(apps, schema_editor):
     Payment = apps.get_model("nadine", "Payment")
     Resource = apps.get_model("nadine", "Resource")
     tz = timezone.get_current_timezone()
-    print
+    # print
 
     # Pull our Coworking Day Resource
     DAY = Resource.objects.filter(key="day").first()
@@ -32,7 +32,7 @@ def forward(apps, schema_editor):
     # Create a BillingBatch for all these new Bills
     batch = BillingBatch.objects.create()
 
-    print("    Migrating Old Bills...")
+    # print("    Migrating Old Bills...")
     for old_bill in OldBill.objects.all().order_by('bill_date'):
         # OldBill -> UserBill
         if old_bill.paid_by:
@@ -120,7 +120,7 @@ def forward(apps, schema_editor):
     user = User.objects.first()
     # Only do this step if there is data in the system
     if loose_days and user:
-        print("    Associating %d unbilled days" % len(loose_days))
+        # print("    Associating %d unbilled days" % len(loose_days))
         first_day = loose_days.first().visit_date
         last_day = loose_days.last().visit_date
         bill = UserBill.objects.create(user=user, period_start=first_day, period_end=last_day, due_date=last_day)
@@ -138,7 +138,7 @@ def forward(apps, schema_editor):
         bill.mark_paid = True
         bill.closed_ts = localtime(now())
         bill.save()
-        print("UserBill %d: %s %s to %s" % (bill.id, bill.user.username, bill.period_start, bill.period_end))
+        # print("UserBill %d: %s %s to %s" % (bill.id, bill.user.username, bill.period_start, bill.period_end))
         batch.bills.add(bill)
 
     # Close up this BillingBatch

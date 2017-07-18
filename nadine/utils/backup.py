@@ -36,7 +36,7 @@ class BackupManager(object):
             raise BackupError('settings.DATABASES is not defined')
         if not 'default' in settings.DATABASES:
             raise BackupError('settings.DATABASES has no default db')
-        if settings.DATABASES['default']['ENGINE'] != 'django.db.backends.postgresql_psycopg2':
+        if settings.DATABASES['default']['ENGINE'] != 'django.db.backends.postgresql':
             raise BackupError('This command only works with PostgreSQL')
         if 'PASSWORD' in settings.DATABASES['default']:
             password = settings.DATABASES['default']['PASSWORD']

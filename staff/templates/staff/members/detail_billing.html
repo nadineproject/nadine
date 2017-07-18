@@ -95,7 +95,7 @@
       <form action="{% url 'staff:members:deposits' %}" method="POST">
         <input name="username" value="{{ user.username }}" type="hidden" />
         <td><strong style='font-size: 1.2em;'>Record New Deposit:</strong></th>
-        <td><input name="amount" placeholder='Enter Amount Here'/></td>
+        <td><strong style='font-size: 1.4em; position: relative; bottom: 8px;'>$ </strong> <input name="amount" placeholder='Enter Amount Here' style='width: 55%;'/></td>
         <td><input name="note" placeholder='i.e. Key deposit for two members'/></td>
         <td class='right'><input name="add_deposit" type="submit" Value="Record Deposit" style='margin-top: 10%;'/></td>
         {% csrf_token %}

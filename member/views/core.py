@@ -150,7 +150,6 @@ def view_members(request):
 @login_required
 def bill_receipt(request, bill_id):
     bill = get_object_or_404(UserBill, id=bill_id)
-
     # Only the bill's user or staff can view the receipt.
     # If anyone else wants it the user should print it out and send it
     if request.user != bill.user:

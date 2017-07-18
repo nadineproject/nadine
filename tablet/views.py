@@ -43,7 +43,7 @@ def members(request):
 
 
 def here_today(request):
-    users_today = User.helper.here_today()
+    users_today = User.helper.here_today().order_by('first_name')
     return render(request, 'tablet/here_today.html', {'users_today': users_today})
 
 
@@ -75,22 +75,6 @@ def search(request):
 
 def user_profile(request, username):
     user = get_object_or_404(User, username=username)
-    tags = user.profile.tags.order_by('name')
-    period_start, period_end = user.membership.get_period()
-    days, allowed = user.profile.days_used()
-    context = {
-        'user': user,
-        'days_this_period': days,
-        'day_allowance': allowed,
-        'period_start': period_start,
-        'period_end': period_end,
-        'tags': tags
-    }
-    return render(request, 'tablet/user_profile.html', context)
-
-
-def user_signin(request, username):
-    user = get_object_or_404(User, username=username)
 
     can_signin = True
     if user.membership.has_desk():
@@ -114,7 +98,7 @@ def user_signin(request, username):
     previous_hosts = User.helper.active_members().filter(id__in=guest_days)
 
     # Pull up how many days were used this period
-    days, allowed = user.profile.days_used()
+    days, allowed, billable = user.profile.days_used()
 
     # Pull our open alerts
     alert_list = [MemberAlert.MEMBER_AGREEMENT, MemberAlert.TAKE_PHOTO, MemberAlert.ORIENTATION, MemberAlert.KEY_AGREEMENT, MemberAlert.ASSIGN_CABINET, MemberAlert.ASSIGN_MAILBOX, MemberAlert.RETURN_DOOR_KEY, MemberAlert.RETURN_DESK_KEY]
@@ -125,12 +109,13 @@ def user_signin(request, username):
         'can_signin': can_signin,
         'days_this_period': days,
         'day_allowance': allowed,
+        'billable': billable,
         'previous_hosts' :previous_hosts,
         'open_alerts': open_alerts,
         'member_search_form': member_search_form,
         'search_results': search_results,
     }
-    return render(request, 'tablet/user_signin.html', context)
+    return render(request, 'tablet/user_profile.html', context)
 
 
 def post_create(request, username):
@@ -182,7 +167,7 @@ def signin_user_guest(request, username, paid_by):
 def welcome(request, username):
     usage_color = "black"
     user = get_object_or_404(User, username=username)
-    days, allowed = user.profile.days_used()
+    days, allowed, billable = user.profile.days_used()
     if days > allowed:
         usage_color = "red"
     elif days == allowed:
@@ -195,6 +180,7 @@ def welcome(request, username):
         'user': user,
         'days_this_period': days,
         'day_allowance': allowed,
+        'billable': billable,
         'usage_color': usage_color,
         'bill_day_str':bill_day_str,
         'motd': motd,
