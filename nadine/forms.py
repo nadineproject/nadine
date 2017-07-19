@@ -658,8 +658,8 @@ class MOTDForm(forms.Form):
 
 class RoomForm(forms.Form):
     name = forms.CharField(required=True, max_length=64)
-    location = forms.CharField(max_length=128, required=False)
-    description = forms.CharField(required=False)
+    location = forms.CharField(widget=forms.TextInput(attrs={'placeholder':'i.e. By the elevator'}), max_length=128, required=False)
+    description = forms.CharField(widget=forms.Textarea, required=False)
     floor = forms.IntegerField(min_value=1, max_value=100, required=True)
     seats = forms.IntegerField(min_value=1, max_value=1000, required=True)
     max_capacity = forms.IntegerField(min_value=1, max_value=1000, required=True)
@@ -680,14 +680,10 @@ class RoomForm(forms.Form):
         has_av = self.cleaned_data['has_av']
         has_phone = self.cleaned_data['has_phone']
         default_rate = self.cleaned_data['default_rate']
+        image = self.cleaned_data['image']
 
-        room = Room(name=name, location=location, description=description, floor=floor, seats=seats, max_capacity=max_capacity, has_av=has_av, has_phone=has_phone, default_rate=default_rate)
+        room = Room(name=name, location=location, description=description, floor=floor, seats=seats, max_capacity=max_capacity, has_av=has_av, has_phone=has_phone, default_rate=default_rate, image=image)
         room.save()
-
-        if self.cleaned_data['image']:
-            image = self.cleaned_data['image']
-            room.image = image
-            room.save()
 
         return room
 

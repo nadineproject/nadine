@@ -205,11 +205,8 @@ def motd(request):
 @staff_member_required
 def edit_rooms(request):
     rooms = Room.objects.all().order_by('floor')
-    print('hello')
-
     if request.method == 'POST':
-        print('boop')
-        form = RoomForm(request.POST)
+        form = RoomForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse('staff:tasks:todo'))

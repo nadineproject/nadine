@@ -7,30 +7,30 @@
   {{ e }}
 {% endfor %}
 <h4>Add and Edit Meeting Rooms</h4>
-<form class='room-edit' action='.' method='POST'>
+<form class='room-edit' action='.' method='POST' enctype="multipart/form-data">
   <table>
     <tr>
-      <td>Room Name:</td>
+      <td><strong>Room Name:</strong></td>
       <td> {{ form.name }} </td>
-      <td>Floor:</td>
+      <td><strong>Floor:</strong></td>
       <td>{{ form.floor }}</td>
     </tr>
     <tr>
-      <td>Seats:</td>
+      <td><strong>Seats:</strong></td>
       <td>{{ form.seats }}</td>
-      <td>Max Capacity:</td>
+      <td><strong>Max Capacity:</strong></td>
       <td>{{ form.max_capacity }}</td>
     </tr>
     <tr>
-      <td>Specific Location:</td>
+      <td><strong>Specific Location:</strong></td>
       <td>{{ form.location }}</td>
-      <td>Room Description:</td>
+      <td><strong>Room Description:</strong></td>
       <td>{{ form.description}}</td>
     </tr>
     <tr>
-      <td>Default Rate</td>
+      <td><strong>Default Rate:</strong></td>
       <td>{{ form.default_rate }}</td>
-      <td>Upload Room Image:</td>
+      <td><strong>Upload Room Image:</strong></td>
       <td>{{ form.image }}</td>
     </tr>
     <tr>
@@ -43,13 +43,30 @@
   {% csrf_token %}
   <button class='btn create-btn' type='submit'>Create</button>
 </form>
-{% endblock %}
 
-<!-- {% block extrajs %}
-  <script>
-    $(document).ready(function() {
-      $('.button-collapse').sideNav();
-      $('.collapsible').collapsible();
-    })
-  </script>
-{% endblock %} -->
+<table class='room-table'>
+  <tr>
+    <tr>
+      <th class='sub-th'>Room Name</th>
+      <th class='sub-th'>Floor</th>
+      <th class='sub-th'>Seats</th>
+      <th class='sub-th'>Max Capacity</th>
+      <th class='sub-th'>Has A/V</th>
+      <th class='sub-th'>Has Phone</th>
+      <th class='sub-th'>Default Rate</th>
+    </tr>
+  </tr>
+  {% for r in rooms %}
+    <tr class='{% cycle "row-even" "row-odd" %}'>
+      <td>{{ r.name }}</td>
+      <td>{{ r.floor }}</td>
+      <td>{{ r.seats }}</td>
+      <td>{{ r.max_capacity }}</td>
+      <td>{{ r.has_av|yesno:"Yes,No" }}</td>
+      <td>{{ r.has_phone|yesno:"Yes,No"  }}</td>
+      <td style='text-align: center;'>{{ r.default_rate }}</td>
+    </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}

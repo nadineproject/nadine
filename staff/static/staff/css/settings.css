@@ -88,6 +88,16 @@ table td {
   display: none;
 }
 
+.room-table {
+  margin-top: 2%;
+}
+
+.sub-th {
+  background-color: RGBA(76, 76, 76, 1.00);
+	color: white;
+	border-radius: 0;
+}
+
 .td-title {
   width: 15%;
 }
