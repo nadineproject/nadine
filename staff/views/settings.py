@@ -21,9 +21,9 @@ from django.core.files.storage import FileSystemStorage
 
 from nadine.models.membership import MembershipPackage, SubscriptionDefault
 from nadine.models.profile import FileUpload
-from nadine.models.resource import Resource
+from nadine.models.resource import Resource, Room
 from nadine.utils import network
-from nadine.forms import HelpTextForm, MOTDForm, MembershipPackageForm
+from nadine.forms import HelpTextForm, MOTDForm, MembershipPackageForm, RoomForm
 from nadine.settings import MOTD_TIMEOUT
 from member.models import HelpText, MOTD
 
@@ -201,6 +201,27 @@ def motd(request):
 #         'docs': docs,
 #     }
 #     return render(request, 'staff/settings/doc_upload.html', context)
+
+@staff_member_required
+def edit_rooms(request):
+    rooms = Room.objects.all().order_by('floor')
+    print('hello')
+
+    if request.method == 'POST':
+        print('boop')
+        form = RoomForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('staff:tasks:todo'))
+        else:
+            messages.error(request, 'There was an error updating meeting rooms.')
+    else:
+        form = RoomForm()
+
+    context = { 'rooms': rooms,
+                'form': form,
+              }
+    return render(request, 'staff/settings/edit_rooms.html', context)
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

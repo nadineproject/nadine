@@ -8,6 +8,7 @@ urlpatterns = [
      url(r'^packages/$', settings.membership_packages, name='membership_packages'),
      url(r'^helptexts/$', settings.helptexts, name='helptexts'),
      url(r'^motd/$', settings.motd, name='motd'),
+     url(r'^edit_rooms/$', settings.edit_rooms, name='edit_rooms'),
     #  url(r'^doc_upload/$', settings.document_upload, name='doc_upload'),
 ]
 

@@ -663,8 +663,8 @@ class RoomForm(forms.Form):
     floor = forms.IntegerField(min_value=1, max_value=100, required=True)
     seats = forms.IntegerField(min_value=1, max_value=1000, required=True)
     max_capacity = forms.IntegerField(min_value=1, max_value=1000, required=True)
-    has_av = forms.BooleanField(required=True)
-    has_phone = forms.BooleanField(required=True)
+    has_av = forms.BooleanField(required=False)
+    has_phone = forms.BooleanField(required=False)
     default_rate = forms.FloatField(required=True, min_value=0, max_value=None)
     image = forms.FileField(required=False)
 
@@ -679,8 +679,9 @@ class RoomForm(forms.Form):
         max_capacity = self.cleaned_data['max_capacity']
         has_av = self.cleaned_data['has_av']
         has_phone = self.cleaned_data['has_phone']
+        default_rate = self.cleaned_data['default_rate']
 
-        room = Room(name=name, location=location, description=desciption, floor=floor, seats=seats, max_capacity=max_capacity, has_av=has_av, has_phone=has_phone)
+        room = Room(name=name, location=location, description=description, floor=floor, seats=seats, max_capacity=max_capacity, has_av=has_av, has_phone=has_phone, default_rate=default_rate)
         room.save()
 
         if self.cleaned_data['image']:

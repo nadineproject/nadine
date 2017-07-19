@@ -1,0 +1,55 @@
+{% extends "staff/settings/base.html" %}
+
+{% block sub-title %} Edit Rooms {% endblock %}
+
+{% block content %}
+{% for e in form.errors %}
+  {{ e }}
+{% endfor %}
+<h4>Add and Edit Meeting Rooms</h4>
+<form class='room-edit' action='.' method='POST'>
+  <table>
+    <tr>
+      <td>Room Name:</td>
+      <td> {{ form.name }} </td>
+      <td>Floor:</td>
+      <td>{{ form.floor }}</td>
+    </tr>
+    <tr>
+      <td>Seats:</td>
+      <td>{{ form.seats }}</td>
+      <td>Max Capacity:</td>
+      <td>{{ form.max_capacity }}</td>
+    </tr>
+    <tr>
+      <td>Specific Location:</td>
+      <td>{{ form.location }}</td>
+      <td>Room Description:</td>
+      <td>{{ form.description}}</td>
+    </tr>
+    <tr>
+      <td>Default Rate</td>
+      <td>{{ form.default_rate }}</td>
+      <td>Upload Room Image:</td>
+      <td>{{ form.image }}</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td>{{ form.has_av }} <label for='id_has_av'>Has A/V?</label></td>
+      <td></td>
+      <td>{{ form.has_phone }} <label for='id_has_phone'>Has a phone?</label></td>
+    </tr>
+  </table>
+  {% csrf_token %}
+  <button class='btn create-btn' type='submit'>Create</button>
+</form>
+{% endblock %}
+
+<!-- {% block extrajs %}
+  <script>
+    $(document).ready(function() {
+      $('.button-collapse').sideNav();
+      $('.collapsible').collapsible();
+    })
+  </script>
+{% endblock %} -->
