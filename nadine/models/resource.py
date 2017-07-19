@@ -9,6 +9,7 @@ from django.db import models
 from django.conf import settings
 from django.db.models import Q, F
 from django.contrib.auth.models import User
+from django.urls import reverse
 from django.utils.timezone import localtime, now, get_current_timezone
 
 from PIL import Image
@@ -162,6 +163,9 @@ class Room(models.Model):
                     block['reserved'] = True
 
         return calendar
+
+    def get_admin_url(self):
+        return reverse('admin:nadine_room_change', args=[self.id])
 
 
 class ResourceManager(models.Manager):

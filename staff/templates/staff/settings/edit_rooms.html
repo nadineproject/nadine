@@ -44,6 +44,7 @@
   <button class='btn create-btn' type='submit'>Create</button>
 </form>
 
+<h5>Existing Rooms</h5>
 <table class='room-table'>
   <tr>
     <tr>
@@ -54,6 +55,7 @@
       <th class='sub-th'>Has A/V</th>
       <th class='sub-th'>Has Phone</th>
       <th class='sub-th'>Default Rate</th>
+      <th class='sub-th'></th>
     </tr>
   </tr>
   {% for r in rooms %}
@@ -65,6 +67,7 @@
       <td>{{ r.has_av|yesno:"Yes,No" }}</td>
       <td>{{ r.has_phone|yesno:"Yes,No"  }}</td>
       <td style='text-align: center;'>{{ r.default_rate }}</td>
+      <td><a href='{{ r.get_admin_url }}'>Edit in Admin</a></td>
     </tr>
   {% endfor %}
 </table>
