@@ -92,6 +92,22 @@ table td {
   margin-top: 2%;
 }
 
+.room-edit #name-td {
+  width: 40%;
+}
+
+.room-edit #id_image {
+  float: left;
+}
+
+.room-edit table {
+  margin-bottom: 2%;
+}
+
+.small-td {
+  width: 10%;
+}
+
 .sub-th {
   background-color: RGBA(76, 76, 76, 1.00);
 	color: white;

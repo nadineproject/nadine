@@ -11,33 +11,37 @@
   <table>
     <tr>
       <td><strong>Room Name:</strong></td>
-      <td> {{ form.name }} </td>
+      <td id='name-td'> {{ form.name }} </td>
       <td><strong>Floor:</strong></td>
-      <td>{{ form.floor }}</td>
+      <td class='small-td'>{{ form.floor }}</td>
+      <td><strong>Seats:</strong></td>
+      <td class='small-td'>{{ form.seats }}</td>
     </tr>
     <tr>
-      <td><strong>Seats:</strong></td>
-      <td>{{ form.seats }}</td>
+      <td><strong>Room Description:</strong></td>
+      <td>{{ form.description}}</td>
       <td><strong>Max Capacity:</strong></td>
-      <td>{{ form.max_capacity }}</td>
+      <td class='small-td'>{{ form.max_capacity }}</td>
+      <td><strong>Default Rate:</strong></td>
+      <td>{{ form.default_rate }}</td>
     </tr>
+    <!-- <tr>
+
+    </tr> -->
     <tr>
       <td><strong>Specific Location:</strong></td>
       <td>{{ form.location }}</td>
-      <td><strong>Room Description:</strong></td>
-      <td>{{ form.description}}</td>
+      <td></td>
+      <td>{{ form.has_av }} <label for='id_has_av'>A/V?</label></td>
+      <td></td>
+      <td>{{ form.has_phone }}<label for='id_has_phone'>Phone?</label></td>
     </tr>
     <tr>
-      <td><strong>Default Rate:</strong></td>
-      <td>{{ form.default_rate }}</td>
       <td><strong>Upload Room Image:</strong></td>
       <td>{{ form.image }}</td>
-    </tr>
-    <tr>
       <td></td>
-      <td>{{ form.has_av }} <label for='id_has_av'>Has A/V?</label></td>
       <td></td>
-      <td>{{ form.has_phone }} <label for='id_has_phone'>Has a phone?</label></td>
+      <td></td>
     </tr>
   </table>
   {% csrf_token %}
@@ -60,7 +64,7 @@
   </tr>
   {% for r in rooms %}
     <tr class='{% cycle "row-even" "row-odd" %}'>
-      <td>{{ r.name }}</td>
+      <td style='text-align: center;'>{{ r.name }}</td>
       <td>{{ r.floor }}</td>
       <td>{{ r.seats }}</td>
       <td>{{ r.max_capacity }}</td>
