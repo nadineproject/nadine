@@ -7,9 +7,9 @@ register = template.Library()
 @register.filter
 def gender_filter(value):
     if value == 'F':
-        return 'Woman'
+        return 'Female'
     elif value == 'M':
-        return 'Man'
+        return 'Male'
     elif value == 'O':
         return 'Something else'
     else:
