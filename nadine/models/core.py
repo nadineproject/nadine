@@ -32,7 +32,7 @@ GENDER_CHOICES = (
     ('U', 'Unknown'),
     ('M', 'Male'),
     ('F', 'Female'),
-    ('O', 'Other'),
+    ('O', 'Something Else'),
 )
 
 
