@@ -11,7 +11,7 @@ def gender_filter(value):
     elif value == 'M':
         return 'Male'
     elif value == 'O':
-        return 'Something Else'
+        return 'Something else'
     else:
         return 'Not shared'
 
