@@ -94,7 +94,8 @@ class User_Report:
 
     def ended_membership(self):
         ended_memberships = Membership.objects.date_range(start=self.start_date, end=self.end_date, action='ended')
-        return User.objects.filter(membership__id__in=ended_memberships)
+        new_memberships = Membership.objects.date_range(start=self.start_date, end=self.end_date, action='started')
+        return User.objects.filter(membership__id__in=ended_memberships).exclude(membership__id__in=new_memberships)
 
     def invalid_billing(self):
         return User.objects.filter(profile__valid_billing=False)
