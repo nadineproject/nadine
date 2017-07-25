@@ -14,7 +14,7 @@ from nadine.models.membership import MembershipPackage, SubscriptionDefault
 from nadine.models.membership import Membership, ResourceSubscription
 from nadine.models.organization import Organization
 from nadine.models.resource import Resource
-from nadine.models.usage import CoworkingDay
+from nadine.models.usage import CoworkingDay, Event
 
 
 today = localtime(now()).date()
@@ -120,6 +120,19 @@ class UserBillTestCase(TestCase):
         self.assertTrue(bill.includes_coworking_day(day))
         self.assertEquals(bill, day.bill)
 
+    def test_add_room_booking(self):
+        event = Event.objects.create(
+            user = self.user1,
+            start_ts = localtime(now()) - timedelta(hours=2),
+            end_ts = localtime(now()),
+            charge = 40
+        )
+        bill = UserBill.objects.create_for_day(self.user1)
+        self.assertFalse(bill.includes_room_booking(event))
+        bill.add_room_bookings(event)
+        self.asserTrue(bill.includes_room_booking(event))
+        self.assertEquals(bill, event.bill)
+
     def test_monthly_rate(self):
         bill = UserBill.objects.create_for_day(self.user1, today)
         self.assertEqual(0, bill.resource_allowance(Resource.objects.day_resource))
@@ -171,6 +184,7 @@ class UserBillTestCase(TestCase):
         )
         bill.add_subscription(subscription2)
         self.assertEqual(18, bill.resource_allowance(Resource.objects.day_resource))
+
 
     def test_recalculate(self):
         user = User.objects.create(username='test_user', first_name='Test', last_name='User')

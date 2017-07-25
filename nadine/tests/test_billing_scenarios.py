@@ -149,6 +149,16 @@ class BillingTestCase(TestCase):
             overage_rate = 0
         )
 
+        #Event Package
+        self.eventPackage = MembershipPackage.objects.create(name='Events')
+        SubscriptionDefault.objects.create(
+            package = self.eventPackage,
+            resource = Resource.objects.room_resource,
+            monthly_rate = 100,
+            allowance = 10,
+            overage_rate = 20
+        )
+
     def test_drop_in_on_billing_date_is_associated_with_correct_bill(self):
         # PT-5 5/20/2010 - 6/19/2010 & Basic since 6/20/2010
         # Daily activity 6/11/2010 through 6/25/2010
@@ -900,5 +910,45 @@ class BillingTestCase(TestCase):
         bill_after_end_date = user.bills.filter(period_start=tomorrow)
         self.assertTrue(len(bill_after_end_date) == 0)
 
+    def test_room_booking_hours_user_less_than_allowance(self):
+        # Create subscription for 10 room booking hours
+        start = one_month_ago + timedelta(days=2)
+        user = User.objects.create(username='member_twentyseven', first_name='Member', last_name='Twentyseven')
+        membership = Membership.objects.for_user(user)
+        membership.bill_day = start
+        membership.set_to_package(self.eventPackage, start_date=start)
+        self.assertEqual(1, membership.active_subscriptions().count())
+
+        # Create event for 6 hours
+        event1 = Event.objects.create(user=user, start_ts=localtime(now()) - timedelta(hours=6), end_ts=localtime(now()))
+
+        # Make sure bill returns with line for subscription and one line for event
+        new_bill_batch = BillingBatch.objects.run(start_date=start, end_date = today + timedelta(days=1))
+        self.assertTrue(new_bill_batch.successful)
+        user_bill = user.bills.get(period_start=start, period_end=start + relativedelta(months=0) - timedelta(days=1))
+        self.assertEqual(100, user_bill.amount)
+        self.assertEqual(2, user_bill.line_items.all().count())
+
+    def test_room_booking_hour_overage(self):
+        # Create subscription for 10 room booking hours
+        start = one_month_ago + timedelta(days=2)
+        user = User.objects.create(username='member_twentyeight', first_name='Member', last_name='Twentyeight')
+        membership = Membership.objects.for_user(user)
+        membership.bill_day = start
+        membership.set_to_package(self.eventPackage, start_date=start)
+        self.assertEqual(1, membership.active_subscriptions().count())
+
+        # Create event for 12 hours
+        event1 = Event.objects.create(user=user, start_ts=localtime(now()) - timedelta(hours=12), end_ts=localtime(now()))
+
+        # Run billing batch
+        new_bill_batch = BillingBatch.objects.run(start_date=start, end_date = today + timedelta(days=1))
+        self.assertTrue(new_bill_batch.successful)
+        user_bill = user.bills.get(period_start=start, period_end=start + relativedelta(months=0) - timedelta(days=1))
+
+        # Should have overage of $40 due to 2 extra room booking hours over allowance
+        self.assertEqual(140, user_bill.amount)
+        self.assertEqual(2, user_bill.line_items.all().count())
+        
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
