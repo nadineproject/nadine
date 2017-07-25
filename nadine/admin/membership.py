@@ -2,8 +2,23 @@ from django.contrib import admin
 from django.utils.timezone import localtime, now
 
 from nadine.admin.core import StyledAdmin
-from nadine.models.membership import Membership, ResourceSubscription, SecurityDeposit
+from nadine.models.membership import Membership, ResourceSubscription, SecurityDeposit, MembershipPackage, SubscriptionDefault
 from nadine.models.billing import UserBill
+
+
+class DefaultInline(admin.StackedInline):
+    model = SubscriptionDefault
+    fields = [
+        ('resource', 'allowance', 'monthly_rate', 'overage_rate'),
+    ]
+    extra = 1
+
+
+class MembershipPackageAdmin(StyledAdmin):
+    inlines = [DefaultInline, ]
+
+admin.site.register(MembershipPackage, MembershipPackageAdmin)
+
 
 class ActiveFilter(admin.SimpleListFilter):
     title = "is_active"
