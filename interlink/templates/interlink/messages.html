@@ -1,70 +1,74 @@
 {% extends "interlink/base.html" %}
 
-{% block sub-title %}{{ mailing_list.name }} Log | {% endblock %}
+{% block sub-title %}Messages | {{ mailing_list.name }}{% endblock %}
 
 {% block style %}
-.incoming-table td, .incoming-table th {
-	text-align: left;
-}
+  .incoming-table td, .incoming-table th {
+    text-align: left;
+  }
 
-.incoming-table td:first-child, .incoming-table th:first-child {
-	width: 15em;
-}
+  .incoming-table td:first-child, .incoming-table th:first-child {
+    width: 15em;
+  }
 
-.last-attempt {
-	color: #F44;
-}
+  .last-attempt {
+    color: #F44;
+  }
 {% endblock %}
 
 {% block content%}
-
-<h4>{{ mailing_list.name }} Log:</h4>
+<h4>{{ mailing_list.name }} Messages</h4>
 
 <h5>Incoming Mail:</h5>
-<table class='incoming-table'>
-	<tr>
-		<th>Sent Time</th>
-		<th>Origin</th>
-		<th>Subject</th>
-	</tr>
-{% for incoming_mail in mailing_list.incoming_mails.all|dictsortreversed:"sent_time"|slice:"0:15" %}
-	<tr>
-		<td>{{ incoming_mail.sent_time }}</td>
-		<td>{{ incoming_mail.origin_address }}</td>
-		<td>{{ incoming_mail.subject }}</td>
-	</tr>
-{% endfor %}
+<table class='responsive-table incoming-table'>
+  <thead>
+    <tr>
+      <th>Sent Time</th>
+      <th>Origin</th>
+      <th>Subject</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for incoming_mail in incoming_messages %}
+      <tr class="{% cycle 'row-even' 'row-odd' %}">
+        <td>{{ incoming_mail.sent_time }}</td>
+        <td>{{ incoming_mail.origin_address }}</td>
+        <td><a target="_self" href="{% url 'member:connect:view_mail' incoming_mail.id %}">{{ incoming_mail.clean_subject }}</a></td>
+        <!-- <td>{{ incoming_mail.subject }}</td> -->
+      </tr>
+    {% endfor %}
+  </tbody>
 </table>
 
 <h5>Outgoing Mail:</h5>
 <table class='responsive-table outgoing-table'>
-	<thead>
-		<tr>
-			<th>Sent Time</th>
-			<th>Origin</th>
-			<th>Subject</th>
-			<th>Moderators only?</th>
-		</tr>
-	</thead>
-	<tbody>
-		{% for outgoing_mail in mailing_list.outgoing_mails.all|dictsortreversed:"sent"|slice:"0:15" %}
-			<tr class="{% cycle 'row-even' 'row-odd' %}">
-				<td>
-					{% if outgoing_mail.sent %}
-						{{ outgoing_mail.sent }}
-					{% else %}
-						{% if outgoing_mail.last_attempt %}
-							<span class="last-attempt">{{ outgoing_mail.last_attempt}}</span><br/>
-							{{ outgoing_mail.attempts }} attempt{{ outgoing_mail.attempts|pluralize }}
-						{% endif %}
-					{% endif %}
-				</td>
-				<td>{{ outgoing_mail.original_mail.origin_address }}</td>
-				<td>{{ outgoing_mail.subject }}</td>
-				<td>{{ outgoing_mail.moderators_only }}</td>
-			</tr>
-		{% endfor %}
-	</tbody>
+  <thead>
+    <tr>
+      <th>Sent Time</th>
+      <th>Origin</th>
+      <th>Subject</th>
+      <th>Moderators only?</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for outgoing_mail in outgoing_messages %}
+      <tr class="{% cycle 'row-even' 'row-odd' %}">
+        <td>
+          {% if outgoing_mail.sent %}
+            {{ outgoing_mail.sent }}
+          {% else %}
+            {% if outgoing_mail.last_attempt %}
+              <span class="last-attempt">{{ outgoing_mail.last_attempt}}</span><br/>
+              {{ outgoing_mail.attempts }} attempt{{ outgoing_mail.attempts|pluralize }}
+            {% endif %}
+          {% endif %}
+        </td>
+        <td>{{ outgoing_mail.original_mail.origin_address }}</td>
+        <td>{{ outgoing_mail.subject }}</td>
+        <td>{{ outgoing_mail.moderators_only }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
 </table>
 
 {% endblock %}

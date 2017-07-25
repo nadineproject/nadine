@@ -18,7 +18,14 @@ def home(request):
 @staff_member_required
 def list_messages(request, list_id):
     mailing_list = get_object_or_404(MailingList, pk=list_id)
-    return render(request, 'interlink/messages.html', {'mailing_list': mailing_list})
+    incoming_messages = mailing_list.incoming_mails.all().order_by('-sent_time')[0:15]
+    outgoing_messages = mailing_list.outgoing_mails.all().order_by('-sent')[0:15]
+    context = {
+        'mailing_list': mailing_list,
+        'incoming_messages': incoming_messages,
+        'outgoing_messages': outgoing_messages,
+    }
+    return render(request, 'interlink/messages.html', context)
 
 
 @staff_member_required
