@@ -722,6 +722,7 @@ class MembershipPackageForm(forms.Form):
         monthly_rate = self.cleaned_data['monthly_rate']
         overage_rate = self.cleaned_data['overage_rate']
         enabled = self.cleaned_data['enabled']
+
         if enabled == 'False':
             enabled = False
         else:

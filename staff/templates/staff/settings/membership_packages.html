@@ -79,6 +79,7 @@
             <td class='rate'>{{ package.allowance }}</td>
             <td class='rate'>{{ package.monthly_rate }}</td>
             <td class='rate' style='text-align: center;'>{{ package.overage_rate }}</td>
+            <td></td>
             <input type='hidden' name='package' value='{{ package.package.id }}' />
             <td><button action='submit'>Edit</button></td>
           </tr>
@@ -128,7 +129,7 @@
             <td>{{ package.allowance }}</td>
             <td>{{ package.monthly_rate }}</td>
             <td style='text-align: center;'>{{ package.overage_rate }}</td>
-            <input type='hidden' name='package' value='{{ package.package.id }}' />
+            <td><input type='hidden' name='package' value='{{ package.package.id }}' /></td>
             <td></td>
           </tr>
         {% endifchanged %}
@@ -189,7 +190,8 @@
       {% endif %}
     {% endfor %}
 
-    $(document).on('click', '#toast-container .toast', function() {
+    $('#toast-container .toast').on('click', function(e) {
+      e.preventDefault();
       $(this).fadeOut(function(){
         $(this).remove();
       });
