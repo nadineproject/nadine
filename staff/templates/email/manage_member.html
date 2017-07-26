@@ -1,17 +1,17 @@
 {% load static %}
 
-<h2>{{ user.get_full_name }}</h2>
-	{% if user.profile.photo %}
-		<img width="170" src="{{ site_url }}{{ user.profile.photo.url }}">
-	{% else %}
-		<p>[ No photo for this user. ]</p>
-	{% endif %}
+{% if user.profile.photo %}
+	<img width="170" src="{{ site_url }}{{ user.profile.photo.url }}">
+{% else %}
+	<p>[ No photo for this user. ]</p>
+{% endif %}
+<h3 style='margin-top: 2%; margin-bottom: 2%; color: RGBA(79, 134, 135, 1.00);'>{{ user.get_full_name }}</h3>
 
 <p></p>
 
 {% if user.profile.open_alerts %}
-	<h3>Action Needed</h3>
-	<table style="width:100%;">
+	<h4 style='margin-left: 2%;'>Action Needed</h4>
+	<table style="width:90%; margin-left: 5%; margin-right: 5%;">
 		{% for alert in user.profile.open_alerts %}
 			<tr>
 				<td style="border-bottom: 1px solid gray; text-align:left;" nowrap>{{ alert.description }}</td>
@@ -31,13 +31,13 @@
 	</table>
 {% endif %}
 
-<h3>Recent Activity</h3>
-<table style="width:100%;">
+<h4 style='margin-left: 2%;'>Recent Activity</h4>
+<table style="width:90%; margin-left: 5%; margin-right: 5%;">
 	<tr>
-		<th style="border-bottom: 1px solid gray; text-align:left;" nowrap>Date</th>
-		<th style="border-bottom: 1px solid gray; text-align:left;">Payment</th>
-		<th style="border-bottom: 1px solid gray; text-align:left;">Guest of</th>
-		<th style="border-bottom: 1px solid gray; text-align:left;">Notes</th>
+		<th style="background-color: RGBA(76, 76, 76, 1.00); color: white; border-radius: 0px; text-align:left; font-weight: initial;" nowrap>Date</th>
+		<th style="background-color: RGBA(76, 76, 76, 1.00); color: white; border-radius: 0px; text-align:left; font-weight: initial;">Payment</th>
+		<th style="background-color: RGBA(76, 76, 76, 1.00); color: white; border-radius: 0px; text-align:left; font-weight: initial;">Guest of</th>
+		<th style="background-color: RGBA(76, 76, 76, 1.00); color: white; border-radius: 0px; text-align:left; font-weight: initial;">Notes</th>
 	</tr>
 	{% for log in user.coworkingday_set.all|slice:":10" %}
 		<tr>
@@ -51,12 +51,12 @@
 	{% endfor %}
 </table>
 
-<h3>Membership History</h3>
-<table style="width:100%;">
+<h4 style='margin-left: 2%;'>Membership History</h4>
+<table style="width:90%; margin-left: 5%; margin-right: 5%;">
 	<tr>
-		<th style="border-bottom: 1px solid gray; text-align:left;">Membership</th>
-		<th style="border-bottom: 1px solid gray; text-align:left;">Start</th>
-		<th style="border-bottom: 1px solid gray; text-align:left;">End</th>
+		<th style="background-color: RGBA(76, 76, 76, 1.00); color: white; border-radius: 0px; text-align:left; font-weight: initial;">Membership</th>
+		<th style="background-color: RGBA(76, 76, 76, 1.00); color: white; border-radius: 0px; text-align:left; font-weight: initial;">Start</th>
+		<th style="background-color: RGBA(76, 76, 76, 1.00); color: white; border-radius: 0px; text-align:left; font-weight: initial;">End</th>
 	</tr>
 	{% for m in user.profile.membership_history %}
 		<tr>
@@ -69,12 +69,12 @@
 	{% endfor %}
 </table>
 
-<h3>Files</h3>
-<table style="width:100%;">
+<h4 style='margin-left: 2%;'>Files</h4>
+<table style="width:90%; margin-left: 5%; margin-right: 5%;">
 	<tr>
-		<th style="border-bottom: 1px solid gray; text-align:left;" nowrap>Uploaded</th>
-		<th style="border-bottom: 1px solid gray; text-align:left;">File Name</th>
-		<th style="border-bottom: 1px solid gray; text-align:left;">Uploaded By</th>
+		<th style="background-color: RGBA(76, 76, 76, 1.00); color: white; border-radius: 0px; text-align:left; font-weight: initial;" nowrap>Uploaded</th>
+		<th style="background-color: RGBA(76, 76, 76, 1.00); color: white; border-radius: 0px; text-align:left; font-weight: initial;">File Name</th>
+		<th style="background-color: RGBA(76, 76, 76, 1.00); color: white; border-radius: 0px; text-align:left; font-weight: initial;">Uploaded By</th>
 	</tr>
 	{% for f in user.profile.file_uploads %}
 		<tr>

@@ -658,6 +658,7 @@ class MOTDForm(forms.Form):
 
 class RoomForm(forms.Form):
     name = forms.CharField(required=True, max_length=64)
+    room_id = forms.IntegerField(required=False, widget=forms.HiddenInput)
     location = forms.CharField(widget=forms.TextInput(attrs={'placeholder':'i.e. By the elevator'}), max_length=128, required=False)
     description = forms.CharField(widget=forms.Textarea, required=False)
     floor = forms.IntegerField(min_value=1, max_value=100, required=True)
@@ -671,6 +672,7 @@ class RoomForm(forms.Form):
     def save(self):
         if not self.is_valid():
             raise Exception('The form must be valid in order to save')
+        room_id = self.cleaned_data['room_id']
         name = self.cleaned_data['name']
         location = self.cleaned_data['location']
         description = self.cleaned_data['description']
@@ -682,8 +684,23 @@ class RoomForm(forms.Form):
         default_rate = self.cleaned_data['default_rate']
         image = self.cleaned_data['image']
 
-        room = Room(name=name, location=location, description=description, floor=floor, seats=seats, max_capacity=max_capacity, has_av=has_av, has_phone=has_phone, default_rate=default_rate, image=image)
-        room.save()
+        if room_id != None:
+            room = Room.objects.get(id=room_id)
+            room.name = name
+            room.location = location
+            room.description = description
+            room.floor = floor
+            room.seats = seats
+            room.max_capacity = max_capacity
+            room.has_av = has_av
+            room.has_phone = has_phone
+            room.default_rate = default_rate
+            if image:
+                room.image = image
+            room.save()
+        else:
+            room = Room(name=name, location=location, description=description, floor=floor, seats=seats, max_capacity=max_capacity, has_av=has_av, has_phone=has_phone, default_rate=default_rate, image=image)
+            room.save()
 
         return room
 

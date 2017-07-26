@@ -205,6 +205,12 @@ def motd(request):
 @staff_member_required
 def edit_rooms(request):
     rooms = Room.objects.all().order_by('floor')
+    room = request.GET.get('room', None)
+    rm_data = None
+    if room != None:
+        rm = Room.objects.get(id=room)
+        rm_data = {'room_id': rm.id, 'name': rm.name, 'floor': rm.floor, 'seats':rm.seats, 'description':rm.description, 'max_capacity':rm.max_capacity, 'default_rate':rm.default_rate, 'location': rm.location, 'has_av':rm.has_av, 'has_phone': rm.has_phone, 'image':rm.image}
+
     if request.method == 'POST':
         form = RoomForm(request.POST, request.FILES)
         if form.is_valid():
@@ -213,10 +219,10 @@ def edit_rooms(request):
         else:
             messages.error(request, 'There was an error updating meeting rooms.')
     else:
-        form = RoomForm()
-
+        form = RoomForm(initial=rm_data)
     context = { 'rooms': rooms,
                 'form': form,
+                'room': room,
               }
     return render(request, 'staff/settings/edit_rooms.html', context)
 

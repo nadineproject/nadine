@@ -16,6 +16,7 @@
       <td class='small-td'>{{ form.floor }}</td>
       <td><strong>Seats:</strong></td>
       <td class='small-td'>{{ form.seats }}</td>
+      {{ form.room_id }}
     </tr>
     <tr>
       <td><strong>Room Description:</strong></td>
@@ -45,7 +46,11 @@
     </tr>
   </table>
   {% csrf_token %}
-  <button class='btn create-btn' type='submit'>Create</button>
+  {% if room %}
+    <button class='btn create-btn' type='submit'>Edit</button>
+  {% else %}
+    <button class='btn create-btn' type='submit'>Create</button>
+  {% endif %}
 </form>
 
 <h5>Existing Rooms</h5>
@@ -71,7 +76,11 @@
       <td>{{ r.has_av|yesno:"Yes,No" }}</td>
       <td>{{ r.has_phone|yesno:"Yes,No"  }}</td>
       <td style='text-align: center;'>{{ r.default_rate }}</td>
-      <td><a href='{{ r.get_admin_url }}'>Edit in Admin</a></td>
+      <form action='.' method='GET'>
+        <input type='hidden' name='room' value='{{ r.id }}' />
+        <td><button type='submit'>Edit</button></td>
+        {% csrf_token %}
+      </form>
     </tr>
   {% endfor %}
 </table>
