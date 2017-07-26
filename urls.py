@@ -31,7 +31,7 @@ urlpatterns = [
     url(r'^interlink/', include('interlink.urls', namespace='interlink')),
     url(r'^doors/', include('doors.keymaster.urls', namespace='doors')),
     url(r'^logs/', include('arpwatch.urls', namespace='arp')),
-    url('^comlink/', include('comlink.urls', namespace='comlink')),
+    url(r'^comlink/', include('comlink.urls', namespace='comlink')),
 
     url(r'^email/add/$', views.email_add, name='email_add'),
     url(r'^email/manage/(?P<email_pk>\d+)/(?P<action>.+)/$', views.email_manage, name='email_manage'),

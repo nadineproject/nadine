@@ -6,6 +6,8 @@ from django.utils.timezone import localtime, now
 from nadine.models.membership import Membership
 from arpwatch.models import UserDevice
 from django.forms.widgets import SelectDateWidget
+from dateutil.relativedelta import relativedelta
+
 
 REPORT_KEYS = (
     ('NEW_USERS', 'New Users'),
@@ -24,7 +26,7 @@ REPORT_FIELDS = (
 
 
 def getDefaultForm():
-    start = localtime(now()).date() - timedelta(days=365)
+    start = localtime(now()).date() - relativedelta(months=1)
     end = localtime(now()).date()
     form_data = {'report': 'NEW_MEMBER', 'order_by': 'JOINED', 'active_only': False, 'start_date': start, 'end_date': end}
     return UserReportForm(form_data)
@@ -92,7 +94,8 @@ class User_Report:
 
     def ended_membership(self):
         ended_memberships = Membership.objects.date_range(start=self.start_date, end=self.end_date, action='ended')
-        return User.objects.filter(membership__id__in=ended_memberships)
+        new_memberships = Membership.objects.date_range(start=self.start_date, end=self.end_date, action='started')
+        return User.objects.filter(membership__id__in=ended_memberships).exclude(membership__id__in=new_memberships)
 
     def invalid_billing(self):
         return User.objects.filter(profile__valid_billing=False)

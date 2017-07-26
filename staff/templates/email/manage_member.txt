@@ -1,4 +1,4 @@
-{{ user.get_full_name }}
+<a href='{{ user.get_staff_url }}'>{{ user.get_full_name }}</a>
 
 {% if user.profile.open_alerts %}
 Action Needed
