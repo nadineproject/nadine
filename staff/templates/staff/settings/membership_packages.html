@@ -66,6 +66,7 @@
       <th>Monthly Rate</th>
       <th>Overage Rate</th>
       <th></th>
+      <th></th>
     </tr>
     {% for package in packages %}
       <form action='.' method='GET'>
@@ -110,6 +111,9 @@
             </td>
             <td class='rate'>
               {{ package_form.overage_rate }}
+            </td>
+            <td>
+              {{ package_form.delete }}<p style='display: inline-block; margin-top: 5%; margin-left: 5%;'><strong>Delete</strong></p>
             </td>
             <td>
               {% ifchanged package.package.name %}

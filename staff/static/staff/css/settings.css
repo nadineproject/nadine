@@ -17,6 +17,13 @@ table td {
   margin-left: 45%;
 }
 
+.del-checkbox {
+  margin-left: 20%;
+  position: inherit !important;
+  left:auto !important;
+  opacity: 1 !important;
+}
+
 .doc-btn {
   margin-left: 40%;
 }
