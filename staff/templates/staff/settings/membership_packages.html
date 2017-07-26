@@ -66,6 +66,7 @@
       <th>Monthly Rate</th>
       <th>Overage Rate</th>
       <th></th>
+      <th></th>
     </tr>
     {% for package in packages %}
       <form action='.' method='GET'>
@@ -79,6 +80,7 @@
             <td class='rate'>{{ package.allowance }}</td>
             <td class='rate'>{{ package.monthly_rate }}</td>
             <td class='rate' style='text-align: center;'>{{ package.overage_rate }}</td>
+            <td></td>
             <input type='hidden' name='package' value='{{ package.package.id }}' />
             <td><button action='submit'>Edit</button></td>
           </tr>
@@ -111,6 +113,9 @@
               {{ package_form.overage_rate }}
             </td>
             <td>
+              {{ package_form.delete }}<p style='display: inline-block; margin-top: 5%; margin-left: 5%;'><strong> Delete</strong></p>
+            </td>
+            <td>
               {% ifchanged package.package.name %}
                 <button type='submit'>Update</button>
                 <a class='cancel'>Cancel</a>
@@ -128,7 +133,7 @@
             <td>{{ package.allowance }}</td>
             <td>{{ package.monthly_rate }}</td>
             <td style='text-align: center;'>{{ package.overage_rate }}</td>
-            <input type='hidden' name='package' value='{{ package.package.id }}' />
+            <td><input type='hidden' name='package' value='{{ package.package.id }}' /></td>
             <td></td>
           </tr>
         {% endifchanged %}
@@ -189,7 +194,8 @@
       {% endif %}
     {% endfor %}
 
-    $(document).on('click', '#toast-container .toast', function() {
+    $('#toast-container .toast').on('click', function(e) {
+      e.preventDefault();
       $(this).fadeOut(function(){
         $(this).remove();
       });
