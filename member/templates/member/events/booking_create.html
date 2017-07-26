@@ -50,9 +50,9 @@
           <td id='floor-select'>
             <select class='browser-default input-field' name='floor' id='floor'>
               <option value="" disabled selected>On Floor:</option>
-              <option id='floor-1' value="1">Floor 1</option>
-              <option id='floor-2' value="2">Floor 2</option>
-              <option id='floor-2' value="3">Floor 3</option>
+              {% for floor in floors %}
+                <option id='floor-{{ floor.floor }}' value="{{ floor.floor }}">Floor {{ floor.floor }}</option>
+              {% endfor %}
             </select>
           </td>
           <td id='seat-select'>

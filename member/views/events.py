@@ -105,6 +105,8 @@ def create_booking(request):
     end = request.GET.get('end', str(datetime.now().hour + 2) + ':' + str(datetime.now().minute))
     all_day = request.GET.get('all_day', None)
 
+    floors = Room.objects.filter().values('floor').distinct().order_by('floor')
+
     if all_day:
         start = settings.OPEN_TIME
         end = settings.CLOSE_TIME
@@ -148,6 +150,7 @@ def create_booking(request):
                'date': date,
                'has_av': has_av,
                'floor': floor,
+               'floors': floors,
                'seats': seats,
                'all_day': all_day,
                'has_phone': has_phone,
