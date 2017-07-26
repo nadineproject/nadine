@@ -680,6 +680,8 @@ class MembershipPackageForm(forms.Form):
     allowance = forms.IntegerField(min_value=0, required=False)
     monthly_rate = forms.IntegerField(min_value=0, required=False)
     overage_rate = forms.IntegerField(min_value=0, required=False)
+    delete = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class':'browser-default del-checkbox'}), required=False)
+
 
     def save(self):
         if not self.is_valid():
@@ -691,6 +693,8 @@ class MembershipPackageForm(forms.Form):
         monthly_rate = self.cleaned_data['monthly_rate']
         overage_rate = self.cleaned_data['overage_rate']
         enabled = self.cleaned_data['enabled']
+        delete = self.cleaned_data['delete']
+
         if enabled == 'False':
             enabled = False
         else:
@@ -702,10 +706,13 @@ class MembershipPackageForm(forms.Form):
             p.save()
 
             sub_default = SubscriptionDefault.objects.get(id=self.cleaned_data['sub_id'])
-            sub_default.allowance = allowance
-            sub_default.monthly_rate = monthly_rate
-            sub_default.overage_rate = overage_rate
-            sub_default.save()
+            if delete == True:
+                sub_default.delete()
+            else:
+                sub_default.allowance = allowance
+                sub_default.monthly_rate = monthly_rate
+                sub_default.overage_rate = overage_rate
+                sub_default.save()
         else:
             if MembershipPackage.objects.filter(name=name):
                 raise Exception('A membership package with this name already exists.')
