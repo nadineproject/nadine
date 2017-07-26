@@ -30,9 +30,9 @@ logger = logging.getLogger(__name__)
 
 GENDER_CHOICES = (
     ('U', 'Unknown'),
-    ('M', 'Male'),
-    ('F', 'Female'),
-    ('O', 'Other'),
+    ('M', 'Man'),
+    ('F', 'Woman'),
+    ('O', 'Something else'),
 )
 
 

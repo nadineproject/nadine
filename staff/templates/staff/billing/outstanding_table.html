@@ -15,41 +15,44 @@
     <th>Action</th>
   </tr>
 {% for bill in bills %}
-  <tr class="{% cycle 'row-odd' 'row-even' %}">
-    <td>
-      <a style="color:{% user_billing_color bill.user %};" href="{{ bill.get_staff_url }}">{{ bill.id }}</a>
-    </td>
-    <td nowrap>{{ bill.period_start }}</td>
-    <!-- <td nowrap>{{ bill.period_end }}</td> -->
-    <td>
-      <a href="{% url 'staff:members:detail' bill.user.username %}">{{ bill.user.get_full_name }}</a>
-    </td>
-    <td id='amount-td'>
-      {% if bill.monthly_rate %}${{ bill.monthly_rate }}{% endif %}
-    </td>
-    <td id='amount-td' style="color:red;">
-      {% if bill.overage_amount %}${{ bill.overage_amount }}{% endif %}
-    </td>
-    <td id='amount-td'><strong>${{ bill.amount }}</strong></td>
-    <td id='amount-td'>
-      {% if bill.total_paid %}
-        ${{ bill.total_paid }}
-      {% endif %}
-    </td>
-    <td>
-      {{ bill.coworking_day_count }}
-      {% if bill.coworking_day_count != bill.coworking_day_billable_count %}
-        ({{ bill.coworking_day_billable_count}})
-      {% endif %}
-    </td>
-    <td nowrap>
-      {% include "staff/billing/action_bill_delay.html" %}
-      {% with bill.user as user %}
-        {% include "staff/billing/action_billing_flag.html" %}
-      {% endwith %}
-      {% include "staff/billing/action_bill_paid.html" %}
-    </td>
-  </tr>
+  {% if bill.amount > bill.total_paid %}
+    <tr class="{% cycle 'row-odd' 'row-even' %}">
+      <td>
+        <a style="color:{% user_billing_color bill.user %};" href="{{ bill.get_staff_url }}">{{ bill.id }}</a>
+      </td>
+      <td nowrap>{{ bill.period_start }}</td>
+      <!-- <td nowrap>{{ bill.period_end }}</td> -->
+
+      <td>
+        <a href="{% url 'staff:members:detail' bill.user.username %}">{{ bill.user.get_full_name }}</a>
+      </td>
+      <td id='amount-td'>
+        {% if bill.monthly_rate %}${{ bill.monthly_rate }}{% endif %}
+      </td>
+      <td id='amount-td' style="color:red;">
+        {% if bill.overage_amount %}${{ bill.overage_amount }}{% endif %}
+      </td>
+      <td id='amount-td'><strong>${{ bill.amount }}</strong></td>
+      <td id='amount-td'>
+        {% if bill.total_paid %}
+          ${{ bill.total_paid }}
+        {% endif %}
+      </td>
+      <td>
+        {{ bill.coworking_day_count }}
+        {% if bill.coworking_day_count != bill.coworking_day_billable_count %}
+          ({{ bill.coworking_day_billable_count}})
+        {% endif %}
+      </td>
+      <td nowrap>
+        {% include "staff/billing/action_bill_delay.html" %}
+        {% with bill.user as user %}
+          {% include "staff/billing/action_billing_flag.html" %}
+        {% endwith %}
+        {% include "staff/billing/action_bill_paid.html" %}
+      </td>
+    </tr>
+  {% endif %}
 {% endfor %}
   <tr class='total-row'>
     <td></td>
@@ -58,8 +61,7 @@
     <td></td>
     <td><strong>{{ bills|length }} bill{{ bills|pluralize }}:</strong></td>
     <td>
-      <strong>$
-        <span id='bills-total'>{{ total|floatformat:2|intcomma }}</span>
+      <strong>$<span id='bills-total'>{{ total|floatformat:2|intcomma }}</span>
       </strong>
     </td>
     <td></td>
