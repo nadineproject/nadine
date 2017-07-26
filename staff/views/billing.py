@@ -62,20 +62,42 @@ def bill_list(request):
 @staff_member_required
 def outstanding(request):
     closed_bills = UserBill.objects.outstanding().filter(closed_ts__isnull=False, in_progress=False).order_by('due_date')
-    closed_bills_total = closed_bills.aggregate(amount=Sum('bill_amount'))
+    closed_bills_total = closed_bills.aggregate(amount=Sum('bill_amount'))['amount']
     open_bills = UserBill.objects.outstanding().filter(closed_ts__isnull=True, in_progress=False).order_by('due_date')
-    open_bills_total = open_bills.aggregate(amount=Sum('bill_amount'))
+    open_bills_total = open_bills.aggregate(amount=Sum('bill_amount'))['amount']
+    subscriptions_due = []
+    subscriptions_due_total = 0
+    dropins = []
+    dropin_total = 0
+    other_bills = []
+    other_bills_totals = 0
+    for bill in open_bills:
+        if bill.subscriptions_due:
+            subscriptions_due.append(bill)
+            subscriptions_due_total += bill.amount
+        elif bill.subscriptions().count() == 0:
+            dropins.append(bill)
+            dropin_total += bill.amount
+        else:
+            other_bills.append(bill)
+            other_bills_totals += bill.amount
     in_progress = UserBill.objects.outstanding().filter(in_progress=True).order_by('due_date')
-    in_progress_total = in_progress.aggregate(amount=Sum('bill_amount'))
+    in_progress_total = in_progress.aggregate(amount=Sum('bill_amount'))['amount']
     bill_count = closed_bills.count() + open_bills.count() + in_progress.count()
+    bill_total = closed_bills_total + open_bills_total + in_progress_total
     context = {
         'closed_bills': closed_bills,
-        'open_bills': open_bills,
+        'subscriptions_due': subscriptions_due,
         'in_progress': in_progress,
+        'dropins': dropins,
+        'other_bills': other_bills,
+        'dropin_total': dropin_total,
         'closed_bills_total': closed_bills_total,
-        'open_bills_total': open_bills_total,
+        'subscriptions_due_total': subscriptions_due_total,
         'in_progress_total': in_progress_total,
-        'bill_count': bill_count
+        'other_bills_totals': other_bills_totals,
+        'bill_count': bill_count,
+        'bill_total': bill_total,
     }
     return render(request, 'staff/billing/outstanding.html', context)
 

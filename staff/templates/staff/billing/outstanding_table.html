@@ -4,7 +4,8 @@
 <table class='outstanding-table responsive-table'>
   <tr>
     <th>ID *</th>
-    <th>Due Date</th>
+    <th>Period Start</th>
+    <!-- <th>Period End</th> -->
     <th>User</th>
     <th>Monthly</th>
     <th>Overage</th>
@@ -18,7 +19,8 @@
     <td>
       <a style="color:{% user_billing_color bill.user %};" href="{{ bill.get_staff_url }}">{{ bill.id }}</a>
     </td>
-    <td nowrap>{{ bill.due_date}}</td>
+    <td nowrap>{{ bill.period_start }}</td>
+    <!-- <td nowrap>{{ bill.period_end }}</td> -->
     <td>
       <a href="{% url 'staff:members:detail' bill.user.username %}">{{ bill.user.get_full_name }}</a>
     </td>

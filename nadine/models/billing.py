@@ -301,6 +301,15 @@ class UserBill(models.Model):
                 return self.amount - self.monthly_rate
 
     @property
+    def subscriptions_due(self):
+        ''' True if this bill is not paid and the amount paid is less than the montnly rate. '''
+        if self.is_paid:
+            return False
+        if not self.monthly_rate:
+            return False
+        return self.total_paid < self.monthly_rate
+
+    @property
     def package_name(self):
         ''' If all subscriptions have the same package_name we'll assume that name for this bill as well. '''
         package_name = None
@@ -427,6 +436,7 @@ class UserBill(models.Model):
             description = description,
             amount = amount
         )
+        
     ###########################################################################
     # Coworking Day Methods
     ############################################################################

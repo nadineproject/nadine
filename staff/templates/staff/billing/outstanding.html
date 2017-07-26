@@ -15,12 +15,30 @@
 
 <h4>Outstanding Bills ({{ bill_count }})</h4>
 <p style="padding: 1% 2% 2% 2%; font-size: 1.2em;">
-A bill is outstanding if there is an amount owed on the bill.  Subscriptions are due at the start of the bill period,
-and overages are due at the end of the bill period.
+A bill is outstanding if there is an amount owed on the bill.
 </p>
 
+{% if bill_count == 0 %}
+  <p>There are no bills!</p>
+{% endif %}
+
+{% if subscriptions_due %}
+  <h6>Subscriptions Due (<a onclick="$('#open_help').toggle();">?</a>)</h6>
+  <table>
+    <tr id="open_help" class="help_text">
+      <td style='font-size: 1.2em;'>
+        Subscriptions are due at the beginning of a bill period. Bills will appear in this list if they are<br/>
+        open, outstanding, and the amount paid is less than the total montly rate for all subscriptions.
+      </td>
+    </tr>
+  </table>
+  {% with subscriptions_due as bills and subscriptions_due_total as total  %}
+    {% include "staff/billing/outstanding_table.html" %}
+  {% endwith %}
+{% endif %}
+
 {% if closed_bills %}
-<h6>Closed (<a onclick="$('#closed_help').toggle();">?</a>)</h6>
+<h6>Overages Due (<a onclick="$('#closed_help').toggle();">?</a>)</h6>
   <table>
     <tr id="closed_help" class="help_text">
       <td style='font-size: 1.2em;'>
@@ -29,36 +47,32 @@ and overages are due at the end of the bill period.
       </td>
     </tr>
   </table>
-  {% with closed_bills as bills and closed_bills_total.amount as total %}
+  {% with closed_bills as bills and closed_bills_total as total %}
     {% include "staff/billing/outstanding_table.html" %}
   {% endwith %}
 {% endif %}
 
-{% if open_bills %}
-  <h6>Open (<a onclick="$('#open_help').toggle();">?</a>)</h6>
-  <table>
-    <tr id="open_help" class="help_text">
-      <td style='font-size: 1.2em;'>
-        If a bill is open and outstanding it most likely indicates the start of a new bill period when subscriptions are due.<br/>
-        This also includes non-member activity where a bill remains open until it is paid.
-      </td>
-    </tr>
-  </table>
-  {% with open_bills as bills and open_bills_total.amount as total  %}
+{% if dropins %}
+  <h6>Drop-ins</h6>
+  {% with dropins as bills and dropin_total as total  %}
     {% include "staff/billing/outstanding_table.html" %}
   {% endwith %}
 {% endif %}
 
-{% if not outstanding and not open_bills %}
-  <p>There are no bills!</p>
+{% if dropins %}
+  <h6>Other Open Bills</h6>
+  {% with other_bills as bills and other_bills_totals as total  %}
+    {% include "staff/billing/outstanding_table.html" %}
+  {% endwith %}
 {% endif %}
 
 {% if in_progress %}
-  <h6>In Progress ({{ in_progress|length }})</h6>
-  {% with in_progress as bills and True as in_progress and in_progress_total.amount as total  %}
+  <h6>In Progress</h6>
+  {% with in_progress as bills and True as in_progress and in_progress_total as total  %}
     {% include "staff/billing/outstanding_table.html" %}
   {% endwith %}
 {% endif %}
+
 
 <br/>
 
