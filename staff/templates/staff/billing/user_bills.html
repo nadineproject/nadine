@@ -9,21 +9,21 @@
 {% block content %}
 <h4>Bills for <a href="{% url 'staff:members:detail' user.username %}">{{ user.get_full_name }}</a></h4>
 {% if bills %}
-  <table>
+  <table style='margin: 2%; width: 96%;' class='responsive-table'>
     <tr>
-      <th>ID</th>
-      <th>Created</th>
-      <th>Due</th>
-      <th>Period Start</th>
-      <th>Period End</th>
-      <th>Closed</th>
-      <th>Lines</th>
-      <th class="amount">Amount</th>
-      <th class="amount">Paid</th>
+      <th class='sub-th'>ID</th>
+      <th class='sub-th'>Created</th>
+      <th class='sub-th'>Due</th>
+      <th class='sub-th'>Period Start</th>
+      <th class='sub-th'>Period End</th>
+      <th class='sub-th'>Closed</th>
+      <th class='sub-th'>Lines</th>
+      <th class="sub-th amount">Amount</th>
+      <th class="sub-th amount">Paid</th>
     </tr>
 
     {% for bill in bills %}
-      <tr class="{% cycle 'row-even' 'row-odd' %}">
+      <tr class="{% cycle 'row-odd' 'row-even' %}">
         <td><a href="{% url 'staff:billing:bill' bill.id %}">{{ bill.id }}</a></td>
         <td>{{ bill.created_ts|date:"m/d/y" }}</a></td>
         <td>{{ bill.due_date|date:"m/d/y" }}</a></td>

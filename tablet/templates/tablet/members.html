@@ -47,7 +47,7 @@
 			<span class="tile"><a href="?startswith=Y">Y</a></span>
 			<span class="tile"><a href="?startswith=Z">Z</a></span>
 			<span class="tile"><a href="{% url 'tablet:search' %}">?</a></span>
-
 		</div>
+		<button style='width: 20%; margin-left:40%; margin-top: 10%; background-color: RGBA(51, 136, 204, 1.00); color: white; text-shadow: none; padding: 1%;font-size: .8em; border-radius: 3px;' class='btn' onClick="location.href='{% url 'tablet:motd' %}'">Home</button>
 	{% endif %}
 {% endblock %}
