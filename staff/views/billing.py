@@ -62,9 +62,23 @@ def bill_list(request):
 @staff_member_required
 def outstanding(request):
     closed_bills = UserBill.objects.outstanding().filter(closed_ts__isnull=False, in_progress=False).order_by('due_date')
-    closed_bills_total = closed_bills.aggregate(amount=Sum('bill_amount'))['amount']
     open_bills = UserBill.objects.outstanding().filter(closed_ts__isnull=True, in_progress=False).order_by('due_date')
-    open_bills_total = open_bills.aggregate(amount=Sum('bill_amount'))['amount']
+    in_progress = UserBill.objects.outstanding().filter(in_progress=True).order_by('due_date')
+    if closed_bills:
+        closed_bills_total = closed_bills.aggregate(amount=Sum('bill_amount'))['amount']
+    else:
+        closed_bills_total = 0
+
+    if open_bills:
+        open_bills_total = open_bills.aggregate(amount=Sum('bill_amount'))['amount']
+    else:
+        open_bills_total = 0
+
+    if in_progress:
+        in_progress_total = in_progress.aggregate(amount=Sum('bill_amount'))['amount']
+    else:
+        in_progress_total = 0
+
     subscriptions_due = []
     subscriptions_due_total = 0
     dropins = []
@@ -81,8 +95,7 @@ def outstanding(request):
         else:
             other_bills.append(bill)
             other_bills_totals += bill.amount
-    in_progress = UserBill.objects.outstanding().filter(in_progress=True).order_by('due_date')
-    in_progress_total = in_progress.aggregate(amount=Sum('bill_amount'))['amount']
+
     bill_count = closed_bills.count() + open_bills.count() + in_progress.count()
     bill_total = closed_bills_total + open_bills_total + in_progress_total
     context = {
