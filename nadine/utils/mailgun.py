@@ -65,6 +65,7 @@ def clean_mailgun_data(mailgun_data):
     logger.debug("clean mailgun_data: %s" % mailgun_data)
     return mailgun_data
 
+
 def inject_list_headers(mailgun_data):
     # Attach some headers: LIST-ID, REPLY-TO, Precedence...
     # Reply-To: list email apparently has some religious debates
@@ -87,13 +88,35 @@ def mailgun_send(mailgun_data, files=None, clean_first=True, inject_list_id=True
             logger.debug("mailgun_send: setting testmode=yes")
             mailgun_data["o:testmode"] = "yes"
 
-    resp = requests.post("https://api.mailgun.net/v2/%s/messages" % settings.MAILGUN_DOMAIN,
-                         auth=("api", settings.MAILGUN_API_KEY),
-                         data=mailgun_data,
-                         files=files
-                         )
+    mailgun_url = settings.MAILGUN_DOMAIN
+    if not mailgun_url.startswith("http"):
+        mailgun_url = "https://api.mailgun.net/v2/" + mailgun_url
+    mailgun_url += "/messages"
+
+    resp = requests.post(
+        mailgun_url,
+        auth=("api", settings.MAILGUN_API_KEY),
+        data=mailgun_data,
+        files=files,
+    )
     logger.debug("Mailgun response: %s" % resp.text)
     return HttpResponse(status=200)
+
+
+def validate_address(email_address):
+    ''' Use the mailgun API to validate the given email address. '''
+    if not hasattr(settings, "MAILGUN_VALIDATION_KEY"):
+        raise MailgunException("Missing required MAILGUN_VALIDATION_KEY setting!")
+    response = requests.get(
+        "https://api.mailgun.net/v3/address/validate",
+        auth=("api", settings.MAILGUN_VALIDATION_KEY),
+        params={"address": email_address})
+    if not response or not response.ok:
+        raise MailgunException("Did not get an OK response from validation request")
+    response_dict = json.loads(response.text)
+    if not response_dict or 'is_valid' not in response_dict:
+        raise MailgunException("Did not get expected JSON response")
+    return response_dict['is_valid']
 
 
 # TODO - move to email?
