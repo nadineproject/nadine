@@ -14,19 +14,17 @@
 <div id="monthly-members">
 	<table border="1">
       <tr>
-         <th>Member</th>
-         <th>Start Date</th>
-         <th>Package</th>
-         <th>Rate</th>
-         <th>Note</th>
+         <th class='sub-th'>Member</th>
+         <th class='sub-th'>Start Date</th>
+         <th class='sub-th'>Package</th>
+         <th class='sub-th'>Rate</th>
       </tr>
       {% for membership in memberships %}
-	      <tr class="{% cycle 'row-even' 'row-odd' %}">
+	      <tr class="{% cycle 'row-odd' 'row-even' %}">
 	         <td><a href="{{ membership.who_url }}">{{ membership.who }}</a></td>
 	         <td>{{ membership.start_date }}</td>
 	         <td>{{ membership.package_name }}</td>
 	         <td>${{ membership.monthly_rate }}</td>
-	         <td class="note-cell">{{ membership.note }}</td>
 	      </tr>
 	   {% endfor %}
 

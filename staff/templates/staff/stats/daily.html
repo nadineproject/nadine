@@ -8,17 +8,17 @@
 
 <!-- Daily Logs By Month -->
 <div id="daily-logs-by-month">
-  <table border="1" width="100%">
+  <table border="1" width="100%" style='margin-top: 3%;'>
     <tr>
-      <th>Month</th>
-      <th>Trial</th>
-      <th>Waived</th>
-      <th>Billable</th>
-      <th>Total</th>
+      <th class='sub-th'>Month</th>
+      <th class='sub-th'>Trial</th>
+      <th class='sub-th'>Waived</th>
+      <th class='sub-th'>Billable</th>
+      <th class='sub-th'>Total</th>
     </tr>
 
     {% for numbers in daily_logs_by_month %}
-      <tr class="{% cycle 'row-even' 'row-odd' %}">
+      <tr class="{% cycle 'row-odd' 'row-even' %}">
         <td align="center">{{ numbers.month }}</td>
         <td align="center">{{ numbers.Trial }}</td>
         <td align="center">{{ numbers.Waive }}</td>

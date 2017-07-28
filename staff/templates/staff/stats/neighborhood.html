@@ -41,13 +41,13 @@ function toggleDetails(neighborhoodID){
 <div id="neighborhoods">
 	<table class="neighborhood_table">
       <tr>
-         <th>&nbsp;</th>
-         <th>Neighborhood</th>
-         <th>Members</th>
+         <th class='sub-th'>&nbsp;</th>
+         <th class='sub-th'>Neighborhood</th>
+         <th class='sub-th'>Members</th>
       </tr>
 
       {% for hood in neighborhoods %}
-	      <tr class="{% cycle 'row-even' 'row-odd' %}">
+	      <tr class="{% cycle 'row-odd' 'row-even' %}">
 	         <td>
 	            {% ifnotequal hood.count 0 %}
 	               <a class="detail-toggle" id="neighborhood-details-toggle-{{hood.id}}"

@@ -110,6 +110,12 @@ canvas#cvs {
   background-color: #9F9;
 }
 
+.sub-th {
+  background-color: RGBA(76, 76, 76, 1.00);
+	color: white;
+	border-radius: 0;
+}
+
 .titles {
   margin: 10px 0;
 }
