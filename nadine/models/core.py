@@ -29,13 +29,11 @@ logger = logging.getLogger(__name__)
 
 
 GENDER_CHOICES = (
-    ('U', 'Unknown'),
+    ('U', 'Not recorded'),
     ('M', 'Man'),
     ('F', 'Woman'),
     ('O', 'Something else'),
 )
-
-
 
 
 class HowHeard(models.Model):

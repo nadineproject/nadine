@@ -112,7 +112,7 @@ function gotoEmailReset(emailAddress){
         {% if user.profile.gender %}
             <tr>
                 <td class='detail-title'>Gender</td>
-                <td class='detail-data'>{{ user.profile.gender|gender_filter }}</td>
+                <td class='detail-data'>{{ user.profile.get_gender_display }}</td>
             </tr>
         {% endif %}
 

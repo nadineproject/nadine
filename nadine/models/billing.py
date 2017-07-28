@@ -436,7 +436,7 @@ class UserBill(models.Model):
             description = description,
             amount = amount
         )
-        
+
     ###########################################################################
     # Coworking Day Methods
     ############################################################################
@@ -598,6 +598,10 @@ class SubscriptionLineItem(BillLineItem):
 
 class CoworkingDayLineItem(BillLineItem):
     day = models.ForeignKey('CoworkingDay', related_name="line_items", on_delete=models.CASCADE)
+
+
+class EventLineItem(BillLineItem):
+    event = models.ForeignKey('Event', related_name="line_items", on_delete=models.CASCADE)
 
 
 class Payment(models.Model):
