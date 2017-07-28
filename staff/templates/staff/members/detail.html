@@ -100,6 +100,14 @@ function gotoEmailReset(emailAddress){
             <td class='detail-data'>{{ user.username }}</td>
         </tr>
 
+        <!-- Billing Day -->
+        {% if user.profile.is_active %}
+          <tr>
+            <td class='detail-title'>Bill Day</td>
+            <td class='detail-data'> {{ user.membership.bill_day_str }} of the month</td>
+          </tr>
+        {% endif %}
+
         <!-- Website -->
         {% if user.profile.url_personal %}
             <tr>
