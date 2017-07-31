@@ -435,10 +435,9 @@ class Membership(models.Model):
                 # Make sure we are creating a valid date with these
                 month_start, month_end = calendar.monthrange(year, month)
                 if month_end < self.bill_day:
-                    bill_day = int(self.bill_day)
                     # We went too far, but now we know what to do
                     period_start = date(year, target_date.month, 1)
-                    period_end = date(year, target_date.month, bill_day) - timedelta(days=1)
+                    period_end = date(year, target_date.month, int(self.bill_day) - 1)
                     return (period_start, period_end)
 
             # print("year=%d, month=%s, day=%s" % (year, month, day))

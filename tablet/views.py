@@ -75,7 +75,7 @@ def search(request):
 
 def user_profile(request, username):
     user = get_object_or_404(User, username=username)
-
+    
     can_signin = True
     if user.membership.has_desk():
         # They have a desk so they can't sign in
