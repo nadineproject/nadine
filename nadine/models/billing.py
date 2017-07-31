@@ -600,8 +600,8 @@ class CoworkingDayLineItem(BillLineItem):
     day = models.ForeignKey('CoworkingDay', related_name="line_items", on_delete=models.CASCADE)
 
 
-class EventLineItem(BillLineItem):
-    event = models.ForeignKey('Event', related_name="line_items", on_delete=models.CASCADE)
+# class EventLineItem(BillLineItem):
+#     event = models.ForeignKey('Event', related_name="line_items", on_delete=models.CASCADE)
 
 
 class Payment(models.Model):
