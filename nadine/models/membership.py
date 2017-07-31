@@ -279,7 +279,8 @@ class Membership(models.Model):
         if self.is_individual:
             # The user themselves
             users.add(self.individualmembership.user)
-            guest_subscriptions = ResourceSubscription.objects.filter(paid_by=self.individualmembership.user)
+            # guest_subscriptions = ResourceSubscription.objects.filter(paid_by=self.individualmembership.user, period_start__gte=period_start)
+            guest_subscriptions = ResourceSubscription.objects.for_period(period_start, period_end).filter(paid_by=self.individualmembership.user)
             for s in guest_subscriptions:
                 users = users.union(s.membership.users_in_period(period_start, period_end))
         elif self.is_organization:
@@ -378,10 +379,11 @@ class Membership(models.Model):
 
     def subscriptions_for_period(self, period_start, period_end):
         ''' Return all active subscriptions for a given period. '''
-        started = Q(start_date__lte=period_end)
-        unending = Q(end_date__isnull=True)
-        future_ending = Q(end_date__gte=period_start)
-        return self.subscriptions.filter(started).filter(unending | future_ending).distinct()
+        # started = Q(start_date__lte=period_end)
+        # unending = Q(end_date__isnull=True)
+        # future_ending = Q(end_date__gte=period_start)
+        # return self.subscriptions.filter(started).filter(unending | future_ending).distinct()
+        return ResourceSubscription.objects.for_period(period_start, period_end).filter(membership=self)
 
     def subscriptions_for_day(self, target_date=None):
         ''' Return the active subscriptions on a given day. '''
@@ -513,6 +515,13 @@ class OrganizationMembership(Membership):
 
 
 class SubscriptionManager(models.Manager):
+
+    def for_period(self, period_start, period_end):
+        ''' Return all active subscriptions for a given period. '''
+        started = Q(start_date__lte=period_end)
+        unending = Q(end_date__isnull=True)
+        future_ending = Q(end_date__gte=period_start)
+        return self.filter(started).filter(unending | future_ending).distinct()
 
     def active_subscriptions(self, target_date=None):
         if not target_date:

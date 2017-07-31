@@ -161,31 +161,41 @@ class MembershipTestCase(TestCase):
     def test_users_in_period(self):
         user1 = User.objects.create(username='user_gen1', first_name='Gen', last_name='One')
         user2 = User.objects.create(username='user_gen2', first_name='Gen', last_name='Two')
-        subscription = ResourceSubscription.objects.create(
-            membership = user1.membership,
+        membership1 = Membership.objects.for_user(user1)
+        subscription1 = ResourceSubscription.objects.create(
+            membership = membership1,
             resource = self.test_resource,
             start_date = date(2017, 6, 1),
             monthly_rate = 100.00,
             overage_rate = 0,
         )
-        ps, pe = user1.membership.get_period(date(2017, 6, 1))
-        users = user1.membership.users_in_period(ps, pe)
+        ps, pe = membership1.get_period(date(2017, 6, 1))
+        users = membership1.users_in_period(ps, pe)
         self.assertEqual(1, len(users))
         self.assertTrue(user1 in users)
         self.assertFalse(user2 in users)
 
-        subscription = ResourceSubscription.objects.create(
-            membership = user2.membership,
+        # User2 subscription paid by User1 starting in May
+        membership2 = Membership.objects.for_user(user2)
+        subscription2 = ResourceSubscription.objects.create(
+            membership = membership2,
             resource = self.test_resource,
-            start_date = date(2017, 6, 1),
+            start_date = date(2017, 5, 1),
             monthly_rate = 100.00,
             overage_rate = 0,
             paid_by = user1,
         )
-        users = user1.membership.users_in_period(ps, pe)
+        # User2 should show up in User1's list
+        users = membership1.users_in_period(ps, pe)
         self.assertEqual(2, len(users))
         self.assertTrue(user1 in users)
         self.assertTrue(user2 in users)
+
+        # End User2 membership 5/31 and expect it not in User1's list. (Bug #338)
+        membership2.end_all(date(2017, 5, 31))
+        users = membership1.users_in_period(ps, pe)
+        self.assertEqual(1, len(users))
+        self.assertFalse(user2 in users)
 
     def test_users_in_period_organization(self):
         # An organization membership should have all members of that org
