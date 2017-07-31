@@ -5,17 +5,6 @@ from django.template import Library
 register = template.Library()
 
 @register.filter
-def gender_filter(value):
-    if value == 'F':
-        return 'Female'
-    elif value == 'M':
-        return 'Male'
-    elif value == 'O':
-        return 'Something else'
-    else:
-        return 'Not shared'
-
-@register.filter
 def resource_filter(value):
     if value == 1 or value == '1':
         return 'Coworking Day'
