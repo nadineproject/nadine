@@ -165,8 +165,8 @@
       {% if line_item.coworkingdaylineitem %}
         <a href="{{ line_item.coworkingdaylineitem.day.get_admin_url }}">Edit</a>
       {% endif %}
-      {% if line_item.roombookinglineitem %}
-        <a href="{{ line_item.roombookinglineitem.day.get_admin_url }}">Edit</a>
+      {% if line_item.eventlineitem %}
+        <a href="{{ line_item.eventlineitem.get_admin_url }}">Edit</a>
       {% endif %}
       </td>
     </tr>
