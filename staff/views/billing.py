@@ -113,7 +113,7 @@ def action_bill_paid(request, bill_id):
     if 'payment_date' in request.POST:
         payment.created_ts = datetime.strptime(request.POST['payment_date'], "%Y-%m-%d").date()
         payment.save()
-    messages.success(request, "Bill %d ($%s) paid" % (bill.id, amount))
+    messages.success(request, "Bill %d ($%s) paid" % (bill.id, format(amount, '.2f')))
     if 'next' in request.POST:
         return HttpResponseRedirect(request.POST['next'])
     return HttpResponseRedirect(reverse('staff:billing:outstanding'))
