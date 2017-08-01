@@ -128,20 +128,6 @@ class UserBillTestCase(TestCase):
         self.assertTrue(bill.includes_coworking_day(day))
         self.assertEquals(bill, day.bill)
 
-<<<<<<< HEAD
-    def test_add_room_booking(self):
-        event = Event.objects.create(
-            user = self.user1,
-            start_ts = localtime(now()) - timedelta(hours=2),
-            end_ts = localtime(now()),
-            charge = 40
-        )
-        bill = UserBill.objects.create_for_day(self.user1)
-        self.assertFalse(bill.includes_room_booking(event))
-        bill.add_room_bookings(event)
-        self.asserTrue(bill.includes_room_booking(event))
-        self.assertEquals(bill, event.bill)
-=======
     def test_add_event(self):
         event = Event.objects.create(
             user = self.user1,
@@ -154,7 +140,6 @@ class UserBillTestCase(TestCase):
         bill.add_event(event)
         self.assertTrue(bill.includes_event(event))
         # self.assertEquals(bill, day.bill)
->>>>>>> 2.0
 
     def test_monthly_rate(self):
         bill = UserBill.objects.create_for_day(self.user1, today)
