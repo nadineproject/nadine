@@ -117,8 +117,13 @@ def create_booking(request):
     start_ts_mil = ((time.mktime(start_ts.timetuple()) * 1000))
 
     # Make auto date for start and end if not otherwise given
+    # If member, return all rooms
+    # If not a member, return only public rooms
     room_dict = {}
-    rooms = Room.objects.available(start=start_ts, end=end_ts, has_av=has_av, has_phone=has_phone, floor=floor, seats=seats)
+    if user.membership.active_subscriptions():
+        rooms = Room.objects.available(start=start_ts, end=end_ts, has_av=has_av, has_phone=has_phone, floor=floor, seats=seats)
+    else:
+        rooms = rooms = Room.objects.available(start=start_ts, end=end_ts, has_av=has_av, has_phone=has_phone, floor=floor, seats=seats).filter(members_only=False)
 
     # Get all the events for each room in that day
     target_date = start_ts.date()

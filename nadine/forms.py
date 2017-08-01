@@ -668,6 +668,7 @@ class RoomForm(forms.Form):
     has_phone = forms.BooleanField(required=False)
     default_rate = forms.FloatField(required=True, min_value=0, max_value=None)
     image = forms.FileField(required=False)
+    members_only = forms.BooleanField(required=False)
 
     def save(self):
         if not self.is_valid():
@@ -683,6 +684,7 @@ class RoomForm(forms.Form):
         has_phone = self.cleaned_data['has_phone']
         default_rate = self.cleaned_data['default_rate']
         image = self.cleaned_data['image']
+        members_only = self.cleaned_data['members_only']
 
         if room_id != None:
             room = Room.objects.get(id=room_id)
@@ -695,11 +697,12 @@ class RoomForm(forms.Form):
             room.has_av = has_av
             room.has_phone = has_phone
             room.default_rate = default_rate
+            room.members_only = members_only
             if image:
                 room.image = image
             room.save()
         else:
-            room = Room(name=name, location=location, description=description, floor=floor, seats=seats, max_capacity=max_capacity, has_av=has_av, has_phone=has_phone, default_rate=default_rate, image=image)
+            room = Room(name=name, location=location, description=description, floor=floor, seats=seats, max_capacity=max_capacity, has_av=has_av, has_phone=has_phone, default_rate=default_rate, image=image, members_only=members_only)
             room.save()
 
         return room
