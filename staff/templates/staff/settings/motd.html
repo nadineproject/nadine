@@ -82,6 +82,7 @@
       CKEDITOR.replace('id_message');
       $('#id_start_ts').addClass('datepicker');
       $('#id_end_ts').addClass('datepicker');
+      $('#id_start_ts').val(formatDate(new Date()));
 
       $('#id_delay_ms').val('{{ delay }}');
       $('#id_start_ts').attr('required', true);
