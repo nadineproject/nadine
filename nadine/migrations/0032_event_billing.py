@@ -21,4 +21,9 @@ class Migration(migrations.Migration):
             ],
             bases=('nadine.billlineitem',),
         ),
+        migrations.AddField(
+            model_name='event',
+            name='members_only',
+            field=models.BooleanField(default=False),
+        ),
     ]
