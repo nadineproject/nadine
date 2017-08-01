@@ -68,7 +68,7 @@ def calculate_monthly_low_high(package, dates):
     high = 0
     low = 100000000
     for working_date in dates:
-        num_residents = Membership.objects.active_memberships(working_date).filter(package=package).count()
+        num_residents = User.helper.members_by_package(package, working_date).count()
         high = max(high, num_residents)
         low = min(low, num_residents)
         avg = int(round((low + high) / 2))
@@ -129,7 +129,7 @@ def memberships(request):
         dates = [date(month.year, month.month, i) for i in range(1, month.days_in_month + 1)]
 
         for package in MembershipPackage.objects.filter(enabled=True):
-            data = calculate_monthly_low_high(package.id, dates)
+            data = calculate_monthly_low_high(package, dates)
             if average_only:
                 month.data[package.name] = data[2]
             else:

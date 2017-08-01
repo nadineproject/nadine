@@ -70,7 +70,3 @@ EMAIL_SUBJECT_PREFIX = "[COWORKING] "  # or None if you want no subject prefix
 
 TEAM_EMAIL_ADDRESS = "team@officenomads.com"
 TEAM_MEMBERSHIP_PLAN = "ON Team"
-
-BILLING_START_DATE = datetime.date(2009, 11, 17)
-NEW_MEMBER_DEPOSIT = 500
-NON_MEMBER_DROPIN_FEE = 25

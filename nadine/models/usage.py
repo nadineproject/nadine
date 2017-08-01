@@ -93,6 +93,13 @@ class Event(models.Model):
     charge = models.DecimalField(decimal_places=2, max_digits=9, null=True)
     paid_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="guest_event", on_delete=models.CASCADE)
     is_public = models.BooleanField(default=False)
+    members_only = models.BooleanField(default=False)
+
+    @property
+    def hours(self):
+        ''' How many hours is this event down to 15 minutes. '''
+        time_difference = self.end_ts - self.start_ts
+        return time_difference.seconds/60/15/4.0
 
     def __str__(self):
         if self.description:
