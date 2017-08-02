@@ -12,27 +12,15 @@ from user import *
 from organization import *
 from billing import *
 from membership import *
+from usage import *
 from old_models import *
-
 
 # Register the objects with the admin interface
 admin.site.register(Neighborhood)
 admin.site.register(Industry)
 admin.site.register(HowHeard)
 admin.site.register(Room)
-admin.site.register(Event)
 admin.site.register(Resource)
-
-
-class CoworkingDayAdmin(StyledAdmin):
-    list_display = ('visit_date', 'user', 'paid_by', 'created_ts')
-    raw_id_fields = ('user', 'paid_by', 'bill')
-    search_fields = ('user__first_name', 'user__last_name', 'paid_by__first_name', 'paid_by__last_name')
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "paid_by":
-            kwargs["queryset"] = User.helper.active_members()
-        return super(CoworkingDayAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
-admin.site.register(CoworkingDay, CoworkingDayAdmin)
 
 
 class SentEmailLogAdmin(StyledAdmin):
