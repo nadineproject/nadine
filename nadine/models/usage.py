@@ -95,6 +95,7 @@ class EventManager(models.Manager):
 
 
 class Event(models.Model):
+    objects = EventManager()
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     room = models.ForeignKey('Room', null=True, on_delete=models.CASCADE)
     created_ts = models.DateTimeField(auto_now_add=True)

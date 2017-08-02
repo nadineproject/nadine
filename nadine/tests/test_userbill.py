@@ -13,11 +13,7 @@ from nadine.models.billing import UserBill, BillLineItem, Payment
 from nadine.models.membership import MembershipPackage, SubscriptionDefault
 from nadine.models.membership import Membership, ResourceSubscription
 from nadine.models.organization import Organization
-<<<<<<< HEAD
-from nadine.models.resource import Resource
-=======
 from nadine.models.resource import Resource, Room
->>>>>>> 2.0
 from nadine.models.usage import CoworkingDay, Event
 
 
