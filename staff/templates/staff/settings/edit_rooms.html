@@ -62,6 +62,7 @@
       <th class='sub-th'>Has Phone</th>
       <th class='sub-th'>Default Rate</th>
       <th class='sub-th'></th>
+      <th class='sub-th'></th>
     </tr>
   </tr>
   {% for r in rooms %}
@@ -72,6 +73,7 @@
       <td>{{ r.max_capacity }}</td>
       <td>{{ r.has_av|yesno:"Yes,No" }}</td>
       <td>{{ r.has_phone|yesno:"Yes,No"  }}</td>
+      <td>{% if r.members_only %}Members Only {% endif %}</td>
       <td style='text-align: center;'>{{ r.default_rate }}</td>
       <form action='.' method='GET'>
         <input type='hidden' name='room' value='{{ r.id }}' />
