@@ -38,6 +38,14 @@
             <input type="date" name="date" value='{{ date }}' readonly />
           </td>
         </tr>
+        {% if rate != 'None' %}
+        <tr>
+          <td><strong>Cost:</strong></td>
+          <td>
+            <input id='rate' name="rate"  readonly />
+          </td>
+        </tr>
+        {% endif %}
       </table>
       <table class='booking-bar'>
         <thead>
@@ -119,6 +127,8 @@
         selectYears: 3,
         format: 'yyyy-mm-dd'
       });
+
+      getRate($('#start-time').val(), $('#end-time').val(), '{{ date }}')
 
       //Helper functions for toggling calendar bar
       function toggleStatus(id) {
@@ -220,6 +230,16 @@
             toggleStatus(id);
           }
         }
+      }
+
+      function getRate(start, end, date){
+        var dateSplit = date.split('-');
+        var startTimestamp = new Date(date[0], (date[1] - 1), date[2], start.split(':')[0], start.split(':')[1]);
+        var endTimestamp = new Date(date[0], (date[1] - 1), date[2], end.split(':')[0], end.split(':')[1]);
+
+        var totalTime = (endTimestamp - startTimestamp) / 36e5;
+        $('#rate').val('$' + totalTime * parseInt('{{ rate }}'));
+        console.log();
       }
 
       //click on box to change the reservation
@@ -366,6 +386,7 @@
         var id = timeCoersionUp(hour, minutes)[0];
         var end = timeStringLength(id);
         start = parseFloat(start);
+        getRate(end, $('#end_time').val(), '{{ date }}')
 
         if ($('#hour-' + id).hasClass('available')) {
           $('#cal-error').html('<tr><td>You made your reservation too short.</td></tr>');
@@ -399,6 +420,7 @@
         }
         var newStart = hour + ':' + minutes;
         var id = parseFloat(hour + minutes);
+        getRate(newStart, $('#end_time').val(), '{{ date }}')
 
         if ($('#hour-' + id).hasClass('reserved')) {
           $('#cal-error').html('<tr><td>Your requested booking overlaps with another reservation.</td></tr>');
@@ -432,6 +454,7 @@
         }
         var newEnd = hour + ':' + minutes;
         var id = parseFloat(hour + minutes);
+        getRate($('#start-time').val(), newEnd, '{{ date }}')
 
         if ($('#hour-' + end).hasClass('reserved')) {
           $('#cal-error').html('<tr><td>Your requested booking overlaps with another reservation.</td></tr>');
@@ -466,6 +489,7 @@
 
         var newEnd = hour + ':' + minutes;
         var id = hour + minutes;
+        getRate($('#start-time').val(), newEnd, '{{ date }}')
 
         if ($('#hour-' + id).hasClass('available')) {
           $('#cal-error').html('<tr><td>You made your reservation too short.</td></tr>');

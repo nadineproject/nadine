@@ -34,6 +34,12 @@
           <input id='day-btn' name='all_day' type='checkbox' class='filled-in' />
           <label for='day-btn' name='all-day'>All Day Event</label>
         </td>
+        {% if user.membership.active_subscriptions %}
+          <td>
+            <input id='member-btn' name='members_only' type='checkbox' class='filled-in' />
+            <label for='member-btn' name='all-day'>Included in Membership</label>
+          </td>
+        {% endif %}
       </tr>
     </table>
     <div class='row' id='room-criteria'>

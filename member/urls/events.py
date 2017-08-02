@@ -7,7 +7,7 @@ app_name = 'member'
 urlpatterns = [
     url(r'^events/$', events.events_google, name='events'),
     url(r'^booking/create/(?P<username>[^/]+)/$', events.create_booking, name='create_booking'),
-    url(r'^booking/confirm/(?P<room>[^/]+)/(?P<start>[^/]+)/(?P<end>[^/]+)/(?P<date>[^/]+)$', events.confirm_booking, name='confirm_booking'),
+    url(r'^booking/confirm/(?P<room>[^/]+)/(?P<start>[^/]+)/(?P<end>[^/]+)/(?P<date>[^/]+)/(?P<rate>[^/]+)$', events.confirm_booking, name='confirm_booking'),
     url(r'^calendar/$', events.calendar, name='calendar'),
 ]
 
