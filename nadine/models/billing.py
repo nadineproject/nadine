@@ -89,8 +89,8 @@ class BillingBatch(models.Model):
         # Gather up all the subscriptions
         self.run_subscriptions(target_date)
 
-        # Gather up all the coworking days
-        self.run_coworking_days(target_date)
+        # Gather up all the trackable usage (CoworkingDays and Events)
+        self.run_usage(target_date)
 
         # Recalculate all the bills that need it
         for bill in self.to_recalculate:
@@ -125,7 +125,7 @@ class BillingBatch(models.Model):
                 if activity and activity.count() > 0:
                     self.to_recalculate.add(bill)
 
-    def run_coworking_days(self, target_date):
+    def run_usage(self, target_date):
         # Pull and add all past unbilled CoworkingDays
         for day in CoworkingDay.objects.unbilled(target_date).order_by('visit_date'):
             logger.debug("Found Coworking Day: %s %s %s" % (day.user, day.visit_date, day.payment))
@@ -133,6 +133,14 @@ class BillingBatch(models.Model):
             bill = UserBill.objects.get_or_create_open_bill(day.payer, day.visit_date, day.visit_date)
             bill.add_coworking_day(day)
             self.bills.add(bill)
+
+        # Pull and add all past unbilled Events
+        for event in Event.objects.unbilled(target_date).order_by('start_ts'):
+            day = event.start_ts.date()
+            logger.debug("Found Event: %s %s %s" % (event.user, day))
+            # Find the open bill for the period of this one day
+            bill = UserBill.objects.get_or_create_open_bill(event.payer, day, day)
+            bill.add_event(event)
 
     def close_bills_at_end_of_period(self, target_date):
         ''' Close the open bills at the end of their period. '''
