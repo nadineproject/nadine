@@ -626,12 +626,12 @@ class RoomForm(forms.Form):
             room.has_av = has_av
             room.has_phone = has_phone
             room.default_rate = default_rate
-            # room.members_only = members_only
+            room.members_only = members_only
             if image:
                 room.image = image
             room.save()
         else:
-            room = Room(name=name, location=location, description=description, floor=floor, seats=seats, max_capacity=max_capacity, has_av=has_av, has_phone=has_phone, default_rate=default_rate, image=image)
+            room = Room(name=name, location=location, description=description, floor=floor, seats=seats, max_capacity=max_capacity, has_av=has_av, has_phone=has_phone, default_rate=default_rate, image=image, members_only=members_only)
             room.save()
 
         return room

@@ -209,7 +209,7 @@ def edit_rooms(request):
     rm_data = None
     if room != None:
         rm = Room.objects.get(id=room)
-        rm_data = {'room_id': rm.id, 'name': rm.name, 'floor': rm.floor, 'seats':rm.seats, 'description':rm.description, 'max_capacity':rm.max_capacity, 'default_rate':rm.default_rate, 'location': rm.location, 'has_av':rm.has_av, 'has_phone': rm.has_phone, 'image':rm.image}
+        rm_data = {'room_id': rm.id, 'name': rm.name, 'floor': rm.floor, 'seats':rm.seats, 'description':rm.description, 'max_capacity':rm.max_capacity, 'default_rate':rm.default_rate, 'location': rm.location, 'has_av':rm.has_av, 'has_phone': rm.has_phone, 'image':rm.image, 'members_only':rm.members_only}
 
     if request.method == 'POST':
         form = RoomForm(request.POST, request.FILES)

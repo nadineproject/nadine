@@ -26,22 +26,19 @@
       <td><strong>Default Rate:</strong></td>
       <td>{{ form.default_rate }}</td>
     </tr>
-    <!-- <tr>
-
-    </tr> -->
     <tr>
       <td><strong>Specific Location:</strong></td>
       <td>{{ form.location }}</td>
       <td></td>
-      <td>{{ form.has_av }} <label for='id_has_av'>A/V?</label></td>
+      <td style=''>{{ form.has_av }} <label for='id_has_av'>A/V</label></td>
       <td></td>
-      <td>{{ form.has_phone }}<label for='id_has_phone'>Phone?</label></td>
+      <td>{{ form.has_phone }}<label for='id_has_phone'>Phone</label></td>
     </tr>
     <tr>
       <td><strong>Upload Room Image:</strong></td>
       <td>{{ form.image }}</td>
       <td></td>
-      <td></td>
+      <td>{{ form.members_only }}<label for='id_members_only'>Members Only</label></td>
       <td></td>
     </tr>
   </table>
