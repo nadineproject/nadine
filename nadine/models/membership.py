@@ -263,24 +263,43 @@ class Membership(models.Model):
             # Indicates not active.  Use single day instead
             period_start = target_date
             period_end = target_date
-        users = self.users_in_period(period_start, period_end)
+        users = self.users_in_period(period_start, period_end, resource=Resource.objects.day_resource)
         in_period = Q(visit_date__range=(period_start, period_end))
         by_user = Q(user__in=users)
         paid_by_user = Q(paid_by__in=users)
         return CoworkingDay.objects.filter(in_period).filter(by_user | paid_by_user)
 
+    def events_in_period(self, target_date=None):
+        if not target_date:
+            target_date = localtime(now()).date()
+        from nadine.models.usage import Event
+        period_start, period_end = self.get_period(target_date)
+        if not period_start:
+            # Indicates not active.  Use single day instead
+            period_start = target_date
+            period_end = target_date
+        users = self.users_in_period(period_start, period_end, resource=Resource.objects.event_resource)
+        in_period = Q(start_ts__range=(period_start, period_end))
+        by_user = Q(user__in=users)
+        paid_by_user = Q(paid_by__in=users)
+        return Event.objects.filter(in_period).filter(by_user | paid_by_user)
+
     def resource_activity_in_period(self, resource, target_date=None):
         ''' Get all the activity for this resource in this period. '''
         if resource == Resource.objects.day_resource:
             return self.coworking_days_in_period(target_date)
+        elif resource == Resource.objects.event_resource:
+            return self.events_in_period(target_date)
 
-    def users_in_period(self, period_start, period_end):
+    def users_in_period(self, period_start, period_end, resource=None):
         users = set()
         if self.is_individual:
             # The user themselves
             users.add(self.individualmembership.user)
-            # guest_subscriptions = ResourceSubscription.objects.filter(paid_by=self.individualmembership.user, period_start__gte=period_start)
-            guest_subscriptions = ResourceSubscription.objects.for_period(period_start, period_end).filter(paid_by=self.individualmembership.user)
+            query = ResourceSubscription.objects.for_period(period_start, period_end)
+            if resource:
+                query = query.filter(resource=resource)
+            guest_subscriptions = query.filter(paid_by=self.individualmembership.user)
             for s in guest_subscriptions:
                 users = users.union(s.membership.users_in_period(period_start, period_end))
         elif self.is_organization:

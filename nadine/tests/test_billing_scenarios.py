@@ -153,7 +153,7 @@ class BillingTestCase(TestCase):
         self.eventPackage = MembershipPackage.objects.create(name='Events')
         SubscriptionDefault.objects.create(
             package = self.eventPackage,
-            resource = Resource.objects.room_resource,
+            resource = Resource.objects.event_resource,
             monthly_rate = 100,
             allowance = 10,
             overage_rate = 20

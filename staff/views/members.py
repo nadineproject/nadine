@@ -451,11 +451,7 @@ def confirm_membership(request, username, package, end_target, start_target, new
                                 s.end_date = end_target
                                 s.save()
                         """When a membership is created, add the user to any opt-out mailing lists"""
-                        # TODO Looks like this is being implemented in alerts. Erase?
-                        # if user.membership.package_name() == None:
-                        #     mailing_lists = MailingList.objects.filter(is_opt_out=True)
-                        #     for ml in mailing_lists:
-                        #         ml.subscribe(membership.user)
+
                     # Review all subscriptions to see if adding or ending
                     for sub in subs:
                         sub_id = sub['s_id']
@@ -511,11 +507,6 @@ def confirm_membership(request, username, package, end_target, start_target, new
                             if a.end_date == None:
                                 a.end_date = end_target
                                 a.save()
-                    # TODO: Can this be a task? Set package to none once end date passes
-                    # if datetime.strptime(end_target, '%Y-%m-%d').date() <= localtime(now()).date():
-                    #     user.membership.package = None
-                    #     user.membership.save()
-                    # PaymentAPI().disable_recurring(username)
                 messages.success(request, "You have updated the subscriptions for %s" % username)
                 return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}) + '#tabs-1')
         except IntegrityError as e:

@@ -375,7 +375,7 @@ class UserBill(models.Model):
         ''' Return all the activity for the given resource. '''
         if resource == Resource.objects.day_resource:
             return self.coworking_days()
-        if resource == Resource.objects.room_resource:
+        if resource == Resource.objects.event_resource:
             return self.events()
 
     @property
@@ -470,7 +470,7 @@ class UserBill(models.Model):
 
         amount = 0
         if day.billable:
-            billable_count = CoworkingDay.objects.billable().filter(bill=self).count() + 1
+            billable_count = self.coworking_day_billable_count + 1
             if billable_count > allowance:
                 amount = overage_rate
             description += " (%d) " % billable_count
@@ -489,11 +489,6 @@ class UserBill(models.Model):
             amount = amount,
             day = day,
         )
-
-        # Add a link back to this UserBill from the CoworkingDay
-        day.bill = self
-        day.save()
-
         return line_item
 
 
@@ -539,7 +534,7 @@ class UserBill(models.Model):
 
     def add_event(self, event):
         ''' Add the given event to this bill. '''
-        resource = Resource.objects.room_resource
+        resource = Resource.objects.event_resource
         allowance = self.resource_allowance(resource)
         overage_rate = self.resource_overage_rate(resource)
         overage = 1.00 * allowance - (self.event_hours + event.hours)
@@ -551,6 +546,9 @@ class UserBill(models.Model):
         # Start building our description
         day = str(event.start_ts.date())
         description = "Booking on %s for %s hours" % (day, overage)
+        # Append the username if it's different from this bill
+        if event.user != self.user:
+            description += " by " + event.user.username
 
         # Create the line item
         line_item = EventLineItem.objects.create(
@@ -559,11 +557,6 @@ class UserBill(models.Model):
             amount = amount,
             event = event,
         )
-
-        # Add a link back to this UserBill from the Event
-        # event.bill = self
-        event.save()
-
         return line_item
 
     @property
@@ -588,19 +581,19 @@ class UserBill(models.Model):
     @property
     def event_hour_allowance(self):
         ''' The number of event hours allowed based on the subscriptions. '''
-        return self.resource_allowance(Resource.objects.room_resource)
+        return self.resource_allowance(Resource.objects.event_resource)
 
     @property
     def event_hour_overage(self):
-        ''' The number of days over our allowance. '''
-        if self.coworking_day_billable_count < self.coworking_day_allowance:
+        ''' The number of hours over our allowance. '''
+        if self.event_hours < self.event_hour_allowance:
             return 0
-        return self.coworking_day_billable_count - self.coworking_day_allowance
+        return self.event_hours - self.event_hour_allowance
 
     @property
     def has_events(self):
         ''' True if there are events or an allowance on this bill. '''
-        return self.coworking_day_count > 0 or self.coworking_day_allowance > 0
+        return self.event_count > 0 or self.event_hour_allowance > 0
 
     ############################################################################
     # Other Methods
@@ -615,11 +608,6 @@ class UserBill(models.Model):
         coworking_days = list(self.coworking_days().order_by('visit_date'))
         custom_items = list(self.line_items.filter(custom=True))
         total_before = self.amount
-
-        # Disassociate all the coworking days from this bill
-        for day in self.coworking_days():
-            day.bill = None
-            day.save()
 
         # Delete all the line items
         for line_item in self.line_items.all():
@@ -649,16 +637,24 @@ class UserBill(models.Model):
             self.due_date = bill.due_date
         self.save()
 
+        # Pull all the line items in to memory and delete the other bill
+        subscriptions = list(bill.subscriptions())
+        coworking_days = list(bill.coworking_days())
+        events = list(bill.events())
+        custom_items = list(bill.line_items.filter(custom=True))
+        bill.delete()
+
         # Add all the subscriptions, days, and custom items
-        for s in bill.subscriptions():
+        for s in subscriptions:
             self.add_subscription(s)
-        for d in bill.coworking_days():
+        for d in coworking_days:
             self.add_coworking_day(d)
-        for line_item in bill.line_items.filter(custom=True):
+        for e in events:
+            self.add_event(e)
+        for line_item in custom_items:
             line_item.bill = self
             line_item.save()
 
-        bill.delete()
         if recalculate:
             self.recalculate()
 
@@ -685,11 +681,11 @@ class SubscriptionLineItem(BillLineItem):
 
 
 class CoworkingDayLineItem(BillLineItem):
-    day = models.ForeignKey('CoworkingDay', related_name="line_items", on_delete=models.CASCADE)
+    day = models.OneToOneField('CoworkingDay', related_name="line_item", on_delete=models.CASCADE)
 
 
 class EventLineItem(BillLineItem):
-    event = models.ForeignKey('Event', related_name="line_items", on_delete=models.CASCADE)
+    event = models.OneToOneField('Event', related_name="line_item", on_delete=models.CASCADE)
 
 
 class Payment(models.Model):
