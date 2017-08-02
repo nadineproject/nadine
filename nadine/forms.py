@@ -19,6 +19,7 @@ from localflavor.us.us_states import US_STATES
 from localflavor.ca.ca_provinces import PROVINCE_CHOICES
 
 from nadine import email
+from nadine.utils import mailgun
 from nadine.models.core import HowHeard, Industry, Neighborhood, URLType, GENDER_CHOICES
 from nadine.models.profile import UserProfile, MemberNote, user_photo_path
 from nadine.models.membership import Membership, MembershipPackage, ResourceSubscription, IndividualMembership, SubscriptionDefault
@@ -214,6 +215,8 @@ class NewUserForm(forms.Form):
         email = self.cleaned_data['email'].strip().lower()
         if User.objects.filter(email=email).count() > 0:
             raise forms.ValidationError("Email address '%s' already in use." % email)
+        if not mailgun.validate_address(email):
+            raise forms.ValidationError("Email address '%s' is not valid." % email)
         return email
 
     def create_username(self, suffix=""):

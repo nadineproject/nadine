@@ -49,7 +49,9 @@
         {% with bill.user as user %}
           {% include "staff/billing/action_billing_flag.html" %}
         {% endwith %}
-        {% include "staff/billing/action_bill_paid.html" %}
+        {% with bill.amount as amount %}
+          {% include "staff/billing/action_bill_paid.html" %}
+        {% endwith %}
       </td>
     </tr>
   {% endif %}

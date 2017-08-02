@@ -83,6 +83,17 @@ class CoworkingDay(models.Model):
         ordering = ['-visit_date', '-created_ts']
 
 
+class EventManager(models.Manager):
+
+    def unbilled(self, target_date=None):
+        ''' Not associated with any bill. '''
+        query = self.filter(line_items__isnull=True)
+        if target_date:
+            # Only events prior to the given date
+            return query.filter(start_ts__lte=target_date)
+        return query
+
+
 class Event(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     room = models.ForeignKey('Room', null=True, on_delete=models.CASCADE)
@@ -92,7 +103,33 @@ class Event(models.Model):
     description = models.CharField(max_length=128, null=True)
     charge = models.DecimalField(decimal_places=2, max_digits=9, null=True)
     paid_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="guest_event", on_delete=models.CASCADE)
+    # note = models.CharField("Note", max_length=128, blank="True", null=True)
     is_public = models.BooleanField(default=False)
+    members_only = models.BooleanField(default=False)
+
+    @property
+    def hours(self):
+        ''' How many hours is this event down to 15 minutes. '''
+        time_difference = self.end_ts - self.start_ts
+        return time_difference.seconds/60/15/4.0
+
+    @property
+    def payer(self):
+        # It's easy if paid_by is set
+        if self.paid_by:
+            return self.paid_by
+
+        # Find out what subscriptions they had on this day
+        from nadine.models.resource import Resource
+        from nadine.models.membership import ResourceSubscription
+        subscriptions = ResourceSubscription.objects.for_user_and_date(self.user, self.visit_date).filter(resource=Resource.objects.room_resource)
+        if subscriptions:
+            # This is a quick and dirty way that does not consider
+            # which of these subscriptions we should use --JLS
+            return subscriptions.first().payer
+
+        # No one else is paying so the user is on the hook
+        return self.user
 
     def __str__(self):
         if self.description:

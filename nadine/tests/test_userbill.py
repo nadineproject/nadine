@@ -13,7 +13,11 @@ from nadine.models.billing import UserBill, BillLineItem, Payment
 from nadine.models.membership import MembershipPackage, SubscriptionDefault
 from nadine.models.membership import Membership, ResourceSubscription
 from nadine.models.organization import Organization
+<<<<<<< HEAD
 from nadine.models.resource import Resource
+=======
+from nadine.models.resource import Resource, Room
+>>>>>>> 2.0
 from nadine.models.usage import CoworkingDay, Event
 
 
@@ -46,6 +50,14 @@ class UserBillTestCase(TestCase):
         logging.getLogger('nadine.models').setLevel(logging.INFO)
 
         self.user1 = User.objects.create(username='member_one', first_name='Member', last_name='One')
+
+        self.test_room = Room.objects.create(
+            name = "Test Room",
+            floor = 2,
+            seats = 6,
+            max_capacity = 10,
+            default_rate = 50,
+        )
 
     def test_outstanding(self):
         bill = UserBill.objects.create_for_day(self.user1, today)
@@ -120,18 +132,18 @@ class UserBillTestCase(TestCase):
         self.assertTrue(bill.includes_coworking_day(day))
         self.assertEquals(bill, day.bill)
 
-    def test_add_room_booking(self):
+    def test_add_event(self):
         event = Event.objects.create(
             user = self.user1,
-            start_ts = localtime(now()) - timedelta(hours=2),
-            end_ts = localtime(now()),
-            charge = 40
+            room = self.test_room,
+            start_ts = localtime(now()),
+            end_ts = localtime(now()) + timedelta(hours=2),
         )
-        bill = UserBill.objects.create_for_day(self.user1)
-        self.assertFalse(bill.includes_room_booking(event))
-        bill.add_room_bookings(event)
-        self.asserTrue(bill.includes_room_booking(event))
-        self.assertEquals(bill, event.bill)
+        bill = UserBill.objects.create_for_day(self.user1, today)
+        self.assertFalse(bill.includes_event(event))
+        bill.add_event(event)
+        self.assertTrue(bill.includes_event(event))
+        # self.assertEquals(bill, day.bill)
 
     def test_monthly_rate(self):
         bill = UserBill.objects.create_for_day(self.user1, today)

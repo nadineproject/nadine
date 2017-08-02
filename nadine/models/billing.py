@@ -15,7 +15,7 @@ from django.conf import settings
 
 from nadine.models.membership import Membership, ResourceSubscription
 from nadine.models.resource import Resource
-from nadine.models.usage import CoworkingDay
+from nadine.models.usage import CoworkingDay, Event
 
 logger = logging.getLogger(__name__)
 
@@ -89,8 +89,8 @@ class BillingBatch(models.Model):
         # Gather up all the subscriptions
         self.run_subscriptions(target_date)
 
-        # Gather up all the coworking days
-        self.run_coworking_days(target_date)
+        # Gather up all the trackable usage (CoworkingDays and Events)
+        self.run_usage(target_date)
 
         # Recalculate all the bills that need it
         for bill in self.to_recalculate:
@@ -125,7 +125,7 @@ class BillingBatch(models.Model):
                 if activity and activity.count() > 0:
                     self.to_recalculate.add(bill)
 
-    def run_coworking_days(self, target_date):
+    def run_usage(self, target_date):
         # Pull and add all past unbilled CoworkingDays
         for day in CoworkingDay.objects.unbilled(target_date).order_by('visit_date'):
             logger.debug("Found Coworking Day: %s %s %s" % (day.user, day.visit_date, day.payment))
@@ -133,6 +133,14 @@ class BillingBatch(models.Model):
             bill = UserBill.objects.get_or_create_open_bill(day.payer, day.visit_date, day.visit_date)
             bill.add_coworking_day(day)
             self.bills.add(bill)
+
+        # Pull and add all past unbilled Events
+        for event in Event.objects.unbilled(target_date).order_by('start_ts'):
+            day = event.start_ts.date()
+            logger.debug("Found Event: %s %s %s" % (event.user, day))
+            # Find the open bill for the period of this one day
+            bill = UserBill.objects.get_or_create_open_bill(event.payer, day, day)
+            bill.add_event(event)
 
     def close_bills_at_end_of_period(self, target_date):
         ''' Close the open bills at the end of their period. '''
@@ -367,6 +375,8 @@ class UserBill(models.Model):
         ''' Return all the activity for the given resource. '''
         if resource == Resource.objects.day_resource:
             return self.coworking_days()
+        if resource == Resource.objects.room_resource:
+            return self.events()
 
     @property
     def desk_allowance(self):
@@ -435,7 +445,7 @@ class UserBill(models.Model):
             description = description,
             amount = amount
         )
-        
+
     ###########################################################################
     # Coworking Day Methods
     ############################################################################
@@ -512,6 +522,84 @@ class UserBill(models.Model):
     @property
     def has_coworking_days(self):
         ''' True if there are days or an allowance on this bill. '''
+        return self.coworking_day_count > 0 or self.coworking_day_allowance > 0
+
+    ###########################################################################
+    # Event Methods
+    ############################################################################
+
+    def events(self):
+        ''' Return all Events associated with this bill. '''
+        event_ids = EventLineItem.objects.filter(bill=self).values('event')
+        return Event.objects.filter(id__in=event_ids)
+
+    def includes_event(self, event):
+        ''' Return True if the given event is in the line items. '''
+        return event in self.events()
+
+    def add_event(self, event):
+        ''' Add the given event to this bill. '''
+        resource = Resource.objects.room_resource
+        allowance = self.resource_allowance(resource)
+        overage_rate = self.resource_overage_rate(resource)
+        overage = 1.00 * allowance - (self.event_hours + event.hours)
+        if overage > 0:
+            amount = overage * overage_rate
+        else:
+            amount = 0.00
+
+        # Start building our description
+        day = str(event.start_ts.date())
+        description = "Booking on %s for %s hours" % (day, overage)
+
+        # Create the line item
+        line_item = EventLineItem.objects.create(
+            bill = self,
+            description = description,
+            amount = amount,
+            event = event,
+        )
+
+        # Add a link back to this UserBill from the Event
+        # event.bill = self
+        event.save()
+
+        return line_item
+
+    @property
+    def event_count(self):
+        ''' The number of events on this bill. '''
+        return self.events().count()
+
+    @property
+    def event_hours(self):
+        ''' The number of event hours on this bill. '''
+        hours = 0
+        for event in self.events():
+            hours += event.hours
+        return hours
+
+    # TODO - Is this neccessary?  Currently all events are billable
+    # @property
+    # def event_billable_count(self):
+    #     ''' The number of billable coworking days on this bill. '''
+    #     return self.coworking_days().filter(payment="Bill").count()
+
+    @property
+    def event_hour_allowance(self):
+        ''' The number of event hours allowed based on the subscriptions. '''
+        return self.resource_allowance(Resource.objects.room_resource)
+
+    @property
+    def event_hour_overage(self):
+        ''' The number of days over our allowance. '''
+        if self.coworking_day_billable_count < self.coworking_day_allowance:
+            return 0
+        return self.coworking_day_billable_count - self.coworking_day_allowance
+
+    @property
+    def has_events(self):
+        ''' True if there are events or an allowance on this bill. '''
         return self.coworking_day_count > 0 or self.coworking_day_allowance > 0
 
     ############################################################################
@@ -598,6 +686,10 @@ class SubscriptionLineItem(BillLineItem):
 
 class CoworkingDayLineItem(BillLineItem):
     day = models.ForeignKey('CoworkingDay', related_name="line_items", on_delete=models.CASCADE)
+
+
+class EventLineItem(BillLineItem):
+    event = models.ForeignKey('Event', related_name="line_items", on_delete=models.CASCADE)
 
 
 class Payment(models.Model):
