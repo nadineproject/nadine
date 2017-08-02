@@ -173,7 +173,7 @@ class ResourceManager(models.Manager):
     KEY_KEY = "key"
     MAIL_KEY = "mail"
     DESK_KEY = "desk"
-    ROOM_KEY = "room"
+    EVENT_KEY = "event"
 
     def resource_by_key(self, key):
         # print("pulling '%s' resource" % key)
@@ -201,8 +201,8 @@ class ResourceManager(models.Manager):
         return self.resource_by_key(self.DESK_KEY)
 
     @property
-    def room_resource(self):
-        return self.resource_by_key(self.ROOM_KEY)
+    def event_resource(self):
+        return self.resource_by_key(self.EVENT_KEY)
 
 
 class Resource(models.Model):

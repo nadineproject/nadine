@@ -97,14 +97,14 @@ class EventManager(models.Manager):
 class Event(models.Model):
     objects = EventManager()
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    room = models.ForeignKey('Room', null=True, on_delete=models.CASCADE)
+    room = models.ForeignKey('Room', null=True, blank=True, on_delete=models.CASCADE)
     created_ts = models.DateTimeField(auto_now_add=True)
     start_ts = models.DateTimeField(verbose_name="Start time")
     end_ts = models.DateTimeField(verbose_name="End time")
-    description = models.CharField(max_length=128, null=True)
-    charge = models.DecimalField(decimal_places=2, max_digits=9, null=True)
+    description = models.CharField(max_length=128, null=True, blank=True)
+    charge = models.DecimalField(decimal_places=2, max_digits=9, null=True, blank=True)
     paid_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="guest_event", on_delete=models.CASCADE)
-    # note = models.CharField("Note", max_length=128, blank="True", null=True)
+    note = models.CharField("Note", max_length=128, null=True, blank=True)
     is_public = models.BooleanField(default=False)
     members_only = models.BooleanField(default=False)
 
@@ -123,7 +123,7 @@ class Event(models.Model):
         # Find out what subscriptions they had on this day
         from nadine.models.resource import Resource
         from nadine.models.membership import ResourceSubscription
-        subscriptions = ResourceSubscription.objects.for_user_and_date(self.user, self.visit_date).filter(resource=Resource.objects.room_resource)
+        subscriptions = ResourceSubscription.objects.for_user_and_date(self.user, self.visit_date).filter(resource=Resource.objects.event_resource)
         if subscriptions:
             # This is a quick and dirty way that does not consider
             # which of these subscriptions we should use --JLS

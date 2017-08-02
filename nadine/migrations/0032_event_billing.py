@@ -6,6 +6,26 @@ from django.db import migrations, models
 import django.db.models.deletion
 
 
+def rename_resource(apps, old_key, new_key, new_name):
+    Resource = apps.get_model("nadine", "Resource")
+    resource = Resource.objects.filter(key=old_key).first()
+    if not resource:
+        print("Could not find resouce for key '%s' " % old_key)
+        return False
+    resource.key = new_key
+    resource.name = new_name
+    resource.save()
+    return True
+
+
+def forward(apps, schema_editor):
+    rename_resource(apps, "room", "event", "Event Hours")
+
+
+def reverse(apps, schema_editor):
+    rename_resource(apps, "event", "room", "Room Booking")
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -13,6 +33,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        # New EventLineItem model
         migrations.CreateModel(
             name='EventLineItem',
             fields=[
@@ -21,9 +42,33 @@ class Migration(migrations.Migration):
             ],
             bases=('nadine.billlineitem',),
         ),
+
+        # Changes to the Event model
         migrations.AddField(
             model_name='event',
             name='members_only',
             field=models.BooleanField(default=False),
         ),
+        migrations.AddField(
+            model_name='event',
+            name='note',
+            field=models.CharField(blank=True, max_length=128, null=True, verbose_name='Note'),
+        ),
+        migrations.AlterField(
+            model_name='event',
+            name='charge',
+            field=models.DecimalField(blank=True, decimal_places=2, max_digits=9, null=True),
+        ),
+        migrations.AlterField(
+            model_name='event',
+            name='description',
+            field=models.CharField(blank=True, max_length=128, null=True),
+        ),
+        migrations.AlterField(
+            model_name='event',
+            name='room',
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='nadine.Room'),
+        ),
+
+        migrations.RunPython(forward, reverse),
     ]
