@@ -24,6 +24,7 @@ from interlink.models import MailingList
 from nadine import email
 from nadine.utils import mailgun
 from nadine.utils.slack_api import SlackAPI
+from nadine.utils.payment_api import PaymentAPI
 
 logger = logging.getLogger(__name__)
 
@@ -84,6 +85,10 @@ class MemberAlertManager(models.Manager):
             duration = u.profile.duration()
             if not duration.years and duration.months == 1:
                 MemberAlert.objects.create_if_new(user=u, key=MemberAlert.ONE_MONTH)
+
+    def trigger_change_subscription(self, user):
+        # Turn off automatic billing
+        PaymentAPI().disable_recurring(user.username)
 
     def trigger_ending_membership(self, user, target_date=None):
         logger.debug("trigger_ending_membership: %s, %s" % (user, target_date))
@@ -252,6 +257,9 @@ def subscription_callback(sender, **kwargs):
     if not subscription.user:
         return
     user = subscription.user
+
+    # Trigger Change Subscription
+    MemberAlert.objects.trigger_change_subscription(user)
 
     # Filter to appropriate trigger depending on resource and if it's new or ending
     if subscription.resource == Resource.objects.desk_resource:
