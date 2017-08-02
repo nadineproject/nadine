@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
             name='EventLineItem',
             fields=[
                 ('billlineitem_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='nadine.BillLineItem')),
-                ('event', models.OneToOneField(on_delete=django.db.models.deletion.SET_NULL, null=True, related_name='line_item', to='nadine.Event')),
+                ('event', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='line_item', to='nadine.Event')),
             ],
             bases=('nadine.billlineitem',),
         ),
@@ -47,7 +47,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='coworkingdaylineitem',
             name='day',
-            field=models.OneToOneField(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='line_item', to='nadine.CoworkingDay'),
+            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='line_item', to='nadine.CoworkingDay'),
         ),
         migrations.RemoveField(
             model_name='coworkingday',

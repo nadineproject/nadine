@@ -681,11 +681,11 @@ class SubscriptionLineItem(BillLineItem):
 
 
 class CoworkingDayLineItem(BillLineItem):
-    day = models.OneToOneField('CoworkingDay', related_name="line_item", on_delete=models.SET_NULL, null=True)
+    day = models.OneToOneField('CoworkingDay', related_name="line_item", on_delete=models.CASCADE)
 
 
 class EventLineItem(BillLineItem):
-    event = models.OneToOneField('Event', related_name="line_item", on_delete=models.SET_NULL, null=True)
+    event = models.OneToOneField('Event', related_name="line_item", on_delete=models.CASCADE)
 
 
 class Payment(models.Model):
