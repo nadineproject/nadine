@@ -514,11 +514,6 @@ class UserBill(models.Model):
             return 0
         return self.coworking_day_billable_count - self.coworking_day_allowance
 
-    @property
-    def has_coworking_days(self):
-        ''' True if there are days or an allowance on this bill. '''
-        return self.coworking_day_count > 0 or self.coworking_day_allowance > 0
-
     ###########################################################################
     # Event Methods
     ############################################################################
@@ -532,25 +527,45 @@ class UserBill(models.Model):
         ''' Return True if the given event is in the line items. '''
         return event in self.events()
 
-    def add_event(self, event):
-        ''' Add the given event to this bill. '''
-        resource = Resource.objects.event_resource
-        allowance = self.resource_allowance(resource)
-        overage_rate = self.resource_overage_rate(resource)
-        overage = 1.00 * allowance - (self.event_hours + event.hours)
-        if overage > 0:
-            amount = overage * overage_rate
+    def calculate_event_charge(self, event):
+        # First check to see if there is a set charge on this event
+        if event.charge:
+            return event.charge
         else:
-            amount = 0.00
+            if not event.room:
+                raise Exception("Event must have room specified or a specific charge set.")
 
-        # Start building our description
+        # Member only rooms get charged depending on subscriptions
+        if event.room.members_only:
+            total_hours = self.event_hours_used + event.hours
+            overage = total_hours - self.event_hour_allowance
+            if overage < 0:
+                overage = 0.00
+            return overage * self.event_hour_overage_rate
+
+        # Calculate the charge based on the default rate for the room
+        if self.event_hour_allowance == 0:
+            return event.room.default_rate
+        else:
+            # If there is an allowance, they are an active member and get a discount
+            return event.room.default_rate * getattr(settings, "MEMBER_DISCOUNT_EVENTS", 1.0)
+
+    def calculate_event_description(self, event):
         day = str(event.start_ts.date())
-        description = "Booking on %s for %s hours" % (day, overage)
+        if event.description:
+            return "Event on %s: %s" % (day, event.description)
+
+        description = "Booking on %s for %s hours" % (day, event.hours)
         # Append the username if it's different from this bill
         if event.user != self.user:
             description += " by " + event.user.username
+        return description
 
-        # Create the line item
+    def add_event(self, event):
+        ''' Add the given event to this bill. '''
+        logger.debug("add_event(%s)" % event)
+        amount = self.calculate_event_charge(event)
+        description = self.calculate_event_description(event)
         line_item = EventLineItem.objects.create(
             bill = self,
             description = description,
@@ -565,18 +580,12 @@ class UserBill(models.Model):
         return self.events().count()
 
     @property
-    def event_hours(self):
+    def event_hours_used(self):
         ''' The number of event hours on this bill. '''
         hours = 0
         for event in self.events():
             hours += event.hours
         return hours
-
-    # TODO - Is this neccessary?  Currently all events are billable
-    # @property
-    # def event_billable_count(self):
-    #     ''' The number of billable coworking days on this bill. '''
-    #     return self.coworking_days().filter(payment="Bill").count()
 
     @property
     def event_hour_allowance(self):
@@ -584,16 +593,16 @@ class UserBill(models.Model):
         return self.resource_allowance(Resource.objects.event_resource)
 
     @property
+    def event_hour_overage_rate(self):
+        ''' The rate per hour if over the allowance. '''
+        return self.resource_overage_rate(Resource.objects.event_resource)
+
+    @property
     def event_hour_overage(self):
         ''' The number of hours over our allowance. '''
         if self.event_hours < self.event_hour_allowance:
             return 0
         return self.event_hours - self.event_hour_allowance
-
-    @property
-    def has_events(self):
-        ''' True if there are events or an allowance on this bill. '''
-        return self.event_count > 0 or self.event_hour_allowance > 0
 
     ############################################################################
     # Other Methods

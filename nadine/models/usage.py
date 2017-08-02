@@ -111,7 +111,6 @@ class Event(models.Model):
     paid_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="guest_event", on_delete=models.CASCADE)
     note = models.CharField("Note", max_length=128, null=True, blank=True)
     is_public = models.BooleanField(default=False)
-    members_only = models.BooleanField(default=False)
 
     @property
     def hours(self):

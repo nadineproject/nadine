@@ -43,6 +43,13 @@ class Migration(migrations.Migration):
             bases=('nadine.billlineitem',),
         ),
 
+        # Changes to Room model
+        migrations.AddField(
+            model_name='room',
+            name='members_only',
+            field=models.BooleanField(default=False),
+        ),
+
         # Changes to the CoworkingDay and CoworkingLineItem models
         migrations.AlterField(
             model_name='coworkingdaylineitem',
@@ -55,11 +62,6 @@ class Migration(migrations.Migration):
         ),
 
         # Changes to the Event model
-        migrations.AddField(
-            model_name='event',
-            name='members_only',
-            field=models.BooleanField(default=False),
-        ),
         migrations.AddField(
             model_name='event',
             name='note',

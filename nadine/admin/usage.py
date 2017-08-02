@@ -11,7 +11,7 @@ from nadine.admin.core import StyledAdmin
 
 class EventAdmin(StyledAdmin):
     list_display = ('user', 'room', 'start_ts', 'end_ts', 'paid_by', 'created_ts')
-    list_filter = ('is_public', 'members_only')
+    list_filter = ('is_public', )
     raw_id_fields = ('user', 'paid_by')
     search_fields = ('user__first_name', 'user__last_name', 'paid_by__first_name', 'paid_by__last_name')
 admin.site.register(Event, EventAdmin)
