@@ -72,6 +72,7 @@ class RoomManager(models.Manager):
 
 
 class Room(models.Model):
+    objects = RoomManager()
     name = models.CharField(max_length=64)
     location = models.CharField(max_length=128, null=True)
     description = models.TextField(blank=True, null=True)
@@ -83,8 +84,7 @@ class Room(models.Model):
     default_rate = models.DecimalField(decimal_places=2, max_digits=9)
     #image = models.ImageField(upload_to=room_img_upload_to, blank=True, null=True, help_text="Images should be 500px x 325px or a 1 to 0.65 ratio ")
     image = models.ImageField(upload_to=room_img_upload_to, blank=True, null=True)
-
-    objects = RoomManager()
+    members_only = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name

@@ -231,7 +231,7 @@ def bill_view(request, bill_id):
 
     # Count up all the resources on this bill
     resources = {}
-    if bill.has_coworking_days:
+    if bill.coworking_day_count > 0 or bill.coworking_day_allowance > 0:
         resources['days'] = {
             'count': bill.coworking_day_count,
             'billable': bill.coworking_day_billable_count,
