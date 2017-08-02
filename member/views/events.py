@@ -1,5 +1,6 @@
 import time
 import traceback
+import decimal
 from datetime import date, datetime, timedelta
 from calendar import Calendar, HTMLCalendar
 
@@ -17,6 +18,7 @@ from django.utils.timezone import localtime, now
 from nadine.models.usage import CoworkingDay, Event
 from nadine.models.resource import Room
 from nadine.forms import EventForm
+# from nadine.settings import MEMBER_DISCOUNT
 
 from member.views.core import is_active_member
 
@@ -94,7 +96,8 @@ def coerce_times(start, end, date):
 
 @login_required
 @user_passes_test(is_active_member, login_url='member:not_active')
-def create_booking(request):
+def create_booking(request, username):
+    user = get_object_or_404(User, username=username)
     # Process URL variables
     has_av = request.GET.get('has_av', None)
     has_phone = request.GET.get('has_phone', None)
@@ -117,13 +120,23 @@ def create_booking(request):
     start_ts_mil = ((time.mktime(start_ts.timetuple()) * 1000))
 
     # Make auto date for start and end if not otherwise given
-    # If member, return all rooms
-    # If not a member, return only public rooms
     room_dict = {}
-    if user.membership.active_subscriptions():
-        rooms = Room.objects.available(start=start_ts, end=end_ts, has_av=has_av, has_phone=has_phone, floor=floor, seats=seats)
-    else:
-        rooms = rooms = Room.objects.available(start=start_ts, end=end_ts, has_av=has_av, has_phone=has_phone, floor=floor, seats=seats).filter(members_only=False)
+    rooms = Room.objects.available(start=start_ts, end=end_ts, has_av=has_av, has_phone=has_phone, floor=floor, seats=seats)
+
+    ''' Return all rooms if member and limited rooms if not '''
+    # To be implemented once model changed
+    # if user.membership.active_subscriptions():
+    #     rooms = Room.objects.available(start=start_ts, end=end_ts, has_av=has_av, has_phone=has_phone, floor=floor, seats=seats)
+    #     # if room is billable, add a rate to the room
+    #     for room in rooms:
+    #         if room.members_only == False:
+    #             for room in rooms:
+    #                 room.rate = format((MEMBER_DISCOUNT * room.default_rate), '.2f')
+    #             room.rate =  * room.default_rate
+    # else:
+    #     rooms = Room.objects.available(start=start_ts, end=end_ts, has_av=has_av, has_phone=has_phone, floor=floor, seats=seats).filter(members_only=False)
+    #     for r in rooms:
+    #         r.rate = r.default_rate
 
     # Get all the events for each room in that day
     target_date = start_ts.date()
@@ -160,7 +173,8 @@ def create_booking(request):
                'all_day': all_day,
                'has_phone': has_phone,
                'room_dict': room_dict,
-               'start_ts_mil': start_ts_mil
+               'start_ts_mil': start_ts_mil,
+               'user': user,
                }
     return render(request, 'member/events/booking_create.html', context)
 
