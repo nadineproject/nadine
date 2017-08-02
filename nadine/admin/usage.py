@@ -19,7 +19,7 @@ admin.site.register(Event, EventAdmin)
 
 class CoworkingDayAdmin(StyledAdmin):
     list_display = ('visit_date', 'user', 'paid_by', 'payment')
-    raw_id_fields = ('user', 'paid_by', 'bill')
+    raw_id_fields = ('user', 'paid_by')
     search_fields = ('user__first_name', 'user__last_name', 'paid_by__first_name', 'paid_by__last_name')
     list_filter = ('payment', )
     # Not neccessary since we went to a raw_id_field on paid_by

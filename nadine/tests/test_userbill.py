@@ -139,7 +139,7 @@ class UserBillTestCase(TestCase):
         self.assertFalse(bill.includes_event(event))
         bill.add_event(event)
         self.assertTrue(bill.includes_event(event))
-        # self.assertEquals(bill, day.bill)
+        self.assertEquals(bill, event.bill)
 
     def test_monthly_rate(self):
         bill = UserBill.objects.create_for_day(self.user1, today)

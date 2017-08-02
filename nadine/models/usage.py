@@ -27,18 +27,17 @@ class CoworkingDayManager(models.Manager):
 
     def unbilled(self, target_date=None):
         ''' Not associated with any bill. '''
+        query = self.filter(line_item__isnull=True)
         if target_date:
-            # Only days prior to the given date
-            return self.filter(bill__isnull=True, visit_date__lte=target_date)
-        return self.filter(bill__isnull=True)
-
+            # Only events prior to the given date
+            return query.filter(visit_date__lte=target_date)
+        return query
 
 class CoworkingDay(models.Model):
     objects = CoworkingDayManager()
     user = models.ForeignKey(settings.AUTH_USER_MODEL, unique_for_date="visit_date", on_delete=models.CASCADE)
     visit_date = models.DateField("Date")
     payment = models.CharField("Payment", max_length=5, choices=PAYMENT_CHOICES)
-    bill = models.ForeignKey('UserBill', blank=True, null=True, on_delete=models.SET_NULL)
     paid_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="guest_day", on_delete=models.CASCADE)
     note = models.CharField("Note", max_length=128, blank="True")
     created_ts = models.DateTimeField(auto_now_add=True)
@@ -71,6 +70,12 @@ class CoworkingDay(models.Model):
     def billable(self):
         return self.payment == 'Bill'
 
+    @property
+    def bill(self):
+        if self.line_item:
+            return self.line_item.bill
+        return none
+
     def __str__(self):
         return '%s - %s' % (self.visit_date, self.user)
 
@@ -87,7 +92,7 @@ class EventManager(models.Manager):
 
     def unbilled(self, target_date=None):
         ''' Not associated with any bill. '''
-        query = self.filter(line_items__isnull=True)
+        query = self.filter(line_item__isnull=True)
         if target_date:
             # Only events prior to the given date
             return query.filter(start_ts__lte=target_date)
@@ -131,6 +136,12 @@ class Event(models.Model):
 
         # No one else is paying so the user is on the hook
         return self.user
+
+    @property
+    def bill(self):
+        if self.line_item:
+            return self.line_item.bill
+        return none
 
     def __str__(self):
         if self.description:

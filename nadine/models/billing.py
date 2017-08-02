@@ -470,7 +470,7 @@ class UserBill(models.Model):
 
         amount = 0
         if day.billable:
-            billable_count = CoworkingDay.objects.billable().filter(bill=self).count() + 1
+            billable_count = self.coworking_day_billable_count + 1
             if billable_count > allowance:
                 amount = overage_rate
             description += " (%d) " % billable_count
@@ -489,11 +489,6 @@ class UserBill(models.Model):
             amount = amount,
             day = day,
         )
-
-        # Add a link back to this UserBill from the CoworkingDay
-        day.bill = self
-        day.save()
-
         return line_item
 
 
@@ -614,11 +609,6 @@ class UserBill(models.Model):
         custom_items = list(self.line_items.filter(custom=True))
         total_before = self.amount
 
-        # Disassociate all the coworking days from this bill
-        for day in self.coworking_days():
-            day.bill = None
-            day.save()
-
         # Delete all the line items
         for line_item in self.line_items.all():
             line_item.delete()
@@ -647,16 +637,24 @@ class UserBill(models.Model):
             self.due_date = bill.due_date
         self.save()
 
+        # Pull all the line items in to memory and delete the other bill
+        subscriptions = list(bill.subscriptions())
+        coworking_days = list(bill.coworking_days())
+        events = list(bill.events())
+        custom_items = list(bill.line_items.filter(custom=True))
+        bill.delete()
+
         # Add all the subscriptions, days, and custom items
-        for s in bill.subscriptions():
+        for s in subscriptions:
             self.add_subscription(s)
-        for d in bill.coworking_days():
+        for d in coworking_days:
             self.add_coworking_day(d)
-        for line_item in bill.line_items.filter(custom=True):
+        for e in events:
+            self.add_event(e)
+        for line_item in custom_items:
             line_item.bill = self
             line_item.save()
 
-        bill.delete()
         if recalculate:
             self.recalculate()
 
@@ -683,11 +681,11 @@ class SubscriptionLineItem(BillLineItem):
 
 
 class CoworkingDayLineItem(BillLineItem):
-    day = models.ForeignKey('CoworkingDay', related_name="line_items", on_delete=models.CASCADE)
+    day = models.OneToOneField('CoworkingDay', related_name="line_item", on_delete=models.SET_NULL, null=True)
 
 
 class EventLineItem(BillLineItem):
-    event = models.ForeignKey('Event', related_name="line_items", on_delete=models.CASCADE)
+    event = models.OneToOneField('Event', related_name="line_item", on_delete=models.SET_NULL, null=True)
 
 
 class Payment(models.Model):
