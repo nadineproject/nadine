@@ -59,7 +59,7 @@ A bill is outstanding if there is an amount owed on the bill.
   {% endwith %}
 {% endif %}
 
-{% if dropins %}
+{% if other_bills %}
   <h6>Other Open Bills</h6>
   {% with other_bills as bills and other_bills_totals as total  %}
     {% include "staff/billing/outstanding_table.html" %}
