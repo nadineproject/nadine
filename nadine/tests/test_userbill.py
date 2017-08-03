@@ -140,6 +140,8 @@ class UserBillTestCase(TestCase):
         bill.add_event(event)
         self.assertTrue(bill.includes_event(event))
         self.assertEquals(bill, event.bill)
+        self.assertEquals(2, bill.event_hours())
+        self.assertTrue(1 == bill.event_count())
 
     def test_monthly_rate(self):
         bill = UserBill.objects.create_for_day(self.user1, today)
