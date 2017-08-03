@@ -965,7 +965,7 @@ class BillingTestCase(TestCase):
         print_bill(user_bill)
         self.assertEqual(event1.bill, user_bill)
         self.assertEqual(40, user_bill.amount)
-        # Should have 2 line items. One for the subscription & one for the event
+        # Should have 1 line items. Just one for the event
         self.assertEqual(1, user_bill.line_items.all().count())
 
 
