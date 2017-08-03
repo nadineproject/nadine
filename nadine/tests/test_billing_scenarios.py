@@ -920,10 +920,10 @@ class BillingTestCase(TestCase):
         self.assertEqual(1, membership.active_subscriptions().count())
 
         # Create event for 6 hours
-        event1 = Event.objects.create(user=user, start_ts=localtime(now()) - timedelta(hours=6), end_ts=localtime(now()))
+        event1 = Event.objects.create(user=user, start_ts=localtime(now()) - timedelta(hours=6), end_ts=localtime(now()), room=Room.objects.create(name="Room 1", has_phone=False, has_av=False, floor=1, seats=4, max_capacity=10, default_rate=20.00, members_only=False))
 
         # Make sure bill returns with line for subscription and one line for event
-        new_bill_batch = BillingBatch.objects.run(start_date=start, end_date = start)
+        new_bill_batch = BillingBatch.objects.run(start_date=start, end_date = (start + relativedelta(months=1) - timedelta(days=1)))
         self.assertTrue(new_bill_batch.successful)
         user_bill = user.bills.get(period_start=start, period_end=start + relativedelta(months=1) - timedelta(days=1))
         self.assertEqual(100, user_bill.amount)

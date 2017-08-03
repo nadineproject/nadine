@@ -543,10 +543,6 @@ class UserBill(models.Model):
 
         # Member only rooms get charged depending on subscriptions
         if event.room.members_only:
-            total_hours = self.event_hours_used + event.hours
-            overage = total_hours - self.event_hour_allowance
-            if overage < 0:
-                overage = 0.00
             return overage * float(self.event_hour_overage_rate)
 
         # Calculate the charge based on the default rate for the room
