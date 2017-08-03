@@ -137,7 +137,7 @@ class BillingBatch(models.Model):
         # Pull and add all past unbilled Events
         for event in Event.objects.unbilled(target_date).order_by('start_ts'):
             day = event.start_ts.date()
-            logger.debug("Found Event: %s %s %s" % (event.user, day))
+            logger.debug("Found Event: %s %s" % (event.user, day))
             # Find the open bill for the period of this one day
             bill = UserBill.objects.get_or_create_open_bill(event.payer, day, day)
             bill.add_event(event)
@@ -535,20 +535,26 @@ class UserBill(models.Model):
             if not event.room:
                 raise Exception("Event must have room specified or a specific charge set.")
 
+        if self.user.membership.active_subscriptions():
+            total_hours = self.event_hours_used + event.hours
+            overage = total_hours - self.event_hour_allowance
+            if overage < 0:
+                overage = 0.00
+
         # Member only rooms get charged depending on subscriptions
         if event.room.members_only:
             total_hours = self.event_hours_used + event.hours
             overage = total_hours - self.event_hour_allowance
             if overage < 0:
                 overage = 0.00
-            return overage * self.event_hour_overage_rate
+            return overage * float(self.event_hour_overage_rate)
 
         # Calculate the charge based on the default rate for the room
         if self.event_hour_allowance == 0:
             return event.room.default_rate
         else:
             # If there is an allowance, they are an active member and get a discount
-            return event.room.default_rate * getattr(settings, "MEMBER_DISCOUNT_EVENTS", 1.0)
+            return float(event.room.default_rate) * getattr(settings, "MEMBER_DISCOUNT_EVENTS", 1.0) * overage
 
     def calculate_event_description(self, event):
         day = str(event.start_ts.date())

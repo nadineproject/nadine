@@ -574,7 +574,7 @@ class MembershipTestCase(TestCase):
 
     def test_bill_day_for_long_absent_member(self):
         one_year_ago = today - relativedelta(years=1)
-        user = User.objects.create(username='longgone_user', first_name='Longgon', last_name='User')
+        user = User.objects.create(username='longgone_user', first_name='Longgone', last_name='User')
         membership = Membership.objects.for_user(user)
         membership.bill_day = 12
 
