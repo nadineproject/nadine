@@ -233,17 +233,21 @@ class BillManager(models.Manager):
         # and a partial payment not showing up in this set as it should.
         # https://code.djangoproject.com/ticket/10060
         # https://github.com/nadineproject/nadine/issues/300
-        adjustment_expression = (F('payment_amount') * F('payments_distinct')) / F('payment_count')
-        query = self.filter(mark_paid=False) \
+        amount_adjustment = (F('bill_amount') * F('items_distinct')) / F('item_count')
+        payment_adjustment = (F('payment_amount') * F('payments_distinct')) / F('payment_count')
+        outstanding_query = self.filter(mark_paid=False) \
             .annotate(bill_amount=Sum('line_items__amount', output_field=DecimalField())) \
+            .annotate(item_count=Count('line_items')) \
+            .annotate(items_distinct=Count('line_items', distinct=True)) \
             .annotate(payment_amount=Sum('payment__amount', output_field=DecimalField())) \
             .annotate(payment_count=Count('payment')) \
             .annotate(payments_distinct=Count('payment', distinct=True)) \
-            .annotate(adjusted_amount=ExpressionWrapper(adjustment_expression, output_field=DecimalField())) \
-            .annotate(owed=F('bill_amount') - F('adjusted_amount'))
-        no_payments = Q(payment_count = 0)
+            .annotate(adjusted_amount=ExpressionWrapper(amount_adjustment, output_field=DecimalField())) \
+            .annotate(adjusted_payments=ExpressionWrapper(payment_adjustment, output_field=DecimalField())) \
+            .annotate(owed=F('adjusted_amount') - F('adjusted_payments'))
+        no_payments = Q(payments_distinct = 0)
         partial_payment = Q(owed__gt = 0)
-        return query.filter(bill_amount__gt=0).filter(no_payments | partial_payment)
+        return outstanding_query.filter(bill_amount__gt=0).filter(no_payments | partial_payment)
 
     def non_zero(self):
         return self.annotate(bill_amount=Sum('line_items__amount')).filter(bill_amount__gt=0)
