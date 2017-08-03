@@ -1,10 +1,5 @@
-<h3>
-  This Period:
-  {{ period_start|date:'M d' }} to {{ period_end|date:'M d' }}
-</h3>
-
-<h3>
-  Activity This Period:
+<h3 class='header-font'>
+  Activity Between {{ period_start|date:'M d' }} to {{ period_end|date:'M d' }}:
   {{ days_this_period | length}} {% if allowance %} of {{ allowance }} Days{% endif %}
   {% if days_this_period != billable %}
     ({{ billable }} billable)
@@ -16,12 +11,12 @@
     <thead>
       <tr>
         {% if show_user %}
-          <th>User</th>
+          <th class='sub-th'>User</th>
         {% endif %}
-        <th>Date</th>
-        <th align="center">Billable</th>
+        <th class='sub-th'>Date</th>
+        <th class='sub-th' align="center">Billable</th>
         {% if show_paid %}
-          <th>Paid by</th>
+          <th class='sub-th'>Paid by</th>
         {% endif %}
       </tr>
     </thead>
