@@ -12,7 +12,7 @@ from nadine.models.billing import BillingBatch, UserBill, Payment
 from nadine.models.membership import MembershipPackage, SubscriptionDefault
 from nadine.models.membership import Membership, ResourceSubscription
 from nadine.models.organization import Organization
-from nadine.models.resource import Resource
+from nadine.models.resource import Resource, Room
 from nadine.models.usage import CoworkingDay, Event
 
 
@@ -920,10 +920,10 @@ class BillingTestCase(TestCase):
         self.assertEqual(1, membership.active_subscriptions().count())
 
         # Create event for 6 hours
-        event1 = Event.objects.create(user=user, start_ts=localtime(now()) - timedelta(hours=6), end_ts=localtime(now()))
+        event1 = Event.objects.create(user=user, start_ts=localtime(now()) - timedelta(hours=6), end_ts=localtime(now()), room=Room.objects.create(name="Room 1", has_phone=False, has_av=False, floor=1, seats=4, max_capacity=10, default_rate=20.00, members_only=False))
 
         # Make sure bill returns with line for subscription and one line for event
-        new_bill_batch = BillingBatch.objects.run(start_date=start, end_date = start)
+        new_bill_batch = BillingBatch.objects.run(start_date=start, end_date = (start + relativedelta(months=1) - timedelta(days=1)))
         self.assertTrue(new_bill_batch.successful)
         user_bill = user.bills.get(period_start=start, period_end=start + relativedelta(months=1) - timedelta(days=1))
         self.assertEqual(100, user_bill.amount)
@@ -940,17 +940,33 @@ class BillingTestCase(TestCase):
         self.assertEqual(1, membership.active_subscriptions().count())
 
         # Create event for 12 hours
-        event1 = Event.objects.create(user=user, start_ts=localtime(now()) - timedelta(hours=12), end_ts=localtime(now()))
+        event1 = Event.objects.create(user=user, start_ts=localtime(now()) - timedelta(hours=12), end_ts=localtime(now()), room=Room.objects.create(name="Room 1", has_phone=False, has_av=False, floor=1, seats=4, max_capacity=10, default_rate=20.00, members_only=False))
 
         # Run billing batch
-        new_bill_batch = BillingBatch.objects.run(start_date=start, end_date=start)
+        new_bill_batch = BillingBatch.objects.run(start_date=start, end_date=(start + relativedelta(months=1) - timedelta(days=1)))
         self.assertTrue(new_bill_batch.successful)
         user_bill = user.bills.get(period_start=start, period_end=start + relativedelta(months=1) - timedelta(days=1))
 
         # Should have overage of $40 due to 2 extra room booking hours over allowance
+        self.assertEqual(event1.bill, user_bill)
         self.assertEqual(140, user_bill.amount)
         # Should have 2 line items. One for the subscription & one for the event
         self.assertEqual(2, user_bill.line_items.all().count())
+
+    def test_room_booking_for_inactive_member(self):
+        user = User.objects.create(username='member_twentynine', first_name='Member', last_name='Twentynine')
+
+        event1 = Event.objects.create(user=user, start_ts=localtime(now()) - timedelta(hours=36), end_ts=localtime(now())-timedelta(hours=34), room=Room.objects.create(name="Room 1", has_phone=False, has_av=False, floor=1, seats=4, max_capacity=10, default_rate=20.00, members_only=False))
+
+        new_bill_batch = BillingBatch.objects.run(start_date=one_month_ago, end_date=today)
+        self.assertTrue(new_bill_batch.successful)
+
+        user_bill = user.bills.get(period_start=today, period_end=today)
+        print_bill(user_bill)
+        self.assertEqual(event1.bill, user_bill)
+        self.assertEqual(40, user_bill.amount)
+        # Should have 1 line items. Just one for the event
+        self.assertEqual(1, user_bill.line_items.all().count())
 
 
 # Copyright 2017 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

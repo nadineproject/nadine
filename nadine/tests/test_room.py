@@ -135,10 +135,10 @@ class RoomTestCase(TestCase):
     def test_available_phone(self):
         # Look for rooms with a phoen starting tomorrow
         tomorrow = localtime(now()) + timedelta(days=1)
-        rooms = Room.objects.available(start=tomorrow, has_phone=True)
-        self.assertEqual(len(rooms), 1)
-        self.assertEqual(self.room2, rooms[0])
-        self.assertTrue(rooms[0].has_phone)
+        init_rooms = Room.objects.available(start=tomorrow, has_phone=True)
+        self.assertEqual(len(init_rooms), 1)
+        self.assertEqual(self.room2, init_rooms[0])
+        self.assertTrue(init_rooms[0].has_phone)
         rooms = Room.objects.available(start=tomorrow, has_phone=False)
         self.assertEqual(len(rooms), 1)
         self.assertEqual(self.room1, rooms[0])

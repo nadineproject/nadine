@@ -34,6 +34,12 @@
           <input id='day-btn' name='all_day' type='checkbox' class='filled-in' />
           <label for='day-btn' name='all-day'>All Day Event</label>
         </td>
+        {% if user.membership.active_subscriptions %}
+          <td>
+            <input id='member-btn' name='members_only' type='checkbox' class='filled-in' />
+            <label for='member-btn' name='all-day'>Included in Membership</label>
+          </td>
+        {% endif %}
       </tr>
     </table>
     <div class='row' id='room-criteria'>
@@ -158,6 +164,9 @@
               <button class='btn col s1 m1 l1 room-close'>X</p>
             </div>
             <ul>
+              {% if room.rate %}
+                <li style='color: red;'><strong>Hourly Rate:</strong> ${{ room.rate }}</li>
+              {% endif %}
               <li><strong>Seats:</strong> {{ room.seats }}</li>
               <li><strong>Max Capacity:</strong> {{ room.max_capacity }}</li>
               <li><strong>Has A/V?:</strong> {{ room.has_av|yesno:"Yes, No" }}</li>

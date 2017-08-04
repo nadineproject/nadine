@@ -127,7 +127,7 @@ class Event(models.Model):
         # Find out what subscriptions they had on this day
         from nadine.models.resource import Resource
         from nadine.models.membership import ResourceSubscription
-        subscriptions = ResourceSubscription.objects.for_user_and_date(self.user, self.visit_date).filter(resource=Resource.objects.event_resource)
+        subscriptions = ResourceSubscription.objects.for_user_and_date(self.user, self.start_ts.date()).filter(resource=Resource.objects.event_resource)
         if subscriptions:
             # This is a quick and dirty way that does not consider
             # which of these subscriptions we should use --JLS
