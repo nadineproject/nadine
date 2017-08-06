@@ -35,9 +35,10 @@ EMAIL_HOST_USER = "username"
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_SUBJECT_PREFIX = "[COWORKING] "  # or None if you want no subject prefix
-BILLING_EMAIL_ADDRESS = "billing@example.com"
 
-# Team Settings
+# Team Emails
+STAFF_EMAIL_ADDRESS = "billing@example.com"
+BILLING_EMAIL_ADDRESS = "billing@example.com"
 TEAM_EMAIL_ADDRESS = "team@officenomads.com"
 TEAM_MEMBERSHIP_PACKAGE = "ON Team"
 
