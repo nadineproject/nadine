@@ -5,12 +5,12 @@ from datetime import datetime, time, date, timedelta
 
 from django.conf import settings
 from django.contrib.sites.models import Site
+from django.contrib.auth.models import User
 from django.template.loader import get_template, render_to_string
 from django.template import Template, TemplateDoesNotExist, RequestContext
 from django.core.mail import send_mail, EmailMessage, EmailMultiAlternatives
 from django.urls import reverse
-from django.contrib.auth.models import User
-from django.utils import timezone
+from django.utils.timezone import localtime, now
 
 from nadine.models.membership import Membership
 from nadine.utils.slack_api import SlackAPI
@@ -278,14 +278,8 @@ def send_manage_member(user, subject=None):
         subject = settings.EMAIL_SUBJECT_PREFIX.strip() + " " + subject.strip()
 
     # Render the body from the templates
-    if settings.DEBUG:
-        site_url = ''
-    else:
-        site_url = "https://" + Site.objects.get_current().domain
     context = {
-        'today': timezone.localtime(timezone.now()),
         'user': user,
-        'site_url': site_url,
     }
     text_content, html_content = render_templates(context, "manage_member")
 
@@ -306,6 +300,12 @@ def send_manage_member(user, subject=None):
 def render_templates(context, email_key):
     text_content = None
     html_content = None
+
+    # inject some specific context
+    context['today'] = localtime(now())
+    context['site_url'] = ''
+    if not settings.DEBUG:
+        context['site_url'] = "https://" + Site.objects.get_current().domain
 
     try:
         text_template = get_template("email/%s.txt" % email_key)
