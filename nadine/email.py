@@ -13,8 +13,8 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 
 from nadine.models.membership import Membership
-from nadine.utils import mailgun
 from nadine.utils.slack_api import SlackAPI
+from nadine.utils import mailgun
 
 logger = logging.getLogger(__name__)
 
@@ -269,40 +269,57 @@ def announce_special_day(user, special_day):
     send_quietly(settings.TEAM_EMAIL_ADDRESS, subject, message)
 
 
+def send_manage_member(user, subject=None):
+    if subject == None:
+        subject = "Incomplete Tasks"
+    subject = "%s - %s" % (subject, user.get_full_name())
+    if hasattr(settings, "EMAIL_SUBJECT_PREFIX"):
+        # Adjust the subject if we have a prefix
+        subject = settings.EMAIL_SUBJECT_PREFIX.strip() + " " + subject.strip()
+
+    # Render the body from the templates
+    if settings.DEBUG:
+        site_url = ''
+    else:
+        site_url = "https://" + Site.objects.get_current().domain
+    context = {
+        'today': timezone.localtime(timezone.now()),
+        'user': user,
+        'site_url': site_url,
+    }
+    text_content, html_content = render_templates(context, "manage_member")
+
+    mailgun_data = {"from": settings.EMAIL_ADDRESS,
+                    "to": [settings.TEAM_EMAIL_ADDRESS, ],
+                    "subject": subject,
+                    "text": text_content,
+                    "html": html_content,
+                    }
+    return mailgun.mailgun_send(mailgun_data, inject_list_id=False)
+
+
 #####################################################################
 #                        Utilities
 #####################################################################
 
 
-def get_templates(email_key):
-    text_template = None
-    html_template = None
-
-    template_override = EmailTemplate.objects.filter(key=email_key).first()
-    if template_override:
-        if template_override.text_body:
-            text_template = Template(template_override.text_body)
-        if t.html_body:
-            html_template = Template(template_override.html_body)
-    else:
-        try:
-            text_template = get_template("email/%s.txt" % email_key)
-            html_template = get_template("email/%s.html" % email_key)
-        except TemplateDoesNotExist:
-            logger.debug('There is no template for email key "%s"' % email_key)
-            logger.debug('Exiting quietly')
-
-    return (text_template, html_template)
-
-
 def render_templates(context, email_key):
     text_content = None
     html_content = None
-    text_template, html_template = get_templates(location, email_key)
-    if text_template:
-        text_content = text_template.render(context)
-    if html_template:
-        html_content = html_template.render(context)
+
+    try:
+        text_template = get_template("email/%s.txt" % email_key)
+        if text_template:
+            text_content = text_template.render(context)
+
+        html_template = get_template("email/%s.html" % email_key)
+        if html_template:
+            html_content = html_template.render(context)
+    except TemplateDoesNotExist:
+        pass
+
+    #logger.debug("text_context: %s" % text_content)
+    #logger.debug("html_content: %s" % html_content)
     return (text_content, html_content)
 
 

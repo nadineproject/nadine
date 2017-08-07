@@ -22,7 +22,6 @@ from nadine.models.resource import Resource
 from interlink.models import MailingList
 
 from nadine import email
-from nadine.utils import mailgun
 from nadine.utils.slack_api import SlackAPI
 from nadine.utils.payment_api import PaymentAPI
 
@@ -103,7 +102,7 @@ class MemberAlertManager(models.Manager):
         # Send an email to the team announcing their exit
         end = user.membership.end_date
         subject = "Exiting Member: %s/%s/%s" % (end.month, end.day, end.year)
-        mailgun.send_manage_member(user, subject=subject)
+        email.send_manage_member(user, subject=subject)
 
         # Remove them from the mailing lists
         for mailing_list in MailingList.objects.filter(is_opt_out=True):
@@ -196,7 +195,7 @@ class MemberAlertManager(models.Manager):
         else:
             # If it's not their first day and they still have open alerts, message the team
             if len(user.profile.open_alerts()) > 0:
-                mailgun.send_manage_member(user)
+                email.send_manage_member(user)
 
     def trigger_new_desk(self, user):
         logger.debug("trigger_new_desk: %s" % user)
