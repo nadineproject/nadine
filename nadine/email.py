@@ -117,7 +117,6 @@ def send_new_membership(user):
     subject = "New %s Membership" % membership.package_name()
     message = render_to_string('email/new_membership.txt', context={'user': user, 'membership': membership, 'site': site})
     send(user.email, subject, message)
-    announce_new_membership(user)
 
 
 def send_first_day_checkin(user):

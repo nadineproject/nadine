@@ -117,6 +117,13 @@ class MemberAlertManager(models.Manager):
         all_alerts = user.profile.alerts_by_key(include_resolved=True)
         existing_files = user.profile.files_by_type()
 
+        # Send New Member email
+        try:
+            email.send_new_membership(user)
+            email.announce_new_membership(user)
+        except Exception as e:
+            logger.error("Could not send New Member notification", e)
+
         # Member Information
         if not FileUpload.MEMBER_INFO in existing_files:
             if not MemberAlert.PAPERWORK in open_alerts:
