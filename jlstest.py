@@ -21,4 +21,5 @@ jacob = User.objects.get(username='jacob')
 j = jacob
 user = jacob
 
-on = Organization.objects.get(name="Office Nomads")
+on = Organization.objects.filter(name="Office Nomads").first()
+main = Organization.objects.filter(name="312 Main").first()
