@@ -102,7 +102,7 @@ def user_profile(request, username):
 
     # Pull our open alerts
     alert_list = [MemberAlert.MEMBER_AGREEMENT, MemberAlert.TAKE_PHOTO, MemberAlert.ORIENTATION, MemberAlert.KEY_AGREEMENT, MemberAlert.ASSIGN_CABINET, MemberAlert.ASSIGN_MAILBOX, MemberAlert.RETURN_DOOR_KEY, MemberAlert.RETURN_DESK_KEY]
-    if user.membership.active_subscriptions():
+    if user.profile.is_active():
         open_alerts = user.profile.open_alerts().filter(key__in=alert_list)
     else:
         open_alerts = None
