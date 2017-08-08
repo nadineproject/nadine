@@ -7,20 +7,20 @@ path = lambda *a: os.path.join(ROOT, *a)
 PRODUCTION = False
 DEBUG = True
 
-# Admins
+# Site Administrators
 ADMINS = (
     ('YOU', 'you@yourdomain.com'),
 )
 
-# Example Database Setup
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.postgresql',
-#        'NAME': 'nadinedb',
-#        'USER': 'postgres',
-#        'PASSWORD': 'password'
-#    }
-#}
+# Database Settings
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'nadinedb',
+        'USER': 'postgres',
+        'PASSWORD': 'password'
+    }
+}
 
 # Site Information
 SITE_NAME = "Nadine"
@@ -28,18 +28,18 @@ SITE_DOMAIN = "127.0.0.1:8080"
 SITE_PROTO = "http"
 
 # Email Settings
-EMAIL_ADDRESS = "something@example.com"
 EMAIL_HOST = "smtp.example.com"
+EMAIL_HOST_USER = "postmaster@example.com"
 EMAIL_HOST_PASSWORD = "password"
-EMAIL_HOST_USER = "username"
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_SUBJECT_PREFIX = "[COWORKING] "  # or None if you want no subject prefix
+EMAIL_SUBJECT_PREFIX = "[Nadine] "
+SERVER_EMAIL = "nadine@example.com"
+DEFAULT_FROM_EMAIL = "nadine@example.com"
+STAFF_EMAIL_ADDRESS = "staff@example.com"
 BILLING_EMAIL_ADDRESS = "billing@example.com"
-
-# Team Settings
-TEAM_EMAIL_ADDRESS = "team@officenomads.com"
-TEAM_MEMBERSHIP_PACKAGE = "ON Team"
+TEAM_EMAIL_ADDRESS = "team@example.com"
+TEAM_MEMBERSHIP_PACKAGE = "Team Membership"
 
 # Make this unique, and don't share it with anybody.
 # http://www.miniwebtool.com/django-secret-key-generator/
@@ -55,20 +55,20 @@ CALENDAR_DICT = {'Public':'red', 'Member Only': 'RGBA(71, 159, 198, 1)' }
 
 # Mailgun Settings
 #MAILGUN_API_KEY = "YOUR-MAILGUN-API-KEY"
-MAILGUN_VALIDATION_KEY = "YOUR-MAILGUN-VALIDATION-KEY"
+#MAILGUN_VALIDATION_KEY = "YOUR-MAILGUN-VALIDATION-KEY"
 #MAILGUN_DOMAIN = "YOUR-MAILGUN-DOMAIN"
 #MAILGUN_DEBUG = False
 
 # USAePay Settings
 # Use API Doc/Literal WSDL
-# USA_EPAY_GATE = "https://www.usaepay.com/gate.php"
-# USA_EPAY_FORM = "https://www.usaepay.com/interface/epayform/"
+#USA_EPAY_GATE = "https://www.usaepay.com/gate.php"
+#USA_EPAY_FORM = "https://www.usaepay.com/interface/epayform/"
 # Used for adding billing profiles
-# USA_EPAY_FORM_KEY="YOUR_KEY"
-# USA_EPAY_SOAP_1_2 = "https://www.usaepay.com/soap/gate/YOUR_CODE/usaepay.wsdl"
-# USA_EPAY_SOAP_1_4 = "https://www.usaepay.com/soap/gate/YOUR_CODE/usaepay.wsdl"
-# USA_EPAY_SOAP_KEY = "YOUR_KEY"
-# USA_EPAY_SOAP_PIN = "YOUR_PIN"
+#USA_EPAY_FORM_KEY="YOUR_KEY"
+#USA_EPAY_SOAP_1_2 = "https://www.usaepay.com/soap/gate/YOUR_CODE/usaepay.wsdl"
+#USA_EPAY_SOAP_1_4 = "https://www.usaepay.com/soap/gate/YOUR_CODE/usaepay.wsdl"
+#USA_EPAY_SOAP_KEY = "YOUR_KEY"
+#USA_EPAY_SOAP_PIN = "YOUR_PIN"
 
 # Mailchimp Settings
 #MAILCHIMP_API_KEY = "goMonkeygo"
@@ -88,9 +88,9 @@ MAILGUN_VALIDATION_KEY = "YOUR-MAILGUN-VALIDATION-KEY"
 #SLACK_TEAM_URL = "https://nadine.slack.com/"
 
 # Arp Settings
-ARPWATCH_SNMP_SERVER = '192.168.1.1'
-ARPWATCH_SNMP_COMMUNITY = 'yourcommunitystring'
-ARPWATCH_NETWORK_PREFIX = '192.168.'
+#ARPWATCH_SNMP_SERVER = '192.168.1.1'
+#ARPWATCH_SNMP_COMMUNITY = 'yourcommunitystring'
+#ARPWATCH_NETWORK_PREFIX = '192.168.'
 
 # HID Door System
 # Encryption Key must be a URL-safe base64-encoded 32-byte key.

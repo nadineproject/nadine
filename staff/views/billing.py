@@ -8,7 +8,7 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.template import RequestContext
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.urls import reverse
 from django.contrib import messages
 from django.db.models import Q, Sum
@@ -47,7 +47,7 @@ def batch_logs(request):
 
 @staff_member_required
 def bill_list(request):
-    date_range_form = DateRangeForm.from_request(request, days=30)
+    date_range_form = DateRangeForm.from_request(request, days=7)
     start_date, end_date = date_range_form.get_dates()
     bills = UserBill.objects.filter(period_start__range=(start_date, end_date)).order_by('period_start').reverse()
     context = {
@@ -191,6 +191,15 @@ def action_record_payment(request):
     if bill_id:
         return HttpResponseRedirect(reverse('staff:billing:bill', kwargs={'bill_id': bill_id}))
     return HttpResponseRedirect(reverse('staff:billing:bills'))
+
+
+@staff_member_required
+def bill_view_redirect(request):
+    if "bill_id" in request.POST:
+        bill_id = request.POST['bill_id']
+        return HttpResponseRedirect(reverse('staff:billing:bill', kwargs={'bill_id': bill_id}))
+    raise Http404
+
 
 @staff_member_required
 def bill_view(request, bill_id):

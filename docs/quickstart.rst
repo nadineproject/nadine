@@ -23,7 +23,7 @@ Download the nadine source code from Github
 
 .. code-block:: console
 
-  $ git clone https://github.com/nadineproject.nadine.github
+  $ git clone https://github.com/nadineproject/nadine.git
   $ cd nadine
 
 Install all the requirements

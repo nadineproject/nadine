@@ -4,7 +4,28 @@
 
 {% block content %}
 
-<h4>Bill List</h4>
+<h4>Find a Bill</h4>
+
+
+<table style="margin-top: 1em;">
+<form method="POST" action="{% url 'staff:billing:bill_redirect' %}">
+  <tr>
+    <td style="width:15%;">
+      <h5>Go to Bill:</h5>
+    </td>
+    <td style="width:10%;">
+      <input size="1" name="bill_id" placeholder="Bill ID"/>
+    </td>
+    <td style="width:10%;">
+      <!-- <input type="submit"> -->
+    </td>
+    <td></td>
+  </tr>
+  {% csrf_token %}
+</form>
+</table>
+
+<h5>Recent bills</h5>
 <div class="columns clearfix date-range">
   {% include "staff/date_range_form.html"%}
 </div>
@@ -21,7 +42,7 @@
       <th class='sub-th'>Lines</th>
       <th class=" sub-th amount">Amount</th>
       <th class="sub-th amount">Paid</th>
-      <th></th>
+      <th class="sub-th"></th>
     </tr>
 
     {% for bill in bills %}
@@ -35,7 +56,7 @@
         <td>{{ bill.line_items.all | length }}</td>
         <td class="amount">${{ bill.amount }}</td>
         <td class="amount">${{ bill.total_paid }}</td>
-        <td><a href="{{ bill.get_admin_url }}">edit</a></td>
+        <td><a href="{{ bill.get_admin_url }}">admin</a></td>
       </tr>
     {% endfor %}
 {% else %}

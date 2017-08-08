@@ -35,8 +35,8 @@ VERIFY_SIGNATURE = getattr(settings, "COMLINK_VERIFY_INCOMING", not settings.DEB
 
 @staff_member_required
 def home(request):
-    messages = IncomingEmail.objects.all().order_by("-received")
-    threads = jwzthreading.thread(messages)
+    # messages = IncomingEmail.objects.all().order_by("-received")
+    # threads = jwzthreading.thread(messages)
     inboxes = []
     for a in SimpleMailingList.objects.all().values('address'):
         inboxes.append({'address': a})
@@ -47,7 +47,8 @@ def home(request):
     for i in inboxes:
         c = IncomingEmail.objects.filter(recipient__contains=i['address']).count()
         i['messages'] = c
-    context = {'messages':messages, 'inboxes':inboxes}
+    # context = {'messages':messages, 'inboxes':inboxes}
+    context = {'inboxes':inboxes}
     return render(request, 'comlink/home.html', context)
 
 

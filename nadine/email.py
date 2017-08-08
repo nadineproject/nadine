@@ -5,16 +5,16 @@ from datetime import datetime, time, date, timedelta
 
 from django.conf import settings
 from django.contrib.sites.models import Site
+from django.contrib.auth.models import User
 from django.template.loader import get_template, render_to_string
 from django.template import Template, TemplateDoesNotExist, RequestContext
 from django.core.mail import send_mail, EmailMessage, EmailMultiAlternatives
 from django.urls import reverse
-from django.contrib.auth.models import User
-from django.utils import timezone
+from django.utils.timezone import localtime, now
 
 from nadine.models.membership import Membership
-from nadine.utils import mailgun
 from nadine.utils.slack_api import SlackAPI
+from nadine.utils import mailgun
 
 logger = logging.getLogger(__name__)
 
@@ -117,7 +117,6 @@ def send_new_membership(user):
     subject = "New %s Membership" % membership.package_name()
     message = render_to_string('email/new_membership.txt', context={'user': user, 'membership': membership, 'site': site})
     send(user.email, subject, message)
-    announce_new_membership(user)
 
 
 def send_first_day_checkin(user):
@@ -271,39 +270,65 @@ def announce_special_day(user, special_day):
 
 
 #####################################################################
-#                        Utilities
+#                    Manage Member Email
 #####################################################################
 
 
-def get_templates(email_key):
-    text_template = None
-    html_template = None
+def get_manage_member_content(user, subject=None):
+    if subject == None:
+        subject = "Incomplete Tasks"
+    subject = "%s - %s" % (subject, user.get_full_name())
+    if hasattr(settings, "EMAIL_SUBJECT_PREFIX"):
+        # Adjust the subject if we have a prefix
+        subject = settings.EMAIL_SUBJECT_PREFIX.strip() + " " + subject.strip()
 
-    template_override = EmailTemplate.objects.filter(key=email_key).first()
-    if template_override:
-        if template_override.text_body:
-            text_template = Template(template_override.text_body)
-        if t.html_body:
-            html_template = Template(template_override.html_body)
-    else:
-        try:
-            text_template = get_template("email/%s.txt" % email_key)
-            html_template = get_template("email/%s.html" % email_key)
-        except TemplateDoesNotExist:
-            logger.debug('There is no template for email key "%s"' % email_key)
-            logger.debug('Exiting quietly')
+    # Render the body from the templates
+    context = {
+        'user': user,
+    }
+    return render_templates(context, "manage_member")
 
-    return (text_template, html_template)
+
+def send_manage_member(user, subject=None):
+    text_content, html_content = get_manage_member_content(user, subject)
+    mailgun_data = {
+        "from": settings.DEFAULT_FROM_EMAIL,
+        "to": [settings.TEAM_EMAIL_ADDRESS, ],
+        "subject": subject,
+        "text": text_content,
+        "html": html_content,
+    }
+    return mailgun.mailgun_send(mailgun_data, inject_list_id=False)
+
+
+#####################################################################
+#                        Utilities
+#####################################################################
 
 
 def render_templates(context, email_key):
     text_content = None
     html_content = None
-    text_template, html_template = get_templates(location, email_key)
-    if text_template:
-        text_content = text_template.render(context)
-    if html_template:
-        html_content = html_template.render(context)
+
+    # inject some specific context
+    context['today'] = localtime(now())
+    context['site_url'] = ''
+    if not settings.DEBUG:
+        context['site_url'] = "https://" + Site.objects.get_current().domain
+
+    try:
+        text_template = get_template("email/%s.txt" % email_key)
+        if text_template:
+            text_content = text_template.render(context)
+
+        html_template = get_template("email/%s.html" % email_key)
+        if html_template:
+            html_content = html_template.render(context)
+    except TemplateDoesNotExist:
+        pass
+
+    #logger.debug("text_context: %s" % text_content)
+    #logger.debug("html_content: %s" % html_content)
     return (text_content, html_content)
 
 
@@ -326,7 +351,7 @@ def send_email(recipient, subject, text_message, html_message=None, fail_silentl
 
     # A little safety net when debugging
     if settings.DEBUG:
-        recipient = settings.EMAIL_ADDRESS
+        recipient = settings.DEFAULT_FROM_EMAIL
 
     # Adjust the subject if we have a prefix
     if hasattr(settings, "EMAIL_SUBJECT_PREFIX"):
@@ -335,7 +360,7 @@ def send_email(recipient, subject, text_message, html_message=None, fail_silentl
     note = None
     success = False
     try:
-        msg = EmailMultiAlternatives(subject, text_message, settings.EMAIL_ADDRESS, [recipient])
+        msg = EmailMultiAlternatives(subject, text_message, settings.DEFAULT_FROM_EMAIL, [recipient])
         if html_message:
             msg.attach_alternative(html_message, 'text/html')
         msg.send(fail_silently=False)

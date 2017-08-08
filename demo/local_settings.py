@@ -60,7 +60,6 @@ ARPWATCH_SNMP_COMMUNITY = 'yourcommunitystring'
 ARPWATCH_NETWORK_PREFIX = '192.168.'
 
 DEFAULT_FROM_EMAIL = "something@example.com"
-EMAIL_ADDRESS = "something@example.com"
 EMAIL_HOST = "smtp.example.com"
 EMAIL_HOST_PASSWORD = "password"
 EMAIL_HOST_USER = "username"

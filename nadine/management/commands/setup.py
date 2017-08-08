@@ -28,6 +28,7 @@ class Command(BaseCommand):
             self.load_settings_file()
             self.setup_general()
             self.setup_timezone()
+            self.setup_email()
             self.setup_database()
             self.write_settings_file()
         except KeyboardInterrupt:
@@ -56,6 +57,15 @@ class Command(BaseCommand):
             print("Writing %s" % SETTINGS_FILE)
             self.local_settings.save(SETTINGS_FILE)
 
+    def prompt_for_value(self, question, key, default=None):
+        if not default:
+            default = self.local_settings.get_value(key)
+        print("%s? (default: '%s')" % (question, default))
+        value = raw_input(PROMPT).strip().lower()
+        if not value:
+            value = default
+        self.local_settings.set(key, value)
+
     def setup_general(self):
         print("### General Settings ###")
 
@@ -67,22 +77,10 @@ class Command(BaseCommand):
             self.local_settings.set('SECRET_KEY', secret_key, quiet=True)
             print
 
-        # Site Name
+        # Site Information
+        self.prompt_for_value("Site Name", "SITE_NAME")
         current_host = socket.gethostname().lower()
-        print("Site name? (default: 'Nadine')")
-        site_name = raw_input(PROMPT).strip()
-        if not site_name:
-            site_name = "Nadine"
-        self.local_settings.set('SITE_NAME', site_name)
-
-        # Site Domain
-        print("Site domain? (default: '%s')" % current_host)
-        domain = raw_input(PROMPT).strip()
-        if not domain:
-            domain = current_host
-        self.local_settings.set('SITE_DOMAIN', domain)
-
-        # Protocol (http or https)
+        self.prompt_for_value("Site Domain", "SITE_DOMAIN", default=current_host)
         protocol = "http"
         print("Use SSL? (y, N)")
         ssl = raw_input(PROMPT).strip().lower()
@@ -90,15 +88,15 @@ class Command(BaseCommand):
             protocol = protocol + "s"
         self.local_settings.set('SITE_PROTO', protocol)
 
-        # System Email Address
-        default_email = "nadine@" + domain
-        print("System email address? (default: '%s')" % default_email)
-        email = raw_input(PROMPT).strip().lower()
-        if not email:
-            email = default_email
-        self.local_settings.set('EMAIL_ADDRESS', email)
+        # Site Administrator
+        print("Full Name of Administrator")
+        admin_name = raw_input(PROMPT).strip().title()
+        print("Admin Email Address?")
+        admin_email = raw_input(PROMPT).strip().lower()
+        self.local_settings.set_admins(admin_name, admin_email)
 
     def setup_timezone(self):
+        print
         print("### Timezone Setup ###")
 
         # Country
@@ -125,7 +123,6 @@ class Command(BaseCommand):
 
     # Database Setup
     def setup_database(self):
-        current_user = getpass.getuser()
         print
         print("### Database Setup ###")
         print("Database Name? (default: nadinedb)")
@@ -133,6 +130,7 @@ class Command(BaseCommand):
         if not db_name:
             db_name = "nadinedb"
         print("DATABASE_NAME = '%s'" % db_name)
+        current_user = getpass.getuser()
         print("Database User? (default: %s)" % current_user)
         db_user = raw_input(PROMPT).strip()
         if not db_user:
@@ -144,32 +142,23 @@ class Command(BaseCommand):
             print("DATABASE_PASSWORD = '%s'" % db_pass)
         self.local_settings.set_database(db_name, db_user, db_pass)
 
-        #print ("Migrating database")
-        #from django.conf import settings
-        #from django.core import management
-        #management.call_command("migrate")
-
-    def setup_admin(self):
-        # TODO - doesn't work yet
-        print("We need to create an administrator.")
-        print("Admin First Name?")
-        admin_first_name = raw_input(PROMPT).strip().title()
-        print("Admin Last Name?")
-        admin_last_name = raw_input(PROMPT).strip().title()
-        print("Admin Email Address?")
-        admin_email = raw_input(PROMPT).strip().lower()
-        print("Admin Password?")
-        admin_password = raw_input(PROMPT).strip()
-        admin_username = "%s_%s" % (admin_first_name.lower(), admin_last_name.lower())
-        admin_user = User.objects.create_superuser(admin_username, admin_email, admin_password)
-        admin_user.first_name = admin_first_name
-        admin_user.last_name = admin_last_name
-        #print(admin_username)
-        admin_user.save()
-
     # Mail Server Setup
     def setup_email(self):
-        pass
+        print
+        print("### Email Setup ###")
+        domain = self.local_settings.get_value("SITE_DOMAIN")
+        self.prompt_for_value("Email Host", "EMAIL_HOST")
+        self.prompt_for_value("Email Host User", "EMAIL_HOST_USER", default="postmaster@" + domain)
+        self.prompt_for_value("Email Host Password", "EMAIL_HOST_PASSWORD")
+        # self.prompt_for_value("Email Host Port", "EMAIL_PORT")
+        # self.prompt_for_value("User TSL", "EMAIL_USE_TLS")
+        self.prompt_for_value("Subject Prefix", "EMAIL_SUBJECT_PREFIX")
+        self.prompt_for_value("Sent From Address", "DEFAULT_FROM_EMAIL", default="nadine@" + domain)
+        default_from = self.local_settings.get_value("DEFAULT_FROM_EMAIL")
+        self.local_settings.set('SERVER_EMAIL', default_from)
+        self.prompt_for_value("Staff Address", "STAFF_EMAIL_ADDRESS", default="staff@" + domain)
+        self.prompt_for_value("Billing Address", "BILLING_EMAIL_ADDRESS", default="billing@" + domain)
+        self.prompt_for_value("Team Address", "TEAM_EMAIL_ADDRESS", default="team@" + domain)
 
 
 class LocalSettings():
@@ -179,7 +168,8 @@ class LocalSettings():
         with open(filename) as f:
             self.settings = f.readlines()
 
-        self.settings.append("\n# Settings Generated by ./manage.py setup\n")
+        if not self.settings[0].startswith("# Generated using"):
+            self.settings.insert(0, "# Generated using ./manage.py setup\n")
 
     def get_line_number(self, key):
         for i, line in enumerate(self.settings):
@@ -193,6 +183,15 @@ class LocalSettings():
             return self.settings[line_number]
         return None
 
+    def get_value(self, key):
+        value = self.get(key)
+        if not value:
+            return None
+        clean_value = value[value.index('=') + 1:].strip()
+        if clean_value[0] == "'" or clean_value[0] == '"':
+            return clean_value[1:len(clean_value)-1]
+        return clean_value
+
     def set(self, key, value, quiet=False):
         new_line = '%s = "%s"\n' % (key, value)
         if not quiet:
@@ -203,17 +202,18 @@ class LocalSettings():
         else:
             self.settings.append(new_line)
 
-    def set_database(self, db_name=None, db_user=None, db_pass=None):
-        self.settings.append("DATABASES = {\n")
-        self.settings.append("    'default': {\n")
-        self.settings.append("        'ENGINE': 'django.db.backends.postgresql',\n")
-        if db_name:
-            self.settings.append("         'NAME': '%s',\n" % db_name)
-        if db_user:
-            self.settings.append("         'USER': '%s',\n" % db_user)
+    def set_admins(self, admin_name, admin_email):
+        line_number = self.get_line_number("ADMINS")
+        self.settings[line_number + 1] = "    ('%s', '%s')\n" % (admin_name, admin_email)
+
+    def set_database(self, db_name, db_user, db_pass=None):
+        line_number = self.get_line_number("DATABASES")
+        self.settings[line_number + 3] = "        'NAME': '%s',\n" % db_name
+        self.settings[line_number + 4] = "        'USER': '%s',\n" % db_user
         if db_pass:
-            self.settings.append("         'PASSWORD': '%s',\n" % db_pass)
-        self.settings.append("    }\n}\n")
+            self.settings[line_number + 5] = "        'PASSWORD': '%s',\n" % db_pass
+        else:
+            self.settings[line_number + 5] = "        #'PASSWORD': 'password',\n"
 
     def save(self, filename):
         print("Writing new settings file...")
