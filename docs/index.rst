@@ -40,7 +40,8 @@ Indices and tables
   requirements
   quickstart
   settings
-
+  nginx
+  
 .. toctree::
   :maxdepth: 1
   :glob:
