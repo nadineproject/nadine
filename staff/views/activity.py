@@ -90,7 +90,7 @@ def activity_for_date(request, activity_date):
         for v in visits:
             v.payment = 'Waive'
             v.save()
-            messages.success(request, 'All visits today have been waived')
+        messages.success(request, 'All visits today have been waived')
 
     context = {'daily_logs': daily_logs,
                'activity_date': activity_date,
