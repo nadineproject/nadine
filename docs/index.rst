@@ -40,7 +40,7 @@ Indices and tables
   requirements
   quickstart
   settings
-  nginx
+  production
   
 .. toctree::
   :maxdepth: 1
