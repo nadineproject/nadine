@@ -130,6 +130,11 @@ input.datepicker {
   margin-top: 5%;
 }
 
+.waiver-form {
+  margin-top: 2%;
+  margin-left: 80%;
+}
+
 
 @media only screen and (max-width: 700px) {
   #alert-a {
@@ -138,6 +143,7 @@ input.datepicker {
 }
 @media only screen and (max-width: 480px) {
 	.graph-column {
+		width: 5px;
 		width: 5px;
 		float: left;
 		margin-bottom: 10%;

@@ -86,18 +86,13 @@ def activity_for_date(request, activity_date):
     daily_logs = CoworkingDay.objects.filter(visit_date=activity_date).reverse()
 
     if request.method == 'POST':
-        daily_log_form = CoworkingDayForm(request.POST, request.FILES)
-        if daily_log_form.is_valid():
-            try:
-                daily_log_form.save()
-                messages.add_message(request, messages.INFO, "Activity was recorded!")
-            except Exception as e:
-                messages.add_message(request, messages.ERROR, e)
-    else:
-        daily_log_form = CoworkingDayForm(initial={'visit_date': activity_date})
+        visits = CoworkingDay.objects.filter(visit_date=activity_date)
+        for v in visits:
+            v.payment = 'Waive'
+            v.save()
+            messages.success(request, 'All visits today have been waived')
 
     context = {'daily_logs': daily_logs,
-               'daily_log_form': daily_log_form,
                'activity_date': activity_date,
                'next_date': activity_date + timedelta(days=1),
                'previous_date': activity_date - timedelta(days=1)}
