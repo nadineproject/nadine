@@ -75,7 +75,7 @@ def search(request):
 
 def user_profile(request, username):
     user = get_object_or_404(User, username=username)
-    
+
     can_signin = True
     if user.membership.has_desk():
         # They have a desk so they can't sign in
@@ -102,7 +102,10 @@ def user_profile(request, username):
 
     # Pull our open alerts
     alert_list = [MemberAlert.MEMBER_AGREEMENT, MemberAlert.TAKE_PHOTO, MemberAlert.ORIENTATION, MemberAlert.KEY_AGREEMENT, MemberAlert.ASSIGN_CABINET, MemberAlert.ASSIGN_MAILBOX, MemberAlert.RETURN_DOOR_KEY, MemberAlert.RETURN_DESK_KEY]
-    open_alerts = user.profile.open_alerts().filter(key__in=alert_list)
+    if user.membership.active_subscriptions():
+        open_alerts = user.profile.open_alerts().filter(key__in=alert_list)
+    else:
+        open_alerts = None
 
     context = {
         'user': user,
