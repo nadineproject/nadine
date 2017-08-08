@@ -283,7 +283,7 @@ def send_manage_member(user, subject=None):
     }
     text_content, html_content = render_templates(context, "manage_member")
 
-    mailgun_data = {"from": settings.EMAIL_ADDRESS,
+    mailgun_data = {"from": settings.DEFAULT_FROM_EMAIL,
                     "to": [settings.TEAM_EMAIL_ADDRESS, ],
                     "subject": subject,
                     "text": text_content,
@@ -342,7 +342,7 @@ def send_email(recipient, subject, text_message, html_message=None, fail_silentl
 
     # A little safety net when debugging
     if settings.DEBUG:
-        recipient = settings.EMAIL_ADDRESS
+        recipient = settings.DEFAULT_FROM_EMAIL
 
     # Adjust the subject if we have a prefix
     if hasattr(settings, "EMAIL_SUBJECT_PREFIX"):
@@ -351,7 +351,7 @@ def send_email(recipient, subject, text_message, html_message=None, fail_silentl
     note = None
     success = False
     try:
-        msg = EmailMultiAlternatives(subject, text_message, settings.EMAIL_ADDRESS, [recipient])
+        msg = EmailMultiAlternatives(subject, text_message, settings.DEFAULT_FROM_EMAIL, [recipient])
         if html_message:
             msg.attach_alternative(html_message, 'text/html')
         msg.send(fail_silently=False)
