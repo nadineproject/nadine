@@ -15,7 +15,6 @@ from django.template.loader import get_template
 from django.utils.timezone import localtime, now
 
 from nadine import email
-from nadine.utils import mailgun
 from nadine.models.profile import UserProfile
 from nadine.models.usage import CoworkingDay
 from nadine.models.billing import UserBill
@@ -184,7 +183,7 @@ def manage_member(request, username):
             alert.resolve(request.user)
 
     # Render the email content in to a variable to make up the page content
-    text_content, html_content = mailgun.get_manage_member_content(user)
+    text_content, html_content = email.get_manage_member_content(user)
 
     return render(request, 'member/core/manage_member.html', {'user': user, 'page_content': html_content})
 

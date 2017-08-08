@@ -269,7 +269,12 @@ def announce_special_day(user, special_day):
     send_quietly(settings.TEAM_EMAIL_ADDRESS, subject, message)
 
 
-def send_manage_member(user, subject=None):
+#####################################################################
+#                    Manage Member Email
+#####################################################################
+
+
+def get_manage_member_content(user, subject=None):
     if subject == None:
         subject = "Incomplete Tasks"
     subject = "%s - %s" % (subject, user.get_full_name())
@@ -281,14 +286,18 @@ def send_manage_member(user, subject=None):
     context = {
         'user': user,
     }
-    text_content, html_content = render_templates(context, "manage_member")
+    return render_templates(context, "manage_member")
 
-    mailgun_data = {"from": settings.DEFAULT_FROM_EMAIL,
-                    "to": [settings.TEAM_EMAIL_ADDRESS, ],
-                    "subject": subject,
-                    "text": text_content,
-                    "html": html_content,
-                    }
+
+def send_manage_member(user, subject=None):
+    text_content, html_content = get_manage_member_content(user, subject)
+    mailgun_data = {
+        "from": settings.DEFAULT_FROM_EMAIL,
+        "to": [settings.TEAM_EMAIL_ADDRESS, ],
+        "subject": subject,
+        "text": text_content,
+        "html": html_content,
+    }
     return mailgun.mailgun_send(mailgun_data, inject_list_id=False)
 
 
