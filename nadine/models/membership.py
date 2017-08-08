@@ -329,7 +329,8 @@ class Membership(models.Model):
 
         # Save the package
         if bill_day:
-            self.bill_day = bill_day
+            if (self.bill_day - day) == 1:
+                self.bill_day = bill_day
         self.save()
 
         # Add subscriptions for each of the defaults

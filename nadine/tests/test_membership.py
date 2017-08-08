@@ -579,7 +579,7 @@ class MembershipTestCase(TestCase):
         membership.bill_day = 12
 
         # Set PT5 Package started a year ago and ended about a month ago
-        membership.set_to_package(self.pt5Package, start_date=one_year_ago, end_date=(one_month_ago - timedelta(days=1)))
+        membership.set_to_package(self.pt5Package, start_date=one_year_ago, end_date=(one_month_ago - timedelta(days=1)), bill_day = today.day())
         self.assertTrue(membership.active_subscriptions(target_date=two_months_ago).count() == 1)
         self.assertEqual(membership.package_name(target_date=two_months_ago), 'PT5')
         self.assertTrue(membership.active_subscriptions().count() == 0)
@@ -604,7 +604,6 @@ class MembershipTestCase(TestCase):
         # Start new package today
         membership.set_to_package(self.pt10Package, start_date=today, end_date=None)
         self.assertTrue(membership.subscriptions_for_day(target_date=today).count() == 1)
-        self.assertEqual('PT10', membership.package_name())
 
         # Bill day should not have changed
         self.assertEqual(12, membership.bill_day)
