@@ -73,8 +73,8 @@
       <td>{{ r.max_capacity }}</td>
       <td>{{ r.has_av|yesno:"Yes,No" }}</td>
       <td>{{ r.has_phone|yesno:"Yes,No"  }}</td>
-      <td>{% if r.members_only %}Members Only {% endif %}</td>
       <td style='text-align: center;'>{{ r.default_rate }}</td>
+      <td>{% if r.members_only %}Members Only {% endif %}</td>
       <form action='.' method='GET'>
         <input type='hidden' name='room' value='{{ r.id }}' />
         <td><button type='submit'>Edit</button></td>
