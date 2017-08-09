@@ -155,6 +155,10 @@ table td {
   height: 90%;
 }
 
+#image-clear_id, label[for=image-clear_id] {
+  display: none;
+}
+
 #new-message-td {
   vertical-align: sub;
   font-size: 1.2em;
