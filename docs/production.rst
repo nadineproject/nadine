@@ -60,6 +60,8 @@ Copy configuration files in to place
   $ sudo ln -sf /etc/nginx/sites-available/nadine /etc/nginx/sites-enabled/default
   $ sudo cp etc/nginx/snippets/ssl-nadine.conf /etc/nginx/snippets/
   $ sudo cp etc/nginx/snippets/ssl-params.conf /etc/nginx/snippets/
+  $ sudo cp etc/uwsgi/apps-available/nadine.yaml /etc/uwsgi/apps-available/
+  $ sudo ln -s /etc/uwsgi/apps-available/nadine.yaml /etc/uwsgi/apps-enabled/
 
   Edit all configuration files to make sure your domain is correct.
 

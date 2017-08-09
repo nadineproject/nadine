@@ -1,0 +1,36 @@
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    server_name _;
+    return 301 https://$server_name$request_uri;
+}
+
+server {
+    listen 443 ssl default_server;
+    listen [::]:443 ssl default_server;
+    include snippets/ssl-nadine.conf;
+    include snippets/ssl-params.conf;
+
+    client_max_body_size 4G;
+    keepalive_timeout 70;
+
+    access_log  /home/nadine/logs/nginx_access.log;
+    error_log  /home/nadine/logs/nginx_error.log notice;
+
+    location = /favicon.ico {
+      root /home/nadine/webapp/static/;
+    }
+
+    location /static/ {
+        alias   /home/nadine/webapp/static/;
+    }
+
+    location /media/ {
+        alias   /home/nadine/webapp/media/;
+    }
+
+    location / {
+      include uwsgi_params;
+      uwsgi_pass unix:/home/nadine/webapp/run/uwsgi_nadine.sock;
+    }
+}

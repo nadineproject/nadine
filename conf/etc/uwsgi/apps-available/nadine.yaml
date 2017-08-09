@@ -1,0 +1,10 @@
+uwsgi:
+  chdir: /home/nadine/webapp
+  logfile: file:/home/nadine/logs/uwsgi.log
+  module: nadine.wsgi:application
+  socket: /home/nadine/webapp/run/uwsgi_nadine.sock
+  chown-socket: nadine:www-data
+  chmod-socket: 660
+  master: true
+  processes: 5
+  vacuum: true
