@@ -12,7 +12,7 @@ Create Nadine User
 
 .. code-block:: console
 
-  $ sudo useradd nadine
+  $ sudo adduser nadine
   $ sudo su - nadine
 
 Follow all the instructions in :doc:`quickstart<quickstart>` as the nadine user.
@@ -20,11 +20,12 @@ Follow all the instructions in :doc:`quickstart<quickstart>` as the nadine user.
 Create a few important directories for later.
 
 .. code-block:: console
+
+  $ mkdir -p /home/nadine/logs/
+  $ mkdir -p /home/nadine/backups/
   $ mkdir -p /home/nadine/webapp/run/
-  $ mkdir -p /home/nadine/webapp/logs/
   $ mkdir -p /home/nadine/webapp/media/
   $ mkdir -p /home/nadine/webapp/static/
-  $ mkdir -p /home/nadine/webapp/backups/
 
 
 Install Nginx and Certbot
@@ -38,7 +39,7 @@ Install Nginx and Certbot
 Get your LetsEncrypt certificate
 --------------------------------
 
-Follow instructions here:  `https://certbot.eff.org/all-instructions/`
+Follow instructions here:  `https://certbot.eff.org/all-instructions/ <https://certbot.eff.org/all-instructions/#debian-9-stretch-nginx>`
 
 If you test your server using the `SSL Labs Server Test <https://www.ssllabs.com/ssltest/>`_ now,
 it will only get a B grade due to weak Diffie-Hellman parameters.
@@ -56,5 +57,17 @@ Copy configuration files in to place
 
   $ cd /home/nadine/webapp/nadine/conf
   $ sudo cp etc/nginx/sites-available/nadine /etc/nginx/sites-available/nadine
+  $ sudo ln -sf /etc/nginx/sites-available/nadine /etc/nginx/sites-enabled/default
   $ sudo cp etc/nginx/snippets/ssl-nadine.conf /etc/nginx/snippets/
   $ sudo cp etc/nginx/snippets/ssl-params.conf /etc/nginx/snippets/
+
+  Edit all configuration files to make sure your domain is correct.
+
+
+Restart Nginx
+-------------
+
+.. code-block:: console
+
+  $ sudo nginx -t
+  $ sudo systemctl restart nginx
