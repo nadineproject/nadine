@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.utils.timezone import localtime, now
 from django.urls import reverse
 from django.db.models.signals import post_save
+from django.core.exceptions import ObjectDoesNotExist
 
 # from nadine.models.resource import Resource
 
@@ -71,10 +72,25 @@ class CoworkingDay(models.Model):
         return self.payment == 'Bill'
 
     @property
+    def waived(self):
+        return self.payment == 'Waive'
+
+    @property
+    def free_trial(self):
+        return self.payment == 'Trial'
+
+    @property
     def bill(self):
-        if self.line_item:
+        try:
             return self.line_item.bill
-        return none
+        except ObjectDoesNotExist:
+            return None
+
+    def mark_waived(self):
+        if self.bill:
+            raise Exception("Trying to waive a CoworkingDay that is already associated with a bill (%d)" % self.bill.id)
+        self.payment = 'Waive'
+        self.save()
 
     def __str__(self):
         return '%s - %s' % (self.visit_date, self.user)
