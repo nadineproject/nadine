@@ -40,7 +40,8 @@ Indices and tables
   requirements
   quickstart
   settings
-
+  production
+  
 .. toctree::
   :maxdepth: 1
   :glob:
