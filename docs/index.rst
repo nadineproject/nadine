@@ -41,7 +41,7 @@ Indices and tables
   quickstart
   settings
   production
-  
+
 .. toctree::
   :maxdepth: 1
   :glob:
@@ -59,3 +59,4 @@ Indices and tables
 
   testing
   mailing_lists
+  events

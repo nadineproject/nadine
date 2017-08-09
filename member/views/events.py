@@ -162,7 +162,7 @@ def create_booking(request, username):
         date = request.POST.get('date')
         rate = request.POST.get('rate', None)
 
-        return HttpResponseRedirect(reverse('member:event:confirm_booking', kwargs={'room': room, 'start': start, 'end': end, 'date': date}))
+        return HttpResponseRedirect(reverse('member:event:confirm_booking', kwargs={'room': room, 'start': start, 'end': end, 'date': date, 'rate': rate}))
 
     context = {'rooms': rooms,
                'start': start,

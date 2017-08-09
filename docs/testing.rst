@@ -6,7 +6,7 @@ Nadine is written with front-end and back-end tests. You are welcome to run the 
 Front-End Testing
 -----------------
 
-For Front-En testing, Nadine uses CasperJS which is a 'navigation scripting & testing utility for the PhantomJS (WebKit) and SlimerJS (Gecko) headless browsers, written in Javascript.'
+For Front-End testing, Nadine uses CasperJS which is a 'navigation scripting & testing utility for the PhantomJS (WebKit) and SlimerJS (Gecko) headless browsers, written in Javascript.'
 
 To run these tests, you first must have CasperJS installed and make sure that PhantomJS is installed.
 

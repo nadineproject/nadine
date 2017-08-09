@@ -1157,6 +1157,15 @@ a.photo.star-img  {
 	font-size: 1.2em;
 }
 
+#event-title, #add-event-header {
+	text-align: center;
+	font-family: 'Roboto Condensed', sans-serif;;
+}
+
+#event-info span {
+	padding: 1% 5%;
+}
+
 #pic_target h3 {
 		margin-top: 5%;
 }

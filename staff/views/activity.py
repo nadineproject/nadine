@@ -87,16 +87,20 @@ def activity_for_date(request, activity_date):
     daily_logs = CoworkingDay.objects.filter(visit_date=activity_date).reverse()
     today = localtime(now()).date()
 
-    if request.method == 'POST':
-        visits = CoworkingDay.objects.filter(visit_date=today)
-        for v in visits:
-            v.payment = 'Waive'
-            v.save()
-        messages.success(request, "All today's visits have been waived")
+    if request.method == 'POST' and 'mark_waived' in request.POST:
+        for visit in daily_logs:
+            if visit.billable:
+                visit.mark_waived()
+        messages.success(request, 'All selected visits have been waived')
+
+    # We can only waive days not associated with a bill
+    has_activity = daily_logs.count() > 0
+    no_bills = daily_logs.filter(line_item__isnull=False).count() == 0
+    can_waive = has_activity and no_bills
 
     context = {'daily_logs': daily_logs,
                'activity_date': activity_date,
-               'today': today,
+               'can_waive': can_waive,
                'next_date': activity_date + timedelta(days=1),
                'previous_date': activity_date - timedelta(days=1)}
     return render(request, 'staff/activity/for_date.html', context)

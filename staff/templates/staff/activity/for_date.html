@@ -44,6 +44,16 @@
          </tr>
       {% endfor %}
   </table>
+
+  {% if can_waive %}
+    <span id='waiver'>
+      <form class='waiver-form' action='.' method='POST' onSubmit="return confirm('Waive all visits for this date?');">
+        <input type='submit' name="mark_waived" class='chip' value="Waive These Visits"/>
+        {% csrf_token %}
+      </form>
+    </span>
+  {% endif %}
+
   <div class='records-count'>{{ daily_logs | length }} records found</div>
 </div>
 

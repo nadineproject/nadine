@@ -8,7 +8,7 @@
   <div id='infoModal' class='modal'>
     <div class='modal-content'>
       <div class='modal-body'>
-        <h2 id='event-title'></h2>
+        <h4 id='event-title'></h4>
         <div class='container'>
           <div class='row'>
             <table class='col s8' id='event-info'>
@@ -60,7 +60,7 @@
   <div id='event-modal' class='modal'>
     <div class='eModal-content'>
       <div class='eModal-body'>
-        <h2 id='add-event-header'>Add Event to Public Calendar</h2>
+        <h4 id='add-event-header'>Add Event to Public Calendar</h4>
         <p style='text-align:center;'>- These events will be viewable by all - </p>
         <br />
         <form action='#' method='POST'>
@@ -185,7 +185,7 @@
 
           if (calEvent.img) {
             $('#host').show();
-            $('#host-img').attr('src', '../../media/' + calEvent.img);
+            $('#host-img').attr('src', '../../../media/' + calEvent.img);
           } else {
             $('#host').hide();
           }
@@ -234,6 +234,22 @@
         $('#infoModal').css('display', 'none');
         $('#event-modal').css('display', 'none');
       })
+
+      $(function () {
+        {% for message in messages %}
+          {% if message.tags == 'error' %}
+            Materialize.toast('{{ message }}', 60000, 'error-msg msg');
+          {% else %}
+            Materialize.toast('{{ message }}', 3000, '{{ message.tags }}-msg msg');
+          {% endif %}
+        {% endfor %}
+
+        $(document).on('click', '#toast-container .toast', function() {
+          $(this).fadeOut(function(){
+            $(this).remove();
+          });
+        });
+      });
     });
   </script>
 {% endblock %}
