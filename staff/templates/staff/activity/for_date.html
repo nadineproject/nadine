@@ -14,15 +14,22 @@
 		<a href="{% url 'staff:activity:date' next_date.year next_date.month next_date.day %}">&rarr;</a>
 	</span>
 </div>
-
+{% if activity_date == today %}
+	<span id='waiver'>
+		<form class='waiver-form' action='.' method='POST' onSubmit="return confirm('Waive all visits for this date?');">
+			<input type='submit' class='chip' value="Waive Today's Visits"/>
+			{% csrf_token %}
+		</form>
+	</span>
+{% endif %}
 <div id="activity_list">
    <table>
       <tr>
-         <th>Member</th>
-         <th>Payment</th>
-         <th>Paid by</th>
-         <th>Note</th>
-         <th></th>
+         <th class='sub-th'>Member</th>
+         <th class='sub-th'>Payment</th>
+         <th class='sub-th'>Paid by</th>
+         <th class='sub-th'>Note</th>
+         <th class='sub-th'></th>
       </tr>
       {% for log in daily_logs %}
          <tr class="{% cycle 'row-even' 'row-odd' %}">
@@ -37,12 +44,6 @@
          </tr>
       {% endfor %}
   </table>
-	<span id='waiver'>
-		<form class='waiver-form' action='.' method='POST' onSubmit="return confirm('Waive all visits for this date?');">
-			<input type='submit' class='chip' value="Waive These Visits"/>
-			{% csrf_token %}
-		</form>
-	</span>
   <div class='records-count'>{{ daily_logs | length }} records found</div>
 </div>
 

@@ -10,6 +10,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib import messages
 from django.conf import settings
+from django.utils.timezone import localtime, now, get_current_timezone
 
 from doors.keymaster.models import DoorEvent
 from arpwatch.models import ArpLog
@@ -84,16 +85,18 @@ def list(request):
 @staff_member_required
 def activity_for_date(request, activity_date):
     daily_logs = CoworkingDay.objects.filter(visit_date=activity_date).reverse()
+    today = localtime(now()).date()
 
     if request.method == 'POST':
-        visits = CoworkingDay.objects.filter(visit_date=activity_date)
+        visits = CoworkingDay.objects.filter(visit_date=today)
         for v in visits:
             v.payment = 'Waive'
             v.save()
-        messages.success(request, 'All selected visits have been waived')
+        messages.success(request, "All today's visits have been waived")
 
     context = {'daily_logs': daily_logs,
                'activity_date': activity_date,
+               'today': today,
                'next_date': activity_date + timedelta(days=1),
                'previous_date': activity_date - timedelta(days=1)}
     return render(request, 'staff/activity/for_date.html', context)
