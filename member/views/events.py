@@ -199,6 +199,10 @@ def confirm_booking(request, room, start, end, date, rate):
     event_dict = {}
     calendar = room.get_calendar(target_date)
     event_dict[room] = calendar
+    if len(calendar) > 48:
+        loop_count = 4
+    else:
+        loop_count = 2
 
     # Infuse room calendar with search range
     search_start = start.replace(':', '')
@@ -249,7 +253,8 @@ def confirm_booking(request, room, start, end, date, rate):
                'room': room,
                'date': date,
                'rate': rate,
-               'event_dict': event_dict
+               'loop_count': loop_count,
+               'event_dict': event_dict,
                }
     return render(request, 'member/events/booking_confirm.html', context)
 

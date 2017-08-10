@@ -52,7 +52,7 @@
           {% for block, times in event_dict.items %}
             {% if room == block %}
               {% for time in times %}
-                {% if forloop.counter0|divisibleby:2 %}
+                {% if forloop.counter0|divisibleby:loop_count %}
                   <th class="rotate"><div><span>
                     {{ time.hour }}:{{ time.minutes }}
                   </div></span></th>
