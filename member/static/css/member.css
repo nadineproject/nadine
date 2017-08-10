@@ -1646,6 +1646,7 @@ th.rotate{
   padding: 0;
   font-size: 12px;
   line-height: 0.8;
+	margin-bottom: 1%;
 }
 
 th.rotate > div {
@@ -1692,7 +1693,7 @@ th.rotate span {
 	border-right: 1px solid white;
 	box-sizing: border-box;
 	padding: 0;
-	border-radius: 0px 0px 0px 0px;
+	border-radius: 0;
 	background-color: RGBA(178, 225, 203, .6);
 }
 

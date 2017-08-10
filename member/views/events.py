@@ -145,6 +145,10 @@ def create_booking(request, username):
     for room in rooms:
         calendar = room.get_calendar(target_date)
         room_dict[room] = calendar
+        if len(calendar) > 48:
+            loop_count = 4
+        else:
+            loop_count = 2
 
         # Infuse calendar with search range
         search_start = start.replace(':', '')
@@ -173,6 +177,7 @@ def create_booking(request, username):
                'floors': floors,
                'seats': seats,
                'all_day': all_day,
+               'loop_count': loop_count,
                'has_phone': has_phone,
                'members_only': members_only,
                'room_dict': room_dict,

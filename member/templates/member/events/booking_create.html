@@ -108,7 +108,7 @@
                     {% for time in times %}
                       {% if forloop.last %}
                       {% else %}
-                        {% if forloop.counter0|divisibleby:2 %}
+                        {% if forloop.counter0|divisibleby:loop_count %}
                           <th class="rotate"><div><span>
                             {{ time.hour }}:{{ time.minutes }}
                           </div></span></th>
