@@ -274,7 +274,11 @@ def announce_special_day(user, special_day):
 #####################################################################
 
 
-def get_manage_member_content(user, subject=None):
+def get_manage_member_content(user):
+    return render_templates({'user': user}, "manage_member")
+
+
+def send_manage_member(user, subject=None):
     if subject == None:
         subject = "Incomplete Tasks"
     subject = "%s - %s" % (subject, user.get_full_name())
@@ -282,15 +286,7 @@ def get_manage_member_content(user, subject=None):
         # Adjust the subject if we have a prefix
         subject = settings.EMAIL_SUBJECT_PREFIX.strip() + " " + subject.strip()
 
-    # Render the body from the templates
-    context = {
-        'user': user,
-    }
-    return render_templates(context, "manage_member")
-
-
-def send_manage_member(user, subject=None):
-    text_content, html_content = get_manage_member_content(user, subject)
+    text_content, html_content = get_manage_member_content(user)
     mailgun_data = {
         "from": settings.DEFAULT_FROM_EMAIL,
         "to": [settings.TEAM_EMAIL_ADDRESS, ],
