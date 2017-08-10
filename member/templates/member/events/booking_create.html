@@ -198,10 +198,6 @@
   		$('.button-collapse').sideNav();
       $('.time-error').hide();
 
-      if ($(window).width() > 990) {
-        $('.book-room').attr('class', 'book-room col s3');
-      };
-
       // Hide rooms if searched time is in the past
       var js_date = parseFloat('{{ start_ts_mil }}') + 1740000;
       if (js_date < new Date()) {

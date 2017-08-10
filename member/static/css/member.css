@@ -1643,7 +1643,6 @@ th.rotate{
   max-width: 2%;
   position: relative;
   vertical-align: bottom;
-  /*padding: 0;*/
   font-size: 12px;
   line-height: 0.8;
 	margin-bottom: 1%;
@@ -2210,6 +2209,17 @@ footer.sticky-footer {
 
 	.booking-bar th.rotate span {
 		font-weight: normal;
+	}
+}
+
+@media only screen and (max-width: 960px){
+	.cal-box, th.rotate, .cal-table th {
+		width: 2%;
+		padding: .25em;
+	}
+
+	.cal-table {
+		margin-left: 10%;
 	}
 }
 
