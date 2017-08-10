@@ -72,7 +72,7 @@
             </select>
           </td>
           <td>
-            <button type='submit' value='Search' class='btn waves-effect book-btn '>Search</button>
+            <button type='submit' value='Search' class='btn waves-effect book-btn'>Search</button>
           </td>
         </tr>
       </table>
@@ -93,14 +93,14 @@
               <img class='room-thumbnail' src="{{ room.image.url }}"/>
             </div>
           {% else %}
-          <div class='col s2'>
+          <div class='col s1'>
             <h5 class='header-font' style='color:RGBA(66, 98, 113, 1.00);'>{{ room.name }}</h5>
             <p>Floor {{room.floor}}</p>
             <button class='btn room-show' id='{{ room.id }}'>More Info</button>
             <button class='btn room-close'>Hide Info</button>
           </div>
           {% endif %}
-          <div class='col s8 cal-div' style='height:110px;'>
+          <div class='col s8 m8 cal-div' style='height:110px;'>
             <table class='cal-table'>
               <thead>
                 {% for block, times in room_dict.items %}
@@ -145,7 +145,7 @@
               </tr>
             </table>
           </div>
-          <form class='col s1 book-room' action='.' method='POST'>
+          <form class='col s2 book-room' action='.' method='POST'>
             <input type='hidden' name='room' value='{{ room.name }}' />
             <input type='hidden' name='start' value='{{ start }}'/>
             <input type='hidden' name='end' value='{{ end }}' />
@@ -197,6 +197,10 @@
     $(document).ready(function() {
   		$('.button-collapse').sideNav();
       $('.time-error').hide();
+
+      if ($(window).width() > 990) {
+        $('.book-room').attr('class', 'book-room col s3');
+      };
 
       // Hide rooms if searched time is in the past
       var js_date = parseFloat('{{ start_ts_mil }}') + 1740000;

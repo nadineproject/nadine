@@ -1643,7 +1643,7 @@ th.rotate{
   max-width: 2%;
   position: relative;
   vertical-align: bottom;
-  padding: 0;
+  /*padding: 0;*/
   font-size: 12px;
   line-height: 0.8;
 	margin-bottom: 1%;
@@ -2026,10 +2026,40 @@ footer.sticky-footer {
 	a#star-img.org-photo {
 		margin-left: 10%
 	}
+
+	#thumbnail-box {
+		display: none;
+	}
+
+	.book-room .book-btn {
+		margin-left: 40%;
+	}
+}
+
+@media only screen and (max-width: 1350px){
+	.book-room .book-btn {
+		margin-left: 60%;
+		padding: 0 8px 0 8px;
+		font-size: 12px;
+	}
 }
 
 @media only screen and (max-width: 1300px) {
+	.book-room .book-btn {
+		margin-left: 80%;
+	}
+}
 
+@media only screen and (max-width: 1250px) {
+	.book-room .book-btn {
+		margin-left: 100%;
+	}
+}
+
+@media only screen and (max-width: 1150px) {
+	.book-room .book-btn {
+		margin-left: 120%;
+	}
 }
 
 @media only screen and (max-width: 1100px) {
@@ -2074,6 +2104,12 @@ footer.sticky-footer {
 		margin-left: 0;
 	}
 
+	.book-room .book-btn {
+		margin-left: 40%;
+		padding: 0 15px 0 15px;
+		display:
+	}
+
 	img.logo-img {
 		height: 80%;
 		width: 27%;
@@ -2095,9 +2131,15 @@ footer.sticky-footer {
 	}
 }
 
+@media only screen and (max-width:1050px) {
+	.book-room .book-btn {
+		margin-left: 75%;
+		padding: 0 15px 0 15px;
+		display:
+	}
+}
 
 @media only screen and (max-width: 990px) {
-
 	.col.s10.offset-s1 {
 		margin-top: 8%;
 	}
