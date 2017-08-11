@@ -5,14 +5,13 @@
 
 {% block content %}
 <h4 id='membership-h4'>Edit Bill Day for <a href="{% url 'staff:members:detail' user.username %}">{{ user.get_full_name }}</a></h4>
-<h5>Change the regular billing day for {{ user.get_full_name }}</h5>
 
 {% if open_bill %}
   <p style='margin: 4%; font-size: 1.4em; color:RGBA(156, 88, 87, 1.00);'>
-    <strong>Since there is an open bill, you cannot change the bill day for this member. Please delete or close the open bill before changing the bill day.</strong>
+    <strong>There is an open bill for this member with an end date of {{ open_bill.period_end }}. If you edit the bill day then you may have to adjust the bill amounts so this member is not double charged for any time period.</strong>
   </p>
   <a href="{% url 'staff:billing:bill' open_bill.id %}" class='btn' style='margin-left: 35%;'>Go To Open Bill</a>
-{% else %}
+{% endif %}
 
 <form action='.' method='POST' onSubmit="return confirm('Are you sure you want to change this bill day?')">
   <table class='bill-day-table'>
@@ -36,7 +35,6 @@
   {% csrf_token %}
   <input class='btn' type='submit' style='display:inline-block; margin-right: 5%; margin-left:40%;' /><span class='cancel'>Cancel</span>
 </form>
-{% endif %}
 {% endblock %}
 
 {% block extrajs %}

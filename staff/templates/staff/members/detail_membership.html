@@ -40,8 +40,11 @@ $(document).ready(function() {
     {% endif %}
     <td>${{ membership.monthly_rate }}</td>
     <td class='sub-chips'>
-      <a class='chip' href="{% url 'staff:members:membership' user.username %}" style='margin-right: 1%;'>Edit Subscriptions</a> |
+      <a class='chip' href="{% url 'staff:members:membership' user.username %}" style='margin-right: 1%;'>Edit Subscriptions</a>
+      {% if settings.DEFAULT_BILLING_DAY == 0 %}|
+      
        <a class='chip' href="{% url 'staff:members:edit_bill_day' user.username %}" style='margin-left: 1%;'>Change Bill Day</a>
+       {% endif %}
     </td>
   </tr>
 </table>

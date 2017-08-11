@@ -532,14 +532,14 @@ def edit_bill_day(request, username):
     today = localtime(now()).date()
     ps, pe = membership.get_period(target_date=today)
     last_bill_end = None
+
     if UserBill.objects.filter(user=user):
         last_bill_end = UserBill.objects.filter(user=user).filter(closed_ts__isnull=False).order_by('-due_date')[:1]
         end_date = last_bill_end[0].due_date.day
 
     open_bill = user.bills.get_open_bill(user=user, period_start=ps, period_end=pe)
     if request.method == 'POST':
-        day = request.POST.get('bill-date')[-2:]
-        membership.change_bill_day(day)
+        membership.change_bill_day(datetime.strptime(request.POST.get('bill-date'), '%Y-%m-%d'))
         messages.success(request, 'Updated bill day for %s' % user)
         return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}) + '#tabs-1')
     context = {
