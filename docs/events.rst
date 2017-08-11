@@ -10,7 +10,7 @@ If you would like to use a Google Calendar then you must first create a Google c
 
 To use a Google Calendar in the place of a local calendar, you will need to acquire a Google API key and the Google Calendar ID for previously created calendar. In **nadine/local_settings**, set each appropriately as GOOGLE_API_KEY and GOOGLE_CALENDAR_ID.
 
-This calendar is only set to be viewable by members but not editable from the Members application. Members can click on events on the calendar and they will be redirected to the Google page including event details.
+This calendar is only set to be viewable by members but not editable from the Members application. Members can click on events on the calendar and they will be redirected to the Google page including event details. Additionally, this calendar will not display member room bookings made within the application.
 
 Built-In Calendar
 -----------------
