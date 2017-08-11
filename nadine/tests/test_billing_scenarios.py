@@ -276,22 +276,21 @@ class BillingTestCase(TestCase):
         self.assertTrue(may_10_bill.is_open)
 
         # Change the bill date to the 1st
-        membership.change_bill_day(day=1, target_date=date(2010, 5, 27))
+        membership.change_bill_day(date(2010, 6, 1))
         self.assertEqual(1, membership.bill_day)
 
-        # Generate bills again
-        batch = BillingBatch.objects.run(start_date=date(2010, 6, 1), end_date=date(2010, 6, 30))
-        self.assertEqual(1, membership.bill_day)
+        # Generate the bills again
+        batch = BillingBatch.objects.run(start_date=date(2010, 5, 1), end_date=date(2010, 6, 2))
         self.assertTrue(batch.successful)
-        # self.assertEqual(2, batch.bills.count())
+        self.assertEqual(1, batch.bills.count())
         print_all_bills(user)
 
+        # Make sure the 6/2 day got on the new June bill
         june_1_bill = user.bills.get(period_start=date(2010, 6, 1))
-        may_bill = user.bills.get(period_start=date(2010, 5, 10))
         self.assertFalse(day1 in june_1_bill.coworking_days())
         self.assertFalse(day2 in june_1_bill.coworking_days())
         self.assertTrue(day3 in june_1_bill.coworking_days())
-        self.assertTrue(day3 not in may_bill.coworking_days())
+
 
     def test_start_package(self):
         #New user joins and starts a PT5 membership the same day

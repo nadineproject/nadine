@@ -500,13 +500,20 @@ class Membership(models.Model):
             return last_subscription.created_ts
         return None
 
-    def change_bill_day(self, day=None, target_date=None):
-        if not day:
-            day = localtime(now()).day
-
+    def change_bill_day(self, target_date):
         try:
             with transaction.atomic():
-                self.bill_day = day
+                # Find any overlapping open bills
+                from billing import UserBill
+                open_bill = UserBill.objects.get_open_bill(self.user, target_date, target_date)
+                if open_bill:
+                    for d in open_bill.coworking_days().filter(visit_date__gte=target_date):
+                        d.unassociate()
+                    open_bill.period_end = target_date - timedelta(days=1)
+                    open_bill.close()
+
+                # Now we can change the bill day
+                self.bill_day = target_date.day
                 self.save()
         except IntegrityError as e:
             print('There was an ERROR: %s' % e.message)

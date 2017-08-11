@@ -92,6 +92,11 @@ class CoworkingDay(models.Model):
         self.payment = 'Waive'
         self.save()
 
+    def unassociate(self):
+        ''' Unassociate this day with any bill it might be added to. '''
+        if self.bill:
+            self.line_item.delete()
+
     def __str__(self):
         return '%s - %s' % (self.visit_date, self.user)
 
