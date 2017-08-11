@@ -13,8 +13,8 @@ class RoomTestCase(TestCase):
     def setUp(self):
         self.user1 = User.objects.create(username='user_one', first_name='User', last_name='One')
 
-        self.room1 = Room.objects.create(name="Room 1", has_phone=False, has_av=False, floor=1, seats=4, max_capacity=10, default_rate=20.00)
-        self.room2 = Room.objects.create(name="Room 2", has_phone=True, has_av=True, floor=1, seats=2, max_capacity=4, default_rate=20.00)
+        self.room1 = Room.objects.create(name="Room 1", has_phone=False, has_av=False, floor=1, seats=4, max_capacity=10, default_rate=20.00, members_only=True)
+        self.room2 = Room.objects.create(name="Room 2", has_phone=True, has_av=True, floor=1, seats=2, max_capacity=4, default_rate=20.00, members_only=False)
 
         # With these 2 events, Room1 is booked for the next 5 hours and Room2 is available.
 
@@ -143,6 +143,17 @@ class RoomTestCase(TestCase):
         self.assertEqual(len(rooms), 1)
         self.assertEqual(self.room1, rooms[0])
         self.assertFalse(rooms[0].has_phone)
+
+    def test_available_members_only(self):
+        tomorrow = localtime(now()) + timedelta(days=1)
+        init_rooms = Room.objects.available(start=tomorrow, members_only=True)
+        self.assertEqual(len(init_rooms), 1)
+        self.assertEqual(self.room1, init_rooms[0])
+        self.assertTrue(init_rooms[0].members_only)
+        rooms = Room.objects.available(start=tomorrow, members_only=False)
+        self.assertEqual(len(rooms), 1)
+        self.assertEqual(self.room2, rooms[0])
+        self.assertFalse(rooms[0].members_only)
 
     def test_get_raw_calendar(self):
         settings.OPEN_TIME = "8:00"

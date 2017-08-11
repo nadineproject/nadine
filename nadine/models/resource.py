@@ -34,7 +34,7 @@ def room_img_upload_to(instance, filename):
 
 class RoomManager(models.Manager):
 
-    def available(self, start=None, end=None, has_av=None, has_phone=None, floor=None, seats=None):
+    def available(self, start=None, end=None, has_av=None, has_phone=None, floor=None, seats=None, members_only=None):
         # Default time is now, for one hour
         if not start:
             start = localtime(now())
@@ -51,6 +51,8 @@ class RoomManager(models.Manager):
             rooms = rooms.filter(floor=floor)
         if seats != None:
             rooms = rooms.filter(seats__gte=seats)
+        if members_only != None:
+            rooms = rooms.filter(members_only=members_only)
 
         events = Event.objects.all()
         for event in events:
