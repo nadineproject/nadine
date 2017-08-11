@@ -585,7 +585,7 @@ class MembershipTestCase(TestCase):
         self.assertTrue(membership.active_subscriptions().count() == 0)
 
         # Set new membership package of PT5 starting today
-        membership.set_to_package(self.pt5Package, start_date=today)
+        membership.set_to_package(self.pt5Package, start_date=today, bill_day=today)
         self.assertTrue(membership.active_subscriptions().count() == 1)
 
         # Since there had been no active_subscriptions, bill day should be today.day

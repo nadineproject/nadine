@@ -329,7 +329,9 @@ class Membership(models.Model):
 
         # Save the package
         if bill_day:
-            self.bill_day = bill_day
+            last_sub = ResourceSubscription.objects.filter(membership=self).order_by('end_date').last()
+            if last_sub and ((start_date - last_sub.end_date).days != 1) and settings.DEFAULT_BILLING_DAY == 0:
+                self.change_bill_day(bill_day)
         self.save()
 
         # Add subscriptions for each of the defaults
