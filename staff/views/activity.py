@@ -86,12 +86,24 @@ def list(request):
 def activity_for_date(request, activity_date):
     daily_logs = CoworkingDay.objects.filter(visit_date=activity_date).reverse()
     today = localtime(now()).date()
+    daily_log_form = None
 
-    if request.method == 'POST' and 'mark_waived' in request.POST:
-        for visit in daily_logs:
-            if visit.billable:
-                visit.mark_waived()
-        messages.success(request, 'All selected visits have been waived')
+    if request.method == 'POST':
+        if 'mark_waived' in request.POST:
+            for visit in daily_logs:
+                if visit.billable:
+                    visit.mark_waived()
+            messages.success(request, 'All selected visits have been waived')
+        else:
+            daily_log_form = CoworkingDayForm(request.POST, request.FILES)
+            if daily_log_form.is_valid():
+                try:
+                    daily_log_form.save()
+                    messages.add_message(request, message.INFO, "Activity was recorded!")
+                except Exception as e:
+                    messages.add_message(request, messages.ERROR, e)
+    else:
+        daily_log_form = CoworkingDayForm(initial={'visit_date': activity_date})
 
     # We can only waive days not associated with a bill
     has_activity = daily_logs.count() > 0
@@ -99,6 +111,7 @@ def activity_for_date(request, activity_date):
     can_waive = has_activity and no_bills
 
     context = {'daily_logs': daily_logs,
+               'daily_log_form': daily_log_form,
                'activity_date': activity_date,
                'can_waive': can_waive,
                'next_date': activity_date + timedelta(days=1),

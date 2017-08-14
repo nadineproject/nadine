@@ -140,6 +140,7 @@ class UserQueryHelper():
         for u in self.here_today(target_date):
             if not u in signed_in and not u.membership.has_desk(target_date):
                 not_signed_in.append({'user':u, 'day':target_date})
+                not_signed_in.append({'user':u, 'day':target_date})
 
         return not_signed_in
 

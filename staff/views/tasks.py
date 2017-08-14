@@ -13,7 +13,6 @@ from django.conf import settings
 
 from nadine.models.alerts import MemberAlert
 
-
 @staff_member_required
 def todo(request):
     member_alerts = []
