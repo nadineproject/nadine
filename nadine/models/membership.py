@@ -503,6 +503,7 @@ class Membership(models.Model):
         return None
 
     def change_bill_day(self, target_date):
+        
         try:
             with transaction.atomic():
                 # Find any overlapping open bills

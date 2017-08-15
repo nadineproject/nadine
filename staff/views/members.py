@@ -412,6 +412,7 @@ def confirm_membership(request, username, package, end_target, start_target, new
     pkg = ast.literal_eval(package)
     match = None
     old_pkg = None
+    activity_target = datetime.strptime(start_target, '%Y-%m-%d')
 
     if user.membership.package_name():
         old_pkg = MembershipPackage.objects.get(name=user.membership.package_name())
@@ -439,8 +440,8 @@ def confirm_membership(request, username, package, end_target, start_target, new
                         pkg_name = MembershipPackage.objects.get(id=request.POST.get('match')).name
                     if len(membership.active_subscriptions()) == 0:
                         if settings.DEFAULT_BILLING_DAY == 0:
-                            membership.bill_day = int(start_target[-2:])
-                            membership.save()
+                            if membership.subscriptions_for_day(activity_target).count() == 0:
+                                membership.change_bill_day(activity_target)
                         else:
                             membership.bill_day = settings.DEFAULT_BILLING_DAY
                             membership.save()
