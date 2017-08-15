@@ -412,7 +412,8 @@ def confirm_membership(request, username, package, end_target, start_target, new
     pkg = ast.literal_eval(package)
     match = None
     old_pkg = None
-    activity_target = datetime.strptime(start_target, '%Y-%m-%d')
+    if start_target != 'None':
+        activity_target = datetime.strptime(start_target, '%Y-%m-%d')
 
     if user.membership.package_name():
         old_pkg = MembershipPackage.objects.get(name=user.membership.package_name())

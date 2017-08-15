@@ -16,14 +16,13 @@
 			</form>
 			<h4>Team Location: <a href="{{ team_url }}">{{ team_url }}</a></h4>
 		</div>
-	{% endif %}
 {% endblock %}
 
 {% block extrajs %}
 <script>
 	$(document).ready(function() {
 		$('.button-collapse').sideNav();
-		
+
 		$(function () {
 	    {% for message in messages %}
 	      {% if message.tags == 'error' %}

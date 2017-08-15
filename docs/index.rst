@@ -60,3 +60,10 @@ Indices and tables
   testing
   mailing_lists
   events
+
+.. toctree::
+  :maxdepth: 1
+  :glob:
+  :caption: Staff Application
+
+  staff_application
