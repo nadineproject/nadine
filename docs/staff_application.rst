@@ -37,4 +37,4 @@ On a member's Staff Application profile, staff may send emails to a member, rese
 Settings Pages
 //////////////
 
-As described in the :doc:`Nadine Structure<app_structure>` Settings section, the  are there to allow staff to create and edit elements of the space without accessing the admin interface. The editable elements are the **Help Texts, Messages of the Day** (displayed on tablet at sign in), **Membership Packages** and **reservable rooms**.
+As described in the `Settings <app_structure.html#settings>`_ section, the  are there to allow staff to create and edit elements of the space without accessing the admin interface. The editable elements are the **Help Texts, Messages of the Day** (displayed on tablet at sign in), **Membership Packages** and **reservable rooms**.
