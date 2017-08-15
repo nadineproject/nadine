@@ -66,4 +66,4 @@ Indices and tables
   :glob:
   :caption: Staff Application
 
-  staff_application
+  staff_overview
