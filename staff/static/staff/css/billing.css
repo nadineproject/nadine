@@ -115,6 +115,10 @@ input.datepicker {
   background-color: #F99;
 }
 
+.charges-table {
+  margin-top: 2%;
+}
+
 .cvv-title {
   width: 5%;
   vertical-align: middle;

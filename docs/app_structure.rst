@@ -86,10 +86,10 @@ Settings
 
 Under Settings, staff has the ability to edit different elements of the application as well as see the settings as set by the Nadine Admin. Options from the Settings dropdown include:
 
-- Help Texts - These are the documents for frequently asked questions. Each will have it's own page which members will be able to review.
-- MOTD - MOTD stands for Message of the Day. This is the greeting which is presented on the home screen of the Tablet Application.
-- Membership Packages - Allows staff to create and edit the default subscriptions and pricing for membership packages
-- Edit Rooms - Staff can add and edit the details of rooms which are available for users to reserved
+- **Help Texts** - These are the documents for frequently asked questions. Each will have it's own page which members will be able to review.
+- **MOTD** - MOTD stands for Message of the Day. This is the greeting which is presented on the home screen of the Tablet Application.
+- **Membership Packages** - Allows staff to create and edit the default subscriptions and pricing for membership packages
+- **Edit Rooms** - Staff can add and edit the details of rooms which are available for users to reserved
 
 
 Admin
