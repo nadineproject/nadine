@@ -99,7 +99,7 @@ def activity_for_date(request, activity_date):
             if daily_log_form.is_valid():
                 try:
                     daily_log_form.save()
-                    messages.add_message(request, message.INFO, "Activity was recorded!")
+                    messages.add_message(request, messages.INFO, "Activity was recorded!")
                 except Exception as e:
                     messages.add_message(request, messages.ERROR, e)
     else:
