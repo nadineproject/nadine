@@ -43,26 +43,26 @@ TEAM_MEMBERSHIP_PACKAGE = "Team Membership"
 
 # Make this unique, and don't share it with anybody.
 # http://www.miniwebtool.com/django-secret-key-generator/
-SECRET_KEY = ''
+SECRET_KEY = 'YOUR-SECRET-KEY'
 
 #These are business hours used to organize reservations. Times MUST be in military time. Calendar will be broken up via 15 minute increments
 OPEN_TIME = '8:00'
 CLOSE_TIME = '18:00'
 
 # Country either the 'US' or 'CA' currently for use in user address options
-COUNTRY = "COUNTRY_INITIALS"
+COUNTRY = "US"
 
 # List of possible public calendar designations and the color for display
 CALENDAR_DICT = {'Pine':'red', 'Pike': 'RGBA(71, 159, 198, 1)' }
 
 # Allows for the login page to include or not include the option for nonmembers to register and make a user account.
-ALLOW_ONLINE_REGISTRATION = BOOLEAN
+ALLOW_ONLINE_REGISTRATION = False
 
 # Allows or does not allow for users to upload their own profile photo on the edit profile page.
-ALLOW_PHOTO_UPLOAD = BOOLEAN
+ALLOW_PHOTO_UPLOAD = False
 
 # Apply a discount for members reserving rooms normally charged
-MEMBER_DISCOUNT = DECIMAL_AMOUNT
+MEMBER_DISCOUNT = 0.0
 
 # Google Settings
 #GOOGLE_ANALYTICS_ID = "YOUR-GOOGLE-CODE"
