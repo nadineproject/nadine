@@ -592,7 +592,7 @@ class UserProfile(models.Model):
         return False
 
     def auto_bill_enabled(self):
-        if not hasattr(settings, 'USA_EPAY_KEY'):
+        if not hasattr(settings, 'USA_EPAY_SOAP_KEY'):
             return None
         api = PaymentAPI()
         return api.auto_bill_enabled(self.user.username)
