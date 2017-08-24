@@ -237,6 +237,7 @@ def security_deposits(request):
 
 @staff_member_required
 def member_search(request):
+    term = None
     search_results = None
     if request.method == "POST":
         member_search_form = MemberSearchForm(request.POST)
