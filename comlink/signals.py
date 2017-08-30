@@ -33,9 +33,9 @@ def router(sender, **kwargs):
     mailing_list = SimpleMailingList.objects.filter(address=email.recipient).first()
     if mailing_list:
         bcc_list = mailing_list.get_subscriber_list()
-    elif hasattr(settings, "STAFF_EMAIL_ADDRESS") and email.recipient == settings.STAFF_EMAIL_ADDRESS:
+    elif hasattr(settings, "STAFF_EMAIL_ADDRESS") and settings.STAFF_EMAIL_ADDRESS in email.recipient:
         bcc_list = list(User.objects.filter(is_staff=True, is_active=True).values_list('email', flat=True))
-    elif hasattr(settings, "TEAM_EMAIL_ADDRESS") and email.recipient == settings.TEAM_EMAIL_ADDRESS:
+    elif hasattr(settings, "TEAM_EMAIL_ADDRESS") and settings.TEAM_EMAIL_ADDRESS in email.recipient:
         bcc_list = list(User.helper.managers(include_future=True).values_list('email', flat=True))
     logger.debug("BCC List:")
     logger.debug(bcc_list)
