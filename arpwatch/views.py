@@ -50,9 +50,9 @@ def device_list(request):
 
 
 @staff_member_required
-def device(request, id):
-    device = UserDevice.objects.get(pk=id)
-    logs = ArpLog.objects.for_device(id)
+def device(request, device_id):
+    device = UserDevice.objects.get(pk=device_id)
+    logs = ArpLog.objects.for_device(device_id)
     return render(request, 'arpwatch/device_view.html', {'device': device, 'logs': logs})
 
 
