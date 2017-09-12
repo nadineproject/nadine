@@ -236,4 +236,6 @@ class BackupManager(object):
 
         with open(filename, 'wb') as f:
             writer = csv.writer(f)
-            writer.writerows(csv_data)
+            for row in csv_data:
+                writer.writerow([s.encode('utf-8') if s else '' for s in row])
+                # writer.writerow(row.encode('utf-8'))
