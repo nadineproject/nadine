@@ -234,8 +234,9 @@ class BackupManager(object):
 
             csv_data.append(row)
 
+        # Write out our CSV
+        # NOTE:  This will output UTF-8 charecters even though excel can't handle that in a csv
         with open(filename, 'wb') as f:
             writer = csv.writer(f)
             for row in csv_data:
                 writer.writerow([s.encode('utf-8') if s else '' for s in row])
-                # writer.writerow(row.encode('utf-8'))
