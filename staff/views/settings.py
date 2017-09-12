@@ -29,6 +29,8 @@ from member.models import HelpText, MOTD
 
 
 def times_timeszones(date):
+    if not date:
+        return None
     with_time = date + ' 00:00'
     time_dt = datetime.strptime(with_time, "%Y-%m-%d %H:%M")
     final = timezone.make_aware(time_dt, timezone.get_current_timezone())

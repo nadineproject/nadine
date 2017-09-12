@@ -568,7 +568,7 @@ class HelpTextForm(forms.Form):
 class MOTDForm(forms.Form):
     today = localtime(now()).date()
     start_ts = forms.DateField(initial=today, required=True)
-    end_ts = forms.DateField(required=False)
+    end_ts = forms.DateField(required=True)
     message = forms.CharField(required=True)
     delay_ms = forms.IntegerField(required=True, widget=forms.HiddenInput)
 
