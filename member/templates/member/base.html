@@ -6,215 +6,222 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="DC.title" content="{{ site.name }}" />
-	<title>{% block title %}{% block sub-title %}{% endblock %}{{ site.name }}{% endblock %}</title>
-	<link rel="shortcut icon" href="{%  static 'img/favicon.ico' %}">
-	<link rel="stylesheet" href="{% static 'css/jquery-ui.min.css' %}"  />
-	<link rel="stylesheet" href="{% static 'js/jquery-custom.css' %}">
-	<link rel='stylesheet' href="{% static 'js/fullcalendar/fullcalendar.css' %}" />
-	<link rel = 'stylesheet' href="{% static 'css/jquery.timepicker.min.css' %}" />
-	<link href="https://fonts.googleapis.com/css?family=Oswald|Roboto+Condensed" rel="stylesheet">
-	<link  href="{% static 'css/cropper.min.css' %}" rel="stylesheet">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="DC.title" content="{{ site.name }}" />
+  <title>{% block title %}{% block sub-title %}{% endblock %}{{ site.name }}{% endblock %}</title>
+  <link rel="shortcut icon" href="{%  static 'img/favicon.ico' %}">
+  <link rel="stylesheet" href="{% static 'css/jquery-ui.min.css' %}"  />
+  <link rel="stylesheet" href="{% static 'js/jquery-custom.css' %}">
+  <link rel='stylesheet' href="{% static 'js/fullcalendar/fullcalendar.css' %}" />
+  <link rel = 'stylesheet' href="{% static 'css/jquery.timepicker.min.css' %}" />
+  <link href="https://fonts.googleapis.com/css?family=Oswald|Roboto+Condensed" rel="stylesheet">
+  <link  href="{% static 'css/cropper.min.css' %}" rel="stylesheet">
 
-	<!--[if IE]>
-		<script src="{{ STATIC_URL }}html5.js"></script>
-	<![endif]-->
-	<script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
-	<script src="{% static 'js/jquery-ui.min.js' %}"></script>
-	<script src="{% static 'js/fullcalendar/lib/moment.min.js' %}"></script>
-	<script src="{% static 'js/fullcalendar/fullcalendar.min.js' %}"></script>
-	<script src="{% static 'js/fullcalendar/gcal.js' %}"></script>
-	<script src="{% static 'js/timepicker/jquery.timepicker.min.js' %}"></script>
-	<script src="{% static 'js/jquery.formset.js' %}"></script>
-	<script src="{% static 'js/cropper.min.js' %}"></script>
-{% block scripts %}
-	<!-- Compiled and minified CSS -->
-	<link rel="stylesheet" href="{% static 'css/materialize.min.css' %}" />
-	<!-- Compiled and minified JavaScript -->
-	<script src="{% static 'js/materialize.min.js' %}"></script>
-	<!-- Fonts are fun -->
-	<link href="{% static 'fonts/roboto/Roboto-Regular.eot' %}" rel="stylesheet">
-{% endblock %}
-	<link rel="stylesheet" type="text/css" href= "{% static 'css/member.css'%}" />
+  <!--[if IE]>
+  <script src="{{ STATIC_URL }}html5.js"></script>
+  <![endif]-->
+  <script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
+  <script src="{% static 'js/jquery-ui.min.js' %}"></script>
+  <script src="{% static 'js/fullcalendar/lib/moment.min.js' %}"></script>
+  <script src="{% static 'js/fullcalendar/fullcalendar.min.js' %}"></script>
+  <script src="{% static 'js/fullcalendar/gcal.js' %}"></script>
+  <script src="{% static 'js/timepicker/jquery.timepicker.min.js' %}"></script>
+  <script src="{% static 'js/jquery.formset.js' %}"></script>
+  <script src="{% static 'js/cropper.min.js' %}"></script>
 
-{% block pagestyle %}{% endblock %}
+  {% block scripts %}
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="{% static 'css/materialize.min.css' %}" />
+    <!-- Compiled and minified JavaScript -->
+    <script src="{% static 'js/materialize.min.js' %}"></script>
+    <!-- Fonts are fun -->
+    <link href="{% static 'fonts/roboto/Roboto-Regular.eot' %}" rel="stylesheet">
+  {% endblock %}
 
-{% if not request.user.is_staff %}
-		<script>
-			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-			})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  <link rel="stylesheet" type="text/css" href= "{% static 'css/member.css'%}" />
 
-			ga('create', '{% settings_value "GOOGLE_ANALYTICS_ID" %}', 'auto');
-			ga('send', 'pageview');
-		</script>
-	{% endif %}
+  {% block pagestyle %}{% endblock %}
 
-	{%block sub-head %}{% endblock %}
+  {% if not request.user.is_staff %}
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+      ga('create', '{% settings_value "GOOGLE_ANALYTICS_ID" %}', 'auto');
+      ga('send', 'pageview');
+    </script>
+  {% endif %}
 
-	<style>
-	{% block style %}{% endblock %}
-	</style>
+  {%block sub-head %}{% endblock %}
+
+  <style>
+    {% block style %}{% endblock %}
+  </style>
 </head>
 
 <body>
-	{% load_integrations as integrations %}
-	{% block body %}
-		{% block top_div %}{% endblock %}
-			<!-- Page  -->
-			<div id="header_container">
-				<div id="header">
-					{% block top_nav %}
-						<nav class='row' id='main-nav'>
-							<div class='nav-wrapper'>
-								<div id='logo'>
-									<a href="{% url 'member:home' %}" class='brand-logo' id="home">
-										<img class='sec-logo' src="{% static 'img/logo-line.png' %}"/>
-									</a>
-								</div>
-								<a href='#' data-activates="mobile" class="button-collapse"><img class='menu-img' src="{% static 'img/hamburger.png' %}"/></a>
-						<ul id="nav-mobile" class="right hide-on-med-and-down">
-					{% endblock %}
-					{% if request.user.profile.is_active %}
-							<li><a href="{% url 'member:faq' %}">Help</a></li>
-							<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown1' href="{% url 'member:members' %}">Members</a>
-								<ul id='dropdown1' class='dropdown-content'>
-									<li><a href="{% url 'member:members' %}">Active Members</a></li>
-									<li><a href="{% url 'member:tag:cloud' 'members' %}">Tags</a></li>
-								</ul>
-							</li>
-							<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown2' href="{% url 'member:org:list' %}">Organizations</a>
-								<ul id='dropdown2' class='dropdown-content'>
-									<li><a href="{% url 'member:org:list' %}">Active Organizations</a></li>
-									<li><a href="{% url 'member:tag:cloud' 'organizations' %}">Tags</a></li>
-								</ul>
-							</li>
-							<li><a href="{% url 'member:event:calendar' %}">Events</a></li>
-							<li><a href="{% url 'member:connect:email_lists' %}">Mailing Lists</a></li>
-							{% if integrations.slack %}
-								<li><a class='slack-a' href="{% url 'member:connect:slack' user.username %}">Slack</a></li>
-							{% endif %}
-							<li><a href="{% url 'member:profile:redirect' %}">Profile</a></li>
-							<li><a class='logout-a dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown3' href="{% url 'logout' %}">Logout</a>
-								<ul id='dropdown3' class='dropdown-content'>
-									{% if request.user.is_staff %} <li><a href="{% url 'staff:home' %}">Staff</a></li>
-										<li><a href="{% url 'admin:index' %}">Admin</a></li>
-									{% endif %}
-								</ul>
-							</li>
-						{% else %}
-							<li><a href="{% url 'member:not_active' %}">Help</a></li>
-							<li><a href="{% url 'member:not_active' %}">Members</a></li>
-							<li><a href="{% url 'member:not_active' %}">Organizations</a></li>
-							<li><a href="{% url 'member:not_active' %}">Events</a></li>
-							<li><a href="{% url 'member:not_active' %}">Mailing Lists</a></li>
-							{% if integrations.slack %}
-								<li><a href="{% url 'member:not_active' %}">Slack</a></li>
-							{% endif %}
-							<li><a href="{% url 'member:profile:redirect' %}">Profile</a></li>
-							<li><a class='logout-a' href="{% url 'logout' %}">Logout</a></li>
-						{% endif %}
-		      </ul>
-					{% block side-nav %}
-					<ul class="side-nav" id="mobile">
-						{% if request.user.profile.is_active %}
-							<li><a href="{% url 'member:faq' %}">Help</a></li>
-							<li><a href="{% url 'member:members' %}">Members</a></li>
-							<li><a href="{% url 'member:org:list' %}">Organizations</a></li>
-							<li><a href="{% url 'member:event:calendar' %}">Events</a></li>
-							<li><a href="{% url 'member:connect:email_lists' %}">Mailing Lists</a></li>
-							{% if integrations.slack %}
-								<li><a class='slack-a' href="{% url 'member:connect:slack' user.username %}">Slack</a></li>
-							{% endif %}
-							<li><a href="{% url 'member:profile:redirect' %}">Profile</a></li>
-							<li><a class='logout-a' href="{% url 'logout' %}">Logout</a></li>
-						{% else %}
-							<li><a href="{% url 'member:not_active' %}">Help</a></li>
-							<li><a href="{% url 'member:not_active' %}">Members</a></li>
-							<li><a href="{% url 'member:not_active' %}">Organizations</a></li>
-							<li><a href="{% url 'member:not_active' %}">Events</a></li>
-							<li><a href="{% url 'member:not_active' %}">Tags</a></li>
-							<li><a href="{% url 'member:not_active' %}">Mailing Lists</a></li>
-							{% if integrations.slack %}
-								<li><a href="{% url 'member:not_active' %}">Slack</a></li>
-							{% endif %}
-							<li><a href="{% url 'member:profile:redirect' %}">Profile</a></li>
-							<li><a class='logout-a' href="{% url 'logout' %}">Logout</a></li>
-						{% endif %}
-					</ul>
-					{% endblock %}
-					</div>
-				</nav>
-					{% block lower_nav %}{% endblock %}
-				</div>
-			</div>
-		{% block main_body %}
-			<div>
-				<div class='row main'>
-					<div class="lightbg col s10 offset-s1">
-						<div id="content">
-							{% block content %}{% endblock %}
-						</div>
-					</div>
-				</div>
-			</div>
-		{% endblock %}
+  {% load_integrations as integrations %}
+  {% block body %}
+  {% block top_div %}{% endblock %}
 
-		{% block footer %}
-			<!-- Footer -->
-			{% block footer-class %}
-				<footer class="page-footer main-footer" id="footer">
-			{% endblock %}
-					<div class="footer-copyright setwidth container">
-						<div id="copyright">
-							© 2016 |  Office Nomads | <a id='nadine-link' href="http://nadineproject.org/" target="_new">The Nadine Project</a>
-						</div>
-						{% block lowerfooter %}
-							{% load_social_urls as social %}
-								<div class='grey-text text-lighten-4 right' id="social">
-									{% if social.facebook %}
-										<a id="fb" target="_blank" href="{{ social.facebook }}">fb</a>
-									{% endif %}
-									{% if social.twitter %}
-										<a id="tw" target="_blank" href="{{ social.twitter }}">tw</a>
-									{% endif %}
-									{% if social.yelp %}
-										<a id="ye" target="_blank" href="{{ social.yelp }}">ye</a>
-									{% endif %}
-									{% if social.instagram %}
-										<a id='inst' target='_blank' href="{{ social.instagram }}">inst</a>
-									{% endif %}
-								</div>
-						{% endblock %}
-						</div>
-					</div>
-				</footer>
-			{% endblock %}
-			<!-- End Page -->
-		</div>
-		{% block bottom_div %} {% endblock %}
-		{% endblock %}
+  <!-- Page  -->
+  <div id="header_container">
+      <div id="header">
+        {% block top_nav %}
+        <nav class='row' id='main-nav'>
+          <div class='nav-wrapper'>
+            <div id='logo'>
+              <a href="{% url 'member:home' %}" class='brand-logo' id="home">
+              <img class='sec-logo' src="{% static 'img/logo-line.png' %}"/>
+              </a>
+            </div>
+            <a href='#' data-activates="mobile" class="button-collapse"><img class='menu-img' src="{% static 'img/hamburger.png' %}"/></a>
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+        {% endblock %}
+          {% if request.user.profile.is_active %}
+            <li><a href="{% url 'member:faq' %}">Help</a></li>
+            <li>
+              <a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown1' href="{% url 'member:members' %}">Members</a>
+              <ul id='dropdown1' class='dropdown-content'>
+                <li><a href="{% url 'member:members' %}">Active Members</a></li>
+                <li><a href="{% url 'member:tag:cloud' 'members' %}">Tags</a></li>
+              </ul>
+            </li>
+            <li>
+              <a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown2' href="{% url 'member:org:list' %}">Organizations</a>
+              <ul id='dropdown2' class='dropdown-content'>
+                <li><a href="{% url 'member:org:list' %}">Active Organizations</a></li>
+              <li><a href="{% url 'member:tag:cloud' 'organizations' %}">Tags</a></li>
+              </ul>
+            </li>
+            <li><a href="{% url 'member:event:calendar' %}">Events</a></li>
+            <li><a href="{% url 'member:connect:email_lists' %}">Mailing Lists</a></li>
+            {% if integrations.slack %}
+              <li><a class='slack-a' href="{% url 'member:connect:slack' user.username %}">Slack</a></li>
+            {% endif %}
+            <li><a href="{% url 'member:profile:redirect' %}">Profile</a></li>
+            <li>
+              <a class='logout-a dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown3' href="{% url 'logout' %}">Logout</a>
+              <ul id='dropdown3' class='dropdown-content'>
+                {% if request.user.is_staff %}
+                  <li><a href="{% url 'staff:home' %}">Staff</a></li>
+                  <li><a href="{% url 'admin:index' %}">Admin</a></li>
+                {% endif %}
+              </ul>
+            </li>
+          {% else %}
+            <li><a href="{% url 'member:not_active' %}">Help</a></li>
+            <li><a href="{% url 'member:not_active' %}">Members</a></li>
+            <li><a href="{% url 'member:not_active' %}">Organizations</a></li>
+            <li><a href="{% url 'member:not_active' %}">Events</a></li>
+            <li><a href="{% url 'member:not_active' %}">Mailing Lists</a></li>
+            {% if integrations.slack %}
+              <li><a href="{% url 'member:not_active' %}">Slack</a></li>
+            {% endif %}
+            <li><a href="{% url 'member:profile:redirect' %}">Profile</a></li>
+            <li><a class='logout-a' href="{% url 'logout' %}">Logout</a></li>
+          {% endif %}
+          </ul>
 
-	{% block extrajs %}
-		<script>
-		$(document).ready(function(){
-			$('.button-collapse').sideNav();
-			$('.dropdown-button').dropdown();
+          {% block side-nav %}
+            <ul class="side-nav" id="mobile">
+              {% if request.user.profile.is_active %}
+                <li><a href="{% url 'member:faq' %}">Help</a></li>
+                <li><a href="{% url 'member:members' %}">Members</a></li>
+                <li><a href="{% url 'member:org:list' %}">Organizations</a></li>
+                <li><a href="{% url 'member:event:calendar' %}">Events</a></li>
+                <li><a href="{% url 'member:connect:email_lists' %}">Mailing Lists</a></li>
+                {% if integrations.slack %}
+                  <li><a class='slack-a' href="{% url 'member:connect:slack' user.username %}">Slack</a></li>
+                {% endif %}
+                <li><a href="{% url 'member:profile:redirect' %}">Profile</a></li>
+                <li><a class='logout-a' href="{% url 'logout' %}">Logout</a></li>
+              {% else %}
+                <li><a href="{% url 'member:not_active' %}">Help</a></li>
+                <li><a href="{% url 'member:not_active' %}">Members</a></li>
+                <li><a href="{% url 'member:not_active' %}">Organizations</a></li>
+                <li><a href="{% url 'member:not_active' %}">Events</a></li>
+                <li><a href="{% url 'member:not_active' %}">Tags</a></li>
+                <li><a href="{% url 'member:not_active' %}">Mailing Lists</a></li>
+                {% if integrations.slack %}
+                  <li><a href="{% url 'member:not_active' %}">Slack</a></li>
+                {% endif %}
+                <li><a href="{% url 'member:profile:redirect' %}">Profile</a></li>
+                <li><a class='logout-a' href="{% url 'logout' %}">Logout</a></li>
+              {% endif %}
+            </ul>
+          {% endblock %}
+          </div>
+        </nav>
+      {% block lower_nav %}{% endblock %}
+    </div>
+  </div>
 
-			if($('.main').height() < 900) {
-				$('footer').attr('class', 'sticky-footer');
-			} else {
-				if($('footer').hasClass('sticky-footer')) {
-					$('footer').attr('page-footer main-footer');
-				}
-			}
-			
-		});
-		</script>
-	{% endblock %}
+  {% block main_body %}
+    <div>
+      <div class='row main'>
+        <div class="lightbg col s10 offset-s1">
+          <div id="content">
+          {% block content %}{% endblock %}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endblock %}
+
+  {% block footer %}
+    <!-- Footer -->
+    {% block footer-class %}
+      <footer class="page-footer main-footer" id="footer">
+    {% endblock %}
+    <div class="footer-copyright setwidth container">
+      <div id="copyright">
+      © 2016 |  Office Nomads | <a id='nadine-link' href="http://nadineproject.org/" target="_new">The Nadine Project</a>
+      </div>
+      {% block lowerfooter %}
+        {% load_social_urls as social %}
+        <div class='grey-text text-lighten-4 right' id="social">
+          {% if social.facebook %}
+            <a id="fb" target="_blank" href="{{ social.facebook }}">fb</a>
+          {% endif %}
+          {% if social.twitter %}
+            <a id="tw" target="_blank" href="{{ social.twitter }}">tw</a>
+          {% endif %}
+          {% if social.yelp %}
+            <a id="ye" target="_blank" href="{{ social.yelp }}">ye</a>
+          {% endif %}
+          {% if social.instagram %}
+            <a id='inst' target='_blank' href="{{ social.instagram }}">inst</a>
+          {% endif %}
+        </div>
+      {% endblock %}
+      </div>
+    </div>
+    </footer>
+    {% endblock %}
+    <!-- End Page -->
+    </div>
+    {% block bottom_div %} {% endblock %}
+  {% endblock %}
+
+  {% block extrajs %}
+    <script>
+      $(document).ready(function(){
+        $('.button-collapse').sideNav();
+        $('.dropdown-button').dropdown();
+
+        if($('.main').height() < 900) {
+          $('footer').attr('class', 'sticky-footer');
+        } else {
+          if($('footer').hasClass('sticky-footer')) {
+            $('footer').attr('page-footer main-footer');
+          }
+        }
+      });
+    </script>
+  {% endblock %}
 </body>
 </html>
