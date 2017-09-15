@@ -27,19 +27,21 @@
       <tr>
          <th class='sub-th'>Member</th>
          <th class='sub-th'>Payment</th>
+         <th class='sub-th'>Bill</th>
          <th class='sub-th'>Paid by</th>
          <th class='sub-th'>Note</th>
          <th class='sub-th'></th>
       </tr>
-      {% for log in daily_logs %}
+      {% for day in activity %}
          <tr class="{% cycle 'row-even' 'row-odd' %}">
-            <td><a href="{% url 'staff:members:detail' log.user.username %}">{{ log.user.get_full_name }}</a></td>
-            <td>{{ log.payment }}</td>
-            <td>{% if log.paid_by %}<a href="{% url 'staff:members:detail' log.paid_by.username %}">{{ log.paid_by.get_full_name }}</a>{% endif %}</td>
-            <td class="log-note">{{ log.note }}</td>
+            <td><a href="{% url 'staff:members:detail' day.user.username %}">{{ day.user.get_full_name }}</a></td>
+            <td>{{ day.payment }}</td>
+            <td>{% if day.bill %}<a href="{% url 'staff:billing:bill' day.bill.id %}">{{ day.bill.id }}</a>{% endif %}</td>
+            <td>{% if day.paid_by %}<a href="{% url 'staff:members:detail' day.paid_by.username %}">{{ day.paid_by.get_full_name }}</a>{% endif %}</td>
+            <td>{{ day.note }}</td>
             <td class='centered'>
-                <a href="{% url 'admin:nadine_coworkingday_change' log.id %}">edit data </a> |
-                <a href="{% url 'staff:activity:user' log.user.username %}">user activity</a>
+                <a href="{% url 'staff:activity:user' day.user.username %}">user activity</a> |
+                <a href="{% url 'admin:nadine_coworkingday_change' day.id %}">edit data </a>
             </td>
          </tr>
       {% endfor %}
@@ -54,7 +56,7 @@
     </span>
   {% endif %}
 
-  <div class='records-count'>{{ daily_logs | length }} records found</div>
+  <div class='records-count'>{{ activity | length }} records found</div>
 </div>
 
 {% endblock %}

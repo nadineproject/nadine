@@ -84,34 +84,34 @@ def list(request):
 
 @staff_member_required
 def activity_for_date(request, activity_date):
-    daily_logs = CoworkingDay.objects.filter(visit_date=activity_date).reverse()
+    activity = CoworkingDay.objects.filter(visit_date=activity_date).reverse()
     today = localtime(now()).date()
-    daily_log_form = None
+    activity_form = None
 
     if request.method == 'POST':
         if 'mark_waived' in request.POST:
-            for visit in daily_logs:
+            for visit in activity:
                 if visit.billable:
                     visit.mark_waived()
             messages.success(request, 'All selected visits have been waived')
         else:
-            daily_log_form = CoworkingDayForm(request.POST, request.FILES)
-            if daily_log_form.is_valid():
+            activity_form = CoworkingDayForm(request.POST, request.FILES)
+            if activity_form.is_valid():
                 try:
-                    daily_log_form.save()
+                    activity_form.save()
                     messages.add_message(request, messages.INFO, "Activity was recorded!")
                 except Exception as e:
                     messages.add_message(request, messages.ERROR, e)
     else:
-        daily_log_form = CoworkingDayForm(initial={'visit_date': activity_date})
+        activity_form = CoworkingDayForm(initial={'visit_date': activity_date})
 
     # We can only waive days not associated with a bill
-    has_activity = daily_logs.count() > 0
-    no_bills = daily_logs.filter(line_item__isnull=False).count() == 0
+    has_activity = activity.count() > 0
+    no_bills = activity.filter(line_item__isnull=False).count() == 0
     can_waive = has_activity and no_bills
 
-    context = {'daily_logs': daily_logs,
-               'daily_log_form': daily_log_form,
+    context = {'activity': activity,
+               'activity_form': activity_form,
                'activity_date': activity_date,
                'can_waive': can_waive,
                'next_date': activity_date + timedelta(days=1),
