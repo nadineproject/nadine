@@ -123,7 +123,7 @@
             {% endif %}
             <li><a href="{% url 'member:profile:redirect' %}">Profile</a></li>
             <li>
-              <a class='logout-a' href="{% url 'logout' %}">Logout</a>
+              <a class='logout-a dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown3' href="{% url 'logout' %}">Logout</a>
               <ul id='dropdown3' class='dropdown-content'>
                 {% if request.user.is_staff %}
                   <li><a href="{% url 'staff:home' %}">Staff</a></li>
