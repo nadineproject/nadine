@@ -221,6 +221,12 @@ def bill_view(request, bill_id):
         if 'close_bill' in request.POST:
             bill.close()
             messages.success(request, "Bill marked as closed.")
+        if 'waive_day' in request.POST:
+            day_id = request.POST.get('waive_day')
+            day = CoworkingDay.objects.get(pk=day_id)
+            day.mark_waived()
+            bill.recalculate()
+            messages.success(request, "Activity on %s waived and bill recalculated." % day.visit_date)
         if 'recalculate' in request.POST:
             bill.recalculate()
             messages.success(request, "Bill recalculated.")
@@ -230,6 +236,7 @@ def bill_view(request, bill_id):
         'username': bill.user.username,
         'payment_date': localtime(now()),
         'amount': bill.total_owed,
+        'can_waive_days': bill.total_paid == 0,
     }
     payment_form = PaymentForm(initial=initial_data)
 

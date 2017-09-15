@@ -87,8 +87,6 @@ class CoworkingDay(models.Model):
             return None
 
     def mark_waived(self):
-        if self.bill:
-            raise Exception("Trying to waive a CoworkingDay that is already associated with a bill (%d)" % self.bill.id)
         self.payment = 'Waive'
         self.save()
 

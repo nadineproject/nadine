@@ -162,12 +162,22 @@
       <td style='width:60%;'>{{ line_item.description }}</td>
       <td style="text-align: right; width: 40%;">${{ line_item.amount|floatformat:2 }}</td>
       <td>
-      {% if line_item.coworkingdaylineitem %}
-        <a href="{{ line_item.coworkingdaylineitem.day.get_admin_url }}">Edit</a>
-      {% endif %}
-      {% if line_item.eventlineitem %}
-        <a href="{{ line_item.eventlineitem.get_admin_url }}">Edit</a>
-      {% endif %}
+        {% if line_item.coworkingdaylineitem and line_item.coworkingdaylineitem.day.billable %}
+          <form action="." method="POST" onSubmit="return confirm('Are you sure you want to waive visit on {{ line_item.coworkingdaylineitem.day.visit_date }}?'); return false;">
+            <input type="hidden" name="waive_day" value="{{ line_item.coworkingdaylineitem.day.id }}"/>
+            <input type="submit" class='btn' style="line-height: 18px; height: 16px; padding: 0 1rem;" value="Waive" >
+            {% csrf_token %}
+          </form>
+        </td>
+
+        {% endif %}
+
+        <!-- {% if line_item.coworkingdaylineitem %}
+          <a href="{{ line_item.coworkingdaylineitem.day.get_admin_url }}">Edit</a>
+        {% endif %}
+        {% if line_item.eventlineitem %}
+          <a href="{{ line_item.eventlineitem.get_admin_url }}">Edit</a>
+        {% endif %} -->
       </td>
     </tr>
   {% endfor %}
@@ -195,7 +205,7 @@
         <td style="text-align:right; border-bottom: none;">${{ payment.amount }}</td>
         <td style='border-bottom: none;'>
           <form action="." method="POST" onSubmit="return confirm('Are you sure you want to delete this payment of ${{ payment.amount }}?'); return false;">
-            <input type="hidden" name="delete_payment_id" value="{{ payment.id}}"/>
+            <input type="hidden" name="delete_payment_id" value="{{ payment.id }}"/>
             <input type="submit" class='btn' value="Delete Payment" >
             {% csrf_token %}
           </form>
