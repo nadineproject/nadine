@@ -122,7 +122,15 @@
               <li><a href="{% url 'member:not_active' %}">Slack</a></li>
             {% endif %}
             <li><a href="{% url 'member:profile:redirect' %}">Profile</a></li>
-            <li><a class='logout-a' href="{% url 'logout' %}">Logout</a></li>
+            <li>
+              <a class='logout-a' href="{% url 'logout' %}">Logout</a>
+              <ul id='dropdown3' class='dropdown-content'>
+                {% if request.user.is_staff %}
+                  <li><a href="{% url 'staff:home' %}">Staff</a></li>
+                  <li><a href="{% url 'admin:index' %}">Admin</a></li>
+                {% endif %}
+              </ul>
+            </li>
           {% endif %}
           </ul>
 
