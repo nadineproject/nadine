@@ -87,7 +87,9 @@ class MemberAlertManager(models.Manager):
 
     def trigger_change_subscription(self, user):
         # Turn off automatic billing
-        PaymentAPI().disable_recurring(user.username)
+        payment_api = PaymentAPI()
+        if payment_api.enabled:
+            payment_api.disable_recurring(user.username)
 
     def trigger_ending_membership(self, user, target_date=None):
         logger.debug("trigger_ending_membership: %s, %s" % (user, target_date))

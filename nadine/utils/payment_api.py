@@ -15,6 +15,11 @@ from suds.client import Client
 class PaymentAPI(object):
 
     def __init__(self, v=4):
+        if not hasattr(settings, 'USA_EPAY_SOAP_KEY'):
+            self.enabled = False
+            return None
+
+        self.enabled = True
         if v == 2:
             self.url = settings.USA_EPAY_SOAP_1_2
         elif v == 3:
