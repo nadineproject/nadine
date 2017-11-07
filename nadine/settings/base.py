@@ -306,10 +306,13 @@ LOGGING = {
     },
 }
 
+DATABASES = {}
+
 # Import the local and theme SETTINGS files
-if os.path.isfile('nadine/local_settings.py'):
-    #print("Loading local settings file...")
-    from nadine.local_settings import *
+# if os.path.isfile('nadine/local_settings.py'):
+#     #print("Loading local settings file...")
+#     from nadine.local_settings import *
+
 if os.path.isfile('themes/active/theme_settings.py'):
     #print("Loading theme settings file...")
     import imp

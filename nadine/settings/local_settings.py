@@ -1,3 +1,5 @@
+from .base_ldap import *
+
 import os
 import datetime
 
@@ -13,13 +15,11 @@ ADMINS = (
 )
 
 # Database Settings
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'nadinedb',
-        'USER': 'postgres',
-        'PASSWORD': 'password'
-    }
+DATABASES['default'] = {
+    'ENGINE': 'django.db.backends.postgresql',
+    'NAME': 'affinity_nadine',
+    'USER': 'tnightingale',
+    'PASSWORD': ''
 }
 
 # Site Information
@@ -114,3 +114,4 @@ MEMBER_DISCOUNT = 0.0
 #HID_ENCRYPTION_KEY = "YOUR-HID-ENCRYPTION-KEY"
 #HID_KEYMASTER_URL = "http://127.0.0.1:8000/doors/keymaster/"
 #HID_POLL_DELAY_SEC = 60
+
