@@ -18,6 +18,12 @@ mailchimp==2.0.9
 cryptography==2.1.3
 suds-jurko==0.6
 
+# LDAP
+django-auth-ldap==1.2.16
+django-ldapdb==0.9.0
+pyldap==2.4.37
+python-ldap==2.4.45
+
 # For document signing & PDFs
 html5lib==1.0b10
 django-jsignature==0.8
