@@ -152,14 +152,7 @@ def email_verify(request, email_pk):
             email_address.verified_ts = timezone.now()
             email_address.save()
             messages.success(request, "Email address has been verified.")
-
-            if 'NEXT_URL' in request.GET:
-                next_url = request.GET.get('NEXT_URL')
-            elif 'HTTP_REFERER' in request.META:
-                next_url = request.META['HTTP_REFERER']
-            else:
-                next_url = reverse('member:profile:view', kwargs={'username': email_address.user.username})
-            return HttpResponseRedirect(next_url)
+            return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': email_address.user.username}))
         else:
             messages.error(request, "Invalid Key")
 
