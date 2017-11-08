@@ -20,12 +20,10 @@ class NadineLDAPBackend(LDAPBackend):
                 user = User.objects.get(username=username)
 
         except User.DoesNotExist as e:
-            # TODO: Get more specific about the exception we want to catch, eg: NotFound
-            import pdb; pdb.set_trace()
             # If we can't match against a user in the database then we bail.
             # LDAP users are created & managed FROM Nadine; we don't want to be
             # creating Django users for existing LDAP accounts.
-            pass
+            user = None
 
         if (user):
             return (user, user.date_joined)
