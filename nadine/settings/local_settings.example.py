@@ -15,13 +15,11 @@ ADMINS = (
 )
 
 # Database Settings
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'nadinedb',
-        'USER': 'postgres',
-        'PASSWORD': 'password'
-    }
+DATABASES['default'] = {
+    'ENGINE': 'django.db.backends.postgresql',
+    'NAME': 'nadinedb',
+    'USER': 'postgres',
+    'PASSWORD': 'password'
 }
 
 # Site Information
@@ -30,11 +28,16 @@ SITE_DOMAIN = "127.0.0.1:8080"
 SITE_PROTO = "http"
 
 # Email Settings
-EMAIL_HOST = "smtp.example.com"
-EMAIL_HOST_USER = "postmaster@example.com"
-EMAIL_HOST_PASSWORD = "password"
-EMAIL_USE_TLS = True
-EMAIL_PORT = 587
+# EMAIL_HOST = "smtp.example.com"
+# EMAIL_HOST_USER = "postmaster@example.com"
+# EMAIL_HOST_PASSWORD = "password"
+# EMAIL_USE_TLS = True
+# EMAIL_PORT = 587
+
+# Debug mail server 
+# https://docs.djangoproject.com/en/1.11/topics/email/#configuring-email-for-development
+EMAIL_PORT = 1025
+
 EMAIL_SUBJECT_PREFIX = "[Nadine] "
 SERVER_EMAIL = "nadine@example.com"
 DEFAULT_FROM_EMAIL = "nadine@example.com"
