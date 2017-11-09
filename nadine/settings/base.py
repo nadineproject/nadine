@@ -308,6 +308,8 @@ LOGGING = {
 
 DATABASES = {}
 
+AUTH_PASSWORD_VALIDATORS = []
+
 # Import the local and theme SETTINGS files
 # if os.path.isfile('nadine/local_settings.py'):
 #     #print("Loading local settings file...")
