@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from .base import *
 
 import ldap
@@ -6,7 +8,7 @@ from django_auth_ldap.config import LDAPSearch
 # Application definition
 #
 INSTALLED_APPS += [
-    'nadine_ldap',
+    'nadine_ldap.apps.NadineLdapConfig',
 ]
 
 # LDAP Auth
@@ -16,8 +18,16 @@ AUTHENTICATION_BACKENDS += (
     'nadine_ldap.auth.NadineLDAPBackend',
 )
 
+AUTH_PASSWORD_VALIDATORS += [
+    {'NAME': 'nadine_ldap.password_validation.LDAPSyncValidator'}
+]
+
 AUTH_LDAP_BIND_DN = "cn=admin,dc=312main,dc=ca"
 AUTH_LDAP_BIND_PASSWORD = ""
+
+# Base LDAP DN (location) to read/write user accounts
+NADINE_LDAP_USER_BASE_DN = "ou=users,dc=tnightingale,dc=com"
+NADINE_LDAP_GROUP_BASE_DN = "ou=groups,dc=tnightingale,dc=com"
 
 # Search query for a user.
 AUTH_LDAP_USER_SEARCH = LDAPSearch(
