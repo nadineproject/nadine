@@ -2,19 +2,20 @@
 Django==1.11.7
 Pillow==4.3.0
 psycopg2==2.7.3.2
-django-localflavor==1.5.2
+django-localflavor==1.5.3
 django-localflavor-us==1.1
 django-taggit==0.22.1
 django-taggit-templatetags2==1.6.1
 django-crontab==0.7.1
 python-slugify==1.2.4
-pytz==2017.2
+pytz==2017.3
 requests==2.18.4
 gunicorn==19.7.1
-setuptools==36.6.0
+setuptools==37.0.0
 
 # Supporting libraries
 mailchimp==2.0.9
+docopt==0.6.2
 cryptography==2.1.3
 suds-jurko==0.6
 
@@ -28,11 +29,11 @@ pyxero==0.9.0
 PyJWT==1.5.3
 
 # Libraries for Arpwatch
-pysnmp==4.4.1
+pysnmp==4.4.2
 pysnmp-mibs==0.1.6
 
 # For the documentation:
-sphinx==1.6.3
+sphinx==1.6.5
 sphinx-rtd-theme==0.2.4
 recommonmark==0.4.0
 pycodestyle==2.3.1
@@ -41,5 +42,5 @@ Markdown==2.6.9
 
 # A few handy tools
 safety==1.6.1
-django-debug-toolbar==1.8
+django-debug-toolbar==1.9.1
 pip-review==1.0
