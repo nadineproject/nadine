@@ -5,7 +5,7 @@ import sys
 import datetime
 import json
 
-from nadine.models.membership import Membership
+from nadine.models.membership import IndividualMembership, ResourceSubscription
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand, CommandError
 from collections import OrderedDict
@@ -16,7 +16,7 @@ def date_handler(x):
     raise TypeError("Unknown type")
 
 class Command(BaseCommand):
-    help = "Sends system emails to given user."
+    help = "Export user data for analysys"
     requires_system_checks = False
 
     def add_arguments(self, parser):
@@ -46,15 +46,21 @@ class Command(BaseCommand):
             data['tags'] = []
             for tag in user.profile.tags.all():
                 data['tags'].append(str(tag))
-            data['memberships'] = []
-            # for m in OldMembership.objects.filter(user=user).order_by('start_date'):
-            #     m_data = OrderedDict()
-            #     m_data['plan'] = m.membership_plan.name
-            #     m_data['start_date'] = m.start_date
-            #     m_data['end_date'] = m.end_date
-            #     m_data['monthly_rate'] = m.monthly_rate
-            #     data['memberships'].append(m_data)
+
+            # Pull IndividualMembership ResourceSubscription
+            # TODO - Grab OrganizationMemberships too
+            data['subscriptions'] = []
+            membership = IndividualMembership.objects.get(user=user)
+            for s in ResourceSubscription.objects.filter(membership=membership).order_by('start_date'):
+                s_data = OrderedDict()
+                s_data['package'] = s.package_name
+                s_data['start_date'] = s.start_date
+                s_data['end_date'] = s.end_date
+                s_data['monthly_rate'] = str(s.monthly_rate)
+                data['subscriptions'].append(s_data)
             user_data.append(data)
+
+        print(user_data)
 
         print("Writing JSON data to: %s" % output)
         with open(output, 'w') as outfile:
