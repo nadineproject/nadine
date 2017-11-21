@@ -1,4 +1,3 @@
-import mailchimp
 import traceback
 import logging
 from datetime import datetime, time, date, timedelta
@@ -105,6 +104,7 @@ def send_introduction(user):
 def subscribe_to_newsletter(user):
     if settings.MAILCHIMP_NEWSLETTER_KEY:
         try:
+            import mailchimp
             mc = mailchimp.Mailchimp(settings.MAILCHIMP_API_KEY)
             mc.lists.subscribe(id=settings.MAILCHIMP_NEWSLETTER_KEY, email={'email': user.email}, send_welcome=True)
         except:
