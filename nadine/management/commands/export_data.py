@@ -1,6 +1,6 @@
 import os
 import time
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import sys
 import datetime
 import json
@@ -62,7 +62,7 @@ class Command(BaseCommand):
 
         print(user_data)
 
-        print("Writing JSON data to: %s" % output)
+        print(("Writing JSON data to: %s" % output))
         with open(output, 'w') as outfile:
             json.dump(user_data, outfile, default=date_handler)
 

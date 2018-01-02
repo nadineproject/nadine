@@ -9,7 +9,7 @@ import traceback
 
 import cherrypy
 
-from core import Messages, EncryptedConnection, DoorEventTypes
+from .core import Messages, EncryptedConnection, DoorEventTypes
 
 ################################################################################
 # The Web Application
@@ -39,7 +39,7 @@ class EventProxy(threading.Thread):
         proxy_data = json.dumps(proxy_dict)
         print(proxy_data)
         response = self.connection.send_message(proxy_data)
-        print("Keymaster Response: %s" % response)
+        print(("Keymaster Response: %s" % response))
         return "Here's where I would actually process the stuff"
 
     def run(self):
@@ -76,7 +76,7 @@ if __name__ == "__main__":
     debug = "-d" in sys.argv
 
     # Test the connection
-    print("Testing connection: %s" % config['KEYMASTER_URL'])
+    print(("Testing connection: %s" % config['KEYMASTER_URL']))
     connection = EncryptedConnection(config['ENCRYPTION_KEY'], config['KEYMASTER_URL'])
     response = connection.send_message(Messages.TEST_QUESTION)
     if response == Messages.TEST_RESPONSE:

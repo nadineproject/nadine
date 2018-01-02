@@ -252,7 +252,7 @@ class DoorController(object):
 
         # Now loop through all the cardholders and any that don't have an action
         # are in the controller but not in the given list.  Remove them.
-        for cardholder in self.cardholders_by_id.values():
+        for cardholder in list(self.cardholders_by_id.values()):
             if not hasattr(cardholder, "action"):
                 cardholder.action = 'delete'
                 changes.append(cardholder)
@@ -390,7 +390,7 @@ class Gatekeeper(object):
 
             # Find our controller for this door
             if door_type == DoorTypes.HID:
-                from hid_control import HIDDoorController
+                from .hid_control import HIDDoorController
                 controller = HIDDoorController(name, ip_address, username, password)
                 controller.debug = self.debug
             elif door_type == DoorTypes.TEST:
@@ -432,18 +432,18 @@ class Gatekeeper(object):
 
     def sync_clocks(self):
         logging.info("Gatekeeper: Syncing the door clocks...")
-        for door in self.get_doors().values():
+        for door in list(self.get_doors().values()):
             controller = door['controller']
             controller.set_time()
 
     def load_data(self):
-        for door in self.get_doors().values():
+        for door in list(self.get_doors().values()):
             controller = door['controller']
             controller.load_credentials()
 
     def clear_all_codes(self):
         logging.info("Gatekeeper: Clearing all door codes...")
-        for door in self.get_doors().values():
+        for door in list(self.get_doors().values()):
             controller = door['controller']
             controller.clear_door_codes()
 
@@ -463,7 +463,7 @@ class Gatekeeper(object):
             for c in door_codes:
                 c['code'] = self.decode_door_code(c['code'])
 
-        for door in self.get_doors().values():
+        for door in list(self.get_doors().values()):
             controller = door['controller']
             changes = controller.process_door_codes(door_codes)
             controller.process_changes(changes)
@@ -473,7 +473,7 @@ class Gatekeeper(object):
         if record_count <= 0:
             record_count = self.event_count
         event_logs = {}
-        for door_name, door in self.get_doors().items():
+        for door_name, door in list(self.get_doors().items()):
             logging.debug("Gatekeeper: Pulling %d logs from '%s'" % (record_count, door_name))
             controller = door['controller']
             door_events = controller.pull_events(record_count)

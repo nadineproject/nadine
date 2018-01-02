@@ -705,7 +705,7 @@ class MembershipPackageForm(forms.Form):
                 p.save()
 
             sub_default = SubscriptionDefault(package=p, resource=resource, allowance=allowance, monthly_rate=monthly_rate, overage_rate=overage_rate)
-            print('Default is %s' % sub_default)
+            print(('Default is %s' % sub_default))
             sub_default.save()
 
         return sub_default

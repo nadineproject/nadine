@@ -145,7 +145,7 @@ def test_door(request):
         controller = DoorController(ip_address, username, password)
         response_code, xml_response = controller.__send_xml_str(xml_request)
         response_time = localtime(now()) - start_ts
-        print("response code: %d, response time: %s" % (response_code, response_time))
+        print(("response code: %d, response time: %s" % (response_code, response_time)))
     else:
         # Start with the basic framework
         xml_request = '<?xml version="1.0" encoding="UTF-8"?>\n<VertXMessage>\n\n</VertXMessage>'

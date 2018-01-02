@@ -16,10 +16,10 @@ class Command(BaseCommand):
         # Send an exit survey to members that have been gone a week.
         today = localtime(now()).date()
         one_week_ago = today - relativedelta(weeks=1)
-        print("Checking for subscriptions ending: %s" % one_week_ago)
+        print(("Checking for subscriptions ending: %s" % one_week_ago))
         for subscription in ResourceSubscription.objects.filter(end_date=one_week_ago):
             if not subscription.user.profile.is_active():
-                print("  Sending exit survey to %s" % subscription.user.get_full_name())
+                print(("  Sending exit survey to %s" % subscription.user.get_full_name()))
                 email.send_exit_survey(subscription.user)
 
 

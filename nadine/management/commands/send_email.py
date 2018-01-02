@@ -1,6 +1,6 @@
 import os
 import time
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import sys
 import datetime
 
@@ -20,7 +20,7 @@ class Command(BaseCommand):
     def print_keys(self):
         print("Valid Message Keys: ")
         for key in email.valid_message_keys():
-            print("   " + key)
+            print(("   " + key))
 
     def handle(self, *args, **options):
         # Make sure we have a valid user
@@ -35,8 +35,8 @@ class Command(BaseCommand):
             self.print_keys()
             raise CommandError("Invalid message key '%s'" % options['message'])
 
-        print("Sending %s..." % message)
-        print("Email address: %s" % user.email)
+        print(("Sending %s..." % message))
+        print(("Email address: %s" % user.email))
 
 
 # Copyright 2018 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

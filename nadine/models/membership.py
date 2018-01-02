@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+
 
 import os
 import uuid
@@ -62,7 +62,7 @@ class MemberGroups():
             if User.helper.members_by_package(package).count() > 0:
                 package_name = package.name
                 group_list.append((package_name, "%s Members" % package_name))
-        for g, d in sorted(MemberGroups.GROUP_DICT.items(), key=operator.itemgetter(0)):
+        for g, d in sorted(list(MemberGroups.GROUP_DICT.items()), key=operator.itemgetter(0)):
             group_list.append((g, d))
         return group_list
 
@@ -507,7 +507,7 @@ class Membership(models.Model):
         try:
             with transaction.atomic():
                 # Find any overlapping open bills
-                from billing import UserBill
+                from .billing import UserBill
                 open_bill = UserBill.objects.get_open_bill(self.user, target_date, target_date)
                 if open_bill:
                     for d in open_bill.coworking_days().filter(visit_date__gte=target_date):
@@ -519,7 +519,7 @@ class Membership(models.Model):
                 self.bill_day = target_date.day
                 self.save()
         except IntegrityError as e:
-            print('There was an ERROR: %s' % e.message)
+            print(('There was an ERROR: %s' % e.message))
 
         return self.bill_day
 

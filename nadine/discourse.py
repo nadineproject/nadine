@@ -1,7 +1,7 @@
 import base64
 import hmac
 import hashlib
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
@@ -9,7 +9,7 @@ from django.urls import reverse
 
 from django.conf import settings
 
-from urlparse import parse_qs
+from urllib.parse import parse_qs
 
 @login_required
 def sso(request):
@@ -22,7 +22,7 @@ def sso(request):
     ## Validate the payload
 
     try:
-        payload = urllib.unquote(payload)
+        payload = urllib.parse.unquote(payload)
         decoded = base64.decodestring(payload)
         assert 'nonce' in decoded
         assert len(payload) > 0
@@ -51,9 +51,9 @@ def sso(request):
         'moderator': request.user.is_staff
     }
 
-    return_payload = base64.encodestring(urllib.urlencode(params))
+    return_payload = base64.encodestring(urllib.parse.urlencode(params))
     h = hmac.new(key, return_payload, digestmod=hashlib.sha256)
-    query_string = urllib.urlencode({'sso': return_payload, 'sig': h.hexdigest()})
+    query_string = urllib.parse.urlencode({'sso': return_payload, 'sig': h.hexdigest()})
 
     ## Redirect back to Discourse
 

@@ -40,7 +40,7 @@ class Response(object):
 
     def __repr__(self):
         if self.ok:
-            return "Response OK: Size: %d, Keys: %s" % (len(self.raw), self.body.keys())
+            return "Response OK: Size: %d, Keys: %s" % (len(self.raw), list(self.body.keys()))
         return "Response ERROR: %s" % self.error
 
 

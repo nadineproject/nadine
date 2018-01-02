@@ -184,7 +184,7 @@ def day_is_complete(day_str):
     day_start = datetime.strptime(day_str + " 00:00", "%Y-%m-%d %H:%M")
     day_end = datetime.strptime(day_str + " 23:59", "%Y-%m-%d %H:%M")
     arp_logs = ArpLog.objects.filter(runtime__gt=day_start, runtime__lt=day_end).order_by('runtime')
-    print(arp_logs.count())
+    print((arp_logs.count()))
     return True
 
 

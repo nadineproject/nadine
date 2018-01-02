@@ -16,14 +16,14 @@ class Command(BaseCommand):
         # if they are still active and this was their first membership
         today = localtime(now()).date()
         two_months_ago = today - relativedelta(months=2)
-        print("Checking for subscriptions starting on: %s" % two_months_ago)
+        print(("Checking for subscriptions starting on: %s" % two_months_ago))
         for subscription in ResourceSubscription.objects.filter(start_date=two_months_ago):
             user = subscription.user
             membership = Membership.objects.for_user(user)
             first_membership = ResourceSubscription.objects.filter(membership=membership, start_date__lt=two_months_ago).count() == 0
             is_active = user.profile.is_active(today)
             if first_membership and is_active:
-                print("  Sending membership survey to %s" % user.get_full_name())
+                print(("  Sending membership survey to %s" % user.get_full_name()))
                 email.send_member_survey(membership.user)
 
 

@@ -236,7 +236,7 @@ def thread (msglist):
             prev.add_child(this_container)
 
     # 2. Find root set
-    root_set = [container for container in id_table.values()
+    root_set = [container for container in list(id_table.values())
                 if container.parent is None]
 
     # 3. Delete id_table

@@ -192,7 +192,7 @@ class ListTest(TestCase):
         self.assertEqual(['hats@example.com'], m.to)
         self.assertEqual('hats@example.com', m.extra_headers['Sender'])
         self.assertEqual('Bob Albert <bob@example.com>', m.extra_headers['Reply-To'])
-        self.assertEqual([u'bob@example.com', u'charlie@example.com'], sorted(m.recipients()))
+        self.assertEqual(['bob@example.com', 'charlie@example.com'], sorted(m.recipients()))
 
     def test_incoming_processing(self):
         # send an email from an unknown address
@@ -216,10 +216,10 @@ class ListTest(TestCase):
         self.assertEqual(1, len(mail.outbox))
         m = mail.outbox[0]
         self.assertEqual('hats@example.com', m.from_email)
-        self.assertEqual(u'Moderation Request: Hat Styles: ahoi 1', m.subject)
+        self.assertEqual('Moderation Request: Hat Styles: ahoi 1', m.subject)
         self.assertEqual(['charlie@example.com'], m.to)
-        self.assertEqual(u'hats@example.com', m.extra_headers['Reply-To'])
-        self.assertEqual([u'charlie@example.com'], m.recipients())
+        self.assertEqual('hats@example.com', m.extra_headers['Reply-To'])
+        self.assertEqual(['charlie@example.com'], m.recipients())
 
         # send an email from a known address, but not a subscriber
         incoming = IncomingMail.objects.create(mailing_list=self.mlist1,

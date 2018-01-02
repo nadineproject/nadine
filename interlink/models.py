@@ -153,7 +153,7 @@ class MailingList(models.Model):
         if body:
             body += '\n\nEmail sent to the %s list at https://%s' % (self.name, site.domain)
         if html_body:
-            html_body += u'<br/><div>Email sent to the %s list at <a href="https://%s">%s</a></div>' % (self.name, site.domain, site.name)
+            html_body += '<br/><div>Email sent to the %s list at <a href="https://%s">%s</a></div>' % (self.name, site.domain, site.name)
 
         # Clean up the subject on the way in.  More processing is done later.
         subject = message['Subject']
@@ -328,7 +328,7 @@ class OutgoingMailManager(models.Manager):
 
         # Once we have this, we can go through each key value pair,
         # make a connection to the server, and send them all.
-        for ml, mails in d.iteritems():
+        for ml, mails in d.items():
             try:
                 conn = None
                 try:

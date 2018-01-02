@@ -156,7 +156,7 @@ class MembershipTestCase(TestCase):
         m = self.create_membership(start=period_start)
         ps, pe = m.get_period(target_date=period_start)
         # print("start: %s, end: %s, got: %s" % (period_start, period_end, pe))
-        self.assertEquals(pe, period_end)
+        self.assertEqual(pe, period_end)
 
     def next_period_start_test(self, start, number):
         last_start = start
@@ -290,11 +290,11 @@ class MembershipTestCase(TestCase):
         self.assertEqual(date(2016,6,1), membership.end_date)
 
     def test_inactive_period(self):
-        self.assertEquals((None, None), self.membership1.get_period(target_date=yesterday))
-        self.assertEquals((None, None), self.membership2.get_period(target_date=yesterday))
-        self.assertEquals((None, None), self.membership3.get_period(target_date=today))
-        self.assertEquals((None, None), self.membership4.get_period(target_date=tomorrow))
-        self.assertEquals((None, None), self.membership5.get_period(target_date=tomorrow))
+        self.assertEqual((None, None), self.membership1.get_period(target_date=yesterday))
+        self.assertEqual((None, None), self.membership2.get_period(target_date=yesterday))
+        self.assertEqual((None, None), self.membership3.get_period(target_date=today))
+        self.assertEqual((None, None), self.membership4.get_period(target_date=tomorrow))
+        self.assertEqual((None, None), self.membership5.get_period(target_date=tomorrow))
 
     def test_get_period(self):
         # Test month bounderies
@@ -442,27 +442,27 @@ class MembershipTestCase(TestCase):
     def test_bill_day_str(self):
         membership = self.user1.membership
         membership.bill_day = 1
-        self.assertEquals("1st", membership.bill_day_str)
+        self.assertEqual("1st", membership.bill_day_str)
         membership.bill_day = 2
-        self.assertEquals("2nd", membership.bill_day_str)
+        self.assertEqual("2nd", membership.bill_day_str)
         membership.bill_day = 3
-        self.assertEquals("3rd", membership.bill_day_str)
+        self.assertEqual("3rd", membership.bill_day_str)
         membership.bill_day = 5
-        self.assertEquals("5th", membership.bill_day_str)
+        self.assertEqual("5th", membership.bill_day_str)
         membership.bill_day = 11
-        self.assertEquals("11th", membership.bill_day_str)
+        self.assertEqual("11th", membership.bill_day_str)
         membership.bill_day = 21
-        self.assertEquals("21st", membership.bill_day_str)
+        self.assertEqual("21st", membership.bill_day_str)
         membership.bill_day = 22
-        self.assertEquals("22nd", membership.bill_day_str)
+        self.assertEqual("22nd", membership.bill_day_str)
         membership.bill_day = 23
-        self.assertEquals("23rd", membership.bill_day_str)
+        self.assertEqual("23rd", membership.bill_day_str)
         membership.bill_day = 25
-        self.assertEquals("25th", membership.bill_day_str)
+        self.assertEqual("25th", membership.bill_day_str)
         membership.bill_day = 30
-        self.assertEquals("30th", membership.bill_day_str)
+        self.assertEqual("30th", membership.bill_day_str)
         membership.bill_day = 31
-        self.assertEquals("31st", membership.bill_day_str)
+        self.assertEqual("31st", membership.bill_day_str)
 
     def test_coworking_days(self):
         from nadine.models.usage import CoworkingDay

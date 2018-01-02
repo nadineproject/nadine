@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+
 
 import logging
 
@@ -278,7 +278,7 @@ def subscription_callback(sender, **kwargs):
     elif subscription.resource == Resource.objects.key_resource:
         if created:
             MemberAlert.objects.trigger_new_key(user)
-        elif ending and not user.has_key(subscription.end_date + timedelta(days=1)):
+        elif ending and subscription.end_date + timedelta(days=1) not in user:
             MemberAlert.objects.trigger_ending_key(user, subscription.end_dat)
     elif subscription.resource == Resource.objects.mail_resource:
         if created:

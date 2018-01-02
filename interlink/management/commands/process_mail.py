@@ -1,5 +1,5 @@
 import sys
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import logging
 import datetime
 

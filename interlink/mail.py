@@ -26,7 +26,7 @@ class PopMailChecker(object):
                 response = pop_client.pass_(self.mailing_list.password)
                 if not response.startswith('+OK'):
                     raise Exception('Password not accepted: %s' % response)
-            except poplib.error_proto, e:
+            except poplib.error_proto as e:
                 # We get this back a lot, and we don't want it to flood our logs:
                 # error_proto('-ERR [IN-USE] Unable to lock maildrop: Mailbox is locked by POP server',)
                 if 'IN-USE' not in e.message:
@@ -61,7 +61,7 @@ class PopMailChecker(object):
                     # TODO Delete and ignore soft bounces
                     results.append(self.mailing_list.create_incoming(message))
                     pop_client.dele(i + 1)
-                except Exception, e:
+                except Exception as e:
                     self.logger.error("Exception while processing email")
                     self.logger.error("Message: " + str(message))
                     self.logger.error("Exception: " + str(e))

@@ -20,11 +20,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         try:
-            print
+            print()
             print("###################################")
             print("Nadine Local Settings Configuration")
             print("###################################")
-            print
+            print()
             self.load_settings_file()
             self.setup_general()
             self.setup_timezone()
@@ -32,36 +32,36 @@ class Command(BaseCommand):
             self.setup_database()
             self.write_settings_file()
         except KeyboardInterrupt:
-            print
+            print()
             print("Exiting without saving!")
-            print
+            print()
 
     def load_settings_file(self):
         # Test to see if SETTINGS_FILE exists and prompt to load it or remove it
         filename = EXAMPLE_FILE
         if os.path.isfile(SETTINGS_FILE):
-            print("File '%s' exists!" % SETTINGS_FILE)
+            print(("File '%s' exists!" % SETTINGS_FILE))
             print("Do you want to load the existing file? (Y, n)")
-            load = raw_input(PROMPT).strip().lower()
+            load = input(PROMPT).strip().lower()
             if load == "n":
-                print("Current settings in '%s' will be lost!" % SETTINGS_FILE)
+                print(("Current settings in '%s' will be lost!" % SETTINGS_FILE))
             else:
                 filename = SETTINGS_FILE
         self.local_settings = LocalSettings(filename)
-        print
+        print()
 
     def write_settings_file(self):
         print("Write new local_settings file? (y, N)")
-        save = raw_input(PROMPT).strip().lower()
+        save = input(PROMPT).strip().lower()
         if save == "y":
-            print("Writing %s" % SETTINGS_FILE)
+            print(("Writing %s" % SETTINGS_FILE))
             self.local_settings.save(SETTINGS_FILE)
 
     def prompt_for_value(self, question, key, default=None):
         if not default:
             default = self.local_settings.get_value(key)
-        print("%s? (default: '%s')" % (question, default))
-        value = raw_input(PROMPT).strip().lower()
+        print(("%s? (default: '%s')" % (question, default)))
+        value = input(PROMPT).strip().lower()
         if not value:
             value = default
         self.local_settings.set(key, value)
@@ -75,7 +75,7 @@ class Command(BaseCommand):
             print("Generating random SECRET_KEY")
             secret_key = ''.join([random.SystemRandom().choice("{}{}".format(string.ascii_letters, string.digits)) for i in range(63)])
             self.local_settings.set('SECRET_KEY', secret_key, quiet=True)
-            print
+            print()
 
         # Site Information
         self.prompt_for_value("Site Name", "SITE_NAME")
@@ -83,68 +83,68 @@ class Command(BaseCommand):
         self.prompt_for_value("Site Domain", "SITE_DOMAIN", default=current_host)
         protocol = "http"
         print("Use SSL? (y, N)")
-        ssl = raw_input(PROMPT).strip().lower()
+        ssl = input(PROMPT).strip().lower()
         if ssl == "y":
             protocol = protocol + "s"
         self.local_settings.set('SITE_PROTO', protocol)
 
         # Site Administrator
         print("Full Name of Administrator")
-        admin_name = raw_input(PROMPT).strip().title()
+        admin_name = input(PROMPT).strip().title()
         print("Admin Email Address?")
-        admin_email = raw_input(PROMPT).strip().lower()
+        admin_email = input(PROMPT).strip().lower()
         self.local_settings.set_admins(admin_name, admin_email)
 
     def setup_timezone(self):
-        print
+        print()
         print("### Timezone Setup ###")
 
         # Country
         country = ''
         while country not in country_names:
             print("What country? (blank: list available)")
-            country = raw_input(PROMPT).strip().upper()
+            country = input(PROMPT).strip().upper()
             if not country:
                 print("Country Codes:")
-                print(', '.join(country_names))
-                print
+                print((', '.join(country_names)))
+                print()
         self.local_settings.set('COUNTRY', country)
 
         # Timezone
         tz = ''
         while tz not in common_timezones:
             print("What timezone? (blank: list available)")
-            tz = raw_input(PROMPT).strip()
+            tz = input(PROMPT).strip()
             if not tz:
                 print("Available Timezones:")
-                print(', '.join(country_timezones[country]))
-                print
+                print((', '.join(country_timezones[country])))
+                print()
         self.local_settings.set('TIME_ZONE', tz)
 
     # Database Setup
     def setup_database(self):
-        print
+        print()
         print("### Database Setup ###")
         print("Database Name? (default: nadinedb)")
-        db_name = raw_input(PROMPT).strip()
+        db_name = input(PROMPT).strip()
         if not db_name:
             db_name = "nadinedb"
-        print("DATABASE_NAME = '%s'" % db_name)
+        print(("DATABASE_NAME = '%s'" % db_name))
         current_user = getpass.getuser()
-        print("Database User? (default: %s)" % current_user)
-        db_user = raw_input(PROMPT).strip()
+        print(("Database User? (default: %s)" % current_user))
+        db_user = input(PROMPT).strip()
         if not db_user:
             db_user = current_user
-        print("DATABASE_USER = '%s'" % db_user)
+        print(("DATABASE_USER = '%s'" % db_user))
         print("Database Password? (optional)")
-        db_pass = raw_input(PROMPT).strip()
+        db_pass = input(PROMPT).strip()
         if db_pass:
-            print("DATABASE_PASSWORD = '%s'" % db_pass)
+            print(("DATABASE_PASSWORD = '%s'" % db_pass))
         self.local_settings.set_database(db_name, db_user, db_pass)
 
     # Mail Server Setup
     def setup_email(self):
-        print
+        print()
         print("### Email Setup ###")
         domain = self.local_settings.get_value("SITE_DOMAIN")
         self.prompt_for_value("Email Host", "EMAIL_HOST")
@@ -164,7 +164,7 @@ class Command(BaseCommand):
 class LocalSettings():
 
     def __init__(self, filename):
-        print("Loading %s" % filename)
+        print(("Loading %s" % filename))
         with open(filename) as f:
             self.settings = f.readlines()
 

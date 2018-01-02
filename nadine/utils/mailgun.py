@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+
 
 import json
 import requests
@@ -49,18 +49,18 @@ def clean_mailgun_data(mailgun_data):
     to_name, to_address = email.utils.parseaddr(mailgun_data["to"][0])
     exclude = [from_address, to_address]
     bccs = address_map(mailgun_data, "bcc", exclude)
-    exclude.extend(bccs.keys())
+    exclude.extend(list(bccs.keys()))
     # We do not want to remove our first 'to' address
     to_exclude = list(set(exclude))
     to_exclude.remove(to_address)
     tos = address_map(mailgun_data, "to", to_exclude)
-    exclude.extend(tos.keys())
+    exclude.extend(list(tos.keys()))
     ccs = address_map(mailgun_data, "cc", exclude)
 
     # Repopulate our data with our clean lists
-    mailgun_data["bcc"] = bccs.values()
-    mailgun_data["cc"] = ccs.values()
-    mailgun_data["to"] = tos.values()
+    mailgun_data["bcc"] = list(bccs.values())
+    mailgun_data["cc"] = list(ccs.values())
+    mailgun_data["to"] = list(tos.values())
 
     logger.debug("clean mailgun_data: %s" % mailgun_data)
     return mailgun_data

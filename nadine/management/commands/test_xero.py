@@ -1,7 +1,7 @@
 import os
 import time
 import csv
-import ConfigParser
+import configparser
 
 from django.template.defaultfilters import slugify
 from django.core.management.base import BaseCommand, CommandError

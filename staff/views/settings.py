@@ -69,9 +69,9 @@ def membership_packages(request):
                     messages.success(request, 'Successfully edited membership packages.')
                     return HttpResponseRedirect(reverse('staff:settings:membership_packages'))
                 else:
-                    print(package_formset.errors)
+                    print((package_formset.errors))
         except IntegrityError as e:
-            print('There was an ERROR: %s' % e.message)
+            print(('There was an ERROR: %s' % e.message))
             messages.error(request, 'There was an error creating the new membership package')
     else:
         package_formset = PackageFormset(initial=sub_data)

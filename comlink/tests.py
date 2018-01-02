@@ -29,5 +29,5 @@ class SimpleTest(TestCase):
         form = formk(request.POST)
         email = form.save()
 
-        for k, v in form.field_map.items():
+        for k, v in list(form.field_map.items()):
             assert getattr(email, v) == testpostdata[k]

@@ -1,6 +1,6 @@
 import os
 import time
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import sys
 import requests
 
@@ -19,4 +19,4 @@ class Command(BaseCommand):
     requires_system_checks = False
 
     def handle(self, *labels, **options):
-        print(Fernet.generate_key())
+        print((Fernet.generate_key()))

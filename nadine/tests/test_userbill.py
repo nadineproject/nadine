@@ -29,12 +29,12 @@ def print_all_bills(user):
         print_bill(bill)
 
 def print_bill(bill):
-    print("UserBill %d" % bill.id)
-    print("  due_date: %s" % bill.due_date)
-    print("  amount: $%s" % bill.amount)
+    print(("UserBill %d" % bill.id))
+    print(("  due_date: %s" % bill.due_date))
+    print(("  amount: $%s" % bill.amount))
     print("  line_items:")
     for line_item in bill.line_items.all().order_by('id'):
-        print("    %s: $%s" % (line_item.description, line_item.amount))
+        print(("    %s: $%s" % (line_item.description, line_item.amount)))
 
 
 @override_settings(SUSPEND_MEMBER_ALERTS=True)
@@ -126,7 +126,7 @@ class UserBillTestCase(TestCase):
         self.assertFalse(bill.includes_coworking_day(day))
         bill.add_coworking_day(day)
         self.assertTrue(bill.includes_coworking_day(day))
-        self.assertEquals(bill, day.bill)
+        self.assertEqual(bill, day.bill)
 
     def test_add_event(self):
         event = Event.objects.create(
@@ -139,8 +139,8 @@ class UserBillTestCase(TestCase):
         self.assertFalse(bill.includes_event(event))
         bill.add_event(event)
         self.assertTrue(bill.includes_event(event))
-        self.assertEquals(bill, event.bill)
-        self.assertEquals(2, bill.event_hours_used)
+        self.assertEqual(bill, event.bill)
+        self.assertEqual(2, bill.event_hours_used)
         self.assertTrue(1 == bill.event_count)
 
     def test_monthly_rate(self):

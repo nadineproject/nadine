@@ -1,7 +1,7 @@
 import os
 import sys
 import time
-import urllib
+import urllib.request, urllib.parse, urllib.error
 from datetime import date, datetime, timedelta
 from django.utils import timezone
 from django.conf import settings

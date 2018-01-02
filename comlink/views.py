@@ -118,10 +118,10 @@ class Incoming(View):
             # reverse mapping in content_ids dict
             content_ids = dict(
                 (attnr, cid) for cid, attnr in
-                (email.content_ids or {}).iteritems())
+                (email.content_ids or {}).items())
 
             i = 1
-            for file in request.FILES.values():
+            for file in list(request.FILES.values()):
                 attachment = self.attachment_model(email=email,
                     file=file,
                     content_id=content_ids.get('attachment-{0!s}'.format(i), ''))

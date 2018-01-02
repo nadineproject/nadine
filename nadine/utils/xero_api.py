@@ -154,33 +154,33 @@ class XeroAPI:
         # Clearly just a test -- JLS
         xero = self.xero
         invoice = {
-                    u'Status': u'DRAFT',
-                    u'Total': u'264.00',
-                    u'CurrencyRate': u'1.000000',
-                    u'Reference': u'sdfghsfgh',
-                    u'Type': u'ACCREC',
-                    u'CurrencyCode': u'AUD',
-                    u'AmountPaid': u'0.00',
-                    u'TotalTax': u'24.00',
-                    u'Contact': {
-                        u'Name': u'Test One'
+                    'Status': 'DRAFT',
+                    'Total': '264.00',
+                    'CurrencyRate': '1.000000',
+                    'Reference': 'sdfghsfgh',
+                    'Type': 'ACCREC',
+                    'CurrencyCode': 'AUD',
+                    'AmountPaid': '0.00',
+                    'TotalTax': '24.00',
+                    'Contact': {
+                        'Name': 'Test One'
                     },
-                    u'AmountDue': u'264.00',
-                    u'Date': datetime.date(2014, 7, 24),
-                    u'LineAmountTypes': u'Exclusive',
-                    u'LineItems': {
-                        u'LineItem': {
-                            u'AccountCode': u'200',
-                            u'TaxAmount': u'24.00',
-                            u'Description': u'fgshfsdh',
-                            u'UnitAmount': u'24.00',
-                            u'TaxType': u'OUTPUT',
-                            u'ItemCode': u'sfghfshg',
-                            u'LineAmount': u'240.00',
-                            u'Quantity': u'10.0000'
+                    'AmountDue': '264.00',
+                    'Date': datetime.date(2014, 7, 24),
+                    'LineAmountTypes': 'Exclusive',
+                    'LineItems': {
+                        'LineItem': {
+                            'AccountCode': '200',
+                            'TaxAmount': '24.00',
+                            'Description': 'fgshfsdh',
+                            'UnitAmount': '24.00',
+                            'TaxType': 'OUTPUT',
+                            'ItemCode': 'sfghfshg',
+                            'LineAmount': '240.00',
+                            'Quantity': '10.0000'
                         }
                     },
-                    u'SubTotal': u'240.00',
-                    u'DueDate': datetime.date(2014, 7, 24)
+                    'SubTotal': '240.00',
+                    'DueDate': datetime.date(2014, 7, 24)
                 }
         #xero.invoices.put(invoice)

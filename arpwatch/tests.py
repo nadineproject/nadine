@@ -9,7 +9,7 @@ from django.conf import settings
 from django.db import IntegrityError
 from django.utils.timezone import localtime, now
 
-import arp
+from . import arp
 from arpwatch.models import *
 
 

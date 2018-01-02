@@ -23,7 +23,7 @@ class EmailForm(forms.ModelForm):
         if not mailgun_post:
             raise Exception("No mailgun post passed. Unbound form not supported.")
 
-        mailgun_data = {self.field_map.get(k, k): v for k, v in mailgun_post.items()}
+        mailgun_data = {self.field_map.get(k, k): v for k, v in list(mailgun_post.items())}
         message_headers = mailgun_data['message_headers']
         message_header_keys = [item[0] for item in message_headers]
 

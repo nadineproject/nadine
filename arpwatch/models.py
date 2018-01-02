@@ -74,7 +74,7 @@ class ArpLog_Manager(models.Manager):
                 # Create a new device log
                 start = end = arp_log.runtime
                 device_logs[key] = DeviceLog(arp_log.device, start, end, 0)
-        return device_logs.values()
+        return list(device_logs.values())
 
     def for_device(self, device_id):
         DeviceLog = namedtuple('DeviceLog', 'ip, day')
@@ -103,7 +103,7 @@ class ArpLog_Manager(models.Manager):
                 # Create a new device log
                 start = end = arp_log.runtime
                 device_logs[key] = DeviceLog(start, end, 0)
-        return device_logs.values()
+        return list(device_logs.values())
 
 
 class ArpLog(models.Model):

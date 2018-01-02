@@ -1,7 +1,7 @@
 import os
 import sys
 import time
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import logging
 import datetime
 

@@ -68,7 +68,7 @@ def detail(request, username):
             desc = request.POST.get('description')
             SpecialDay.objects.create(user=user, month=month, day=day, year=year, description=desc)
         else:
-            print(request.POST)
+            print((request.POST))
     staff_members = User.objects.filter(is_staff=True).order_by('id').reverse()
     email_keys = email.valid_message_keys()
     email_keys.remove("all")
@@ -382,8 +382,8 @@ def membership(request, username):
                 except IntegrityError:
                     messages.error(request, 'There was an error updating the subscriptions')
             else:
-                print(sub_formset.errors)
-                print(package_form.errors)
+                print((sub_formset.errors))
+                print((package_form.errors))
                 messages.error(request, 'There was an error updating the subscriptions')
     else:
         package_form = MembershipForm()
@@ -513,7 +513,7 @@ def confirm_membership(request, username, package, end_target, start_target, new
                 messages.success(request, "You have updated the subscriptions for %s" % username)
                 return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}) + '#tabs-1')
         except IntegrityError as e:
-            print('There was an ERROR: %s' % e.message)
+            print(('There was an ERROR: %s' % e.message))
             messages.error(request, 'There was an error setting new membership package')
     context = {
         'user': user,

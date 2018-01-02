@@ -3,7 +3,7 @@ import time
 import logging
 import threading
 
-from core import Messages
+from .core import Messages
 
 class Heartbeat(threading.Thread):
 
@@ -71,7 +71,7 @@ class EventWatcher(threading.Thread):
                 if not self.new_data:
                     logging.debug("EventWatcher: Polling the doors for events...")
                     event_logs = self.gatekeeper.pull_event_logs(1)
-                    for door_name, logs in event_logs.items():
+                    for door_name, logs in list(event_logs.items()):
                         if logs and len(logs) == 1 and 'timestamp' in logs[0]:
                             door = self.gatekeeper.get_door(door_name)
                             last_event_ts = door.get("last_event_ts")

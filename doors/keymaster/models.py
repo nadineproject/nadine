@@ -83,7 +83,7 @@ class Keymaster(models.Model):
             raise Exception("process_event_logs: No event logs to process!")
         #logger.debug("process_event_logs: %d doors to process" % len(event_logs))
 
-        for door_name, events_to_process in event_logs.items():
+        for door_name, events_to_process in list(event_logs.items()):
             door = Door.objects.get(name=door_name)
             last_ts = door.get_last_event_ts()
             logger.debug("Processing events for '%s'. Last TS = %s" % (door_name, last_ts))

@@ -5,8 +5,8 @@ import time
 import logging
 import traceback
 
-from core import Messages, EncryptedConnection, Gatekeeper
-from threads import Heartbeat, EventWatcher
+from .core import Messages, EncryptedConnection, Gatekeeper
+from .threads import Heartbeat, EventWatcher
 
 class GatekeeperApp(object):
     def run(self, config):

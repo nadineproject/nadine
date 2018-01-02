@@ -121,7 +121,7 @@ def org_edit(request, org_id):
                                 if url_type and url:
                                     link_form.save()
                         except Exception as e:
-                            print("Could not save website: %s" % str(e))
+                            print(("Could not save website: %s" % str(e)))
 
                     form.save()
                     return HttpResponseRedirect(reverse('member:org:view', kwargs={'org_id': org.id}))

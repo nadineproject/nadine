@@ -1,6 +1,6 @@
 import os
 import time
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import datetime
 import sys
 
