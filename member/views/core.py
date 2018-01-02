@@ -30,7 +30,7 @@ from member.models import HelpText
 
 
 def is_active_member(user):
-    if user and not user.is_anonymous():
+    if user and not user.is_anonymous:
         # If today is their Free Trial Day count them as active
         if CoworkingDay.objects.filter(user=user, payment='Trial', visit_date=date.today()).count() == 1:
             return True
@@ -43,14 +43,14 @@ def is_active_member(user):
 
 
 def is_manager(user):
-    if user and not user.is_anonymous():
+    if user and not user.is_anonymous:
         return user.profile.is_manager()
     return False
 
 
 def is_new_user(user):
     # also check for staff and if settings allow registration
-    if user.is_anonymous() or user.profile.is_manager():
+    if user.is_anonymous or user.profile.is_manager():
         if settings.ALLOW_ONLINE_REGISTRATION is True:
             return True
 
