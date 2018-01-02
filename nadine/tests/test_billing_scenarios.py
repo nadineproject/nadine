@@ -32,17 +32,17 @@ def print_all_bills(user):
         print_bill(bill)
 
 def print_bill(bill):
-    print("UserBill %d" % bill.id)
-    print("  user: %s" % bill.user)
-    print("  due_date: %s" % bill.due_date)
-    print("  period_start: %s" % bill.period_start)
-    print("  period_end: %s" % bill.period_end)
+    print(("UserBill %d" % bill.id))
+    print(("  user: %s" % bill.user))
+    print(("  due_date: %s" % bill.due_date))
+    print(("  period_start: %s" % bill.period_start))
+    print(("  period_end: %s" % bill.period_end))
     if bill.is_closed:
-        print("  closed_ts: %s" % bill.closed_ts)
-    print("  amount: $%s" % bill.amount)
+        print(("  closed_ts: %s" % bill.closed_ts))
+    print(("  amount: $%s" % bill.amount))
     print("  line_items:")
     for line_item in bill.line_items.all().order_by('id'):
-        print("    %s: $%s" % (line_item.description, line_item.amount))
+        print(("    %s: $%s" % (line_item.description, line_item.amount)))
 
 
 @override_settings(SUSPEND_MEMBER_ALERTS=True)
@@ -460,7 +460,7 @@ class BillingTestCase(TestCase):
         current_bill_batch = BillingBatch.objects.run(start_date=today, end_date=today)
         self.assertTrue(current_bill_batch.successful)
         team_lead_bill = team_lead.bills.filter(period_start=today)
-        self.assertEquals(1, len(team_lead_bill))
+        self.assertEqual(1, len(team_lead_bill))
         total = 0
         for b in team_lead_bill:
             total = total + b.amount
@@ -527,7 +527,7 @@ class BillingTestCase(TestCase):
         start_date_bill = user.bills.get(period_start=start)
         self.assertTrue(start_date_bill is not None)
         # Bill should be prorated
-        self.assertTrue(start_date_bill.amount < self.advocatePackage.monthly_rate)
+        self.assertTrue(start_date_bill.amount < self.advocatePackage.monthly_rate())
 
     def test_current_pt5_adds_key(self):
         #Create user with PT5 membership package started 2 months ago
