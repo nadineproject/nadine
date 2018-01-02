@@ -31,8 +31,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('sent_date', models.DateTimeField(default=None, null=True, blank=True)),
-                ('notify_user', models.ForeignKey(related_name=b'notify', to=settings.AUTH_USER_MODEL, on_delete=models.deletion.CASCADE)),
-                ('target_user', models.ForeignKey(related_name=b'target', to=settings.AUTH_USER_MODEL, on_delete=models.deletion.CASCADE)),
+                ('notify_user', models.ForeignKey(related_name='notify', to=settings.AUTH_USER_MODEL, on_delete=models.deletion.CASCADE)),
+                ('target_user', models.ForeignKey(related_name='target', to=settings.AUTH_USER_MODEL, on_delete=models.deletion.CASCADE)),
             ],
             options={
             },

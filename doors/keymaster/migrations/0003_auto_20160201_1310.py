@@ -19,6 +19,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='door',
             name='door_type',
-            field=models.CharField(max_length=16, choices=[(b'hid', b'Hid Controller'), (b'maypi', b'Maypi Controller'), (b'test', b'Test Controller')]),
+            field=models.CharField(max_length=16, choices=[('hid', 'Hid Controller'), ('maypi', 'Maypi Controller'), ('test', 'Test Controller')]),
         ),
     ]

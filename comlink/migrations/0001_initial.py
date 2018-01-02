@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
             name='Attachment',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('file', models.FileField(upload_to=b'attachments/', verbose_name='file')),
+                ('file', models.FileField(upload_to='attachments/', verbose_name='file')),
                 ('content_id', models.CharField(blank=True, help_text='Content-ID (CID) referencing this attachment.', max_length=255, verbose_name='Content-ID')),
             ],
             options={

@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 ('body', models.TextField(null=True, blank=True)),
                 ('html_body', models.TextField(null=True, blank=True)),
                 ('original_message', models.TextField(blank=True)),
-                ('state', models.CharField(default=b'raw', max_length=10, choices=[(b'raw', b'raw'), (b'moderate', b'moderate'), (b'send', b'send'), (b'sent', b'sent'), (b'reject', b'reject')])),
+                ('state', models.CharField(default='raw', max_length=10, choices=[('raw', 'raw'), ('moderate', 'moderate'), ('send', 'send'), ('sent', 'sent'), ('reject', 'reject')])),
                 ('created', models.DateTimeField(auto_now_add=True)),
             ],
             options={
@@ -36,8 +36,8 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=1024)),
                 ('description', models.TextField(blank=True)),
                 ('subject_prefix', models.CharField(max_length=1024, blank=True)),
-                ('is_opt_out', models.BooleanField(default=False, help_text=b'True if new users should be automatically enrolled')),
-                ('moderator_controlled', models.BooleanField(default=False, help_text=b'True if only the moderators can send mail to the list and can unsubscribe users.')),
+                ('is_opt_out', models.BooleanField(default=False, help_text='True if new users should be automatically enrolled')),
+                ('moderator_controlled', models.BooleanField(default=False, help_text='True if only the moderators can send mail to the list and can unsubscribe users.')),
                 ('email_address', models.EmailField(max_length=75)),
                 ('username', models.CharField(max_length=1024)),
                 ('password', models.CharField(max_length=1024)),
@@ -45,9 +45,9 @@ class Migration(migrations.Migration):
                 ('pop_port', models.IntegerField(default=995)),
                 ('smtp_host', models.CharField(max_length=1024)),
                 ('smtp_port', models.IntegerField(default=587)),
-                ('throttle_limit', models.IntegerField(default=0, help_text=b'The number of recipients in 10 minutes this mailing list is limited to. Default is 0, which means no limit.')),
-                ('moderators', models.ManyToManyField(help_text=b'Users who will be sent moderation emails', related_name=b'moderated_mailing_lists', to=settings.AUTH_USER_MODEL, blank=True)),
-                ('subscribers', models.ManyToManyField(related_name=b'subscribed_mailing_lists', to=settings.AUTH_USER_MODEL, blank=True)),
+                ('throttle_limit', models.IntegerField(default=0, help_text='The number of recipients in 10 minutes this mailing list is limited to. Default is 0, which means no limit.')),
+                ('moderators', models.ManyToManyField(help_text='Users who will be sent moderation emails', related_name='moderated_mailing_lists', to=settings.AUTH_USER_MODEL, blank=True)),
+                ('subscribers', models.ManyToManyField(related_name='subscribed_mailing_lists', to=settings.AUTH_USER_MODEL, blank=True)),
             ],
             options={
             },
@@ -66,8 +66,8 @@ class Migration(migrations.Migration):
                 ('sent', models.DateTimeField(null=True, blank=True)),
                 ('sent_recipients', models.IntegerField(default=0)),
                 ('created', models.DateTimeField(auto_now_add=True)),
-                ('mailing_list', models.ForeignKey(related_name=b'outgoing_mails', to='interlink.MailingList', on_delete=models.deletion.CASCADE)),
-                ('original_mail', models.ForeignKey(default=None, blank=True, to='interlink.IncomingMail', on_delete=models.deletion.CASCADE, help_text=b'The incoming mail which caused this mail to be sent', null=True)),
+                ('mailing_list', models.ForeignKey(related_name='outgoing_mails', to='interlink.MailingList', on_delete=models.deletion.CASCADE)),
+                ('original_mail', models.ForeignKey(default=None, blank=True, to='interlink.IncomingMail', on_delete=models.deletion.CASCADE, help_text='The incoming mail which caused this mail to be sent', null=True)),
             ],
             options={
                 'ordering': ['-created'],
@@ -78,7 +78,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='incomingmail',
             name='mailing_list',
-            field=models.ForeignKey(related_name=b'incoming_mails', to='interlink.MailingList', on_delete=models.deletion.CASCADE),
+            field=models.ForeignKey(related_name='incoming_mails', to='interlink.MailingList', on_delete=models.deletion.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(

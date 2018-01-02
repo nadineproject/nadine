@@ -41,6 +41,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='dailylog',
             name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, unique_for_date=b'visit_date'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, unique_for_date='visit_date'),
         ),
     ]
