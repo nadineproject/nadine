@@ -10,7 +10,7 @@ from django.utils.translation import ugettext as _
 from django.urls import reverse
 from django.contrib.sites.models import Site
 
-from email.Utils import parseaddr
+from email.utils import parseaddr
 
 UPLOAD_TO = getattr(settings, "COMLINK_UPLOAD_TO", "attachments/")
 

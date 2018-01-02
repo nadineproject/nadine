@@ -7,13 +7,12 @@ from django.contrib.auth.admin import UserAdmin
 from nadine.models import *
 
 from nadine.admin.core import StyledAdmin
-
-from user import *
-from organization import *
-from billing import *
-from membership import *
-from usage import *
-from old_models import *
+from nadine.admin.user import *
+from nadine.admin.organization import *
+from nadine.admin.billing import *
+from nadine.admin.membership import *
+from nadine.admin.usage import *
+from nadine.admin.old_models import *
 
 # Register the objects with the admin interface
 admin.site.register(Neighborhood)
