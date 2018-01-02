@@ -101,7 +101,6 @@ class Website(models.Model):
 #     doc_count = Documents.objects.filter(name=inst_name).count() + 1
 #     name = inst_name + str(doc_count)
 #     filename='documents/%s.png' % name
-#     print filename
 #
 #     return os.path.join(path, filename)
 #

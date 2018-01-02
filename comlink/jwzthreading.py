@@ -247,7 +247,7 @@ def thread (msglist):
         assert container.parent == None
 
     return root_set
-    print 'before'
+    print('before')
     for ctr in root_set:
        print_container(ctr)
 
@@ -258,7 +258,7 @@ def thread (msglist):
 
     root_set = new_root_set
 
-    print '\n\nafter'
+    print('\n\nafter')
     for ctr in root_set:
          print_container(ctr)
 

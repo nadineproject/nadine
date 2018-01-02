@@ -304,7 +304,7 @@ def edit_photo(request, username):
                 form.save()
                 return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': user.username}))
             else:
-                print form
+                print(form)
         except Exception as e:
             messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
     else:

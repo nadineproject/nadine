@@ -382,8 +382,8 @@ def membership(request, username):
                 except IntegrityError:
                     messages.error(request, 'There was an error updating the subscriptions')
             else:
-                print sub_formset.errors
-                print package_form.errors
+                print(sub_formset.errors)
+                print(package_form.errors)
                 messages.error(request, 'There was an error updating the subscriptions')
     else:
         package_form = MembershipForm()

@@ -159,9 +159,9 @@ class Room(models.Model):
             end_int = int(localtime(event.end_ts).strftime('%H%M'))
             for block in calendar:
                 block_int = int(block['mil_hour'] + block['minutes'])
-                #print ("%d, %d, %d" % (start_int, end_int, block_int))
+                #print("%d, %d, %d" % (start_int, end_int, block_int))
                 if start_int <= block_int and block_int < end_int:
-                    #print "Reserved!"
+                    #print("Reserved!")
                     block['reserved'] = True
 
         return calendar

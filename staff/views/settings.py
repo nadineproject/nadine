@@ -69,7 +69,7 @@ def membership_packages(request):
                     messages.success(request, 'Successfully edited membership packages.')
                     return HttpResponseRedirect(reverse('staff:settings:membership_packages'))
                 else:
-                    print package_formset.errors
+                    print(package_formset.errors)
         except IntegrityError as e:
             print('There was an ERROR: %s' % e.message)
             messages.error(request, 'There was an error creating the new membership package')
@@ -196,7 +196,7 @@ def motd(request):
 #                 messages.success(request, 'Successfully uploaded new document.')
 #                 return HttpResponseRedirect(reverse('staff:settings:doc_upload'))
 #             else:
-#                 print doc_form.errors
+#                 print(doc_form.errors)
 #                 messages.error(request, 'There was an error uploading your document')
 #     context = {
 #         'doc_form': doc_form,

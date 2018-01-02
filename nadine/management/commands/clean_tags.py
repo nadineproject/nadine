@@ -17,9 +17,9 @@ class Command(BaseCommand):
         for tag in Tag.objects.all():
             clean = tag.name.strip().lower()
             if tag.name != clean:
-                print ("Found '%s'" % tag.name)
+                print("Found '%s'" % tag.name)
                 for user in User.objects.filter(profile__tags__name__in=[tag.name]):
-                    print ("   Updating '%s'" % user.username)
+                    print("   Updating '%s'" % user.username)
                     user.profile.tags.add(clean)
-                print ("Deleting '%s'" % tag.name)
+                print("Deleting '%s'" % tag.name)
                 tag.delete()

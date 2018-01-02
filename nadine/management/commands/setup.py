@@ -40,8 +40,8 @@ class Command(BaseCommand):
         # Test to see if SETTINGS_FILE exists and prompt to load it or remove it
         filename = EXAMPLE_FILE
         if os.path.isfile(SETTINGS_FILE):
-            print ("File '%s' exists!" % SETTINGS_FILE)
-            print ("Do you want to load the existing file? (Y, n)")
+            print("File '%s' exists!" % SETTINGS_FILE)
+            print("Do you want to load the existing file? (Y, n)")
             load = raw_input(PROMPT).strip().lower()
             if load == "n":
                 print("Current settings in '%s' will be lost!" % SETTINGS_FILE)
@@ -105,7 +105,7 @@ class Command(BaseCommand):
             print("What country? (blank: list available)")
             country = raw_input(PROMPT).strip().upper()
             if not country:
-                print ("Country Codes:")
+                print("Country Codes:")
                 print(', '.join(country_names))
                 print
         self.local_settings.set('COUNTRY', country)
@@ -116,7 +116,7 @@ class Command(BaseCommand):
             print("What timezone? (blank: list available)")
             tz = raw_input(PROMPT).strip()
             if not tz:
-                print ("Available Timezones:")
+                print("Available Timezones:")
                 print(', '.join(country_timezones[country]))
                 print
         self.local_settings.set('TIME_ZONE', tz)

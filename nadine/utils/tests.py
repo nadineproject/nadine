@@ -41,7 +41,7 @@ class MailgunTestCase(SimpleTestCase):
 
     def test_clean_mailgun_data(self):
         clean_data = mailgun.clean_mailgun_data(self.mailgun_data)
-        # print clean_data
+        # print(clean_data)
         tos = clean_data['to']
         self.assertEqual(len(tos), 1)
         self.assertEqual(tos[0], self.alice)

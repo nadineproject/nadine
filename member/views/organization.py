@@ -183,7 +183,7 @@ def org_member(request, org_id):
                 form.save()
                 return HttpResponseRedirect(reverse('member:org:view', kwargs={'org_id': org.id}))
             else:
-                print form
+                print(form)
     except Exception as e:
         messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
 
@@ -211,7 +211,7 @@ def org_edit_photo(request, org_id):
                 form.save()
                 return HttpResponseRedirect(reverse('member:org:view', kwargs={'org_id': org.id}))
             else:
-                print form
+                print(form)
         except Exception as e:
             messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
     else:
