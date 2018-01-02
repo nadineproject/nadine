@@ -20,7 +20,7 @@ cryptography==2.1.4
 suds-jurko==0.6
 
 # For document signing & PDFs
-html5lib==1.0b10
+html5lib==1.0.1
 django-jsignature==0.8
 weasyprint==0.42
 
