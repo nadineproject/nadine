@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import threading
-import Queue
+import queue
 
 import sys
 import json
@@ -84,7 +84,7 @@ if __name__ == "__main__":
     else:
         raise Exception("Could not connect to Keymaster")
 
-    queue = Queue.PriorityQueue()
+    queue = queue.PriorityQueue()
 
     doors = {'FrontDoor': 1}
     users = {'mike': 1}
