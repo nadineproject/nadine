@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import os
 import uuid
 import pprint
@@ -22,7 +20,6 @@ from django.conf import settings
 from django.utils.encoding import smart_str
 from django_localflavor_us.models import USStateField, PhoneNumberField
 from django.utils.timezone import localtime, now
-from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.contrib.sites.models import Site
 
@@ -425,7 +422,7 @@ class UserProfile(models.Model):
         # Only want the latest one if there are duplicates
         for f in FileUpload.objects.filter(user=self.user).order_by('uploadTS').reverse():
             files[f.name] = f
-        return files.values()
+        return list(files.values())
 
     def files_by_type(self):
         files = {}
@@ -686,8 +683,10 @@ class EmailAddress(models.Model):
                     email.save(verify=False)
 
     def generate_verif_key(self):
-        salt = hashlib.sha1(str(random())).hexdigest()[:5]
-        self.verif_key = hashlib.sha1(salt + self.email).hexdigest()
+        randstr = str(random()).encode('utf-8')
+        salt = hashlib.sha1(randstr).hexdigest()[:5]
+        salted_email = (salt + self.email).encode('utf-8')
+        self.verif_key = hashlib.sha1(salted_email).hexdigest()
         self.save()
 
     def get_verif_key(self):
@@ -914,7 +913,7 @@ def sync_primary_callback(sender, **kwargs):
     user = kwargs['instance']
     try:
         email_address = EmailAddress.objects.get(email=user.email)
-    except ObjectDoesNotExist:
+    except EmailAddress.DoesNotExist:
         email_address = EmailAddress(user=user, email=user.email)
         email_address.save(verify=False)
     email_address.set_primary()
