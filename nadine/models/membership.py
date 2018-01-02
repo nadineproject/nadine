@@ -29,8 +29,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.contrib.sites.models import Site
 
-from resource import Resource
-from organization import Organization
+from nadine.models.resource import Resource
+from nadine.models.organization import Organization
 
 logger = logging.getLogger(__name__)
 
@@ -503,7 +503,7 @@ class Membership(models.Model):
         return None
 
     def change_bill_day(self, target_date):
-        
+
         try:
             with transaction.atomic():
                 # Find any overlapping open bills
