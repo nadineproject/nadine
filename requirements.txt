@@ -1,5 +1,5 @@
 # Core requirements
-Django==1.11.8
+Django==2.0.1
 Pillow==5.0.0
 psycopg2==2.7.3.2
 django-localflavor==2.0
