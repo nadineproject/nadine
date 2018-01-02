@@ -1,12 +1,13 @@
 import os
+import sys
 import uuid
 import pprint
+import random
 import traceback
 import operator
 import logging
 import hashlib
 import pytz
-from random import random
 from datetime import datetime, time, date, timedelta
 from dateutil.relativedelta import relativedelta
 
@@ -683,10 +684,10 @@ class EmailAddress(models.Model):
                     email.save(verify=False)
 
     def generate_verif_key(self):
-        randstr = str(random()).encode('utf-8')
-        salt = hashlib.sha1(randstr).hexdigest()[:5]
-        salted_email = (salt + self.email).encode('utf-8')
-        self.verif_key = hashlib.sha1(salted_email).hexdigest()
+        random.seed(datetime.now())
+        salt = random.randint(0, sys.maxsize)
+        salted_email = "%s%s" % (salt, self.email)
+        self.verif_key = hashlib.sha1(salted_email.encode('utf-8')).hexdigest()
         self.save()
 
     def get_verif_key(self):

@@ -122,7 +122,7 @@ class PaymentAPI(object):
 
     def has_new_card(self, username):
         history = self.get_history(username)
-        for cust_num, transactions in history.items():
+        for cust_num, transactions in list(history.items()):
             # New cards have only a few transactions and one
             # is an autorization within one week
             if len(transactions) > 0 and len(transactions) <= 3:
@@ -216,13 +216,14 @@ class USAEPAY_SOAP_API(object):
 
         # Hash our pin
         random.seed(datetime.now())
-        seed = random.randint(0, sys.maxsize)
-        pin_hash = hashlib.sha1("%s%s%s" % (key, seed, pin))
+        salt = random.randint(0, sys.maxsize)
+        salted_value = "%s%s%s" % (key, salt, pin)
+        pin_hash = hashlib.sha1(salted_value.encode('utf-8'))
 
         self.token = self.client.factory.create('ueSecurityToken')
         self.token.SourceKey = key
         self.token.PinHash.Type = 'sha1'
-        self.token.PinHash.Seed = seed
+        self.token.PinHash.Seed = salt
         self.token.PinHash.HashValue = pin_hash.hexdigest()
 
     def getCustomerNumber(self, username):

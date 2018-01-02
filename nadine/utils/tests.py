@@ -27,18 +27,18 @@ class MailgunTestCase(SimpleTestCase):
 
     def test_address_map(self):
         addresses = mailgun.address_map(self.mailgun_data, 'BUNK', [])
-        self.assertEquals(addresses, {})
+        self.assertEqual(addresses, {})
 
         exclude = []
         addresses = mailgun.address_map(self.mailgun_data, 'to', exclude)
         self.assertEqual(len(addresses), 3)
-        self.assertEqual(self.alice_email, addresses.keys()[0], exclude)
-        self.assertEqual(self.bob_email, addresses.keys()[2], exclude)
+        self.assertEqual(self.alice_email, list(addresses.keys())[0], exclude)
+        self.assertEqual(self.bob_email, list(addresses.keys())[2], exclude)
 
         exclude = [self.bob_email]
         addresses = mailgun.address_map(self.mailgun_data, 'to', exclude)
         self.assertEqual(len(addresses), 2)
-        self.assertEqual(self.alice_email, addresses.keys()[0], exclude)
+        self.assertEqual(self.alice_email, list(addresses.keys())[0], exclude)
 
     def test_clean_mailgun_data(self):
         clean_data = mailgun.clean_mailgun_data(self.mailgun_data)
@@ -67,14 +67,15 @@ class UsaepayTestCase(SimpleTestCase):
         if not self._token:
             # Hash our pin
             random.seed(datetime.now())
-            seed = random.randint(0, sys.maxsize)
-            pin_hash = hashlib.sha1("%s%s%s" % (key, seed, pin))
+            salt = random.randint(0, sys.maxsize)
+            salted_value = "%s%s%s" % (key, salt, pin)
+            pin_hash = hashlib.sha1(salted_value.encode('utf-8'))
 
             client = self.get_client()
             self._token = client.factory.create('ueSecurityToken')
             self._token.SourceKey = key
             self._token.PinHash.Type = 'sha1'
-            self._token.PinHash.Seed = seed
+            self._token.PinHash.Seed = salt
             self._token.PinHash.HashValue = pin_hash.hexdigest()
         return self._token
 
