@@ -8,7 +8,8 @@ from django.test import SimpleTestCase
 from django.conf import settings
 
 from suds.client import Client
-import mailgun
+
+from nadine.utils import mailgun
 
 class MailgunTestCase(SimpleTestCase):
     bob_email = "bob@bob.net"
