@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 ('phone', django_localflavor_us.models.PhoneNumberField(max_length=20, null=True, blank=True)),
                 ('email', models.EmailField(max_length=254, null=True, blank=True)),
                 ('last_updated', models.DateTimeField(auto_now_add=True)),
-                ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL)),
+                ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL, on_delete=models.deletion.CASCADE)),
             ],
         ),
     ]

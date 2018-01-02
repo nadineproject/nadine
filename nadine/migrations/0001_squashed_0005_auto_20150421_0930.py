@@ -68,8 +68,8 @@ class Migration(migrations.Migration):
                 ('content_type', models.CharField(max_length=64)),
                 ('file', models.FileField(upload_to=nadine.models.user_file_upload_path)),
                 ('document_type', models.CharField(default=None, max_length=200, null=True, blank=True, choices=[('Member_Information', 'Member Information'), ('Member_Agreement', 'Membership Agreement'), ('Key_Agreement', 'Key Holder Agreement'), ('Event_Host_Agreement', 'Event Host Agreement')])),
-                ('uploaded_by', models.ForeignKey(related_name='uploaded_by', to=settings.AUTH_USER_MODEL)),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('uploaded_by', models.ForeignKey(related_name='uploaded_by', to=settings.AUTH_USER_MODEL, on_delete=models.deletion.CASCADE)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.deletion.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -121,8 +121,8 @@ class Migration(migrations.Migration):
                 ('last_modified', models.DateField(auto_now=True)),
                 ('photo', models.ImageField(null=True, upload_to=nadine.models.user_photo_path, blank=True)),
                 ('valid_billing', models.BooleanField(default=False)),
-                ('howHeard', models.ForeignKey(blank=True, to='nadine.HowHeard', null=True)),
-                ('industry', models.ForeignKey(blank=True, to='nadine.Industry', null=True)),
+                ('howHeard', models.ForeignKey(blank=True, to='nadine.HowHeard', null=True, on_delete=models.deletion.CASCADE)),
+                ('industry', models.ForeignKey(blank=True, to='nadine.Industry', null=True, on_delete=models.deletion.CASCADE)),
             ],
             options={
                 'ordering': ['user__first_name', 'user__last_name'],
@@ -135,8 +135,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('note', models.TextField(null=True, blank=True)),
-                ('created_by', models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True)),
-                ('member', models.ForeignKey(to='nadine.Member')),
+                ('created_by', models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True, on_delete=models.deletion.CASCADE)),
+                ('member', models.ForeignKey(to='nadine.Member', on_delete=models.deletion.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -151,8 +151,8 @@ class Migration(migrations.Migration):
                 ('has_desk', models.BooleanField(default=False)),
                 ('has_key', models.BooleanField(default=False)),
                 ('has_mail', models.BooleanField(default=False)),
-                ('guest_of', models.ForeignKey(related_name='monthly_guests', blank=True, to='nadine.Member', null=True)),
-                ('member', models.ForeignKey(related_name='memberships', to='nadine.Member')),
+                ('guest_of', models.ForeignKey(related_name='monthly_guests', blank=True, to='nadine.Member', null=True, on_delete=models.deletion.CASCADE)),
+                ('member', models.ForeignKey(related_name='memberships', to='nadine.Member', on_delete=models.deletion.CASCADE)),
             ],
             options={
                 'ordering': ['start_date'],
@@ -194,7 +194,7 @@ class Migration(migrations.Migration):
                 ('returned_date', models.DateField(null=True, blank=True)),
                 ('amount', models.PositiveSmallIntegerField(default=0)),
                 ('note', models.CharField(max_length=128, null=True, blank=True)),
-                ('member', models.ForeignKey(to='nadine.Member')),
+                ('member', models.ForeignKey(to='nadine.Member', on_delete=models.deletion.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -206,7 +206,7 @@ class Migration(migrations.Migration):
                 ('subject', models.CharField(max_length=128, null=True, blank=True)),
                 ('success', models.NullBooleanField(default=False)),
                 ('note', models.TextField(null=True, blank=True)),
-                ('member', models.ForeignKey(to='nadine.Member', null=True)),
+                ('member', models.ForeignKey(to='nadine.Member', null=True, on_delete=models.deletion.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -217,7 +217,7 @@ class Migration(migrations.Migration):
                 ('month', models.PositiveSmallIntegerField(null=True, blank=True)),
                 ('day', models.PositiveSmallIntegerField(null=True, blank=True)),
                 ('description', models.CharField(max_length=128, null=True, blank=True)),
-                ('member', models.ForeignKey(to='nadine.Member')),
+                ('member', models.ForeignKey(to='nadine.Member', on_delete=models.deletion.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -229,7 +229,7 @@ class Migration(migrations.Migration):
                 ('amount', models.DecimalField(max_digits=7, decimal_places=2)),
                 ('note', models.TextField(null=True, blank=True)),
                 ('bills', models.ManyToManyField(related_name='transactions', to='nadine.Bill')),
-                ('member', models.ForeignKey(to='nadine.Member')),
+                ('member', models.ForeignKey(to='nadine.Member', on_delete=models.deletion.CASCADE)),
             ],
             options={
                 'ordering': ['-transaction_date'],
@@ -238,12 +238,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='membership',
             name='membership_plan',
-            field=models.ForeignKey(to='nadine.MembershipPlan', null=True),
+            field=models.ForeignKey(to='nadine.MembershipPlan', null=True, on_delete=models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='member',
             name='neighborhood',
-            field=models.ForeignKey(blank=True, to='nadine.Neighborhood', null=True),
+            field=models.ForeignKey(blank=True, to='nadine.Neighborhood', null=True, on_delete=models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='member',
@@ -253,17 +253,17 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='member',
             name='user',
-            field=models.ForeignKey(related_name='user', to=settings.AUTH_USER_MODEL, unique=True),
+            field=models.ForeignKey(related_name='user', to=settings.AUTH_USER_MODEL, unique=True, on_delete=models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='dailylog',
             name='guest_of',
-            field=models.ForeignKey(related_name='guest_of', verbose_name='Guest Of', blank=True, to='nadine.Member', null=True),
+            field=models.ForeignKey(related_name='guest_of', verbose_name='Guest Of', blank=True, to='nadine.Member', null=True, on_delete=models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='dailylog',
             name='member',
-            field=models.ForeignKey(related_name='daily_logs', verbose_name='Member', to='nadine.Member', unique_for_date='visit_date'),
+            field=models.ForeignKey(related_name='daily_logs', verbose_name='Member', to='nadine.Member', unique_for_date='visit_date', on_delete=models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='bill',
@@ -278,17 +278,17 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='bill',
             name='member',
-            field=models.ForeignKey(related_name='bills', to='nadine.Member'),
+            field=models.ForeignKey(related_name='bills', to='nadine.Member', on_delete=models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='bill',
             name='membership',
-            field=models.ForeignKey(blank=True, to='nadine.Membership', null=True),
+            field=models.ForeignKey(blank=True, to='nadine.Membership', null=True, on_delete=models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='bill',
             name='paid_by',
-            field=models.ForeignKey(related_name='guest_bills', blank=True, to='nadine.Member', null=True),
+            field=models.ForeignKey(related_name='guest_bills', blank=True, to='nadine.Member', null=True, on_delete=models.deletion.CASCADE),
         ),
         migrations.AlterField(
             model_name='dailylog',
@@ -304,9 +304,9 @@ class Migration(migrations.Migration):
                 ('resolved_ts', models.DateTimeField(null=True)),
                 ('muted_ts', models.DateTimeField(null=True)),
                 ('note', models.TextField(null=True, blank=True)),
-                ('muted_by', models.ForeignKey(related_name='muted_by', to=settings.AUTH_USER_MODEL, null=True)),
-                ('resolved_by', models.ForeignKey(related_name='resolved_by', to=settings.AUTH_USER_MODEL, null=True)),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('muted_by', models.ForeignKey(related_name='muted_by', to=settings.AUTH_USER_MODEL, null=True, on_delete=models.deletion.CASCADE)),
+                ('resolved_by', models.ForeignKey(related_name='resolved_by', to=settings.AUTH_USER_MODEL, null=True, on_delete=models.deletion.CASCADE)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.deletion.CASCADE)),
             ],
         ),
         migrations.AlterField(
@@ -317,7 +317,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='member',
             name='user',
-            field=models.OneToOneField(related_name='user', to=settings.AUTH_USER_MODEL),
+            field=models.OneToOneField(related_name='user', to=settings.AUTH_USER_MODEL, on_delete=models.deletion.CASCADE),
         ),
         migrations.AlterField(
             model_name='sentemaillog',

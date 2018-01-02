@@ -66,8 +66,8 @@ class Migration(migrations.Migration):
                 ('sent', models.DateTimeField(null=True, blank=True)),
                 ('sent_recipients', models.IntegerField(default=0)),
                 ('created', models.DateTimeField(auto_now_add=True)),
-                ('mailing_list', models.ForeignKey(related_name=b'outgoing_mails', to='interlink.MailingList')),
-                ('original_mail', models.ForeignKey(default=None, blank=True, to='interlink.IncomingMail', help_text=b'The incoming mail which caused this mail to be sent', null=True)),
+                ('mailing_list', models.ForeignKey(related_name=b'outgoing_mails', to='interlink.MailingList', on_delete=models.deletion.CASCADE)),
+                ('original_mail', models.ForeignKey(default=None, blank=True, to='interlink.IncomingMail', on_delete=models.deletion.CASCADE, help_text=b'The incoming mail which caused this mail to be sent', null=True)),
             ],
             options={
                 'ordering': ['-created'],
@@ -78,13 +78,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='incomingmail',
             name='mailing_list',
-            field=models.ForeignKey(related_name=b'incoming_mails', to='interlink.MailingList'),
+            field=models.ForeignKey(related_name=b'incoming_mails', to='interlink.MailingList', on_delete=models.deletion.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='incomingmail',
             name='owner',
-            field=models.ForeignKey(default=None, blank=True, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(default=None, blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.deletion.CASCADE),
             preserve_default=True,
         ),
     ]

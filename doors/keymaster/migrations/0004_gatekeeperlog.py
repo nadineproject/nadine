@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('timestamp', models.DateTimeField(auto_now_add=True)),
                 ('resolved', models.BooleanField(default=False)),
                 ('message', models.TextField()),
-                ('keymaster', models.ForeignKey(to='keymaster.Keymaster')),
+                ('keymaster', models.ForeignKey(to='keymaster.Keymaster', on_delete=models.deletion.CASCADE)),
             ],
         ),
     ]

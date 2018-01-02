@@ -29,8 +29,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('modified_ts', models.DateTimeField(auto_now=True)),
                 ('code', models.CharField(unique=True, max_length=16)),
-                ('created_by', models.ForeignKey(related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('created_by', models.ForeignKey(related_name='+', to=settings.AUTH_USER_MODEL, on_delete=models.deletion.CASCADE)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.deletion.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -41,8 +41,8 @@ class Migration(migrations.Migration):
                 ('code', models.CharField(max_length=16)),
                 ('event_type', models.CharField(default=b'0', max_length=1, choices=[(b'0', b'Unknown Command'), (b'1', b'Unrecognized Card'), (b'2', b'Access Granted'), (b'3', b'Access Denied'), (b'4', b'Door Locked'), (b'5', b'Door Unlocked')])),
                 ('event_description', models.CharField(max_length=256)),
-                ('door', models.ForeignKey(to='keymaster.Door')),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True)),
+                ('door', models.ForeignKey(to='keymaster.Door', on_delete=models.deletion.CASCADE)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True, on_delete=models.deletion.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -60,6 +60,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='door',
             name='keymaster',
-            field=models.ForeignKey(to='keymaster.Keymaster'),
+            field=models.ForeignKey(to='keymaster.Keymaster', on_delete=models.deletion.CASCADE),
         ),
     ]

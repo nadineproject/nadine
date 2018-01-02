@@ -44,7 +44,7 @@ class Migration(migrations.Migration):
                 ('device_name', models.CharField(max_length=32, null=True, blank=True)),
                 ('mac_address', models.CharField(unique=True, max_length=17, db_index=True)),
                 ('ignore', models.BooleanField(default=False)),
-                ('user', models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('user', models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.deletion.CASCADE)),
             ],
             options={
             },
@@ -56,7 +56,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('logintime', models.DateTimeField()),
                 ('ip_address', models.IPAddressField()),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.deletion.CASCADE)),
             ],
             options={
                 'ordering': ['-logintime'],
@@ -67,7 +67,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='arplog',
             name='device',
-            field=models.ForeignKey(to='arpwatch.UserDevice'),
+            field=models.ForeignKey(to='arpwatch.UserDevice', on_delete=models.deletion.CASCADE),
             preserve_default=True,
         ),
     ]
