@@ -44,7 +44,7 @@ class PopMailChecker(object):
             for i in range(stats[0]):
                 try:
                     response, mail, _size = pop_client.retr(i + 1)
-                    parser = email.FeedParser.FeedParser()
+                    parser = email.parser.FeedParser()
                     parser.feed('\n'.join(mail))
                     message = parser.close()
 
