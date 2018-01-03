@@ -145,5 +145,5 @@ class Incoming(View):
     def verify_signature(self, token, timestamp, signature):
         byte_key = bytes(self.api_key.encode("utf-8"))
         formatted_msg = msg='{0}{1}'.format(timestamp, token)
-        hashed_signature = hmac.new(key=byte_key, msg=formated_msg, digestmod=hashlib.sha256)
+        hashed_signature = hmac.new(key=byte_key, msg=formatted_msg, digestmod=hashlib.sha256)
         return signature == hashed_signature.hexdigest()
