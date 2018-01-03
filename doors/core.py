@@ -64,7 +64,7 @@ class EncryptedConnection(object):
         if not encryption_key:
             raise Exception("Missing Encryption Key")
         self.encryption_key = encryption_key
-        self.farnet = Fernet(bytes(encryption_key))
+        self.farnet = Fernet(bytes(encryption_key.encode('utf-8')))
         self.ttl = ttl
         self.keymaster_url = keymaster_url
         self.message = None
@@ -74,10 +74,10 @@ class EncryptedConnection(object):
     def decrypt_message(self, message):
         # If you are getting a blank exception when this runs it might be because the encrypted message
         # was created in the future.  Check the time of the machine encrypting the message and try again --JLS
-        return self.farnet.decrypt(bytes(message), ttl=self.ttl)
+        return self.farnet.decrypt(bytes(message.encode('utf-8')), ttl=self.ttl)
 
     def encrypt_message(self, message):
-        return self.farnet.encrypt(bytes(message))
+        return self.farnet.encrypt(bytes(message.encode('utf-8')))
 
     def send_message(self, message, data=None, encrypt=True):
         # Encrypt the message
