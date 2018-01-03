@@ -71,10 +71,12 @@ class GatekeeperTestCase(TestCase):
                }
 
     def test_config(self):
+        # Test a bad config and expect an exception
         bad_config = {}
         with self.assertRaises(Exception) as cm:
             gatekeeper = Gatekeeper(bad_config)
 
+        # Test a good config and expect no exceptions
         try:
             good_config = self.get_config()
             gatekeeper = Gatekeeper(good_config)
@@ -83,7 +85,6 @@ class GatekeeperTestCase(TestCase):
 
     def test_encode_decode(self):
         good_config = self.get_config()
-        print(good_config)
         gatekeeper = Gatekeeper(good_config)
         o = "this is a test"
         e = gatekeeper.encode_door_code(o)
