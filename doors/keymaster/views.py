@@ -1,6 +1,7 @@
 import time
 import logging
 import pytz
+import traceback
 from datetime import datetime, timedelta, date
 
 from django.conf import settings
@@ -177,7 +178,8 @@ def keymaster(request):
         if incoming_message == Messages.TEST_QUESTION:
             outgoing_message = Messages.TEST_RESPONSE
         elif incoming_message == Messages.GET_TIME:
-            return JsonResponse({'text_message':time.strftime("%c")})
+            the_time = datetime.now().time()
+            return JsonResponse({'text_message':time.strftime(the_time, "%c")})
         elif incoming_message == Messages.PULL_CONFIGURATION:
             outgoing_message = keymaster.pull_config()
         elif incoming_message == Messages.CHECK_IN:
@@ -206,6 +208,7 @@ def keymaster(request):
         # Encrypt our response
         encrypted_response = connection.encrypt_message(outgoing_message)
     except Exception as e:
+        traceback.print_exc()
         logger.error(e)
         return JsonResponse({'error': str(e)})
 
