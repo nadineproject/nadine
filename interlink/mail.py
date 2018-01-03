@@ -63,7 +63,7 @@ class PopMailChecker(object):
                     pop_client.dele(i + 1)
                 except Exception as e:
                     self.logger.error("Exception while processing email")
-                    self.logger.error("Message: " + str(message))
+                    # self.logger.error("Message: " + str(message))
                     self.logger.error("Exception: " + str(e))
 
         finally:
