@@ -139,8 +139,9 @@ def import_file(file, runtime):
             for line in chunk.splitlines():
                 # Expect line like:
                 # ? (172.16.5.153) at 00:1b:21:4e:e7:2c on sk4 expires in 1169 seconds [ethernet]
-                ip = line.split("(")[1].split(") at ")[0]
-                mac = line.split(") at ")[1].split(" on ")[0]
+                line_str = line.decode("utf-8")
+                ip = line_str.split("(")[1].split(") at ")[0]
+                mac = line_str.split(") at ")[1].split(" on ")[0]
 
                 # Stop me if you think that you've heard this one before
                 if ArpLog.objects.filter(runtime=runtime, ip_address=ip).count() > 0:
