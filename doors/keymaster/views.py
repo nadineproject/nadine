@@ -211,4 +211,4 @@ def keymaster(request):
         logger.error(e)
         return JsonResponse({'error': str(e)})
 
-    return JsonResponse({'message':encrypted_response})
+    return JsonResponse({'message':encrypted_response.decode("utf-8")})
