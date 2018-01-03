@@ -63,8 +63,10 @@ class EncryptedConnection(object):
     def __init__(self, encryption_key, keymaster_url=None, ttl=600):
         if not encryption_key:
             raise Exception("Missing Encryption Key")
+        if isinstance(encryption_key, str):
+            encryption_key = bytes(encryption_key.encode('utf-8'))
         self.encryption_key = encryption_key
-        self.farnet = Fernet(bytes(encryption_key.encode('utf-8')))
+        self.farnet = Fernet(encryption_key)
         self.ttl = ttl
         self.keymaster_url = keymaster_url
         self.message = None
@@ -72,12 +74,17 @@ class EncryptedConnection(object):
         self.lock = threading.Lock()
 
     def decrypt_message(self, message):
+        if isinstance(message, str):
+            message = bytes(message.encode('utf-8'))
         # If you are getting a blank exception when this runs it might be because the encrypted message
         # was created in the future.  Check the time of the machine encrypting the message and try again --JLS
-        return self.farnet.decrypt(bytes(message.encode('utf-8')), ttl=self.ttl)
+        decrypted_message = self.farnet.decrypt(message, ttl=self.ttl)
+        return decrypted_message.decode("utf-8")
 
     def encrypt_message(self, message):
-        return self.farnet.encrypt(bytes(message.encode('utf-8')))
+        if isinstance(message, str):
+            message = bytes(message.encode('utf-8'))
+        return self.farnet.encrypt(message)
 
     def send_message(self, message, data=None, encrypt=True):
         # Encrypt the message
@@ -530,17 +537,27 @@ class Gatekeeper(object):
         enc = []
         for i in range(len(clear)):
             key_c = self.card_secret[i % len(self.card_secret)]
+            if isinstance(key_c, int):
+                key_c = chr(key_c)
             enc_c = chr((ord(clear[i]) + ord(key_c)) % 256)
             enc.append(enc_c)
-        e = base64.urlsafe_b64encode("".join(enc))
+        enc_str = "".join(enc)
+        e = base64.urlsafe_b64encode(bytes(enc_str.encode("utf-8")))
         return e[::-1][1:]
 
     def decode_door_code(self, enc):
         if not enc: return None
         dec = []
         enc = base64.urlsafe_b64decode(str(enc)[::-1] + "=")
+        print("enc=%s" % enc)
         for i in range(len(enc)):
             key_c = self.card_secret[i % len(self.card_secret)]
+            if isinstance(key_c, int):
+                key_c = chr(key_c)
+            enc_c = enc[i]
+            if isinstance(enc_c, int):
+                enc_c = chr(enc_c)
+            print("key_c=%s, enc_c=%s" % (key_c, enc_c))
             dec_c = chr((256 + ord(enc[i]) - ord(key_c)) % 256)
             dec.append(dec_c)
         return "".join(dec)

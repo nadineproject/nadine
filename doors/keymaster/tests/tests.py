@@ -65,8 +65,8 @@ class KeymasterTestCase(TestCase):
 
 class GatekeeperTestCase(TestCase):
     def get_config(self):
-        return { "CARD_SECRET": Fernet.generate_key(),
-                 "KEYMASTER_SECRET": Fernet.generate_key(),
+        return { "CARD_SECRET": Fernet.generate_key().decode("utf-8"),
+                 "KEYMASTER_SECRET": Fernet.generate_key().decode("utf-8"),
                  "KEYMASTER_URL": "http://127.0.0.1:8000/doors/keymaster/",
                }
 
@@ -83,8 +83,8 @@ class GatekeeperTestCase(TestCase):
 
     def test_encode_decode(self):
         good_config = self.get_config()
+        print(good_config)
         gatekeeper = Gatekeeper(good_config)
-
         o = "this is a test"
         e = gatekeeper.encode_door_code(o)
         self.assertFalse(o == e)
