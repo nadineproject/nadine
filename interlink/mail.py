@@ -44,8 +44,8 @@ class PopMailChecker(object):
             for i in range(stats[0]):
                 try:
                     response, mail, _size = pop_client.retr(i + 1)
-                    parser = email.parser.FeedParser()
-                    parser.feed('\n'.join(mail))
+                    parser = email.parser.BytesFeedParser()
+                    parser.feed(b'\n'.join(mail))
                     message = parser.close()
 
                     # Delete and ignore auto responses
