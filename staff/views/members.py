@@ -406,8 +406,6 @@ def membership(request, username):
 def confirm_membership(request, username, package, end_target, start_target, new_subs):
     user = get_object_or_404(User, username=username)
     membership = Membership.objects.for_user(user)
-    new_subs = unicodedata.normalize('NFKD', new_subs).encode('ascii', 'ignore')
-    package = unicodedata.normalize('NFKD', package).encode('ascii', 'ignore')
     subs = ast.literal_eval(new_subs)
     matches_package = user.membership.matching_package(subscriptions=subs)
     pkg = ast.literal_eval(package)
