@@ -178,8 +178,7 @@ def keymaster(request):
         if incoming_message == Messages.TEST_QUESTION:
             outgoing_message = Messages.TEST_RESPONSE
         elif incoming_message == Messages.GET_TIME:
-            the_time = datetime.now().time()
-            return JsonResponse({'text_message':time.strftime(the_time, "%c")})
+            return JsonResponse({'text_message':time.strftime("%c")})
         elif incoming_message == Messages.PULL_CONFIGURATION:
             outgoing_message = keymaster.pull_config()
         elif incoming_message == Messages.CHECK_IN:
