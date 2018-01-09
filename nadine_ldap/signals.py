@@ -30,8 +30,8 @@ def user_post_save(**kwargs):
         LDAPAccountStatus.objects.update_or_create(
             user=user,
             defaults={
-                'has_error': True,
-                'last_error': str(ldap_error)
+                'synchronized': False,
+                'ldap_error_message': str(ldap_error)
             }
         )
 
@@ -43,7 +43,7 @@ def ldap_posix_user_post_save(**kwargs):
         user=user,
         defaults={
             'ldap_dn': ldap_posix_user.dn,
-            'has_error': False,
-            'last_error': ''
+            'synchronized': True,
+            'ldap_error_message': ''
         }
     )

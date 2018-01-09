@@ -16,6 +16,6 @@ class LDAPAccountStatus(models.Model):
         primary_key=True,
         on_delete=models.CASCADE
     )
-    has_error = models.BooleanField(default=False)
-    last_error = models.CharField(max_length=255, blank=True)
+    synchronized = models.BooleanField(default=False)
+    ldap_error_message = models.CharField(max_length=255, blank=True)
     ldap_dn = models.CharField(unique=True, max_length=255, blank=True, null=True)

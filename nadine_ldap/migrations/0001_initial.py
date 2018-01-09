@@ -22,8 +22,8 @@ class Migration(migrations.Migration):
             name='LDAPAccountStatus',
             fields=[
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL)),
-                ('has_error', models.BooleanField(default=False)),
-                ('last_error', models.CharField(blank=True, max_length=255)),
+                ('synchronized', models.BooleanField(default=False)),
+                ('ldap_error_message', models.CharField(blank=True, max_length=255)),
                 ('ldap_dn', models.CharField(blank=True, null=True, max_length=255, unique=True)),
             ],
         ),
