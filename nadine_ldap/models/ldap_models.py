@@ -7,46 +7,11 @@ from ldapdb.models.fields import (CharField, ListField, IntegerField)
 from ldapdb.models import Model as LDAPModel
 
 
-def _next_posix_id(prev_id=None, starting_id=1000):
-    return prev_id if prev_id is not None else starting_id
-
-class LDAPPosixObject(object):
-    """
-    Mixin to handle some of the uglyness when it comes to creating new
-    objects. LDAP doesn't autoincrement ids so we need to do a manual lookup
-    and increment.
-    """
-
-    def ensure_id(self):
-        """
-        Fetching last id so we can safely set a new one.
-        This is not ideal but apparently (based on a brief internet search)
-        it's the only way to increment posix id with LDAP.
-        """
-        if not hasattr(self, 'ID_FIELD_NAME'):
-            raise Exception("LDAPPosixObjects must declare an ID_FIELD_NAME property")
-        if getattr(self, self.ID_FIELD_NAME) is None:
-            # In theory Django does its best to prevent you from accessing a
-            # model's manager from inside the model:
-            # https://docs.djangoproject.com/en/dev/topics/db/queries/#retrieving-objects
-            # Not sure if that same rule applies to mixins but it probably does.
-            last_obj = self.__class__.objects.order_by(self.ID_FIELD_NAME).first()
-            obj_id = _next_posix_id(getattr(last_obj, self.ID_FIELD_NAME))
-            setattr(self, self.ID_FIELD_NAME, obj_id)
-
-    def save(self, *args, **kwargs):
-        """
-        Overriding to ensure we have a safe ID when creating the object.
-        """
-        self.ensure_id()
-        return super(LDAPPosixObject, self).save(*args, **kwargs)
-
-
 class LDAPPosixGroupManager(models.Manager):
     pass
 
 
-class LDAPPosixGroup(LDAPPosixObject, LDAPModel):
+class LDAPPosixGroup(LDAPModel):
     """
     Class for representing an LDAP group entry.
     """
@@ -57,7 +22,7 @@ class LDAPPosixGroup(LDAPPosixObject, LDAPModel):
     object_classes = ['posixGroup']
 
     # posixGroup attributes
-    gid = IntegerField(db_column='gidNumber', unique=True)
+    gid = IntegerField(db_column='gidNumber', default=500)
     name = CharField(db_column='cn', max_length=200, primary_key=True)
     usernames = ListField(db_column='memberUid')
 
@@ -72,11 +37,10 @@ class LDAPPosixUserManager(models.Manager):
     pass
 
 
-class LDAPPosixUser(LDAPPosixObject, LDAPModel):
+class LDAPPosixUser(LDAPModel):
     """
     Class for representing an LDAP user entry.
     """
-    ID_FIELD_NAME = 'uid'
 
     objects = LDAPPosixUserManager()
 
@@ -91,7 +55,7 @@ class LDAPPosixUser(LDAPPosixObject, LDAPModel):
     email = ListField(db_column='mail')
 
     # posixAccount
-    uid = IntegerField(db_column='uidNumber', unique=True)
+    uid = IntegerField(db_column='uidNumber', default=1000)
     group = IntegerField(db_column='gidNumber')
     home_directory = CharField(db_column='homeDirectory')
     login_shell = CharField(db_column='loginShell', default='/bin/bash')
