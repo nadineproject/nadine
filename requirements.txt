@@ -23,11 +23,12 @@ django-auth-ldap==1.2.16
 django-ldapdb==0.9.0
 pyldap==2.4.37
 python-ldap==2.4.45
+passlib==1.7.1
 
 # For document signing & PDFs
 html5lib==1.0b10
 django-jsignature==0.8
-weasyprint==0.41
+WeasyPrint==0.41
 
 # Libraries for Xero
 pyxero==0.9.0
@@ -38,7 +39,7 @@ pysnmp==4.4.1
 pysnmp-mibs==0.1.6
 
 # For the documentation:
-sphinx==1.6.3
+Sphinx==1.6.3
 sphinx-rtd-theme==0.2.4
 recommonmark==0.4.0
 pycodestyle==2.3.1
