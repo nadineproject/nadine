@@ -24,6 +24,7 @@ django-auth-ldap==1.2.16
 django-ldapdb==0.9.0
 pyldap==2.4.37
 python-ldap==2.4.45
+passlib==1.7.1
 
 # For document signing & PDFs
 html5lib==1.0.1
