@@ -19,13 +19,12 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='UsersLDAPAccount',
+            name='LDAPAccountStatus',
             fields=[
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL)),
-                ('exists_in_ldap', models.BooleanField(default=False)),
                 ('has_error', models.BooleanField(default=False)),
                 ('last_error', models.CharField(blank=True, max_length=255)),
-                ('ldap_dn', models.CharField(blank=True, max_length=255, unique=True)),
+                ('ldap_dn', models.CharField(blank=True, null=True, max_length=255, unique=True)),
             ],
         ),
     ]
