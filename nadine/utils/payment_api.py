@@ -60,7 +60,7 @@ class PaymentAPI(object):
         return history
 
     def run_transaction(self, customer_id, amount, description, invoice=None, comment=None, auth_only=False):
-        if amount <= 0:
+        if float(amount) <= 0:
             raise Exception("Invalid amount (%s)!" % amount)
 
         # We have to revert to API v1.2 to make this work HACK!!!!!!
