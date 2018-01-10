@@ -12,9 +12,11 @@ def get_ldap_account_safely(user):
     if hasattr(user, 'ldapaccountstatus'):
         return user.ldapaccountstatus
 
+
 def get_or_create_ldap_account(user):
     ldap_status, created = LDAPAccountStatus.objects.get_or_create(user=user)
     return ldap_status
+
 
 def update_ldap_account(user, create=False):
     """
@@ -53,16 +55,19 @@ def delete_ldap_account(ldap_status):
     try:
         ldap_posix_user = LDAPPosixUser.objects.get(nadine_id=str(ldap_status.pk))
         ldap_posix_user.delete()
-
-    except DBError as error:
-        log_ldap_error(ldap_status, error)
+        ldap_status.delete()
 
     except LDAPPosixUser.DoesNotExist:
-        # TODO: Passing here as account doesn't appear to exist anyway.
-        pass
+        # LDAP account has been deleted so it's ok to clean up the ldap_status
+        # object.
+        ldap_status.delete()
 
-    # LDAP account has been deleted, it's ok to clean up ldap_status object.
-    ldap_status.delete()
+    except DBError as error:
+        # In the case that we can't connect and/or delete from LDAP, hold off on
+        # removing our reference of the object for cron to try clean up at a
+        # later date.
+        log_ldap_error(ldap_status, error)
+
 
 
 def log_ldap_error(ldap_status, error):

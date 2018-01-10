@@ -78,5 +78,5 @@ class Command(BaseCommand):
     def clean_up_accounts(self):
         to_delete = LDAPAccountStatus.objects.filter(user=None)
         for ldap_account in to_delete:
-            self.stdout.write("Deleting account '{} ({})'...".format(ldap_account.dn, ldap_account.cn))
+            self.stdout.write("Deleting orphaned account '{}'...".format(ldap_account.ldap_dn))
             delete_ldap_account(ldap_account)
