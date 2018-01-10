@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 from nadine.models import User
 from nadine_ldap.models import LDAPAccountStatus
-from nadine_ldap.ldap import update_or_create_ldap_account
+from nadine_ldap.ldap import get_ldap_account_safely, update_ldap_account, delete_ldap_account
 
 class Command(BaseCommand):
     """
@@ -48,7 +48,10 @@ class Command(BaseCommand):
             query['ldapaccountstatus__synchronized'] = False
 
         users = User.objects.filter(**query)
+        self.sync_users(users)
+        self.clean_up_accounts()
 
+    def sync_users(self, users):
         if users:
             total = len(users)
             successful = 0
@@ -56,8 +59,10 @@ class Command(BaseCommand):
 
             self.stdout.write("Attempting to synchronize {} accounts to LDAP".format(total))
             for user in users:
-                self.stdout.write("Syncronizing '{}({})'...".format(user, user.id), ending='')
-                ldap_account = update_or_create_ldap_account(user)
+                self.stdout.write("Synchronizing '{}({})'...".format(user, user.id), ending='')
+                update_ldap_account(user, create=True)
+                ldap_account = get_ldap_account_safely(user)
+                
                 if ldap_account.synchronized:
                     self.stdout.write(self.style.SUCCESS(' Success!'))
                     successful = successful + 1
@@ -69,3 +74,9 @@ class Command(BaseCommand):
 
         else:
             self.stdout.write("No accounts synchronized, to force synchronization use the 'force' argument")
+
+    def clean_up_accounts(self):
+        to_delete = LDAPAccountStatus.objects.filter(user=None)
+        for ldap_account in to_delete:
+            self.stdout.write("Deleting account '{} ({})'...".format(ldap_account.dn, ldap_account.cn))
+            delete_ldap_account(ldap_account)

@@ -13,8 +13,8 @@ class LDAPAccountStatus(models.Model):
 
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
-        primary_key=True,
-        on_delete=models.CASCADE
+        null=True,
+        on_delete=models.SET_NULL
     )
     synchronized = models.BooleanField(default=False)
     ldap_error_message = models.CharField(max_length=255, blank=True)
