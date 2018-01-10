@@ -8,7 +8,6 @@ def update_or_create_ldap_account(user):
     """
     try:
         ldap_status, created = LDAPAccountStatus.objects.get_or_create(user=user)
-        import pdb;pdb.set_trace()
         LDAPPosixUser.objects.update_or_create(
             nadine_id=str(ldap_status.pk),
             #TODO: email=[..., ...]
