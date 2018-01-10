@@ -51,7 +51,7 @@ class LDAPPosixUser(LDAPModel):
     # inetOrgPerson
     first_name = CharField(db_column='givenName', verbose_name="Prime name")
     last_name = CharField("Final name", db_column='sn')
-    full_name = CharField(db_column='cn')
+    common_name = CharField(db_column='cn')
     email = ListField(db_column='mail')
 
     # posixAccount
@@ -59,7 +59,7 @@ class LDAPPosixUser(LDAPModel):
     group = IntegerField(db_column='gidNumber')
     home_directory = CharField(db_column='homeDirectory')
     login_shell = CharField(db_column='loginShell', default='/bin/bash')
-    username = CharField(db_column='uid', primary_key=True)
+    nadine_id = CharField(db_column='uid', primary_key=True)
     password = CharField(db_column='userPassword')
 
     if hasattr(settings, 'NADINE_LDAP_USER_HOME_DIR_TEMPLATE'):
@@ -83,9 +83,7 @@ class LDAPPosixUser(LDAPModel):
         If no home_directory is set then LDAP complains, we can auto-populate.
         """
         if not self.home_directory:
-            self.home_directory = self.HOME_DIR_TEMPLATE.format(
-                self.username if self.username is not None else self.uid
-            )
+            self.home_directory = self.HOME_DIR_TEMPLATE.format(self.uid)
 
     def save(self, *args, **kwargs):
         self.ensure_gid()
@@ -93,7 +91,7 @@ class LDAPPosixUser(LDAPModel):
         return super(LDAPPosixUser, self).save(*args, **kwargs)
 
     def __str__(self):
-        return self.username
+        return "{}:{}".format(self.nadine_id, self.common_name)
 
     def __unicode__(self):
         return self.full_name

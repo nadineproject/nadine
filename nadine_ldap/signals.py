@@ -3,47 +3,17 @@ from __future__ import unicode_literals
 from django.dispatch import receiver
 from django.contrib.auth.models import User
 from django.db.models.signals import pre_save, post_save
-from django.db.utils import Error as DBError
 
 from models import LDAPPosixUser, LDAPAccountStatus
-
-# @receiver(pre_save, sender=User)
-# def user_pre_save(**kwargs):
-#     pass
+from ldap import update_or_create_ldap_account, clear_ldap_error
 
 @receiver(post_save, sender=User)
 def user_post_save(**kwargs):
     user = kwargs['instance']
-    try:
-        LDAPPosixUser.objects.update_or_create(
-            username=user.username,
-            full_name=user.username,
-            last_name=user.username,
-            password=user.password
-        )
-    except DBError as ldap_error:
-        """
-        Something went wrong writing to LDAP. We don't want to interrupt the
-        user. Instead we record the problem in Nadine's database in a record
-        associated with the user's account.
-        """
-        LDAPAccountStatus.objects.update_or_create(
-            user=user,
-            defaults={
-                'synchronized': False,
-                'ldap_error_message': str(ldap_error)
-            }
-        )
+    update_or_create_ldap_account(user)
 
 @receiver(post_save, sender=LDAPPosixUser)
 def ldap_posix_user_post_save(**kwargs):
     ldap_posix_user = kwargs['instance']
-    user = User.objects.get(username=ldap_posix_user.username)
-    LDAPAccountStatus.objects.update_or_create(
-        user=user,
-        defaults={
-            'ldap_dn': ldap_posix_user.dn,
-            'synchronized': True,
-            'ldap_error_message': ''
-        }
-    )
+    ldap_status = LDAPAccountStatus.objects.get(pk=ldap_posix_user.nadine_id)
+    clear_ldap_error(ldap_status.user, ldap_posix_user.dn)
