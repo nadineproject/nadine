@@ -24,13 +24,3 @@ def user_post_save(**kwargs):
     """
     user = kwargs['instance']
     update_or_create_ldap_account(user)
-
-@receiver(post_save, sender=LDAPPosixUser)
-def ldap_posix_user_post_save(**kwargs):
-    """
-    User's LDAP account was successfully updated, we can safely clear any
-    outstanding errors.
-    """
-    ldap_posix_user = kwargs['instance']
-    ldap_status = LDAPAccountStatus.objects.get(pk=ldap_posix_user.nadine_id)
-    clear_ldap_error(ldap_status.user, ldap_posix_user.dn)
