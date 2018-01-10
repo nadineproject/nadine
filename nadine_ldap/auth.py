@@ -26,7 +26,7 @@ class NadineLDAPBackend(LDAPBackend):
             user = None
 
         if (user):
-            return (user, user.date_joined)
+            return (user, False)
         else:
             raise _LDAPUser.AuthenticationFailed(
                 "User exists in LDAP but doesn't exist in Nadine"

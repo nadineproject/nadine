@@ -8,13 +8,14 @@ def update_or_create_ldap_account(user):
     """
     try:
         ldap_status, created = LDAPAccountStatus.objects.get_or_create(user=user)
+        email_addresses = map((lambda address: address.email), user.emailaddress_set.all())
         LDAPPosixUser.objects.update_or_create(
             nadine_id=str(ldap_status.pk),
-            #TODO: email=[..., ...]
             defaults={
                 'common_name': user.username,
                 'password': user.password,
                 'last_name': user.username,
+                'email': email_addresses,
             },
         )
     except DBError as ldap_error:
