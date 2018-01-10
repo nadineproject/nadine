@@ -47,10 +47,10 @@ AUTH_LDAP_USER_SEARCH = LDAPSearch(
     # Look under 'users' organizational unit (ou)
     "ou=users,dc=312main,dc=ca",
     ldap.SCOPE_SUBTREE,
-    # Match against uid (alias: 'User Name') or mail (alias: 'Email')
+    # Match against cn (alias: 'Common Name') or mail (alias: 'Email')
     # attribute. The 'mail' attribute can contain multiple values in LDAP but
     # they must be unique.
-    "(|(uid=%(user)s)(mail=%(user)s))"
+    "(|(cn=%(user)s)(mail=%(user)s))"
 )
 # TODO: These allow us to change properties on Django user object based on
 #       their LDAP group membership.
