@@ -17,6 +17,14 @@ django_contrib_auth_index = INSTALLED_APPS.index('django.contrib.auth')
 INSTALLED_APPS.insert(django_contrib_auth_index + 1, 'passlib.ext.django')
 
 
+# Cron tasks
+#
+CRONJOBS += [
+    # Run LDAP sync every 15 mins:
+    ('*/15 * * * *', 'django.core.management.call_command', ['syncldapusers']),
+]
+
+
 # LDAP Database (for creating & updating LDAP records)
 # https://github.com/django-ldapdb/django-ldapdb#using-django-ldapdb
 #
@@ -71,6 +79,7 @@ AUTH_LDAP_USER_SEARCH = LDAPSearch(
 
 # PassLib provides LDAP-compatible password hashing, hash formatting and
 # authentication.
+#
 PASSLIB_CONFIG = {
     'schemes': [
         'ldap_pbkdf2_sha256',
