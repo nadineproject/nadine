@@ -5,8 +5,6 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
-import ldapdb.models.fields
-import nadine_ldap.models.ldap_models
 
 
 class Migration(migrations.Migration):

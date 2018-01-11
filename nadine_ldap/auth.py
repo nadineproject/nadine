@@ -11,7 +11,7 @@ class NadineLDAPBackend(LDAPBackend):
         they don't exist but we don't want to do this. Instead we throw a
         _LDAPUser.AuthenticationFailed exception.
         """
-        try: 
+        try:
             # Use 'nadine.backends.EmailOrUsernameModelBackend' strategy to
             # look up a user. First by email, then by username.
             if '@' in username:
@@ -19,7 +19,7 @@ class NadineLDAPBackend(LDAPBackend):
             else:
                 user = User.objects.get(username=username)
 
-        except User.DoesNotExist as e:
+        except User.DoesNotExist:
             # If we can't match against a user in the database then we bail.
             # LDAP users are created & managed FROM Nadine; we don't want to be
             # creating Django users for existing LDAP accounts.

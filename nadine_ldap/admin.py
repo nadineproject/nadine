@@ -1,8 +1,5 @@
 from django.contrib import admin
-from django import forms
-from django.forms.utils import ErrorList
-from django.contrib.auth.models import User, Group
-from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import User
 
 from nadine.admin import EmailAddressInline, UserProfileInline, EmergencyContactInline, XeroContactInline, UserWithProfileAdmin
 from nadine_ldap.models import LDAPAccountStatus

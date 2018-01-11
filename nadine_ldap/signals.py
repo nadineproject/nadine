@@ -4,7 +4,7 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save, pre_delete, post_delete
 
 from nadine.models import User, EmailAddress
-from nadine_ldap.models import LDAPPosixUser, LDAPAccountStatus
+from nadine_ldap.models import LDAPAccountStatus
 from nadine_ldap.ldap import get_ldap_account_safely, update_ldap_account, delete_ldap_account
 
 @receiver(post_save, sender=User)

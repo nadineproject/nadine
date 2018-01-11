@@ -14,7 +14,7 @@ def get_ldap_account_safely(user):
 
 
 def get_or_create_ldap_account(user):
-    ldap_status, created = LDAPAccountStatus.objects.get_or_create(user=user)
+    ldap_status, _ = LDAPAccountStatus.objects.get_or_create(user=user)
     return ldap_status
 
 
@@ -34,7 +34,7 @@ def update_ldap_account(user, create=False):
     user = ldap_status.user
     email_addresses = [address.email for address in user.emailaddress_set.all()]
     try:
-        ldap_posix_user, created = LDAPPosixUser.objects.update_or_create(
+        ldap_posix_user, _ = LDAPPosixUser.objects.update_or_create(
             nadine_id=str(ldap_status.pk),
             defaults={
                 'common_name': user.username,

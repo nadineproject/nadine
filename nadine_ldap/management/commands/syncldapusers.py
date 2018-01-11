@@ -1,7 +1,6 @@
 from __future__ import unicode_literals
 
-from django.db.models import Q
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 
 from nadine.models import User
 from nadine_ldap.models import LDAPAccountStatus
@@ -62,7 +61,7 @@ class Command(BaseCommand):
                 self.stdout.write("Synchronizing '{}({})'...".format(user, user.id), ending='')
                 update_ldap_account(user, create=True)
                 ldap_account = get_ldap_account_safely(user)
-                
+
                 if ldap_account.synchronized:
                     self.stdout.write(self.style.SUCCESS(' Success!'))
                     successful = successful + 1

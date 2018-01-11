@@ -46,7 +46,7 @@ class LDAPPosixUser(LDAPModel):
 
     # LDAP meta-data
     base_dn = settings.NADINE_LDAP_USER_BASE_DN
-    object_classes = ['top', 'posixAccount', 'inetOrgPerson'] #'shadowAccount', 
+    object_classes = ['top', 'posixAccount', 'inetOrgPerson']
 
     # inetOrgPerson
     first_name = CharField(db_column='givenName', verbose_name="Prime name")
@@ -73,7 +73,7 @@ class LDAPPosixUser(LDAPModel):
         group.
         """
         if self.group is None:
-            members_group, created = LDAPPosixGroup.objects.get_or_create(
+            members_group, _ = LDAPPosixGroup.objects.get_or_create(
                 name=settings.NADINE_LDAP_MEMBERS_GROUP_CN
             )
             self.group = members_group.gid

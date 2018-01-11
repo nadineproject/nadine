@@ -1,7 +1,6 @@
 from .base import *
 
 import os
-import datetime
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 path = lambda *a: os.path.join(ROOT, *a)
@@ -34,7 +33,7 @@ SITE_PROTO = "http"
 # EMAIL_USE_TLS = True
 # EMAIL_PORT = 587
 
-# Debug mail server 
+# Debug mail server
 # https://docs.djangoproject.com/en/1.11/topics/email/#configuring-email-for-development
 EMAIL_PORT = 1025
 
