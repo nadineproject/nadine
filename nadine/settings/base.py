@@ -2,8 +2,6 @@
 import os
 import sys
 
-from datetime import timedelta
-
 ROOT = os.path.dirname(os.path.abspath(__file__))
 path = lambda *a: os.path.join(ROOT, *a)
 print("Loading global settings file...")
