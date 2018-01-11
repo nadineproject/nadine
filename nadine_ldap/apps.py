@@ -8,4 +8,4 @@ class NadineLdapConfig(AppConfig):
 
     def ready(self):
         # Load and connect signal recievers
-        import signals
+        import nadine_ldap.signals
