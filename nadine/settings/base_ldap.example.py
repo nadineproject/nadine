@@ -96,6 +96,6 @@ PASSLIB_CONFIG = {
         # 'ldap_sha1',
         'django_pbkdf2_sha256',
     ],
-    'ldap_pbkdf2_sha256__min_rounds': 36000,
-    'django_pbkdf2_sha256__min_rounds': 36000,
+    'ldap_pbkdf2_sha256__min_rounds': 100000,
+    'django_pbkdf2_sha256__min_rounds': 100000,
 }
