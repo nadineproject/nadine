@@ -26,7 +26,7 @@ def router(sender, **kwargs):
     attachments = kwargs['attachments']
     files = []
     for a in attachments:
-        files.append(('attachment', open(a.file.path)))
+        files.append(('attachment', open(a.file.path, mode='rb')))
 
     # Build out the BCC depending on who the recipient is
     bcc_list = None
