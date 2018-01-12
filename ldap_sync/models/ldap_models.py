@@ -18,7 +18,7 @@ class LDAPPosixGroup(LDAPModel):
 
     objects = LDAPPosixGroupManager()
     # LDAP meta-data
-    base_dn = settings.NADINE_LDAP_GROUP_BASE_DN
+    base_dn = settings.LDAP_SYNC_GROUP_BASE_DN
     object_classes = ['posixGroup']
 
     # posixGroup attributes
@@ -45,7 +45,7 @@ class LDAPPosixUser(LDAPModel):
     objects = LDAPPosixUserManager()
 
     # LDAP meta-data
-    base_dn = settings.NADINE_LDAP_USER_BASE_DN
+    base_dn = settings.LDAP_SYNC_USER_BASE_DN
     object_classes = ['top', 'posixAccount', 'inetOrgPerson']
 
     # inetOrgPerson
@@ -62,8 +62,8 @@ class LDAPPosixUser(LDAPModel):
     nadine_id = CharField(db_column='uid', primary_key=True)
     password = CharField(db_column='userPassword')
 
-    if hasattr(settings, 'NADINE_LDAP_USER_HOME_DIR_TEMPLATE'):
-        HOME_DIR_TEMPLATE = settings.NADINE_LDAP_USER_HOME_DIR_TEMPLATE
+    if hasattr(settings, 'LDAP_SYNC_USER_HOME_DIR_TEMPLATE'):
+        HOME_DIR_TEMPLATE = settings.LDAP_SYNC_USER_HOME_DIR_TEMPLATE
     else:
         HOME_DIR_TEMPLATE = "/home/{}"
 
@@ -74,7 +74,7 @@ class LDAPPosixUser(LDAPModel):
         """
         if self.group is None:
             members_group, _ = LDAPPosixGroup.objects.get_or_create(
-                name=settings.NADINE_LDAP_MEMBERS_GROUP_CN
+                name=settings.LDAP_SYNC_MEMBERS_GROUP_CN
             )
             self.group = members_group.gid
 

@@ -1,7 +1,7 @@
 from django_auth_ldap.backend import LDAPBackend, _LDAPUser
 from django.contrib.auth.models import User
 
-class NadineLDAPBackend(LDAPBackend):
+class LDAPSyncBackend(LDAPBackend):
 
     def get_or_create_user(self, username, ldap_user):
         """

@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 from django.db.utils import Error as DBError
 
-from nadine_ldap.models import LDAPPosixUser, LDAPAccountStatus
+from ldap_sync.models import LDAPPosixUser, LDAPAccountStatus
 
 def get_ldap_account_safely(user):
     """

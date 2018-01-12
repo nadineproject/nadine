@@ -3,8 +3,8 @@ from __future__ import unicode_literals
 from django.core.management.base import BaseCommand
 
 from nadine.models import User
-from nadine_ldap.models import LDAPAccountStatus
-from nadine_ldap.ldap import get_ldap_account_safely, update_ldap_account, delete_ldap_account
+from ldap_sync.models import LDAPAccountStatus
+from ldap_sync.ldap import get_ldap_account_safely, update_ldap_account, delete_ldap_account
 
 class Command(BaseCommand):
     """

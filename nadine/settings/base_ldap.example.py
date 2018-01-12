@@ -9,7 +9,7 @@ from django_auth_ldap.config import LDAPSearch
 # Application definition
 #
 INSTALLED_APPS += [
-    'nadine_ldap.apps.NadineLdapConfig',
+    'ldap_sync.apps.LDAPSyncConfig',
 ]
 
 # Overriding Django Auth's hashers with those from PassLib
@@ -36,17 +36,17 @@ DATABASES['ldap'] = {
 }
 DATABASE_ROUTERS = ['ldapdb.router.Router']
 # Base LDAP DN (location) to read/write user accounts
-NADINE_LDAP_USER_BASE_DN = "ou=users,dc=tnightingale,dc=com"
-NADINE_LDAP_GROUP_BASE_DN = "ou=groups,dc=tnightingale,dc=com"
-NADINE_LDAP_MEMBERS_GROUP_CN = "members"
-NADINE_LDAP_USER_HOME_DIR_TEMPLATE = "/home/{}"
+LDAP_SYNC_USER_BASE_DN = "ou=users,dc=tnightingale,dc=com"
+LDAP_SYNC_GROUP_BASE_DN = "ou=groups,dc=tnightingale,dc=com"
+LDAP_SYNC_MEMBERS_GROUP_CN = "members"
+LDAP_SYNC_USER_HOME_DIR_TEMPLATE = "/home/{}"
 
 
 # LDAP Auth
 # https://django-auth-ldap.readthedocs.io/en/1.2.x/authentication.html#server-config
 #
 AUTHENTICATION_BACKENDS += (
-    'nadine_ldap.auth.NadineLDAPBackend',
+    'ldap_sync.auth.LDAPSyncBackend',
 )
 AUTH_LDAP_BIND_DN = "cn=admin,dc=312main,dc=ca"
 AUTH_LDAP_BIND_PASSWORD = ""

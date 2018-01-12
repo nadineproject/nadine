@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 
 from nadine.admin import EmailAddressInline, UserProfileInline, EmergencyContactInline, XeroContactInline, UserWithProfileAdmin
-from nadine_ldap.models import LDAPAccountStatus
+from ldap_sync.models import LDAPAccountStatus
 
 class LDAPAccountStatusInline(admin.TabularInline):
     model = LDAPAccountStatus
