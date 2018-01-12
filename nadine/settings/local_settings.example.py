@@ -1,4 +1,4 @@
-from .base import *
+from nadine.settings.base import *
 
 import os
 
