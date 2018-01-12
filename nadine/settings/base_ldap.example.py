@@ -2,8 +2,6 @@ from __future__ import unicode_literals
 
 from nadine.settings.base import *
 
-import ldap
-
 
 # Application definition
 #
