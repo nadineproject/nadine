@@ -35,7 +35,7 @@ def update_ldap_account(user, create=False):
     email_addresses = [address.email for address in user.emailaddress_set.all()]
     try:
         ldap_posix_user, _ = LDAPPosixUser.objects.update_or_create(
-            nadine_id=str(ldap_status.pk),
+            nadine_id=ldap_status.ldap_uid,
             defaults={
                 'common_name': user.username,
                 'password': user.password,
@@ -53,7 +53,7 @@ def update_ldap_account(user, create=False):
 
 def delete_ldap_account(ldap_status):
     try:
-        ldap_posix_user = LDAPPosixUser.objects.get(nadine_id=str(ldap_status.pk))
+        ldap_posix_user = LDAPPosixUser.objects.get(nadine_id=ldap_status.ldap_uid)
         ldap_posix_user.delete()
         ldap_status.delete()
 

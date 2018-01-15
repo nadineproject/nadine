@@ -9,7 +9,7 @@ class LDAPAccountStatusInline(admin.TabularInline):
     Defines admin widget for LDAPAccountStatus information.
     """
     model = LDAPAccountStatus
-    readonly_fields = ['synchronized', 'ldap_error_message', 'ldap_dn', ]
+    readonly_fields = ['synchronized', 'ldap_uid', 'ldap_dn', 'ldap_error_message',]
     can_delete = False
 
 class LDAPUserWithProfileAdmin(UserWithProfileAdmin):
