@@ -55,15 +55,16 @@ Indices and tables
 .. toctree::
   :maxdepth: 1
   :glob:
-  :caption: Advanced Usage
+  :caption: Staff Application
 
-  testing
-  mailing_lists
-  events
+  staff_overview
 
 .. toctree::
   :maxdepth: 1
   :glob:
-  :caption: Staff Application
+  :caption: Advanced Topics
 
-  staff_overview
+  testing
+  mailing_lists
+  ldap_sync
+  events
