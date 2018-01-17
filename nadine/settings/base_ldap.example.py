@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+# Additional settings required for ldap_sync
 
 from nadine.settings.base import *
 
@@ -13,14 +13,12 @@ INSTALLED_APPS += [
 django_contrib_auth_index = INSTALLED_APPS.index('django.contrib.auth')
 INSTALLED_APPS.insert(django_contrib_auth_index + 1, 'passlib.ext.django')
 
-
 # Cron tasks
 #
 CRONJOBS += [
     # Run LDAP sync every 15 mins:
     ('*/15 * * * *', 'django.core.management.call_command', ['syncldapusers']),
 ]
-
 
 # LDAP Database (for creating & updating LDAP records)
 # https://github.com/django-ldapdb/django-ldapdb#using-django-ldapdb
@@ -38,10 +36,7 @@ LDAP_SYNC_GROUP_BASE_DN = "ou=groups,dc=tnightingale,dc=com"
 LDAP_SYNC_MEMBERS_GROUP_CN = "members"
 LDAP_SYNC_USER_HOME_DIR_TEMPLATE = "/home/{}"
 
-
-# PassLib provides LDAP-compatible password hashing, hash formatting and
-# authentication.
-#
+# PassLib provides LDAP-compatible password hashing, hash formatting and authentication.
 PASSLIB_CONFIG = {
     'schemes': [
         'ldap_pbkdf2_sha256',

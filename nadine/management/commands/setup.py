@@ -3,6 +3,7 @@ import string
 import random
 import getpass
 import socket
+from datetime import datetime
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -169,7 +170,7 @@ class LocalSettings():
             self.settings = f.readlines()
 
         if not self.settings[0].startswith("# Generated using"):
-            self.settings.insert(0, "# Generated using ./manage.py setup\n")
+            self.settings.insert(0, "# Generated using ./manage.py setup (%s)\n" % datetime.now())
 
     def get_line_number(self, key):
         for i, line in enumerate(self.settings):
