@@ -2,8 +2,6 @@
 import os
 import sys
 
-from datetime import timedelta
-
 ROOT = os.path.dirname(os.path.abspath(__file__))
 path = lambda *a: os.path.join(ROOT, *a)
 print("Loading global settings file...")
@@ -306,10 +304,15 @@ LOGGING = {
     },
 }
 
+DATABASES = {}
+
+AUTH_PASSWORD_VALIDATORS = []
+
 # Import the local and theme SETTINGS files
-if os.path.isfile('nadine/local_settings.py'):
-    #print("Loading local settings file...")
-    from nadine.local_settings import *
+# if os.path.isfile('nadine/local_settings.py'):
+#     #print("Loading local settings file...")
+#     from nadine.local_settings import *
+
 if os.path.isfile('themes/active/theme_settings.py'):
     #print("Loading theme settings file...")
     import imp

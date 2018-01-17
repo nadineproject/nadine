@@ -10,8 +10,8 @@ from django.core.management.base import BaseCommand, CommandError
 
 from pytz import country_names, country_timezones, common_timezones
 
-EXAMPLE_FILE = "nadine/local_settings.example"
-SETTINGS_FILE = "nadine/local_settings.py"
+EXAMPLE_LOCAL_SETTINGS_FILE = "nadine/settings/local_settings.example.py"
+LOCAL_SETTINGS_FILE = "nadine/settings/local_settings.py"
 PROMPT = '> '
 
 class Command(BaseCommand):
@@ -37,16 +37,16 @@ class Command(BaseCommand):
             print()
 
     def load_settings_file(self):
-        # Test to see if SETTINGS_FILE exists and prompt to load it or remove it
-        filename = EXAMPLE_FILE
-        if os.path.isfile(SETTINGS_FILE):
-            print(("File '%s' exists!" % SETTINGS_FILE))
+        # Test to see if LOCAL_SETTINGS_FILE exists and prompt to load it or remove it
+        filename = EXAMPLE_LOCAL_SETTINGS_FILE
+        if os.path.isfile(LOCAL_SETTINGS_FILE):
+            print(("File '%s' exists!" % LOCAL_SETTINGS_FILE))
             print("Do you want to load the existing file? (Y, n)")
             load = input(PROMPT).strip().lower()
             if load == "n":
-                print(("Current settings in '%s' will be lost!" % SETTINGS_FILE))
+                print(("Current settings in '%s' will be lost!" % LOCAL_SETTINGS_FILE))
             else:
-                filename = SETTINGS_FILE
+                filename = LOCAL_SETTINGS_FILE
         self.local_settings = LocalSettings(filename)
         print()
 
@@ -54,8 +54,8 @@ class Command(BaseCommand):
         print("Write new local_settings file? (y, N)")
         save = input(PROMPT).strip().lower()
         if save == "y":
-            print(("Writing %s" % SETTINGS_FILE))
-            self.local_settings.save(SETTINGS_FILE)
+            print(("Writing %s" % LOCAL_SETTINGS_FILE))
+            self.local_settings.save(LOCAL_SETTINGS_FILE)
 
     def prompt_for_value(self, question, key, default=None):
         if not default:
@@ -208,12 +208,12 @@ class LocalSettings():
 
     def set_database(self, db_name, db_user, db_pass=None):
         line_number = self.get_line_number("DATABASES")
-        self.settings[line_number + 3] = "        'NAME': '%s',\n" % db_name
-        self.settings[line_number + 4] = "        'USER': '%s',\n" % db_user
+        self.settings[line_number + 2] = "        'NAME': '%s',\n" % db_name
+        self.settings[line_number + 3] = "        'USER': '%s',\n" % db_user
         if db_pass:
-            self.settings[line_number + 5] = "        'PASSWORD': '%s',\n" % db_pass
+            self.settings[line_number + 4] = "        'PASSWORD': '%s',\n" % db_pass
         else:
-            self.settings[line_number + 5] = "        #'PASSWORD': 'password',\n"
+            self.settings[line_number + 4] = "        #'PASSWORD': 'password',\n"
 
     def save(self, filename):
         print("Writing new settings file...")
