@@ -44,7 +44,7 @@ sphinx==1.6.6
 sphinx-rtd-theme==0.2.4
 recommonmark==0.4.0
 pycodestyle==2.3.1
-CommonMark==0.7.4
+CommonMark==0.5.4
 Markdown==2.6.10
 
 # A few handy tools
