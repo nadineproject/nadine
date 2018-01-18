@@ -503,7 +503,6 @@ class Membership(models.Model):
         return None
 
     def change_bill_day(self, target_date):
-
         try:
             with transaction.atomic():
                 # Find any overlapping open bills
@@ -522,6 +521,7 @@ class Membership(models.Model):
             print(('There was an ERROR: %s' % e.message))
 
         return self.bill_day
+
 
 class IndividualMembership(Membership):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="membership", on_delete=models.CASCADE)
