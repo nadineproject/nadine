@@ -1,17 +1,17 @@
 # Core requirements
-Django==2.0.1
+Django==2.0.2
 Pillow==5.0.0
-psycopg2==2.7.3.2
+psycopg2==2.7.4
 django-localflavor==2.0
 django-localflavor-us==1.1
 django-taggit==0.22.2
 django-taggit-templatetags2==1.6.1
 django-crontab==0.7.1
 python-slugify==1.2.4
-pytz==2017.3
+pytz==2018.3
 requests==2.18.4
 gunicorn==19.7.1
-setuptools==38.4.0
+setuptools==38.5.1
 
 # Supporting libraries
 mailchimp==2.0.9
@@ -29,7 +29,7 @@ suds-jurko==0.6
 # For document signing & PDFs
 html5lib==1.0.1
 django-jsignature==0.8
-weasyprint==0.42
+weasyprint==0.42.2
 
 # Libraries for Xero
 pyxero==0.9.0
@@ -40,7 +40,7 @@ pysnmp==4.4.4
 pysnmp-mibs==0.1.6
 
 # For the documentation:
-sphinx==1.6.6
+sphinx==1.6.7
 sphinx-rtd-theme==0.2.4
 recommonmark==0.4.0
 pycodestyle==2.3.1
@@ -49,6 +49,6 @@ CommonMark==0.5.4
 Markdown==2.6.10
 
 # A few handy tools
-safety==1.6.1
+safety==1.7.0
 django-debug-toolbar==1.9.1
 pip-review==1.0
