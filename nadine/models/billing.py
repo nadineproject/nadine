@@ -704,12 +704,21 @@ class EventLineItem(BillLineItem):
     event = models.OneToOneField('Event', related_name="line_item", on_delete=models.CASCADE)
 
 
+class PaymentMethod(models.Model):
+    name = models.CharField(max_length=128, help_text="e.g., Stripe, Visa, cash, bank transfer")
+
+    def __str__(self):
+        return self.name
+
+
 class Payment(models.Model):
     created_ts = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="+", null=True, blank=True, on_delete=models.CASCADE)
     bill = models.ForeignKey(UserBill, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=7, decimal_places=2, default=0)
+    method = models.ForeignKey(PaymentMethod, on_delete=models.SET_NULL, null=True, blank=True)
+    external_id = models.CharField(max_length=128, null=True, blank=True, help_text="ID used by payment service")
     note = models.TextField(blank=True, null=True, help_text="Private notes about this payment")
 
     def __str__(self):
