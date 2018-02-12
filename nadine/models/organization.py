@@ -143,7 +143,7 @@ class Organization(models.Model):
             t = URLType.objects.get(name=url_type)
             self.websites.create(url_type=t, url=url_value)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_absolute_url(self):
@@ -188,7 +188,7 @@ class OrganizationMember(models.Model):
     def is_admin(self):
         return self.admin or self.is_lead
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s member of %s" % (self.user, self.organization)
 
 

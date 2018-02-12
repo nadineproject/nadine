@@ -42,7 +42,7 @@ class BillingBatch(models.Model):
         ordering = ['-created_ts']
         get_latest_by = 'created_ts'
 
-    def __unicode__(self):
+    def __str__(self):
         return 'BillingBatch %s: %s' % (self.created_ts, self.successful)
 
     @property
@@ -265,7 +265,7 @@ class UserBill(models.Model):
     in_progress = models.BooleanField(default=False, blank=False, null=False, help_text="Mark a bill as 'in progress' indicating someone is working on it")
     mark_paid = models.BooleanField(default=False, blank=False, null=False, help_text="Mark a bill as paid even if it is not")
 
-    def __unicode__(self):
+    def __str__(self):
         return "UserBill %d: %s %s to %s for $%s" % (self.id, self.user, self.period_start, self.period_end, self.amount)
 
     ############################################################################
@@ -687,7 +687,7 @@ class BillLineItem(models.Model):
     amount = models.DecimalField(max_digits=7, decimal_places=2, default=0)
     custom = models.BooleanField(default=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.description
 
 
@@ -711,5 +711,5 @@ class Payment(models.Model):
     amount = models.DecimalField(max_digits=7, decimal_places=2, default=0)
     note = models.TextField(blank=True, null=True, help_text="Private notes about this payment")
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s: %s - $%s" % (str(self.created_ts)[:16], self.user, self.amount)

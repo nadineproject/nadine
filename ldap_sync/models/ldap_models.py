@@ -29,7 +29,7 @@ class LDAPPosixGroup(LDAPModel):
     def __str__(self):
         return self.name
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -93,5 +93,5 @@ class LDAPPosixUser(LDAPModel):
     def __str__(self):
         return "{}:{}".format(self.nadine_id, self.common_name)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.full_name
