@@ -1,28 +1,37 @@
-{% if settings.USA_EPAY_FORM_KEY %}
-	<div style="margin-left: 2em; margin-top:1%;">
-		<form action="{{ settings.USA_EPAY_FORM }}">
-			<input type="hidden" name="UMkey" value="{{ settings.USA_EPAY_FORM_KEY }}">
-			<input type="hidden" name="UMdescription" value="Office Nomads Billing Authorization">
-			<input type="hidden" name="UMcustid" value="{{ user.username }}">
-			<input type="hidden" name="UMcommand" value="AuthOnly">
-			<input type="hidden" name="UMamount" value="1.00">
-			<input type="hidden" name="UMinvoice" value="1617">
-			<input type="hidden" name="UMaddcustomer" value="yes">
-			<input type="hidden" name="UMschedule" value="disabled">
-			<input type="hidden" name="UMsoftware" value="nadine">
-			<input type="hidden" name="UMcustreceipt" value="yes">
-			<input type="hidden" name="UMcardpresent" value="true">
-			<input type="hidden" name="UMname" value="{{ user.get_full_name }}">
-			<input type="hidden" name="UMstreet" value="{{ user.profile.address1 }}">
-			<input type="hidden" name="UMzip" value="{{ user.profile.zipcode }}">
-			<input type="hidden" name="UMbillfname" value="{{ user.first_name }}">
-			<input type="hidden" name="UMbilllname" value="{{ user.last_name }}">
-			<input type="hidden" name="UMbillcompany" value="{{ user.profile.organization }}">
-			<input type="hidden" name="UMbillphone" value="{{ user.profile.phone }}">
-			<input type="hidden" name="UMemail" value="{{ user.email }}">
-			<!--<input type="hidden" name="UMtestmode" value="true">-->
-			<input type="hidden" name="username" value="{{user.username}}">
-			<input class='billing-btn btn' type="submit" value="Create New Billing Profile">
-		</form>
-	</div>
+{% if settings.STRIPE_SECRET_KEY %}
+  <div id="stripe_form" style="margin-left: 2em; margin-top:1%; display: none;">
+      Insert Stripe Form Here!
+  </div>
+  <div style="margin-left: 2em; margin-top:1%;">
+    <form>
+      <input class='billing-btn btn' type="submit" value="Create New Billing Profile" onclick="$('#stripe_form').toggle(); return false"/>
+    </form>
+  </div>
+{% elif settings.USA_EPAY_FORM_KEY %}
+  <div style="margin-left: 2em; margin-top:1%;">
+    <form action="{{ settings.USA_EPAY_FORM }}">
+      <input type="hidden" name="UMkey" value="{{ settings.USA_EPAY_FORM_KEY }}">
+      <input type="hidden" name="UMdescription" value="Office Nomads Billing Authorization">
+      <input type="hidden" name="UMcustid" value="{{ user.username }}">
+      <input type="hidden" name="UMcommand" value="AuthOnly">
+      <input type="hidden" name="UMamount" value="1.00">
+      <input type="hidden" name="UMinvoice" value="1617">
+      <input type="hidden" name="UMaddcustomer" value="yes">
+      <input type="hidden" name="UMschedule" value="disabled">
+      <input type="hidden" name="UMsoftware" value="nadine">
+      <input type="hidden" name="UMcustreceipt" value="yes">
+      <input type="hidden" name="UMcardpresent" value="true">
+      <input type="hidden" name="UMname" value="{{ user.get_full_name }}">
+      <input type="hidden" name="UMstreet" value="{{ user.profile.address1 }}">
+      <input type="hidden" name="UMzip" value="{{ user.profile.zipcode }}">
+      <input type="hidden" name="UMbillfname" value="{{ user.first_name }}">
+      <input type="hidden" name="UMbilllname" value="{{ user.last_name }}">
+      <input type="hidden" name="UMbillcompany" value="{{ user.profile.organization }}">
+      <input type="hidden" name="UMbillphone" value="{{ user.profile.phone }}">
+      <input type="hidden" name="UMemail" value="{{ user.email }}">
+      <!--<input type="hidden" name="UMtestmode" value="true">-->
+      <input type="hidden" name="username" value="{{user.username}}">
+      <input class='billing-btn btn' type="submit" value="Create New Billing Profile">
+    </form>
+  </div>
 {% endif %}
