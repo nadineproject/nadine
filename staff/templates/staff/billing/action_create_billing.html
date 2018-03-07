@@ -1,6 +1,17 @@
 {% if settings.STRIPE_SECRET_KEY %}
   <div id="stripe_form" style="margin-left: 2em; margin-top:1%; display: none;">
-      Insert Stripe Form Here!
+    <form action="your-server-side-code" method="POST">
+      <script
+        src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+        data-key="pk_test_PRB9HCqjL5D0TiyMvbBvBNWO"
+        data-amount="999"
+        data-name="312 Main Community Co-op"
+        data-description="Example charge"
+        data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+        data-locale="auto"
+        data-currency="cad">
+      </script>
+    </form>
   </div>
   <div style="margin-left: 2em; margin-top:1%;">
     <form>
