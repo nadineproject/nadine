@@ -46,5 +46,16 @@ class UserBillAdmin(StyledAdmin):
     inlines = [BillLineItemInline, PaymentInline]
 
 
-admin.site.register(BillingBatch)
+class BillingBatchAdmin(StyledAdmin):
+    def bills(self):
+        return self.bills.count()
+
+    model = BillingBatch
+    date_hierarchy = 'created_ts'
+    list_display = ('id', 'created_by', 'created_ts', 'completed_ts', 'successful', bills)
+    fields = ('id', bills, 'created_ts', 'completed_ts', 'created_by', 'error')
+    readonly_fields = ('id', bills, 'created_ts', 'created_by', 'completed_ts', 'error')
+
+
+admin.site.register(BillingBatch, BillingBatchAdmin)
 admin.site.register(UserBill, UserBillAdmin)
