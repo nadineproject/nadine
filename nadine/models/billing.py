@@ -65,7 +65,7 @@ class BillingBatch(models.Model):
             target_date = start_date
             if not target_date:
                 last_batch = BillingBatch.objects.filter(error__isnull=True).order_by('created_ts').last()
-                target_date = last_batch.created_ts.date()
+                target_date = localtime(last_batch.created_ts).date()
 
             # Run for each day in our range
             while target_date <= end_date:
@@ -144,6 +144,7 @@ class BillingBatch(models.Model):
 
     def close_bills_at_end_of_period(self, target_date):
         ''' Close the open bills at the end of their period. '''
+        logger.debug("close_bills_at_end_of_period(target_date=%s)" % target_date)
         for bill in UserBill.objects.filter(closed_ts__isnull=True, period_end=target_date):
             if bill.subscriptions().count() > 0:
                 # Only close bills that have subscriptions.

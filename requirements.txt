@@ -42,10 +42,10 @@ pysnmp-mibs==0.1.6
 suds-jurko==0.6
 
 # Stripe libraries
-stripe==1.77.2
+#stripe==1.79.1
 
 # For the documentation:
-sphinx==1.7.0
+sphinx==1.7.1
 sphinx-rtd-theme==0.2.4
 recommonmark==0.4.0
 pycodestyle==2.3.1

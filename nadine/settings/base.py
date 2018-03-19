@@ -294,8 +294,8 @@ CRONJOBS = [
     # Backup Tasks at 1:00 AM
     ('0 1 * * *', 'django.core.management.call_command', ['backup_members']),
     ('0 1 * * *', 'django.core.management.call_command', ['backup_create']),
-    # Billing Tasks at 4:00 AM
-    ('0 4 * * *', 'django.core.management.call_command', ['billing_batch_run']),
+    # Billing Tasks at 8:00 PM
+    ('0 20 * * *', 'django.core.management.call_command', ['billing_batch_run']),
     # Other Tasks
     ('30 8 * * *', 'django.core.management.call_command', ['announce_special_days']),
 ]

@@ -532,17 +532,24 @@ def edit_bill_day(request, username):
     membership = Membership.objects.for_user(user)
     today = localtime(now()).date()
     ps, pe = membership.get_period(target_date=today)
-    last_bill_end = None
 
-    if UserBill.objects.filter(user=user):
-        last_bill_end = UserBill.objects.filter(user=user).filter(closed_ts__isnull=False).order_by('-due_date')[:1]
-        end_date = last_bill_end[0].due_date.day
-
-    open_bill = user.bills.get_open_bill(user=user, period_start=ps, period_end=pe)
-    if request.method == 'POST':
-        membership.change_bill_day(datetime.strptime(request.POST.get('bill-date'), '%Y-%m-%d'))
+    # Process the change if we recived a date
+    if request.method == 'POST' and 'bill-date' in request.POST:
+        new_date = datetime.strptime(request.POST.get('bill-date'), '%Y-%m-%d')
+        membership.change_bill_day(new_date)
         messages.success(request, 'Updated bill day for %s' % user)
         return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': username}) + '#tabs-1')
+
+    # Find an end date on the last closed bill
+    end_date = None
+    if UserBill.objects.filter(user=user):
+        last_bill = UserBill.objects.filter(user=user).filter(closed_ts__isnull=False).order_by('-due_date').last()
+        if last_bill:
+            end_date = last_bill.due_date.day
+
+    # Look for an open bill in the period we're in
+    open_bill = user.bills.get_open_bill(user=user, period_start=ps, period_end=pe)
+
     context = {
         'user': user,
         'open_bill': open_bill,
