@@ -30,7 +30,7 @@ Install all the requirements
 
 .. code-block:: console
 
-  $ pip install -r requirements.txt
+  $ pip3 install -r requirements.txt
 
 Run these scripts to setup nadine, install the database, and create your admin user
 
