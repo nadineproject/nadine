@@ -27,6 +27,7 @@ gw_config.json
 .vagrant/
 __pycache__/
 docs/_build/*
+.vscode
 
 
 # Ignore Themes
