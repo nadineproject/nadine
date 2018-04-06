@@ -16,7 +16,7 @@
     <td>
       {% include "staff/billing/action_billing_flag.html" %}
     </td>
-    {% if integrations.usaepay %}
+    {% if integrations.usaepay or integrations.stripe %}
       <td>
         {% include "staff/billing/action_create_billing.html" %}
       </td>

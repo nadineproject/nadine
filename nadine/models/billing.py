@@ -723,3 +723,12 @@ class Payment(models.Model):
 
     def __str__(self):
         return "%s: %s - $%s" % (str(self.created_ts)[:16], self.user, self.amount)
+
+
+class StripeBillingProfile(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    customer_email = models.EmailField(help_text="Customer email address used with Stripe customer record")
+    customer_id = models.CharField(max_length=128, help_text="Stripe customer ID used for billing via Stripe")
+
+    def __str__(self):
+        return "{} ({}): {}".format(self.user, self.customer_email, self.customer_id)
