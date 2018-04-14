@@ -12,6 +12,7 @@ from django.utils.timezone import localtime, now
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.utils.functional import cached_property
 
 from nadine.models.membership import Membership, ResourceSubscription
 from nadine.models.resource import Resource
@@ -118,7 +119,7 @@ class BillingBatch(models.Model):
             # Find the open bill for this period and add this subscription
             bill = UserBill.objects.get_or_create_open_bill(subscription.payer, period_start, period_end, check_open_bills=False)
             if not bill.has_subscription(subscription):
-                bill.add_subscription(subscription)
+                line_item = bill.add_subscription(subscription)
                 self.bills.add(bill)
                 # If we have any activity for this resource, flag for recalculation
                 activity = bill.resource_activity(subscription.resource)
@@ -444,12 +445,14 @@ class UserBill(models.Model):
         amount = prorate * subscription.monthly_rate
 
         # Create our new line item
-        return SubscriptionLineItem.objects.create(
+        line_item = SubscriptionLineItem.objects.create(
             bill = self,
             subscription = subscription,
             description = description,
             amount = amount
         )
+        self.add_lineitem_taxes(line_item.calculate_taxes())
+        return line_item
 
     ###########################################################################
     # Coworking Day Methods
@@ -494,6 +497,7 @@ class UserBill(models.Model):
             amount = amount,
             day = day,
         )
+        self.add_lineitem_taxes(line_item.calculate_taxes())
         return line_item
 
 
@@ -579,6 +583,7 @@ class UserBill(models.Model):
             amount = amount,
             event = event,
         )
+        self.add_lineitem_taxes(line_item.calculate_taxes())
         return line_item
 
     @property
@@ -614,6 +619,26 @@ class UserBill(models.Model):
     ############################################################################
     # Other Methods
     ############################################################################
+
+    def calculate_taxes(self):
+        """Produce list of tax rates and amounts (tax_rate_id, amount)"""
+        taxes = []
+        for item in SubscriptionLineItem.objects.filter(bill=self):
+            taxes.append((item, item.calculate_taxes()))
+        return taxes
+
+    """ Saves bill's line item taxes """
+    def add_lineitem_taxes(self, lineitem_taxes):
+        for (lineitem_tax) in lineitem_taxes:
+            lineitem_tax.save()
+
+    """ Provide the total amount of tax added to bill """
+    def calculate_tax_total(self):
+        total = 0
+        for item in SubscriptionLineItem.objects.filter(bill=self):
+            for lineitem_tax in item.applied_taxes:
+                total += lineitem_tax.amount
+        return total
 
     def recalculate(self):
         ''' Recalculate bill by evaluating all subscriptions and activity. '''
@@ -688,6 +713,41 @@ class BillLineItem(models.Model):
     amount = models.DecimalField(max_digits=7, decimal_places=2, default=0)
     custom = models.BooleanField(default=False)
 
+    @property
+    def applicable_taxes(self):
+        resource = self.get_resource()
+        return resource.taxrate_set.all()
+
+    @cached_property
+    def applied_taxes(self):
+        return self.lineitemtax_set.all()
+
+    """ Get an instance of tax if rate has been applied """
+    def get_applied_tax(self, rate):
+        return self.lineitemtax_set.filter(tax_rate=rate.id).first()
+
+    def has_tax_applied(self, rate):
+        return self.get_applied_tax(rate) is not None
+
+    def calculate_taxes(self):
+        taxes = []
+        if self.amount == 0:
+            return taxes
+        for rate in self.applicable_taxes:
+            tax = self.get_applied_tax(rate)
+            # Ensure we only calculate tax once.
+            if tax is None:
+                tax = LineItemTax(
+                    line_item=self,
+                    tax_rate=rate,
+                    amount=self.calculate_tax_amount(rate)
+                )
+            taxes.append(tax)
+        return taxes
+
+    def calculate_tax_amount(self, rate):
+        return self.amount * rate.percentage
+
     def __str__(self):
         return self.description
 
@@ -695,13 +755,22 @@ class BillLineItem(models.Model):
 class SubscriptionLineItem(BillLineItem):
     subscription = models.ForeignKey('ResourceSubscription', related_name="line_items", on_delete=models.CASCADE)
 
+    def get_resource(self):
+        return self.subscription.resource
+
 
 class CoworkingDayLineItem(BillLineItem):
     day = models.OneToOneField('CoworkingDay', related_name="line_item", on_delete=models.CASCADE)
 
+    def get_resource(self):
+        return Resource.objects.resource_by_key(Resource.objects.DAY_KEY)
+
 
 class EventLineItem(BillLineItem):
     event = models.OneToOneField('Event', related_name="line_item", on_delete=models.CASCADE)
+
+    def get_resource(self):
+        return Resource.objects.resource_by_key(Resource.objects.EVENT_KEY)
 
 
 class PaymentMethod(models.Model):
@@ -732,3 +801,26 @@ class StripeBillingProfile(models.Model):
 
     def __str__(self):
         return "{} ({}): {}".format(self.user, self.customer_email, self.customer_id)
+
+
+class TaxRate(models.Model):
+    name = models.CharField(max_length=256, help_text="The name of the tax")
+    percentage = models.DecimalField(max_digits=3, decimal_places=2, help_text="Tax percentage")
+    resources = models.ManyToManyField(Resource)
+
+    def __str__(self):
+        return "{} ({}%)".format(self.name, self.percentage * 100)
+
+
+class LineItemTax(models.Model):
+    line_item = models.ForeignKey(BillLineItem, on_delete=models.CASCADE)
+    tax_rate = models.ForeignKey(TaxRate, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=7, decimal_places=2)
+
+    def __str__(self):
+        return "{} applied to {}".format(self.tax_rate, self.line_item)
+
+    @cached_property
+    def calculate_tax_rate(self):
+        # Figure out the tax rate from amount and line_item.amount
+        pass

@@ -3,12 +3,16 @@ from django.contrib import admin
 from nadine.admin.core import StyledAdmin
 from nadine.models.billing import BillingBatch, UserBill, BillLineItem
 from nadine.models.billing import Payment, PaymentMethod
+from nadine.models.billing import TaxRate, LineItemTax
 
 
 class BillLineItemInline(admin.TabularInline):
     model = BillLineItem
     extra = 0
 
+# class LineItemTaxInline(admin.TabularInline):
+#     model = LineItemTax
+#     extra = 0
 
 class PaymentInline(admin.TabularInline):
     model = Payment
@@ -51,6 +55,14 @@ class PaymentMethodAdmin(StyledAdmin):
     model = PaymentMethod
 
 
+class LineItemTaxAdmin(StyledAdmin):
+    model = LineItemTax
+
+
+class TaxRateAdmin(StyledAdmin):
+    model = TaxRate
+
+
 class BillingBatchAdmin(StyledAdmin):
     def bills(self):
         return self.bills.count()
@@ -65,3 +77,5 @@ class BillingBatchAdmin(StyledAdmin):
 admin.site.register(BillingBatch, BillingBatchAdmin)
 admin.site.register(UserBill, UserBillAdmin)
 admin.site.register(PaymentMethod, PaymentMethodAdmin)
+admin.site.register(TaxRate, TaxRateAdmin)
+admin.site.register(LineItemTax, LineItemTaxAdmin)
