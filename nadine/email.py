@@ -294,7 +294,8 @@ def send_manage_member(user, subject=None):
         "text": text_content,
         "html": html_content,
     }
-    return mailgun.mailgun_send(mailgun_data, inject_list_id=False)
+    if hasattr(settings, 'MAILGUN_DOMAIN'):
+        return mailgun.mailgun_send(mailgun_data, inject_list_id=False)
 
 
 #####################################################################
