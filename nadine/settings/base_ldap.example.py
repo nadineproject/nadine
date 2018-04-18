@@ -31,8 +31,8 @@ DATABASES['ldap'] = {
 }
 DATABASE_ROUTERS = ['ldapdb.router.Router']
 # Base LDAP DN (location) to read/write user accounts
-LDAP_SYNC_USER_BASE_DN = "ou=users,dc=tnightingale,dc=com"
-LDAP_SYNC_GROUP_BASE_DN = "ou=groups,dc=tnightingale,dc=com"
+LDAP_SYNC_USER_BASE_DN = "ou=users,dc=example,dc=com"
+LDAP_SYNC_GROUP_BASE_DN = "ou=groups,dc=example,dc=com"
 LDAP_SYNC_MEMBERS_GROUP_CN = "members"
 LDAP_SYNC_USER_HOME_DIR_TEMPLATE = "/home/{}"
 
