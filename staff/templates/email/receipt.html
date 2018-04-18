@@ -71,31 +71,35 @@
         <th style="text-align: left; width:440px; margin-left:40px;">Description</th>
         <th style="text-align: right;">Amount</th>
       </tr>
-        {% for line_item in bill.line_items.all %}
+      {% for line_item in bill.line_items.all %}
+        <tr>
+          <td style="text-align: left; width:440px; margin-left:40px; padding-top: 20px;">{{ line_item.description }}{% if benefactor %} <i>- For {{ benefactor.get_full_name }}</i>{% endif %}</td>
+          <td style="text-align: right; padding-top: 20px;">${{ line_item.amount|floatformat:2 }}</td>
+        </tr>
+      {% endfor %}
+      {% for rate, total in bill.total_tax_applied_by_rate %}
+        <tr>
+          <td style="text-align: left; width:440px; margin-left:40px; padding-top: 20px;">{{ rate }}</td>
+          <td style="text-align: right; padding-top: 20px;">${{ total|floatformat:2 }}</td>
+        </tr>
+      {% endfor %}
+      {% if bill.payment_set.all %}
+        {% for payment in bill.payment_set.all %}
           <tr>
-            <td style="text-align: left; width:440px; margin-left:40px; padding-top: 20px;">{{ line_item.description }}{% if benefactor %} <i>- For {{ benefactor.get_full_name }}</i>{% endif %}</td>
-            <td style="text-align: right; padding-top: 20px;">${{ line_item.amount|floatformat:2 }}</td>
+            <td style="text-align: left; width:440px; margin-left:40px; padding-top: 20px; color: green;">Payment -{{ payment.created_ts|date:"m/d/y" }}</td>
+            <td style="text-align: right; padding-top: 20px;">( ${{ payment.amount }} )</td>
           </tr>
         {% endfor %}
-        {% if bill.payment_set.all %}
-          {% for payment in bill.payment_set.all %}
-          <tr>
-            <td style="text-align: left; width:440px; margin-left:40px; padding-top: 20px; color: green;">Payment -{{ payment.created_ts|date:"m/d/y" }}
-            </td>
-            <td style="text-align: right; padding-top: 20px;">( ${{ payment.amount }} )</td>
-            </tr>
-          {% endfor %}
-        {% endif %}
-        <tr>
-          <td colspan="2" style="text-align: right; padding-top: 5%; padding-bottom: 15px;">
-            {% if bill.total_owed == 0 %}
-              <strong>Total Paid:</strong> ${{ bill.total_paid|floatformat:2 }}
-            {% else %}
-              <strong>Total Owed:</strong> ${{ bill.total_owed|floatformat:2 }}
-            {% endif %}
-          </td>
-        </table>
-      </td></tr>
+      {% endif %}
+      <tr>
+        <td colspan="2" style="text-align: right; padding-top: 5%; padding-bottom: 15px;">
+          {% if bill.total_owed == 0 %}
+            <strong>Total Paid:</strong> ${{ bill.total_paid|floatformat:2 }}
+          {% else %}
+            <strong>Total Owed:</strong> ${{ bill.total_owed|floatformat:2 }}
+          {% endif %}
+        </td>
+      </tr>
     </table>
     <hr />
     {% if bill.comment %}

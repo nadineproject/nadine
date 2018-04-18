@@ -1,3 +1,4 @@
+import unittest
 from django.test import TestCase, override_settings
 
 from django.contrib.auth.models import User
@@ -26,8 +27,11 @@ class TaxLineItemTestCase(TestCase):
         event,_ = Resource.objects.get_or_create(key=Resource.objects.EVENT_KEY, defaults={'name': 'Event Hours', 'default_rate': 10})
         key,_ = Resource.objects.get_or_create(key=Resource.objects.KEY_KEY, defaults={'name': 'Key', 'default_rate': 2})
         # Create some taxes.
-        self.gst,_ = TaxRate.objects.get_or_create(name="GST", percentage=0.05)
-        self.pst,_ = TaxRate.objects.get_or_create(name="PST", percentage=0.07)
+        TaxRate.objects.get_or_create(name="GST", percentage=0.05)
+        TaxRate.objects.get_or_create(name="PST", percentage=0.07)
+        # Load taxes from db to avoid floating point insanity.
+        self.gst,_ = TaxRate.objects.get_or_create(name="GST")
+        self.pst,_ = TaxRate.objects.get_or_create(name="PST")
         # Apply taxes to resources.
         self.gst.resources.add(day, event, key)
         self.pst.resources.add(key)
@@ -42,15 +46,32 @@ class TaxLineItemTestCase(TestCase):
             period_end=today + one_month
         )
 
-    def test_userbill_calculate_taxes_produces_results_all_line_items(self):
+    def test_userbill_total_tax_applied_by_rate_calculates_totals_for_each_rate(self):
         """
-        UserBill.calculate_taxes returns a list of tuples of the form:
-        (<BillLineItem>, <List<LineItemTax>>), one for each BillLineItem.
+        UserBill.calculate_taxes calculates the amount of tax charged for each
+        tax rate.
+        Returns a list of tuples of the form (rate<TaxRate>, total<Decimal>).
         """
-        self.assertEqual(
-            len(self.bill.calculate_taxes()), self.bill.subscriptions().count(),
-            "Number of TaxLineItems matches number of line items"
-        )
+        coworkingdaylineitem = create(a_coworkingdaylineitem(
+            self.bill, self.user,
+            amount=50
+        ))
+        line_item_taxes = coworkingdaylineitem.calculate_taxes()
+        self.bill.add_lineitem_taxes(line_item_taxes)
+
+        subscriptionlineitem = create(a_subscriptionlineitem(
+            self.bill, self.membership,
+            resource=Resource.objects.key_resource, amount=100
+        ))
+        line_item_taxes = subscriptionlineitem.calculate_taxes()
+        self.bill.add_lineitem_taxes(line_item_taxes)
+
+        taxes = self.bill.total_tax_applied_by_rate()
+        self.assertEqual(len(taxes), 2, "One total per applied tax rate")
+
+    @unittest.skip("Not implemented")
+    def test_userbill_calculate_taxes(self):
+        self.fail()
 
     def test_userbill_add_lineitem_taxes(self):
         """
@@ -82,20 +103,34 @@ class TaxLineItemTestCase(TestCase):
         self.bill.add_lineitem_taxes(line_item_taxes)
         self.assertEqual(list(eventlineitem.lineitemtax_set.all()), line_item_taxes)
 
-    def test_userbill_calculate_tax_total(self):
+    def test_userbill_total_tax_applied_calculates_total_tax_applied_to_bill(self):
         """
         Calculates the sum of all applied LineItemTax amounts.
         """
-        amount = 100
-        key = Resource.objects.key_resource
-        line_item = create(a_subscriptionlineitem(
-            self.bill, self.membership,
-            resource=key, amount=amount
-        ))
-        line_item_taxes = line_item.calculate_taxes()
+        total = 0
+
+        amount = 20
+        line_item_taxes = create(a_subscriptionlineitem(
+                self.bill, self.membership,
+                resource=Resource.objects.key_resource, amount=amount
+            )) \
+            .calculate_taxes()
         for lineitem_tax in line_item_taxes:
             lineitem_tax.save()
-        self.assertEqual(self.bill.calculate_tax_total(), (amount * self.gst.percentage) + (amount * self.pst.percentage))
+        total += (amount * self.gst.percentage) + (amount * self.pst.percentage)
+
+        amount = 50
+        line_item_taxes = create(a_coworkingdaylineitem(
+                self.bill, self.user,
+                amount=amount
+            )) \
+            .calculate_taxes()
+        for lineitem_tax in line_item_taxes:
+            lineitem_tax.save()
+        total += amount * self.gst.percentage
+
+        self.assertEqual(self.bill.total_tax_applied(), total)
+        self.assertEqual(self.bill.tax_amount, total)
 
     def test_billlineitem_calculate_taxes_applies_correct_taxrates(self):
         """

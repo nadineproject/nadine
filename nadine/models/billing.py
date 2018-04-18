@@ -268,7 +268,7 @@ class UserBill(models.Model):
     mark_paid = models.BooleanField(default=False, blank=False, null=False, help_text="Mark a bill as paid even if it is not")
 
     def __str__(self):
-        return "UserBill %d: %s %s to %s for $%s" % (self.id, self.user, self.period_start, self.period_end, self.amount)
+        return "UserBill %d: %s %s to %s for $%s" % (self.id, self.user, self.period_start, self.period_end, self.total) # self.amount)
 
     ############################################################################
     # Basic Properties
@@ -280,11 +280,19 @@ class UserBill(models.Model):
 
     @property
     def total_owed(self):
-        return self.amount - self.total_paid
+        return self.total - self.total_paid
 
     @property
     def amount(self):
         return self.line_items.aggregate(amount=Coalesce(Sum('amount'), Value(0.00)))['amount']
+
+    @property
+    def tax_amount(self):
+        return self.total_tax_applied()
+
+    @property
+    def total(self):
+        return self.amount + self.tax_amount
 
     @property
     def is_paid(self):
@@ -617,28 +625,53 @@ class UserBill(models.Model):
         return self.event_hours - self.event_hour_allowance
 
     ############################################################################
-    # Other Methods
+    # Tax Methods
+    # TODO: Consider putting these in their own module.
     ############################################################################
 
     def calculate_taxes(self):
-        """Produce list of tax rates and amounts (tax_rate_id, amount)"""
+        ''' Calculates applicable taxes based on bill's line items '''
         taxes = []
         for item in SubscriptionLineItem.objects.filter(bill=self):
-            taxes.append((item, item.calculate_taxes()))
+            taxes += item.calculate_taxes()
+        for item in CoworkingDayLineItem.objects.filter(bill=self):
+            taxes += item.calculate_taxes()
+        for item in EventLineItem.objects.filter(bill=self):
+            taxes = item.calculate_taxes()
         return taxes
 
-    """ Saves bill's line item taxes """
     def add_lineitem_taxes(self, lineitem_taxes):
+        ''' Applies line item taxes to bill (saves them to DB) '''
         for (lineitem_tax) in lineitem_taxes:
             lineitem_tax.save()
 
-    """ Provide the total amount of tax added to bill """
-    def calculate_tax_total(self):
+    def total_tax_applied(self):
+        ''' Provide the total amount of tax added to bill '''
         total = 0
-        for item in SubscriptionLineItem.objects.filter(bill=self):
-            for lineitem_tax in item.applied_taxes:
-                total += lineitem_tax.amount
+        for _,amount in self.total_tax_applied_by_rate():
+            total += amount
         return total
+
+    def total_tax_applied_by_rate(self):
+        ''' Produce list of tax rates and amounts (rate<TaxRate>, amount<Decimal>) '''
+        taxes = []
+        for taxrate in TaxRate.objects.all():
+            total = self.total_tax_applied_for_rate(taxrate)
+            taxes.append((taxrate, total))
+        return taxes
+
+    def total_tax_applied_for_rate(self, rate):
+        ''' Total tax amount applied for given rate '''
+        total = 0
+        for item in BillLineItem.objects.filter(bill=self):
+            tax = item.get_applied_tax(rate)
+            if tax is not None:
+                total += tax.amount
+        return total
+
+    ############################################################################
+    # Other Methods
+    ############################################################################
 
     def recalculate(self):
         ''' Recalculate bill by evaluating all subscriptions and activity. '''
@@ -818,7 +851,7 @@ class LineItemTax(models.Model):
     amount = models.DecimalField(max_digits=7, decimal_places=2)
 
     def __str__(self):
-        return "{} applied to {}".format(self.tax_rate, self.line_item)
+        return "{}, {} for {}".format(self.line_item.bill, self.tax_rate, self.line_item)
 
     @cached_property
     def calculate_tax_rate(self):
