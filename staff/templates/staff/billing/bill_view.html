@@ -196,6 +196,7 @@
       <th class="left">Recorded</th>
       <th>Note</th>
       <th class="right">Amount</th>
+      <th>Method</th>
       <th></th>
     </tr>
     {% for payment in bill.payment_set.all %}
@@ -208,6 +209,7 @@
         </td>
         <td style='border-bottom: none;'>{{ payment.note|default:'' }}</td>
         <td style="text-align:right; border-bottom: none;">${{ payment.amount }}</td>
+        <td style="border-bottom: none;">{{ payment.method }}</td>
         <td style='border-bottom: none;'>
           <form action="." method="POST" onSubmit="return confirm('Are you sure you want to delete this payment of ${{ payment.amount }}?'); return false;">
             <input type="hidden" name="delete_payment_id" value="{{ payment.id }}"/>
@@ -227,6 +229,7 @@
           <td>{{ payment_form.payment_date }}</td>
           <td>{{ payment_form.note }}</td>
           <td class='payment-amount'>{{ payment_form.amount }}</td>
+          <td class='payment-method'>{{ payment_form.method}}</td>
           <td>
             <input type="submit" class='btn' value="Record Payment"/>
           </td>

@@ -18,8 +18,8 @@ class PaymentInline(admin.TabularInline):
     model = Payment
     raw_id_fields = ('user', )
     # For now let's just make this read-only
-    readonly_fields = ('user', 'amount', 'note')
-    fields = (('user', 'amount'), 'note')
+    readonly_fields = ('user', 'amount', 'method', 'note')
+    fields = (('user', 'amount'), 'method', 'note')
     extra = 0
     # TODO = Hardcode user to be the bill.user
 
