@@ -54,7 +54,7 @@
         <td>{{ bill.period_end }}</td>
         <td>{{ bill.closed_ts|default:'Open' }}</td>
         <td>{{ bill.line_items.all | length }}</td>
-        <td class="amount">${{ bill.amount }}</td>
+        <td class="amount">${{ bill.total }}</td>
         <td class="amount">${{ bill.total_paid }}</td>
         <td><a href="{{ bill.get_admin_url }}">admin</a></td>
       </tr>
