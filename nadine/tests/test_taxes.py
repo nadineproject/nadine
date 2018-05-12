@@ -195,6 +195,29 @@ class TaxLineItemTestCase(TestCase):
         ))
         self.assertEqual(len(line_item.calculate_taxes()), 0)
 
+    def test_billlineitem_calculate_taxes_caches_total_tax_amount(self):
+        """
+        When calculating all applicable taxes, also sum totals to calculate the
+        total amount applicable for line item. This calculated value is cached
+        as an optimization.
+        """
+        # Day resource has one tax.
+        day = Resource.objects.day_resource
+        # Key resource has two taxes.
+        key = Resource.objects.key_resource
+
+        # Resource: key (gst 5%, pst 7%) == tax = 12
+        line_item = create(a_subscriptionlineitem(
+            self.bill, self.membership,
+            resource=key, amount=100
+        ))
+        line_item.calculate_taxes()
+
+        self.assertEqual(
+            line_item.tax_amount, Decimal(12.00),
+            "Total LineItem tax amount should be calculated and set"
+        )
+
     def test_billlineitem_calculate_tax_amount(self):
         """
         Given a rate, calculate amount of tax charged for a BillLineItem

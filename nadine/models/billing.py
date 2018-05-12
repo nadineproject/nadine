@@ -236,23 +236,30 @@ class BillManager(models.Manager):
         # https://code.djangoproject.com/ticket/10060
         # https://github.com/nadineproject/nadine/issues/300
         amount_adjustment = (F('bill_amount') * F('items_distinct')) / F('item_count')
+        tax_amount_adjustment = (F('bill_tax_amount') * F('items_distinct')) / F('item_count')
         payment_adjustment = (F('payment_amount') * F('payments_distinct')) / F('payment_count')
         outstanding_query = self.filter(mark_paid=False) \
             .annotate(bill_amount=Sum('line_items__amount', output_field=DecimalField())) \
+            .annotate(bill_tax_amount=Sum('line_items__tax_amount', output_field=DecimalField())) \
             .annotate(item_count=Count('line_items')) \
             .annotate(items_distinct=Count('line_items', distinct=True)) \
             .annotate(payment_amount=Sum('payment__amount', output_field=DecimalField())) \
             .annotate(payment_count=Count('payment')) \
             .annotate(payments_distinct=Count('payment', distinct=True)) \
             .annotate(adjusted_amount=ExpressionWrapper(amount_adjustment, output_field=DecimalField())) \
+            .annotate(adjusted_tax_amount=ExpressionWrapper(tax_amount_adjustment, output_field=DecimalField())) \
             .annotate(adjusted_payments=ExpressionWrapper(payment_adjustment, output_field=DecimalField())) \
-            .annotate(owed=F('adjusted_amount') - F('adjusted_payments'))
+            .annotate(owed=F('adjusted_amount') + F('adjusted_tax_amount') - F('adjusted_payments'))
+            # .annotate(total=F('bill_amount') + F('bill_tax_amount')) \
         no_payments = Q(payments_distinct = 0)
         partial_payment = Q(owed__gt = 0)
         return outstanding_query.filter(bill_amount__gt=0).filter(no_payments | partial_payment)
 
     def non_zero(self):
-        return self.annotate(bill_amount=Sum('line_items__amount')).filter(bill_amount__gt=0)
+        return self \
+            .annotate(bill_amount=Sum('line_items__amount')) \
+            .annotate(bill_tax_amount=Sum('line_items__tax_amount')) \
+            .filter(bill_amount__gt=0)
 
 class UserBill(models.Model):
     objects = BillManager()
@@ -744,6 +751,7 @@ class BillLineItem(models.Model):
     bill = models.ForeignKey(UserBill, related_name="line_items", null=True, on_delete=models.CASCADE)
     description = models.CharField(max_length=200)
     amount = models.DecimalField(max_digits=7, decimal_places=2, default=0)
+    tax_amount = models.DecimalField(max_digits=7, decimal_places=2, default=0)
     custom = models.BooleanField(default=False)
 
     @property
@@ -763,6 +771,7 @@ class BillLineItem(models.Model):
         return self.get_applied_tax(rate) is not None
 
     def calculate_taxes(self):
+        self.tax_amount = 0
         taxes = []
         if self.amount == 0:
             return taxes
@@ -775,7 +784,10 @@ class BillLineItem(models.Model):
                     tax_rate=rate,
                     amount=self.calculate_tax_amount(rate)
                 )
+            self.tax_amount += tax.amount
             taxes.append(tax)
+        # Saving line item to cache calculated tax_amount value.
+        self.save()
         return taxes
 
     def calculate_tax_amount(self, rate):
