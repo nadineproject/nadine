@@ -65,17 +65,17 @@ def outstanding(request):
     open_bills = UserBill.objects.outstanding().filter(closed_ts__isnull=True, in_progress=False).order_by('due_date')
     in_progress = UserBill.objects.outstanding().filter(in_progress=True).order_by('due_date')
     if closed_bills:
-        closed_bills_total = closed_bills.aggregate(amount=Sum('bill_amount'))['amount']
+        closed_bills_total = closed_bills.aggregate(total=Sum('bill_total'))['total']
     else:
         closed_bills_total = 0
 
     if open_bills:
-        open_bills_total = open_bills.aggregate(amount=Sum('bill_amount'))['amount']
+        open_bills_total = open_bills.aggregate(total=Sum('bill_total'))['total']
     else:
         open_bills_total = 0
 
     if in_progress:
-        in_progress_total = in_progress.aggregate(amount=Sum('bill_amount'))['amount']
+        in_progress_total = in_progress.aggregate(total=Sum('bill_total'))['total']
     else:
         in_progress_total = 0
 
@@ -88,13 +88,13 @@ def outstanding(request):
     for bill in open_bills:
         if bill.subscriptions_due:
             subscriptions_due.append(bill)
-            subscriptions_due_total += bill.amount
+            subscriptions_due_total += bill.total
         elif bill.subscriptions().count() == 0:
             dropins.append(bill)
-            dropin_total += bill.amount
+            dropin_total += bill.total
         else:
             other_bills.append(bill)
-            other_bills_totals += bill.amount
+            other_bills_totals += bill.total
 
     bill_count = closed_bills.count() + open_bills.count() + in_progress.count()
     bill_total = closed_bills_total + open_bills_total + in_progress_total
@@ -119,13 +119,14 @@ def outstanding(request):
 def action_bill_paid(request, bill_id):
     ''' Mark the bill paid '''
     bill = get_object_or_404(UserBill, id=bill_id)
-    amount = bill.amount
+    amount = bill.total
     if 'amount' in request.POST:
         amount = float(request.POST['amount'])
     payment = Payment.objects.create(bill=bill, user=bill.user, amount=amount, created_by=request.user)
     if 'payment_date' in request.POST:
         payment.created_ts = datetime.strptime(request.POST['payment_date'], "%Y-%m-%d").date()
         payment.save()
+
     messages.success(request, "Bill %d ($%s) paid" % (bill.id, format(amount, '.2f')))
     if 'next' in request.POST:
         return HttpResponseRedirect(request.POST['next'])

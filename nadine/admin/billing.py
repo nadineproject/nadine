@@ -34,7 +34,7 @@ class PaymentInline(admin.TabularInline):
 
 class UserBillAdmin(StyledAdmin):
     model = UserBill
-    list_display = ('id', 'user', 'period_start', 'period_end', 'amount', 'total_paid')
+    list_display = ('id', 'user', 'period_start', 'period_end', 'amount', 'tax_amount', 'total', 'total_paid')
     search_fields = ('user__username', 'user__first_name')
     raw_id_fields = ('user', )
     readonly_fields = ('id', 'created_ts', )

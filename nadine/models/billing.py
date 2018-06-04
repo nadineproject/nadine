@@ -72,12 +72,19 @@ class BillingBatch(models.Model):
             while target_date <= end_date:
                 self.run_billing_for_day(target_date)
                 target_date = target_date + timedelta(days=1)
+
+            # Close out batch
+            self.close()
+
+            # Update cached totals on all associated bills
+            for bill in self.bills.all():
+                bill.update_cached_totals()
+
         except Exception as e:
             # Save all error messages
             self.error = str(e)
             traceback.print_exc()
             logger.error(self.error)
-        finally:
             self.close()
 
         # Indicate if we ran successsfully or not
@@ -229,31 +236,35 @@ class BillManager(models.Manager):
     def closed(self):
         return self.filter(closed_ts__isnull=False)
 
+    # def outstanding(self):
+    #     ''' Return a set of all outstanding bills. '''
+    #     # There is a known bug that results in a bill that has multiple line items
+    #     # and a partial payment not showing up in this set as it should.
+    #     # https://code.djangoproject.com/ticket/10060
+    #     # https://github.com/nadineproject/nadine/issues/300
+    #     amount_adjustment = (F('bill_amount') * F('items_distinct')) / F('item_count')
+    #     tax_amount_adjustment = (F('bill_tax_amount') * F('items_distinct')) / F('item_count')
+    #     payment_adjustment = (F('payment_amount') * F('payments_distinct')) / F('payment_count')
+    #     outstanding_query = self.filter(mark_paid=False) \
+    #         .annotate(bill_amount=Sum('line_items__amount', output_field=DecimalField())) \
+    #         .annotate(bill_tax_amount=Sum('line_items__tax_amount', output_field=DecimalField())) \
+    #         .annotate(item_count=Count('line_items')) \
+    #         .annotate(items_distinct=Count('line_items', distinct=True)) \
+    #         .annotate(payment_amount=Sum('payment__amount', output_field=DecimalField())) \
+    #         .annotate(payment_count=Count('payment')) \
+    #         .annotate(payments_distinct=Count('payment', distinct=True)) \
+    #         .annotate(adjusted_amount=ExpressionWrapper(amount_adjustment, output_field=DecimalField())) \
+    #         .annotate(adjusted_tax_amount=ExpressionWrapper(tax_amount_adjustment, output_field=DecimalField())) \
+    #         .annotate(adjusted_payments=ExpressionWrapper(payment_adjustment, output_field=DecimalField())) \
+    #         .annotate(owed=F('adjusted_amount') + F('adjusted_tax_amount') - F('adjusted_payments'))
+    #         # .annotate(total=F('bill_amount') + F('bill_tax_amount')) \
+    #     no_payments = Q(payments_distinct = 0)
+    #     partial_payment = Q(owed__gt = 0)
+    #     return outstanding_query.filter(bill_amount__gt=0).filter(no_payments | partial_payment)
+
     def outstanding(self):
-        ''' Return a set of all outstanding bills. '''
-        # There is a known bug that results in a bill that has multiple line items
-        # and a partial payment not showing up in this set as it should.
-        # https://code.djangoproject.com/ticket/10060
-        # https://github.com/nadineproject/nadine/issues/300
-        amount_adjustment = (F('bill_amount') * F('items_distinct')) / F('item_count')
-        tax_amount_adjustment = (F('bill_tax_amount') * F('items_distinct')) / F('item_count')
-        payment_adjustment = (F('payment_amount') * F('payments_distinct')) / F('payment_count')
-        outstanding_query = self.filter(mark_paid=False) \
-            .annotate(bill_amount=Sum('line_items__amount', output_field=DecimalField())) \
-            .annotate(bill_tax_amount=Sum('line_items__tax_amount', output_field=DecimalField())) \
-            .annotate(item_count=Count('line_items')) \
-            .annotate(items_distinct=Count('line_items', distinct=True)) \
-            .annotate(payment_amount=Sum('payment__amount', output_field=DecimalField())) \
-            .annotate(payment_count=Count('payment')) \
-            .annotate(payments_distinct=Count('payment', distinct=True)) \
-            .annotate(adjusted_amount=ExpressionWrapper(amount_adjustment, output_field=DecimalField())) \
-            .annotate(adjusted_tax_amount=ExpressionWrapper(tax_amount_adjustment, output_field=DecimalField())) \
-            .annotate(adjusted_payments=ExpressionWrapper(payment_adjustment, output_field=DecimalField())) \
-            .annotate(owed=F('adjusted_amount') + F('adjusted_tax_amount') - F('adjusted_payments'))
-            # .annotate(total=F('bill_amount') + F('bill_tax_amount')) \
-        no_payments = Q(payments_distinct = 0)
-        partial_payment = Q(owed__gt = 0)
-        return outstanding_query.filter(bill_amount__gt=0).filter(no_payments | partial_payment)
+        return self.filter(mark_paid=False, cached_total_owed__gt = 0) \
+            .annotate(bill_total=F('cached_total_amount') + F('cached_total_tax_amount'))
 
     def non_zero(self):
         return self \
@@ -273,6 +284,11 @@ class UserBill(models.Model):
     note = models.TextField(blank=True, null=True, help_text="Private notes about this bill")
     in_progress = models.BooleanField(default=False, blank=False, null=False, help_text="Mark a bill as 'in progress' indicating someone is working on it")
     mark_paid = models.BooleanField(default=False, blank=False, null=False, help_text="Mark a bill as paid even if it is not")
+
+    cached_total_amount = models.DecimalField(max_digits=7, decimal_places=2, default=0)
+    cached_total_tax_amount = models.DecimalField(max_digits=7, decimal_places=2, default=0)
+    cached_total_paid = models.DecimalField(max_digits=7, decimal_places=2, default=0)
+    cached_total_owed = models.DecimalField(max_digits=7, decimal_places=2, default=0)
 
     def __str__(self):
         return "UserBill %d: %s %s to %s for $%s" % (self.id, self.user, self.period_start, self.period_end, self.total) # self.amount)
@@ -739,6 +755,13 @@ class UserBill(models.Model):
         if recalculate:
             self.recalculate()
 
+    def update_cached_totals(self):
+        self.cached_total_amount = self.amount
+        self.cached_total_tax_amount = self.tax_amount
+        self.cached_total_paid = self.total_paid
+        self.cached_total_owed = self.total_owed
+        self.save()
+
     def close(self):
         if self.closed_ts != None:
             raise Exception("Bill is already closed!")
@@ -751,7 +774,6 @@ class BillLineItem(models.Model):
     bill = models.ForeignKey(UserBill, related_name="line_items", null=True, on_delete=models.CASCADE)
     description = models.CharField(max_length=200)
     amount = models.DecimalField(max_digits=7, decimal_places=2, default=0)
-    tax_amount = models.DecimalField(max_digits=7, decimal_places=2, default=0)
     custom = models.BooleanField(default=False)
 
     @property
@@ -771,7 +793,6 @@ class BillLineItem(models.Model):
         return self.get_applied_tax(rate) is not None
 
     def calculate_taxes(self):
-        self.tax_amount = 0
         taxes = []
         if self.amount == 0:
             return taxes
@@ -784,10 +805,7 @@ class BillLineItem(models.Model):
                     tax_rate=rate,
                     amount=self.calculate_tax_amount(rate)
                 )
-            self.tax_amount += tax.amount
             taxes.append(tax)
-        # Saving line item to cache calculated tax_amount value.
-        self.save()
         return taxes
 
     def calculate_tax_amount(self, rate):
