@@ -1,36 +1,36 @@
 # Core requirements
-Django==2.0.3
-Pillow==5.0.0
+Django==2.0.6
+Pillow==5.1.0
 psycopg2==2.7.4
 django-localflavor==2.0
 django-localflavor-us==1.1
 django-taggit==0.22.2
 django-taggit-templatetags2==1.6.1
 django-crontab==0.7.1
-python-slugify==1.2.4
+python-slugify==1.2.5
 pytz==2018.3
-requests==2.18.4
-gunicorn==19.7.1
+requests==2.19.1
+gunicorn==19.8.1
 setuptools==39.0.1
 
 # Supporting libraries
 mailchimp==2.0.9
 docopt==0.6.2
-cryptography==2.2
+cryptography==2.2.2
 
 # LDAP Syncing
 #django-ldapdb==1.0.0
-#python-ldap==3.0.0
+#python-ldap==3.1.0
 #passlib==1.7.1
 
 # For document signing & PDFs
 html5lib==1.0.1
 django-jsignature==0.8
-weasyprint==0.42.2
+weasyprint==0.42.3
 
 # Libraries for Xero
 pyxero==0.9.0
-PyJWT==1.6.1
+PyJWT==1.6.4
 
 # Libraries for Arpwatch
 pysnmp==4.4.4
@@ -52,6 +52,6 @@ Markdown==2.6.11
 CommonMark==0.5.4
 
 # A few handy tools
-safety==1.7.0
+safety==1.8.1
 django-debug-toolbar==1.9.1
 pip-review==1.0
