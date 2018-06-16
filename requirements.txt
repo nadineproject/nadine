@@ -14,8 +14,7 @@ gunicorn==19.8.1
 setuptools==39.0.1
 
 # Supporting libraries
-mailchimp==2.0.9
-docopt==0.6.2
+mailchimp3==3.0.4
 cryptography==2.2.2
 
 # LDAP Syncing

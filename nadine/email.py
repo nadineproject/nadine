@@ -103,12 +103,25 @@ def send_introduction(user):
 
 def subscribe_to_newsletter(user):
     if settings.MAILCHIMP_NEWSLETTER_KEY:
+        from mailchimp3 import MailChimp
         try:
-            import mailchimp
-            mc = mailchimp.Mailchimp(settings.MAILCHIMP_API_KEY)
-            mc.lists.subscribe(id=settings.MAILCHIMP_NEWSLETTER_KEY, email={'email': user.email}, send_welcome=True)
-        except:
-            pass
+            client = MailChimp(mc_api=settings.MAILCHIMP_API_KEY)
+            client.lists.members.create(settings.MAILCHIMP_NEWSLETTER_KEY, {
+                'email_address': user.email,
+                'status': 'subscribed',
+                'merge_fields': {
+                    'FNAME': user.first_name,
+                    'LNAME': user.last_name,
+                },
+            })
+        except Exception as error:
+            try:
+                if error.args[0]['title'] == 'Member Exists':
+                    logger.debug("%s already subscribed to newsletter" % user.email)
+                    return
+            except Exception:
+                pass
+            raise error
 
 
 def send_new_membership(user):
