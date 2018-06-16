@@ -117,7 +117,7 @@ def subscribe_to_newsletter(user):
         except Exception as error:
             try:
                 if error.args[0]['title'] == 'Member Exists':
-                    logger.debug("%s already subscribed to newsletter" % user.email)
+                    logger.info("%s already subscribed to newsletter" % user.email)
                     return
             except Exception:
                 pass
