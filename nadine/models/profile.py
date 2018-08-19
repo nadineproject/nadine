@@ -200,8 +200,8 @@ class UserQueryHelper():
     def missing_photo(self):
         return self.active_members().filter(profile__photo="").order_by('first_name')
 
-    def members_by_package(self, package, target_date=None):
-        active_subscriptions = ResourceSubscription.objects.active_subscriptions_with_username(target_date).filter(package_name=package.name)
+    def members_by_package(self, package_name, target_date=None):
+        active_subscriptions = ResourceSubscription.objects.active_subscriptions_with_username(target_date).filter(package_name=package_name)
         return User.objects.filter(username__in=active_subscriptions.values('username'))
 
     def members_by_resource(self, resource, target_date=None):
