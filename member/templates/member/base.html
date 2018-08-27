@@ -180,15 +180,17 @@
     </div>
   {% endblock %}
 
+  <!-- Footer -->
   {% block footer %}
-    <!-- Footer -->
     {% block footer-class %}
       <footer class="page-footer main-footer" id="footer">
     {% endblock %}
     <div class="footer-copyright setwidth container">
-      <div id="copyright">
-      © 2018 |  Office Nomads | <a id='nadine-link' href="http://nadineproject.org/" target="_new">The Nadine Project</a>
-      </div>
+      {% block upperfooter %}
+        <div id="copyright">
+          © 2018 |  Office Nomads | <a id='nadine-link' href="http://nadineproject.org/" target="_new">The Nadine Project</a>
+        </div>
+      {% endblock %}
       {% block lowerfooter %}
         {% load_social_urls as social %}
         <div class='grey-text text-lighten-4 right' id="social">
@@ -210,7 +212,6 @@
     </div>
     </footer>
     {% endblock %}
-    <!-- End Page -->
     </div>
     {% block bottom_div %} {% endblock %}
   {% endblock %}
