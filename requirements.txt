@@ -1,7 +1,7 @@
 # Core requirements
-Django==2.0.8
+Django==2.1
 Pillow==5.2.0
-psycopg2==2.7.4
+psycopg2==2.7.5
 django-localflavor==2.1
 django-localflavor-us==1.1
 django-taggit==0.23.0

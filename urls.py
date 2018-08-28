@@ -1,55 +1,49 @@
 import time
-from django.conf.urls import include, url
+
+from django.urls import include, path
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.views.generic.base import RedirectView
-from django.contrib.auth.views import login, logout_then_login, password_reset_done, password_reset_confirm, password_reset_complete
+from django.contrib.auth import views as auth_views
 
 import views
 
-admin.autodiscover()
 
-favicon_view = RedirectView.as_view(url='/static/img/favicon.ico', permanent=True)
+admin.autodiscover()
 
 app_name = 'nadine'
 urlpatterns = [
-    url(r'^$', views.index, name='site_index'),
+    path('', views.index, name='site_index'),
+    path('favicon.ico', RedirectView.as_view(url='/static/img/favicon.ico', permanent=True)),
+    path('robots.txt', lambda r: HttpResponse("User-agent: *\nDisallow: /", content_type="text/plain")),
+    path('cache.manifest', lambda r: HttpResponse(get_manifest(), content_type="text/plain")),
 
-    url(r'^favicon\.ico$', favicon_view),
-    url(r'^robots\.txt$', lambda r: HttpResponse("User-agent: *\nDisallow: /", content_type="text/plain")),
-    url(r'^cache\.manifest$', lambda r: HttpResponse(get_manifest(), content_type="text/plain")),
-    url(r'^accounts/profile/$', lambda r: redirect('/')),
-    url(r'^login/$', login, {'template_name': 'login.html'}, name='login'),
-    url(r'^logout/$', logout_then_login, name="logout"),
+    path('account/', include('django.contrib.auth.urls')),
+    path('login/', auth_views.LoginView.as_view(), name='login'),
+    path('logout/', auth_views.logout_then_login, name='logout'),
 
-    url(r'^staff/', include('staff.urls', namespace='staff')),
-    url(r'^member/', include('member.urls', namespace='member')),
-    url(r'^tablet/', include('tablet.urls', namespace='tablet')),
-    url(r'^interlink/', include('interlink.urls', namespace='interlink')),
-    url(r'^doors/', include('doors.keymaster.urls', namespace='doors')),
-    url(r'^logs/', include('arpwatch.urls', namespace='arp')),
-    url(r'^comlink/', include('comlink.urls', namespace='comlink')),
+    path('staff/', include('staff.urls', namespace='staff')),
+    path('member/', include('member.urls', namespace='member')),
+    path('tablet/', include('tablet.urls', namespace='tablet')),
+    path('interlink/', include('interlink.urls', namespace='interlink')),
+    path('doors/', include('doors.keymaster.urls', namespace='doors')),
+    path('logs/', include('arpwatch.urls', namespace='arp')),
+    path('comlink/', include('comlink.urls', namespace='comlink')),
 
-    url(r'^email/add/$', views.email_add, name='email_add'),
-    url(r'^email/manage/(?P<email_pk>\d+)/(?P<action>.+)/$', views.email_manage, name='email_manage'),
-    url(r'^email/verify/(?P<email_pk>\d+)/$', views.email_verify, name='email_verify'),
+    path('email/add/', views.email_add, name='email_add'),
+    path('email/manage/<email_pk>/<action>/', views.email_manage, name='email_manage'),
+    path('email/verify/<email_pk>/', views.email_verify, name='email_verify'),
 
-    url(r'^reset/$', views.password_reset, {'template_name': 'password_reset_form.html', 'email_template_name': 'email/password_reset_email.txt'}, 'password_reset'),
-    url(r'^reset/done/$', password_reset_done, {'template_name': 'password_reset_done.html'}, 'password_reset_done'),
-    url(r'^reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$', password_reset_confirm, {'template_name': 'password_reset_confirm.html'}, 'password_reset_confirm'),
-    url(r'^reset/complete/$', password_reset_complete, {'template_name': 'password_reset_complete.html'}, 'password_reset_complete'),
-
-    url(r'^admin/login/$', login, {'template_name': 'login.html'}, name='login'),
-    url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-    url(r'^admin/', admin.site.urls),
+    path('admin/doc/', include('django.contrib.admindocs.urls')),
+    path('admin/', admin.site.urls),
 ]
 
 if settings.DEBUG:
     import debug_toolbar
-    urlpatterns.append(url(r'^__debug__/', include(debug_toolbar.urls)))
+    urlpatterns.append(path('__debug__/', include(debug_toolbar.urls)))
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
