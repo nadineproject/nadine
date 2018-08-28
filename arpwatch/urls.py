@@ -1,17 +1,18 @@
-from django.conf.urls import url
+from django.urls import path
 
 from arpwatch import views
 
+
 app_name = 'arpwatch'
 urlpatterns = [
-   url(r'^$', views.home, name='home'),
-   url(r'^import/$', views.import_files, name='import'),
-   url(r'^devices/$', views.device_list, name='devices'),
-   url(r'^device/(?P<device_id>[\d]+)/$', views.device, name='device'),
-   url(r'^device/$', views.device_logs_today, name='devices_today'),
-   url(r'^device/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', views.device_logs_by_day, name='device_logs'),
-   url(r'^user/$', views.logins_today, name='user'),
-   url(r'^user/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', views.logins_by_day, name='user_logs'),
+   path('', views.home, name='home'),
+   path('import/', views.import_files, name='import'),
+   path('devices/', views.device_list, name='devices'),
+   path('device/(<int:device_id>)/', views.device, name='device'),
+   path('device/', views.device_logs_today, name='devices_today'),
+   path('device/<int:year>/<int:month>/<day>/', views.device_logs_by_day, name='device_logs'),
+   path('user/', views.logins_today, name='user'),
+   path('user/<int:year>/<int:month>/<int:day>/', views.logins_by_day, name='user_logs'),
 ]
 
 

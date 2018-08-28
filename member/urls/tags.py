@@ -1,17 +1,16 @@
-from django.conf.urls import url
-from django.shortcuts import redirect
+from django.urls import path
 
 from member.views import tags
 
 app_name = 'member'
 urlpatterns = [
-    url(r'^list/(?P<type>[^/]+)/$', tags.tag_list, name='list'),
-    url(r'^cloud/(?P<type>[^/]+)/$', tags.tag_cloud, name='cloud'),
-    url(r'^add/user/(?P<username>[^/]+)/$', tags.add_tag, name='add'),
-    url(r'^remove/user/(?P<username>[^/]+)/(?P<tag>[^/]+)/$', tags.remove_tag, name='remove'),
-    url(r'^add/org/(?P<org_id>\d+)/$', tags.add_org_tag, name='add_org'),
-    url(r'^remove/org/(?P<org_id>\d+)/(?P<tag>[^/]+)/$', tags.remove_org_tag, name='remove_org'),
-    url(r'^(?P<type>[^/]+)/(?P<tag>[^/]+)/$', tags.tag_view, name='view'),
+    path('list/<type>/', tags.tag_list, name='list'),
+    path('cloud/<type>/', tags.tag_cloud, name='cloud'),
+    path('add/user/<username>/', tags.add_tag, name='add'),
+    path('remove/user/<username>/<tag>/', tags.remove_tag, name='remove'),
+    path('add/org/<int:org_id>/', tags.add_org_tag, name='add_org'),
+    path('remove/org/<int:org_id>/<tag>/', tags.remove_org_tag, name='remove_org'),
+    path('<type>/<tag>/', tags.tag_view, name='view'),
 
 ]
 
