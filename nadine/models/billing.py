@@ -12,6 +12,7 @@ from django.utils.timezone import localtime, now
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.utils.functional import cached_property
 
 from nadine.models.membership import Membership, ResourceSubscription
 from nadine.models.resource import Resource
@@ -71,12 +72,19 @@ class BillingBatch(models.Model):
             while target_date <= end_date:
                 self.run_billing_for_day(target_date)
                 target_date = target_date + timedelta(days=1)
+
+            # Close out batch
+            self.close()
+
+            # Update cached totals on all associated bills
+            for bill in self.bills.all():
+                bill.update_cached_totals()
+
         except Exception as e:
             # Save all error messages
             self.error = str(e)
             traceback.print_exc()
             logger.error(self.error)
-        finally:
             self.close()
 
         # Indicate if we ran successsfully or not
@@ -118,7 +126,7 @@ class BillingBatch(models.Model):
             # Find the open bill for this period and add this subscription
             bill = UserBill.objects.get_or_create_open_bill(subscription.payer, period_start, period_end, check_open_bills=False)
             if not bill.has_subscription(subscription):
-                bill.add_subscription(subscription)
+                line_item = bill.add_subscription(subscription)
                 self.bills.add(bill)
                 # If we have any activity for this resource, flag for recalculation
                 activity = bill.resource_activity(subscription.resource)
@@ -228,30 +236,41 @@ class BillManager(models.Manager):
     def closed(self):
         return self.filter(closed_ts__isnull=False)
 
+    # def outstanding(self):
+    #     ''' Return a set of all outstanding bills. '''
+    #     # There is a known bug that results in a bill that has multiple line items
+    #     # and a partial payment not showing up in this set as it should.
+    #     # https://code.djangoproject.com/ticket/10060
+    #     # https://github.com/nadineproject/nadine/issues/300
+    #     amount_adjustment = (F('bill_amount') * F('items_distinct')) / F('item_count')
+    #     tax_amount_adjustment = (F('bill_tax_amount') * F('items_distinct')) / F('item_count')
+    #     payment_adjustment = (F('payment_amount') * F('payments_distinct')) / F('payment_count')
+    #     outstanding_query = self.filter(mark_paid=False) \
+    #         .annotate(bill_amount=Sum('line_items__amount', output_field=DecimalField())) \
+    #         .annotate(bill_tax_amount=Sum('line_items__tax_amount', output_field=DecimalField())) \
+    #         .annotate(item_count=Count('line_items')) \
+    #         .annotate(items_distinct=Count('line_items', distinct=True)) \
+    #         .annotate(payment_amount=Sum('payment__amount', output_field=DecimalField())) \
+    #         .annotate(payment_count=Count('payment')) \
+    #         .annotate(payments_distinct=Count('payment', distinct=True)) \
+    #         .annotate(adjusted_amount=ExpressionWrapper(amount_adjustment, output_field=DecimalField())) \
+    #         .annotate(adjusted_tax_amount=ExpressionWrapper(tax_amount_adjustment, output_field=DecimalField())) \
+    #         .annotate(adjusted_payments=ExpressionWrapper(payment_adjustment, output_field=DecimalField())) \
+    #         .annotate(owed=F('adjusted_amount') + F('adjusted_tax_amount') - F('adjusted_payments'))
+    #         # .annotate(total=F('bill_amount') + F('bill_tax_amount')) \
+    #     no_payments = Q(payments_distinct = 0)
+    #     partial_payment = Q(owed__gt = 0)
+    #     return outstanding_query.filter(bill_amount__gt=0).filter(no_payments | partial_payment)
+
     def outstanding(self):
-        ''' Return a set of all outstanding bills. '''
-        # There is a known bug that results in a bill that has multiple line items
-        # and a partial payment not showing up in this set as it should.
-        # https://code.djangoproject.com/ticket/10060
-        # https://github.com/nadineproject/nadine/issues/300
-        amount_adjustment = (F('bill_amount') * F('items_distinct')) / F('item_count')
-        payment_adjustment = (F('payment_amount') * F('payments_distinct')) / F('payment_count')
-        outstanding_query = self.filter(mark_paid=False) \
-            .annotate(bill_amount=Sum('line_items__amount', output_field=DecimalField())) \
-            .annotate(item_count=Count('line_items')) \
-            .annotate(items_distinct=Count('line_items', distinct=True)) \
-            .annotate(payment_amount=Sum('payment__amount', output_field=DecimalField())) \
-            .annotate(payment_count=Count('payment')) \
-            .annotate(payments_distinct=Count('payment', distinct=True)) \
-            .annotate(adjusted_amount=ExpressionWrapper(amount_adjustment, output_field=DecimalField())) \
-            .annotate(adjusted_payments=ExpressionWrapper(payment_adjustment, output_field=DecimalField())) \
-            .annotate(owed=F('adjusted_amount') - F('adjusted_payments'))
-        no_payments = Q(payments_distinct = 0)
-        partial_payment = Q(owed__gt = 0)
-        return outstanding_query.filter(bill_amount__gt=0).filter(no_payments | partial_payment)
+        return self.filter(mark_paid=False, cached_total_owed__gt = 0) \
+            .annotate(bill_total=F('cached_total_amount') + F('cached_total_tax_amount'))
 
     def non_zero(self):
-        return self.annotate(bill_amount=Sum('line_items__amount')).filter(bill_amount__gt=0)
+        return self \
+            .annotate(bill_amount=Sum('line_items__amount')) \
+            .annotate(bill_tax_amount=Sum('line_items__tax_amount')) \
+            .filter(bill_amount__gt=0)
 
 class UserBill(models.Model):
     objects = BillManager()
@@ -266,8 +285,13 @@ class UserBill(models.Model):
     in_progress = models.BooleanField(default=False, blank=False, null=False, help_text="Mark a bill as 'in progress' indicating someone is working on it")
     mark_paid = models.BooleanField(default=False, blank=False, null=False, help_text="Mark a bill as paid even if it is not")
 
+    cached_total_amount = models.DecimalField(max_digits=7, decimal_places=2, default=0)
+    cached_total_tax_amount = models.DecimalField(max_digits=7, decimal_places=2, default=0)
+    cached_total_paid = models.DecimalField(max_digits=7, decimal_places=2, default=0)
+    cached_total_owed = models.DecimalField(max_digits=7, decimal_places=2, default=0)
+
     def __str__(self):
-        return "UserBill %d: %s %s to %s for $%s" % (self.id, self.user, self.period_start, self.period_end, self.amount)
+        return "UserBill %d: %s %s to %s for $%s" % (self.id, self.user, self.period_start, self.period_end, self.total) # self.amount)
 
     ############################################################################
     # Basic Properties
@@ -279,11 +303,19 @@ class UserBill(models.Model):
 
     @property
     def total_owed(self):
-        return self.amount - self.total_paid
+        return self.total - self.total_paid
 
     @property
     def amount(self):
         return self.line_items.aggregate(amount=Coalesce(Sum('amount'), Value(0.00)))['amount']
+
+    @property
+    def tax_amount(self):
+        return self.total_tax_applied()
+
+    @property
+    def total(self):
+        return self.amount + self.tax_amount
 
     @property
     def is_paid(self):
@@ -444,12 +476,14 @@ class UserBill(models.Model):
         amount = prorate * subscription.monthly_rate
 
         # Create our new line item
-        return SubscriptionLineItem.objects.create(
+        line_item = SubscriptionLineItem.objects.create(
             bill = self,
             subscription = subscription,
             description = description,
             amount = amount
         )
+        self.add_lineitem_taxes(line_item.calculate_taxes())
+        return line_item
 
     ###########################################################################
     # Coworking Day Methods
@@ -494,6 +528,7 @@ class UserBill(models.Model):
             amount = amount,
             day = day,
         )
+        self.add_lineitem_taxes(line_item.calculate_taxes())
         return line_item
 
 
@@ -579,6 +614,7 @@ class UserBill(models.Model):
             amount = amount,
             event = event,
         )
+        self.add_lineitem_taxes(line_item.calculate_taxes())
         return line_item
 
     @property
@@ -610,6 +646,51 @@ class UserBill(models.Model):
         if self.event_hours < self.event_hour_allowance:
             return 0
         return self.event_hours - self.event_hour_allowance
+
+    ############################################################################
+    # Tax Methods
+    # TODO: Consider putting these in their own module.
+    ############################################################################
+
+    def calculate_taxes(self):
+        ''' Calculates applicable taxes based on bill's line items '''
+        taxes = []
+        for item in SubscriptionLineItem.objects.filter(bill=self):
+            taxes += item.calculate_taxes()
+        for item in CoworkingDayLineItem.objects.filter(bill=self):
+            taxes += item.calculate_taxes()
+        for item in EventLineItem.objects.filter(bill=self):
+            taxes = item.calculate_taxes()
+        return taxes
+
+    def add_lineitem_taxes(self, lineitem_taxes):
+        ''' Applies line item taxes to bill (saves them to DB) '''
+        for (lineitem_tax) in lineitem_taxes:
+            lineitem_tax.save()
+
+    def total_tax_applied(self):
+        ''' Provide the total amount of tax added to bill '''
+        total = 0
+        for _,amount in self.total_tax_applied_by_rate():
+            total += amount
+        return total
+
+    def total_tax_applied_by_rate(self):
+        ''' Produce list of tax rates and amounts (rate<TaxRate>, amount<Decimal>) '''
+        taxes = []
+        for taxrate in TaxRate.objects.all():
+            total = self.total_tax_applied_for_rate(taxrate)
+            taxes.append((taxrate, total))
+        return taxes
+
+    def total_tax_applied_for_rate(self, rate):
+        ''' Total tax amount applied for given rate '''
+        total = 0
+        for item in BillLineItem.objects.filter(bill=self):
+            tax = item.get_applied_tax(rate)
+            if tax is not None:
+                total += tax.amount
+        return total
 
     ############################################################################
     # Other Methods
@@ -674,6 +755,13 @@ class UserBill(models.Model):
         if recalculate:
             self.recalculate()
 
+    def update_cached_totals(self):
+        self.cached_total_amount = self.amount
+        self.cached_total_tax_amount = self.tax_amount
+        self.cached_total_paid = self.total_paid
+        self.cached_total_owed = self.total_owed
+        self.save()
+
     def close(self):
         if self.closed_ts != None:
             raise Exception("Bill is already closed!")
@@ -688,6 +776,41 @@ class BillLineItem(models.Model):
     amount = models.DecimalField(max_digits=7, decimal_places=2, default=0)
     custom = models.BooleanField(default=False)
 
+    @property
+    def applicable_taxes(self):
+        resource = self.get_resource()
+        return resource.taxrate_set.all()
+
+    @cached_property
+    def applied_taxes(self):
+        return self.lineitemtax_set.all()
+
+    """ Get an instance of tax if rate has been applied """
+    def get_applied_tax(self, rate):
+        return self.lineitemtax_set.filter(tax_rate=rate.id).first()
+
+    def has_tax_applied(self, rate):
+        return self.get_applied_tax(rate) is not None
+
+    def calculate_taxes(self):
+        taxes = []
+        if self.amount == 0:
+            return taxes
+        for rate in self.applicable_taxes:
+            tax = self.get_applied_tax(rate)
+            # Ensure we only calculate tax once.
+            if tax is None:
+                tax = LineItemTax(
+                    line_item=self,
+                    tax_rate=rate,
+                    amount=self.calculate_tax_amount(rate)
+                )
+            taxes.append(tax)
+        return taxes
+
+    def calculate_tax_amount(self, rate):
+        return self.amount * rate.percentage
+
     def __str__(self):
         return self.description
 
@@ -695,13 +818,29 @@ class BillLineItem(models.Model):
 class SubscriptionLineItem(BillLineItem):
     subscription = models.ForeignKey('ResourceSubscription', related_name="line_items", on_delete=models.CASCADE)
 
+    def get_resource(self):
+        return self.subscription.resource
+
 
 class CoworkingDayLineItem(BillLineItem):
     day = models.OneToOneField('CoworkingDay', related_name="line_item", on_delete=models.CASCADE)
 
+    def get_resource(self):
+        return Resource.objects.resource_by_key(Resource.objects.DAY_KEY)
+
 
 class EventLineItem(BillLineItem):
     event = models.OneToOneField('Event', related_name="line_item", on_delete=models.CASCADE)
+
+    def get_resource(self):
+        return Resource.objects.resource_by_key(Resource.objects.EVENT_KEY)
+
+
+class PaymentMethod(models.Model):
+    name = models.CharField(max_length=128, help_text="e.g., Stripe, Visa, cash, bank transfer")
+
+    def __str__(self):
+        return self.name
 
 
 class Payment(models.Model):
@@ -710,7 +849,41 @@ class Payment(models.Model):
     bill = models.ForeignKey(UserBill, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=7, decimal_places=2, default=0)
+    method = models.ForeignKey(PaymentMethod, on_delete=models.SET_NULL, null=True, blank=True)
+    external_id = models.CharField(max_length=128, null=True, blank=True, help_text="ID used by payment service")
     note = models.TextField(blank=True, null=True, help_text="Private notes about this payment")
 
     def __str__(self):
         return "%s: %s - $%s" % (str(self.created_ts)[:16], self.user, self.amount)
+
+
+class StripeBillingProfile(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    customer_email = models.EmailField(help_text="Customer email address used with Stripe customer record")
+    customer_id = models.CharField(max_length=128, help_text="Stripe customer ID used for billing via Stripe")
+
+    def __str__(self):
+        return "{} ({}): {}".format(self.user, self.customer_email, self.customer_id)
+
+
+class TaxRate(models.Model):
+    name = models.CharField(max_length=256, help_text="The name of the tax")
+    percentage = models.DecimalField(max_digits=3, decimal_places=2, help_text="Tax percentage")
+    resources = models.ManyToManyField(Resource)
+
+    def __str__(self):
+        return "{} ({}%)".format(self.name, self.percentage * 100)
+
+
+class LineItemTax(models.Model):
+    line_item = models.ForeignKey(BillLineItem, on_delete=models.CASCADE)
+    tax_rate = models.ForeignKey(TaxRate, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=7, decimal_places=2)
+
+    def __str__(self):
+        return "{}, {} for {}".format(self.line_item.bill, self.tax_rate, self.line_item)
+
+    @cached_property
+    def calculate_tax_rate(self):
+        # Figure out the tax rate from amount and line_item.amount
+        pass

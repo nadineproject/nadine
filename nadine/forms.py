@@ -26,7 +26,7 @@ from nadine.models.membership import Membership, MembershipPackage, ResourceSubs
 from nadine.models.usage import PAYMENT_CHOICES, CoworkingDay
 from nadine.models.resource import Room, Resource
 from nadine.models.organization import Organization, OrganizationMember
-from nadine.models.billing import UserBill, Payment
+from nadine.models.billing import UserBill, Payment, PaymentMethod
 from nadine.utils.payment_api import PaymentAPI
 from member.models import HelpText, MOTD
 
@@ -177,6 +177,7 @@ class PaymentForm(forms.Form):
     username = forms.CharField(required=True, widget=forms.HiddenInput)
     # created_by = forms.CharField(required=False, widget=forms.HiddenInput)
     payment_date = forms.DateField(required=True, widget=forms.DateInput(attrs={'placeholder':'e.g. 12/28/16', 'class':'datepicker'}, format='%m/%d/%Y'))
+    method = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), label="Payment method", queryset=PaymentMethod.objects.all(), required=False)
     note = forms.CharField(max_length=256, required=False)
     amount = forms.DecimalField(min_value=0, max_value=10000, required=True, max_digits=7, decimal_places=2)
 
@@ -192,6 +193,7 @@ class PaymentForm(forms.Form):
             payment.created_by = User.objects.get(username=created_by)
         payment.note = self.cleaned_data['note']
         payment.amount = amount
+        payment.method = self.cleaned_data['method']
         payment.save()
         return payment
 

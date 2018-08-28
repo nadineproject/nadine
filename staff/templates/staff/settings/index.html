@@ -20,7 +20,15 @@
     <li>Mailgun = {{ integrations.mailgun }}</li>
     <li>Mailchimp = {{ integrations.mailchimp }}</li>
     <li>Google Analytics = {{ integrations.google }}</li>
-    <li>USAePay = {{ integrations.usaepay }}</li>
+    <li>Payments =
+      {% if integrations.stripe %}
+        Stripe
+      {% elif integrations.usaepay %}
+        USAePay
+      {% else %}
+        False
+      {% endif %}
+    </li>
     <li>Xero = {{ integrations.xero }}</li>
     <li>Slack = {{ integrations.slack }}</li>
     <li>Doors = {{ integrations.doors }}</li>

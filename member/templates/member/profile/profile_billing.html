@@ -59,7 +59,7 @@
 {% for bill in bills %}
     <tr class="{% cycle 'row-even' 'row-odd' %}">
         <td nowrap>{{ bill.due_date|date:"M d, Y" }}</td>
-        <td>${{ bill.amount }}</td>
+        <td>${{ bill.total }}</td>
         <td>${{ bill.total_paid }}</td>
         <td>{% if bill.is_open %}Open{% endif %}</td>
         <td><a href='{{ bill.get_absolute_url}}'>Receipt</a></td>

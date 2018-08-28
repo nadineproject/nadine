@@ -30,7 +30,7 @@
     <td id='amount-td' style="color:red;">
       {% if bill.overage_amount %}${{ bill.overage_amount }}{% endif %}
     </td>
-    <td id='amount-td'><strong>${{ bill.amount }}</strong></td>
+    <td id='amount-td'><strong>${{ bill.total }}</strong></td>
     <td id='amount-td'>
       {% if bill.total_paid %}
         ${{ bill.total_paid }}

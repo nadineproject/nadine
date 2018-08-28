@@ -155,7 +155,8 @@ class MemberAlertManager(models.Manager):
             mailing_list.subscribers.add(user)
 
         # Invite them to slack
-        SlackAPI().invite_user_quiet(user)
+        if hasattr(settings, 'SLACK_API_TOKEN'):
+            SlackAPI().invite_user_quiet(user)
 
     def trigger_profile_save(self, profile):
         logger.debug("trigger_profile_save: %s" % profile)
