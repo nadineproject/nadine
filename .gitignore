@@ -34,3 +34,5 @@ docs/_build/*
 /themes/**
 !/themes/README.md
 
+# Ignore pycharm metadata
+.idea*
