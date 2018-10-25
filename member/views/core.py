@@ -71,12 +71,12 @@ def home(request):
     return render(request, 'member/core/home.html', context)
 
 
-def faq(request):
-    title = "faq"
-    template_text = "Frequently Asked Questions "
+def help(request):
+    title = "Help"
+    template_text = "Member Help Pages"
     other_topics = {}
     for topic in HelpText.objects.all():
-        if topic.slug == 'faq':
+        if topic.slug == 'welcome':
             title = topic.title
             template_text = topic.template
         else:
@@ -86,27 +86,29 @@ def faq(request):
     template = Template(template_text)
     rendered = template.render(current_context)
 
-    context = {'title': title,
-               'page_body': rendered,
-               'other_topics': other_topics,
-               'settings': settings
-               }
-    return render(request, 'member/core/faq.html', context)
+    context = {
+        'title': title,
+        'page_body': rendered,
+        'other_topics': other_topics,
+        'settings': settings
+    }
+    return render(request, 'member/core/help.html', context)
 
 
 def help_topic(request, slug):
     topic = get_object_or_404(HelpText, slug=slug)
     title = topic.title
     template_text = topic.template
-    other_topics = HelpText.objects.all().order_by('order')
     current_context = context_instance = RequestContext(request)
     template = Template(template_text)
     rendered = template.render(current_context)
-    context = {'title': title,
-               'page_body': rendered,
-               'other_topics': other_topics,
-               'settings': settings
-               }
+    other_topics = HelpText.objects.all().order_by('order')
+    context = {
+        'title': title,
+        'page_body': rendered,
+        'other_topics': other_topics,
+        'settings': settings
+    }
     return render(request, 'member/core/help_topic.html', context)
 
 

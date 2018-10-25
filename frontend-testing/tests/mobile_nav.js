@@ -59,7 +59,7 @@ casper.test.begin('Member App on Mobile Test', function(test) {
    });
 
    casper.then(function() {
-     test.assertUrlMatch('/member/faq', 'Navigation to help link via mobile navigation working.')
+     test.assertUrlMatch('/member/help', 'Navigation to help link via mobile navigation working.')
    })
 
    casper.run(function() {test.done();});
