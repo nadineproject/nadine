@@ -71,7 +71,6 @@ def home(request):
     return render(request, 'member/core/home.html', context)
 
 
-@login_required
 def faq(request):
     title = "faq"
     template_text = "Frequently Asked Questions "
@@ -95,7 +94,6 @@ def faq(request):
     return render(request, 'member/core/faq.html', context)
 
 
-@login_required
 def help_topic(request, slug):
     topic = get_object_or_404(HelpText, slug=slug)
     title = topic.title
