@@ -177,6 +177,7 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760
 
 # URL that handles login
 LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/member/profile/'
 
 # The interface for the front desk tablet.  Values are 'WEB' or "iOS"
 #TABLET = "iOS"
