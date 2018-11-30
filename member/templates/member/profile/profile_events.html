@@ -27,7 +27,7 @@
     </td>
   </tr>
 </table>
-<a class='btn booking-redirect' href='{% url "member:event:create_booking" %}'>Make a New Room Booking</a>
+<a class='btn booking-redirect' href='{% url "member:event:create_booking" user.username %}'>Make a New Room Booking</a>
 
 <script>
   $(document).ready(function() {
