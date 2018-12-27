@@ -1,20 +1,20 @@
 # Core requirements
-Django==2.1
-Pillow==5.2.0
-psycopg2==2.7.5
+Django>=2.0,<2.1
+Pillow==5.3.0
+psycopg2==2.7.6.1
 django-localflavor==2.1
 django-localflavor-us==1.1
 django-taggit==0.23.0
 django-taggit-templatetags2==1.6.1
 django-crontab==0.7.1
-python-slugify==1.2.5
-pytz==2018.5
-requests==2.19.1
-setuptools==40.2.0
+python-slugify==1.2.6
+pytz==2018.7
+requests==2.20.0
+setuptools==40.6.3
 
 # Supporting libraries
-mailchimp3==3.0.4
-cryptography==2.3.1
+mailchimp3==3.0.6
+cryptography==2.4.2
 
 # LDAP Syncing
 #django-ldapdb==1.2.0
@@ -51,5 +51,5 @@ CommonMark==0.5.4
 
 # A few handy tools
 safety==1.8.4
-django-debug-toolbar==1.9.1
+django-debug-toolbar==1.11
 pip-review==1.0

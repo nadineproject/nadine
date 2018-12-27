@@ -4,7 +4,7 @@
 ############################################################
 
 # Set the base image to use to python 2.7
-FROM python:2.7
+FROM python:3.7
 
 # Set the file maintainer (your name - the file's author)
 MAINTAINER Jacob Sayles

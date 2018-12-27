@@ -80,9 +80,9 @@
             </div>
             <a href='#' data-activates="mobile" class="button-collapse"><img class='menu-img' src="{% static 'img/hamburger.png' %}"/></a>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li><a href="{% url 'member:help' %}">Help</a></li>
         {% endblock %}
           {% if request.user.profile.is_active %}
-            <li><a href="{% url 'member:faq' %}">Help</a></li>
             <li>
               <a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown1' href="{% url 'member:members' %}">Members</a>
               <ul id='dropdown1' class='dropdown-content'>
@@ -113,7 +113,6 @@
               </ul>
             </li>
           {% else %}
-            <li><a href="{% url 'member:not_active' %}">Help</a></li>
             <li><a href="{% url 'member:not_active' %}">Members</a></li>
             <li><a href="{% url 'member:not_active' %}">Organizations</a></li>
             <li><a href="{% url 'member:not_active' %}">Events</a></li>
@@ -137,7 +136,7 @@
           {% block side-nav %}
             <ul class="side-nav" id="mobile">
               {% if request.user.profile.is_active %}
-                <li><a href="{% url 'member:faq' %}">Help</a></li>
+                <li><a href="{% url 'member:help' %}">Help</a></li>
                 <li><a href="{% url 'member:members' %}">Members</a></li>
                 <li><a href="{% url 'member:org:list' %}">Organizations</a></li>
                 <li><a href="{% url 'member:event:calendar' %}">Events</a></li>

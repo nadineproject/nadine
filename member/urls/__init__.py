@@ -6,8 +6,8 @@ from member.views import core
 app_name = 'member'
 urlpatterns = [
     path('', core.home, name='home'),
-    path('faq/', core.faq, name='faq'),
-    path('help/<slug:slug>/', core.help_topic, name='help'),
+    path('help/', core.help, name='help'),
+    path('help/<slug:slug>/', core.help_topic, name='help_topic'),
     path('view/', core.view_members, name='members'),
     path('receipt/<int:bill_id>', core.bill_receipt, name='receipt'),
     path('register/', core.register, name='register'),
