@@ -107,7 +107,7 @@ class Command(BaseCommand):
             country = input(PROMPT).strip().upper()
             if not country:
                 print("Country Codes:")
-                print((', '.join(country_names)))
+                print(('\n'.join('{}: {}'.format(k, country_names[k]) for k in sorted(country_names))))
                 print()
         self.local_settings.set('COUNTRY', country)
 
