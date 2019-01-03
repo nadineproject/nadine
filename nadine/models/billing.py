@@ -20,6 +20,7 @@ from nadine.models.usage import CoworkingDay, Event
 
 logger = logging.getLogger(__name__)
 
+
 class BatchManager(models.Manager):
 
     def run(self, start_date=None, end_date=None, created_by=None):

@@ -61,12 +61,21 @@ class UserBillTestCase(TestCase):
         self.assertEqual(0, bill.total_owed)
         self.assertFalse(bill in UserBill.objects.outstanding())
         # Create a line item
-        BillLineItem.objects.create(bill=bill, amount=10)
+        lineitem = BillLineItem.objects.create(bill=bill, amount=10)
         self.assertEqual(10, bill.amount)
         self.assertEqual(10, bill.total_owed)
         self.assertTrue(bill in UserBill.objects.outstanding())
         # Pay the bill
-        Payment.objects.create(bill=bill, user=self.user1, amount=10)
+        payment = Payment.objects.create(bill=bill, user=self.user1, amount=10)
+        self.assertEqual(0, bill.total_owed)
+        self.assertFalse(bill in UserBill.objects.outstanding())
+        # Delete the payment
+        payment.delete()
+        self.assertEqual(10, bill.amount)
+        self.assertEqual(10, bill.total_owed)
+        self.assertTrue(bill in UserBill.objects.outstanding())
+        # Delete the line item
+        lineitem.delete()
         self.assertEqual(0, bill.total_owed)
         self.assertFalse(bill in UserBill.objects.outstanding())
 
@@ -194,7 +203,6 @@ class UserBillTestCase(TestCase):
         )
         bill.add_subscription(subscription2)
         self.assertEqual(18, bill.resource_allowance(Resource.objects.day_resource))
-
 
     def test_recalculate(self):
         user = User.objects.create(username='test_user', first_name='Test', last_name='User')
