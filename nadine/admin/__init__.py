@@ -12,7 +12,6 @@ from nadine.admin.organization import *
 from nadine.admin.billing import *
 from nadine.admin.membership import *
 from nadine.admin.usage import *
-from nadine.admin.old_models import *
 
 
 # Register the objects with the admin interface
