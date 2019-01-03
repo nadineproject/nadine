@@ -4,6 +4,15 @@ from django.db import migrations, models
 import django.db.models.deletion
 
 
+def forward(apps, schema_editor):
+    # We can't do this in migration space
+    # UserBill = apps.get_model("nadine", "UserBill")
+    # for bill in UserBill.objects.all():
+    #     bill.update_cached_totals()
+    print()
+    print("    NOTE: After the migration run './manage.py migrate_21'")
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -33,4 +42,27 @@ class Migration(migrations.Migration):
             name='tax_rate',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='nadine.TaxRate'),
         ),
+        migrations.AddField(
+            model_name='userbill',
+            name='cached_total_amount',
+            field=models.DecimalField(decimal_places=2, default=0, max_digits=7),
+        ),
+        migrations.AddField(
+            model_name='userbill',
+            name='cached_total_owed',
+            field=models.DecimalField(decimal_places=2, default=0, max_digits=7),
+        ),
+        migrations.AddField(
+            model_name='userbill',
+            name='cached_total_paid',
+            field=models.DecimalField(decimal_places=2, default=0, max_digits=7),
+        ),
+        migrations.AddField(
+            model_name='userbill',
+            name='cached_total_tax_amount',
+            field=models.DecimalField(decimal_places=2, default=0, max_digits=7),
+        ),
+
+        migrations.RunPython(forward, migrations.RunPython.noop),
+
     ]
