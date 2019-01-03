@@ -19,13 +19,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "trusty32"
-
-  # custom baked ubuntu vm that hass updates applied and packages applied
-  config.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-i386-vagrant-disk1.box"
-
+  config.vm.box = "generic/debian9"
   cache_dir = local_cache(config.vm.box)
-
   config.vm.synced_folder cache_dir, "/var/cache/apt/archives/"
 
   # accessing "localhost:31337" will access port 3133 on the guest machine.
@@ -39,16 +34,16 @@ $rootScript = <<SCRIPT
   set -x
   apt-get update -y
   apt-get install git vim screen -y
-  apt-get install python-dev python-pip python-software-properties -y
-  apt-get install libffi-dev libxml2-dev libxslt1-dev libjpeg8-dev -y
-  apt-get install python-psycopg2 libpq-dev postgresql -y
+  apt-get install python3-pip python3-dev virtualenv -y
+  apt-get install postgresql postgresql-server-dev-all python-psycopg2 -y
+  apt-get install libffi-dev libghc-cairo-dev libghc-pango-dev libxml2-dev libxslt1-dev libjpeg62-turbo-dev -y
   apt-get autoremove -y
   apt-get clean
 
   sudo -u postgres createuser --createdb --no-superuser --no-createrole nadine
   sudo -u postgres createdb --owner=nadine nadinedb
   sudo -u postgres psql -d postgres -c "ALTER USER nadine WITH PASSWORD 'password'"
-  sed -i.bak 's/peer$/trust/' /etc/postgresql/9.3/main/pg_hba.conf
+  sed -i.bak 's/peer$/trust/' /etc/postgresql/9.6/main/pg_hba.conf
   service postgresql restart
 
   if [ -f /etc/init.d/nginx ]; then
@@ -56,34 +51,30 @@ $rootScript = <<SCRIPT
     killall nginx
   fi
 
-  pip install pip --upgrade
-  pip install virtualenv
-  pip install virtualenvwrapper
 SCRIPT
 
 $userScript = <<SCRIPT
-  git config --global url."https://".insteadOf git://
+  if [ ! -f webapp ]; then
+    virtualenv -p /usr/bin/python3 webapp
+    cd webapp
+    source bin/activate
+    pip install pip --upgrade
+    git clone https://github.com/nadineproject/nadine.git
+    cd nadine
+    pip install -r requirements.txt
 
-  echo export WORKON_HOME="/home/vagrant/envs" >> /home/vagrant/.bashrc
-  export WORKON_HOME="/home/vagrant/envs"
-  echo source /usr/local/bin/virtualenvwrapper.sh >> /home/vagrant/.bashrc
-  source /usr/local/bin/virtualenvwrapper.sh
-  cd /vagrant
+    #SECURE_RANDOM=$(dd if=/dev/urandom count=1 bs=28 2>/dev/null | od -t x1 -A n)
+    #SECRET_KEY="${SECURE_RANDOM//[[:space:]]/}"
+    #sed "s/^SECRET_KEY.*$/SECRET_KEY = '$SECRET_KEY'/" nadine/settings/local_settings.example >> nadine/local_settings.py
 
-  mkvirtualenv nadine
-  yes | pip install -r requirements.txt
-
-  if [ ! -f nadine/local_settings.py ]; then
-  	SECURE_RANDOM=$(dd if=/dev/urandom count=1 bs=28 2>/dev/null | od -t x1 -A n)
-  	SECRET_KEY="${SECURE_RANDOM//[[:space:]]/}"
-  	sed "s/^SECRET_KEY.*$/SECRET_KEY = '$SECRET_KEY'/" nadine/local_settings.example > nadine/local_settings.py
-    #sed -i.bak "s/'postgres'/'modernomad'/" modernomad/local_settings.py
+    cd nadine
+    ./manage.py migrate
+    ./manage.py create_admin
   fi
 
-  echo workon nadine >> /home/vagrant/.bashrc
-  workon nadine
-  ./manage.py migrate
-  ./manage.py create_admin
+  cd /home/vagrant/webapp
+  source bin/activate
+  cd nadine
   screen -dmS django ./manage.py runserver 0.0.0.0:8989
 SCRIPT
 
