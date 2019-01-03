@@ -218,7 +218,8 @@ def signature_capture(request, username, doc_type):
         signature_file = form.save_signature()
         render_url = reverse('tablet:sig_render', kwargs={'username': user.username, 'doc_type': doc_type, 'signature_file': signature_file}) + "?save_file=True"
         return HttpResponseRedirect(render_url)
-    return render(request, 'tablet/signature_capture.html', {'user': user, 'form': form, 'today': today, 'doc_type': doc_type})
+    context = {'user': user, 'form': form, 'today': today, 'doc_type': doc_type}
+    return render(request, 'tablet/signature_capture.html', context)
 
 
 def signature_render(request, username, doc_type, signature_file):

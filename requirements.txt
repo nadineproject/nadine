@@ -1,15 +1,15 @@
 # Core requirements
-Django>=2.0,<2.1
-Pillow==5.3.0
+Django==2.1.4
+Pillow==5.4.0
 psycopg2==2.7.6.1
 django-localflavor==2.1
 django-localflavor-us==1.1
 django-taggit==0.23.0
 django-taggit-templatetags2==1.6.1
 django-crontab==0.7.1
-python-slugify==1.2.6
+python-slugify==2.0.0
 pytz==2018.7
-requests==2.20.0
+requests==2.21.0
 setuptools==40.6.3
 
 # Supporting libraries
@@ -23,30 +23,31 @@ cryptography==2.4.2
 
 # For document signing & PDFs
 html5lib==1.0.1
-django-jsignature==0.8
-weasyprint==0.42.3
+weasyprint==44
+# Master branch of django-jsignature is very out of date
+#django-jsignature==0.8
+-e git+https://github.com/nadineproject/django-jsignature.git#egg=django-jsignature
+
 
 # Libraries for Xero
 pyxero==0.9.1
-PyJWT==1.6.4
+PyJWT==1.7.1
 
 # Libraries for Arpwatch
-pysnmp==4.4.4
+pysnmp==4.4.8
 pysnmp-mibs==0.1.6
 
-# USAePay libraries
+# Payment libraries
 suds-jurko==0.6
-
-# Stripe libraries
-#stripe==2.6.0
+stripe==2.17.0
 
 # For the documentation:
-sphinx==1.7.6
-sphinx-rtd-theme==0.4.1
-recommonmark==0.4.0
+sphinx==1.8.3
+sphinx-rtd-theme==0.4.2
 pycodestyle==2.4
-Markdown==2.6.11
+Markdown==3.0.1
 # Must use CommonMark 0.5.4 for ReadTheDocs!
+recommonmark==0.4.0
 CommonMark==0.5.4
 
 # A few handy tools
