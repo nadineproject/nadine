@@ -55,3 +55,6 @@ class UserNotification(models.Model):
     notify_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="notify", blank=False, on_delete=models.CASCADE)
     target_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="target", blank=False, on_delete=models.CASCADE)
     sent_date = models.DateTimeField(blank=True, null=True, default=None)
+
+
+# Copyright 2019 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
