@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title>Office Nomads:  Here Today</title>
+	<link rel="stylesheet" href="bootstrap.min.css">
+	<style>
+		body {
+			background-color:black;
+			overflow: hidden;
+			margin-left:10px;
+		}
+		#header {
+			font-size: 2em;
+			font-weight: bold;
+			line-height: 2em;
+			color: #E8E8E8;
+			margin:10px;
+		}
+		#header span {
+			padding: 20px;
+		}
+		.user { 
+			font-size: 1.5em;
+			font-weight: bold;
+			line-height: 1.3em;
+			margin:10px;
+			display: inline-block;
+			vertical-align: top; 
+			text-align: center;
+			width: 190px;
+			height: 190px;
+			overflow: hidden;
+			background-color: #E8E8E8;
+			padding: 7px;
+			border-radius: 10px;
+		}
+		.user img {
+			max-width: 100%;
+			max-height: 160px;
+		}
+		.blur{
+		        box-shadow: 0px 0px 20px 10px rgba(255,255,255,1);
+		        -webkit-transform: scale(0.9);
+		        -moz-transform: scale(0.9);
+		        -o-transform: scale(0.9);
+		        -ms-transform: scale(0.9);
+		        transform: scale(0.9);
+		        opacity: 0.7;
+		}
+	</style>
+</head>
+<body>
+	<!--[if lt IE 7]>
+		<p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+	<![endif]-->
+	<div id="header">
+	</div>
+	<div class="data">
+		<div class="holder">
+		</div>
+	</div>
+	<div class="scripts">
+		<script src="https://apps.officenomads.com/static/jquery-2.1.0.min.js"></script>
+		<script>
+		function fillData(data) {
+			//console.log(data);
+			
+			var header = $('#header');
+			header.empty();
+			header.append('<span>Here Today: ' + data['objects'][0]['here_today'].length + '</span>');
+			header.append('<span>Drop-Ins: ' + data['objects'][0]['dropin_count'] + '</span>');
+			header.append('<span>Devices: ' + data['objects'][0]['device_count'] + '</span>');
+			header.append('<span>Total Members: ' + data['objects'][0]['member_count'] + '</span>');
+			header.append('<span>Full-Time: ' + data['objects'][0]['full_time_count'] + '</span>');
+			header.append('<span>Part-Time: ' + data['objects'][0]['part_time_count'] + '</span>');
+			
+			var holder = $('.data .holder');
+			holder.empty();
+			var cap = data['objects'][0]['here_today'].length
+			if (cap > 32) { cap = 32; }
+		    for (var i = 0; i < cap; i++) {
+				var newdiv = $('<div class="span1 user">');
+				newdiv.text(data['objects'][0]['here_today'][i]['name']);
+				holder.append(newdiv);
+				
+				var newimg = $('<img>');
+				var photo_url = data['objects'][0]['here_today'][i]['thumbnail']
+				if (photo_url) {
+					newimg.attr('src', photo_url);
+				} else {
+					newimg.attr('src', 'https://apps.officenomads.com/static/BlankIcon150x150.jpg');
+				}
+				//newimg.addClass('blur');
+				newdiv.append(newimg);
+			}
+		}
+
+		function getData() {
+			//var url = "https://apps.officenomads.com/api/v1/activity/?format=jsonp";
+			var url = "/api/v1/activity/";
+		    $.ajax({
+		        url: url,
+		        type: "GET",
+		        contentType: 'text/javascript', /*'application/json', /* ; charset=utf-8 */
+		        dataType: "jsonp"
+		    }).done(fillData);
+			setTimeout(getData, 10000);
+		}
+		
+		$(document).ready(function() {
+			getData();
+		});
+		</script>
+	</div>
+</body>
+</html>
