@@ -1,5 +1,5 @@
 # Core requirements
-Django==2.1.4
+Django==2.1.5
 Pillow==5.4.0
 psycopg2==2.7.6.1
 django-localflavor==2.1
@@ -7,7 +7,7 @@ django-localflavor-us==1.1
 django-taggit==0.23.0
 django-taggit-templatetags2==1.6.1
 django-crontab==0.7.1
-python-slugify==2.0.0
+python-slugify==2.0.1
 pytz==2018.7
 requests==2.21.0
 setuptools==40.6.3
