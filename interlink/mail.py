@@ -29,6 +29,7 @@ class PopMailChecker(object):
             except poplib.error_proto as e:
                 # We get this back a lot, and we don't want it to flood our logs:
                 # error_proto('-ERR [IN-USE] Unable to lock maildrop: Mailbox is locked by POP server',)
+                self.logger.debug("Error: %s" % str(e))
                 if 'IN-USE' not in str(e):
                     raise e
                 self.logger.debug("Ignoring locked mailbox")
@@ -40,7 +41,7 @@ class PopMailChecker(object):
                 return []
 
             results = []
-            self.logger.info("Processing %d %s messages" % (stats[0], self.mailing_list.name))
+            self.logger.info("Processing %d %s 'messages'" % (stats[0], self.mailing_list.name))
             for i in range(stats[0]):
                 try:
                     response, mail, _size = pop_client.retr(i + 1)
