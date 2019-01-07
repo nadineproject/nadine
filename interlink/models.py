@@ -50,7 +50,7 @@ class MailingListManager(models.Manager):
 
     def fetch_all_mail(self, logger=None):
         """Fetches mail for all mailing lists and returns an array of mailing_lists which reported failures"""
-        for ml in self.all():
+        for ml in self.filter(enabled=True):
             ml.fetch_mail(logger)
 
 
@@ -63,6 +63,7 @@ class MailingList(models.Model):
 
     is_opt_out = models.BooleanField(default=False, help_text='True if new users should be automatically enrolled')
     moderator_controlled = models.BooleanField(default=False, help_text='True if only the moderators can send mail to the list and can unsubscribe users.')
+    enabled = models.BooleanField(default=True, help_text='Set to False to disable this list.')
 
     email_address = models.EmailField()
 
