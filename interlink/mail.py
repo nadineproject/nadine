@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 class PopMailChecker(object):
 
-    """An class for fetching mail"""
+    """A class for fetching mail"""
 
     def __init__(self, mailing_list, _logger=None):
         self.mailing_list = mailing_list
@@ -19,22 +19,26 @@ class PopMailChecker(object):
         self.logger.debug("Checking mail for: %s" % self.mailing_list.name)
         pop_client = poplib.POP3_SSL(self.mailing_list.pop_host, self.mailing_list.pop_port)
         try:
+            # Start with the username
             response = pop_client.user(self.mailing_list.username).decode("utf-8")
             if not response.startswith('+OK'):
                 raise Exception('Username not accepted: %s' % response)
+
+            # Password is a bit trickier as this is when the connection magic happens
             try:
                 response = pop_client.pass_(self.mailing_list.password).decode("utf-8")
                 if not response.startswith('+OK'):
                     raise Exception('Password not accepted: %s' % response)
             except poplib.error_proto as e:
+                self.logger.error("Error Connecing: %s" % str(e))
                 # We get this back a lot, and we don't want it to flood our logs:
                 # error_proto('-ERR [IN-USE] Unable to lock maildrop: Mailbox is locked by POP server',)
-                self.logger.debug("Error: %s" % str(e))
                 if 'IN-USE' not in str(e):
                     raise e
                 self.logger.debug("Ignoring locked mailbox")
                 return
 
+            self.logger.debug("Auth Response: '%s'" % response)
             stats = pop_client.stat()
             if stats[0] == 0:
                 self.logger.debug("No mail")
