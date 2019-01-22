@@ -1,0 +1,60 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[packages]
+Django = "~=2.1"
+Pillow = "~=5.4"
+psycopg2 = "~=2.7"
+django-localflavor = "~=2.1"
+django-localflavor-us = "~=1.1"
+django-taggit = "~=0.23"
+django-taggit-templatetags2 = "~=1.6"
+django-crontab = "~=0.7"
+python-slugify = "!=2.0"
+requests = "~=2.21"
+cryptography = "~=2.4"
+mailchimp3 = "~=3.0"
+
+# Libraries for Arpwatch
+pysnmp = "~=4.4"
+pysnmp-mibs = "~=0.1"
+
+# Libraries for Xero
+pyxero = "~=0.9"
+PyJWT = "~=1.7"
+
+# For document signing & PDFs
+# Master branch of django-jsignature is very out of date
+django-jsignature = {git = "https://github.com/nadineproject/django-jsignature.git", editable = true}
+WeasyPrint = "==44"
+html5lib = "==1.0.1"
+
+# Payment libraries
+suds-jurko = "==0.6"
+# TODO - Remove
+stripe = "==2.17.0"
+
+# For the documentation:
+# Must use CommonMark 0.5.4 for ReadTheDocs!
+CommonMark = "==0.5.4"
+Sphinx = "==1.8.3"
+sphinx_rtd_theme = "==0.4.2"
+Markdown = "==3.0.1"
+recommonmark = "==0.4.0"
+pycodestyle = "==2.4"
+
+
+# LDAP Syncing
+#django-ldapdb == 1.2.0
+#python-ldap == "3.1.0
+#passlib == "1.7.1
+
+pytz = "*"
+safety = "*"
+pip-review = "*"
+django-debug-toolbar = "*"
+
+[requires]
+python_version = "3.7"
