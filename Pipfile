@@ -16,6 +16,7 @@ python-slugify = "!=2.0"
 requests = "~=2.21"
 cryptography = "~=2.4"
 mailchimp3 = "~=3.0"
+pyyaml = ">=4.2b1"
 
 # Libraries for Arpwatch
 pysnmp = "~=4.4"
