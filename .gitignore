@@ -28,6 +28,7 @@ gw_config.json
 __pycache__/
 docs/_build/*
 .vscode
+.venv/
 
 
 # Ignore Themes
