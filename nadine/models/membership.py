@@ -220,12 +220,18 @@ class Membership(models.Model):
             return None
         return subscriptions.order_by('end_date').last().end_date
 
-    def package_name(self, target_date=None):
+    def package_name(self, target_date=None, include_future=False):
         ''' Determine the package name from the active ResourceSubscriptions '''
         packaged_subscriptions = self.active_subscriptions(target_date).filter(package_name__isnull=False)
         if packaged_subscriptions:
             return packaged_subscriptions.first().package_name
-        return None
+
+        # If we made it this far there are no active subscriptions on this date.
+        # Look to the future if that is what is desired.
+        if include_future:
+            future_date = self.will_be_active(target_date)
+            if future_date:
+                return self.package_name(future_date)
 
     def package_is_pure(self, target_date=None):
         ''' True if we have one and only one package name and no blank package names '''
@@ -421,8 +427,19 @@ class Membership(models.Model):
         return self.subscriptions_for_period(period_start=period_start, period_end=period_end)
         # return self.subscriptions_for_day(target_date)
 
+    def future_subscriptions(self, target_date=None):
+        if not target_date:
+            target_date = localtime(now()).date()
+        return ResourceSubscription.objects.filter(membership=self, start_date__gt=target_date)
+
     def is_active(self, target_date=None):
         return self.subscriptions_for_day(target_date).count() > 0
+
+    def will_be_active(self, target_date=None):
+        ''' Return the date this membership will be active if there are subscriptions in the future '''
+        next_sub = self.future_subscriptions(target_date).order_by("start_date").first()
+        if next_sub:
+            return next_sub.start_date
 
     def in_future(self, target_date=None):
         return self in Membership.objects.future_memberships(target_date)

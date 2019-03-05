@@ -127,8 +127,9 @@ def subscribe_to_newsletter(user):
 def send_new_membership(user):
     site = Site.objects.get_current()
     membership = Membership.objects.for_user(user)
-    if membership and membership.is_active():
-        subject = "New %s Membership" % membership.package_name()
+    package_name = membership.package_name(include_future=True)
+    if package_name:
+        subject = "New %s Membership" % package_name
     else:
         subject = "New Membership"
     message = render_to_string('email/new_membership.txt', context={'user': user, 'membership': membership, 'site': site})
@@ -235,7 +236,7 @@ def announce_free_trial(user):
 
 def announce_new_membership(user):
     membership = Membership.objects.for_user(user)
-    package_name = membership.package_name()
+    package_name = membership.package_name(include_future=True)
     subject = "New %s: %s" % (package_name, user.get_full_name())
     message = "Team,\r\n\r\n \t%s has a new %s membership! %s" % (user.get_full_name(), package_name, team_signature(user))
     send_quietly(settings.TEAM_EMAIL_ADDRESS, subject, message)
