@@ -170,6 +170,7 @@ def signin_user_guest(request, username, paid_by):
 def welcome(request, username):
     usage_color = "black"
     user = get_object_or_404(User, username=username)
+    first_day = user.coworkingday_set.count() == 1
     days, allowed, billable = user.profile.days_used()
     if days > allowed:
         usage_color = "red"
@@ -185,7 +186,8 @@ def welcome(request, username):
         'day_allowance': allowed,
         'billable': billable,
         'usage_color': usage_color,
-        'bill_day_str':bill_day_str,
+        'bill_day_str': bill_day_str,
+        'first_day': first_day,
         'motd': motd,
     }
     return render(request, 'tablet/welcome.html', context)

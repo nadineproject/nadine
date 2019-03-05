@@ -3,16 +3,20 @@
 {% block nav-members %} class="ui-btn-active" {% endblock %}
 
 {% block content %}
-	<div style="font-size: 150%;">Welcome {{user.first_name}} {{user.last_name}}!</div>
-	<div style="font-weight:bold; padding:1em; font-size:200%">
-		As of today, you have used
-		<span style="color: {{ usage_color }}">
-			{{ billable }} {% if day_allowance %} of {{ day_allowance }} {% endif %}
-		</span>
-		days.
+  <div style="font-size: 150%;">Welcome {{user.first_name}} {{user.last_name}}!</div>
 
-		<div style="padding-top:1em; font-weight:normal;">Your billing day is the {{ bill_day_str }}.</div>
-	</div>
+  <div style="font-weight:bold; padding:1em; font-size:200%">
+    {% if first_day %}
+      Today is your first day and we're so glad you're here!
+    {% else %}
+      As of today, you have used
+      <span style="color: {{ usage_color }}">
+        {{ billable }} {% if day_allowance %} of {{ day_allowance }} {% endif %}
+      </span>
+      days.
+      <div style="padding-top:1em; font-weight:normal;">Your billing day is the {{ bill_day_str }}.</div>
+    {% endif %}
+  </div>
 
 	<div style="width:100%; position:absolute; bottom:60px; text-align:center;">
 		<div id="page-coutdown" style="margin:0 auto; position:relative;">
