@@ -127,7 +127,10 @@ def subscribe_to_newsletter(user):
 def send_new_membership(user):
     site = Site.objects.get_current()
     membership = Membership.objects.for_user(user)
-    subject = "New %s Membership" % membership.package_name()
+    if membership and membership.is_active():
+        subject = "New %s Membership" % membership.package_name()
+    else:
+        subject = "New Membership"
     message = render_to_string('email/new_membership.txt', context={'user': user, 'membership': membership, 'site': site})
     send(user.email, subject, message)
 
