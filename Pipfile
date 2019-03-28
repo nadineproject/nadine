@@ -4,7 +4,7 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [packages]
-Django = "~=2.1"
+Django = ">=2.1.6"
 Pillow = "~=5.4"
 psycopg2 = "~=2.7"
 django-localflavor = "~=2.1"
@@ -35,7 +35,7 @@ html5lib = "==1.0.1"
 # Payment libraries
 suds-jurko = "==0.6"
 # TODO - Remove
-stripe = "==2.17.0"
+stripe = "==2.23.0"
 
 # For the documentation:
 # Must use CommonMark 0.5.4 for ReadTheDocs!
