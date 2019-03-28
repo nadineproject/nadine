@@ -1,21 +1,21 @@
 # Core requirements
-Django==2.1.5
-Pillow==5.4.0
-psycopg2==2.7.6.1
+Django==2.1.7
+Pillow==5.4.1
+psycopg2==2.7.7
 django-localflavor==2.1
 django-localflavor-us==1.1
 django-taggit==0.23.0
 django-taggit-templatetags2==1.6.1
 django-crontab==0.7.1
-python-slugify==2.0.1
-pytz==2018.7
+python-slugify==3.0.1
+pytz==2018.9
 requests==2.21.0
 setuptools==40.6.3
 
 # Supporting libraries
-mailchimp3==3.0.6
-cryptography==2.4.2
-pyyaml>=4.2b1
+mailchimp3==3.0.7
+cryptography==2.6.1
+pyyaml>=5.1
 
 # LDAP Syncing
 #django-ldapdb==1.2.0
@@ -24,7 +24,7 @@ pyyaml>=4.2b1
 
 # For document signing & PDFs
 html5lib==1.0.1
-weasyprint==44
+weasyprint==46
 # Master branch of django-jsignature is very out of date
 #django-jsignature==0.8
 -e git+https://github.com/nadineproject/django-jsignature.git#egg=django-jsignature
@@ -35,12 +35,12 @@ pyxero==0.9.1
 PyJWT==1.7.1
 
 # Libraries for Arpwatch
-pysnmp==4.4.8
+pysnmp==4.4.9
 pysnmp-mibs==0.1.6
 
 # Payment libraries
 suds-jurko==0.6
-stripe==2.17.0
+stripe==2.23.0
 
 # For the documentation:
 sphinx==1.8.3
@@ -52,6 +52,6 @@ recommonmark==0.4.0
 CommonMark==0.5.4
 
 # A few handy tools
-safety==1.8.4
+safety==1.8.5
 django-debug-toolbar==1.11
 pip-review==1.0
