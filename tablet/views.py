@@ -38,7 +38,7 @@ def members(request):
     list_members = "startswith" in request.GET
     if list_members:
         sw = request.GET.get('startswith')
-        members = User.helper.active_members().filter(first_name__startswith=sw).order_by('first_name')
+        members = User.helper.active_members().filter(first_name__istartswith=sw).order_by('first_name')
     return render(request, 'tablet/members.html', {'members': members, 'list_members': list_members})
 
 
