@@ -701,7 +701,7 @@ class EmailAddress(models.Model):
             site = Site.objects.get_current()
             verif_key = self.get_verif_key()
             uri = reverse('email_verify', kwargs={'email_pk': self.id}) + "?verif_key=" + verif_key
-            verify_link = "http://" + site.domain + uri
+            verify_link = "https://" + site.domain + uri
         return verify_link
 
     def get_send_verif_link(self):
