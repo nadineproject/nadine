@@ -42,7 +42,6 @@ suds-jurko = "==0.6"
 stripe = "*"
 
 # For the documentation:
-# Must use CommonMark 0.5.4 for ReadTheDocs!
 CommonMark = "==0.8.1"
 Sphinx = "==2.0.1"
 sphinx_rtd_theme = "==0.4.3"
