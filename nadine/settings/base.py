@@ -93,6 +93,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'django.contrib.staticfiles',
     'django.contrib.admindocs',
+    'django.contrib.messages',
     # Nadine Applications
     'nadine',
     'staff',
