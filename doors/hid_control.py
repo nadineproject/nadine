@@ -4,7 +4,7 @@ import ssl, urllib.request, urllib.parse, urllib.error, urllib.request, urllib.e
 from datetime import datetime
 from xml.etree import ElementTree
 
-from .core import CardHolder, DoorController, DoorEventTypes
+from core import CardHolder, DoorController, DoorEventTypes
 
 logger = logging.getLogger(__name__)
 

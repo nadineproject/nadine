@@ -2,13 +2,13 @@
 
 ## Keymaster
 
-The Keymaster runs on the main django application server along side the main application. 
+The Keymaster runs on the main Django application server along side the main application.
 
 ## Gatekeeper (coor.py)
 
 The Gatekeeper runs on a remote system close to the door locks.  This system should be locked down to only allow communication between it and the keymaster.
 
-The gatekeeper runs two processes: one to poll the keymaster for changes to make (such as adding or removing keys), and another to relay door events (access granted/denied, door unlocked, etc) to the keymaster.
+The gatekeeper runs two processes: one to poll the Keymaster for changes to make (such as adding or removing keys), and another to relay door events (access granted/denied, door unlocked, etc) to the Keymaster.
 
 #### Heartbeat (threads.py)
  * Upon booting, secure handsake with the Keymaster to verify connection
@@ -26,11 +26,11 @@ There is a bug in the HID controllers that doesn't allow for this feature to wor
  * Accept event notifications from doors in real time
  * Convert to JSON, add Door ID, and send along to the Keymaster to be logged
  * Interpret response from Keymaster in the case the "Magic Key" has been scanned (and toggle lock state of all doors)
- 
+
 
 ### Gatekeeper Setup
 
-* Generate a keymaster encrytion key:
+* Generate a Keymaster encrytion key:
 `./manage.py generate_key`
 
 * Create your config file (nadine/doors/gw_config.json):
@@ -50,18 +50,12 @@ There is a bug in the HID controllers that doesn't allow for this feature to wor
   * LOCK_KEY = A key code that will send a lock command to a given door
   * UNLOCK_KEY = A key code that will send a unlock command to a given door
 
-* Install neccessary libraries:
-`pip install flask cryptography requests`
+* Install necessary libraries:
+`pipenv install`
 
 * Run the app:
-`./gateway_app.py`
+`pipenv run ./gatekeeper_app.py`
 
 ### Adding a new Gatekeer
 
 The first time a Gatekeeper contacts the Keymaster the IP address of the Gatekeeper is stored in the Keymaster and disabled.  To enable, you need to save the shared secret key in the Keymaster database and mark the Gatekeeper enabled.
-
-#### TODO: 
-
- * Magic Key (toggle lock/unlock)
- * New Code Mode (Adding cards to user)
- * Scheduled Lock & Unlock

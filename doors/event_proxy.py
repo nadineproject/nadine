@@ -9,7 +9,7 @@ import traceback
 
 import cherrypy
 
-from .core import Messages, EncryptedConnection, DoorEventTypes
+from core import Messages, EncryptedConnection, DoorEventTypes
 
 ################################################################################
 # The Web Application
