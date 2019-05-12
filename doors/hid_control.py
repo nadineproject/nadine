@@ -21,7 +21,7 @@ class HIDDoorController(DoorController):
     def __send_xml_str(self, xml_str):
         logger.debug("Sending: %s" % xml_str)
 
-        xml_data = urllib.parse.urlencode({'XML': bytes(xml_str, "utf-8")})
+        xml_data = urllib.parse.urlencode({'XML': xml_str})
         request = urllib.request.Request(self.door_url(), xml_data)
         auth_str = '%s:%s' % (self.door_user, self.door_pass)
         base64string = base64.encodestring(bytes(auth_str, "utf-8"))[:-1]
