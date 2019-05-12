@@ -399,7 +399,7 @@ class Gatekeeper(object):
 
             # Find our controller for this door
             if door_type == DoorTypes.HID:
-                from .hid_control import HIDDoorController
+                from hid_control import HIDDoorController
                 controller = HIDDoorController(name, ip_address, username, password)
                 controller.debug = self.debug
             elif door_type == DoorTypes.TEST:
