@@ -23,7 +23,8 @@ class HIDDoorController(DoorController):
 
         xml_data = urllib.parse.urlencode({'XML': xml_str})
         request = urllib.request.Request(self.door_url(), xml_data)
-        base64string = base64.encodestring('%s:%s' % (self.door_user, self.door_pass)).replace('\n', '')
+        auth_str = '%s:%s' % (self.door_user, self.door_pass)
+        base64string = base64.encodestring(bytes(auth_str, "utf-8"))[:-1]
         request.add_header("Authorization", "Basic %s" % base64string)
         context = ssl._create_unverified_context()
         context.set_ciphers('RC4-SHA')
