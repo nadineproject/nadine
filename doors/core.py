@@ -206,7 +206,8 @@ class DoorController(object):
         self.clear_data()
 
     def door_url(self):
-        door_url = "https://%s/cgi-bin/vertx_xml.cgi" % self.door_ip
+        # door_url = "https://%s/cgi-bin/vertx_xml.cgi" % self.door_ip
+        door_url = "http://%s/cgi-bin/vertx_xml.cgi" % self.door_ip
         return door_url
 
     def cardholder_count(self):
