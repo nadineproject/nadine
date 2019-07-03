@@ -490,7 +490,7 @@ class Gatekeeper(object):
             if self.card_secret:
                 for e in door_events:
                     if 'cardNumber' in e:
-                        e['cardNumber'] = self.encode_door_code(e['cardNumber'])
+                        e['cardNumber'] = self.encode_door_code(e['cardNumber']).decode('utf-8')
             event_logs[door_name] = door_events
         return event_logs
 
@@ -537,22 +537,25 @@ class Gatekeeper(object):
 
     def encode_door_code(self, clear):
         if not clear: return None
-        enc_str = ''
+        enc = []
         for i in range(len(clear)):
             key_c = self.card_secret[i % len(self.card_secret)]
             if isinstance(key_c, int): key_c = chr(key_c)
-            enc_str += chr((ord(clear[i]) + ord(key_c)) % 256)
-        return base64.urlsafe_b64encode(enc_str.encode('utf-8'))[::-1][1:]
+            enc_c = chr((ord(clear[i]) + ord(key_c)) % 256)
+            enc.append(enc_c)
+        new_enc =  base64.urlsafe_b64encode("".join(enc).encode()).decode()
+        return new_enc[::-1][2:]
 
     def decode_door_code(self, enc):
         if not enc: return None
-        enc = base64.urlsafe_b64decode((enc[::-1] + b'=')).decode('utf-8')
-        dec_str = ''
+        dec = []
+        enc = base64.urlsafe_b64decode(enc[::-1] + '==').decode()
         for i in range(len(enc)):
             key_c = self.card_secret[i % len(self.card_secret)]
             if isinstance(key_c, int): key_c = chr(key_c)
-            dec_str += chr((256 + ord(enc[i]) - ord(key_c)) % 256)
-        return dec_str
+            dec_c = chr((256 + ord(enc[i]) - ord(key_c)) % 256)
+            dec.append(dec_c)
+        return "".join(dec)
 
     def __str__(self):
         return self.description
