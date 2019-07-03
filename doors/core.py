@@ -490,7 +490,8 @@ class Gatekeeper(object):
             if self.card_secret:
                 for e in door_events:
                     if 'cardNumber' in e:
-                        e['cardNumber'] = self.encode_door_code(e['cardNumber']).decode('utf-8')
+                        # e['cardNumber'] = self.encode_door_code(e['cardNumber']).decode('utf-8')
+                        e['cardNumber'] = self.encode_door_code(e['cardNumber'])
             event_logs[door_name] = door_events
         return event_logs
 
