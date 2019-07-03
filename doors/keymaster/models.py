@@ -221,7 +221,7 @@ class DoorCode(models.Model):
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="+", on_delete=models.CASCADE)
     modified_ts = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    code = models.CharField(max_length=16, unique=True)
+    code = models.CharField(max_length=32, unique=True)
 
     def get_last_event(self):
         return DoorEvent.objects.filter(code=self.code).order_by('timestamp').reverse().first()
