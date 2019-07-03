@@ -537,25 +537,29 @@ class Gatekeeper(object):
 
     def encode_door_code(self, clear):
         if not clear: return None
-        enc = []
-        for i in range(len(clear)):
-            key_c = self.card_secret[i % len(self.card_secret)]
-            if isinstance(key_c, int): key_c = chr(key_c)
-            enc_c = chr((ord(clear[i]) + ord(key_c)) % 256)
-            enc.append(enc_c)
-        new_enc =  base64.urlsafe_b64encode("".join(enc).encode()).decode()
-        return new_enc[::-1][2:]
+        # TODO - Bypassing local card encryption -- JLS
+        # enc = []
+        # for i in range(len(clear)):
+        #     key_c = self.card_secret[i % len(self.card_secret)]
+        #     if isinstance(key_c, int): key_c = chr(key_c)
+        #     enc_c = chr((ord(clear[i]) + ord(key_c)) % 256)
+        #     enc.append(enc_c)
+        # new_enc =  base64.urlsafe_b64encode("".join(enc).encode()).decode()
+        # return new_enc[::-1][2:]
+        return clear
 
     def decode_door_code(self, enc):
         if not enc: return None
-        dec = []
-        enc = base64.urlsafe_b64decode(enc[::-1] + '==').decode()
-        for i in range(len(enc)):
-            key_c = self.card_secret[i % len(self.card_secret)]
-            if isinstance(key_c, int): key_c = chr(key_c)
-            dec_c = chr((256 + ord(enc[i]) - ord(key_c)) % 256)
-            dec.append(dec_c)
-        return "".join(dec)
+        # TODO - Bypassing local card encryption -- JLS
+        # dec = []
+        # enc = base64.urlsafe_b64decode(enc[::-1] + '==').decode()
+        # for i in range(len(enc)):
+        #     key_c = self.card_secret[i % len(self.card_secret)]
+        #     if isinstance(key_c, int): key_c = chr(key_c)
+        #     dec_c = chr((256 + ord(enc[i]) - ord(key_c)) % 256)
+        #     dec.append(dec_c)
+        # return "".join(dec)
+        return enc
 
     def __str__(self):
         return self.description
