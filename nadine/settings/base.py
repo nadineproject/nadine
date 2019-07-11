@@ -282,7 +282,7 @@ CRONJOBS = [
     # Check-in with members
     ('30 8 * * *', 'django.core.management.call_command', ['checkin_anniversary']),
     ('30 8 * * *', 'django.core.management.call_command', ['checkin_exiting']),
-    ('30 8 * * *', 'django.core.management.call_command', ['checkin_two_months']),
+    # ('30 8 * * *', 'django.core.management.call_command', ['checkin_two_months']),
     ('30 8 * * *', 'django.core.management.call_command', ['checkin_no_return']),
     ('55 17 * * *', 'django.core.management.call_command', ['checkin_first_day']),
     # Tasks to run every hour
