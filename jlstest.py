@@ -23,3 +23,14 @@ user = jacob
 
 on = Organization.objects.filter(name="Office Nomads").first()
 main = Organization.objects.filter(name="312 Main").first()
+
+# Gatekeeper Testing
+# from core import *
+# with open('gw_config.json', 'r') as f:
+#     config = json.load(f)
+#
+#
+# gatekeeper = Gatekeeper(config)
+# gatekeeper.configure_doors()
+# controller = list(gatekeeper.doors.values())[0]['controller']
+# controller.load_credentials()
