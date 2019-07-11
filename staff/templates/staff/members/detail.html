@@ -124,6 +124,15 @@ function gotoEmailReset(emailAddress){
             </tr>
         {% endif %}
 
+        <!-- Pronouns -->
+        {% if user.profile.pronouns %}
+            <tr>
+                <td class='detail-title'>Pronouns</td>
+                <td class='detail-data'>{{ user.profile.pronouns }}</td>
+            </tr>
+        {% endif %}
+
+
         <!-- How Heard -->
         {% if user.profile.howHeard %}
             <tr>

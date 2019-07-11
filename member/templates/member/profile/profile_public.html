@@ -45,6 +45,13 @@
         </tr>
     {% endif %}
 
+    {% if user.profile.pronouns %}
+        <tr>
+            <td class='bold-blue'><strong>Pronouns:</strong></td>
+            <td>{{ user.profile.pronouns }}</td>
+        </tr>
+    {% endif %}
+
 </table>
 
 <!-- Website Icons -->

@@ -357,6 +357,7 @@ class EditProfileForm(forms.Form):
     url_linkedin = forms.URLField(required=False)
     url_github = forms.URLField(required=False)
     gender = forms.ChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), choices=GENDER_CHOICES, required=False)
+    pronouns = forms.CharField(max_length=64, required=False)
     howHeard = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), label="How heard", queryset=HowHeard.objects.all(), required=False)
     industry = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), queryset=Industry.objects.all(), required=False)
     neighborhood = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), queryset=Neighborhood.objects.all(), required=False)
@@ -389,6 +390,7 @@ class EditProfileForm(forms.Form):
         user.profile.zipcode = self.cleaned_data['zipcode']
         user.profile.bio = self.cleaned_data['bio']
         user.profile.gender = self.cleaned_data['gender']
+        user.profile.pronouns = self.cleaned_data['pronouns']
         user.profile.howHeard = self.cleaned_data['howHeard']
         user.profile.industry = self.cleaned_data['industry']
         user.profile.neighborhood = self.cleaned_data['neighborhood']

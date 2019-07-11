@@ -282,6 +282,7 @@ class UserProfile(models.Model):
     bio = models.TextField(blank=True, null=True)
     public_profile = models.BooleanField(default=False)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default="U")
+    pronouns = models.CharField(max_length=64, blank=True, null=True)
     howHeard = models.ForeignKey(HowHeard, blank=True, null=True, on_delete=models.CASCADE)
     #referred_by = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="Referred By", related_name="referral", blank=True, null=True, on_delete=models.CASCADE)
     industry = models.ForeignKey(Industry, blank=True, null=True, on_delete=models.CASCADE)
