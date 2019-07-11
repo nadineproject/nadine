@@ -5,16 +5,16 @@ verify_ssl = true
 
 [packages]
 Django = ">=2.2"
-Pillow = "~=6.0"
+Pillow = "~=6.1"
 psycopg2 = "~=2.8"
-django-localflavor = "~=2.1"
+django-localflavor = "~=2.2"
 django-localflavor-us = "~=1.1"
 django-taggit = "~=1.1.0"
 django-taggit-templatetags2 = "~=1.6"
 django-crontab = "~=0.7"
 python-slugify = "!=2.0"
-requests = "~=2.21"
-cryptography = "~=2.4"
+requests = "~=2.22"
+cryptography = "~=2.7"
 mailchimp3 = "~=3.0"
 pyyaml = "~=5.1"
 
@@ -33,7 +33,7 @@ PyJWT = "~=1.7"
 # For document signing & PDFs
 # Master branch of django-jsignature is very out of date
 django-jsignature = {git = "https://github.com/nadineproject/django-jsignature.git", editable = true}
-WeasyPrint = "==47"
+WeasyPrint = "==48"
 html5lib = "==1.0.1"
 
 # Payment libraries
@@ -42,10 +42,10 @@ suds-jurko = "==0.6"
 stripe = "*"
 
 # For the documentation:
-CommonMark = "==0.8.1"
-Sphinx = "==2.0.1"
+CommonMark = "~=0.9"
+Sphinx = "~=2.1"
 sphinx_rtd_theme = "==0.4.3"
-Markdown = "==3.1"
+Markdown = "!=3.1"
 recommonmark = "==0.5.0"
 pycodestyle = "==2.5"
 
