@@ -184,7 +184,7 @@ class BillManager(models.Manager):
             logger.info("get_open_bill(%s, %s, %s)" % (user, period_start, period_end))
             for bill in bills:
                 logger.info("Found %s" % bill)
-            raise Exception("Found more than one bill!")
+            raise Exception("Found more than one bill (%s)!" % bills)
 
         # Returns the one or None if we didn't find anything
         return bills.first()
