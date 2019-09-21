@@ -33,7 +33,7 @@ PyJWT = "~=1.7"
 # For document signing & PDFs
 # Master branch of django-jsignature is very out of date
 django-jsignature = {git = "https://github.com/nadineproject/django-jsignature.git", editable = true}
-WeasyPrint = "==48"
+WeasyPrint = "==50"
 html5lib = "==1.0.1"
 
 # Payment libraries
@@ -46,7 +46,7 @@ CommonMark = "~=0.9"
 Sphinx = "~=2.1"
 sphinx_rtd_theme = "==0.4.3"
 Markdown = "!=3.1"
-recommonmark = "==0.5.0"
+recommonmark = "==0.6.0"
 pycodestyle = "==2.5"
 
 
