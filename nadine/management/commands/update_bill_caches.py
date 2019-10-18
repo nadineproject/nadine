@@ -13,7 +13,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         cnt = UserBill.objects.all().count()
-        print(f"Updating UserBill caches ({cnt})", end='')
+        print("Updating UserBill caches (%d)" % cnt, end='')
 
         for bill in UserBill.objects.all():
             bill.update_cached_totals()
