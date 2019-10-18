@@ -719,6 +719,9 @@ class UserBill(models.Model):
         for c in custom_items:
             c.save()
 
+        # Recalculate the cache as well
+        self.update_cached_totals()
+
         logger.debug("Previous amount: %s, New amount: %s" % (total_before, self.amount))
 
     def combine(self, bill, recalculate=True):
