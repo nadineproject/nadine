@@ -8,6 +8,8 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404, HttpRequest
 from django.shortcuts import render, get_object_or_404
+from django.utils.translation import gettext as _
+
 from django.utils import timezone
 
 from nadine import email
@@ -30,7 +32,7 @@ def connect(request, username):
     action = request.GET.get('action')
     if action and action == "send_info":
         email.send_contact_request(user, target)
-        messages.success(request, "Email Sent")
+        messages.success(request, _("Email Sent"))
     context = {'target': target, 'user': user, 'settings': settings}
     return render(request, 'member/connect/connect.html', context)
 
@@ -103,9 +105,9 @@ def slack(request, username):
         try:
             slack_api = SlackAPI()
             slack_api.invite_user(user)
-            messages.add_message(request, messages.INFO, "Slack Invitation Sent.  Check your email for further instructions.")
+            messages.add_message(request, messages.INFO, _("Slack Invitation Sent.  Check your email for further instructions."))
         except Exception as e:
-            messages.add_message(request, messages.ERROR, "Failed to send invitation: %s" % e)
+            messages.add_message(request, messages.ERROR, _("Failed to send invitation: %s") % e)
 
     context = {'user': user,
                'team_url': settings.SLACK_TEAM_URL,

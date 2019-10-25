@@ -1,28 +1,29 @@
 {% extends "member/base.html" %}
+{% load i18n %}
 
-{% block sub-title %}Contact Request | {% endblock %}
+{% block sub-title %}{% blocktrans %}Contact Request{% endblocktrans %} | {% endblock %}
 
 {% block style %}
 {% endblock %}
 
 {% block content %}
-<h2>Connect with {{ target.first_name}}!</h2>
+<h2>{% blocktrans %}Connect with{% endblocktrans %} {{ target.first_name}}!</h2>
 
 <p style="margin:2em;">
-There are two ways you can use Nadine to connect with other members.  We don't give out any personal information
+{% blocktrans %}There are two ways you can use Nadine to connect with other members.  We don't give out any personal information
 so we can't just give you their email address, but we can alert you when you are both in the space at the same time,
-or we can send an email to them with your information (<i>{{user.email}}</i>) and they can contact you.</p>
+or we can send an email to them with your information (<i>{{user.email}}</i>) and they can contact you.{% endblocktrans %}</p>
 
 <div class='centered'>
-	<h3>What would you like to do?</h3>
+	<h3>{% blocktrans %}What would you like to do?{% endblocktrans %}</h3>
 	<dl>
-		<dd><a href="{% url 'member:connect:add_notification' target %}">Notify me when we are both in the space</a></dd>
+		<dd><a href="{% url 'member:connect:add_notification' target %}">{% blocktrans %}Notify me when we are both in the space{% endblocktrans %}</a></dd>
 		{% if messages %}
-			<dd>Message Sent!</dd>
+			<dd>{% blocktrans %}Message Sent!{% endblocktrans %}</dd>
 		{% else %}
-			<dd><a href="?action=send_info">Send them my contact information</a></dd>
+			<dd><a href="?action=send_info">{% blocktrans %}Send them my contact information{% endblocktrans %}</a></dd>
 		{% endif %}
-		<dd><a href="{% url 'member:profile:view' target %}">Go back to their profile</a></dd>
+		<dd><a href="{% url 'member:profile:view' target %}">{% blocktrans %}Go back to their profile{% endblocktrans %}</a></dd>
 	</dl>
 </div>
 

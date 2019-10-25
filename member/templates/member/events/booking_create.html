@@ -1,6 +1,7 @@
 {% extends 'member/base.html' %}
+{% load i18n %}
 
-{% block sub-title %}Book a Meeting Room | {% endblock %}
+{% block sub-title %}{% blocktrans %}Book a Meeting Room{% endblocktrans %} | {% endblock %}
 
 {% block style %}
 
@@ -17,14 +18,14 @@
 
 {% block content %}
 <div class='booking-box'>
-  <h3 class='header-font' style='text-align:center; color:black;'>Book a Meeting Room</h3>
+  <h3 class='header-font' style='text-align:center; color:black;'>{% blocktrans %}Book a Meeting Room{% endblocktrans %}</h3>
   <br />
   <form id='booking-reqs' action='#' method='GET'>
     <table>
       <tr>
-        <td class='booking-td' class='cap-label'><strong>Date</strong></td>
-        <td class='cap-label'><strong>Start Time</strong></td>
-        <td class='cap-label'><strong>End Time</strong></td>
+        <td class='booking-td' class='cap-label'><strong>{% trans "Date" %}</strong></td>
+        <td class='cap-label'><strong>{% blocktrans %}Start Time{% endblocktrans %}</strong></td>
+        <td class='cap-label'><strong>{% blocktrans %}End Time{% endblocktrans %}</strong></td>
       </tr>
       <tr>
         <td class='booking-td'><input type="date" name="date" class="datepicker" id='booking-date' ></td>
@@ -32,12 +33,12 @@
         <td><input name='end' class='timepicker' step=900 id='end-time'/></td>
         <td>
           <input id='day-btn' name='all_day' type='checkbox' class='filled-in' />
-          <label for='day-btn' name='all-day'>All Day Event</label>
+          <label for='day-btn' name='all-day'>{% blocktrans %}All Day Event{% endblocktrans %}</label>
         </td>
         {% if user.membership.active_subscriptions %}
           <td>
             <input id='member-btn' name='members_only' type='checkbox' class='filled-in' />
-            <label for='member-btn' name='all-day'>Included in Membership</label>
+            <label for='member-btn' name='all-day'>{% blocktrans %}Included in Membership{% endblocktrans %}</label>
           </td>
         {% endif %}
       </tr>
@@ -47,32 +48,32 @@
         <tr>
           <td>
             <input id="av-btn" name='has_av' type="checkbox" class='filled-in' />
-            <label for="av-btn">Has A/V</label>
+            <label for="av-btn">{% blocktrans %}Has A/V{% endblocktrans %}</label>
           </td>
           <td>
             <input id='phone-btn' name="has_phone" type="checkbox" class='filled-in' />
-            <label for="phone-btn">Has Phone</label>
+            <label for="phone-btn">{% blocktrans %}Has Phone{% endblocktrans %}</label>
           </td>
           <td id='floor-select'>
             <select class='browser-default input-field' name='floor' id='floor'>
-              <option value="" disabled selected>On Floor:</option>
+              <option value="" disabled selected>{% blocktrans %}On Floor:{% endblocktrans %}</option>
               {% for floor in floors %}
-                <option id='floor-{{ floor.floor }}' value="{{ floor.floor }}">Floor {{ floor.floor }}</option>
+                <option id='floor-{{ floor.floor }}' value="{{ floor.floor }}">{% trans "Floor" %} {{ floor.floor }}</option>
               {% endfor %}
             </select>
           </td>
           <td id='seat-select'>
             <select class='browser-default input-field' name='seats'>
-              <option value="" disabled selected>Seats:</option>
-              <option id='ppl-2' value="2">2 People</option>
-              <option id='ppl-4' value="4">4 People</option>
-              <option id='ppl-6' value="6">6 People</option>
-              <option id='ppl-10' value="10">10-20 People</option>
-              <option id='ppl-20' value="20">20+ People</option>
+              <option value="" disabled selected>{% trans "Seats:" %}</option>
+              <option id='ppl-2' value="2">{% blocktrans %}2 People{% endblocktrans %}</option>
+              <option id='ppl-4' value="4">{% blocktrans %}4 People{% endblocktrans %}</option>
+              <option id='ppl-6' value="6">{% blocktrans %}6 People{% endblocktrans %}</option>
+              <option id='ppl-10' value="10">{% blocktrans %}10-20 People{% endblocktrans %}</option>
+              <option id='ppl-20' value="20">{% blocktrans %}20+ People{% endblocktrans %}</option>
             </select>
           </td>
           <td>
-            <button type='submit' value='Search' class='btn waves-effect book-btn'>Search</button>
+            <button type='submit' value='Search' class='btn waves-effect book-btn'>{% trans "Search" %}</button>
           </td>
         </tr>
       </table>
@@ -85,9 +86,9 @@
           {% if room.image %}
             <div class='col s1'>
               <h5 class='header-font' style='color:RGBA(66, 98, 113, 1.00);'>{{ room.name }}</h5>
-              <p>Floor {{room.floor}}</p>
-              <button class='btn room-show' id='{{ room.id }}'>More Info</button>
-              <button class='btn room-close'>Hide Info</button>
+              <p>{% trans "Floor" %} {{room.floor}}</p>
+              <button class='btn room-show' id='{{ room.id }}'>{% blocktrans %}More Info{% endblocktrans %}</button>
+              <button class='btn room-close'>{% blocktrans %}Hide Info{% endblocktrans %}</button>
             </div>
             <div class='col s1' id='thumbnail-box'>
               <img class='room-thumbnail' src="{{ room.image.url }}"/>
@@ -95,9 +96,9 @@
           {% else %}
           <div class='col s1'>
             <h5 class='header-font' style='color:RGBA(66, 98, 113, 1.00);'>{{ room.name }}</h5>
-            <p>Floor {{room.floor}}</p>
-            <button class='btn room-show' id='{{ room.id }}'>More Info</button>
-            <button class='btn room-close'>Hide Info</button>
+            <p>{% trans "Floor" %} {{room.floor}}</p>
+            <button class='btn room-show' id='{{ room.id }}'>{% blocktrans %}More Info{% endblocktrans %}</button>
+            <button class='btn room-close'>{% blocktrans %}Hide Info{% endblocktrans %}</button>
           </div>
           {% endif %}
           <div class='col s8 m8 cal-div' style='height:110px;'>
@@ -165,28 +166,28 @@
             </div>
             <ul>
               {% if room.rate %}
-                <li style='color: red;'><strong>Hourly Rate:</strong> ${{ room.rate }}</li>
+                <li style='color: red;'><strong>{% blocktrans %}Hourly Rate:{% endblocktrans %}</strong> ${{ room.rate }}</li>
               {% endif %}
-              <li><strong>Seats:</strong> {{ room.seats }}</li>
-              <li><strong>Max Capacity:</strong> {{ room.max_capacity }}</li>
-              <li><strong>Has A/V?:</strong> {{ room.has_av|yesno:"Yes, No" }}</li>
-              <li><strong>Has Phone:</strong> {{ room.has_phone|yesno:"Yes, No" }}</li>
+              <li><strong>{% trans "Seats:" %}</strong> {{ room.seats }}</li>
+              <li><strong>{% blocktrans %}Max Capacity:{% endblocktrans %}</strong> {{ room.max_capacity }}</li>
+              <li><strong>{% blocktrans %}Has A/V?:{% endblocktrans %}</strong> {{ room.has_av|yesno:"Yes, No" }}</li>
+              <li><strong>{% blocktrans %}Has Phone:{% endblocktrans %}</strong> {{ room.has_phone|yesno:"Yes, No" }}</li>
             </ul>
-            <p><strong>Description:</strong> {{ room.description }}</p>
+            <p><strong>{% trans "Description:" %}</strong> {{ room.description }}</p>
           </div>
         </div>
       {% endfor %}
     {% else %}
       <div class='row'>
         <p style='color:red;text-align:center;padding:5%;'>
-          Sorry, there do not seem to be any rooms available that match your criteria.
+          {% blocktrans %}Sorry, there do not seem to be any rooms available that match your criteria.{% endblocktrans %}
         </p>
       </div>
     {% endif %}
   </div>
   <div class='row time-error'>
     <p style='color:red;text-align:center;padding:5%;'>
-      Please select a time and date in the future.
+      {% blocktrans %}Please select a time and date in the future.{% endblocktrans %}
     </p>
   </div>
 </div>

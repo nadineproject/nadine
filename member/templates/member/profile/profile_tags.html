@@ -1,3 +1,4 @@
+{% load i18n %}
 {% comment %}
   Note:  The jquery on this page will not work if loaded outside the profile page.
 {% endcomment %}
@@ -15,7 +16,7 @@
   		{% endfor %}
     {% else %}
       <p style='font-style: italic;text-align: center;'>
-        No tags yet.
+        {% blocktrans %}No tags yet.{% endblocktrans %}
       </p>
     {% endif %}
 	</ul>

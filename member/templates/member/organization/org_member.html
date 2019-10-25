@@ -1,13 +1,14 @@
 {% extends "member/base.html" %}
+{% load i18n %}
 {% load imagetags %}
 
-{% block sub-title %}Organization | {% endblock %}
+{% block sub-title %}{% trans "Organization" %} | {% endblock %}
 
 {% block style %}
 {% endblock %}
 
 {% block content %}
-<h3 class='header-font' style='text-align: center;'>{{ action|title }} {{ organization.name}} Member</h3>
+<h3 class='header-font' style='text-align: center;'>{{ action|title }} {{ organization.name}} {% trans "Member" %}</h3>
 
 <form class='org-form' method="POST" action="." enctype="multipart/form-data">
 	<input type="hidden" name="action" value="save"/>
@@ -19,7 +20,7 @@
 	<table>
 		<tr>
 			<td class="org-label">
-				User
+                {% trans "User" %}
 			</td>
 			<td>
 				{% if full_name %}
@@ -34,13 +35,13 @@
 			</td>
 			<td class='pf-error name-error' style='padding-bottom: 3%;'>
 				{% if form.username.errors %}
-					Slow down and try again. You must select an existing user from the dropdown.
+					{% blocktrans %}Slow down and try again. You must select an existing user from the dropdown.{% endblocktrans %}
 				{% endif %}
 			</td>
 		</tr>
 		<tr>
 			<td class='org-label'>
-				Title
+                {% trans "Title" %}
 			</td>
 			<td>
 				{{ form.title }}
@@ -51,7 +52,7 @@
 		</tr>
 		<tr>
 			<td class='org-label'>
-				Start Date
+				{% blocktrans %}Start Date{% endblocktrans %}
 			</td>
 			<td>
 				{{ form.start_date }}
@@ -62,7 +63,7 @@
 		</tr>
 		<tr>
 			<td class='org-label'>
-				End Date
+				{% blocktrans %}End Date{% endblocktrans %}
 			</td>
 			<td>
 				{{ form.end_date }}

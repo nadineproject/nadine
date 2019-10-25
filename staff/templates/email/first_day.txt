@@ -1,5 +1,6 @@
 {% load i18n %}{% autoescape off %}
-{{ user.first_name }}, 
+{% blocktrans %}
+{{ user.first_name }},
 
 Thanks so much for coworking with us today - we hope you had fun trying out Office Nomads! It is always exciting for us to have a new face in the office. What were your first impressions of coworking with us?
 
@@ -7,5 +8,5 @@ We also wanted to see if you had any questions about coworking or membership at 
 
 Thanks again and hope to see you back at the space soon,
 The {{ site.name }} Team
-
+{% endblocktrans %}
 {% endautoescape %}

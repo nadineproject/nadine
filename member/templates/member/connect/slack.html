@@ -1,20 +1,21 @@
 {% extends "member/base.html" %}
+{% load i18n %}
 
 {% block content %}
-	<h3 class='header-font' style='text-align:center;'>Slack Team</h3>
-		<p>
-			We have a slack team set up for all members.  You can request an invitation here and then
+	<h3 class='header-font' style='text-align:center;'>{% blocktrans %}Slack Team{% endblocktrans %}</h3>
+		<p>{% url 'member:connect:chat' as chat%}
+			{% blocktrans %}We have a slack team set up for all members.  You can request an invitation here and then
 			you will be sent an email giving you 	instructions on how to finish the registration process.  You can use slack
 			either through the website below or using the various <a href="https://slack.com/apps">desktop and mobile apps</a>.
 			But first you need to request an invite and join the team.  We still have the old school
-			<a href="{% url 'member:connect:chat' %}">irc chat</a> if you prefer that form of communication.
+			<a href="{{ chat }}">irc chat</a> if you prefer that form of communication.{% endblocktrans %}
 		</p>
 		<div style="text-align: center">
 			<form action="." method="POST">
-				<input class='btn' type="submit" value="Request Invite"/>
+				<input class='btn' type="submit" value="{% trans "Request Invite" %}"/>
 				{% csrf_token %}
 			</form>
-			<h4>Team Location: <a href="{{ team_url }}">{{ team_url }}</a></h4>
+			<h4>{% blocktrans %}Team Location:{% endblocktrans %} <a href="{{ team_url }}">{{ team_url }}</a></h4>
 		</div>
 {% endblock %}
 

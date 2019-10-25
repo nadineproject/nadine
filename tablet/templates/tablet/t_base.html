@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load static %}
 
 <!DOCTYPE html>
@@ -5,7 +6,7 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>{{ site.name }} | Front Desk</title>
+	<title>{{ site.name }} | {% blocktrans %}Front Desk{% endblocktrans %}</title>
 	<link rel="apple-touch-icon" href="{% static 'images/apple-touch-icon-57x57.png' %}"/>
 	<link rel="apple-touch-icon" sizes="57x57" href="{% static 'images/apple-touch-icon-57x57.png' %}"/>
 	<link rel="apple-touch-icon" sizes="76x76" href="{% static 'images/apple-touch-icon-76x76.png' %}"/>
@@ -33,12 +34,12 @@
 	<div data-role="page">
 		{% if not tablet_ios %}
 			<div id="header" data-role="header" data-position="fixed">
-				<h1>Nadine Member Console</h1>
+				<h1>{% blocktrans %}Nadine Member Console{% endblocktrans %}</h1>
 				<div id="top-nav" data-role="navbar" data-iconpos="left">
 					<ul>
-						<li><a data-transition="fade" href="{% url 'tablet:members' %}" {% block nav-members %}{% endblock %}>Members</a></li>
-						<li><a data-transition="fade" href="{% url 'tablet:here_today' %}" {% block nav-here %}{% endblock %}>Here Today</a></li>
-						<li><a data-transition="fade" href="{% url 'tablet:visitors' %}" {% block nav-visitors %}{% endblock %}>Visitors</a></li>
+						<li><a data-transition="fade" href="{% url 'tablet:members' %}" {% block nav-members %}{% endblock %}>{% trans "Members" %}</a></li>
+						<li><a data-transition="fade" href="{% url 'tablet:here_today' %}" {% block nav-here %}{% endblock %}>{% blocktrans %}Here Today{% endblocktrans %}</a></li>
+						<li><a data-transition="fade" href="{% url 'tablet:visitors' %}" {% block nav-visitors %}{% endblock %}>{% trans "Visitors" %}</a></li>
 					</ul>
 				</div>
 			</div>
@@ -51,7 +52,7 @@
 
 		{% if not tablet_ios %}
 			<div id="footer" data-role="footer" data-position="fixed">
-				<div style="float:right; margin-right: 1em;">Office Nomads</div>
+				<div style="float:right; margin-right: 1em;">{% blocktrans %}Office Nomads{% endblocktrans %}</div>
 				<div style="float:left; margin-left: 1em;">&copy; 2007-2019 The Nadine Project</div>
 			</div>
 		{% endif %}

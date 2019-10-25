@@ -1,20 +1,21 @@
 {% extends "tablet/t_base.html" %}
+{% load i18n %}
 
 {% block nav-members %} class="ui-btn-active" {% endblock %}
 
 {% block content %}
-  <div style="font-size: 150%;">Welcome {{user.first_name}} {{user.last_name}}!</div>
+  <div style="font-size: 150%;">{% blocktrans %}Welcome {{user.first_name}} {{user.last_name}}!{% endblocktrans %}</div>
 
   <div style="font-weight:bold; padding:1em; font-size:200%">
     {% if first_day %}
-      Today is your first day and we're so glad you're here!
+      {% blocktrans %}Today is your first day and we're so glad you're here!{% endblocktrans %}
     {% else %}
-      As of today, you have used
+      {% blocktrans %}As of today, you have used{% endblocktrans %}
       <span style="color: {{ usage_color }}">
-        {{ billable }} {% if day_allowance %} of {{ day_allowance }} {% endif %}
+        {{ billable }} {% if day_allowance %} {% trans "of" %} {{ day_allowance }} {% endif %}
       </span>
-      days.
-      <div style="padding-top:1em; font-weight:normal;">Your billing day is the {{ bill_day_str }}.</div>
+        {% trans "days." %}
+      <div style="padding-top:1em; font-weight:normal;">{% blocktrans %}Your billing day is the {{ bill_day_str }}.{% endblocktrans %}</div>
     {% endif %}
   </div>
 

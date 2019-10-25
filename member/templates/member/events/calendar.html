@@ -1,4 +1,5 @@
 {% extends "member/base.html" %}
+{% load i18n %}
 
 {% block content %}
   <div class='row'>
@@ -14,7 +15,7 @@
             <table class='col s8' id='event-info'>
               <tr>
                 <td>
-                  <strong>Start Time: </strong>
+                  <strong>{% blocktrans %}Start Time:{% endblocktrans %} </strong>
                 </td>
                 <td>
                   <span id='event-start'></span>
@@ -22,7 +23,7 @@
               </tr>
               <tr>
                 <td>
-                  <strong>End Time: </strong>
+                  <strong>{% blocktrans %}End Time:{% endblocktrans %} </strong>
                 </td>
                 <td>
                   <span id='event-end'></span>
@@ -30,7 +31,7 @@
               </tr>
               <tr>
                 <td>
-                  <strong>Room: </strong>
+                  <strong>{% trans "Room:" %} </strong>
                 </td>
                 <td>
                   <span id='event-room'></span>
@@ -38,7 +39,7 @@
               </tr>
               <tr>
                 <td>
-                  <strong>Hosted By: </strong>
+                  <strong>{% blocktrans %}Hosted By:{% endblocktrans %} </strong>
                 </td>
                 <td>
                   <span id='event-host'></span>
@@ -51,7 +52,7 @@
           </div>
         </div>
         <div class='row'>
-        <button class='btn waves-effect modal-btn'>Close</button>
+        <button class='btn waves-effect modal-btn'>{% trans "Close" %}</button>
         </div>
       </div>
     </div>
@@ -60,14 +61,14 @@
   <div id='event-modal' class='modal'>
     <div class='eModal-content'>
       <div class='eModal-body'>
-        <h4 id='add-event-header'>Add Event to Public Calendar</h4>
-        <p style='text-align:center;'>- These events will be viewable by all - </p>
+        <h4 id='add-event-header'>{% blocktrans %}Add Event to Public Calendar{% endblocktrans %}</h4>
+        <p style='text-align:center;'>- {% blocktrans %}These events will be viewable by all{% endblocktrans %} - </p>
         <br />
         <form action='#' method='POST'>
           <table>
             <tr>
               <td>
-                <strong>Date:</strong>
+                <strong>{% trans "Date:" %}</strong>
               </td>
               <td>
                 <input type="date" name="date" class="datepicker col s6 offset-s2" id='create-date' >
@@ -77,13 +78,13 @@
           <table>
             <tr>
               <td>
-                <strong>Start Time:</strong>
+                <strong>{% blocktrans %}Start Time:{% endblocktrans %}</strong>
               </td>
               <td>
                 <input class='timepicker col s9'  name='start' id='event-start'style='margin-right: 5%;'/>
               </td>
               <td id='end-td'>
-                <strong>End Time:</strong>
+                <strong>{% blocktrans %}End Time:{% endblocktrans %}</strong>
               </td>
               <td>
                 <input class='timepicker col s9' name='end' id='event-end'/>
@@ -93,7 +94,7 @@
           <table>
             <tr class='row'>
               <td>
-                <strong>Description of Event:</strong>
+                <strong>{% blocktrans %}Description of Event:{% endblocktrans %}</strong>
               </td>
               <td>
                 <input type='text' name='description' id='event-desc' style='padding-left:5%;' placeholder='Meditation'/></p>
@@ -101,11 +102,11 @@
             </tr>
           </table>
           <div class='row' id='event-btn-row'>
-            <button class='btn wave-effect' id='event-btn'>Create Event</button>
-            <a class='modal-btn' id='cancel-event'>Cancel</a>
+            <button class='btn wave-effect' id='event-btn'>{% blocktrans %}Create Event{% endblocktrans %}</button>
+            <a class='modal-btn' id='cancel-event'>{% trans "Cancel" %}</a>
           </div>
           <div class='row'>
-            <p style='text-align:center;' id='goto-booking'>Need a room for your event? <a href="{% url 'member:event:create_booking' user.username %}">Click here.</a></p>
+            <p style='text-align:center;' id='goto-booking'>{% blocktrans %}Need a room for your event?{% endblocktrans %} <a href="{% url 'member:event:create_booking' user.username %}">{% blocktrans %}Click here.{% endblocktrans %}</a></p>
           </div>
           {% csrf_token %}
         </form>
@@ -115,7 +116,7 @@
 
   {% if feed_url %}
   <div>
-    <a class='chip' href="{{ feed_url }}">Calendar Feed</a>
+    <a class='chip' href="{{ feed_url }}">{% blocktrans %}Calendar Feed{% endblocktrans %}</a>
   </div>
   {% endif %}
 {% endblock %}

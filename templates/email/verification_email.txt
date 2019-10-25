@@ -5,6 +5,7 @@
 {% trans "Please copy and paste the link below into your browser's address box to verify your new address." %}
 
 {{ verify_link }}
-
+{% blocktrans %}
 Thanks!
 The {{ site.name }} Team
+{% endblocktrans %}

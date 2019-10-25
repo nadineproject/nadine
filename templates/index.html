@@ -1,10 +1,11 @@
 {% extends "member/base.html" %}
+{% load i18n %}
 
 {% block style %}
 {% endblock %}
 
 {% block content%}
 
-<h1>Welcome to the wonderful world of {{ site.name}}</h1>
+<h1>{% blocktrans %}Welcome to the wonderful world of {{ site.name}}{% endblocktrans %}</h1>
 
 {% endblock %}

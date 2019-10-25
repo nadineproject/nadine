@@ -6,6 +6,8 @@ from django.db.models.signals import pre_save, post_save
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.conf import settings
+from django.utils.translation import gettext as _
+
 
 
 class MOTDManager(models.Manager):
@@ -21,7 +23,7 @@ class MOTDManager(models.Manager):
         if not motd:
             message = settings.MOTD
             if not message:
-                message = "Welcome!"
+                message = _("Welcome!")
             delay = settings.MOTD_TIMEOUT
             if not delay:
                 delay=10000

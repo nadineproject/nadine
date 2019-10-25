@@ -1,16 +1,17 @@
 {% extends "tablet/t_base.html" %}
+{% load i18n %}
 {% load static %}
 
 {% block nav-members %} class="ui-btn-active" {% endblock %}
 
 {% block content %}
-	<h2>Documents for {{ user.get_full_name }}</h2>
+	<h2>{% blocktrans %}Documents for {{ user.get_full_name }}{% endblocktrans %}</h2>
 	<div style="margin-left: 3em;">
 	<table style="border: 1px solid black;">
 		<tr>
 			<th></th>
-			<th>Document</th>
-			<th>Date</th>
+			<th>{% trans "Document" %}</th>
+			<th>{% trans "Date" %}</th>
 			<th></th>
 		</tr>
 	{% for doc in documents %}

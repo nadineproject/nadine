@@ -1,4 +1,5 @@
 {% extends "tablet/t_base.html" %}
+{% load i18n %}
 {% load imagetags %}
 
 {% block nav-members %} class="ui-btn-active" {% endblock %}
@@ -14,11 +15,11 @@
 				{% endfor %}
 			</ul>
 		{% else %}
-			<h2>No Members</h2>
+			<h2>{% blocktrans %}No Members{% endblocktrans %}</h2>
 		{% endif %}
 		<input type="button" data-theme="E" onclick="window.location='{% url 'tablet:members' %}'" value="Back"/>
 	{% else %}
-		<h2>What is the first letter of your <em><u>first name</u></em>?</h2>
+		<h2>{% blocktrans %}What is the first letter of your <em><u>first name</u></em>?{% endblocktrans %}</h2>
 		<div id="tiles">
 			<span class="tile"><a href="?startswith=A">A</a></span>
 			<span class="tile"><a href="?startswith=B">B</a></span>
@@ -48,6 +49,6 @@
 			<span class="tile"><a href="?startswith=Z">Z</a></span>
 			<span class="tile"><a href="{% url 'tablet:search' %}">?</a></span>
 		</div>
-		<button style='width: 20%; margin-left:40%; margin-top: 10%; background-color: RGBA(51, 136, 204, 1.00); color: white; text-shadow: none; padding: 1%;font-size: .8em; border-radius: 3px;' class='btn' onClick="location.href='{% url 'tablet:motd' %}'">Home</button>
+		<button style='width: 20%; margin-left:40%; margin-top: 10%; background-color: RGBA(51, 136, 204, 1.00); color: white; text-shadow: none; padding: 1%;font-size: .8em; border-radius: 3px;' class='btn' onClick="location.href='{% url 'tablet:motd' %}'">{% trans "Home" %}</button>
 	{% endif %}
 {% endblock %}

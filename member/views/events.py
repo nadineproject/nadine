@@ -13,6 +13,8 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidde
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from django.utils.timezone import localtime, now
+from django.utils.translation import gettext as _
+
 
 
 from nadine.models.usage import CoworkingDay, Event
@@ -243,7 +245,7 @@ def confirm_booking(request, room, start, end, date, rate):
                 messages.error(request, str(e))
                 logger.error(str(e))
         else:
-            messages.error(request, 'This room is no longer available at the requested time.')
+            messages.error(request, _('This room is no longer available at the requested time.'))
     else:
         booking_form = EventForm()
 
@@ -286,7 +288,7 @@ def calendar(request):
 
             return HttpResponseRedirect(reverse('member:event:calendar'))
         else:
-            messages.add_message(request, messages.ERROR, "Did not save your event. Double check that the event start is before the end time. Thank you.")
+            messages.add_message(request, messages.ERROR, _("Did not save your event. Double check that the event start is before the end time. Thank you."))
 
     template = 'member/events/calendar.html'
     context = {'data': data, 'CALENDAR_DICT': settings.CALENDAR_DICT}

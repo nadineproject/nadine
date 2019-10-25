@@ -1,8 +1,9 @@
 {% extends "member/base.html" %}
+{% load i18n %}
 {% load imagetags %}
 {% load static %}
 
-{% block sub-title %}Organization | {{ organization.name }} | {% endblock %}
+{% block sub-title %}{% trans "Organization" %} | {{ organization.name }} | {% endblock %}
 
 {% block style %}
 	body {
@@ -58,14 +59,14 @@
 			{% if can_edit %}
 			<div class='org-img-edit' id='pic_tab'>
 				<img id="img-edit" alt='edit image' src="{% static 'img/camera.png' %}"/>
-        <h5>Edit Photo</h5>
+        <h5>{% blocktrans %}Edit Photo{% endblocktrans %}</h5>
 			</div>
 			{% endif %}
 		</div>
 	</div>
 
 	<div class='tags-box' style="margin-top:10%;">
-		<p style='text-align:center;'> - <strong>Tags</strong> - </p>
+		<p style='text-align:center;'> - <strong>{% trans "Tags" %}</strong> - </p>
 		{% include "member/organization/org_tags.html" %}
 	</div>
 
@@ -104,7 +105,7 @@
 		</div>
 		{% if organization.bio %}
 			<div class='col s12'>
-				<h5 class='header-font' style='color:black;'>Bio</h5>
+				<h5 class='header-font' style='color:black;'>{% trans "Bio" %}</h5>
 				<p style="margin:2em;">{{ organization.bio }} </p>
 			</div>
 		{% endif %}
@@ -116,14 +117,14 @@
 		</div>
 		{% endwith %}
 
-		<h5 class='header-font org-members col s12'>Organization Members</h5>
+		<h5 class='header-font org-members col s12'>{% blocktrans %}Organization Members{% endblocktrans %}</h5>
 		<table>
 			<tr>
-				<th>Member</th>
-				<th>Title</th>
-				<th>When</th>
+				<th>{% trans "Member" %}</th>
+				<th>{% trans "Title" %}</th>
+				<th>{% trans "When" %}</th>
 				{% if request.user.is_staff or can_edit %}
-					<th>Action</th>
+					<th>{% trans "Action" %}</th>
 				{% endif %}
 			</tr>
 			{% for m in members %}
@@ -138,10 +139,10 @@
 								{{ m.user.get_full_name }}
 							{% if m.is_admin %}</strong>{% endif %}
 							{% if m.is_lead %}
-								(<em>Lead</em>)
+								(<em>{% trans "Lead" %}</em>)
 							{% endif %}
 							{% if not m.is_active %}
-								(<em>Inactive</em>)
+								(<em>{% trans "Inactive" %}</em>)
 							{% endif %}
 						</td>
 						<td>{{ m.title|default:"" }}</td>
@@ -174,9 +175,9 @@
 
 		{% if counts.inactive > 0 %}
 			[ {% if not show_all %}
-				<a href="?show_all">Show ({{ counts.inactive }}) inactive member{{ counts.inactive|pluralize }}</a>
+				<a href="?show_all">{% blocktrans %}Show ({{ counts.inactive }}) inactive member{{ counts.inactive|pluralize }}{% endblocktrans %}</a>
 			{% else %}
-				<a href="?">Hide inactive members</a>
+				<a href="?">{% blocktrans %}Hide inactive members{% endblocktrans %}</a>
 			{% endif %} ]
 		{% endif %}
 
