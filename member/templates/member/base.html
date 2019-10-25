@@ -103,6 +103,7 @@
             {% if integrations.slack %}
               <li><a class='slack-a' href="{% url 'member:connect:slack' user.username %}">{% trans "Slack" %}</a></li>
             {% endif %}
+            <li><a href="{% url 'member:profile:redirect' %}">{% trans "Profile" %}</a></li>
             <li>
               <a class='logout-a dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown3' href="{% url 'logout' %}">{% trans "Logout" %}</a>
               <ul id='dropdown3' class='dropdown-content'>
@@ -120,6 +121,7 @@
             {% if integrations.slack %}
               <li><a href="{% url 'member:not_active' %}">{% trans "Slack" %}</a></li>
             {% endif %}
+            <li><a href="{% url 'member:profile:redirect' %}">{% trans "Profile" %}</a></li>
             <li>
               <a class='logout-a dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown3' href="{% url 'logout' %}">{% trans "Logout" %}</a>
               <ul id='dropdown3' class='dropdown-content'>
