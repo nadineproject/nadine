@@ -14,7 +14,6 @@ from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
-
 from nadine.forms import OrganizationForm, OrganizationMemberForm, ProfileImageForm, OrganizationSearchForm, LinkForm, BaseLinkFormSet
 from nadine.models.organization import Organization, OrganizationMember
 

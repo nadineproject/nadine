@@ -16,7 +16,6 @@ from django.utils.timezone import localtime, now
 from django.utils.translation import gettext as _
 
 
-
 from nadine.models.usage import CoworkingDay, Event
 from nadine.models.resource import Room
 from nadine.forms import EventForm

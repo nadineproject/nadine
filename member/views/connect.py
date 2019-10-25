@@ -9,7 +9,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404, HttpRequest
 from django.shortcuts import render, get_object_or_404
 from django.utils.translation import gettext as _
-
 from django.utils import timezone
 
 from nadine import email

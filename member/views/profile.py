@@ -16,7 +16,6 @@ from django.utils import timezone
 from django.utils.timezone import localtime, now
 from django.utils.translation import gettext as _
 
-
 from nadine import email
 from nadine.models.profile import UserProfile, FileUpload
 from nadine.models.usage import CoworkingDay, Event

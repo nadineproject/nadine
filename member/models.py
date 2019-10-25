@@ -9,7 +9,6 @@ from django.conf import settings
 from django.utils.translation import gettext as _
 
 
-
 class MOTDManager(models.Manager):
 
     def for_date(self, day=None):
