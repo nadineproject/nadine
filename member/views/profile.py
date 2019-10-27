@@ -15,6 +15,7 @@ from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from django.utils.timezone import localtime, now
 from django.utils.translation import gettext as _
+from django.utils import translation
 
 from nadine import email
 from nadine.models.profile import UserProfile, FileUpload
@@ -35,6 +36,16 @@ from member.views.core import is_active_member
 @login_required
 def profile_redirect(request):
     return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': request.user.username}))
+
+
+@login_required
+def profile_language(request, username, language):
+    print(f"changing language to {language} for {username}")
+    translation.activate(language)
+    request.session[translation.LANGUAGE_SESSION_KEY] = language
+    response = HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': request.user.username}))
+    response.set_cookie(settings.LANGUAGE_COOKIE_NAME, language)
+    return response
 
 
 @login_required

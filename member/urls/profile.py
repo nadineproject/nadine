@@ -17,6 +17,7 @@ urlpatterns = [
     path('<username>/edit/', profile.edit_profile, name='edit'),
     path('<username>/edit_photo/', profile.edit_photo, name='edit_photo'),
     path('<username>/disable_billing/', profile.disable_billing, name='disable_billing'),
+    path('<username>/language/<language>', profile.profile_language, name='set_language'),
     path('<username>/file/<disposition>/<file_name>', profile.file_view, name='file'),
 ]
 
