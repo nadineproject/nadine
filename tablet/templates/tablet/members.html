@@ -17,7 +17,7 @@
 		{% else %}
 			<h2>{% blocktrans %}No Members{% endblocktrans %}</h2>
 		{% endif %}
-		<input type="button" data-theme="E" onclick="window.location='{% url 'tablet:members' %}'" value="Back"/>
+		<input type="button" data-theme="E" onclick="window.location='{% url 'tablet:members' %}'" value="{% trans "Back" %}"/>
 	{% else %}
 		<h2>{% blocktrans %}What is the first letter of your <em><u>first name</u></em>?{% endblocktrans %}</h2>
 		<div id="tiles">
