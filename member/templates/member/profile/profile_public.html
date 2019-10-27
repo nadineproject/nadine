@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load static %}
 
 <div id="profile">
@@ -10,17 +11,17 @@
 
 <table>
     <tr>
-        <td class='bold-blue'><strong>Membership:</strong></td>
+        <td class='bold-blue'><strong>{% trans "Membership:" %}</strong></td>
         <td>{{ user.membership.package_name }}</td>
     </tr>
     <tr>
-        <td class='bold-blue'><strong>Member Since:</strong></td>
+        <td class='bold-blue'><strong>{% blocktrans %}Member Since:{% endblocktrans %}</strong></td>
         <td>{{ user.profile.first_visit }}</td>
    </tr>
 
     {% if org_memberships %}
       <tr>
-        <td class='bold-blue'><strong>Organization{{ org_memberships|pluralize }}:</strong></td>
+        <td class='bold-blue'><strong>{% blocktrans %}Organization{{ org_memberships|pluralize }}:{% endblocktrans %}</strong></td>
         <td>
           {% for org in org_memberships %}
             <li style='display:inline-block; padding-right: 2%;'>
@@ -33,21 +34,21 @@
 
     {% if user.profile.neighborhood %}
         <tr>
-            <td class='bold-blue'><strong>Neighborhood:</strong></td>
+            <td class='bold-blue'><strong>{% trans "Neighborhood:" %}</strong></td>
             <td>{{ user.profile.neighborhood }}</td>
         </tr>
     {% endif %}
 
     {% if user.profile.has_kids %}
         <tr>
-            <td class='bold-blue'><strong>Has Kids?</strong></td>
+            <td class='bold-blue'><strong>{% blocktrans %}Has Kids?{% endblocktrans %}</strong></td>
             <td>{{ user.profile.has_kids|yesno:"Yes,No" }}</td>
         </tr>
     {% endif %}
 
     {% if user.profile.pronouns %}
         <tr>
-            <td class='bold-blue'><strong>Pronouns:</strong></td>
+            <td class='bold-blue'><strong>{% trans "Pronouns:" %}</strong></td>
             <td>{{ user.profile.pronouns }}</td>
         </tr>
     {% endif %}

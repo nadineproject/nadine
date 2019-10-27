@@ -1,4 +1,5 @@
 {% extends "tablet/t_base.html" %}
+{% load i18n %}
 {% load static %}
 
 {% block nav-members %} class="ui-btn-active" {% endblock %}
@@ -31,11 +32,11 @@
 
 				<div class="signature_box">
 					<div data-role="fieldcontain" class="static-field">
-						<div class="label">Name:</div>
+						<div class="label">{% trans "Name:" %}</div>
 						<span>{{ user.get_full_name }}</span>
 					</div>
 					<div data-role="fieldcontain" class="static-field">
-						<div class="label">Date:</div>
+						<div class="label">{% trans "Date:" %}</div>
 						<span>{{ today }}</span>
 					</div>
 

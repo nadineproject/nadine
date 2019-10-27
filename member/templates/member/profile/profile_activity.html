@@ -1,6 +1,8 @@
+{% load i18n %}
+
 <h3 class='header-font'>
-  Activity Between {{ period_start|date:'M d' }} to {{ period_end|date:'M d' }}:
-  {{ days_this_period | length}} {% if allowance %} of {{ allowance }} Days{% endif %}
+  {% blocktrans %}Activity Between {{ period_start|date:'M d' }} to {{ period_end|date:'M d' }}:{% endblocktrans %}
+  {{ days_this_period | length}} {% if allowance %} {% trans "of" %} {{ allowance }} {% trans "Days" %}{% endif %}
   {% if days_this_period != billable %}
     ({{ billable }} billable)
   {% endif %}
@@ -11,12 +13,12 @@
     <thead>
       <tr>
         {% if show_user %}
-          <th class='sub-th'>User</th>
+          <th class='sub-th'>{% trans "User" %}</th>
         {% endif %}
-        <th class='sub-th'>Date</th>
-        <th class='sub-th' align="center">Billable</th>
+        <th class='sub-th'>{% trans "Date" %}</th>
+        <th class='sub-th' align="center">{% trans "Billable" %}</th>
         {% if show_paid %}
-          <th class='sub-th'>Paid by</th>
+          <th class='sub-th'>{% blocktrans %}Paid by{% endblocktrans %}</th>
         {% endif %}
       </tr>
     </thead>

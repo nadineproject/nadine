@@ -1,10 +1,11 @@
 {% extends "member/base.html" %}
+{% load i18n %}
 
 {% block style %}
 {% endblock %}
 
 {% block content%}
 
-<h3 style="padding:2em;">Ooops!<br><br>The page you are looking for does not exist.</h3>
+<h3 style="padding:2em;">{% blocktrans %}Ooops!<br><br>The page you are looking for does not exist.{% endblocktrans %}</h3>
 
 {% endblock %}

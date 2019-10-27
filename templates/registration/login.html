@@ -1,6 +1,7 @@
 {% extends "member/base.html" %}
+{% load i18n %}
 
-{% block sub-title %}Login | {% endblock %}
+{% block sub-title %}{% trans "Login" %} | {% endblock %}
 
 {% block style %}
 {% endblock %}
@@ -11,31 +12,33 @@
 	<div>
 		<div class='col s12 m6 l6 offset-m3 offset-l3' id='login_box'>
 			{% if form.errors %}
-				<p class='error'>Your username and password didn't match. Please try again.</p>
+				<p class='error'>{% blocktrans %}Your username and password didn't match. Please try again.{% endblocktrans %}</p>
 			{% endif %}
 			<div>
 				<form id='login_form'  method="POST" action=".">
-					<h2 class='font' id='login_header' align='center'>Login</h2>
+					<h2 class='font' id='login_header' align='center'>{% trans "Login" %}</h2>
 					<table>
 						<tr>
-							<th>Email</th>
+							<th>{% trans "Email" %}</th>
 							<td>{{ form.username }}</td>
 							<td></td>
 						</tr>
 						<tr>
-							<th>Password:</th>
+							<th>{% trans "Password:" %}</th>
 							<td>{{ form.password }}</td>
 							<td></td>
 						</tr>
 					</table>
 				<div class='row'>
-					<button class="btn waves-effect waves-light" id='loginonly-btn' type="submit" value="Login" />Login</button>
+					<button class="btn waves-effect waves-light" id='loginonly-btn' type="submit" value="Login">
+                    {% trans "Login" %}</button>
 					<input type="hidden" name="next" value="{{ next }}" />
-					<a id='reg_link' href='.'>Register</a>
+					<a id='reg_link' href='.'>{% trans "Register" %}</a>
 				</div>
 				{% csrf_token %}
 				<div id='login_reset'>
-					<font size="-1"><i>If you've forgotten your password, you will need to <a href="{% url 'password_reset' %}">create a new password</a>.</i></font>
+                    {% url 'password_reset' as password%}
+					<font size="-1"><i>{% blocktrans %}If you've forgotten your password, you will need to <a href="{{ password }}">create a new password{% endblocktrans %}</a>.</i></font>
 				</div>
 			</form>
 		</div>
@@ -44,24 +47,25 @@
 		<div class='col s6 offset-s3' id='reg_box'>
 			<div style="margin-left:2em;">
 			  <form id='registration_form' name='registration_form' action='../member/register/' method='POST'>
-			    <h2>Register</h2>
+			    <h2>{% trans "Register" %}</h2>
 			    <table>
 						<tr>
-							<th>First Name:</th>
+							<th>{% blocktrans %}First Name:{% endblocktrans %}</th>
 							<td><input type='text' name='first_name' /></td>
 						</tr>
 						<tr>
-							<th>Last Name:</th>
+							<th>{% blocktrans %}Last Name:{% endblocktrans %}</th>
 							<td><input type='text' name='last_name' /></td>
 						</tr>
 						<tr>
-							<th>Email</th>
+							<th>{% trans "Email" %}</th>
 							<td><input type='text' name='email' /></td>
 						</tr>
 			    </table>
 					<div class='row'>
-						<button class="btn waves-effect waves-light" id='reg-btn' type="submit" value="Register" />Register</button>
-						<a id='login_link' href='.'>Login</a>
+						<button class="btn waves-effect waves-light" id='reg-btn' type="submit" value="Register" >
+                        {% trans "Register" %}</button>
+						<a id='login_link' href='.'>{% trans "Login" %}</a>
 						<input type="hidden" name="next" value="{{ next }}" />
 					</div>
 
@@ -73,28 +77,29 @@
 	{% else %}
 	<div class='col s12 m6 l6 offset-m3 offset-l3' id='login_box'>
 		{% if form.errors %}
-			<p class='error'>Your username and password didn't match. Please try again.</p>
+			<p class='error'>{% blocktrans %}Your username and password didn't match. Please try again.{% endblocktrans %}</p>
 		{% endif %}
 		<div>
 			<form id='login_form'  method="post" action=".">
-				<h2 class='font' id='login_header'>Login</h2>
+				<h2 class='font' id='login_header'>{% trans "Login" %}</h2>
 				<table>
 					<tr>
-						<th class='cap-label'>Email</th>
+						<th class='cap-label'>{% trans "Email" %}</th>
 						<td>{{ form.username }}</td>
 					</tr>
 					<tr>
-						<th class='cap-label'>Password</th>
+						<th class='cap-label'>{% trans "Password" %}</th>
 						<td>{{ form.password }}</td>
 					</tr>
 				</table>
 			<div class='row'>
-				<button class="btn waves-effect waves-light" id='loginonly-btn' type="submit" value="Login" />Submit</button>
+				<button class="btn waves-effect waves-light" id='loginonly-btn' type="submit" value="Login" >
+                {% trans "Submit" %}</button>
 				<input type="hidden" name="next" value="{{ next }}" />
 			</div>
 			{% csrf_token %}
 			<div id='login_reset'>
-				<font size="-1"><i>If you've forgotten your password, you will need to <a href="{% url 'password_reset' %}">create a new password</a>.</i></font>
+				<font size="-1"><i>{% blocktrans %}If you've forgotten your password, you will need to <a href="{{ password }}">create a new password{% endblocktrans %}</a>.</i></font>
 			</div>
 			</form>
 		</div>

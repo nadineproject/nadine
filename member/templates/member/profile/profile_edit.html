@@ -1,4 +1,5 @@
 {% extends "member/base.html" %}
+{% load i18n %}
 {% load email_tags %}
 
 {% block sub-title %}Edit Profile | {% endblock %}
@@ -23,25 +24,25 @@
 
 {% block content %}
 {% block reg_edit %}
-<h3 class='header-font centered'>Edit Your Profile</h3>
+<h3 class='header-font centered'>{% blocktrans %}Edit Your Profile{% endblocktrans %}</h3>
 
-<p align="center"><em>NOTE: Items in <strong style='color:RGBA(79, 134, 135, 1);'>green bold</strong> are viewable by all active members.</em></p>
+<p align="center"><em>{% blocktrans %}NOTE: Items in <strong style='color:RGBA(79, 134, 135, 1);'>green bold</strong> are viewable by all active members.{% endblocktrans %}</em></p>
 
 <div id="profile_form">
   <h3>
-      Email Addresses
+      {% blocktrans %}Email Addresses{% endblocktrans %}
       (<a onclick="$('#email_help').toggle();">?</a>)
   </h3>
   <table id="emails">
     <tr id="email_help" class="help_text">
       <td colspan="2">
-        <strong>Email Help</strong>
-        <p>You can have multiple email addresses associated with your membership.
+        <strong>{% blocktrans %}Email Help{% endblocktrans %}</strong>
+        <p>{% blocktrans %}You can have multiple email addresses associated with your membership.
         These emails are used at login, and when messages are sent to various mailing
         lists.  If you send email from an address that is not associated with a
-        membership, it will be moderated.</p>
-        <p>Your primary email address is the address we send notifications and
-        mailing list messages to.</p>
+        membership, it will be moderated.{% endblocktrans %}</p>
+        <p>{% blocktrans %}Your primary email address is the address we send notifications and
+        mailing list messages to.{% endblocktrans %}</p>
       </td>
     </tr>
   </table>
@@ -57,11 +58,11 @@
       </td>
       <td class='pf-email' nowrap style="text-align:right">
         {% if not email.is_primary %}
-          <button class='btn waves-effect verify-email' onclick="location.href = '{{ email.get_set_primary_link }}';">Make Primary</button>
-          <button class='btn waves-effect verify-email' onclick="location.href = '{{ email.get_delete_link }}';">Delete</button>
+          <button class='btn waves-effect verify-email' onclick="location.href = '{{ email.get_set_primary_link }}';">{% blocktrans %}Make Primary{% endblocktrans %}</button>
+          <button class='btn waves-effect verify-email' onclick="location.href = '{{ email.get_delete_link }}';">{% trans "Delete" %}</button>
         {% endif %}
         {% if not email.is_verified %}
-          <button class='btn waves-effect verify-email' onclick="location.href = '{{ email.get_send_verif_link }}';">Verify</button>
+          <button class='btn waves-effect verify-email' onclick="location.href = '{{ email.get_send_verif_link }}';">{% trans "Verify" %}</button>
         {% endif %}
       </td>
     </tr>
@@ -71,10 +72,10 @@
       <input type="hidden" name="username" value="{{ user.username }}" />
       <tr>
         <td class='pf-email'>
-          <input id='email-input' name="email" placeholder="Alternate Email"/>
+          <input id='email-input' name="email" placeholder="{% trans "Alternate Email" %}"/>
         </td>
         <td class='pf-email' style="text-align:right" nowrap>
-          <button id='add-email' class='btn waves-effect' type="submit">Add Email Address</button>
+          <button id='add-email' class='btn waves-effect' type="submit">{% blocktrans %}Add Email Address{% endblocktrans %}</button>
         </td>
       </tr>
       {% csrf_token %}
@@ -82,12 +83,12 @@
   </table>
 
   <form name='edit' enctype="multipart/form-data" action='.' method='POST' autocomplete="off">
-    <h3>Change Password</h3>
+    <h3>{% blocktrans %}Change Password{% endblocktrans %}</h3>
     <div style='text-align:left;' id='passwords'>
       <table>
         <tr>
-          <td class='cap-label'>Password</td>
-          <td class='cap-label'>Confirm Password</td>
+          <td class='cap-label'>{% trans "Password" %}</td>
+          <td class='cap-label'>{% blocktrans %}Confirm Password{% endblocktrans %}</td>
         </tr>
         <tr id='password-row'>
           <td><input class='pwd-input pf-input' type='password' name='password-create' id='password-create' minlength=8/></td>
@@ -97,12 +98,12 @@
     </div>
 
     {{ profile_form.username }}
-    <h3 style='text-align:left;'>Contact Information</h3>
+    <h3 style='text-align:left;'>{% blocktrans %}Contact Information{% endblocktrans %}</h3>
     <div id='contact'>
       <table>
         <tr>
-          <td class='cap-label viewable' id='pf-first'><strong>First Name</strong></td>
-          <td class='cap-label viewable' id='pf-last'><strong>Last Name</strong></td>
+          <td class='cap-label viewable' id='pf-first'><strong>{% blocktrans %}First Name{% endblocktrans %}</strong></td>
+          <td class='cap-label viewable' id='pf-last'><strong>{% blocktrans %}Last Name{% endblocktrans %}</strong></td>
         </tr>
         <tr>
           <td class='pf-input'>{{ profile_form.first_name }}</td>
@@ -117,8 +118,8 @@
 
       <table>
         <tr>
-          <td class='cap-label' id='pf-address'>Address 1</td>
-          <td class='cap-label'>Address 2</td>
+          <td class='cap-label' id='pf-address'>{% blocktrans %}Address 1{% endblocktrans %}</td>
+          <td class='cap-label'>{% blocktrans %}Address 2{% endblocktrans %}</td>
         </tr>
         <tr>
           <td class='pf-input'>{{ profile_form.address1 }}</td>
@@ -131,9 +132,9 @@
       </table>
       <table>
         <tr>
-          <td class='cap-label'>City</td>
-          <td class='cap-label'>State</td>
-          <td class='cap-label'>Zipcode</td>
+          <td class='cap-label'>{% trans "City" %}</td>
+          <td class='cap-label'>{% trans "State" %}</td>
+          <td class='cap-label'>{% trans "Zipcode" %}</td>
         </tr>
         <tr>
           <td class='pf-input'>{{ profile_form.city }}</td>
@@ -148,8 +149,8 @@
       </table>
       <table>
         <tr>
-          <td class='cap-label' id='pf-phone'>Primary Phone</td>
-          <td class='cap-label'>Alternate Phone</td>
+          <td class='cap-label' id='pf-phone'>{% blocktrans %}Primary Phone{% endblocktrans %}</td>
+          <td class='cap-label'>{% blocktrans %}Alternate Phone{% endblocktrans %}</td>
         </tr>
         <tr>
           <td class='pf-input'>{{ profile_form.phone }}</td>
@@ -162,21 +163,21 @@
       </table>
     </div>
 
-    <h3 style='text-align:left;'>Profile Information</h3>
+    <h3 style='text-align:left;'>{% blocktrans %}Profile Information{% endblocktrans %}</h3>
     <div id='websites'>
       <table>
         <tr>
           <td id='pf-public' nowrap>
-            Visibility
+              {% trans "Visibility" %}
             (<a onclick="$('#public_help').toggle();">?</a>)
           </td>
           <td>
             <select class='browser-default input-field col s4' name='public_profile' id='id_public_profile'>
               <option value="False" {% if not user.profile.public_profile %} selected="true" {% endif %}>
-                Active Members Only
+                {% blocktrans %}Active Members Only{% endblocktrans %}
               </option>
               <option value="True" {% if user.profile.public_profile %} selected="true" {% endif %}>
-                Open to the Public
+                {% blocktrans %}Open to the Public{% endblocktrans %}
               </option>
             </select>
           </td>
@@ -186,17 +187,17 @@
         </tr>
         <tr id='public_help' class='help_text'>
           <td colspan=3>
-            <strong>Profile Visibility</strong>
-            <p>By default your profile is only viewable by active members.
+            <strong>{% blocktrans %}Profile Visibility{% endblocktrans %}</strong>
+            <p>{% blocktrans %}By default your profile is only viewable by active members.
             If you you make this profile public, your bio, photo, and links
             will be visable to non-members as well. Contact information
-            is always kept private.</p>
+            is always kept private.{% endblocktrans %}</p>
           </td>
         </tr>
       </table>
       <table>
         <tr>
-          <td class='cap-label viewable'><strong>Bio</strong></td>
+          <td class='cap-label viewable'><strong>{% trans "Bio" %}</strong></td>
         </tr>
         <tr>
           <td class='pf-input' id='pf_bio'>{{ profile_form.bio }}</td>
@@ -207,62 +208,62 @@
 
     <table id="otherinfo">
       <tr>
-        <td class='cap-label'>How did you hear about us?</td>
+        <td class='cap-label'>{% blocktrans %}How did you hear about us?{% endblocktrans %}</td>
         <td>{{ profile_form.howHeard }}</td>
         <td>
           {{ profile_form.howHeard.errors }}
           {% if request.user.is_staff %}
-            [ <a href="{% url 'admin:nadine_howheard_add' %}" target="new">add</a> ]
+            [ <a href="{% url 'admin:nadine_howheard_add' %}" target="new">{% trans "add" %}</a> ]
           {% endif %}
         </td  >
       </tr>
       <tr>
-        <td class='cap-label viewable'><strong>What industry are you in?</strong></td>
+        <td class='cap-label viewable'><strong>{% blocktrans %}What industry are you in?{% endblocktrans %}</strong></td>
         <td>{{ profile_form.industry }}</td>
         <td>
           {% if request.user.is_staff %}
-            [ <a href="{% url 'admin:nadine_industry_add' %}" target="new">add</a> ]
+            [ <a href="{% url 'admin:nadine_industry_add' %}" target="new">{% trans "add" %}</a> ]
           {% endif %}
           {{ profile_form.industry.errors }}
         </td>
       </tr>
       <tr>
-        <td class='cap-label viewable'><strong>Neighborhood:</strong></td>
+        <td class='cap-label viewable'><strong>{% trans "Neighborhood:" %}</strong></td>
         <td>{{ profile_form.neighborhood }}</td>
         <td width="300px">
           {{ profile_form.neighborhood.errors }}
           {% if request.user.is_staff %}
-            [ <a href="{% url 'admin:nadine_neighborhood_add' %}" target="new">add</a> ]
+            [ <a href="{% url 'admin:nadine_neighborhood_add' %}" target="new">{% trans "add" %}</a> ]
           {% endif %}
         </td>
       </tr>
       <tr>
-        <td class='cap-label viewable'><strong>Do you have children?</strong></td>
+        <td class='cap-label viewable'><strong>{% blocktrans %}Do you have children?{% endblocktrans %}</strong></td>
         <td>{{ profile_form.has_kids }}</td>
         <td>{{ profile_form.has_kids.errors }}</td>
       </tr>
       <tr>
-        <td class='cap-label'>Are you self employed?</td>
+        <td class='cap-label'>{% blocktrans %}Are you self employed?{% endblocktrans %}</td>
         <td>{{ profile_form.self_employed }}</td>
         <td>{{ profile_form.self_employed.errors }}</td>
       </tr>
 
       </tr>
       <tr>
-        <td class='cap-label'>Gender</td>
+        <td class='cap-label'>{% trans "Gender" %}</td>
         <td>{{ profile_form.gender }}</td>
         <td width="300px">{{ profile_form.gender.errors }}</td>
       </tr>
 
     </tr>
     <tr>
-      <td class='cap-label'>Preferred Pronouns</td>
+      <td class='cap-label'>{% blocktrans %}Preferred Pronouns{% endblocktrans %}</td>
       <td>{{ profile_form.pronouns }}</td>
       <td width="300px">{{ profile_form.pronouns.errors }}</td>
     </tr>
     </table>
 
-    <h3 style='text-align:left;'>Websites</h3>
+    <h3 style='text-align:left;'>{% trans "Websites" %}</h3>
     {{ link_formset.management_form }}
     {% for link_form in link_formset %}
     <div class='link-formset row'>
@@ -281,13 +282,13 @@
   {% endfor %}
 
 {% block emergency_info %}
-    <h3 style='text-align:left;'>Emergency Contact Information</h3>
+    <h3 style='text-align:left;'>{% blocktrans %}Emergency Contact Information{% endblocktrans %}</h3>
     <a name="emergency_contact"></a>
     <div id='emergencyinfo'>
       <table>
         <tr>
-          <td class='cap-label'>Name</td>
-          <td class='cap-label'>Relationship</td>
+          <td class='cap-label'>{% trans "Name" %}</td>
+          <td class='cap-label'>{% trans "Relationship" %}</td>
         </tr>
         <tr>
           <td class='pf-input'>{{ profile_form.emergency_name }}</td>
@@ -298,8 +299,8 @@
           <td>{{ profile_form.emergency_relationship.errors }}</td>
         </tr>
         <tr>
-          <td class='cap-label'>Email</td>
-          <td class='cap-label'>Phone</td>
+          <td class='cap-label'>{% trans "Email" %}</td>
+          <td class='cap-label'>{% trans "Phone" %}</td>
         </tr>
         <tr>
           <td class='pf-input'>{{ profile_form.emergency_email }}</td>
@@ -312,7 +313,7 @@
       </table>
     </div>
 {% endblock %}
-    <button class="btn waves-effect waves-light sub-btn" type="submit" value="Update Your Profile" />Update Your Profile</button>
+    <button class="btn waves-effect waves-light sub-btn" type="submit" value="Update Your Profile">{% blocktrans %}Update Your Profile{% endblocktrans %}</button>
     {% csrf_token %}
   </form>
 </div>
@@ -328,8 +329,8 @@
 		});
 
     $('.link-formset').formset({
-      addText: 'Add Another',
-      deleteText: 'Remove'
+      addText: {% trans 'Add Another' %},
+      deleteText: {% trans 'Remove' %}
     });
 
     $('.delete-row').addClass('btn-floating btn-large btn url-btn');

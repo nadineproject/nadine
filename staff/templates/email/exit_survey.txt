@@ -1,11 +1,14 @@
 {% load i18n %}{% autoescape off %}
 {{ user.first_name }},
-
+{% blocktrans %}
 Thanks for being a member at Office Nomads!  We'd love to get a little bit of feedback on your experience coworking with us.  Please check out our super-short exit survey here and tell us what you think!
+{% endblocktrans %}
 
 http://bit.ly/ULEm3t
 
+{% blocktrans %}
 Thanks,
 The {{ site.name }} Team
+{% endblocktrans %}
 
 {% endautoescape %}

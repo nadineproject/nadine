@@ -1,6 +1,7 @@
 {% extends 'member/base.html' %}
+{% load i18n %}
 
-{% block sub-title %}Confirm Booking | {% endblock %}
+{% block sub-title %}{% blocktrans %}Confirm Booking{% endblocktrans %} | {% endblock %}
 
 {% block style %}
 
@@ -18,29 +19,29 @@
 {% block content %}
   <div id='booking_form'>
     <form enctype="multipart/form-data" action='#' method='POST'>
-      <h4 class='header-font' style='text-align:center; color:black;'>Confirm Booking</h4>
+      <h4 class='header-font' style='text-align:center; color:black;'>{% blocktrans %}Confirm Booking{% endblocktrans %}</h4>
       <p style='text-align:center;'>
-        Reminder: Make sure you include your setup and breakdown time in your reservation time.
+        {% blocktrans %}Reminder: Make sure you include your setup and breakdown time in your reservation time.{% endblocktrans %}
       </p>
       <table>
         <tr>
-          <td><strong>Booking For:</strong></td>
+          <td><strong>{% blocktrans %}Booking For:{% endblocktrans %}</strong></td>
           <td><input name='user' value='{{ user.first_name }} {{ user.last_name }}' readonly /></td>
         </tr>
         <tr>
-          <td id='room'><strong>Room:</strong></td>
+          <td id='room'><strong>{% trans "Room:" %}</strong></td>
           <td><input name='room' value='{{ room }}' readonly  /></td>
           <td>{{ booking_form.room.errors }}</td>
         </tr>
         <tr>
-          <td><strong>Date:</strong></td>
+          <td><strong>{% trans "Date:" %}</strong></td>
           <td>
             <input type="date" name="date" value='{{ date }}' readonly />
           </td>
         </tr>
         {% if rate != 'None' %}
         <tr>
-          <td><strong>Cost:</strong></td>
+          <td><strong>{% trans "Cost:" %}</strong></td>
           <td>
             <input id='rate' name="rate"  readonly />
           </td>
@@ -55,7 +56,7 @@
                 {% if forloop.counter0|divisibleby:loop_count %}
                   <th class="rotate"><div><span>
                     {{ time.hour }}:{{ time.minutes }}
-                  </div></span></th>
+                  </span></div></th>
                 {% else %}
                   <th></th>
                 {% endif %}
@@ -96,21 +97,21 @@
           <td class='time-btns'><strong>TO </strong><button id='end-forw' class='waves-effect'><</button><input style="width:50%;margin:2%;" type='time' step=900 name='end' id='end-time' value='{{ end }}' readonly /><button id='end-back' class='waves-effect'>></button></td>
         </tr>
         <tr>
-          <td><strong>Description:</strong></td>
+          <td><strong>{% trans "Description:" %}</strong></td>
           <td><input type='text' name='description' id='confirm_desc' placeholder='O.N. Team Meeting'/></td>
           <td>{{ booking_form.description.errors }}</td>
         </tr>
         <tr>
-          <td><strong>Is this a public event?</strong></td>
+          <td><strong>{% blocktrans %}Is this a public event?{% endblocktrans %}</strong></td>
           <td><select class='browser-default input-field col s4' name='is_public' id='publicly_view'>
             <option value="" disabled selected></option>
-            <option value="False" selected="true">No</option>
-            <option value="True">Yes</option>
+            <option value="False" selected="true">{% trans "No" %}</option>
+            <option value="True">{% trans "Yes" %}</option>
           </select></td>
           <td>{{ booking_form.publicly_viewable.errors }}</td>
         </tr>
       </table>
-      <button type='submit' class='btn waves-effect' id='confirm-btn'>Confirm</button>
+      <button type='submit' class='btn waves-effect' id='confirm-btn'>{% trans "Confirm" %}</button>
       {% csrf_token %}
     </form>
   </div>

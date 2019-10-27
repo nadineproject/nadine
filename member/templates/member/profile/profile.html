@@ -1,4 +1,5 @@
 {% extends "member/base.html" %}
+{% load i18n %}
 {% load imagetags %}
 {% load static %}
 
@@ -54,14 +55,14 @@
     {% if ALLOW_PHOTO_UPLOAD and can_edit %}
       <div class='edit-img' id='pic_tab'>
         <img id="img-edit" alt='edit image' src="{% static 'img/camera.png' %}"/>
-        <h3>Edit Photo</h3>
+        <h3>{% blocktrans %}Edit Photo{% endblocktrans %}</h3>
       </div>
     {% else %}
       <div class='locked-img'></div>
     {% endif %}
   </div>
   <div class='tags-box col s12' style='margin-top:5%;'>
-    <p style='text-align:center;'> - <strong>Tags</strong> - </p>
+    <p style='text-align:center;'> - <strong>{% trans "Tags" %}</strong> - </p>
     {% include "member/profile/profile_tags.html" %}
   </div>
 </div>
@@ -98,7 +99,7 @@
     {% if user.username != request.user.username %}
     <dl>
         <dt>Contact:</dt>
-        <dd><a href="{% url 'member:connect:connect' user %}">Connect with this member</a></dd>
+        <dd><a href="{% url 'member:connect:connect' user %}">{% blocktrans %}Connect with this member{% endblocktrans %}</a></dd>
     </dl>
     {% endif %}
   </div>
@@ -109,51 +110,51 @@
     {% if can_edit %}
       <ul class='collapsible prof-tabs' data-collapsible="accordion">
         <li>
-          <div class='collapsible-header' id="private_tab">Private Details</div>
+          <div class='collapsible-header' id="private_tab">{% blocktrans %}Private Details{% endblocktrans %}</div>
           <div class='collapsible-body' id='private_target'>
             {% include "member/profile/profile_private.html" %}
           </div>
         </li>
         <li>
-          <div class='collapsible-header' id='membership_tab'>Membership</div>
+          <div class='collapsible-header' id='membership_tab'>{% trans "Membership" %}</div>
           <div class='collapsible-body' id='membership_target'>
             {% include "member/spinner.html" %}
           </div>
         </li>
         <li>
-          <div class='collapsible-header' id='orgs_tab'>Organizations</div>
+          <div class='collapsible-header' id='orgs_tab'>{% trans "Organizations" %}</div>
           <div class='collapsible-body' id='orgs_target'>
             {% include "member/profile/profile_orgs.html" %}
           </div>
         </li>
         {% if has_bookings %}
         <li>
-          <div class='collapsible-header' id='events_tab'>Events/Room Booking</div>
+          <div class='collapsible-header' id='events_tab'>{% blocktrans %}Events/Room Booking{% endblocktrans %}</div>
           <div class='collapsible-body' id='events_target'>
             {% include "member/spinner.html" %}
           </div>
         </li>
         {% endif %}
         <li>
-          <div class='collapsible-header' id='activity_tab'>Activity</div>
+          <div class='collapsible-header' id='activity_tab'>{% trans "Activity" %}</div>
           <div class='collapsible-body' id='activity_target'>
             {% include "member/spinner.html" %}
           </div>
         </li>
         <li>
-          <div class='collapsible-header' id='billing_tab'>Billing</div>
+          <div class='collapsible-header' id='billing_tab'>{% trans "Billing" %}</div>
           <div class='collapsible-body' id='billing_target'>
             {% include "member/spinner.html" %}
           </div>
         </li>
         <li>
-          <div class='collapsible-header' id='documents_tab'>Documents</div>
+          <div class='collapsible-header' id='documents_tab'>{% trans "Documents" %}</div>
           <div class='collapsible-body' id='documents_target'>
             {% include "member/profile/profile_documents.html" %}
           </div>
         </li>
         <li>
-          <div class='collapsible-header' id='devices_tab'>Devices</div>
+          <div class='collapsible-header' id='devices_tab'>{% trans "Devices" %}</div>
           <div class='collapsible-body' id='devices_target'>
             {% include "member/spinner.html" %}
           </div>

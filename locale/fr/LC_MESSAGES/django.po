@@ -1,0 +1,2267 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-10-26 00:50+0200\n"
+"PO-Revision-Date: 2019-10-26 01:02+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 2.2.4\n"
+
+#: member/models.py:26
+msgid "Welcome!"
+msgstr "Bienvenue !"
+
+#: member/templates/member/base.html:84 member/templates/member/base.html:138
+#: member/templates/member/base.html:149
+msgid "Help"
+msgstr "Aide"
+
+#: member/templates/member/base.html:88 member/templates/member/base.html:116
+#: member/templates/member/base.html:139 member/templates/member/base.html:150
+#: tablet/templates/tablet/t_base.html:40
+msgid "Members"
+msgstr "Membres"
+
+#: member/templates/member/base.html:90
+#: member/templates/member/core/view_members.html:17
+#: member/templates/member/core/view_members.html:21
+#: member/templates/member/core/view_members.html:26
+msgid "Active Members"
+msgstr "Membres actifs"
+
+#: member/templates/member/base.html:91 member/templates/member/base.html:98
+#: member/templates/member/base.html:153
+#: member/templates/member/organization/org_view.html:69
+#: member/templates/member/profile/profile.html:65
+msgid "Tags"
+msgstr "Balises"
+
+#: member/templates/member/base.html:95 member/templates/member/base.html:117
+#: member/templates/member/base.html:140 member/templates/member/base.html:151
+#: member/templates/member/profile/profile.html:125
+msgid "Organizations"
+msgstr "Organisations"
+
+#: member/templates/member/base.html:97
+msgid "Active Organizations"
+msgstr "Organisations actives"
+
+#: member/templates/member/base.html:101 member/templates/member/base.html:118
+#: member/templates/member/base.html:141 member/templates/member/base.html:152
+#: member/templates/member/events/event_add.html:4
+#: member/templates/member/events/event_view.html:4
+msgid "Events"
+msgstr "Evenements"
+
+#: member/templates/member/base.html:102 member/templates/member/base.html:119
+#: member/templates/member/base.html:142 member/templates/member/base.html:154
+msgid "Mailing Lists"
+msgstr "Listes de diffusion"
+
+#: member/templates/member/base.html:104 member/templates/member/base.html:121
+#: member/templates/member/base.html:144 member/templates/member/base.html:156
+msgid "Slack"
+msgstr "Slack"
+
+#: member/templates/member/base.html:107 member/templates/member/base.html:124
+#: member/templates/member/base.html:147 member/templates/member/base.html:159
+msgid "Logout"
+msgstr "Déconnexion"
+
+#: member/templates/member/base.html:110
+msgid "Staff"
+msgstr "Staff"
+
+#: member/templates/member/base.html:111
+msgid "Admin"
+msgstr "Administration"
+
+#: member/templates/member/base.html:146 member/templates/member/base.html:158
+msgid "Profile"
+msgstr "Profile"
+
+#: member/templates/member/base.html:189
+msgid "The Nadine Project"
+msgstr "Le projet Nadine"
+
+#: member/templates/member/connect/chat.html:10
+msgid "Office Nomads - IRC Chat"
+msgstr "IRC Office Nomads"
+
+#: member/templates/member/connect/chat.html:12
+msgid ""
+"If you can read this it's because your browser (probably Chrome) has blocked "
+"the chat client.  You can allow it.  It's OK."
+msgstr ""
+"Si vous pouvez lire ceci alors votre navigateur Web a bloqué le client Chat. "
+"Vous pouvez l'autoriser, c'est OK."
+
+#: member/templates/member/connect/chat.html:15
+msgid "FAQ"
+msgstr "FAQ"
+
+#: member/templates/member/connect/chat.html:17
+msgid "Can I connect using another client?"
+msgstr "Est-ce que je peux me connecter avec un autre client ?"
+
+#: member/templates/member/connect/chat.html:18
+msgid ""
+"Yes!  This chat client uses IRC behind the scenes and you can also connect "
+"using a number of third-party\n"
+"chat clients with the configuration settings below:"
+msgstr ""
+"Oui : Ce client de chat utilise IRC et vous pouvez vous connecter avec "
+"d'autres logiciels en utilisant la configuration ci-dessous :"
+
+#: member/templates/member/connect/chat.html:21
+msgid "Server:"
+msgstr "Serveur :"
+
+#: member/templates/member/connect/chat.html:22
+msgid "Channel:"
+msgstr "Canal :"
+
+#: member/templates/member/connect/chat.html:25
+msgid "What is freenode?"
+msgstr "C'est quoi freenode ?"
+
+#: member/templates/member/connect/chat.html:26
+msgid ""
+"From their <a href=\"http://freenode.net/faq.shtml\">FAQ</a>:  <a href="
+"\"http://freenode.net\">Freenode</a> is a special-purpose, not a general-"
+"purpose, discussion network, currently implemented on Internet Relay Chat "
+"(IRC). It exists to support specific communities. It provides an interactive "
+"environment for coordination and support of peer-directed projects, "
+"including those relating to free software and open source. Our aim is to "
+"help our participants to improve their communicative and collaborative "
+"skills and to maintain a friendly, efficient environment for project "
+"coordination and technical support. For more information about the network "
+"philosophy,\n"
+"please take a look <a href=\"http://freenode.net/philosophy.shtml\">here</a>."
+msgstr ""
+"Depuis leur <a href=\"http://freenode.net/faq.shtml\">FAQ</a>:  <a href="
+"\"http://freenode.net\">Freenode</a> est un réseau de discussion spécialisé "
+"implémenté sur IRC. Il existe pour supporter des communautés spécifiques. Il "
+"fourni un environnement interactif pour la gestion, la coordination et le "
+"support de projets opensource. Notre but est d'aider les participants à "
+"améliorer leur capacité de communication et de collaboration et de maintenir "
+"un environnement efficace et accueillant. Pour plus d'informations degardez "
+"<a href=\"http://freenode.net/philosophy.shtml\">ici</a>."
+
+#: member/templates/member/connect/chat.html:29
+msgid "What's with the Captcha?!?"
+msgstr "Pourquoi un Captcha ?!?"
+
+#: member/templates/member/connect/chat.html:30
+msgid ""
+"Since we use <a href=\"http://freenode.net\">freenode</a>, which is a public "
+"chat service, they do now allow autoconnect\n"
+"so that bad people can't abuse the system."
+msgstr ""
+"Freenode ne parmet pas les connexions automatiques pour éviter les abus."
+
+#: member/templates/member/connect/connect.html:4
+msgid "Contact Request"
+msgstr "Demande de contact"
+
+#: member/templates/member/connect/connect.html:10
+msgid "Connect with"
+msgstr "Se connecter avec"
+
+#: member/templates/member/connect/connect.html:13
+#, python-format
+msgid ""
+"There are two ways you can use Nadine to connect with other members.  We "
+"don't give out any personal information\n"
+"so we can't just give you their email address, but we can alert you when you "
+"are both in the space at the same time,\n"
+"or we can send an email to them with your information (<i>%(user.email)s</"
+"i>) and they can contact you."
+msgstr ""
+"Il y a deux moyens de se connecter avec un autre membre. Nous ne donnons pas "
+"d'informations personelles\n"
+"donc nous ne pouvons pas donner leur adresse email directement mais nous "
+"pouvons vous alerter quand vous êtes tous les deus dans l'espace en même "
+"temps,\n"
+"ou nous pouvons leur envoyer un email avec vos informations de contact  (<i>"
+"%(user.email)s</i>) pour qu'il puisse vous contacter."
+
+#: member/templates/member/connect/connect.html:18
+msgid "What would you like to do?"
+msgstr "Que voulez-vous faire ?"
+
+#: member/templates/member/connect/connect.html:20
+msgid "Notify me when we are both in the space"
+msgstr "Me notifier quand nous sommes ensemble dans l'espace"
+
+#: member/templates/member/connect/connect.html:22
+msgid "Message Sent!"
+msgstr "Message envoyé !"
+
+#: member/templates/member/connect/connect.html:24
+msgid "Send them my contact information"
+msgstr "Contact en cas d'urgenceLeur envoyer mes informations de contact"
+
+#: member/templates/member/connect/connect.html:26
+msgid "Go back to their profile"
+msgstr "Retourner à leur profil"
+
+#: member/templates/member/connect/mail.html:4
+#: member/templates/member/connect/mail_message.html:4
+msgid "Mail"
+msgstr "Mail"
+
+#: member/templates/member/connect/mail.html:29
+msgid "Mailing lists"
+msgstr "Listes de diffusion"
+
+#: member/templates/member/connect/mail.html:47
+msgid "unsubscribe"
+msgstr "se désabonner"
+
+#: member/templates/member/connect/mail.html:50
+msgid "subscribe"
+msgstr "s'abonner"
+
+#: member/templates/member/connect/mail.html:57
+msgid "Recent Messages"
+msgstr "Messages récents"
+
+#: member/templates/member/connect/mail.html:61
+msgid "Sent"
+msgstr "Envoyé"
+
+#: member/templates/member/connect/mail.html:62
+#: member/templates/member/organization/org_member.html:11
+#: member/templates/member/organization/org_view.html:123
+msgid "Member"
+msgstr "Membre"
+
+#: member/templates/member/connect/mail.html:63
+msgid "Subject"
+msgstr "Sujet"
+
+#: member/templates/member/connect/mail.html:85
+msgid "There are no mailing lists configured for this site."
+msgstr "Il n'y a pas de liste de diffusion configurée pour ce site."
+
+#: member/templates/member/connect/mail_message.html:27
+msgid "Sent:"
+msgstr "Envoyé :"
+
+#: member/templates/member/connect/mail_message.html:28
+msgid "From:"
+msgstr "Depuis :"
+
+#: member/templates/member/connect/notifications.html:4
+msgid "Notifications"
+msgstr "Notifications"
+
+#: member/templates/member/connect/notifications.html:16
+msgid "User Notifications"
+msgstr "Notifications utilisateur"
+
+#: member/templates/member/connect/notifications.html:23
+msgid "Created"
+msgstr "Créé"
+
+#: member/templates/member/connect/notifications.html:24
+msgid "Target"
+msgstr "Cible"
+
+#: member/templates/member/connect/notifications.html:31
+msgid "delete"
+msgstr "supprimer"
+
+#: member/templates/member/connect/notifications.html:36
+msgid "You have no user notifications."
+msgstr "Vous avez des notifications utilisateur."
+
+#: member/templates/member/connect/slack.html:5
+msgid "Slack Team"
+msgstr "Equipe Slack"
+
+#: member/templates/member/connect/slack.html:7
+#, python-format
+msgid ""
+"We have a slack team set up for all members.  You can request an invitation "
+"here and then\n"
+"\t\t\tyou will be sent an email giving you \tinstructions on how to finish "
+"the registration process.  You can use slack\n"
+"\t\t\teither through the website below or using the various <a href="
+"\"https://slack.com/apps\">desktop and mobile apps</a>.\n"
+"\t\t\tBut first you need to request an invite and join the team.  We still "
+"have the old school\n"
+"\t\t\t<a href=\"%(chat)s\">irc chat</a> if you prefer that form of "
+"communication."
+msgstr ""
+
+#: member/templates/member/connect/slack.html:15
+msgid "Request Invite"
+msgstr "Demander une invitation"
+
+#: member/templates/member/connect/slack.html:18
+msgid "Team Location:"
+msgstr "Emplacement de l'équipe :"
+
+#: member/templates/member/core/home.html:37
+msgid ""
+"\n"
+"\t\t\t\tAnd welcome to <a href='https://nadineproject.org/'>Nadine</a>, the "
+"software we use to run our space. Nadine is your go-to place for membership "
+"information and other helpful tidbits. Take a look at the tabs above, or get "
+"started right here:"
+msgstr ""
+"\n"
+"Et biennue à <a href='https://nadineproject.org/'>Nadine</a>, le logiciel "
+"que nous utilisons pour gérer l'espace. Nadine est votre référence pour la "
+"gestion de votre souscription ainsi que d'autres informations utiles. "
+"Regardez les onglets ci-dessus ou commencez ici :"
+
+#: member/templates/member/core/home.html:45
+msgid "Printing, billing, or general questions about the space?"
+msgstr ""
+"Impression, facturation ou question générale à propos de notre espace ?"
+
+#: member/templates/member/core/home.html:48
+msgid "Frequently Asked Questions"
+msgstr "Questions fréquentes"
+
+#: member/templates/member/core/home.html:54
+msgid "See who is here & learn people's names"
+msgstr "Regardez qui est ici et apprenez lee prénoms des membres"
+
+#: member/templates/member/core/home.html:57
+msgid "View All Members"
+msgstr "Voir tous les membres"
+
+#: member/templates/member/core/home.html:78
+msgid "See all Events"
+msgstr "Voir tous les événements"
+
+#: member/templates/member/core/not_active.html:5
+msgid "Active Membership Required"
+msgstr "Souscription active nécessaire"
+
+#: member/templates/member/core/not_active.html:7
+msgid "We're sorry, you are not currently an active member."
+msgstr "Nous sommes désolé mais vous n'êtes pas un membre actif."
+
+#: member/templates/member/core/not_active.html:11
+#, python-format
+msgid ""
+"Certain features in Nadine require an active membership to access.  If you "
+"are not a member,\n"
+"\t\t\tor your membership has expired, you will have limited access to this "
+"system. You can view your membership and your history by going to\n"
+"\t\t\t<a href=\"%(profile)s\">your profile</a>. If you have any questions "
+"feel free to send an email to\n"
+"\t\t\t<a href=\"mailto:%(settings.STAFF_EMAIL_ADDRESS)s\">"
+"%(settings.STAFF_EMAIL_ADDRESS)s</a>\n"
+"\t\t\tor just stop by the front desk."
+msgstr ""
+"Certaines fonctionnalités nécessitent une souscription active pour être "
+"accédés. Si vous n'êtes pas membre ou si votre souscription à expiré, vous "
+"aurez un accès limité au système. Vous pouvez voir vos informations de "
+"membre t votre historique en regardant\n"
+"<a href=\"%(profile)s\">votre profil</a>. Si vous avez des questions, "
+"envoyez un email à <a href=\"mailto:%(settings.STAFF_EMAIL_ADDRESS)s\">"
+"%(settings.STAFF_EMAIL_ADDRESS)s</a> ou arrêtez vous au bureau d'accueil."
+
+#: member/templates/member/core/not_active.html:19
+#, python-format
+msgid ""
+"Sincerely,<br>\n"
+"\t\t\tThe %(site.name)s Team"
+msgstr ""
+"Cordialement,<br>\n"
+"\n"
+"L'équipe %(site.name)s"
+
+#: member/templates/member/core/register.html:5
+msgid "Register Profile"
+msgstr "Enregistrer votre profil"
+
+#: member/templates/member/core/register.html:8
+msgid "Registration"
+msgstr "Enregistrement"
+
+#: member/templates/member/core/register.html:10
+msgid ""
+"NOTE: Items in <strong>bold</strong> are viewable by all active members."
+msgstr ""
+"NOTE : Les éléments en <strong>gras</strong> sont visibles par tous les "
+"membres actifs."
+
+#: member/templates/member/core/register.html:20
+#: member/templates/member/profile/profile_edit.html:105
+msgid "First Name"
+msgstr "Prénom"
+
+#: member/templates/member/core/register.html:21
+#: member/templates/member/profile/profile_edit.html:106
+msgid "Last Name"
+msgstr "Nom"
+
+#: member/templates/member/core/register.html:34
+msgid "Primary Email"
+msgstr "Email principal"
+
+#: member/templates/member/core/register.html:45
+msgid "Create Password"
+msgstr "Créer le mot de passe"
+
+#: member/templates/member/core/register.html:46
+#: member/templates/member/profile/profile_edit.html:91
+msgid "Confirm Password"
+msgstr "Confirmer le mot de passe"
+
+#: member/templates/member/core/register.html:54
+#: member/templates/member/profile/profile_edit.html:101
+msgid "Contact Information"
+msgstr "Informations de contact"
+
+#: member/templates/member/core/register.html:62
+msgid "Upload Photo"
+msgstr "Télécharger la photo"
+
+#: member/templates/member/core/view_members.html:10
+msgid "View Members"
+msgstr "Voir les membres"
+
+#: member/templates/member/core/view_members.html:18
+#: member/templates/member/core/view_members.html:22
+#: member/templates/member/core/view_members.html:27
+#: tablet/templates/tablet/t_base.html:41
+msgid "Here Today"
+msgstr "Ici aujourd'hui"
+
+#: member/templates/member/core/view_members.html:19
+#: tablet/templates/tablet/search.html:9
+msgid "Search Results"
+msgstr "Résultats de recherche"
+
+#: member/templates/member/core/view_members.html:23
+msgid "Has Mail"
+msgstr "Email"
+
+#: member/templates/member/core/view_members.html:24
+msgid "Has Key"
+msgstr "Clé"
+
+#: member/templates/member/core/view_members.html:64
+msgid "No members matching that query"
+msgstr "Pas de membre correspondant à cette recherche"
+
+#: member/templates/member/events/booking_confirm.html:4
+#: member/templates/member/events/booking_confirm.html:22
+msgid "Confirm Booking"
+msgstr "Confirmation de la réservation"
+
+#: member/templates/member/events/booking_confirm.html:24
+msgid ""
+"Reminder: Make sure you include your setup and breakdown time in your "
+"reservation time."
+msgstr ""
+"Rappel : assurez vous d'inclure le temps de mise en place et de cloture dans "
+"votre temps de réservation."
+
+#: member/templates/member/events/booking_confirm.html:28
+msgid "Booking For:"
+msgstr "Réservation pour :"
+
+#: member/templates/member/events/booking_confirm.html:32
+#: member/templates/member/events/calendar.html:34
+msgid "Room:"
+msgstr "Salle :"
+
+#: member/templates/member/events/booking_confirm.html:37
+#: member/templates/member/events/calendar.html:71
+#: tablet/templates/tablet/signature_capture.html:39
+#: tablet/templates/tablet/signature_render.html:55
+msgid "Date:"
+msgstr "Date :"
+
+#: member/templates/member/events/booking_confirm.html:44
+msgid "Cost:"
+msgstr "Coût :"
+
+#: member/templates/member/events/booking_confirm.html:100
+#: member/templates/member/events/booking_create.html:176
+msgid "Description:"
+msgstr "Description :"
+
+#: member/templates/member/events/booking_confirm.html:105
+msgid "Is this a public event?"
+msgstr "Est-ce un évènement publique ?"
+
+#: member/templates/member/events/booking_confirm.html:108
+msgid "No"
+msgstr "Non"
+
+#: member/templates/member/events/booking_confirm.html:109
+msgid "Yes"
+msgstr "Oui"
+
+#: member/templates/member/events/booking_confirm.html:114
+msgid "Confirm"
+msgstr "Confirmer"
+
+#: member/templates/member/events/booking_create.html:4
+#: member/templates/member/events/booking_create.html:21
+msgid "Book a Meeting Room"
+msgstr "Réserver une salle de réunion"
+
+#: member/templates/member/events/booking_create.html:26
+#: member/templates/member/profile/profile_activity.html:18
+#: tablet/templates/tablet/document_list.html:14
+msgid "Date"
+msgstr "Date"
+
+#: member/templates/member/events/booking_create.html:27
+msgid "Start Time"
+msgstr "Heure de début"
+
+#: member/templates/member/events/booking_create.html:28
+msgid "End Time"
+msgstr "Heure de fin"
+
+#: member/templates/member/events/booking_create.html:36
+msgid "All Day Event"
+msgstr "Journée complète"
+
+#: member/templates/member/events/booking_create.html:41
+msgid "Included in Membership"
+msgstr "Inclu dans la souscription"
+
+#: member/templates/member/events/booking_create.html:51
+msgid "Has A/V"
+msgstr "Audio/Vidéo"
+
+#: member/templates/member/events/booking_create.html:55
+msgid "Has Phone"
+msgstr "Téléphone"
+
+#: member/templates/member/events/booking_create.html:59
+msgid "On Floor:"
+msgstr "Etage :"
+
+#: member/templates/member/events/booking_create.html:61
+#: member/templates/member/events/booking_create.html:89
+#: member/templates/member/events/booking_create.html:99
+msgid "Floor"
+msgstr "Etage"
+
+#: member/templates/member/events/booking_create.html:67
+#: member/templates/member/events/booking_create.html:171
+msgid "Seats:"
+msgstr "Places :"
+
+#: member/templates/member/events/booking_create.html:68
+msgid "2 People"
+msgstr "2 personnes"
+
+#: member/templates/member/events/booking_create.html:69
+msgid "4 People"
+msgstr "4 personnes"
+
+#: member/templates/member/events/booking_create.html:70
+msgid "6 People"
+msgstr "6 personnes"
+
+#: member/templates/member/events/booking_create.html:71
+msgid "10-20 People"
+msgstr "10-20 personnes"
+
+#: member/templates/member/events/booking_create.html:72
+msgid "20+ People"
+msgstr "20+ personnes"
+
+#: member/templates/member/events/booking_create.html:76
+#: tablet/templates/tablet/search.html:18
+msgid "Search"
+msgstr "Rechercher"
+
+#: member/templates/member/events/booking_create.html:90
+#: member/templates/member/events/booking_create.html:100
+msgid "More Info"
+msgstr "Plus d'informations"
+
+#: member/templates/member/events/booking_create.html:91
+#: member/templates/member/events/booking_create.html:101
+msgid "Hide Info"
+msgstr "Cacher les informations"
+
+#: member/templates/member/events/booking_create.html:169
+msgid "Hourly Rate:"
+msgstr "Prix horaire :"
+
+#: member/templates/member/events/booking_create.html:172
+msgid "Max Capacity:"
+msgstr "Capacité maximale :"
+
+#: member/templates/member/events/booking_create.html:173
+msgid "Has A/V?:"
+msgstr "Audio/Vidéo :"
+
+#: member/templates/member/events/booking_create.html:174
+msgid "Has Phone:"
+msgstr "Téléphone :"
+
+#: member/templates/member/events/booking_create.html:183
+msgid ""
+"Sorry, there do not seem to be any rooms available that match your criteria."
+msgstr "Désolé, il n'y a pas de salle correspondant à vos critères."
+
+#: member/templates/member/events/booking_create.html:190
+msgid "Please select a time and date in the future."
+msgstr "Sélectionnez une date dans le futur."
+
+#: member/templates/member/events/calendar.html:18
+#: member/templates/member/events/calendar.html:81
+msgid "Start Time:"
+msgstr "Heure de début :"
+
+#: member/templates/member/events/calendar.html:26
+#: member/templates/member/events/calendar.html:87
+msgid "End Time:"
+msgstr "Heure de fin :"
+
+#: member/templates/member/events/calendar.html:42
+msgid "Hosted By:"
+msgstr "Géré par :"
+
+#: member/templates/member/events/calendar.html:55
+msgid "Close"
+msgstr "Fermer"
+
+#: member/templates/member/events/calendar.html:64
+msgid "Add Event to Public Calendar"
+msgstr "Ajouter l'évènement au calendrier publique"
+
+#: member/templates/member/events/calendar.html:65
+msgid "These events will be viewable by all"
+msgstr "Ces évènement seront visibles par tous"
+
+#: member/templates/member/events/calendar.html:97
+msgid "Description of Event:"
+msgstr "Description de l'évènement :"
+
+#: member/templates/member/events/calendar.html:105
+msgid "Create Event"
+msgstr "Voir tous les événementsCréer l'évènement"
+
+#: member/templates/member/events/calendar.html:106
+#: member/templates/member/profile/profile_image_edit.html:58
+msgid "Cancel"
+msgstr "Annuler"
+
+#: member/templates/member/events/calendar.html:109
+msgid "Need a room for your event?"
+msgstr "Besoin d'une salle pour l'évènement ?"
+
+#: member/templates/member/events/calendar.html:109
+msgid "Click here."
+msgstr "Cliquer ici."
+
+#: member/templates/member/events/calendar.html:119
+msgid "Calendar Feed"
+msgstr "Flux Calendrier"
+
+#: member/templates/member/events/event_add.html:14
+msgid "Office Nomads - Add an Event"
+msgstr "Office Nomads - Ajouter un évènement"
+
+#: member/templates/member/new_billing.html:7
+msgid "New Billing"
+msgstr "Nouvelle facturation"
+
+#: member/templates/member/new_billing.html:10
+#, python-format
+msgid "New Billing Profile - %(username)s"
+msgstr "Nouvelle facturation - %(username)s"
+
+#: member/templates/member/new_billing.html:16
+msgid "Thank you very much!"
+msgstr "Merci Beaucoup !"
+
+#: member/templates/member/new_billing.html:19
+#, python-format
+msgid ""
+"Your new billing profile has been approved. If you have any billing related "
+"questions\n"
+"\t\tplease stop by the front desk or send an email to <a href=mailto:"
+"billing@officenomads.com\">billing@officenomads.com</a>.\n"
+"\t\tAlso, please take a moment to <a href=\"%(billing)s\">review how we "
+"handle billing."
+msgstr ""
+"Votre nouveau profil de facturation a été approuvé. Si vous avez des "
+"questions concernant la facturation\n"
+"arrêtez vous au bureau d'accueil ou envoyez un email à <a href=mailto:"
+"billing@officenomads.com\">billing@officenomads.com</a>.\n"
+"Aussi, prenez un moment pour voir <a href=\"%(billing)s\">comment pour "
+"traitons les factures."
+
+#: member/templates/member/new_billing.html:23
+msgid "The Office Nomads Team"
+msgstr "L'équipe Office Nomads"
+
+#: member/templates/member/organization/org_edit.html:5
+#: member/templates/member/organization/org_list.html:5
+#: member/templates/member/organization/org_member.html:5
+#: member/templates/member/organization/org_view.html:6
+#: member/templates/member/profile/profile_orgs.html:11
+#: member/templates/member/profile/profile_orgs.html:37
+msgid "Organization"
+msgstr "Organisation"
+
+#: member/templates/member/organization/org_edit.html:20
+msgid "Edit"
+msgstr "Modifier"
+
+#: member/templates/member/organization/org_edit.html:26
+msgid "Organization Name"
+msgstr "Nom de l'organisation"
+
+#: member/templates/member/organization/org_edit.html:39
+msgid "Organization Blurb"
+msgstr "Présentation de l'organisation"
+
+#: member/templates/member/organization/org_edit.html:55
+msgid ""
+"This is a short organization description which will be visible in the main "
+"organzation list. The maximum length of the blurb is 112 characters."
+msgstr ""
+"Description succinte de l'organisation vilible dans la liste des "
+"organisations. Taille maximale de 112 caractères."
+
+#: member/templates/member/organization/org_edit.html:62
+msgid "Organization Bio"
+msgstr "Bio de l' organisation"
+
+#: member/templates/member/organization/org_edit.html:77
+#: member/templates/member/profile/profile_edit.html:171
+msgid "Visibility"
+msgstr "Visibilité"
+
+#: member/templates/member/organization/org_edit.html:83
+#: member/templates/member/profile/profile_edit.html:177
+msgid "Active Members Only"
+msgstr "Membres actifs uniquement"
+
+#: member/templates/member/organization/org_edit.html:86
+#: member/templates/member/profile/profile_edit.html:180
+msgid "Open to the Public"
+msgstr "Ouvert au publique"
+
+#: member/templates/member/organization/org_edit.html:100
+msgid ""
+"By default an organization profile is only viewable by active members. If "
+"you you make this profile public, it will be visable to non-members as well."
+msgstr ""
+"Par défaut une organisation est visible seulement par les membres actifs.\n"
+"Si vous souhaitez rendre ce profil publique, elle\n"
+"seront visibles aussi aux non membres."
+
+#: member/templates/member/organization/org_edit.html:104
+msgid "Links"
+msgstr "Liens"
+
+#: member/templates/member/organization/org_list.html:20
+msgid "Organizations at"
+msgstr "Organisation à"
+
+#: member/templates/member/organization/org_list.html:24
+msgid "Search for an Organization"
+msgstr "Recherche d'une organisation"
+
+#: member/templates/member/organization/org_list.html:38
+msgid "No organization matches that query"
+msgstr "Pas d'organisation correspondant à cette recherche"
+
+#: member/templates/member/organization/org_member.html:23
+#: member/templates/member/profile/profile_activity.html:16
+msgid "User"
+msgstr "Utilisateur"
+
+#: member/templates/member/organization/org_member.html:38
+msgid ""
+"Slow down and try again. You must select an existing user from the dropdown."
+msgstr ""
+"Ralentissez et essayez encore. Vous devez sélectionner un utilisateur "
+"existant dans la liste déroulante."
+
+#: member/templates/member/organization/org_member.html:44
+#: member/templates/member/organization/org_view.html:124
+msgid "Title"
+msgstr "Titre"
+
+#: member/templates/member/organization/org_member.html:55
+#: member/templates/member/profile/profile_membership.html:10
+#: member/templates/member/profile/profile_membership.html:46
+#: member/templates/member/profile/profile_membership.html:72
+#: member/templates/member/profile/profile_orgs.html:12
+#: member/templates/member/profile/profile_orgs.html:38
+msgid "Start Date"
+msgstr "Date de début"
+
+#: member/templates/member/organization/org_member.html:66
+#: member/templates/member/profile/profile_membership.html:11
+#: member/templates/member/profile/profile_membership.html:47
+#: member/templates/member/profile/profile_membership.html:73
+#: member/templates/member/profile/profile_orgs.html:13
+#: member/templates/member/profile/profile_orgs.html:39
+msgid "End Date"
+msgstr "Date de fin"
+
+#: member/templates/member/organization/org_tags.html:15
+#: member/templates/member/profile/profile_tags.html:19
+msgid "No tags yet."
+msgstr "Pas de tags."
+
+#: member/templates/member/organization/org_view.html:62
+#: member/templates/member/profile/profile.html:58
+msgid "Edit Photo"
+msgstr "Modifier la photo"
+
+#: member/templates/member/organization/org_view.html:108
+#: member/templates/member/profile/profile_edit.html:200
+msgid "Bio"
+msgstr "Bio"
+
+#: member/templates/member/organization/org_view.html:120
+msgid "Organization Members"
+msgstr "Membres de l'organisation"
+
+#: member/templates/member/organization/org_view.html:125
+msgid "When"
+msgstr "Quand"
+
+#: member/templates/member/organization/org_view.html:127
+#: member/templates/member/profile/profile_devices.html:24
+#: member/templates/member/profile/profile_devices.html:46
+msgid "Action"
+msgstr "Action"
+
+#: member/templates/member/organization/org_view.html:142
+msgid "Lead"
+msgstr "Meneur"
+
+#: member/templates/member/organization/org_view.html:145
+msgid "Inactive"
+msgstr "Inactif"
+
+#: member/templates/member/organization/org_view.html:178
+#, python-format
+msgid "Show (%(counts.inactive)s) inactive member%(counts.inactive|pluralize)s"
+msgstr ""
+"Voir (%(counts.inactive)s) membres inactif%(counts.inactive|pluralize)s"
+
+#: member/templates/member/organization/org_view.html:180
+msgid "Hide inactive members"
+msgstr "Cacher les membres actifs"
+
+#: member/templates/member/profile/profile.html:102
+msgid "Connect with this member"
+msgstr "Se connecter avec ce membre"
+
+#: member/templates/member/profile/profile.html:113
+#: member/templates/member/profile/profile_private.html:6
+msgid "Private Details"
+msgstr "Informations privées"
+
+#: member/templates/member/profile/profile.html:119
+msgid "Membership"
+msgstr "Souscription"
+
+#: member/templates/member/profile/profile.html:132
+msgid "Events/Room Booking"
+msgstr "Réservation de salle"
+
+#: member/templates/member/profile/profile.html:139
+msgid "Activity"
+msgstr "Activitée"
+
+#: member/templates/member/profile/profile.html:145
+msgid "Billing"
+msgstr "Facturation"
+
+#: member/templates/member/profile/profile.html:151
+msgid "Documents"
+msgstr "Documents"
+
+#: member/templates/member/profile/profile.html:157
+msgid "Devices"
+msgstr "Périphériques"
+
+#: member/templates/member/profile/profile_activity.html:4
+#, python-format
+msgid ""
+"Activity Between %(period_start|date:'M d')s to %(period_end|date:'M d')s:"
+msgstr ""
+"Activité entre le %(period_start|date:'M d')s et le "
+"%(period_end|date:'M d')s :"
+
+#: member/templates/member/profile/profile_activity.html:5
+#: tablet/templates/tablet/welcome.html:15
+msgid "of"
+msgstr "de"
+
+#: member/templates/member/profile/profile_activity.html:5
+msgid "Days"
+msgstr "Jours"
+
+#: member/templates/member/profile/profile_activity.html:19
+msgid "Billable"
+msgstr "Facturable"
+
+#: member/templates/member/profile/profile_activity.html:21
+msgid "Paid by"
+msgstr "Payé par"
+
+#: member/templates/member/profile/profile_billing.html:8
+msgid "Current Profile:"
+msgstr "Profil courant :"
+
+#: member/templates/member/profile/profile_billing.html:10
+msgid "Valid"
+msgstr "Valide"
+
+#: member/templates/member/profile/profile_billing.html:12
+msgid "Guest of:"
+msgstr "Invité de :"
+
+#: member/templates/member/profile/profile_billing.html:15
+msgid "Invalid"
+msgstr "Invalide"
+
+#: member/templates/member/profile/profile_billing.html:22
+msgid "Automatic Billing:"
+msgstr "Facturation automatique"
+
+#: member/templates/member/profile/profile_billing.html:22
+msgid "The"
+msgstr "Le"
+
+#: member/templates/member/profile/profile_billing.html:30
+msgid ""
+"If you have any questions, or need to make any changes to your membership, "
+"please email\n"
+"    <a target=\"_self\" href=\"mailto:billing@officenomads.com\" style="
+"\"color:green;\">billing@officenomads.com</a>.\n"
+"    We need at least one full business day to make any changes, otherwise "
+"your payment will be processed automatically."
+msgstr ""
+
+#: member/templates/member/profile/profile_billing.html:45
+msgid "Recent Bills"
+msgstr "Factures récentes"
+
+#: member/templates/member/profile/profile_billing.html:52
+msgid "Due Date"
+msgstr "Payement le"
+
+#: member/templates/member/profile/profile_billing.html:53
+msgid "Amount"
+msgstr "Montant"
+
+#: member/templates/member/profile/profile_billing.html:54
+msgid "Payments"
+msgstr "Payements"
+
+#: member/templates/member/profile/profile_billing.html:55
+msgid "Status"
+msgstr "Etat"
+
+#: member/templates/member/profile/profile_billing.html:65
+msgid "Open"
+msgstr "Ouvert"
+
+#: member/templates/member/profile/profile_billing.html:66
+msgid "Receipt"
+msgstr "Reçu"
+
+#: member/templates/member/profile/profile_billing.html:72
+msgid "No bills..."
+msgstr "Pas de factures..."
+
+#: member/templates/member/profile/profile_devices.html:2
+#, python-format
+msgid "Current IP Address: %(ip)s"
+msgstr "Adresse IP courante : %(ip)s"
+
+#: member/templates/member/profile/profile_devices.html:4
+msgid ""
+"In order to help us manage our systems\n"
+"\twe ask that you register your device (<i>computer, phone, tablet</i>)\n"
+"\twith us using the form below. This help us understand use of the space and "
+"our network, and enables handy-dandy tools\n"
+"\tlike the Here Today page.\n"
+"\tPlease note that we only track the presence of each device, not what is "
+"being accessed."
+msgstr ""
+"Dans le but de nous aider à gérer notre système, nous vous demondons "
+"d'enregistrer vos périphèriques (<i>ordinateur, téléphone, tablette, ...</"
+"i>\n"
+"Cela nous aide à comprendre l'utilisation de l'espace et de notre réseau et "
+"permet l'enregistrement automatique pour la fonctionnalité \"Ici aujourd'hui"
+"\".\n"
+"Notez que l'on enregistre que la présence de chaque équipement, aucune "
+"information sur le flux internet utilisé n'est enregistré."
+
+#: member/templates/member/profile/profile_devices.html:12
+msgid "Current Device Unknown"
+msgstr "Périphérique actuel inconnu"
+
+#: member/templates/member/profile/profile_devices.html:14
+msgid ""
+"We are having a hard time identifying your device.  For this to work, you "
+"must be in the office and not connected to a VPN.\n"
+"\t\tYou can not do this from home.  It can also take a few minutes the first "
+"time you connect to the network.  If you are having\n"
+"\t\ttrouble we can always help you at the front desk."
+msgstr ""
+"Nous avons des difficultés à enregistrer votre périphérique. Pour que cela "
+"fonctionne, vous devez être dans les bureaux et ne pas être connecté à un "
+"VPN. Vous ne pouvez pas le faire depuis chez vous."
+
+#: member/templates/member/profile/profile_devices.html:19
+msgid "Register New Device"
+msgstr "Enregistrer un nouveau périphérique"
+
+#: member/templates/member/profile/profile_devices.html:22
+#: member/templates/member/profile/profile_devices.html:44
+msgid "Mac Address"
+msgstr "Adresse MAC"
+
+#: member/templates/member/profile/profile_devices.html:23
+#: member/templates/member/profile/profile_devices.html:45
+msgid "Device Name"
+msgstr "Nom du périphérique"
+
+#: member/templates/member/profile/profile_devices.html:41
+msgid "Your Device List"
+msgstr "Votre liste de périphériques"
+
+#: member/templates/member/profile/profile_devices.html:65
+msgid "Current"
+msgstr "Courant"
+
+#: member/templates/member/profile/profile_edit.html:27
+msgid "Edit Your Profile"
+msgstr "Modifier votre profil"
+
+#: member/templates/member/profile/profile_edit.html:29
+msgid ""
+"NOTE: Items in <strong style='color:RGBA(79, 134, 135, 1);'>green bold</"
+"strong> are viewable by all active members."
+msgstr ""
+"NOTE : Les éléments en <strong style='color:RGBA(79, 134, 135, 1);'>gras et "
+"vert</strong> sont visibles par tous les membres."
+
+#: member/templates/member/profile/profile_edit.html:33
+msgid "Email Addresses"
+msgstr "Adresse email"
+
+#: member/templates/member/profile/profile_edit.html:39
+msgid "Email Help"
+msgstr "Aide email"
+
+#: member/templates/member/profile/profile_edit.html:40
+msgid ""
+"You can have multiple email addresses associated with your membership.\n"
+"        These emails are used at login, and when messages are sent to "
+"various mailing\n"
+"        lists.  If you send email from an address that is not associated "
+"with a\n"
+"        membership, it will be moderated."
+msgstr ""
+"Vous pouvez avoir plusieurs adresses email associées à  votre souscription.\n"
+"Ces adresses email sont utilisées au login et lorsqu'un message est envoyé "
+"sur une des listes de diffusion.\n"
+"Si vous envoyez un message avec une adresse qui n'est pas déclarée, le "
+"message sera modéré."
+
+#: member/templates/member/profile/profile_edit.html:44
+msgid ""
+"Your primary email address is the address we send notifications and\n"
+"        mailing list messages to."
+msgstr ""
+"Votre adresse principale est l'adresse utilisée pour l'envoi des "
+"notifications et des messages de listes de diffusion."
+
+#: member/templates/member/profile/profile_edit.html:61
+msgid "Make Primary"
+msgstr "En faire l'adresse principale"
+
+#: member/templates/member/profile/profile_edit.html:62
+msgid "Delete"
+msgstr "Supprimer"
+
+#: member/templates/member/profile/profile_edit.html:65
+msgid "Verify"
+msgstr "Vérifier"
+
+#: member/templates/member/profile/profile_edit.html:75
+msgid "Alternate Email"
+msgstr "Email alternatif"
+
+#: member/templates/member/profile/profile_edit.html:78
+msgid "Add Email Address"
+msgstr "Ajouter une adresse email"
+
+#: member/templates/member/profile/profile_edit.html:86
+msgid "Change Password"
+msgstr "Changer le mot de passe"
+
+#: member/templates/member/profile/profile_edit.html:90
+#: templates/registration/login.html:91
+msgid "Password"
+msgstr "Mot de passe"
+
+#: member/templates/member/profile/profile_edit.html:121
+msgid "Address 1"
+msgstr "Adresse 1"
+
+#: member/templates/member/profile/profile_edit.html:122
+msgid "Address 2"
+msgstr "Adresse 2"
+
+#: member/templates/member/profile/profile_edit.html:135
+msgid "City"
+msgstr "Ville"
+
+#: member/templates/member/profile/profile_edit.html:136
+msgid "State"
+msgstr "Etat"
+
+#: member/templates/member/profile/profile_edit.html:137
+msgid "Zipcode"
+msgstr "Code Postal"
+
+#: member/templates/member/profile/profile_edit.html:152
+msgid "Primary Phone"
+msgstr "Téléphone principal"
+
+#: member/templates/member/profile/profile_edit.html:153
+msgid "Alternate Phone"
+msgstr "Téléphone secondaire"
+
+#: member/templates/member/profile/profile_edit.html:166
+msgid "Profile Information"
+msgstr "Informations"
+
+#: member/templates/member/profile/profile_edit.html:190
+msgid "Profile Visibility"
+msgstr "Visibilitée du profil"
+
+#: member/templates/member/profile/profile_edit.html:191
+msgid ""
+"By default your profile is only viewable by active members.\n"
+"            If you you make this profile public, your bio, photo, and links\n"
+"            will be visable to non-members as well. Contact information\n"
+"            is always kept private."
+msgstr ""
+"Par défaut votre profil est visible seulement par les membres actifs.\n"
+"Si vous souhaitez rendre votre profil publique, votre bio, photo et liens\n"
+"seront visibles aussi aux non membres. Les informations de contact sont "
+"conservées privées."
+
+#: member/templates/member/profile/profile_edit.html:211
+msgid "How did you hear about us?"
+msgstr "Comment avez-vous entendu parler de nous ?"
+
+#: member/templates/member/profile/profile_edit.html:216
+#: member/templates/member/profile/profile_edit.html:225
+#: member/templates/member/profile/profile_edit.html:236
+msgid "add"
+msgstr ""
+
+#: member/templates/member/profile/profile_edit.html:221
+msgid "What industry are you in?"
+msgstr "Dans quel secteur d'activité êtes vous ?"
+
+#: member/templates/member/profile/profile_edit.html:231
+#: member/templates/member/profile/profile_public.html:37
+msgid "Neighborhood:"
+msgstr "Voisinage :"
+
+#: member/templates/member/profile/profile_edit.html:241
+msgid "Do you have children?"
+msgstr "Avez-vous des enfants ?"
+
+#: member/templates/member/profile/profile_edit.html:246
+msgid "Are you self employed?"
+msgstr "Etes vous à votre compte ?"
+
+#: member/templates/member/profile/profile_edit.html:253
+msgid "Gender"
+msgstr "Genre"
+
+#: member/templates/member/profile/profile_edit.html:260
+msgid "Preferred Pronouns"
+msgstr ""
+
+#: member/templates/member/profile/profile_edit.html:266
+msgid "Websites"
+msgstr "Sites web"
+
+#: member/templates/member/profile/profile_edit.html:285
+msgid "Emergency Contact Information"
+msgstr "Contact en cas d'urgence"
+
+#: member/templates/member/profile/profile_edit.html:290
+msgid "Name"
+msgstr "Nom"
+
+#: member/templates/member/profile/profile_edit.html:291
+msgid "Relationship"
+msgstr "Relation"
+
+#: member/templates/member/profile/profile_edit.html:302
+#: templates/registration/login.html:22 templates/registration/login.html:61
+#: templates/registration/login.html:87
+msgid "Email"
+msgstr "Email"
+
+#: member/templates/member/profile/profile_edit.html:303
+msgid "Phone"
+msgstr "Téléphone"
+
+#: member/templates/member/profile/profile_edit.html:316
+msgid "Update Your Profile"
+msgstr "Mettre à jour votre profil"
+
+#: member/templates/member/profile/profile_edit.html:332
+msgid "Add Another"
+msgstr "Ajouter un autre"
+
+#: member/templates/member/profile/profile_edit.html:333
+msgid "Remove"
+msgstr "Supprimer"
+
+#: member/templates/member/profile/profile_events.html:2
+msgid "Upcoming Events and Room Bookings"
+msgstr "Evenements à venir et réservations de salle"
+
+#: member/templates/member/profile/profile_events.html:5
+msgid "Event"
+msgstr "Evenement"
+
+#: member/templates/member/profile/profile_events.html:6
+msgid "Start"
+msgstr "Début"
+
+#: member/templates/member/profile/profile_events.html:7
+msgid "End"
+msgstr "Fin"
+
+#: member/templates/member/profile/profile_events.html:8
+msgid "Room"
+msgstr "Salle"
+
+#: member/templates/member/profile/profile_events.html:9
+msgid "Total Hours"
+msgstr "Total d'heures"
+
+#: member/templates/member/profile/profile_events.html:13
+msgid "Private Event"
+msgstr "Evenement privé"
+
+#: member/templates/member/profile/profile_events.html:17
+#: member/templates/member/profile/profile_events.html:24
+#: member/templates/member/profile/profile_events.html:27
+msgid "hours"
+msgstr "heures"
+
+#: member/templates/member/profile/profile_events.html:24
+msgid "Total Hours Used this Period:"
+msgstr "Total d'heures utilisées dans la période :"
+
+#: member/templates/member/profile/profile_events.html:27
+msgid "Hours Remaining:"
+msgstr "Heures restantes :"
+
+#: member/templates/member/profile/profile_events.html:31
+msgid "Make a New Room Booking"
+msgstr "Réservation de salleFaire une nouvelle réservation de salle"
+
+#: member/templates/member/profile/profile_image_edit.html:7
+msgid "Edit Your Organization Logo:"
+msgstr "Modifier votre logo d'organisation :"
+
+#: member/templates/member/profile/profile_image_edit.html:9
+msgid "Edit Your Profile Image:"
+msgstr "Modifier votre image de profil :"
+
+#: member/templates/member/profile/profile_image_edit.html:53
+msgid "Save"
+msgstr "Enregistrer"
+
+#: member/templates/member/profile/profile_membership.html:8
+#: member/templates/member/profile/profile_membership.html:44
+#: member/templates/member/profile/profile_membership.html:70
+msgid "Resource"
+msgstr "Ressource"
+
+#: member/templates/member/profile/profile_membership.html:9
+#: member/templates/member/profile/profile_membership.html:45
+#: member/templates/member/profile/profile_membership.html:71
+msgid "Allowance"
+msgstr "Allocation"
+
+#: member/templates/member/profile/profile_membership.html:12
+#: member/templates/member/profile/profile_membership.html:48
+#: member/templates/member/profile/profile_membership.html:74
+msgid "Monthly"
+msgstr "Mensuel"
+
+#: member/templates/member/profile/profile_membership.html:13
+#: member/templates/member/profile/profile_membership.html:49
+#: member/templates/member/profile/profile_membership.html:75
+msgid "Overage"
+msgstr "Excédent"
+
+#: member/templates/member/profile/profile_membership.html:14
+#: member/templates/member/profile/profile_membership.html:50
+#: member/templates/member/profile/profile_membership.html:76
+msgid "Paid By"
+msgstr "Payé par"
+
+#: member/templates/member/profile/profile_membership.html:26
+#: member/templates/member/profile/profile_membership.html:34
+#: member/templates/member/profile/profile_membership.html:58
+#: member/templates/member/profile/profile_membership.html:84
+#: member/templates/member/profile/profile_private.html:27
+msgid "/month"
+msgstr "/mois"
+
+#: member/templates/member/profile/profile_membership.html:33
+msgid "Total:"
+msgstr "Total :"
+
+#: member/templates/member/profile/profile_membership.html:41
+msgid "Future Subscriptions"
+msgstr "Souscriptions futures"
+
+#: member/templates/member/profile/profile_membership.html:67
+msgid "Past Subscriptions"
+msgstr "Souscriptions passées"
+
+#: member/templates/member/profile/profile_orgs.html:6
+msgid "Current Organizations"
+msgstr "Organisation courante"
+
+#: member/templates/member/profile/profile_orgs.html:29
+msgid "No Organizations"
+msgstr "Pas d'organisation"
+
+#: member/templates/member/profile/profile_orgs.html:33
+msgid "Past Organizations"
+msgstr "Organisation passées"
+
+#: member/templates/member/profile/profile_orgs.html:57
+msgid "Add Organization"
+msgstr "Ajouter une organisation"
+
+#: member/templates/member/profile/profile_private.html:12
+msgid "Primary Email:"
+msgstr "Email principal :"
+
+#: member/templates/member/profile/profile_private.html:17
+msgid "Alternate Email:"
+msgstr "Email alternatif :"
+
+#: member/templates/member/profile/profile_private.html:26
+msgid "Membership Rate:"
+msgstr "Prix de souscription :"
+
+#: member/templates/member/profile/profile_private.html:33
+#: tablet/templates/tablet/user_profile.html:34
+msgid "Billing Day:"
+msgstr "Jour de facturation :"
+
+#: member/templates/member/profile/profile_private.html:34
+msgid "of the month"
+msgstr "du mois"
+
+#: member/templates/member/profile/profile_private.html:41
+msgid "Address 1:"
+msgstr "Adresse 1 :"
+
+#: member/templates/member/profile/profile_private.html:48
+msgid "Address 2:"
+msgstr "Adresse 2 :"
+
+#: member/templates/member/profile/profile_private.html:55
+msgid "City:"
+msgstr "Ville :"
+
+#: member/templates/member/profile/profile_private.html:63
+#: member/templates/member/profile/profile_private.html:110
+msgid "Phone:"
+msgstr "Téléphone :"
+
+#: member/templates/member/profile/profile_private.html:71
+msgid "Alternate Phone:"
+msgstr "Téléphone secondaire :"
+
+#: member/templates/member/profile/profile_private.html:79
+msgid "How Heard:"
+msgstr "Source :"
+
+#: member/templates/member/profile/profile_private.html:87
+msgid "Gender:"
+msgstr "Genre :"
+
+#: member/templates/member/profile/profile_private.html:94
+msgid "Emergency Contact"
+msgstr "Contact en cas d'urgence"
+
+#: member/templates/member/profile/profile_private.html:95
+msgid "edit"
+msgstr ""
+
+#: member/templates/member/profile/profile_private.html:98
+msgid "No Emergency Contact Information"
+msgstr "Pas d'information de contact en cas d'urgence"
+
+#: member/templates/member/profile/profile_private.html:102
+#: tablet/templates/tablet/signature_capture.html:35
+#: tablet/templates/tablet/signature_render.html:50
+msgid "Name:"
+msgstr "Nom :"
+
+#: member/templates/member/profile/profile_private.html:106
+msgid "Relationship:"
+msgstr "Relation :"
+
+#: member/templates/member/profile/profile_private.html:114
+msgid "E-mail:"
+msgstr "Email :"
+
+#: member/templates/member/profile/profile_public.html:14
+msgid "Membership:"
+msgstr "Souscription :"
+
+#: member/templates/member/profile/profile_public.html:18
+msgid "Member Since:"
+msgstr "Membre depuis :"
+
+#: member/templates/member/profile/profile_public.html:24
+#, python-format
+msgid "Organization%(org_memberships|pluralize)s:"
+msgstr "Organisation%(org_memberships|pluralize)s:"
+
+#: member/templates/member/profile/profile_public.html:44
+msgid "Has Kids?"
+msgstr "Des enfants ?"
+
+#: member/templates/member/profile/profile_public.html:51
+msgid "Pronouns:"
+msgstr ""
+
+#: member/templates/member/tags/tag_cloud.html:26
+msgid "Tag List"
+msgstr "Liste de tags"
+
+#: member/templates/member/tags/tag_list.html:4
+msgid "Tag Cloud"
+msgstr "Nuage de tags"
+
+#: member/templates/member/tags/tag_list.html:5
+#, python-format
+msgid "All %(type | title)s Tags"
+msgstr "Tous les tags  %(type | title)s"
+
+#: member/templates/member/tags/tag_view.html:5
+#, python-format
+msgid "%(type | title)s Tagged with: %(tag)s"
+msgstr "%(type | title)s Taggé with: %(tag)s"
+
+#: member/views/connect.py:35
+msgid "Email Sent"
+msgstr "Email envoyé"
+
+#: member/views/connect.py:108
+msgid "Slack Invitation Sent.  Check your email for further instructions."
+msgstr ""
+"Invitation Slack envoyée. Vérifiez votre emai pour plus d'informations."
+
+#: member/views/connect.py:110
+#, python-format
+msgid "Failed to send invitation: %s"
+msgstr "Echec de l'envoi d'invitation : %s"
+
+#: member/views/core.py:231 member/views/profile.py:208
+msgid "The entered passwords do not match. Please try again."
+msgstr "Les mots de passe ne correspondent pas. Essayez encore."
+
+#: member/views/events.py:248
+msgid "This room is no longer available at the requested time."
+msgstr "Cette salle n'est plus disponible à l'heure sélectionnée."
+
+#: member/views/events.py:291
+msgid ""
+"Did not save your event. Double check that the event start is before the end "
+"time. Thank you."
+msgstr ""
+"Enregistrement de l'événement échoué. Vérifiez que le début de l'événement "
+"est avant la fin de celui-ci. Merci."
+
+#: member/views/organization.py:77 member/views/organization.py:98
+#: member/views/organization.py:155 member/views/organization.py:207
+#: member/views/profile.py:286 member/views/tags.py:100
+msgid "Forbidden"
+msgstr "Accès interdit"
+
+#: member/views/organization.py:126
+#, python-format
+msgid "Could not save website: %s"
+msgstr "Impossible d'enregistrer le site web : %s"
+
+#: member/views/organization.py:131
+msgid "Please make sure the websites have a valid URL and URL type."
+msgstr "Assurez vous que les sites web ont une URL valide."
+
+#: member/views/organization.py:133 member/views/organization.py:190
+#: member/views/organization.py:218 member/views/profile.py:203
+#: member/views/profile.py:312
+#, python-format
+msgid "Could not save: %s"
+msgstr "Impossible d'enregistrer : %s"
+
+#: member/views/organization.py:150
+msgid "You do not have permission to add yourself to this organization"
+msgstr "Vous n'avez pas les droits pour vous ajouter à cette organisation"
+
+#: member/views/profile.py:187
+msgid "Your password must be at least 8 characters long."
+msgstr "Votre mot de passe doit être au moins de 8 caractères."
+
+#: member/views/profile.py:210
+msgid ""
+"There was an error saving your websites. Please make sure they have a valid "
+"URL and URL type."
+msgstr ""
+"Il y a eu une erreur lors de l'enregistrement de vos sites web. Assurez vous "
+"que l'URL est valide."
+
+#: member/views/tags.py:37
+#, python-format
+msgid "Invalid type '%s'"
+msgstr "Type invalide '%s'"
+
+#: member/views/tags.py:81 member/views/tags.py:106
+msgid "Tags can't contain punctuation."
+msgstr "Un tag ne peut pas avoir de caractère de ponctuation."
+
+#: staff/templates/email/contact_request.txt:3
+#, python-format
+msgid ""
+"\n"
+"%(user.get_full_name)s wants to connect with you!  Did you know you can "
+"login to Nadine, find another member,\n"
+"and ask Nadine to connect the two of you?  %(user.first_name)s did and they "
+"chose you!  You can connect with\n"
+"them directly by emailing:  %(user.email)s\n"
+msgstr ""
+"\n"
+"%(user.get_full_name)s veut entrer en contact avec vous !  DAns Nadine, vous "
+"pouvez demander à entrer en contact avec un autre membre. "
+"%(user.first_name)s l'a fait et vous à choisi !  Vous pouvez le contacter "
+"directement par email : %(user.email)s\n"
+
+#: staff/templates/email/contact_request.txt:9
+msgid ""
+"\n"
+"Their Profile:\n"
+msgstr ""
+"\n"
+"Leur profil :\n"
+
+#: staff/templates/email/contact_request.txt:13
+msgid ""
+"\n"
+"Or to be notified the next time you are both in the space:\n"
+msgstr ""
+"\n"
+"Me notifier quand nous sommes ensemble dans l'espace :\n"
+
+#: staff/templates/email/contact_request.txt:18
+#, python-format
+msgid ""
+"\n"
+"Have fun!\n"
+"The %(site.name)s Team\n"
+msgstr ""
+"\n"
+"Cordialement,<br>\n"
+"\n"
+"L'équipe %(site.name)s\n"
+
+#: staff/templates/email/edit_profile.txt:2
+#, python-format
+msgid ""
+"\n"
+"Hi %(user.first_name)s,\n"
+"\n"
+"You have been a coming to %(site.name)s for %(user.profile.duration_str)s "
+"now!  In an effort to keep our data up to date we would like to encourage "
+"you to update your Nadine profile and emergency contact information. It's "
+"easy to edit. Go to the \"Member Login\" link on our website or use the one "
+"below.\n"
+msgstr ""
+"\n"
+"Bonjour %(user.first_name)s,\n"
+"\n"
+"Vous êtes venu chez %(site.name)s depuis %(user.profile.duration_str)s "
+"maintenant ! \n"
+"Pour conserver nos données à jour, nous souhaiterions que vous mettiez à "
+"jour votre profil dans Nadine et les information de contact en cas "
+"d'urgence. Allez dans Connexion Membres depuis le site web ou utlisez le "
+"lien ci-dessous.\n"
+
+#: staff/templates/email/edit_profile.txt:8
+msgid ""
+"\n"
+"If you have any questions, please call us at 206.323.6500, respond to this "
+"message, or stop by the front desk.\n"
+msgstr ""
+"\n"
+"Si vous avez des questions, appelez nous au {{ site.phone }}, répondez à ce "
+"message ou venez nous voir au bureau d'accueil.\n"
+
+#: staff/templates/email/edit_profile.txt:12
+#: staff/templates/email/no_device.txt:14
+#: staff/templates/email/no_signin.txt:14
+#, python-format
+msgid ""
+"\n"
+"Thank you,\n"
+"The %(site.name)s Team\n"
+msgstr ""
+"\n"
+"Cordialement,<br>\n"
+"\n"
+"L'équipe %(site.name)s\n"
+
+#: staff/templates/email/exit_survey.txt:3
+msgid ""
+"\n"
+"Thanks for being a member at Office Nomads!  We'd love to get a little bit "
+"of feedback on your experience coworking with us.  Please check out our "
+"super-short exit survey here and tell us what you think!\n"
+msgstr ""
+"\n"
+"Merci d'être membre chez %(site.name)s ! Nous souhaiterions avoir un retour "
+"concernant votre expérience de coworking avec nous. Remplissez notre "
+"questionnaire super court et dites nous ce que vous pensez !\n"
+
+#: staff/templates/email/exit_survey.txt:9
+#, python-format
+msgid ""
+"\n"
+"Thanks,\n"
+"The %(site.name)s Team\n"
+msgstr ""
+"\n"
+"Cordialement,<br>\n"
+"\n"
+"L'équipe %(site.name)s\n"
+
+#: staff/templates/email/first_day.txt:2
+#, python-format
+msgid ""
+"\n"
+"%(user.first_name)s,\n"
+"\n"
+"Thanks so much for coworking with us today - we hope you had fun trying out "
+"Office Nomads! It is always exciting for us to have a new face in the "
+"office. What were your first impressions of coworking with us?\n"
+"\n"
+"We also wanted to see if you had any questions about coworking or membership "
+"at Office Nomads. Is there anything that we can help you with? Please let us "
+"know by shooting us a reply to this email or give us a call at "
+"206.323.6500.  We're happy to help. \n"
+"\n"
+"Thanks again and hope to see you back at the space soon,\n"
+"The %(site.name)s Team\n"
+msgstr ""
+"\n"
+"%(user.first_name)s,\n"
+"\n"
+"Merci d'être venu au coworking avec nous aujourd'hui. Nous espérons que "
+"l'essai de %(site.name)s vous a plu ! C'est toujours un évènement pour nous "
+"d'avoir de nouveaux visages dans les bureaux. Quelles ont été vos premières "
+"impressions ?\n"
+"\n"
+"Nous souhaiterions savoir si vous avez des questions à propos du coworking "
+"ou des souscription. Peut-on faire quelque chose pour vous aider ? Laissez "
+"nous le savoir en répondant à ce mail.\n"
+"\n"
+"Merci encore et nous espérons vous voir prochainement dans l'espace.\n"
+"\n"
+"L'équipe %(site.name)s\n"
+
+#: staff/templates/email/introduction.txt:2
+#, python-format
+msgid ""
+"\n"
+"%(user.first_name)s,\n"
+"\n"
+"Thanks for visiting %(site.name)s! We just created a new user for you in "
+"Nadine, the system we use to run our space. You can log in to see other "
+"members, update your profile, and view your activity and billing history. "
+"The first time you will need to reset your password. As always, if you have "
+"any trouble at all, swing by the front desk and we can help you out.\n"
+msgstr ""
+"\n"
+"%(user.first_name)s,\n"
+"\n"
+"Merci de visiter %(site.name)s ! Nous avons créé un nouvel utilisateur pour "
+"vous dans Nadine, le système que nous utilisons pour gérer notre espace. "
+"Vous pouvez vous connecter pour voir les autres membres, mettre à jour votre "
+"profil et voir votre activité et votre historique de facturation.\n"
+"\n"
+"La première fois, vous devrez réinitialiser votre mot de passe. Comme "
+"toujours, si vous avez le moindre problème, contactez-nous.\n"
+
+#: staff/templates/email/introduction.txt:10
+#: staff/templates/email/invalid_billing.txt:11
+#: staff/templates/email/new_membership.txt:10
+#: staff/templates/email/user_notification.txt:10
+#: templates/email/verification_email.txt:8
+#, python-format
+msgid ""
+"\n"
+"Thanks!\n"
+"The %(site.name)s Team\n"
+msgstr ""
+"\n"
+"Cordialement,<br>\n"
+"\n"
+"L'équipe %(site.name)s\n"
+
+#: staff/templates/email/invalid_billing.txt:2
+#, python-format
+msgid ""
+"\n"
+"Hi %(user.first_name)s!\n"
+"\n"
+"It looks like we need to update your billing information at %(site.name)s. "
+"When you get a chance, can you please update your information? You can enter "
+"your billing information right from your Nadine profile. Just go to the "
+"billing tab and create a new billing profile.  Once you have entered your "
+"information we'll do the rest.  You can also pay by automatic withdrawal "
+"from your checking account if you give us a voided check. Just let us know "
+"what you would like to do. Thanks!\n"
+msgstr ""
+"\n"
+"Bonjour %(user.first_name)s !\n"
+"\n"
+"Il semble que nous devons mettre à jour vos informations de facturation à "
+"%(site.name)s. Quand vous en aurez la possibilité, pouvez-vous mettre à jour "
+"les informations correspondantes ? Vous pouvez le faire dans le profil "
+"Nadine, allez dans l'onglet facturation et créez un nouveau profil de "
+"facturation.\n"
+"\n"
+"Quand vous aurez entré les nouvelles informations, nous prendrons en charge "
+"la suite.\n"
+
+#: staff/templates/email/member_survey.txt:2
+#, python-format
+msgid ""
+"\n"
+"%(user.first_name)s,\n"
+"\n"
+"As you've been coworking with us for more than a couple months, we'd like to "
+"learn about your experience being a member at Office Nomads.  We're hoping "
+"to use some of this data to help enhance the coworking environment in "
+"Seattle as well as to make our business better. In addition, we share the "
+"data from time to time, to the benefit of other coworking spaces.  Your "
+"input and feedback makes a big difference!\n"
+"\n"
+"Please take a few minutes and complete this brief survey when you've got a "
+"moment: http://bit.ly/14K4z40. \n"
+"\n"
+"If you've got any questions or concerns, please e-mail staff@officenomads."
+"com. \n"
+"\n"
+"Many thanks for your time - we really appreciate it!\n"
+"\n"
+"The %(site.name)s Team\n"
+msgstr ""
+
+#: staff/templates/email/new_membership.txt:2
+#, python-format
+msgid ""
+"\n"
+"%(user.first_name)s,\n"
+"\n"
+"Congratulations on your new membership! Your billing date will be the "
+"%(membership.start_date|date:\"jS\")s of each month. If you have not already "
+"done so, please log in to your Nadine profile (link below) and make sure we "
+"have a valid billing profile. We will assume you would like to stay at your "
+"current membership level unless you tell us otherwise (by email or dropping "
+"by the front desk) before your billing date arrives. If you have signed up "
+"as a Resident member, we ask that you give us 30 days notice before changing "
+"your membership. If you have any questions or concerns, please don't "
+"hesitate to ask us. In the mean time, welcome! We're so happy to have you as "
+"a part of our Nomad family.\n"
+msgstr ""
+
+#: staff/templates/email/no_device.txt:2
+#, python-format
+msgid ""
+"\n"
+"%(user.first_name)s,\n"
+"\n"
+"It looks like you currently do not have any devices registered in Nadine.\n"
+msgstr ""
+"\n"
+"%(user.first_name)s,\n"
+"\n"
+"Vous n'avez pas de périphérique enregistré dans Nadine.\n"
+
+#: staff/templates/email/no_device.txt:10
+#: staff/templates/email/no_signin.txt:10
+msgid ""
+"\n"
+"If you've got any questions or concerns, please e-mail staff@officenomads."
+"com.\n"
+msgstr ""
+
+#: staff/templates/email/no_return.txt:2
+#, python-format
+msgid ""
+"\n"
+"%(user.first_name)s,\n"
+"\n"
+"Hey, where'd you go? :)\n"
+"\n"
+"It has been a while since you took your trial day here at Office Nomads, and "
+"we wanted to check in to see if we'll be seeing you back in the space "
+"sometime soon. We also wanted to be sure to reach out in case you had some "
+"lingering questions about coworking with us that we could help you out with. "
+"Feel free to drop us a line anytime and we'd be happy to talk with you.\n"
+"\n"
+"Otherwise, if we won't be seeing you again, we just wanted to thank you for "
+"coming by and wish you all the best. \n"
+msgstr ""
+
+#: staff/templates/email/no_return.txt:12
+#, python-format
+msgid ""
+"\n"
+"Take care,\n"
+"The %(site.name)s Team\n"
+msgstr ""
+"\n"
+"Cordialement,<br>\n"
+"\n"
+"L'équipe %(site.name)s\n"
+
+#: staff/templates/email/no_signin.txt:2
+#, python-format
+msgid ""
+"\n"
+"%(user.first_name)s,\n"
+"\n"
+"It looks like you forgot to sign in today!\n"
+msgstr ""
+
+#: staff/templates/email/user_notification.txt:2
+#, python-format
+msgid ""
+"\n"
+"%(user.first_name)s,\n"
+"\n"
+"You asked to be notified when both you and %(target.get_full_name)s were in "
+"the space and that's right now!\n"
+msgstr ""
+
+#: tablet/templates/tablet/document_list.html:8
+#, python-format
+msgid "Documents for %(user.get_full_name)s"
+msgstr "Documents pour %(user.get_full_name)s"
+
+#: tablet/templates/tablet/document_list.html:13
+msgid "Document"
+msgstr "Document"
+
+#: tablet/templates/tablet/members.html:18
+msgid "No Members"
+msgstr "Pas de membres"
+
+#: tablet/templates/tablet/members.html:22
+msgid "What is the first letter of your <em><u>first name</u></em>?"
+msgstr "Quelle est la première lettre de votre <em><u>prénom</u></em> ?"
+
+#: tablet/templates/tablet/members.html:52
+msgid "Home"
+msgstr "Home"
+
+#: tablet/templates/tablet/motd.html:13
+msgid "SIGN IN"
+msgstr "S'enregistrer"
+
+#: tablet/templates/tablet/post_create.html:26
+msgid "Welcome to Office Nomads!"
+msgstr "Bienvenue !"
+
+#: tablet/templates/tablet/post_create.html:29
+msgid ""
+"We have created a new user in Nadine. You can use Nadine to enter billing "
+"information, review your membership, your daily activity, and explore "
+"everything\n"
+"\tthat is going on here at Office Nomads."
+msgstr ""
+
+#: tablet/templates/tablet/post_create.html:33
+msgid ""
+"Enjoy!<br>\n"
+"\t\t-- The Office Nomads Team"
+msgstr ""
+"Enjoy !<br>\n"
+"\t\t-- L'équipe %(site.name)s"
+
+#: tablet/templates/tablet/post_create.html:37
+msgid "User Information"
+msgstr "Information utilisateur"
+
+#: tablet/templates/tablet/post_create.html:39
+msgid "Username:"
+msgstr "Nom d'utilisateur :"
+
+#: tablet/templates/tablet/post_create.html:40
+msgid "Full Name:"
+msgstr "Nom complet :"
+
+#: tablet/templates/tablet/post_create.html:41
+msgid "Email:"
+msgstr "Email :"
+
+#: tablet/templates/tablet/post_create.html:47
+msgid "Are you going to stay and work today?"
+msgstr "Est-ce que vous restez ici aujourd'hui ?"
+
+#: tablet/templates/tablet/post_create.html:58
+#: tablet/templates/tablet/user_profile.html:59
+msgid "Which member is paying for you today?"
+msgstr "Quel membre vous invite aujourd'hui ?"
+
+#: tablet/templates/tablet/signature_render.html:60
+msgid "Signature:"
+msgstr "Signature :"
+
+#: tablet/templates/tablet/t_base.html:9
+msgid "Front Desk"
+msgstr "Accueil"
+
+#: tablet/templates/tablet/t_base.html:37
+msgid "Nadine Member Console"
+msgstr "Espace membre Nadine"
+
+#: tablet/templates/tablet/t_base.html:42
+msgid "Visitors"
+msgstr "Visiteurs"
+
+#: tablet/templates/tablet/t_base.html:55
+msgid "Office Nomads"
+msgstr ""
+
+#: tablet/templates/tablet/user_profile.html:21
+msgid "Please update your billing profile."
+msgstr "Mettez à jour votre profil de facturation."
+
+#: tablet/templates/tablet/user_profile.html:25
+#, python-format
+msgid "Check with %(site.name)s staff about these required actions:"
+msgstr "Vérifiez avec le staff de %(site.name)s les actions suivantes :"
+
+#: tablet/templates/tablet/user_profile.html:36
+msgid "Visits This Period:"
+msgstr "Visites pendant la période :"
+
+#: tablet/templates/tablet/user_profile.html:45
+msgid "Sign Documents"
+msgstr "Signer les documents"
+
+#: tablet/templates/tablet/user_profile.html:49
+msgid "Guest of another member?"
+msgstr "Invité d'un autre membre ?"
+
+#: tablet/templates/tablet/user_profile.html:90
+msgid "Sign In"
+msgstr "Enregistrement"
+
+#: tablet/templates/tablet/visitors.html:12
+msgid "Have you been here before?"
+msgstr "Etes vous déjà venu ?"
+
+#: tablet/templates/tablet/visitors.html:21
+msgid "New to Office Nomads?"
+msgstr "Nouveau ici ?"
+
+#: tablet/templates/tablet/welcome.html:7
+#, python-format
+msgid "Welcome %(user.first_name)s %(user.last_name)s!"
+msgstr "Bienvenue %(user.first_name)s %(user.last_name)s !"
+
+#: tablet/templates/tablet/welcome.html:11
+msgid "Today is your first day and we're so glad you're here!"
+msgstr ""
+"Aujourd'hui est votre premier jours et nous sommes fiers de vous avoir ici !"
+
+#: tablet/templates/tablet/welcome.html:13
+msgid "As of today, you have used"
+msgstr "A ce jour, vous avez utilisé"
+
+#: tablet/templates/tablet/welcome.html:17
+msgid "days."
+msgstr "jours."
+
+#: tablet/templates/tablet/welcome.html:18
+#, python-format
+msgid "Your billing day is the %(bill_day_str)s."
+msgstr "Votre jour de facturation est le %(bill_day_str)s."
+
+#: templates/404.html:9
+msgid "Ooops!<br><br>The page you are looking for does not exist."
+msgstr "Ooops!<br><br>La page que vous cherchez n'existe pas."
+
+#: templates/500.html:9
+msgid ""
+"Ooops!<br><br>It looks like there was a problem.  Our support staff has been "
+"notified."
+msgstr "Ooops!<br><br>Il y a eu un problème, le staff est notifié."
+
+#: templates/admin/base_site.html:4 templates/admin/base_site.html:15
+msgid "administration"
+msgstr "administration"
+
+#: templates/admin/member_log/daily_log/change_form.html:7
+msgid "History"
+msgstr "Historique"
+
+#: templates/admin/member_log/daily_log/change_form.html:8
+msgid "View on site"
+msgstr "Voir sur le site"
+
+#: templates/email/password_reset_email.txt:2
+msgid ""
+"\n"
+"Welcome to the Nadine!\n"
+"\n"
+"There are a few steps to creating a new password. First things first, head "
+"to the link below to create your new password:\n"
+msgstr ""
+"\n"
+"Bienvenue dans Nadine!\n"
+"\n"
+"Il y a plusieurs étapes pour créer votre mot de passe. Cliquez sur le lien "
+"ci-dessous pour créer votre nouveau mot de passe :\n"
+
+#: templates/email/password_reset_email.txt:10
+#, python-format
+msgid ""
+"\n"
+"After you have created your new password you'll be sent to the login page.\n"
+"\n"
+"Thanks! If you have any questions, please swing by the front desk and chat "
+"with us.\n"
+"\n"
+" - The %(site_name)s team\n"
+msgstr ""
+"\n"
+"Après avoir créé votre mot de passe, vous serez redirigé vers la page de "
+"connexion.\n"
+"\n"
+"Merci ! Si vous avec des question, demandez-nous !\n"
+"\n"
+"L'équipe %(site_name)s \n"
+
+#: templates/email/verification_email.html:18
+msgid "Please verify your e-mail address."
+msgstr "Vérifiez votre adresse email."
+
+#: templates/email/verification_email.html:20
+#: templates/email/verification_email.txt:4
+msgid "A new e-mail address has been associated with your account at"
+msgstr "Une nouvelle adresse email à été associée à votre compte à"
+
+#: templates/email/verification_email.html:20
+msgid "Please click the link below to verify your new address."
+msgstr "Cliquez le lien ci-dessous pour vérifier votre nouvelle adresse."
+
+#: templates/email/verification_email.html:22
+msgid "Your Verification Key:"
+msgstr "Votre clef de vérification :"
+
+#: templates/email/verification_email.html:25
+#, python-format
+msgid ""
+"\n"
+"Thanks!<br>\n"
+"The %(site.name)s Team\n"
+msgstr ""
+"\n"
+"Cordialement,<br>\n"
+"\n"
+"L'équipe %(site.name)s\n"
+
+#: templates/email/verification_email.txt:2
+msgid "Please take a moment to verify your e-mail address."
+msgstr "Prenez un moment pour vérifier votre adresse email."
+
+#: templates/email/verification_email.txt:5
+msgid ""
+"Please copy and paste the link below into your browser's address box to "
+"verify your new address."
+msgstr ""
+"Copiez le lien ci-dessous dans votre navigateur pour vérifier votre nouvelle "
+"adresse."
+
+#: templates/email_verify.html:10
+msgid "Please verify your email address"
+msgstr "Vérifiez votre adresse email"
+
+#: templates/email_verify.html:19
+msgid ""
+"A link and a verification code was sent to this email address.\n"
+"        If you did not receive this email, we can try and\n"
+"        <a href=\"?send_link=True\">send it again</a>. Otherwise, enter\n"
+"        the verification key below."
+msgstr ""
+"Un lien de vérification a été envoyé à cette adresse email.\n"
+"Si vous n'avez pas reçu le mail nous pouvons le\n"
+"        <a href=\"?send_link=True\">renvoyer</a>. Sinon, entrez le code ci-"
+"dessous."
+
+#: templates/index.html:9
+#, python-format
+msgid "Welcome to the wonderful world of %(site.name)s"
+msgstr "Bienvenu dans le monde merveilleux de %(site.name)s"
+
+#: templates/registration/login.html:4 templates/registration/login.html:19
+#: templates/registration/login.html:34 templates/registration/login.html:68
+#: templates/registration/login.html:84
+msgid "Login"
+msgstr "Connexion"
+
+#: templates/registration/login.html:15 templates/registration/login.html:80
+msgid "Your username and password didn't match. Please try again."
+msgstr "Votre nom d'utilisateur et votre mot de passe ne correspondent pas."
+
+#: templates/registration/login.html:27
+msgid "Password:"
+msgstr "Mot de passe :"
+
+#: templates/registration/login.html:36 templates/registration/login.html:50
+#: templates/registration/login.html:67
+msgid "Register"
+msgstr "Enregistrer"
+
+#: templates/registration/login.html:41 templates/registration/login.html:102
+#, python-format
+msgid ""
+"If you've forgotten your password, you will need to <a href=\"%(password)s"
+"\">create a new password"
+msgstr ""
+"Si vous avez oublié votre mot de passe, vous devrez <a href=\"%(password)s"
+"\">créer un nouveau mot de passe"
+
+#: templates/registration/login.html:53
+msgid "First Name:"
+msgstr "Prénom :"
+
+#: templates/registration/login.html:57
+msgid "Last Name:"
+msgstr "Nom :"
+
+#: templates/registration/login.html:97
+msgid "Submit"
+msgstr "Envoyer"
+
+#: templates/registration/password_reset_complete.html:15
+#: templates/registration/password_reset_confirm.html:15
+#: templates/registration/password_reset_done.html:15
+#: templates/registration/password_reset_form.html:15
+msgid "Password Reset"
+msgstr "Réinitialisation du mot de passe"
+
+#: templates/registration/password_reset_complete.html:16
+#: templates/registration/password_reset_confirm.html:16
+#: templates/registration/password_reset_done.html:16
+#: templates/registration/password_reset_form.html:16
+msgid "Step 1..."
+msgstr "Etape 1..."
+
+#: templates/registration/password_reset_complete.html:17
+#: templates/registration/password_reset_confirm.html:17
+#: templates/registration/password_reset_done.html:17
+#: templates/registration/password_reset_form.html:17
+msgid "Step 2..."
+msgstr "Etape 2..."
+
+#: templates/registration/password_reset_complete.html:18
+#: templates/registration/password_reset_confirm.html:18
+#: templates/registration/password_reset_done.html:18
+#: templates/registration/password_reset_form.html:18
+msgid "Step 3..."
+msgstr "Etape 3..."
+
+#: templates/registration/password_reset_complete.html:19
+msgid "Done!"
+msgstr "Terminé !"
+
+#: templates/registration/password_reset_complete.html:22
+#, python-format
+msgid ""
+"Your password has been set. Thank you! Now, head to the\n"
+"<a href=\"%(home)s\">login page</a>. Thanks!"
+msgstr ""
+"Votre mot de passe a été modifié, Merci ! Maintenant allez à la \n"
+"<a href=\"%(home)s\">page de connexion</a> !"
+
+#: templates/registration/password_reset_confirm.html:22
+msgid "Please enter your new password:"
+msgstr "Entrez votre nouveau mot de passe :"
+
+#: templates/registration/password_reset_confirm.html:34
+msgid ""
+"This link no longer works.  You either waited too long to reset your "
+"password or submitted the form more then once."
+msgstr ""
+"Ce lien ne fonctionne plus. Vous avez attendu trop longtemps ou utilisé deux "
+"fois le même lien."
+
+#: templates/registration/password_reset_done.html:21
+msgid ""
+"We've sent you an email! Please check your inbox and follow the "
+"instructions. If you didn't get an email, stop by the front desk and we can "
+"help you troubleshoot."
+msgstr ""
+"Nous vous avons envoyé un email ! Vérifiez votre boite email et suivez les "
+"instructions. Si vous n'avez pas de mail, venez nous voir, nous pourrons "
+"vous aider."
+
+#: templates/registration/password_reset_form.html:21
+msgid ""
+"Please enter your email address and we'll send you instructions on making a "
+"new password."
+msgstr ""
+"Entrez votre adresse email et nous vous enverons les instructions pour créer "
+"un nouveau mot de passe."

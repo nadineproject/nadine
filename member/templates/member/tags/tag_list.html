@@ -1,8 +1,8 @@
 {% extends "member/base.html" %}
-
+{% load i18n %}
 {% block content %}
-	<div style="float: right;">[ <a href="{% url 'member:tag:cloud' type %}">Tag Cloud</a> ]</div>
-	<h2>All {{ type | title }} Tags</h2>
+	<div style="float: right;">[ <a href="{% url 'member:tag:cloud' type %}">{% trans "Tag Cloud" %}</a> ]</div>
+	<h2>{% blocktrans %}All {{ type | title }} Tags{% endblocktrans %}</h2>
 	<ul>
 	{% for tag, items, count in tags %}
 		<dl>

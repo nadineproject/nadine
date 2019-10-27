@@ -1,4 +1,5 @@
 {% extends "tablet/t_base.html" %}
+{% load i18n %}
 {% load imagetags %}
 
 {% block nav-visitors %} class="ui-btn-active" {% endblock %}
@@ -8,7 +9,7 @@
 	<div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
 {% endfor %}
 
-	<h2>Have you been here before?</h2>
+	<h2>{% blocktrans %}Have you been here before?{% endblocktrans %}</h2>
 		<form id="member-search-form" action="{% url 'tablet:search' %}" method="POST">
 			<div data-role="fieldcontain">
 				<input placeholder="Search by your first name" type="search" name="terms" data-inline="true" />
@@ -17,7 +18,7 @@
 			{% csrf_token %}
 		</form>
 
-	<h2>New to Office Nomads?</h2>
+	<h2>{% blocktrans %}New to Office Nomads?{% endblocktrans %}</h2>
 
 	<div id="visitor-form">
 		<form action="{% url 'tablet:visitors' %}" method="POST">

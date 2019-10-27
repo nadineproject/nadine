@@ -1,3 +1,4 @@
+{% load i18n %}
 <div class='tags'>
   <ul>
     {% if organization.tags.all %}
@@ -11,7 +12,7 @@
       {% endfor %}
       {% else %}
         <p style='font-style: italic;text-align: center;'>
-          No tags yet.
+          {% blocktrans %}No tags yet.{% endblocktrans %}
         </p>
       {% endif %}
   </ul>

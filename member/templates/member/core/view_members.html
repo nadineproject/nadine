@@ -1,4 +1,5 @@
 {% extends "member/base.html" %}
+{% load i18n %}
 {% load imagetags %}
 {% load list_tags %}
 
@@ -6,24 +7,24 @@
 
 {% block content %}
 
-	<h3 class='header-font' style="vertical-align: top; text-align:center;">View Members</h3>
+	<h3 class='header-font' style="vertical-align: top; text-align:center;">{% blocktrans %}View Members{% endblocktrans %}</h3>
 
 {% block search_mems %}
 	<div class='row'>
 		<div class="col s12 m8 l8">
 			<ul class="tabs">
 				{% if search_terms %}
-					<li class="tab mem-tabs col s4 m2 l2"><a href="#tabs-1">Active Members ({{ active_members | length }})</a></li>
-					<li class="tab col s4 m2 l2"><a href="#tabs-2">Here Today ({{ here_today | length }})</a></li>
-					<li class="tab col s4 m2 l2"><a href="#tabs-3" class='active'>Search Results - {{ search_terms }}</a></li>
+					<li class="tab mem-tabs col s4 m2 l2"><a href="#tabs-1">{% blocktrans %}Active Members{% endblocktrans %} ({{ active_members | length }})</a></li>
+					<li class="tab col s4 m2 l2"><a href="#tabs-2">{% blocktrans %}Here Today{% endblocktrans %} ({{ here_today | length }})</a></li>
+					<li class="tab col s4 m2 l2"><a href="#tabs-3" class='active'>{% blocktrans %}Search Results{% endblocktrans %} - {{ search_terms }}</a></li>
 				{% elif user.profile.is_manager %}
-					<li class="tab mem-tabs col s3 m2 l2"><a class='active' href="#tabs-1">Active Members ({{ active_members | length }})</a></li>
-					<li class="tab col s3 m2 l2"><a href="#tabs-2">Here Today ({{ here_today | length }})</a></li>
-					<li class="tab col s3 m2 l2"><a href="#tabs-4">Has Mail ({{ has_mail | length }})</a></li>
-					<li class="tab col s3 m2 l2"><a href="#tabs-5">Has Key ({{ has_key | length }})</a></li>
+					<li class="tab mem-tabs col s3 m2 l2"><a class='active' href="#tabs-1">{% blocktrans %}Active Members{% endblocktrans %} ({{ active_members | length }})</a></li>
+					<li class="tab col s3 m2 l2"><a href="#tabs-2">{% blocktrans %}Here Today{% endblocktrans %} ({{ here_today | length }})</a></li>
+					<li class="tab col s3 m2 l2"><a href="#tabs-4">{% blocktrans %}Has Mail{% endblocktrans %} ({{ has_mail | length }})</a></li>
+					<li class="tab col s3 m2 l2"><a href="#tabs-5">{% blocktrans %}Has Key{% endblocktrans %} ({{ has_key | length }})</a></li>
 				{% else %}
-					<li class="tab mem-tabs col s6 m2 l2"><a class='active' href="#tabs-1">Active Members ({{ active_members | length }})</a></li>
-					<li class="tab col s6 m2 l2"><a href="#tabs-2">Here Today ({{ here_today | length }})</a></li>
+					<li class="tab mem-tabs col s6 m2 l2"><a class='active' href="#tabs-1">{% blocktrans %}Active Members{% endblocktrans %} ({{ active_members | length }})</a></li>
+					<li class="tab col s6 m2 l2"><a href="#tabs-2">{% blocktrans %}Here Today{% endblocktrans %} ({{ here_today | length }})</a></li>
 				{% endif %}
 			</ul>
 		</div>
@@ -60,7 +61,7 @@
 				{% endfor %}
 				</div>
 			{% else %}
-				<h3>No members matching that query</h3>
+				<h3>{% blocktrans %}No members matching that query{% endblocktrans %}</h3>
 			{% endif %}
 		</div>
 	{% elif user.profile.is_manager %}
@@ -76,8 +77,7 @@
 		</div>
 	{% endif %}
 
-{% endblock %}</div>
-
+{% endblock %}
 
 {% block extrajs %}
 <script>

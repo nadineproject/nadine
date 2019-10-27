@@ -13,6 +13,7 @@ from django.shortcuts import render, get_object_or_404
 from django.template import Template, RequestContext
 from django.template.loader import get_template
 from django.utils.timezone import localtime, now
+from django.utils.translation import gettext as _
 
 from nadine import email
 from nadine.models.profile import UserProfile
@@ -226,7 +227,7 @@ def register(request):
 
                     return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': user.username}))
             else:
-                messages.error(request, 'The entered passwords do not match. Please try again.')
+                messages.error(request, _('The entered passwords do not match. Please try again.'))
         except Exception as e:
             logger.error(str(e))
     else:

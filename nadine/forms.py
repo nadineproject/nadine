@@ -14,6 +14,7 @@ from django.conf import settings
 from django.core.files.base import ContentFile
 from django.utils.timezone import localtime, now
 from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext as _
 
 from localflavor.us.us_states import US_STATES
 from localflavor.ca.ca_provinces import PROVINCE_CHOICES
@@ -203,9 +204,9 @@ class MemberSearchForm(forms.Form):
 
 
 class NewUserForm(forms.Form):
-    first_name = forms.CharField(max_length=100, label="First name *", required=True, widget=forms.TextInput(attrs={'autocapitalize': "words"}))
-    last_name = forms.CharField(max_length=100, label="Last name *", required=True, widget=forms.TextInput(attrs={'autocapitalize': "words"}))
-    email = forms.EmailField(max_length=100, label="Email *", required=True)
+    first_name = forms.CharField(max_length=100, label=_("First name *"), required=True, widget=forms.TextInput(attrs={'autocapitalize': "words"}))
+    last_name = forms.CharField(max_length=100, label=_("Last name *"), required=True, widget=forms.TextInput(attrs={'autocapitalize': "words"}))
+    email = forms.EmailField(max_length=100, label=_("Email *"), required=True)
 
     def clean_first_name(self):
         return self.cleaned_data['first_name'].strip().title()
@@ -216,9 +217,9 @@ class NewUserForm(forms.Form):
     def clean_email(self):
         email = self.cleaned_data['email'].strip().lower()
         if User.objects.filter(email=email).count() > 0:
-            raise forms.ValidationError("Email address '%s' already in use." % email)
-        if not mailgun.validate_address(email):
-            raise forms.ValidationError("Email address '%s' is not valid." % email)
+            raise forms.ValidationError(_("Email address '%s' already in use.") % email)
+#        if not mailgun.validate_address(email):
+#            raise forms.ValidationError("Email address '%s' is not valid." % email)
         return email
 
     def create_username(self, suffix=""):
@@ -236,7 +237,7 @@ class NewUserForm(forms.Form):
     def save(self):
         "Creates the User and Profile records with the field data and returns the user"
         if not self.is_valid():
-            raise Exception('The form must be valid in order to save')
+            raise Exception(_('The form must be valid in order to save'))
 
         # Generate a unique username
         tries = 1
@@ -316,9 +317,9 @@ class BaseLinkFormSet(BaseFormSet):
                 if url_type and url :
                     urls.append(url)
                 if url and not url_type:
-                    raise forms.ValidationError(message='All websites must have a URL', code='missing_anchor')
+                    raise forms.ValidationError(message=_('All websites must have a URL'), code='missing_anchor')
                 if url_type and not url:
-                    raise forms.ValidationError(message='All URLS must have a type', code='missing_type')
+                    raise forms.ValidationError(message=_('All URLS must have a type'), code='missing_type')
 
 
 class LinkForm(forms.Form):
@@ -329,7 +330,7 @@ class LinkForm(forms.Form):
 
     def save(self):
         if not self.is_valid():
-            raise Exception('The form must be valid in order to save')
+            raise Exception(_('The form must be valid in order to save'))
 
         if self.cleaned_data['username']:
             user = User.objects.get(username=self.cleaned_data['username'])
@@ -373,7 +374,7 @@ class EditProfileForm(forms.Form):
 
     def save(self):
         if not self.is_valid():
-            raise Exception('The form must be valid in order to save')
+            raise Exception(_('The form must be valid in order to save'))
 
         user = User.objects.get(username=self.cleaned_data['username'])
         user.first_name = self.cleaned_data['first_name']
@@ -429,7 +430,7 @@ class EventForm(forms.Form):
 
     def save(self):
         if not self.is_valid():
-            raise Exception('The form must be valid in order to save')
+            raise Exception(_('The form must be valid in order to save'))
 
         user = self.cleaned_data['user']
         room = self.cleaned_data['room']
@@ -455,13 +456,13 @@ class CoworkingDayForm(forms.Form):
     def save(self):
         "Creates the Daily Log to track member activity"
         if not self.is_valid():
-            raise Exception('The form must be valid in order to save')
+            raise Exception(_('The form must be valid in order to save'))
 
         # Make sure there isn't another log for this member on this day
         u = User.objects.get(username=self.cleaned_data['username'])
         v = self.cleaned_data['visit_date']
         if CoworkingDay.objects.filter(user=u, visit_date=v).count() > 0:
-            raise Exception('Member already signed in')
+            raise Exception(_('Member already signed in'))
 
         day = CoworkingDay()
         day.user = u
@@ -487,7 +488,7 @@ class SubscriptionForm(forms.Form):
 
     def save(self):
         if not self.is_valid():
-            raise Exception('The form must be valid in order to save')
+            raise Exception(_('The form must be valid in order to save'))
 
         username = self.cleaned_data['username']
         user = User.objects.get(username=username)
@@ -529,11 +530,11 @@ class MembershipForm(forms.Form):
 
     def save(self):
         if not self.is_valid():
-            raise Exception('The form must be valid in order to save')
+            raise Exception(_('The form must be valid in order to save'))
         package = self.cleaned_data['package']
         bill_day = self.cleaned_data['bill_day']
         if self.cleaned_data['username'] and self.cleaned_data['org']:
-            raise Exception('You cannot save a membership for an organization AND a user in the same form.')
+            raise Exception(_('You cannot save a membership for an organization AND a user in the same form.'))
         elif self.cleaned_data['username']:
             username = self.cleaned_data['username']
             to_update = User.objects.get(username=username)
@@ -541,7 +542,7 @@ class MembershipForm(forms.Form):
             org = self.cleaned_data['username']
             to_update = Organization.objects.get(id=org)
         else:
-            raise Exception('A user or organization is required to save a membership.')
+            raise Exception(_('A user or organization is required to save a membership.'))
         membership = to_update.membership
         # membership.package = package
         membership.bill_day = bill_day
@@ -551,14 +552,14 @@ class MembershipForm(forms.Form):
 
 
 class HelpTextForm(forms.Form):
-    title = forms.CharField(max_length=128, label='Help Text Title', required=True, widget=forms.TextInput(attrs={'autocapitalize': "words", "placeholder":"e.g. Welcome Info"}))
+    title = forms.CharField(max_length=128, label=_('Help Text Title'), required=True, widget=forms.TextInput(attrs={'autocapitalize': "words", "placeholder":"e.g. Welcome Info"}))
     template = forms.CharField(widget=forms.Textarea(attrs={'placeholder':'<h1>Hello World</h1>'}), required=True)
     slug = forms.CharField(widget=forms.TextInput(attrs={"placeholder":"Single Word for URL e.g. 'hello'"}), max_length=16, required=True)
     order = forms.IntegerField(required=True, widget=forms.HiddenInput)
 
     def save(self):
         if not self.is_valid():
-            raise Exception('The form must be valid in order to save')
+            raise Exception(_('The form must be valid in order to save'))
         title = self.cleaned_data['title']
         template = self.cleaned_data['template']
         slug = self.cleaned_data['slug']
@@ -578,7 +579,7 @@ class MOTDForm(forms.Form):
 
     def save(self):
         if not self.is_valid():
-            raise Exception('The form must be valid in order to save')
+            raise Exception(_('The form must be valid in order to save'))
         start_ts = self.cleaned_data['start_ts']
         end_ts = self.cleaned_data['end_ts']
         message = self.cleaned_data['message']
@@ -605,7 +606,7 @@ class RoomForm(forms.Form):
 
     def save(self):
         if not self.is_valid():
-            raise Exception('The form must be valid in order to save')
+            raise Exception(_('The form must be valid in order to save'))
         room_id = self.cleaned_data['room_id']
         name = self.cleaned_data['name']
         location = self.cleaned_data['location']
@@ -669,7 +670,7 @@ class MembershipPackageForm(forms.Form):
 
     def save(self):
         if not self.is_valid():
-            raise Exception('The form must be valid in order to save')
+            raise Exception(_('The form must be valid in order to save'))
         name = self.cleaned_data['name']
         package = self.cleaned_data['package']
         resource = self.cleaned_data['resource']
@@ -699,7 +700,7 @@ class MembershipPackageForm(forms.Form):
                 sub_default.save()
         else:
             if MembershipPackage.objects.filter(name=name):
-                raise Exception('A membership package with this name already exists.')
+                raise Exception(_('A membership package with this name already exists.'))
             if package:
                 p = MembershipPackage.objects.get(id=package)
                 p.enabled = enabled

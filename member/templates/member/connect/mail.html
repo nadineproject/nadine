@@ -1,6 +1,7 @@
 {% extends "member/base.html" %}
+{% load i18n %}
 
-{% block sub-title %}Mail | {% endblock %}
+{% block sub-title %}{% trans "Mail" %} | {% endblock %}
 
 {% block style %}{% endblock %}
 
@@ -25,7 +26,7 @@
 {% endblock %}
 
 {% block content %}
-<h3 class='font centered'>Mailing lists</h3>
+<h3 class='font centered'>{% blocktrans %}Mailing lists{% endblocktrans %}</h3>
 
 <div id="tabs">
 
@@ -43,23 +44,23 @@
 			{{ mailing_list.name }}
 			{% if not mailing_list.moderator_controlled %} - {{ mailing_list.email_address}}
     			{% if is_subscriber %}
-    			(<a target="_self" href="." onclick="unsubscribe({{ mailing_list.id }}); return false;">unsubscribe</a>)
+    			(<a target="_self" href="." onclick="unsubscribe({{ mailing_list.id }}); return false;">{% trans "unsubscribe" %}</a>)
     			{% else %}
         			{% if request.user.profile.is_active or request.user.is_staff %}
-        			    ( <a target="_self" href="." onclick="subscribe({{mailing_list.id}}); return false;">subscribe</a> )
+        			    ( <a target="_self" href="." onclick="subscribe({{mailing_list.id}}); return false;">{% trans "subscribe" %}</a> )
         			{% endif %}
     			{% endif %}
     		{% endif %}
 		</h4>
 		<div class="list_desc">{{ mailing_list.description }}</div>
 
-		<h5 class='header-font'>Recent Messages</h5>
+		<h5 class='header-font'>{% blocktrans %}Recent Messages{% endblocktrans %}</h5>
 		<div class="list_mail" id="recents-{{ mailing_list.id }}">
 			<table class="msg_table">
 				<tr>
-					<th>Sent</th>
-					<th>Member</th>
-					<th>Subject</th>
+					<th>{% trans "Sent" %}</th>
+					<th>{% trans "Member" %}</th>
+					<th>{% trans "Subject" %}</th>
 				</tr>
 				{% for msg in mailing_list.incoming_mail %}
 				<tr>
@@ -81,7 +82,7 @@
 </div>
 
 {% if not user.mailing_list_memberships %}
-<h4 class='header-font'>There are no mailing lists configured for this site.</h4>
+<h4 class='header-font'>{% blocktrans %}There are no mailing lists configured for this site.{% endblocktrans %}</h4>
 {% endif %}
 
 <form action="." method='post' id="mailing-list-subscription-form">{{ mailing_list_subscription_form }}{% csrf_token %}</form>
