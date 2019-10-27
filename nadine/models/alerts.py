@@ -295,7 +295,10 @@ def subscription_callback(sender, **kwargs):
             subscription.start_date = datetime.strptime(subscription.start_date, '%Y-%m-%d').date()
         the_day_before = subscription.start_date - timedelta(days=1)
         if not user.membership.is_active(the_day_before):
-            MemberAlert.objects.trigger_new_membership(user)
+            # Only trigger once even withn multiple subscriptions on one day (Bug #347)
+            first_subscription = ResourceSubscription.objects.for_user_and_date(user, subscription.start_date).first()
+            if subscription == first_subscription:
+                MemberAlert.objects.trigger_new_membership(user)
 
 ############################################################################
 # Models
