@@ -5,7 +5,7 @@ verify_ssl = true
 
 [packages]
 Django = ">=2.2"
-Pillow = "~=6.1"
+Pillow = ">=6.2.0"
 psycopg2 = "~=2.8"
 django-localflavor = "~=2.2"
 django-localflavor-us = "~=1.1"
@@ -14,7 +14,7 @@ django-taggit-templatetags2 = "~=1.6"
 django-crontab = "~=0.7"
 python-slugify = "!=2.0"
 requests = "~=2.22"
-cryptography = "~=2.7"
+cryptography = "~=2.8"
 mailchimp3 = "~=3.0"
 pyyaml = "~=5.1"
 
@@ -48,7 +48,6 @@ sphinx_rtd_theme = "==0.4.3"
 Markdown = "!=3.1"
 recommonmark = "==0.6.0"
 pycodestyle = "==2.5"
-
 
 # LDAP Syncing
 #django-ldapdb == 1.2.0
