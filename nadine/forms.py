@@ -218,8 +218,8 @@ class NewUserForm(forms.Form):
         email = self.cleaned_data['email'].strip().lower()
         if User.objects.filter(email=email).count() > 0:
             raise forms.ValidationError(_("Email address '%s' already in use.") % email)
-#        if not mailgun.validate_address(email):
-#            raise forms.ValidationError("Email address '%s' is not valid." % email)
+        if not mailgun.validate_address(email):
+            raise forms.ValidationError(_("Email address '%s' is not valid.") % email)
         return email
 
     def create_username(self, suffix=""):
