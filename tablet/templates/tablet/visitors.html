@@ -12,8 +12,8 @@
 	<h2>{% blocktrans %}Have you been here before?{% endblocktrans %}</h2>
 		<form id="member-search-form" action="{% url 'tablet:search' %}" method="POST">
 			<div data-role="fieldcontain">
-				<input placeholder="Search by your first name" type="search" name="terms" data-inline="true" />
-				<input type="submit" value="Search" data-theme="b"/>
+				<input placeholder="{% trans "Search by your first name" %}" type="search" name="terms" data-inline="true" />
+				<input type="submit" value="{% trans "Search" %}" data-theme="b"/>
 			</div>
 			{% csrf_token %}
 		</form>
@@ -30,7 +30,7 @@
 				</div>
 				<div style="align:center; color: #933;">{{ field.errors }}</div>
 			{% endfor %}
-			<input type="submit" value="Add" data-theme="b" data-transition="fade"/>
+			<input type="submit" value="{% trans "Add" %}" data-theme="b" data-transition="fade"/>
 			{% csrf_token %}
 		</form>
 	</div>

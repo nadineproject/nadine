@@ -20,7 +20,7 @@
 			<form id="member-search-form" action="{% url 'tablet:search' %}" method="POST">
 				<div data-role="fieldcontain">
 					<input id="id_terms" type="search" maxlength="100" name="terms" type="text" />
-					<input type="submit" value="Search" data-theme="b" data-transition="fade"/>
+					<input type="submit" value="{% trans "Search" %}" data-theme="b" data-transition="fade"/>
 				</div>
 				{% csrf_token %}
 			</form>

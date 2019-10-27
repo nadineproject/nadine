@@ -67,8 +67,8 @@
 		{% else %}
 			<div id="search-box">
 				<form id="member-search-form" action="{% url 'tablet:post_create' user.username %}" method="POST">
-					<input id="id_terms"  placeholder="Search by first name" type="search" name="terms" maxlength="100"/>
-					<input type="submit" value="Search" data-theme="b" data-transition="fade"/>
+					<input id="id_terms" placeholder="{% trans "Search by first name" %}" type="search" name="terms" maxlength="100"/>
+					<input type="submit" value="{% trans "Search" %}" data-theme="b" data-transition="fade"/>
 					{% csrf_token %}
 				</form>
 			</div>
