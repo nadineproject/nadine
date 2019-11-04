@@ -3,7 +3,7 @@
 
 Thanks for visiting {{ site.name }}! We just created a new user for you in Nadine, the system we use to run our space. You can log in to see other members, update your profile, and view your activity and billing history. The first time you will need to reset your password. As always, if you have any trouble at all, swing by the front desk and we can help you out.
 
-http://{{ site.domain }}{% url 'member:profile:redirect' %}
+https://{{ site.domain }}{% url 'member:profile:redirect' %}
 
 Thanks!
 The {{ site.name }} Team

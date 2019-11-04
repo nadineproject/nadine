@@ -3,7 +3,7 @@ Requirements
 
 * Python 3.6
 * Virtualenv (Virtual environment)
-* Homebrew if you are on Mac OS X (http://brew.sh)
+* Homebrew if you are on Mac OS X (https://brew.sh)
 * Postgresql
 
 .. important::
