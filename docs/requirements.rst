@@ -18,7 +18,7 @@ On Mac OS X
 
   $ git # If you have not installed it, this will prompt you to download it.
   $ brew update
-  $ brew install postgres python3 cairo pango
+  $ brew install postgres python3 libffi openssl cairo pango
   $ pip3 install virtualenv
 
 On Ubuntu/Debian
