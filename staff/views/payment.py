@@ -143,12 +143,11 @@ def add_bills_and_invoices(transactions, open_xero_invoices):
 def usaepay_transactions(request, year, month, day):
     d = date(year=int(year), month=int(month), day=int(day))
     open_batch = False
-    amex = []
-    visamc = []
     ach = []
+    credit_cards = []
     settled_checks = []
     other_transactions = []
-    totals = {'amex_total':0, 'visamc_total':0, 'ach_total':0, 'settled_checks':0, 'total':0}
+    totals = {'cc_total':0, 'ach_total':0, 'settled_checks':0, 'total':0}
 
     open_xero_invoices = {}
     try:
@@ -179,15 +178,12 @@ def usaepay_transactions(request, year, month, day):
         for t in transactions:
             if t['transaction_type'] == "Sale" and t['status'] != "Declined" and t['status'] != "Error":
                 totals['total'] = totals['total'] + t['amount']
-                if t['card_type'] == "A":
-                    amex.append(t)
-                    totals['amex_total'] = totals['amex_total'] + t['amount']
-                elif t['card_type'] == "V" or t['card_type'] == "M":
-                    visamc.append(t)
-                    totals['visamc_total'] = totals['visamc_total'] + t['amount']
-                elif t['card_type'] == "ACH":
+                if t['card_type'] == "ACH":
                     ach.append(t)
                     totals['ach_total'] = totals['ach_total'] + t['amount']
+                else:
+                    credit_cards.append(t)
+                    totals['cc_total'] = totals['cc_total'] + t['amount']
 
                 # Presence of authorized transactions means this batch is still open
                 if t['status'] == "Authorized":
@@ -199,9 +195,8 @@ def usaepay_transactions(request, year, month, day):
 
     context = {
         'date': d,
-        'amex': amex,
-        'visamc': visamc,
         'ach':ach,
+        'credit_cards': credit_cards,
         'open_batch':open_batch,
         'other_transactions': other_transactions,
         'settled_checks':settled_checks,

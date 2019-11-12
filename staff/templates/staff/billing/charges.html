@@ -38,19 +38,13 @@
     Total {{totals.total_count}} Transactions: ${{totals.total|floatformat:2}}
 </p>
 
-{% if amex %}
-	{% with "AMEX" as name and amex as transactions and totals.amex_total as total %}
+{% if credit_cards %}
+	{% with "Credit Cards" as name and credit_cards as transactions and totals.cc_total as total %}
 		{% include "staff/billing/charges_table_frag.html" %}
 	{% endwith %}
 {% endif %}
 
-{% if visamc %}
-	{% with "VISA/MC" as name and visamc as transactions and totals.visamc_total as total %}
-		{% include "staff/billing/charges_table_frag.html" %}
-	{% endwith %}
-{% endif %}
-
-{% if ACH %}
+{% if ach %}
 	{% with "ACH" as name and ach as transactions and totals.ach_total as total %}
 		{% include "staff/billing/charges_table_frag.html" %}
 	{% endwith %}
