@@ -296,7 +296,10 @@ def subscription_callback(sender, **kwargs):
             subscription.start_date = datetime.strptime(subscription.start_date, '%Y-%m-%d').date()
         the_day_before = subscription.start_date - timedelta(days=1)
         if not user.membership.is_active(the_day_before):
-            MemberAlert.objects.trigger_new_membership(user)
+            # Only trigger once even withn multiple subscriptions on one day (Bug #347)
+            first_subscription = ResourceSubscription.objects.for_user_and_date(user, subscription.start_date).first()
+            if subscription == first_subscription:
+                MemberAlert.objects.trigger_new_membership(user)
 
 ############################################################################
 # Models
@@ -408,4 +411,4 @@ class MemberAlert(models.Model):
         app_label = 'nadine'
 
 
-# Copyright 2019 Office Nomads LLC (http://www.officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2019 Office Nomads LLC (https://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

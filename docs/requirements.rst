@@ -3,7 +3,7 @@ Requirements
 
 * Python 3.6
 * Virtualenv (Virtual environment)
-* Homebrew if you are on Mac OS X (http://brew.sh)
+* Homebrew if you are on Mac OS X (https://brew.sh)
 * Postgresql
 
 .. important::
@@ -18,7 +18,7 @@ On Mac OS X
 
   $ git # If you have not installed it, this will prompt you to download it.
   $ brew update
-  $ brew install postgres python3 cairo pango
+  $ brew install postgres python3 libffi openssl cairo pango
   $ pip3 install virtualenv
 
 On Ubuntu/Debian
