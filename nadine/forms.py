@@ -232,6 +232,8 @@ class NewUserForm(forms.Form):
         clean_username = clean_username.replace("+", "")
         clean_username = clean_username.replace("@", "")
         clean_username = clean_username.replace("'", "")
+        clean_username = clean_username.replace("/", "")
+        clean_username = clean_username.replace("\\", "")
         return clean_username
 
     def save(self):
