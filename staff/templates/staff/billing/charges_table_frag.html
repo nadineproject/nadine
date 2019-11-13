@@ -5,7 +5,7 @@
     <tr class='item-table'>
         <th>Member</th>
         <th id='desc-th'>Description</th>
-        <!--<th>Type</th>-->
+        <th>Type</th>
         <th id='status-th'>Status</th>
         <th id='charge-th'>Charge</th>
         <th>Bill</th>
@@ -20,10 +20,10 @@
         <!-- transaction_id: {{ t.transaction_id }} -->
         <tr class="{% cycle 'row-odd' 'row-even' %}">
             <td><a href="{% url 'staff:members:detail' t.username %}">{{ t.username }}</a></td>
-            <td>
+            <td style="text-align:left;">
               {{ t.description|truncatechars:60 }}
             </td>
-            <!--<td>{{ t.card_type }}</td>-->
+            <td>{{ t.card_type }}</td>
             <td {% if t.status == "Authorized" %} class='authorized'{% endif %}>{{ t.status }}</td>
             <td {% if t.outstanding_bills and not t.bill_match %} class='open-bill' {% endif %}>
                 {{ t.amount|floatformat:2 }}
@@ -70,7 +70,7 @@
         {% if forloop.last %}
           <tr>
               <td><strong>{{ transactions|length }} Transactions</strong></td>
-              <td></td>
+              <td colspan="2"></td>
               <td><strong>Total</strong></td>
               <td>${{total|floatformat:2}}</td>
               <td colspan="4"></td>
