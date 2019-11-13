@@ -17,6 +17,9 @@ from arpwatch.models import *
 logger = logging.getLogger(__name__)
 
 
+class ArpImportError(Exception):
+    pass
+
 def register_user_ip(user, ip):
     logtime = timezone.localtime(timezone.now())
     logger.info("register_user_ip: Address for %s = %s @ %s" % (user, ip, logtime))
@@ -150,9 +153,20 @@ def import_file(file, runtime):
 
                 log_data(runtime, ip, mac)
 
+
 def import_snmp():
+    if not hasattr(settings, "ARPWATCH_SNMP_SERVER"):
+        raise ArpImportError("Missing ARPWATCH_SNMP_SERVER setting")
+    if not hasattr(settings, "ARPWATCH_SNMP_COMMUNITY"):
+        raise ArpImportError("Missing ARPWATCH_SNMP_COMMUNITY setting")
+    if not hasattr(settings, "ARPWATCH_NETWORK_PREFIX"):
+        raise ArpImportError("Missing ARPWATCH_NETWORK_PREFIX setting")
+
+    # Mark the time
     runtime = timezone.now()
 
+    # Fire off the SNMP command
+    logger.debug("connecting to %s..." % settings.ARPWATCH_SNMP_SERVER)
     cmdGen = cmdgen.CommandGenerator()
     errorIndication, errorStatus, errorIndex, varBinds = cmdGen.nextCmd(
         cmdgen.CommunityData(settings.ARPWATCH_SNMP_COMMUNITY),
@@ -160,12 +174,20 @@ def import_snmp():
         cmdgen.MibVariable('IP-MIB', 'ipNetToMediaPhysAddress'),
         lookupNames=True, lookupValues=True
     )
+    if errorIndication:
+        raise errorIndication
 
+    # Extract the MAC Addresses and IP Addresses from the data
     for row in varBinds:
+        print(row)
         for name, val in row:
-            ip = name.prettyPrint().split('\"')[3]
-            mac = val.prettyPrint()
-            if ip.startswith(settings.ARPWATCH_NETWORK_PREFIX):
+            long_name = name.prettyPrint()
+            # Search data returned for an IP address
+            if settings.ARPWATCH_NETWORK_PREFIX in long_name:
+                ip_index = long_name.index(settings.ARPWATCH_NETWORK_PREFIX)
+                ip = long_name[ip_start:]
+                mac = val.prettyPrint()
+                # print(f"{mac} = {ip}")
                 log_data(runtime, ip, mac)
 
 
