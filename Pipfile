@@ -4,7 +4,7 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [packages]
-Django = ">=2.2"
+Django = "~=2.2"
 Pillow = ">=6.2.0"
 psycopg2 = "~=2.8"
 django-localflavor = "~=2.2"
@@ -16,7 +16,7 @@ python-slugify = "!=2.0"
 requests = "~=2.22"
 cryptography = "~=2.8"
 mailchimp3 = "~=3.0"
-pyyaml = "~=5.1"
+pyyaml = "~=5.2"
 
 # Important Security Alerts
 urllib3 = ">=1.24.2"
