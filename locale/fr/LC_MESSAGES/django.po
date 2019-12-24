@@ -2265,3 +2265,16 @@ msgid ""
 msgstr ""
 "Entrez votre adresse email et nous vous enverons les instructions pour créer "
 "un nouveau mot de passe."
+
+#: tablet/templates/tablet/user_profile.html:81
+msgid "Search by first name"
+msgstr ""
+#: tablet/templates/tablet/visitors.html:15
+msgid "Search by your first name"
+msgstr ""
+#: tablet/templates/tablet/visitors.html:33
+msgid "Add"
+msgstr ""
+#: tablet/templates/tablet/members.html:20
+msgid "Back"
+msgstr ""
