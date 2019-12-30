@@ -58,7 +58,7 @@ pytz = "*"
 safety = "*"
 pip-review = "*"
 django-debug-toolbar = "*"
-asgiref
+asgiref = "*"
 
 [requires]
 python_version = "3.6"
