@@ -75,9 +75,9 @@ class MailingList(models.Model):
     smtp_host = models.CharField(max_length=1024)
     smtp_port = models.IntegerField(default=587)
 
-    subscribers = models.ManyToManyField(User, blank=True, related_name='subscribed_mailing_lists')
-    unsubscribed = models.ManyToManyField(User, blank=True, related_name='+')
-    moderators = models.ManyToManyField(User, blank=True, related_name='moderated_mailing_lists', help_text='Users who will be sent moderation emails', limit_choices_to={'is_staff': True})
+    subscribers = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name='interlink_subscriptions')
+    unsubscribed = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name='interlink_unsubscribed')
+    moderators = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name='interlink_moderated', limit_choices_to={'is_staff': True})
 
     throttle_limit = models.IntegerField(default=0, help_text='The number of recipients in 10 minutes this mailing list is limited to. Default is 0, which means no limit.')
 
