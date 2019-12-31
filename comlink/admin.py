@@ -7,6 +7,9 @@ class AttachmentInline(admin.TabularInline):
     model = Attachment
     extra = 0
 
+    def has_change_permission(self, request, obj=None):
+            return False
+
 
 class EmailAdmin(admin.ModelAdmin):
     list_display = ('received', 'sender', 'recipient', 'subject')
