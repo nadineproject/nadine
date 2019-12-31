@@ -77,13 +77,6 @@ class Migration(migrations.Migration):
         # Move all the IncomingEmails to EmailMessages
         migrations.RunPython(forward, reverse),
 
-        # Now make received auto_now_add
-        migrations.AlterField(
-            model_name='emailmessage',
-            name='received',
-            field=models.DateTimeField(auto_now_add=True, verbose_name='received'),
-        ),
-
         # Make Attachment.attached_to not null
         migrations.AlterField(
             model_name='attachment',

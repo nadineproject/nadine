@@ -17,6 +17,50 @@ UPLOAD_TO = getattr(settings, "COMLINK_UPLOAD_TO", "attachments/")
 logger = logging.getLogger(__name__)
 
 
+class MailingList(models.Model):
+    name = models.CharField(max_length=128)
+    subject_prefix = models.CharField(max_length=64, blank=True)
+    address = models.EmailField(unique=True)
+    access_ts = models.DateTimeField(auto_now=True)
+    is_members_only = models.BooleanField(default=True)
+    is_opt_out = models.BooleanField(default=False)
+    enabled = models.BooleanField(default=True, help_text='Set to False to disable this list.')
+    subscribers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='+', blank=True)
+    unsubscribed = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='+', blank=True)
+    moderators = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='+', blank=True, limit_choices_to={'is_staff': True})
+
+    @property
+    def unsubscribe_url(self):
+        # TODO - Make this a link to unsubscribe from this mailing list
+        return settings.SITE_PROTO + "://" + settings.SITE_DOMAIN
+
+    @property
+    def subscriber_addresses(self):
+        return list(self.subscribed().values_list('email', flat=True))
+
+    def subscribed(self):
+        """ The subscribers minus the unsubscriberd. """
+        return self.subscribers.exclude(id__in=self.unsubscribed.all())
+
+    def is_subscriber(self, email):
+        user = User.helper.by_email(email)
+        return user in self.subscribers.all()
+
+    def subscribe(self, user):
+        """ Subscribe the given user to this mailing list. """
+        self.subscribers.add(user)
+        self.unsubscribed.remove(user)
+
+    def unsubscribe(self, user):
+        """ Unsubscribe the given user to this mailing list. """
+        self.subscribers.remove(user)
+        self.unsubscribed.add(user)
+
+
+    def __str__(self):
+        return '%s' % self.name
+
+
 class EmailMessage(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, verbose_name=_("user"), on_delete=models.SET_NULL)
     sender = models.EmailField(_("sender"), max_length=255)
@@ -31,6 +75,7 @@ class EmailMessage(models.Model):
     message_headers = models.TextField(_("message headers"), blank=True, help_text=_("Stored in JSON."))
     content_id_map = models.TextField(_("Content-ID map"), blank=True, help_text=_("Dictionary mapping Content-ID (CID) values to corresponding attachments. Stored in JSON."))
     received = models.DateTimeField(_("received"), auto_now_add=True)
+    mailing_list = models.ForeignKey(MailingList, blank=True, null=True, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = _("email message")
@@ -144,49 +189,6 @@ class Attachment(models.Model):
         if self.file:
             return self.file.name
         return "(no file)"
-
-
-class MailingList(models.Model):
-    name = models.CharField(max_length=128)
-    subject_prefix = models.CharField(max_length=64, blank=True)
-    address = models.EmailField(unique=True)
-    access_ts = models.DateTimeField(auto_now=True)
-    is_members_only = models.BooleanField(default=True)
-    is_opt_out = models.BooleanField(default=False)
-    subscribers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='+', blank=True)
-    unsubscribed = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='+', blank=True)
-    moderators = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='+', blank=True, limit_choices_to={'is_staff': True})
-
-    @property
-    def unsubscribe_url(self):
-        # TODO - Make this a link to unsubscribe from this mailing list
-        return settings.SITE_PROTO + "://" + settings.SITE_DOMAIN
-
-    @property
-    def subscriber_addresses(self):
-        return list(self.subscribed().values_list('email', flat=True))
-
-    def subscribed(self):
-        """ The subscribers minus the unsubscriberd. """
-        return self.subscribers.exclude(id__in=self.unsubscribed.all())
-
-    def is_subscriber(self, email):
-        user = User.helper.by_email(email)
-        return user in self.subscribers.all()
-
-    def subscribe(self, user):
-        """ Subscribe the given user to this mailing list. """
-        self.subscribers.add(user)
-        self.unsubscribed.remove(user)
-
-    def unsubscribe(self, user):
-        """ Unsubscribe the given user to this mailing list. """
-        self.subscribers.remove(user)
-        self.unsubscribed.add(user)
-
-
-    def __str__(self):
-        return '%s' % self.name
 
 
 # Copyright 2020 The Nadine Project (https://nadineproject.org/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
