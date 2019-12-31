@@ -24,7 +24,6 @@ from nadine.models.billing import UserBill
 from nadine.models.profile import MemberNote, SentEmailLog, FileUpload, SpecialDay
 from nadine.models.resource import Resource
 from nadine.models.organization import Organization
-from interlink.models import MailingList
 from nadine.utils.slack_api import SlackAPI
 from nadine.utils.payment_api import PaymentAPI
 from nadine.settings import TIME_ZONE, DEFAULT_BILLING_DAY
