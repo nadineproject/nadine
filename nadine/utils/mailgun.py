@@ -105,6 +105,26 @@ def mailgun_send(mailgun_data, files=None, clean_first=True, inject_list_id=True
 
 def validate_address(email_address):
     ''' Use the mailgun API to validate the given email address. '''
+    if not hasattr(settings, "MAILGUN_API_KEY"):
+        raise MailgunException("Missing required MAILGUN_API_KEY setting!")
+    response = requests.get(
+        "https://api.mailgun.net/v4/address/validate",
+        auth=("api", settings.MAILGUN_API_KEY),
+        params={"address": email_address}
+    )
+    if not response or not response.ok:
+        raise MailgunException("Did not get an OK response from validation request")
+    response_dict = json.loads(response.text)
+    if not response_dict or 'risk' not in response_dict:
+        raise MailgunException("Did not get expected JSON response")
+    # Evaluate the risk.  Accept low and medium
+    risk = response_dict['risk']
+    logger.debug("validate_address: Risk for '%s' = '%s'" % (email_address, risk))
+    return risk == 'low' or risk == 'medium'
+
+
+def validate_address_v3(email_address):
+    ''' Use the mailgun v3 API to validate the given email address. '''
     if not hasattr(settings, "MAILGUN_VALIDATION_KEY"):
         raise MailgunException("Missing required MAILGUN_VALIDATION_KEY setting!")
     response = requests.get(
