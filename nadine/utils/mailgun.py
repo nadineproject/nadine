@@ -110,13 +110,32 @@ def validate_address(email_address):
     response = requests.get(
         "https://api.mailgun.net/v3/address/validate",
         auth=("api", settings.MAILGUN_VALIDATION_KEY),
-        params={"address": email_address})
+        params={"address": email_address}
+    )
     if not response or not response.ok:
         raise MailgunException("Did not get an OK response from validation request")
     response_dict = json.loads(response.text)
     if not response_dict or 'is_valid' not in response_dict:
         raise MailgunException("Did not get expected JSON response")
     return response_dict['is_valid']
+
+
+def api_get(uri, params=None):
+    if not hasattr(settings, "MAILGUN_API_KEY"):
+        raise MailgunException("Missing required MAILGUN_API_KEY setting!")
+    if not params:
+        params = {}
+
+    response = requests.get(
+        f"https://api.mailgun.net/v3/{uri}",
+        auth=("api", settings.MAILGUN_API_KEY),
+        params=params
+    )
+    print(response)
+    if not response or not response.ok:
+        raise MailgunException("Did not get an OK response from validation request")
+    response_dict = json.loads(response.text)
+    return response_dict
 
 
 # Copyright 2019 Office Nomads LLC (https://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
