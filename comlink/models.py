@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 import logging
+import email.utils
 
 from django.db import models
 from django.conf import settings
@@ -8,7 +9,6 @@ from django.contrib.auth.models import User
 from django.utils.datastructures import MultiValueDict
 from django.utils.translation import ugettext as _
 from django.urls import reverse
-from django.contrib.sites.models import Site
 
 from email.utils import parseaddr
 
@@ -91,9 +91,20 @@ class EmailMessage(models.Model):
         return self.headers.get('In-Reply-To', None)
 
     @property
-    def site_url(self): return 'https://%s%s' % (Site.objects.get_current().domain, reverse('comlink:mail', kwargs={'id': self.id}))
+    def from_name(self):
+        from_name, from_address = email.utils.parseaddr(self.from_str)
+        return from_name
 
-    def get_mailgun_data(self, stripped=True, footer=True):
+    @property
+    def from_address(self):
+        from_name, from_address = email.utils.parseaddr(self.from_str)
+        return from_address
+
+    @property
+    def public_url(self):
+        return settings.SITE_PROTO + "://" + settings.SITE_DOMAIN + reverse('comlink:mail', kwargs={'id': self.id})
+
+    def get_mailgun_data(self, stripped=True):
         if stripped:
             body_plain = self.stripped_text
             body_html = self.stripped_html
@@ -101,22 +112,15 @@ class EmailMessage(models.Model):
             body_plain = self.body_plain
             body_html = self.body_html
 
-        if footer:
-            # Add in a footer
-            text_footer = "\n\n-------------------------------------------\n*~*~*~* Sent through Nadine *~*~*~*\n%s" % self.site_url
-            body_plain = body_plain + text_footer
-            if body_html:
-                html_footer = "<br><br>-------------------------------------------<br>*~*~*~* Sent through Nadine *~*~*~*\n%s" % self.site_url
-                body_html = body_html + html_footer
-
         # Build and return our data
-        mailgun_data = {"from": self.from_str,
-                        "to": [self.recipient, ],
-                        "cc": [self.cc, ],
-                        "subject": self.subject,
-                        "text": body_plain,
-                        "html": body_html,
-                        }
+        mailgun_data = {
+            "from": self.from_str,
+            "to": [self.recipient, ],
+            "cc": [self.cc, ],
+            "subject": self.subject,
+            "text": body_plain,
+            "html": body_html,
+        }
         return mailgun_data
 
     def __str__(self):
@@ -154,6 +158,11 @@ class MailingList(models.Model):
     moderators = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='+', blank=True, limit_choices_to={'is_staff': True})
 
     @property
+    def unsubscribe_url(self):
+        # TODO - Make this a link to unsubscribe from this mailing list
+        return settings.SITE_PROTO + "://" + settings.SITE_DOMAIN
+
+    @property
     def subscriber_addresses(self):
         return list(self.subscribed().values_list('email', flat=True))
 
@@ -174,6 +183,7 @@ class MailingList(models.Model):
         """ Unsubscribe the given user to this mailing list. """
         self.subscribers.remove(user)
         self.unsubscribed.add(user)
+
 
     def __str__(self):
         return '%s' % self.name

@@ -13,7 +13,6 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.template import Template, TemplateDoesNotExist
 from django.template.loader import get_template
-from django.contrib.sites.models import Site
 from django.utils import timezone
 
 
@@ -75,6 +74,14 @@ def inject_list_headers(mailgun_data):
     mailgun_data["h:List-Id"] = to_address
     mailgun_data["h:Reply-To"] = to_address
     mailgun_data["h:Precedence"] = "list"
+
+
+def inject_footer(mailgun_data, public_url):
+    text_footer = f"\n\n-------------------------------------------\n*~*~*~* Sent through Nadine *~*~*~*\n{public_url}"
+    mailgun_data["text"] = mailgun_data["text"]  + text_footer
+    if mailgun_data["html"]:
+        html_footer = f"<br><br>-------------------------------------------<br>*~*~*~* Sent through Nadine *~*~*~*\n<br>{public_url}"
+        mailgun_data["html"] = mailgun_data["html"] + html_footer
 
 
 def mailgun_send(mailgun_data, files=None, clean_first=True, inject_list_id=True):

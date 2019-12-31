@@ -18,7 +18,7 @@ def router(sender, **kwargs):
     # Pull our email object and convert it to the mailgun_data we need`
     email = kwargs['instance']
     strip_emails = getattr(settings, "COMLINK_STRIP_EMAILS", False)
-    mailgun_data = email.get_mailgun_data(stripped=strip_emails, footer=True)
+    mailgun_data = email.get_mailgun_data(stripped=strip_emails)
     logger.debug("In Router: ")
     logger.debug(mailgun_data)
 
@@ -33,13 +33,16 @@ def router(sender, **kwargs):
     mailing_list = MailingList.objects.filter(address=email.recipient).first()
     if mailing_list:
         if mailing_list.is_members_only:
-            if not mailing_list.is_subscriber(email.sender):
-                raise mailgun.MailgunException("Members Only Mailing List '%s' received email from non-member '%s'" % (mailing_list.name, email.sender))
+            if not mailing_list.is_subscriber(email.from_address):
+                raise mailgun.MailgunException("Members Only Mailing List '%s' received email from non-member '%s'" % (mailing_list.name, email.from_address))
         bcc_list = mailing_list.subscriber_addresses
+        mailgun.inject_footer(mailgun_data, mailing_list.unsubscribe_url)
     elif hasattr(settings, "STAFF_EMAIL_ADDRESS") and settings.STAFF_EMAIL_ADDRESS in email.recipient:
         bcc_list = list(User.objects.filter(is_staff=True, is_active=True).values_list('email', flat=True))
+        mailgun.inject_footer(mailgun_data, email.public_url)
     elif hasattr(settings, "TEAM_EMAIL_ADDRESS") and settings.TEAM_EMAIL_ADDRESS in email.recipient:
         bcc_list = list(User.helper.managers(include_future=True).values_list('email', flat=True))
+        mailgun.inject_footer(mailgun_data, email.public_url)
     logger.debug("BCC List:")
     logger.debug(bcc_list)
 
