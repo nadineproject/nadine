@@ -33,6 +33,10 @@ def forward(apps, schema_editor):
             attachment.save()
 
 
+def reverse(apps, schema_editor):
+    raise Exception("Can not reverse this migration!!!")
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -71,7 +75,7 @@ class Migration(migrations.Migration):
         ),
 
         # Move all the IncomingEmails to EmailMessages
-        migrations.RunPython(forward, migrations.RunPython.noop),
+        migrations.RunPython(forward, reverse),
 
         # Now make received auto_now_add
         migrations.AlterField(
@@ -86,5 +90,15 @@ class Migration(migrations.Migration):
             name='attached_to',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='attachments', to='comlink.EmailMessage'),
         ),
+
+        # Remove the old IncomingEmail model
+        migrations.RemoveField(
+            model_name='attachment',
+            name='email',
+        ),
+        migrations.DeleteModel(
+            name='IncomingEmail',
+        ),
+
 
     ]
