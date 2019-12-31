@@ -9,49 +9,6 @@ from django.conf import settings
 
 from suds.client import Client
 
-from nadine.utils import mailgun
-
-class MailgunTestCase(SimpleTestCase):
-    bob_email = "bob@bob.net"
-    bob = "Bob Smith <%s>" % bob_email
-    alice_email = "alice@312main.ca"
-    alice = "Alice Smith <%s>" % alice_email
-    frank_email = "frank@example.com"
-    frank = "Frank Smith <%s>" % frank_email
-    mailgun_data = {'from':bob,
-        'subject': "This is a test",
-        'to':[alice, frank, bob],
-        'cc':[frank, alice, bob],
-        'bcc':[bob, alice, frank],
-    }
-
-    def test_address_map(self):
-        addresses = mailgun.address_map(self.mailgun_data, 'BUNK', [])
-        self.assertEqual(addresses, {})
-
-        exclude = []
-        addresses = mailgun.address_map(self.mailgun_data, 'to', exclude)
-        self.assertEqual(len(addresses), 3)
-        self.assertEqual(self.alice_email, list(addresses.keys())[0], exclude)
-        self.assertEqual(self.bob_email, list(addresses.keys())[2], exclude)
-
-        exclude = [self.bob_email]
-        addresses = mailgun.address_map(self.mailgun_data, 'to', exclude)
-        self.assertEqual(len(addresses), 2)
-        self.assertEqual(self.alice_email, list(addresses.keys())[0], exclude)
-
-    def test_clean_mailgun_data(self):
-        clean_data = mailgun.clean_mailgun_data(self.mailgun_data)
-        # print(clean_data)
-        tos = clean_data['to']
-        self.assertEqual(len(tos), 1)
-        self.assertEqual(tos[0], self.alice)
-        ccs = clean_data['cc']
-        self.assertEqual(len(ccs), 0)
-        bccs = clean_data['bcc']
-        self.assertEqual(len(bccs), 1)
-        self.assertEqual(bccs[0], self.frank)
-
 
 class UsaepayTestCase(SimpleTestCase):
     _client = None

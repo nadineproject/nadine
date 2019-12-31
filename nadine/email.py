@@ -11,9 +11,10 @@ from django.core.mail import send_mail, EmailMessage, EmailMultiAlternatives
 from django.urls import reverse
 from django.utils.timezone import localtime, now
 
+from comlink import mailgun
+
 from nadine.models.membership import Membership
 from nadine.utils.slack_api import SlackAPI
-from nadine.utils import mailgun
 
 logger = logging.getLogger(__name__)
 

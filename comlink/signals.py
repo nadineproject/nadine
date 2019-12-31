@@ -5,7 +5,7 @@ from django.dispatch import Signal, receiver
 from django.contrib.auth.models import User
 from django.conf import settings
 
-from nadine.utils import mailgun
+from comlink import mailgun
 from comlink.models import MailingList
 
 
