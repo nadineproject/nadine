@@ -8,7 +8,7 @@ class AttachmentInline(admin.TabularInline):
     extra = 0
 
     def has_change_permission(self, request, obj=None):
-            return False
+        return False
 
 
 class EmailAdmin(admin.ModelAdmin):
