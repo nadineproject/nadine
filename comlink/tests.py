@@ -29,7 +29,7 @@ class SimpleTest(TestCase):
 
     def test_saving_inbound_email(self):
         request = request_factory.post('/', data=testpostdata)
-        formk = modelform_factory(IncomingEmail, form=EmailForm, exclude=[])
+        formk = modelform_factory(EmailMessage, form=EmailForm, exclude=[])
         form = formk(request.POST)
         email = form.save()
 
