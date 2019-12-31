@@ -19,6 +19,7 @@ from nadine.models.profile import UserProfile, FileUpload
 from nadine.models.membership import Membership, IndividualMembership, ResourceSubscription
 from nadine.models.usage import CoworkingDay
 from nadine.models.resource import Resource
+# from comlink.models import MailingList
 from interlink.models import MailingList
 
 from nadine import email
@@ -107,8 +108,10 @@ class MemberAlertManager(models.Manager):
         email.send_manage_member(user, subject=subject)
 
         # Remove them from the mailing lists
-        for mailing_list in MailingList.objects.filter(is_opt_out=True):
-            mailing_list.subscribers.remove(user)
+        for mailing_list in MailingList.objects.all():
+            if user in mailing_list.subscribers:
+                mailing_list.subscribers.remove(user)
+                mailing_list.save()
 
     def trigger_new_membership(self, user):
         logger.debug("trigger_new_membership: %s" % user)
