@@ -145,17 +145,41 @@ class Attachment(models.Model):
         return "(no file)"
 
 
-class SimpleMailingList(models.Model):
+class MailingList(models.Model):
     name = models.CharField(max_length=128)
+    subject_prefix = models.CharField(max_length=64, blank=True)
     address = models.EmailField(unique=True)
-    subscribers = models.ManyToManyField(User, blank=True, related_name='simple_mailing_lists')
     access_ts = models.DateTimeField(auto_now=True)
+    is_members_only = models.BooleanField(default=True)
+    is_opt_out = models.BooleanField(default=False)
+    subscribers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='+', blank=True)
+    unsubscribed = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='+', blank=True)
+    moderators = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='+', blank=True, limit_choices_to={'is_staff': True})
 
-    def get_subscriber_list(self):
-        emails = []
-        for u in self.subscribers.all():
-            emails.append(u.email)
-        return emails
+    @property
+    def subscriber_addresses(self):
+        return list(self.subscribed().values_list('email', flat=True))
+
+    def subscribed(self):
+        """ The subscribers minus the unsubscriberd. """
+        return self.subscribers.exclude(id__in=self.unsubscribed.all())
+
+    def is_subscriber(self, email):
+        user = User.helper.by_email(email)
+        return user in self.subscribers.all()
+
+    def subscribe(self, user):
+        """ Subscribe the given user to this mailing list. """
+        self.subscribers.add(user)
+        self.unsubscribed.remove(user)
+
+    def unsubscribe(self, user):
+        """ Unsubscribe the given user to this mailing list. """
+        self.subscribers.remove(user)
+        self.unsubscribed.add(user)
+
+    def __str__(self):
+        return '%s' % self.name
 
 
 # Copyright 2019 The Nadine Project (https://nadineproject.org/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

@@ -6,12 +6,12 @@ from django.contrib.auth.models import User
 from django.conf import settings
 
 from nadine.utils import mailgun
-from comlink.models import SimpleMailingList
+from comlink.models import MailingList
+
 
 logger = logging.getLogger(__name__)
 
 email_received = Signal(providing_args=["instance", "attachments"])
-
 
 @receiver(email_received)
 def router(sender, **kwargs):
@@ -30,9 +30,12 @@ def router(sender, **kwargs):
 
     # Build out the BCC depending on who the recipient is
     bcc_list = None
-    mailing_list = SimpleMailingList.objects.filter(address=email.recipient).first()
+    mailing_list = MailingList.objects.filter(address=email.recipient).first()
     if mailing_list:
-        bcc_list = mailing_list.get_subscriber_list()
+        if mailing_list.is_members_only:
+            if mailing_list.is_subscriber(mailgun_data['sender']):
+                raise mailgun.MailgunException("Members Only Mailing List '%s' received email from non-member '%s'" % (mailing_list.name, mailgun_data['sender']))
+        bcc_list = mailing_list.subscriber_addresses()
     elif hasattr(settings, "STAFF_EMAIL_ADDRESS") and settings.STAFF_EMAIL_ADDRESS in email.recipient:
         bcc_list = list(User.objects.filter(is_staff=True, is_active=True).values_list('email', flat=True))
     elif hasattr(settings, "TEAM_EMAIL_ADDRESS") and settings.TEAM_EMAIL_ADDRESS in email.recipient:

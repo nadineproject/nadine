@@ -16,7 +16,7 @@ from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 
 from comlink.forms import EmailForm
-from comlink.models import Attachment, IncomingEmail, SimpleMailingList
+from comlink.models import Attachment, IncomingEmail, MailingList
 from comlink.signals import email_received
 from comlink.exceptions import RejectedMailException, DroppedMailException
 from comlink import jwzthreading
@@ -38,7 +38,7 @@ def home(request):
     # messages = IncomingEmail.objects.all().order_by("-received")
     # threads = jwzthreading.thread(messages)
     inboxes = []
-    for a in SimpleMailingList.objects.all().values('address'):
+    for a in MailingList.objects.all().values('address'):
         inboxes.append({'address': a})
     if hasattr(settings, "STAFF_EMAIL_ADDRESS"):
         inboxes.append({'address': settings.STAFF_EMAIL_ADDRESS})
