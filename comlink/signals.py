@@ -37,6 +37,8 @@ def router(sender, **kwargs):
                 raise mailgun.MailgunException("Members Only Mailing List '%s' received email from non-member '%s'" % (mailing_list.name, email.from_address))
         bcc_list = mailing_list.subscriber_addresses
         mailgun.inject_footer(mailgun_data, mailing_list.unsubscribe_url)
+        if mailing_list.subject_prefix and mailing_list.subject_prefix not in mailgun_data["subject"]:
+            mailgun_data["subject"] = ' '.join((mailing_list.subject_prefix, mailgun_data["subject"]))
     elif hasattr(settings, "STAFF_EMAIL_ADDRESS") and settings.STAFF_EMAIL_ADDRESS in email.recipient:
         bcc_list = list(User.objects.filter(is_staff=True, is_active=True).values_list('email', flat=True))
         mailgun.inject_footer(mailgun_data, email.public_url)
