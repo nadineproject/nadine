@@ -66,13 +66,13 @@ def chat(request):
 @login_required
 @user_passes_test(is_active_member, login_url='member:not_active')
 def mail(request):
+    user = request.user
     if request.method == 'POST':
         sub_form = MailingListSubscriptionForm(request.POST)
         if sub_form.is_valid():
             sub_form.save(user)
             return HttpResponseRedirect(reverse('member:connect:email_lists'))
 
-    user = request.user
     mailing_lists = []
     for ml in MailingList.objects.filter(enabled=True).order_by('name'):
         mailing_lists.append({
