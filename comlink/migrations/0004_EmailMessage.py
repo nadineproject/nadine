@@ -6,7 +6,7 @@ import django.db.models.deletion
 
 
 def forward(apps, schema_editor):
-    # Move all the IncomingEmails over to flat Email Message
+    # Move all the IncomingEmails over to flat EmailMessage
     User = apps.get_model(settings.AUTH_USER_MODEL)
     IncomingEmail = apps.get_model("comlink", "IncomingEmail")
     EmailMessage = apps.get_model("comlink", "EmailMessage")
@@ -82,6 +82,18 @@ class Migration(migrations.Migration):
             model_name='attachment',
             name='attached_to',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='attachments', to='comlink.EmailMessage'),
+        ),
+
+        # Add a few fields we forgot
+        migrations.AddField(
+            model_name='emailmessage',
+            name='mailing_list',
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='comlink.MailingList'),
+        ),
+        migrations.AddField(
+            model_name='mailinglist',
+            name='enabled',
+            field=models.BooleanField(default=True, help_text='Set to False to disable this list.'),
         ),
 
 
