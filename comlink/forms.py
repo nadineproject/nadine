@@ -1,7 +1,38 @@
 # -*- coding: utf-8 -*-
 from django import forms
+from django.conf import settings
 
+from comlink import mailgun
 from comlink.exceptions import DroppedMailException
+from comlink.models import MailingList
+
+
+class MailingListSubscriptionForm(forms.Form):
+    subscribe = forms.CharField(required=False, widget=forms.HiddenInput)
+    mailing_list_id = forms.IntegerField(required=True, widget=forms.HiddenInput)
+
+    def save(self, user):
+        mailing_list = MailingList.objects.get(pk=self.cleaned_data['mailing_list_id'])
+        #body = 'So says https://%s ' % Site.objects.get_current().domain
+        subject = "Nadine Subscribe/Unsubscribe Form"
+        if self.cleaned_data['subscribe'] == 'true' and (user.profile.is_active() or user.is_staff):
+            mailing_list.subscribe(user)
+            subject = '%s subscribed to %s' % (user.get_full_name(), mailing_list.name)
+        elif self.cleaned_data['subscribe'] == 'false' and user in mailing_list.subscribers.all():
+            mailing_list.unsubscribe(user)
+            subject = '%s unsubscribed from %s' % (user.get_full_name(), mailing_list.name)
+
+        # Send a notification to the team
+        mailgun_data = {
+            "from": settings.DEFAULT_FROM_EMAIL,
+            "to": [settings.TEAM_EMAIL_ADDRESS, ],
+            "subject": subject,
+            "text": "So says Nadine!",
+        }
+        mailgun.mailgun_send(mailgun_data, inject_list_id=False)
+
+        return True
+
 
 class EmailForm(forms.ModelForm):
 

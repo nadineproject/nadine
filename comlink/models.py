@@ -146,8 +146,36 @@ class EmailMessage(models.Model):
         return from_address
 
     @property
+    def clean_subject(self):
+        subject = self.subject
+        prefix = self.mailing_list.subject_prefix
+        if prefix:
+            index = subject.find(prefix)
+            if index >= 0:
+                subject = subject[index + len(prefix):]
+        return subject.strip()
+
+    @property
+    def is_moderated_subject(self):
+        s = self.subject.lower()
+        if "auto-reply" in s:
+            return True
+        if "auto reply" in s:
+            return True
+        if "automatic reply" in s:
+            return True
+        if "out of office" in s:
+            return True
+        return False
+
+    @property
     def public_url(self):
         return settings.SITE_PROTO + "://" + settings.SITE_DOMAIN + reverse('comlink:mail', kwargs={'id': self.id})
+
+    def get_user(self):
+        if not self.user:
+            self.user = User.helper.by_email(self.from_address)
+        return self.user
 
     def get_mailgun_data(self, stripped=True):
         if stripped:
