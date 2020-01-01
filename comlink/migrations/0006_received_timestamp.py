@@ -15,4 +15,13 @@ class Migration(migrations.Migration):
             name='received',
             field=models.DateTimeField(auto_now_add=True, verbose_name='received'),
         ),
+
+        # Remove the old IncomingEmail model
+        migrations.RemoveField(
+            model_name='attachment',
+            name='email',
+        ),
+        migrations.DeleteModel(
+            name='IncomingEmail',
+        ),
     ]

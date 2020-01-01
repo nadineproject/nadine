@@ -50,12 +50,13 @@ class Command(BaseCommand):
                     new_msg = cl_models.EmailMessage.objects.create(
                         mailing_list = new_list,
                         user = old_msg.owner,
+                        received = old_msg.sent_time,
                         sender = old_msg.origin_address,
                         from_str = old_msg.origin_address,
                         recipient = old_list.email_address,
                         subject = old_msg.subject[:255],
                         body_plain = text_body,
-                        body_html = html_body
+                        body_html = html_body,
                         # stripped_signature,
                         # message_headers,
                         # content_id_map,

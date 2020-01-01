@@ -75,7 +75,7 @@ class Migration(migrations.Migration):
         ),
 
         # Move all the IncomingEmails to EmailMessages
-        migrations.RunPython(forward, reverse),
+        migrations.RunPython(forward, migrations.RunPython.noop),
 
         # Make Attachment.attached_to not null
         migrations.AlterField(
@@ -84,14 +84,6 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='attachments', to='comlink.EmailMessage'),
         ),
 
-        # Remove the old IncomingEmail model
-        migrations.RemoveField(
-            model_name='attachment',
-            name='email',
-        ),
-        migrations.DeleteModel(
-            name='IncomingEmail',
-        ),
 
 
     ]
