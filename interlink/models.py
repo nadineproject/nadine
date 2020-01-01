@@ -195,11 +195,11 @@ class MailingList(models.Model):
             return IncomingMail.objects.filter(mailing_list=self).order_by("sent_time").reverse()[:limit]
 
 
-def user_mailing_list_memberships(user):
-    """Returns an array of tuples of <MailingList, is_subscriber> for a User"""
-    return [(ml, user in ml.subscribers.all()) for ml in MailingList.objects.filter(enabled=True).order_by('name')]
-User.mailing_list_memberships = user_mailing_list_memberships
-
+# def user_mailing_list_memberships(user):
+#     """Returns an array of tuples of <MailingList, is_subscriber> for a User"""
+#     return [(ml, user in ml.subscribers.all()) for ml in MailingList.objects.filter(enabled=True).order_by('name')]
+# User.mailing_list_memberships = user_mailing_list_memberships
+#
 
 class IncomingMailManager(models.Manager):
 
