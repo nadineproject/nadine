@@ -3,6 +3,7 @@ import logging
 from django.dispatch import receiver
 from django.db.models.signals import post_save, post_delete
 from django.core.exceptions import ObjectDoesNotExist
+from django.conf import settings
 
 from nadine import email
 from nadine.models import Payment, BillLineItem
