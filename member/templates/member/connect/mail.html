@@ -40,7 +40,7 @@
 <ul>
   <li class='mail-content'>
     <h4 class='font'>
-      {{ row.list.name }} - {{ rot.list.address}}
+      {{ row.list.name }} - {{ row.list.address}}
         {% if row.is_subscriber %}
           (<a target="_self" href="." onclick="unsubscribe({{ row.list.id }}); return false;">unsubscribe</a>)
         {% else %}
