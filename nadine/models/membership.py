@@ -546,18 +546,12 @@ class IndividualMembership(Membership):
     def __str__(self):
         return '%s: %s' % (self.user, self.subscriptions.all())
 
-    class Meta:
-        manager_inheritance_from_future = True
-
 
 class OrganizationMembership(Membership):
     organization = models.OneToOneField(Organization, related_name="membership", on_delete=models.CASCADE)
 
     def __str__(self):
         return '%s: %s' % (self.organization, self.subscriptions.all())
-
-    class Meta:
-        manager_inheritance_from_future = True
 
 
 class SubscriptionManager(models.Manager):
