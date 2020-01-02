@@ -8,13 +8,17 @@ from django.conf import settings
 from comlink import mailgun
 from comlink.models import MailingList
 
-
 logger = logging.getLogger(__name__)
 
+
+# A Signal for when an email has been received
 email_received = Signal(providing_args=["instance", "attachments"])
+
 
 @receiver(email_received)
 def router(sender, **kwargs):
+    """Route an incoming email to the appropriate destination."""
+
     # Pull our email object and convert it to the mailgun_data we need`
     email = kwargs['instance']
     strip_emails = getattr(settings, "COMLINK_STRIP_EMAILS", False)

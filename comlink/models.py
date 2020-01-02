@@ -148,8 +148,8 @@ class EmailMessage(models.Model):
     @property
     def clean_subject(self):
         subject = self.subject
-        prefix = self.mailing_list.subject_prefix
-        if prefix:
+        if self.mailing_list and self.mailing_list.subject_prefix:
+            prefix = self.mailing_list.subject_prefix
             index = subject.find(prefix)
             if index >= 0:
                 subject = subject[index + len(prefix):]
@@ -200,7 +200,7 @@ class EmailMessage(models.Model):
             "from": self.from_str,
             "to": [self.recipient, ],
             "cc": [self.cc, ],
-            "subject": self.subject,
+            "subject": self.clean_subject,
             "text": body_plain,
             "html": body_html,
         }
