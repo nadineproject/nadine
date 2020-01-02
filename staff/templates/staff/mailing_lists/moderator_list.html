@@ -28,7 +28,7 @@
 			<td><a href="{% url 'staff:mailing_lists:inspect' incoming_mail.id %}">{{ incoming_mail.sent_time }}</a></td>
 			<td>{{ incoming_mail.origin_address }}</td>
 			<td>{{ incoming_mail.subject }}</td>
-			<td>{% include "staff/mailing_lists/incoming_mail_controls.frag" %}</td>
+			<td>{% include "staff/mailing_lists/message_controls.frag" %}</td>
 		</tr>
 	{% endfor %}
 	</table>
