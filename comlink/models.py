@@ -95,13 +95,6 @@ class EmailMessage(models.Model):
         except:
             logger.exception("Error parsing JSON data containing message headers")
 
-    @property
-    def headers(self):
-        """Access message_headers parsed into MultiValueDict"""
-        if self._headers is None:
-            self._load_headers()
-        return self._headers
-
     def _load_cids(self):
         if self.content_id_map:
             self._cids = {}
@@ -109,6 +102,13 @@ class EmailMessage(models.Model):
             self._cids = json.loads(self.content_id_map)
         except:
             logger.exception("Error parsing JSON data containing Content-IDs")
+
+    @property
+    def headers(self):
+        """Access message_headers parsed into MultiValueDict"""
+        if self._headers is None:
+            self._load_headers()
+        return self._headers
 
     @property
     def content_ids(self):
@@ -176,6 +176,16 @@ class EmailMessage(models.Model):
         if not self.user:
             self.user = User.helper.by_email(self.from_address)
         return self.user
+
+    def get_body(self, prefer_html=True):
+        if prefer_html:
+            if self.stripped_html:
+                return self.stripped_html
+            if self.body_html:
+                return self.body_html
+        if self.stripped_text:
+            return self.stripped_text
+        return self.body_plain
 
     def get_mailgun_data(self, stripped=True):
         if stripped:

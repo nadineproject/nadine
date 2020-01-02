@@ -32,7 +32,9 @@
 	{% endif %}
 </i></p>
 <pre><code style="font-family:'Roboto', sans-serif">
-{{ message.body_plain }}
+  {% autoescape off %}
+    {{ message.get_body }}
+  {% endautoescape %}
 </pre></code>
 
 {% endblock %}
