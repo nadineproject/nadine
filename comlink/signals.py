@@ -72,6 +72,7 @@ def router(sender, **kwargs):
         mailing_list.emailmessage_set.add(email)
         if mailing_list.is_members_only:
             if not mailing_list.is_subscriber(email.from_address):
+                mailgun.send_template('email/non_member.txt', email.recipient, "Rejected Email [%s]" % mailing_list.name)
                 raise mailgun.MailgunException("Members Only Mailing List '%s' received email from non-member '%s'" % (mailing_list.name, email.from_address))
         bcc_list = mailing_list.subscriber_addresses
         mailgun.inject_footer(mailgun_data, mailing_list.unsubscribe_url)

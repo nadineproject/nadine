@@ -11,8 +11,8 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
+from django.template.loader import get_template, render_to_string
 from django.template import Template, TemplateDoesNotExist
-from django.template.loader import get_template
 from django.utils import timezone
 
 
@@ -108,6 +108,26 @@ def mailgun_send(mailgun_data, files=None, clean_first=True, inject_list_id=True
     )
     logger.debug("Mailgun response: %s" % resp.text)
     return HttpResponse(status=200)
+
+
+def send_template(template, to, subject, context=None):
+    if not context:
+        context = {}
+    context["to"] = to
+    context["site_name"] = settings.SITE_NAME
+    context["site_url"] = settings.SITE_PROTO + "://" + settings.SITE_DOMAIN,
+
+    # Render our body text
+    body_text = render_to_string(template, context=context)
+    mailgun_data = {
+        "from": settings.DEFAULT_FROM_EMAIL,
+        "to": [to, ],
+        "subject": subject,
+        "text": body_text,
+    }
+
+    # Fire in the hole!
+    mailgun_send(mailgun_data)
 
 
 def validate_address(email_address):
