@@ -13,10 +13,10 @@ urlpatterns = [
     path('activity/', include('staff.urls.activity', namespace="activity")),
     path('billing/', include('staff.urls.billing', namespace="billing")),
     path('stats/', include('staff.urls.stats', namespace="stats")),
-    # Logs == Arpwatch
-    # Lists == Interlink
-    # Doors = Doors
+    path('mailing_lists/', include('staff.urls.mailing_lists', namespace="mailing_lists")),
     path('settings/', include('staff.urls.settings', namespace="settings")),
+    # Logs == Arpwatch
+    # Doors = Doors
 
     # Other URLS
     path('event/create/', core.create_event, name='create_event'),

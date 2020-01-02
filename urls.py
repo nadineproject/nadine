@@ -28,7 +28,6 @@ urlpatterns = [
     path('staff/', include('staff.urls', namespace='staff')),
     path('member/', include('member.urls', namespace='member')),
     path('tablet/', include('tablet.urls', namespace='tablet')),
-    path('interlink/', include('interlink.urls', namespace='interlink')),
     path('doors/', include('doors.keymaster.urls', namespace='doors')),
     path('logs/', include('arpwatch.urls', namespace='arp')),
     path('comlink/', include('comlink.urls', namespace='comlink')),

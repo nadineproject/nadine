@@ -19,8 +19,7 @@ from nadine.models.profile import UserProfile, FileUpload
 from nadine.models.membership import Membership, IndividualMembership, ResourceSubscription
 from nadine.models.usage import CoworkingDay
 from nadine.models.resource import Resource
-# from comlink.models import MailingList
-from interlink.models import MailingList
+from comlink.models import MailingList
 
 from nadine import email
 from nadine.utils.slack_api import SlackAPI
