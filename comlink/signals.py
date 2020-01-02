@@ -32,6 +32,7 @@ def router(sender, **kwargs):
     bcc_list = None
     mailing_list = MailingList.objects.filter(address=email.recipient).first()
     if mailing_list:
+        mailing_list.emailmessage_set.add(email)
         if mailing_list.is_members_only:
             if not mailing_list.is_subscriber(email.from_address):
                 raise mailgun.MailgunException("Members Only Mailing List '%s' received email from non-member '%s'" % (mailing_list.name, email.from_address))
