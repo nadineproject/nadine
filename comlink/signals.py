@@ -5,7 +5,7 @@ from django.dispatch import Signal, receiver
 from django.contrib.auth.models import User
 from django.conf import settings
 
-from nadine.models.alerts import change_membership, ending_membership
+from nadine.models.alerts import new_membership, ending_membership
 
 from comlink import mailgun
 from comlink.models import MailingList
@@ -26,15 +26,16 @@ email_received = Signal(providing_args=["instance", "attachments"])
 #######################################################################
 
 
-@receiver(change_membership)
+@receiver(new_membership)
 def subscribe_mailing_lists(sender, **kwargs):
     # Add new members to all opt-out mailing lists
     user = kwargs['user']
-    for mailing_list in MailingList.objects.filter(is_opt_out=True):
-        if not user in mailing_list.subscribers.all():
-            if not user in mailing_list.unsubscribed.all():
-                mailing_list.subscribers.add(user)
-                mailing_list.save()
+    if user.profile.is_active():
+        for mailing_list in MailingList.objects.filter(is_opt_out=True):
+            if not user in mailing_list.subscribers.all():
+                if not user in mailing_list.unsubscribed.all():
+                    mailing_list.subscribers.add(user)
+                    mailing_list.save()
 
 
 @receiver(ending_membership)
