@@ -27,8 +27,8 @@ def forward(apps, schema_editor):
             print("    Adding Subcribers and Unsubscribed...")
             for u in old_list.subscribers.all():
                 new_list.subscribers.add(u)
-            for u in old_list.unsubscribed.all():
-                new_list.unsubscribed.add(u)
+            # for u in old_list.unsubscribed.all():
+            #     new_list.unsubscribed.add(u)
             for u in old_list.moderators.all():
                 new_list.moderators.add(u)
 
