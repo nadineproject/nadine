@@ -8,6 +8,7 @@ from datetime import datetime
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand, CommandError
+from django.core.management.utils import get_random_secret_key
 
 from pytz import country_names, country_timezones, common_timezones
 
@@ -74,8 +75,7 @@ class Command(BaseCommand):
         secret_key = self.local_settings.get("SECRET_KEY")
         if not secret_key or len(secret_key) < 32:
             print("Generating random SECRET_KEY")
-            secret_key = ''.join([random.SystemRandom().choice("{}{}".format(string.ascii_letters, string.digits)) for i in range(63)])
-            self.local_settings.set('SECRET_KEY', secret_key, quiet=True)
+            self.local_settings.set('SECRET_KEY', get_random_secret_key(), quiet=True)
             print()
 
         # Site Information
