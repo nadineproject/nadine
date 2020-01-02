@@ -10,23 +10,42 @@ from django.db.models import Q
 from django.contrib import admin
 from django.core.files.base import ContentFile
 from django.contrib.auth.models import User
-from django.dispatch import receiver
+from django.dispatch import Signal, receiver
 from django.db.models.signals import post_save
-from django.conf import settings
 from django.utils.timezone import localtime, now
+from django.conf import settings
+
+from comlink.models import MailingList
 
 from nadine.models.profile import UserProfile, FileUpload
 from nadine.models.membership import Membership, IndividualMembership, ResourceSubscription
 from nadine.models.usage import CoworkingDay
 from nadine.models.resource import Resource
-from comlink.models import MailingList
-
-from nadine import email
-from nadine.utils.slack_api import SlackAPI
-from nadine.utils.payment_api import PaymentAPI
 
 logger = logging.getLogger(__name__)
 
+
+#######################################################################
+# Signals for every Trigger Action
+#######################################################################
+
+sign_in = Signal(providing_args=["user"])
+profile_save = Signal(providing_args=["user"])
+file_upload = Signal(providing_args=["user"])
+change_membership = Signal(providing_args=["user"])
+new_membership = Signal(providing_args=["user"])
+ending_membership = Signal(providing_args=["user"])
+new_desk_membership = Signal(providing_args=["user"])
+ending_desk_membership = Signal(providing_args=["user"])
+new_key_membership = Signal(providing_args=["user"])
+ending_key_membership = Signal(providing_args=["user"])
+new_mail_membership = Signal(providing_args=["user"])
+ending_mail_membership = Signal(providing_args=["user"])
+
+
+#######################################################################
+# Member Alert Manager
+#######################################################################
 
 class MemberAlertManager(models.Manager):
 
@@ -57,11 +76,11 @@ class MemberAlertManager(models.Manager):
         return unresolved
 
     #######################################################################
-    # Trigger Actions
+    # Actions that need handeling
     #######################################################################
 
-    def trigger_periodic_check(self):
-        logger.debug("trigger_periodic_check")
+    def handle_periodic_check(self):
+        logger.debug("handle_periodic_check")
 
         # Check for exiting members in the coming week
         exit_date = localtime(now()) + timedelta(days=5)
@@ -70,7 +89,7 @@ class MemberAlertManager(models.Manager):
             # Only trigger exiting membership if no exit alerts were created in the last week
             start = localtime(now()) - timedelta(days=5)
             if MemberAlert.objects.filter(user=u, key__in=MemberAlert.PERSISTENT_ALERTS, created_ts__gte=start).count() == 0:
-                self.trigger_ending_membership(u, exit_date)
+                self.handle_ending_membership(u, exit_date)
 
         # Check for stale membership
         smd = User.helper.stale_member_date()
@@ -85,14 +104,13 @@ class MemberAlertManager(models.Manager):
             if not duration.years and duration.months == 1:
                 MemberAlert.objects.create_if_new(user=u, key=MemberAlert.ONE_MONTH)
 
-    def trigger_change_subscription(self, user):
-        # Turn off automatic billing
-        payment_api = PaymentAPI()
-        if payment_api.enabled:
-            payment_api.disable_recurring(user.username)
+    def handle_change_membership(self, user):
+        logger.debug("handle_change_membership: %s" % user)
+        change_membership.send(sender=self.__class__, user=user)
 
-    def trigger_ending_membership(self, user, target_date=None):
-        logger.debug("trigger_ending_membership: %s, %s" % (user, target_date))
+    def handle_ending_membership(self, user, target_date=None):
+        logger.debug("handle_ending_membership: %s, %s" % (user, target_date))
+        ending_membership.send(sender=self.__class__, user=user)
         if target_date == None:
             target_date = localtime(now())
 
@@ -101,31 +119,14 @@ class MemberAlertManager(models.Manager):
             user.profile.resolve_alerts(MemberAlert.POST_PHOTO)
             MemberAlert.objects.create_if_not_open(user=user, key=MemberAlert.REMOVE_PHOTO)
 
-        # Send an email to the team announcing their exit
-        end = user.membership.end_date
-        subject = "Exiting Member: %s/%s/%s" % (end.month, end.day, end.year)
-        email.send_manage_member(user, subject=subject)
-
-        # Remove them from the mailing lists
-        for mailing_list in MailingList.objects.all():
-            if user in mailing_list.subscribers:
-                mailing_list.subscribers.remove(user)
-                mailing_list.save()
-
-    def trigger_new_membership(self, user):
-        logger.debug("trigger_new_membership: %s" % user)
+    def handle_new_membership(self, user):
+        logger.debug("handle_new_membership: %s" % user)
+        new_membership.send(sender=self.__class__, user=user)
 
         # Pull a bunch of data so we don't keep hitting the database
         open_alerts = user.profile.alerts_by_key(include_resolved=False)
         all_alerts = user.profile.alerts_by_key(include_resolved=True)
         existing_files = user.profile.files_by_type()
-
-        # Send New Member email
-        try:
-            email.send_new_membership(user)
-            email.announce_new_membership(user)
-        except Exception as e:
-            logger.error("Could not send New Member notification", e)
 
         # Member Information
         if not FileUpload.MEMBER_INFO in existing_files:
@@ -152,22 +153,19 @@ class MemberAlertManager(models.Manager):
         if not MemberAlert.ORIENTATION in all_alerts:
             MemberAlert.objects.create(user=user, key=MemberAlert.ORIENTATION)
 
-        # Subscribe them to all the opt_out mailing lists
-        for mailing_list in MailingList.objects.filter(is_opt_out=True):
-            mailing_list.subscribers.add(user)
+    def handle_profile_save(self, profile):
+        logger.debug("handle_profile_save: %s" % profile)
+        profile_save.send(sender=self.__class__, user=user)
 
-        # Invite them to slack
-        if hasattr(settings, 'SLACK_API_TOKEN'):
-            SlackAPI().invite_user_quiet(user)
-
-    def trigger_profile_save(self, profile):
-        logger.debug("trigger_profile_save: %s" % profile)
+        # Remove the Photo from the wall if we have one
         if profile.photo:
             profile.resolve_alerts(MemberAlert.TAKE_PHOTO)
             profile.resolve_alerts(MemberAlert.UPLOAD_PHOTO)
 
-    def trigger_file_upload(self, user):
-        logger.debug("trigger_file_upload: %s" % user)
+    def handle_file_upload(self, user):
+        logger.debug("handle_file_upload: %s" % user)
+        file_upload.send(sender=self.__class__, user=user)
+
         existing_files = user.profile.files_by_type()
 
         # Resolve Member Info alert if the file is now present
@@ -183,59 +181,63 @@ class MemberAlertManager(models.Manager):
         if FileUpload.KEY_AGMT in existing_files:
             user.profile.resolve_alerts(MemberAlert.KEY_AGREEMENT)
 
-    def trigger_sign_in(self, user):
-        logger.debug("trigger_sign_in: %s" % user)
+    def handle_sign_in(self, user):
+        logger.debug("handle_sign_in: %s" % user)
+        sign_in.send(sender=self.__class__, user=user)
 
         # If they have signed in, they are not stale anymore
         user.profile.resolve_alerts(MemberAlert.STALE_MEMBER)
 
-        # Send out a bunch of things the first time they sign in
-        if CoworkingDay.objects.filter(user=user).count() == 1:
-            try:
-                email.announce_free_trial(user)
-                email.send_introduction(user)
-                email.subscribe_to_newsletter(user)
-            except:
-                logger.error("Could not send introduction email to %s" % user.email)
-        else:
-            # If it's not their first day and they still have open alerts, message the team
-            if len(user.profile.open_alerts()) > 0:
-                email.send_manage_member(user)
+    def handle_new_desk(self, user):
+        logger.debug("handle_new_desk: %s" % user)
+        new_desk_membership.send(sender=self.__class__, user=user)
 
-    def trigger_new_desk(self, user):
-        logger.debug("trigger_new_desk: %s" % user)
         # No need to return the desk key since their new membership has a desk
         user.profile.resolve_alerts(MemberAlert.RETURN_DESK_KEY)
+
         # A desk comes with a cabinet
         MemberAlert.objects.create_if_not_open(user=user, key=MemberAlert.ASSIGN_CABINET)
 
-    def trigger_ending_desk(self, user, end_date):
-        logger.debug("trigger_ending_desk: %s" % user)
+    def handle_ending_desk(self, user, end_date):
+        logger.debug("handle_ending_desk: %s" % user)
+        ending_desk_membership.send(sender=self.__class__, user=user)
+
+        # Get the cabinet key back
         user.profile.resolve_alerts(MemberAlert.ASSIGN_CABINET)
         MemberAlert.objects.create_if_new(user=user, key=MemberAlert.RETURN_DESK_KEY)
 
-    def trigger_new_key(self, user):
-        logger.debug("trigger_new_key: %s" % user)
+    def handle_new_key(self, user):
+        logger.debug("handle_new_key: %s" % user)
+        new_key_membership.send(sender=self.__class__, user=user)
+
         # No need to return the door key if they now have a key
         user.profile.resolve_alerts(MemberAlert.RETURN_DOOR_KEY)
+
         # Check for a key agreement
         if not FileUpload.KEY_AGMT in user.profile.files_by_type():
             MemberAlert.objects.create_if_not_open(user=user, key=MemberAlert.KEY_AGREEMENT)
 
-    def trigger_ending_key(self, user, end_date):
-        logger.debug("trigger_ending_key: %s" % user)
+    def handle_ending_key(self, user, end_date):
+        logger.debug("handle_ending_key: %s" % user)
+        ending_key_membership.send(sender=self.__class__, user=user)
+
         # They need to return their door key
         MemberAlert.objects.create_if_new(user, MemberAlert.RETURN_DOOR_KEY, end_date)
 
-    def trigger_new_mail(self, user):
-        logger.debug("trigger_new_mail: %s" % user)
+    def handle_new_mail(self, user):
+        logger.debug("handle_new_mail: %s" % user)
+        new_mail_membership.send(sender=self.__class__, user=user)
+
         # No need to remove the mailbox since their new membership has mail
         user.profile.resolve_alerts(MemberAlert.REMOVE_MAILBOX)
+
         # Assign a mailbox
         MemberAlert.objects.create_if_not_open(user=user, key=MemberAlert.ASSIGN_MAILBOX)
 
-    def trigger_ending_mail(self, user, end_date):
-        logger.debug("trigger_ending_mail: %s" % user)
+    def handle_ending_mail(self, user, end_date):
+        logger.debug("handle_ending_mail: %s" % user)
+        ending_mail_membership.send(sender=self.__class__, user=user)
+
         # We don't need to assign a mailbox if they are ending it
         user.profile.resolve_alerts(MemberAlert.ASSIGN_MAILBOX)
         MemberAlert.objects.create_if_new(user=user, key=MemberAlert.REMOVE_MAILBOX)
@@ -246,13 +248,26 @@ class MemberAlertManager(models.Manager):
 ############################################################################
 
 
+@receiver(post_save, sender=UserProfile)
+def profile_save_callback(sender, **kwargs):
+    profile = kwargs['instance']
+    handle_profile_save(profile)
+
+
+@receiver(post_save, sender=FileUpload)
+def file_upload_callback(sender, **kwargs):
+    file_upload = kwargs['instance']
+    from nadine.models.alerts import MemberAlert
+    handle_file_upload(file_upload.user)
+
+
 @receiver(post_save, sender=CoworkingDay)
 def coworking_day_callback(sender, **kwargs):
     if getattr(settings, 'SUSPEND_MEMBER_ALERTS', False): return
     coworking_day = kwargs['instance']
     created = kwargs['created']
     if created:
-        MemberAlert.objects.trigger_sign_in(coworking_day.user)
+        MemberAlert.objects.handle_sign_in(coworking_day.user)
 
 
 @receiver(post_save, sender=ResourceSubscription)
@@ -269,25 +284,25 @@ def subscription_callback(sender, **kwargs):
         return
     user = subscription.user
 
-    # Trigger Change Subscription
-    MemberAlert.objects.trigger_change_subscription(user)
+    # Trigger Change Membership
+    MemberAlert.objects.handle_change_membership(user)
 
     # Filter to appropriate trigger depending on resource and if it's new or ending
     if subscription.resource == Resource.objects.desk_resource:
         if created:
-            MemberAlert.objects.trigger_new_desk(user)
+            MemberAlert.objects.handle_new_desk(user)
         elif ending and not user.has_desk(subscription.end_date + timedelta(days=1)):
-            MemberAlert.objects.trigger_ending_desk(user, subscription.end_date)
+            MemberAlert.objects.handle_ending_desk(user, subscription.end_date)
     elif subscription.resource == Resource.objects.key_resource:
         if created:
-            MemberAlert.objects.trigger_new_key(user)
+            MemberAlert.objects.handle_new_key(user)
         elif ending and subscription.end_date + timedelta(days=1) not in user:
-            MemberAlert.objects.trigger_ending_key(user, subscription.end_dat)
+            MemberAlert.objects.handle_ending_key(user, subscription.end_dat)
     elif subscription.resource == Resource.objects.mail_resource:
         if created:
-            MemberAlert.objects.trigger_new_mail(user)
+            MemberAlert.objects.handle_new_mail(user)
         elif ending and not user.has_mail(subscription.end_date + timedelta(days=1)):
-            MemberAlert.objects.trigger_ending_mail(user, subscription.end_dat)
+            MemberAlert.objects.handle_ending_mail(user, subscription.end_dat)
 
     # If this is a new subscription and they were not an active member
     # the day before this, than this is a new membership!
@@ -300,7 +315,8 @@ def subscription_callback(sender, **kwargs):
             # Only trigger once even withn multiple subscriptions on one day (Bug #347)
             first_subscription = ResourceSubscription.objects.for_user_and_date(user, subscription.start_date).first()
             if subscription == first_subscription:
-                MemberAlert.objects.trigger_new_membership(user)
+                MemberAlert.objects.handle_new_membership(user)
+
 
 ############################################################################
 # Models

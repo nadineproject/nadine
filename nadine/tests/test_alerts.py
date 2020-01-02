@@ -37,7 +37,7 @@ class AlertTestCase(TestCase):
         self.assertFalse(MemberAlert.STALE_MEMBER in user.profile.alerts_by_key())
 
         # Trigger the period check and we should see this membership is stale
-        MemberAlert.objects.trigger_periodic_check()
+        MemberAlert.objects.handle_periodic_check()
         self.assertTrue(MemberAlert.STALE_MEMBER in user.profile.alerts_by_key(include_resolved=False))
 
         # Create a recent CoworkingDay and the membership is no longer stale

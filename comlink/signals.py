@@ -5,14 +5,46 @@ from django.dispatch import Signal, receiver
 from django.contrib.auth.models import User
 from django.conf import settings
 
+from nadine.models.alerts import change_membership, ending_membership
+
 from comlink import mailgun
 from comlink.models import MailingList
 
 logger = logging.getLogger(__name__)
 
 
+#######################################################################
+# Signals
+#######################################################################
+
 # A Signal for when an email has been received
 email_received = Signal(providing_args=["instance", "attachments"])
+
+
+#######################################################################
+# Receivers
+#######################################################################
+
+
+@receiver(change_membership)
+def subscribe_mailing_lists(sender, **kwargs):
+    # Add new members to all opt-out mailing lists
+    user = kwargs['user']
+    for mailing_list in MailingList.objects.filter(is_opt_out=True):
+        if not user in mailing_list.subscribers.all():
+            if not user in mailing_list.unsubscribed.all():
+                mailing_list.subscribers.add(user)
+                mailing_list.save()
+
+
+@receiver(ending_membership)
+def unsubscribe_mailing_lists(sender, **kwargs):
+    # Remove them from the mailing lists
+    user = kwargs['user']
+    for mailing_list in MailingList.objects.all():
+        if user in mailing_list.subscribers.all():
+            mailing_list.subscribers.remove(user)
+            mailing_list.save()
 
 
 @receiver(email_received)
@@ -34,7 +66,7 @@ def router(sender, **kwargs):
 
     # Build out the BCC depending on who the recipient is
     bcc_list = None
-    mailing_list = MailingList.objects.filter(address=email.recipient).first()
+    mailing_list = MailingList.objects.filter(address=email.recipient, enabled=True).first()
     if mailing_list:
         mailing_list.emailmessage_set.add(email)
         if mailing_list.is_members_only:
