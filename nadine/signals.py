@@ -75,8 +75,9 @@ def notify_ending_membership(sender, **kwargs):
 
 
 @receiver(change_membership)
-def disable_billing(sendr, **kwargs):
-    # Turn off automatic billing
+def disable_billing(sender, **kwargs):
+    # Turn off automatic billing when
+    # ANY change is made to the membership
     user = kwargs['user']
     payment_api = PaymentAPI()
     if payment_api.enabled:
