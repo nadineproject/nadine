@@ -29,7 +29,7 @@ def list_messages(request, list_id):
 @staff_member_required
 def list_subscribers(request, list_id):
     mailing_list = get_object_or_404(MailingList, pk=list_id)
-    not_subscribed = User.helper.active_members().exclude(id__in=mailing_list.subscribed())
+    not_subscribed = User.helper.active_members().exclude(id__in=mailing_list.subscribed()).order_by('first_name', 'last_name')
     context = {'mailing_list': mailing_list, 'not_subscribed': not_subscribed}
     return render(request, 'staff/mailing_lists/subscribers.html', context)
 
