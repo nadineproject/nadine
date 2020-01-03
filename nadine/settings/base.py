@@ -289,9 +289,6 @@ CRONJOBS = [
     # Tasks to run every 5 minutes
     ('*/5 * * * *', 'django.core.management.call_command', ['import_arp']),
     ('*/5 * * * *', 'django.core.management.call_command', ['send_user_notifications']),
-    # Interlink Tasks
-    ('*/2 * * * *', 'django.core.management.call_command', ['process_mail']),
-    # ('0 * * * *', 'django.core.management.call_command', ['unsubscribe']),
     # Backup Tasks at 1:00 AM
     ('0 1 * * *', 'django.core.management.call_command', ['backup_members']),
     ('0 1 * * *', 'django.core.management.call_command', ['backup_create']),
