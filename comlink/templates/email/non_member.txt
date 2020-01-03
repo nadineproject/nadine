@@ -9,9 +9,6 @@ again.
 
 Your Profile: {{ site_url }}{% url 'member:profile:redirect' %}
 
-If you have any questions, feel free to call 206.323.6500,
-respond to this message, or stop by the front desk.
-
 Thanks!
 The {{ site_name }} Team
 
