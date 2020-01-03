@@ -8,6 +8,7 @@ from django.conf import settings
 from nadine import email
 from nadine.models import Payment, BillLineItem
 from nadine.models.alerts import sign_in, new_membership, ending_membership, change_membership
+from nadine.models.usage import CoworkingDay
 from nadine.utils.payment_api import PaymentAPI
 from nadine.utils.slack_api import SlackAPI
 

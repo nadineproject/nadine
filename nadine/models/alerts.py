@@ -153,14 +153,14 @@ class MemberAlertManager(models.Manager):
         if not MemberAlert.ORIENTATION in all_alerts:
             MemberAlert.objects.create(user=user, key=MemberAlert.ORIENTATION)
 
-    def handle_profile_save(self, profile):
-        logger.debug("handle_profile_save: %s" % profile)
+    def handle_profile_save(self, user):
+        logger.debug("handle_profile_save: %s" % user)
         profile_save.send(sender=self.__class__, user=user)
 
         # Remove the Photo from the wall if we have one
-        if profile.photo:
-            profile.resolve_alerts(MemberAlert.TAKE_PHOTO)
-            profile.resolve_alerts(MemberAlert.UPLOAD_PHOTO)
+        if user.profile.photo:
+            user.profile.resolve_alerts(MemberAlert.TAKE_PHOTO)
+            user.profile.resolve_alerts(MemberAlert.UPLOAD_PHOTO)
 
     def handle_file_upload(self, user):
         logger.debug("handle_file_upload: %s" % user)
@@ -251,14 +251,13 @@ class MemberAlertManager(models.Manager):
 @receiver(post_save, sender=UserProfile)
 def profile_save_callback(sender, **kwargs):
     profile = kwargs['instance']
-    handle_profile_save(profile)
+    MemberAlert.objects.handle_profile_save(profile.user)
 
 
 @receiver(post_save, sender=FileUpload)
 def file_upload_callback(sender, **kwargs):
     file_upload = kwargs['instance']
-    from nadine.models.alerts import MemberAlert
-    handle_file_upload(file_upload.user)
+    MemberAlert.objects.handle_file_upload(file_upload.user)
 
 
 @receiver(post_save, sender=CoworkingDay)
