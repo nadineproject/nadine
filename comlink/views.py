@@ -123,7 +123,7 @@ class Incoming(View):
             i = 1
             for file in list(request.FILES.values()):
                 attachment = self.attachment_model(
-                    email=attached_to,
+                    attached_to=email,
                     file=file,
                     content_id=content_ids.get('attachment-{0!s}'.format(i), ''))
                 attachment.save()
