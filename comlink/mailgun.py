@@ -23,6 +23,96 @@ class MailgunException(Exception):
     pass
 
 
+class MailgunAPI:
+
+    MESSAGES = "/messages"
+    STATS_TOTAL = "/stats/total"
+
+    def __init__(self):
+        self.domain = getattr(settings, 'MAILGUN_DOMAIN', None)
+        if not self.domain:
+            raise ImproperlyConfigured("Please set your MAILGUN_DOMAIN setting.")
+
+        self.api_key = getattr(settings, 'MAILGUN_API_KEY', None)
+        if not self.api_key:
+            raise ImproperlyConfigured("Please set your MAILGUN_API_KEY setting.")
+
+        self.debug = getattr(settings, 'MAILGUN_DEBUG', True)
+
+        self.base_url = self.domain
+        if not self.base_url.startswith("http"):
+            self.base_url = "https://api.mailgun.net/v3/" + self.base_url
+        if self.base_url.endswith("/"):
+            self.base_url = self.base_url[:-1]
+
+    def send(self, mailgun_data, files=None, clean_first=True, inject_list_id=True):
+        if clean_first: clean_mailgun_data(mailgun_data)
+        if inject_list_id: inject_list_headers(mailgun_data)
+
+        # Make sure nothing goes out if the system is in debug mode
+        if self.debug:
+            # We will see this message in the mailgun logs but nothing will actually be delivered
+            logger.debug("mailgun_send: setting testmode=yes")
+            mailgun_data["o:testmode"] = "yes"
+
+        mailgun_url = self.base_url + self.MESSAGES
+
+        response = requests.post(
+            mailgun_url,
+            auth =("api", self.api_key),
+            data = mailgun_data,
+            files = files,
+        )
+        logger.debug("Mailgun response: %s" % response.text)
+        if not response or not response.ok:
+            raise MailgunException("Did not get an OK response")
+
+        return HttpResponse(status=200)
+
+    def get(self, uri, params=None):
+        if not params: params = {}
+
+        if not uri:
+            raise MailgunException("Invalid URI")
+        if not uri.startswith("/"):
+            uri = "/" + uri
+        mailgun_url = self.base_url + uri
+        logger.debug("Mailgun URL: %s" % mailgun_url)
+        logger.debug("Mailgun Params: %s" % params)
+
+        response = requests.get(
+            mailgun_url,
+            auth=("api", settings.MAILGUN_API_KEY),
+            params=params
+        )
+        logger.debug("Mailgun response(%d): %s" % (response.status_code, response.text))
+        response_dict = response.json()
+        if not response.ok:
+            if 'message' in response_dict:
+                raise MailgunException(response_dict['message'])
+            else:
+                raise MailgunException("Did not get an OK response")
+
+        return response_dict
+
+
+################################################################################
+#  Helper Methods
+################################################################################
+
+
+def get_stats_delivered():
+    # Defaults to last 7 days
+    # TODO - Take time parameters
+    return api.get(MailgunAPI.STATS_TOTAL, params={"event": "delivered"})
+
+
+def get_stats_failed():
+    # Defaults to last 7 days
+    # TODO - Take time parameters
+    return api.get(MailgunAPI.STATS_TOTAL, params={"event": "failed"})
+
+
 def address_map(mailgun_data, key, exclude=None):
     if not exclude: exclude = []
     a_map = OrderedDict()
@@ -165,24 +255,6 @@ def validate_address_v3(email_address):
     if not response_dict or 'is_valid' not in response_dict:
         raise MailgunException("Did not get expected JSON response")
     return response_dict['is_valid']
-
-
-def api_get(uri, params=None):
-    if not hasattr(settings, "MAILGUN_API_KEY"):
-        raise MailgunException("Missing required MAILGUN_API_KEY setting!")
-    if not params:
-        params = {}
-
-    response = requests.get(
-        f"https://api.mailgun.net/v3/{uri}",
-        auth=("api", settings.MAILGUN_API_KEY),
-        params=params
-    )
-    print(response)
-    if not response or not response.ok:
-        raise MailgunException("Did not get an OK response from validation request")
-    response_dict = json.loads(response.text)
-    return response_dict
 
 
 # Copyright 2020 Office Nomads LLC (https://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
