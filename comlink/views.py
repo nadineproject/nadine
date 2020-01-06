@@ -132,16 +132,11 @@ class Incoming(View):
 
         # See if any attached signal handlers throw an error
         try:
-            self.handle_email(email, attachments=attachments)
+            email_received.send(sender=self.email_model, instance=email, attachments=attachments or [])
             return HttpResponse("OK")
         except RejectedMailException as e:
             logger.debug("Email was rejected: %s" % str(e))
             return HttpResponse("Email not accepted", status=406)
-
-    def handle_email(self, email, attachments=None):
-        logger.debug("handle_email: email='%s'" % email)
-        email_received.send(
-            sender=self.email_model, instance=email, attachments=attachments or [])
 
     def verify_signature(self, token, timestamp, signature):
         # logger.debug("token=%s, timestamp=%s, signature=%s" % (token, timestamp, signature))
