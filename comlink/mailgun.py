@@ -1,5 +1,3 @@
-
-
 import json
 import requests
 import datetime
@@ -15,13 +13,93 @@ from django.template.loader import get_template, render_to_string
 from django.template import Template, TemplateDoesNotExist
 from django.utils import timezone
 
-
 logger = logging.getLogger(__name__)
 
 
 class MailgunException(Exception):
     pass
 
+class MailgunMessage:
+
+    def __init__(self, sender, receiver, subject, body_text=None):
+        pass
+        self.mailgun_data = {
+            "from": sender,
+            "to": [receiver, ],
+            "cc": [],
+            "bcc": [],
+            "subject": subject,
+        }
+        if body_text:
+            self.add_text_body(body_text)
+
+    def add_to(self, address):
+        self.mailgun_data["to"].append(address)
+
+    def add_cc(self, address):
+        self.mailgun_data["cc"].append(address)
+
+    def add_bcc(self, address):
+        self.mailgun_data["bcc"].append(address)
+
+    def add_text_body(self, body_text):
+        self.mailgun_data["text"] = body_text
+
+    def add_html_body(self, body_html):
+        self.mailgun_data["html"] = body_html
+
+    def set_debug(self, debug):
+        if debug:
+            self.mailgun_data["o:testmode"] = "yes"
+        elif "o:testmode" in self.mailgun_data:
+            del self.mailgun_data["o:testmode"]
+
+    def _address_map(self, key, exclude=None):
+        if not exclude: exclude = []
+        a_map = OrderedDict()
+        if key in self.mailgun_data:
+            for a in self.mailgun_data[key]:
+                name, address = email.utils.parseaddr(a)
+                if not address in exclude:
+                    a_map[address.lower()] = a
+        return a_map
+
+    def _clean_data(self):
+        logger.debug("dirty data: %s" % self.mailgun_data)
+
+        # Compile all our addresses
+        from_name, from_address = email.utils.parseaddr(self.mailgun_data["from"])
+        to_name, to_address = email.utils.parseaddr(self.mailgun_data["to"][0])
+        exclude = [from_address, to_address]
+        bccs = address_map(self.mailgun_data, "bcc", exclude)
+        exclude.extend(list(bccs.keys()))
+        # We do not want to remove our first 'to' address
+        to_exclude = list(set(exclude))
+        to_exclude.remove(to_address)
+        tos = address_map(self.mailgun_data, "to", to_exclude)
+        exclude.extend(list(tos.keys()))
+        ccs = address_map(self.mailgun_data, "cc", exclude)
+
+        # Repopulate our data with our clean lists
+        self.mailgun_data["bcc"] = list(bccs.values())
+        self.mailgun_data["cc"] = list(ccs.values())
+        self.mailgun_data["to"] = list(tos.values())
+
+        logger.debug("clean data: %s" % self.mailgun_data)
+        return self.mailgun_data
+
+    def get_mailgun_data(self, clean_first=True):
+        # Make sure we have what we need
+        if not "to" in self.mailgun_data or not "from" in self.mailgun_data:
+            raise MailgunException("Mailgun data missing TO/FROM!")
+        if not "subject" in self.mailgun_data:
+            raise MailgunException("Mailgun data missing SUBJECT!")
+        if not "text" in self.mailgun_data and not "html" in self.mailgun_data:
+            raise MailgunException("Message has no body!")
+
+        if clean_first:
+            return self._clean_data()
+        return self.mailgun_data
 
 class MailgunAPI:
 
@@ -44,6 +122,24 @@ class MailgunAPI:
             self.base_url = "https://api.mailgun.net/v3/" + self.base_url
         if self.base_url.endswith("/"):
             self.base_url = self.base_url[:-1]
+
+    def validate_address(self, address):
+        ''' Use the mailgun API to validate the given email address. '''
+        response = requests.get(
+            "https://api.mailgun.net/v4/address/validate",
+            auth=("api", self.api_key),
+            params={"address": address}
+        )
+        if not response or not response.ok:
+            raise MailgunException("Did not get an OK response from validation request")
+        response_dict = response.json()
+        if not response_dict or 'risk' not in response_dict:
+            raise MailgunException("Did not get expected JSON response")
+
+        # Evaluate the risk.  Accept low and medium
+        risk = response_dict['risk']
+        logger.debug("validate_address: Risk for '%s' = '%s'" % (address, risk))
+        return risk == 'low' or risk == 'medium'
 
     def send(self, mailgun_data, files=None, clean_first=True, inject_list_id=True):
         if clean_first: clean_mailgun_data(mailgun_data)
@@ -97,7 +193,7 @@ class MailgunAPI:
 
 
 ################################################################################
-#  Helper Methods
+# Helper Methods
 ################################################################################
 
 
@@ -111,6 +207,11 @@ def get_stats_failed():
     # Defaults to last 7 days
     # TODO - Take time parameters
     return api.get(MailgunAPI.STATS_TOTAL, params={"event": "failed"})
+
+
+################################################################################
+# Deprecated Methods
+################################################################################
 
 
 def address_map(mailgun_data, key, exclude=None):
@@ -218,43 +319,6 @@ def send_template(template, to, subject, context=None):
 
     # Fire in the hole!
     mailgun_send(mailgun_data)
-
-
-def validate_address(email_address):
-    ''' Use the mailgun API to validate the given email address. '''
-    if not hasattr(settings, "MAILGUN_API_KEY"):
-        raise MailgunException("Missing required MAILGUN_API_KEY setting!")
-    response = requests.get(
-        "https://api.mailgun.net/v4/address/validate",
-        auth=("api", settings.MAILGUN_API_KEY),
-        params={"address": email_address}
-    )
-    if not response or not response.ok:
-        raise MailgunException("Did not get an OK response from validation request")
-    response_dict = json.loads(response.text)
-    if not response_dict or 'risk' not in response_dict:
-        raise MailgunException("Did not get expected JSON response")
-    # Evaluate the risk.  Accept low and medium
-    risk = response_dict['risk']
-    logger.debug("validate_address: Risk for '%s' = '%s'" % (email_address, risk))
-    return risk == 'low' or risk == 'medium'
-
-
-def validate_address_v3(email_address):
-    ''' Use the mailgun v3 API to validate the given email address. '''
-    if not hasattr(settings, "MAILGUN_VALIDATION_KEY"):
-        raise MailgunException("Missing required MAILGUN_VALIDATION_KEY setting!")
-    response = requests.get(
-        "https://api.mailgun.net/v3/address/validate",
-        auth=("api", settings.MAILGUN_VALIDATION_KEY),
-        params={"address": email_address}
-    )
-    if not response or not response.ok:
-        raise MailgunException("Did not get an OK response from validation request")
-    response_dict = json.loads(response.text)
-    if not response_dict or 'is_valid' not in response_dict:
-        raise MailgunException("Did not get expected JSON response")
-    return response_dict['is_valid']
 
 
 # Copyright 2020 Office Nomads LLC (https://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
