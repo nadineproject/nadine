@@ -21,18 +21,18 @@ class ArpWatchTest(TestCase):
         with self.assertRaises(IntegrityError):
             device2 = UserDevice.objects.create(mac_address=MAC)
 
-    def test_dir_lock(self):
-        arp.unlock_import_dir()
-        self.assertFalse(arp.import_dir_locked())
-        arp.lock_import_dir()
-        self.assertTrue(arp.import_dir_locked())
-        arp.unlock_import_dir()
-        self.assertFalse(arp.import_dir_locked())
+    # def test_dir_lock(self):
+    #     arp.unlock_import_dir()
+    #     self.assertFalse(arp.import_dir_locked())
+    #     arp.lock_import_dir()
+    #     self.assertTrue(arp.import_dir_locked())
+    #     arp.unlock_import_dir()
+    #     self.assertFalse(arp.import_dir_locked())
 
-    def test_log_message(self):
-        arp.unlock_import_dir()
-        arp.log_message("testing")
-        self.assertFalse(arp.import_dir_locked())
+    # def test_log_message(self):
+    #     arp.unlock_import_dir()
+    #     arp.log_message("testing")
+    #     self.assertFalse(arp.import_dir_locked())
 
     def test_arpwatch_for_user(self):
         # Register user1 with device1
