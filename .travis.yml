@@ -1,9 +1,9 @@
 language: python
 python:
-  - "2.7"
+  - "3.6"
 services:
   - postgresql
-install: "pip install -r requirements.txt"
+install: "pipenv install"
 before_script: "cp nadine/local_settings.example nadine/local_settings.py"
 script: ./manage.py test
 #notifications:
