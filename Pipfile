@@ -63,6 +63,3 @@ pytz = "*"
 safety = "*"
 asgiref = "*"
 setuptools = "*"
-
-[requires]
-python_version = "3.6"
