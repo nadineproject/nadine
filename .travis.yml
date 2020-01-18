@@ -6,9 +6,9 @@ services:
 install: "pipenv install"
 before_script: "cp nadine/settings/local_settings.example.py nadine/settings/local_settings.py"
 script: pipenv run python manage.py test
-#notifications:
-#  email:
-#    recipients:
-#      - jacob@officenomads.com
-#    on_success: change
-#    on_failure: always
+notifications:
+ email:
+   recipients:
+     - jacob@officenomads.com
+   on_success: change
+   on_failure: always
