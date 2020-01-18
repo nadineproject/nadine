@@ -1,10 +1,10 @@
 language: python
 python:
   - "3.6"
-# services:
-#   - postgresql
+services:
+  - postgresql
 install: "pipenv install"
-before_script: "cp nadine/local_settings.example nadine/local_settings.py"
+# before_script: "cp nadine/local_settings.example nadine/local_settings.py"
 script: ./manage.py test
 #notifications:
 #  email:
