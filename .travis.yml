@@ -4,7 +4,7 @@ python:
 services:
   - postgresql
 install: "pipenv install"
-before_script: "cp nadine/settings/local_settings.example nadine/settings/local_settings.py"
+before_script: "cp nadine/settings/local_settings.example.py nadine/settings/local_settings.py"
 script: pipenv run python manage.py test
 #notifications:
 #  email:
