@@ -1,6 +1,7 @@
 Django==3.0.2
 Pillow==7.0.0
 cryptography==2.8
+pip==19.3.1
 
 alabaster==0.7.12
 asgiref==3.2.3
