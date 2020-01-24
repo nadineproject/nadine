@@ -11,9 +11,9 @@ PRODUCTION = False
 DEBUG = True
 
 # Site Administrators
-ADMINS = (
+ADMINS = [
     ('YOU', 'you@yourdomain.com'),
-)
+]
 
 # Database Settings
 DATABASES['default'] = {
