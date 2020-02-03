@@ -24,16 +24,18 @@
 
 <h2>{{ message.clean_subject}}</h2>
 <!--<p id="label"><strong>Mailing Lists:</strong> <i>{{ message.mailing_list}}</i></p>-->
-<p id="label"><strong>{% trans "Sent:" %}</strong> <i>{{ message.sent_time}}</i></p>
+<p id="label"><strong>{% trans "Sent:" %}</strong> <i>{{ message.sent_time }}</i></p>
 <p id="label"><strong>{% trans "From:" %}</strong> <i>
 	{% if message.get_user %}
-		<td nowrap><a href="{% url 'member:profile:view' message.get_user.username %}">{{ message.get_user.get_full_name }}</a></td>
+		<td nowrap><a href="{% url 'member:profile:view' message.user.username %}">{{ message.user.get_full_name }}</a></td>
 	{% else %}
-		<td nowrap>{{ message.origin_address }}</td>
+		<td nowrap>{{ message.recipient }}</td>
 	{% endif %}
 </i></p>
 <pre><code style="font-family:'Roboto', sans-serif">
-{{ message.body }}
+  {% autoescape off %}
+    {{ message.get_body }}
+  {% endautoescape %}
 </pre></code>
 
 {% endblock %}

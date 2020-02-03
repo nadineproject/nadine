@@ -27,7 +27,7 @@ class IntegrationsNode(template.Node):
             'mailchimp': hasattr(settings, 'MAILCHIMP_API_KEY'),
             'doors': 'doors.keymaster' in settings.INSTALLED_APPS,
             'arp': 'arpwatch' in settings.INSTALLED_APPS,
-            'interlink': 'interlink' in settings.INSTALLED_APPS,
+            'comlink': 'comlink' in settings.INSTALLED_APPS,
         }
         context[self.var_name] = integrations
         return ''
