@@ -15,15 +15,13 @@
 }
 </script>
 
-<p>{% trans "Please verify your e-mail address." %}</p>
+<p>Please verify your e-mail address.</p>
 
-<p>{% trans "A new e-mail address has been associated with your account at" %} {{ site.name }}. {% trans "Please click the link below to verify your new address." %}</p>
+<p>A new e-mail address has been associated with your account at" %} {{ site.name }}. {% trans "Please click the link below to verify your new address.</p>
 
-<h3>{% blocktrans %}Your Verification Key:{% endblocktrans %} <a href="{{ verify_link }}">{{ verif_key }}</a></h3>
+<h3>Your Verification Key: <a href="{{ verify_link }}">{{ verif_key }}</a></h3>
 
 <p>
-{% blocktrans %}
 Thanks!<br>
 The {{ site.name }} Team
-{% endblocktrans %}
 </p>

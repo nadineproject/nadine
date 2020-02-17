@@ -1,7 +1,7 @@
 {% extends "member/base.html" %}
 {% load i18n %}
 
-{% block sub-title %}{% trans "Mail" %} | {% endblock %}
+{% block sub-title %}Mail | {% endblock %}
 
 {% block style %}
 	@media only screen and (max-width: 750px) {
@@ -24,8 +24,8 @@
 
 <h2>{{ message.clean_subject}}</h2>
 <!--<p id="label"><strong>Mailing Lists:</strong> <i>{{ message.mailing_list}}</i></p>-->
-<p id="label"><strong>{% trans "Sent:" %}</strong> <i>{{ message.sent_time }}</i></p>
-<p id="label"><strong>{% trans "From:" %}</strong> <i>
+<p id="label"><strong>Sent:</strong> <i>{{ message.sent_time }}</i></p>
+<p id="label"><strong>From:</strong> <i>
 	{% if message.get_user %}
 		<td nowrap><a href="{% url 'member:profile:view' message.user.username %}">{{ message.user.get_full_name }}</a></td>
 	{% else %}

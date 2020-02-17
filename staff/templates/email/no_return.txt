@@ -1,16 +1,12 @@
 {% load i18n %}{% autoescape off %}
-{% blocktrans %}
 {{ user.first_name }},
 
 Hey, where'd you go? :)
 
 It has been a while since you took your trial day here at Office Nomads, and we wanted to check in to see if we'll be seeing you back in the space sometime soon. We also wanted to be sure to reach out in case you had some lingering questions about coworking with us that we could help you out with. Feel free to drop us a line anytime and we'd be happy to talk with you.
 
-Otherwise, if we won't be seeing you again, we just wanted to thank you for coming by and wish you all the best. 
-{% endblocktrans %}
+Otherwise, if we won't be seeing you again, we just wanted to thank you for coming by and wish you all the best.
 
-{% blocktrans %}
 Take care,
 The {{ site.name }} Team
-{% endblocktrans %}
 {% endautoescape %}

@@ -1,7 +1,7 @@
 {% extends "member/base.html" %}
 {% load i18n %}
 
-{% block sub-title %}{% trans "Mail" %} | {% endblock %}
+{% block sub-title %}Mail | {% endblock %}
 
 {% block style %}{% endblock %}
 
@@ -26,7 +26,7 @@
 {% endblock %}
 
 {% block content %}
-<h3 class='font centered'>{% blocktrans %}Mailing lists{% endblocktrans %}</h3>
+<h3 class='font centered'>Mailing lists</h3>
 
 <div id="tabs">
 
@@ -43,21 +43,21 @@
     <h4 class='font'>
       {{ row.list.name }} - {{ row.list.address}}
         {% if row.is_subscriber %}
-    		(<a target="_self" href="." onclick="unsubscribe({{ row.list.id }}); return false;">{% trans "unsubscribe" %}</a>)
+    		(<a target="_self" href="." onclick="unsubscribe({{ row.list.id }}); return false;">unsubscribe</a>)
         {% else %}
             {% if user.profile.is_active or user.is_staff %}
-        		( <a target="_self" href="." onclick="subscribe({{ row.list.id }}); return false;">{% trans "subscribe" %}</a> )
+        		( <a target="_self" href="." onclick="subscribe({{ row.list.id }}); return false;">subscribe</a> )
             {% endif %}
         {% endif %}
     </h4>
 
-	<h5 class='header-font'>{% blocktrans %}Recent Messages{% endblocktrans %}</h5>
+	<h5 class='header-font'>Recent Messages</h5>
     <div class="list_mail" id="recents-{{ row.list.id }}">
       <table class="msg_table">
         <tr>
-			<th>{% trans "Sent" %}</th>
-			<th>{% trans "Member" %}</th>
-			<th>{% trans "Subject" %}</th>
+			<th>Sent</th>
+			<th>Member</th>
+			<th>Subject</th>
         </tr>
         {% for msg in row.recents %}
         <tr>
@@ -79,7 +79,7 @@
 </div>
 
 {% if not mailing_lists %}
-<h4 class='header-font'>{% blocktrans %}There are no mailing lists configured for this site.{% endblocktrans %}</h4>
+<h4 class='header-font'>There are no mailing lists configured for this site.</h4>
 {% endif %}
 
 <form action="." method='post' id="mailing-list-subscription-form">{{ mailing_list_subscription_form }}{% csrf_token %}</form>

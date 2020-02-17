@@ -1,15 +1,13 @@
 {% load i18n %}{% autoescape off %}
-{% blocktrans %}
 Hi {{ user.first_name }}!
 
 It looks like we need to update your billing information at {{ site.name }}. When you get a chance, can you please update your information? You can enter your billing information right from your Nadine profile. Just go to the billing tab and create a new billing profile.  Once you have entered your information we'll do the rest.  You can also pay by automatic withdrawal from your checking account if you give us a voided check. Just let us know what you would like to do. Thanks!
-{% endblocktrans %}
 
 https://{{ site.domain }}{% url 'member:profile:redirect' %}
 
 If you have any questions, feel free to call 206.323.6500, respond to this message, or stop by the front desk.
-{% blocktrans %}
+
 Thanks!
 The {{ site.name }} Team
-{% endblocktrans %}
+
 {% endautoescape %}

@@ -217,30 +217,30 @@ msgstr "Contact en cas d'urgenceLeur envoyer mes informations de contact"
 msgid "Go back to their profile"
 msgstr "Retourner à leur profil"
 
-#: member/templates/member/connect/mail.html:4
-#: member/templates/member/connect/mail_message.html:4
-msgid "Mail"
-msgstr "Mail"
+# #: member/templates/member/connect/mail.html:4
+# #: member/templates/member/connect/mail_message.html:4
+# msgid "Mail"
+# msgstr "Mail"
 
-#: member/templates/member/connect/mail.html:29
-msgid "Mailing lists"
-msgstr "Listes de diffusion"
+# #: member/templates/member/connect/mail.html:29
+# msgid "Mailing lists"
+# msgstr "Listes de diffusion"
 
-#: member/templates/member/connect/mail.html:47
-msgid "unsubscribe"
-msgstr "se désabonner"
+# #: member/templates/member/connect/mail.html:46
+# msgid "unsubscribe"
+# msgstr "se désabonner"
 
-#: member/templates/member/connect/mail.html:50
-msgid "subscribe"
-msgstr "s'abonner"
+# #: member/templates/member/connect/mail.html:49
+# msgid "subscribe"
+# msgstr "s'abonner"
 
-#: member/templates/member/connect/mail.html:57
-msgid "Recent Messages"
-msgstr "Messages récents"
+# #: member/templates/member/connect/mail.html:54
+# msgid "Recent Messages"
+# msgstr "Messages récents"
 
-#: member/templates/member/connect/mail.html:61
-msgid "Sent"
-msgstr "Envoyé"
+# #: member/templates/member/connect/mail.html:58
+# msgid "Sent"
+# msgstr "Envoyé"
 
 #: member/templates/member/connect/mail.html:62
 #: member/templates/member/organization/org_member.html:11
@@ -248,21 +248,21 @@ msgstr "Envoyé"
 msgid "Member"
 msgstr "Membre"
 
-#: member/templates/member/connect/mail.html:63
-msgid "Subject"
-msgstr "Sujet"
+# #: member/templates/member/connect/mail.html:63
+# msgid "Subject"
+# msgstr "Sujet"
 
-#: member/templates/member/connect/mail.html:85
-msgid "There are no mailing lists configured for this site."
-msgstr "Il n'y a pas de liste de diffusion configurée pour ce site."
+# #: member/templates/member/connect/mail.html:85
+# msgid "There are no mailing lists configured for this site."
+# msgstr "Il n'y a pas de liste de diffusion configurée pour ce site."
 
-#: member/templates/member/connect/mail_message.html:27
-msgid "Sent:"
-msgstr "Envoyé :"
+# #: member/templates/member/connect/mail_message.html:27
+# msgid "Sent:"
+# msgstr "Envoyé :"
 
-#: member/templates/member/connect/mail_message.html:28
-msgid "From:"
-msgstr "Depuis :"
+# #: member/templates/member/connect/mail_message.html:28
+# msgid "From:"
+# msgstr "Depuis :"
 
 #: member/templates/member/connect/notifications.html:4
 msgid "Notifications"
@@ -1567,176 +1567,176 @@ msgstr "Type invalide '%s'"
 msgid "Tags can't contain punctuation."
 msgstr "Un tag ne peut pas avoir de caractère de ponctuation."
 
-#: staff/templates/email/contact_request.txt:3
-#, python-format
-msgid ""
-"\n"
-"%(user.get_full_name)s wants to connect with you!  Did you know you can "
-"login to Nadine, find another member,\n"
-"and ask Nadine to connect the two of you?  %(user.first_name)s did and they "
-"chose you!  You can connect with\n"
-"them directly by emailing:  %(user.email)s\n"
-msgstr ""
-"\n"
-"%(user.get_full_name)s veut entrer en contact avec vous !  DAns Nadine, vous "
-"pouvez demander à entrer en contact avec un autre membre. "
-"%(user.first_name)s l'a fait et vous à choisi !  Vous pouvez le contacter "
-"directement par email : %(user.email)s\n"
+# #: staff/templates/email/contact_request.txt:3
+# #, python-format
+# msgid ""
+# "\n"
+# "%(user.get_full_name)s wants to connect with you!  Did you know you can "
+# "login to Nadine, find another member,\n"
+# "and ask Nadine to connect the two of you?  %(user.first_name)s did and they "
+# "chose you!  You can connect with\n"
+# "them directly by emailing:  %(user.email)s\n"
+# msgstr ""
+# "\n"
+# "%(user.get_full_name)s veut entrer en contact avec vous !  DAns Nadine, vous "
+# "pouvez demander à entrer en contact avec un autre membre. "
+# "%(user.first_name)s l'a fait et vous à choisi !  Vous pouvez le contacter "
+# "directement par email : %(user.email)s\n"
 
-#: staff/templates/email/contact_request.txt:9
-msgid ""
-"\n"
-"Their Profile:\n"
-msgstr ""
-"\n"
-"Leur profil :\n"
+# #: staff/templates/email/contact_request.txt:9
+# msgid ""
+# "\n"
+# "Their Profile:\n"
+# msgstr ""
+# "\n"
+# "Leur profil :\n"
 
-#: staff/templates/email/contact_request.txt:13
-msgid ""
-"\n"
-"Or to be notified the next time you are both in the space:\n"
-msgstr ""
-"\n"
-"Me notifier quand nous sommes ensemble dans l'espace :\n"
+# #: staff/templates/email/contact_request.txt:13
+# msgid ""
+# "\n"
+# "Or to be notified the next time you are both in the space:\n"
+# msgstr ""
+# "\n"
+# "Me notifier quand nous sommes ensemble dans l'espace :\n"
 
-#: staff/templates/email/contact_request.txt:18
-#, python-format
-msgid ""
-"\n"
-"Have fun!\n"
-"The %(site.name)s Team\n"
-msgstr ""
-"\n"
-"Cordialement,<br>\n"
-"\n"
-"L'équipe %(site.name)s\n"
+# #: staff/templates/email/contact_request.txt:18
+# #, python-format
+# msgid ""
+# "\n"
+# "Have fun!\n"
+# "The %(site.name)s Team\n"
+# msgstr ""
+# "\n"
+# "Cordialement,<br>\n"
+# "\n"
+# "L'équipe %(site.name)s\n"
 
-#: staff/templates/email/edit_profile.txt:2
-#, python-format
-msgid ""
-"\n"
-"Hi %(user.first_name)s,\n"
-"\n"
-"You have been a coming to %(site.name)s for %(user.profile.duration_str)s "
-"now!  In an effort to keep our data up to date we would like to encourage "
-"you to update your Nadine profile and emergency contact information. It's "
-"easy to edit. Go to the \"Member Login\" link on our website or use the one "
-"below.\n"
-msgstr ""
-"\n"
-"Bonjour %(user.first_name)s,\n"
-"\n"
-"Vous êtes venu chez %(site.name)s depuis %(user.profile.duration_str)s "
-"maintenant ! \n"
-"Pour conserver nos données à jour, nous souhaiterions que vous mettiez à "
-"jour votre profil dans Nadine et les information de contact en cas "
-"d'urgence. Allez dans Connexion Membres depuis le site web ou utlisez le "
-"lien ci-dessous.\n"
+# #: staff/templates/email/edit_profile.txt:2
+# #, python-format
+# msgid ""
+# "\n"
+# "Hi %(user.first_name)s,\n"
+# "\n"
+# "You have been a coming to %(site.name)s for %(user.profile.duration_str)s "
+# "now!  In an effort to keep our data up to date we would like to encourage "
+# "you to update your Nadine profile and emergency contact information. It's "
+# "easy to edit. Go to the \"Member Login\" link on our website or use the one "
+# "below.\n"
+# msgstr ""
+# "\n"
+# "Bonjour %(user.first_name)s,\n"
+# "\n"
+# "Vous êtes venu chez %(site.name)s depuis %(user.profile.duration_str)s "
+# "maintenant ! \n"
+# "Pour conserver nos données à jour, nous souhaiterions que vous mettiez à "
+# "jour votre profil dans Nadine et les information de contact en cas "
+# "d'urgence. Allez dans Connexion Membres depuis le site web ou utlisez le "
+# "lien ci-dessous.\n"
 
-#: staff/templates/email/edit_profile.txt:8
-msgid ""
-"\n"
-"If you have any questions, please call us at 206.323.6500, respond to this "
-"message, or stop by the front desk.\n"
-msgstr ""
-"\n"
-"Si vous avez des questions, appelez nous au {{ site.phone }}, répondez à ce "
-"message ou venez nous voir au bureau d'accueil.\n"
+# #: staff/templates/email/edit_profile.txt:8
+# msgid ""
+# "\n"
+# "If you have any questions, please call us at 206.323.6500, respond to this "
+# "message, or stop by the front desk.\n"
+# msgstr ""
+# "\n"
+# "Si vous avez des questions, appelez nous au {{ site.phone }}, répondez à ce "
+# "message ou venez nous voir au bureau d'accueil.\n"
 
-#: staff/templates/email/edit_profile.txt:12
-#: staff/templates/email/no_device.txt:14
-#: staff/templates/email/no_signin.txt:14
-#, python-format
-msgid ""
-"\n"
-"Thank you,\n"
-"The %(site.name)s Team\n"
-msgstr ""
-"\n"
-"Cordialement,<br>\n"
-"\n"
-"L'équipe %(site.name)s\n"
+# #: staff/templates/email/edit_profile.txt:12
+# #: staff/templates/email/no_device.txt:14
+# #: staff/templates/email/no_signin.txt:14
+# #, python-format
+# msgid ""
+# "\n"
+# "Thank you,\n"
+# "The %(site.name)s Team\n"
+# msgstr ""
+# "\n"
+# "Cordialement,<br>\n"
+# "\n"
+# "L'équipe %(site.name)s\n"
 
-#: staff/templates/email/exit_survey.txt:3
-msgid ""
-"\n"
-"Thanks for being a member at Office Nomads!  We'd love to get a little bit "
-"of feedback on your experience coworking with us.  Please check out our "
-"super-short exit survey here and tell us what you think!\n"
-msgstr ""
-"\n"
-"Merci d'être membre chez %(site.name)s ! Nous souhaiterions avoir un retour "
-"concernant votre expérience de coworking avec nous. Remplissez notre "
-"questionnaire super court et dites nous ce que vous pensez !\n"
+# #: staff/templates/email/exit_survey.txt:3
+# msgid ""
+# "\n"
+# "Thanks for being a member at Office Nomads!  We'd love to get a little bit "
+# "of feedback on your experience coworking with us.  Please check out our "
+# "super-short exit survey here and tell us what you think!\n"
+# msgstr ""
+# "\n"
+# "Merci d'être membre chez %(site.name)s ! Nous souhaiterions avoir un retour "
+# "concernant votre expérience de coworking avec nous. Remplissez notre "
+# "questionnaire super court et dites nous ce que vous pensez !\n"
 
-#: staff/templates/email/exit_survey.txt:9
-#, python-format
-msgid ""
-"\n"
-"Thanks,\n"
-"The %(site.name)s Team\n"
-msgstr ""
-"\n"
-"Cordialement,<br>\n"
-"\n"
-"L'équipe %(site.name)s\n"
+# #: staff/templates/email/exit_survey.txt:9
+# #, python-format
+# msgid ""
+# "\n"
+# "Thanks,\n"
+# "The %(site.name)s Team\n"
+# msgstr ""
+# "\n"
+# "Cordialement,<br>\n"
+# "\n"
+# "L'équipe %(site.name)s\n"
 
-#: staff/templates/email/first_day.txt:2
-#, python-format
-msgid ""
-"\n"
-"%(user.first_name)s,\n"
-"\n"
-"Thanks so much for coworking with us today - we hope you had fun trying out "
-"Office Nomads! It is always exciting for us to have a new face in the "
-"office. What were your first impressions of coworking with us?\n"
-"\n"
-"We also wanted to see if you had any questions about coworking or membership "
-"at Office Nomads. Is there anything that we can help you with? Please let us "
-"know by shooting us a reply to this email or give us a call at "
-"206.323.6500.  We're happy to help. \n"
-"\n"
-"Thanks again and hope to see you back at the space soon,\n"
-"The %(site.name)s Team\n"
-msgstr ""
-"\n"
-"%(user.first_name)s,\n"
-"\n"
-"Merci d'être venu au coworking avec nous aujourd'hui. Nous espérons que "
-"l'essai de %(site.name)s vous a plu ! C'est toujours un évènement pour nous "
-"d'avoir de nouveaux visages dans les bureaux. Quelles ont été vos premières "
-"impressions ?\n"
-"\n"
-"Nous souhaiterions savoir si vous avez des questions à propos du coworking "
-"ou des souscription. Peut-on faire quelque chose pour vous aider ? Laissez "
-"nous le savoir en répondant à ce mail.\n"
-"\n"
-"Merci encore et nous espérons vous voir prochainement dans l'espace.\n"
-"\n"
-"L'équipe %(site.name)s\n"
+# #: staff/templates/email/first_day.txt:2
+# #, python-format
+# msgid ""
+# "\n"
+# "%(user.first_name)s,\n"
+# "\n"
+# "Thanks so much for coworking with us today - we hope you had fun trying out "
+# "Office Nomads! It is always exciting for us to have a new face in the "
+# "office. What were your first impressions of coworking with us?\n"
+# "\n"
+# "We also wanted to see if you had any questions about coworking or membership "
+# "at Office Nomads. Is there anything that we can help you with? Please let us "
+# "know by shooting us a reply to this email or give us a call at "
+# "206.323.6500.  We're happy to help. \n"
+# "\n"
+# "Thanks again and hope to see you back at the space soon,\n"
+# "The %(site.name)s Team\n"
+# msgstr ""
+# "\n"
+# "%(user.first_name)s,\n"
+# "\n"
+# "Merci d'être venu au coworking avec nous aujourd'hui. Nous espérons que "
+# "l'essai de %(site.name)s vous a plu ! C'est toujours un évènement pour nous "
+# "d'avoir de nouveaux visages dans les bureaux. Quelles ont été vos premières "
+# "impressions ?\n"
+# "\n"
+# "Nous souhaiterions savoir si vous avez des questions à propos du coworking "
+# "ou des souscription. Peut-on faire quelque chose pour vous aider ? Laissez "
+# "nous le savoir en répondant à ce mail.\n"
+# "\n"
+# "Merci encore et nous espérons vous voir prochainement dans l'espace.\n"
+# "\n"
+# "L'équipe %(site.name)s\n"
 
-#: staff/templates/email/introduction.txt:2
-#, python-format
-msgid ""
-"\n"
-"%(user.first_name)s,\n"
-"\n"
-"Thanks for visiting %(site.name)s! We just created a new user for you in "
-"Nadine, the system we use to run our space. You can log in to see other "
-"members, update your profile, and view your activity and billing history. "
-"The first time you will need to reset your password. As always, if you have "
-"any trouble at all, swing by the front desk and we can help you out.\n"
-msgstr ""
-"\n"
-"%(user.first_name)s,\n"
-"\n"
-"Merci de visiter %(site.name)s ! Nous avons créé un nouvel utilisateur pour "
-"vous dans Nadine, le système que nous utilisons pour gérer notre espace. "
-"Vous pouvez vous connecter pour voir les autres membres, mettre à jour votre "
-"profil et voir votre activité et votre historique de facturation.\n"
-"\n"
-"La première fois, vous devrez réinitialiser votre mot de passe. Comme "
-"toujours, si vous avez le moindre problème, contactez-nous.\n"
+# #: staff/templates/email/introduction.txt:2
+# #, python-format
+# msgid ""
+# "\n"
+# "%(user.first_name)s,\n"
+# "\n"
+# "Thanks for visiting %(site.name)s! We just created a new user for you in "
+# "Nadine, the system we use to run our space. You can log in to see other "
+# "members, update your profile, and view your activity and billing history. "
+# "The first time you will need to reset your password. As always, if you have "
+# "any trouble at all, swing by the front desk and we can help you out.\n"
+# msgstr ""
+# "\n"
+# "%(user.first_name)s,\n"
+# "\n"
+# "Merci de visiter %(site.name)s ! Nous avons créé un nouvel utilisateur pour "
+# "vous dans Nadine, le système que nous utilisons pour gérer notre espace. "
+# "Vous pouvez vous connecter pour voir les autres membres, mettre à jour votre "
+# "profil et voir votre activité et votre historique de facturation.\n"
+# "\n"
+# "La première fois, vous devrez réinitialiser votre mot de passe. Comme "
+# "toujours, si vous avez le moindre problème, contactez-nous.\n"
 
 #: staff/templates/email/introduction.txt:10
 #: staff/templates/email/invalid_billing.txt:11
@@ -1744,153 +1744,154 @@ msgstr ""
 #: staff/templates/email/user_notification.txt:10
 #: templates/email/verification_email.txt:8
 #, python-format
-msgid ""
-"\n"
-"Thanks!\n"
-"The %(site.name)s Team\n"
-msgstr ""
-"\n"
-"Cordialement,<br>\n"
-"\n"
-"L'équipe %(site.name)s\n"
+# msgid ""
+# "\n"
+# "Thanks!\n"
+# "The %(site.name)s Team\n"
+# msgstr ""
+# "\n"
+# "Cordialement,<br>\n"
+# "\n"
+# "L'équipe %(site.name)s\n"
 
-#: staff/templates/email/invalid_billing.txt:2
-#, python-format
-msgid ""
-"\n"
-"Hi %(user.first_name)s!\n"
-"\n"
-"It looks like we need to update your billing information at %(site.name)s. "
-"When you get a chance, can you please update your information? You can enter "
-"your billing information right from your Nadine profile. Just go to the "
-"billing tab and create a new billing profile.  Once you have entered your "
-"information we'll do the rest.  You can also pay by automatic withdrawal "
-"from your checking account if you give us a voided check. Just let us know "
-"what you would like to do. Thanks!\n"
-msgstr ""
-"\n"
-"Bonjour %(user.first_name)s !\n"
-"\n"
-"Il semble que nous devons mettre à jour vos informations de facturation à "
-"%(site.name)s. Quand vous en aurez la possibilité, pouvez-vous mettre à jour "
-"les informations correspondantes ? Vous pouvez le faire dans le profil "
-"Nadine, allez dans l'onglet facturation et créez un nouveau profil de "
-"facturation.\n"
-"\n"
-"Quand vous aurez entré les nouvelles informations, nous prendrons en charge "
-"la suite.\n"
+# #: staff/templates/email/invalid_billing.txt:2
+# #, python-format
+# msgid ""
+# "\n"
+# "Hi %(user.first_name)s!\n"
+# "\n"
+# "It looks like we need to update your billing information at %(site.name)s. "
+# "When you get a chance, can you please update your information? You can enter "
+# "your billing information right from your Nadine profile. Just go to the "
+# "billing tab and create a new billing profile.  Once you have entered your "
+# "information we'll do the rest.  You can also pay by automatic withdrawal "
+# "from your checking account if you give us a voided check. Just let us know "
+# "what you would like to do. Thanks!\n"
+# msgstr ""
+# "\n"
+# "Bonjour %(user.first_name)s !\n"
+# "\n"
+# "Il semble que nous devons mettre à jour vos informations de facturation à "
+# "%(site.name)s. Quand vous en aurez la possibilité, pouvez-vous mettre à jour "
+# "les informations correspondantes ? Vous pouvez le faire dans le profil "
+# "Nadine, allez dans l'onglet facturation et créez un nouveau profil de "
+# "facturation.\n"
+# "\n"
+# "Quand vous aurez entré les nouvelles informations, nous prendrons en charge "
+# "la suite.\n"
 
-#: staff/templates/email/member_survey.txt:2
-#, python-format
-msgid ""
-"\n"
-"%(user.first_name)s,\n"
-"\n"
-"As you've been coworking with us for more than a couple months, we'd like to "
-"learn about your experience being a member at Office Nomads.  We're hoping "
-"to use some of this data to help enhance the coworking environment in "
-"Seattle as well as to make our business better. In addition, we share the "
-"data from time to time, to the benefit of other coworking spaces.  Your "
-"input and feedback makes a big difference!\n"
-"\n"
-"Please take a few minutes and complete this brief survey when you've got a "
-"moment: http://bit.ly/14K4z40. \n"
-"\n"
-"If you've got any questions or concerns, please e-mail staff@officenomads."
-"com. \n"
-"\n"
-"Many thanks for your time - we really appreciate it!\n"
-"\n"
-"The %(site.name)s Team\n"
-msgstr ""
+# #: staff/templates/email/member_survey.txt:2
+# #, python-format
+# msgid ""
+# "\n"
+# "%(user.first_name)s,\n"
+# "\n"
+# "As you've been coworking with us for more than a couple months, we'd like to "
+# "learn about your experience being a member at Office Nomads.  We're hoping "
+# "to use some of this data to help enhance the coworking environment in "
+# "Seattle as well as to make our business better. In addition, we share the "
+# "data from time to time, to the benefit of other coworking spaces.  Your "
+# "input and feedback makes a big difference!\n"
+# "\n"
+# "Please take a few minutes and complete this brief survey when you've got a "
+# "moment: http://bit.ly/14K4z40. \n"
+# "\n"
+# "If you've got any questions or concerns, please e-mail staff@officenomads."
+# "com. \n"
+# "\n"
+# "Many thanks for your time - we really appreciate it!\n"
+# "\n"
+#
+# "The %(site.name)s Team\n"
+# msgstr ""
 
-#: staff/templates/email/new_membership.txt:2
-#, python-format
-msgid ""
-"\n"
-"%(user.first_name)s,\n"
-"\n"
-"Congratulations on your new membership! Your billing date will be the "
-"%(membership.start_date|date:\"jS\")s of each month. If you have not already "
-"done so, please log in to your Nadine profile (link below) and make sure we "
-"have a valid billing profile. We will assume you would like to stay at your "
-"current membership level unless you tell us otherwise (by email or dropping "
-"by the front desk) before your billing date arrives. If you have signed up "
-"as a Resident member, we ask that you give us 30 days notice before changing "
-"your membership. If you have any questions or concerns, please don't "
-"hesitate to ask us. In the mean time, welcome! We're so happy to have you as "
-"a part of our Nomad family.\n"
-msgstr ""
+# #: staff/templates/email/new_membership.txt:2
+# #, python-format
+# msgid ""
+# "\n"
+# "%(user.first_name)s,\n"
+# "\n"
+# "Congratulations on your new membership! Your billing date will be the "
+# "%(membership.start_date|date:\"jS\")s of each month. If you have not already "
+# "done so, please log in to your Nadine profile (link below) and make sure we "
+# "have a valid billing profile. We will assume you would like to stay at your "
+# "current membership level unless you tell us otherwise (by email or dropping "
+# "by the front desk) before your billing date arrives. If you have signed up "
+# "as a Resident member, we ask that you give us 30 days notice before changing "
+# "your membership. If you have any questions or concerns, please don't "
+# "hesitate to ask us. In the mean time, welcome! We're so happy to have you as "
+# "a part of our Nomad family.\n"
+# msgstr ""
 
-#: staff/templates/email/no_device.txt:2
-#, python-format
-msgid ""
-"\n"
-"%(user.first_name)s,\n"
-"\n"
-"It looks like you currently do not have any devices registered in Nadine.\n"
-msgstr ""
-"\n"
-"%(user.first_name)s,\n"
-"\n"
-"Vous n'avez pas de périphérique enregistré dans Nadine.\n"
+# #: staff/templates/email/no_device.txt:2
+# #, python-format
+# msgid ""
+# "\n"
+# "%(user.first_name)s,\n"
+# "\n"
+# "It looks like you currently do not have any devices registered in Nadine.\n"
+# msgstr ""
+# "\n"
+# "%(user.first_name)s,\n"
+# "\n"
+# "Vous n'avez pas de périphérique enregistré dans Nadine.\n"
 
-#: staff/templates/email/no_device.txt:10
-#: staff/templates/email/no_signin.txt:10
-msgid ""
-"\n"
-"If you've got any questions or concerns, please e-mail staff@officenomads."
-"com.\n"
-msgstr ""
+# #: staff/templates/email/no_device.txt:10
+# #: staff/templates/email/no_signin.txt:10
+# msgid ""
+# "\n"
+# "If you've got any questions or concerns, please e-mail staff@officenomads."
+# "com.\n"
+# msgstr ""
 
-#: staff/templates/email/no_return.txt:2
-#, python-format
-msgid ""
-"\n"
-"%(user.first_name)s,\n"
-"\n"
-"Hey, where'd you go? :)\n"
-"\n"
-"It has been a while since you took your trial day here at Office Nomads, and "
-"we wanted to check in to see if we'll be seeing you back in the space "
-"sometime soon. We also wanted to be sure to reach out in case you had some "
-"lingering questions about coworking with us that we could help you out with. "
-"Feel free to drop us a line anytime and we'd be happy to talk with you.\n"
-"\n"
-"Otherwise, if we won't be seeing you again, we just wanted to thank you for "
-"coming by and wish you all the best. \n"
-msgstr ""
+# #: staff/templates/email/no_return.txt:2
+# #, python-format
+# msgid ""
+# "\n"
+# "%(user.first_name)s,\n"
+# "\n"
+# "Hey, where'd you go? :)\n"
+# "\n"
+# "It has been a while since you took your trial day here at Office Nomads, and "
+# "we wanted to check in to see if we'll be seeing you back in the space "
+# "sometime soon. We also wanted to be sure to reach out in case you had some "
+# "lingering questions about coworking with us that we could help you out with. "
+# "Feel free to drop us a line anytime and we'd be happy to talk with you.\n"
+# "\n"
+# "Otherwise, if we won't be seeing you again, we just wanted to thank you for "
+# "coming by and wish you all the best. \n"
+# msgstr ""
 
-#: staff/templates/email/no_return.txt:12
-#, python-format
-msgid ""
-"\n"
-"Take care,\n"
-"The %(site.name)s Team\n"
-msgstr ""
-"\n"
-"Cordialement,<br>\n"
-"\n"
-"L'équipe %(site.name)s\n"
+# #: staff/templates/email/no_return.txt:12
+# #, python-format
+# msgid ""
+# "\n"
+# "Take care,\n"
+# "The %(site.name)s Team\n"
+# msgstr ""
+# "\n"
+# "Cordialement,<br>\n"
+# "\n"
+# "L'équipe %(site.name)s\n"
 
-#: staff/templates/email/no_signin.txt:2
-#, python-format
-msgid ""
-"\n"
-"%(user.first_name)s,\n"
-"\n"
-"It looks like you forgot to sign in today!\n"
-msgstr ""
+# #: staff/templates/email/no_signin.txt:2
+# #, python-format
+# msgid ""
+# "\n"
+# "%(user.first_name)s,\n"
+# "\n"
+# "It looks like you forgot to sign in today!\n"
+# msgstr ""
 
-#: staff/templates/email/user_notification.txt:2
-#, python-format
-msgid ""
-"\n"
-"%(user.first_name)s,\n"
-"\n"
-"You asked to be notified when both you and %(target.get_full_name)s were in "
-"the space and that's right now!\n"
-msgstr ""
+# #: staff/templates/email/user_notification.txt:2
+# #, python-format
+# msgid ""
+# "\n"
+# "%(user.first_name)s,\n"
+# "\n"
+# "You asked to be notified when both you and %(target.get_full_name)s were in "
+# "the space and that's right now!\n"
+# msgstr ""
 
 #: tablet/templates/tablet/document_list.html:8
 #, python-format
@@ -2060,79 +2061,79 @@ msgstr "Historique"
 msgid "View on site"
 msgstr "Voir sur le site"
 
-#: templates/email/password_reset_email.txt:2
-msgid ""
-"\n"
-"Welcome to the Nadine!\n"
-"\n"
-"There are a few steps to creating a new password. First things first, head "
-"to the link below to create your new password:\n"
-msgstr ""
-"\n"
-"Bienvenue dans Nadine!\n"
-"\n"
-"Il y a plusieurs étapes pour créer votre mot de passe. Cliquez sur le lien "
-"ci-dessous pour créer votre nouveau mot de passe :\n"
+# #: templates/email/password_reset_email.txt:2
+# msgid ""
+# "\n"
+# "Welcome to the Nadine!\n"
+# "\n"
+# "There are a few steps to creating a new password. First things first, head "
+# "to the link below to create your new password:\n"
+# msgstr ""
+# "\n"
+# "Bienvenue dans Nadine!\n"
+# "\n"
+# "Il y a plusieurs étapes pour créer votre mot de passe. Cliquez sur le lien "
+# "ci-dessous pour créer votre nouveau mot de passe :\n"
 
-#: templates/email/password_reset_email.txt:10
-#, python-format
-msgid ""
-"\n"
-"After you have created your new password you'll be sent to the login page.\n"
-"\n"
-"Thanks! If you have any questions, please swing by the front desk and chat "
-"with us.\n"
-"\n"
-" - The %(site_name)s team\n"
-msgstr ""
-"\n"
-"Après avoir créé votre mot de passe, vous serez redirigé vers la page de "
-"connexion.\n"
-"\n"
-"Merci ! Si vous avec des question, demandez-nous !\n"
-"\n"
-"L'équipe %(site_name)s \n"
+# #: templates/email/password_reset_email.txt:10
+# #, python-format
+# msgid ""
+# "\n"
+# "After you have created your new password you'll be sent to the login page.\n"
+# "\n"
+# "Thanks! If you have any questions, please swing by the front desk and chat "
+# "with us.\n"
+# "\n"
+# " - The %(site_name)s team\n"
+# msgstr ""
+# "\n"
+# "Après avoir créé votre mot de passe, vous serez redirigé vers la page de "
+# "connexion.\n"
+# "\n"
+# "Merci ! Si vous avec des question, demandez-nous !\n"
+# "\n"
+# "L'équipe %(site_name)s \n"
 
-#: templates/email/verification_email.html:18
-msgid "Please verify your e-mail address."
-msgstr "Vérifiez votre adresse email."
+# #: templates/email/verification_email.html:18
+# msgid "Please verify your e-mail address."
+# msgstr "Vérifiez votre adresse email."
 
-#: templates/email/verification_email.html:20
-#: templates/email/verification_email.txt:4
-msgid "A new e-mail address has been associated with your account at"
-msgstr "Une nouvelle adresse email à été associée à votre compte à"
+# #: templates/email/verification_email.html:20
+# #: templates/email/verification_email.txt:4
+# msgid "A new e-mail address has been associated with your account at"
+# msgstr "Une nouvelle adresse email à été associée à votre compte à"
 
-#: templates/email/verification_email.html:20
-msgid "Please click the link below to verify your new address."
-msgstr "Cliquez le lien ci-dessous pour vérifier votre nouvelle adresse."
+# #: templates/email/verification_email.html:20
+# msgid "Please click the link below to verify your new address."
+# msgstr "Cliquez le lien ci-dessous pour vérifier votre nouvelle adresse."
 
-#: templates/email/verification_email.html:22
-msgid "Your Verification Key:"
-msgstr "Votre clef de vérification :"
+# #: templates/email/verification_email.html:22
+# msgid "Your Verification Key:"
+# msgstr "Votre clef de vérification :"
 
-#: templates/email/verification_email.html:25
-#, python-format
-msgid ""
-"\n"
-"Thanks!<br>\n"
-"The %(site.name)s Team\n"
-msgstr ""
-"\n"
-"Cordialement,<br>\n"
-"\n"
-"L'équipe %(site.name)s\n"
+# #: templates/email/verification_email.html:25
+# #, python-format
+# msgid ""
+# "\n"
+# "Thanks!<br>\n"
+# "The %(site.name)s Team\n"
+# msgstr ""
+# "\n"
+# "Cordialement,<br>\n"
+# "\n"
+# "L'équipe %(site.name)s\n"
 
-#: templates/email/verification_email.txt:2
-msgid "Please take a moment to verify your e-mail address."
-msgstr "Prenez un moment pour vérifier votre adresse email."
+# #: templates/email/verification_email.txt:2
+# msgid "Please take a moment to verify your e-mail address."
+# msgstr "Prenez un moment pour vérifier votre adresse email."
 
-#: templates/email/verification_email.txt:5
-msgid ""
-"Please copy and paste the link below into your browser's address box to "
-"verify your new address."
-msgstr ""
-"Copiez le lien ci-dessous dans votre navigateur pour vérifier votre nouvelle "
-"adresse."
+# #: templates/email/verification_email.txt:5
+# msgid ""
+# "Please copy and paste the link below into your browser's address box to "
+# "verify your new address."
+# msgstr ""
+# "Copiez le lien ci-dessous dans votre navigateur pour vérifier votre nouvelle "
+# "adresse."
 
 #: templates/email_verify.html:10
 msgid "Please verify your email address"

@@ -1,16 +1,14 @@
 {% load i18n %}{% autoescape off %}
-{% blocktrans %}
 {{ user.first_name }},
 
 As you've been coworking with us for more than a couple months, we'd like to learn about your experience being a member at Office Nomads.  We're hoping to use some of this data to help enhance the coworking environment in Seattle as well as to make our business better. In addition, we share the data from time to time, to the benefit of other coworking spaces.  Your input and feedback makes a big difference!
 
-Please take a few minutes and complete this brief survey when you've got a moment: http://bit.ly/14K4z40. 
+Please take a few minutes and complete this brief survey when you've got a moment: http://bit.ly/14K4z40.
 
-If you've got any questions or concerns, please e-mail staff@officenomads.com. 
+If you've got any questions or concerns, please e-mail staff@officenomads.com.
 
 Many thanks for your time - we really appreciate it!
 
 The {{ site.name }} Team
-{% endblocktrans %}
 
 {% endautoescape %}

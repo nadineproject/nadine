@@ -1,15 +1,11 @@
 {% load i18n %}{% autoescape off %}
-{% blocktrans %}
 {{ user.first_name }},
 
 You asked to be notified when both you and {{ target.get_full_name }} were in the space and that's right now!
-{% endblocktrans %}
 
 http://{{ site.domain }}{% url 'member:profile:view' target.username %}
 
-{% blocktrans %}
 Thanks!
 The {{ site.name }} Team
-{% endblocktrans %}
 
 {% endautoescape %}
