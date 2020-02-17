@@ -367,6 +367,8 @@ class BillingTestCase(TestCase):
         self.assertTrue(len(user.bills.filter(period_start=one_month_from_now)) == 0)
 
     def test_backdated_new_membership_with_end_date(self):
+        # NOTE:  This test fails in the month of February!!!
+        
         # Membership start date of two weeks ago and ending in two weeks
         start = two_weeks_ago
         end = (start + relativedelta(months=1)) - timedelta(days=1)
