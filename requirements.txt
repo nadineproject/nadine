@@ -17,8 +17,7 @@ cssselect2==0.2.2
 defusedxml==0.6.0
 django-classy-tags==1.0.0
 django-crontab==0.7.1
-django-debug-toolbar==2.1
-django-localflavor==2.2
+django-localflavor==3.0
 django-localflavor-us==1.1
 django-taggit==1.2.0
 django-taggit-templatetags2==1.6.1
@@ -33,7 +32,6 @@ Markdown==3.2.1
 MarkupSafe==1.1.1
 oauthlib==3.1.0
 packaging==20.1
-pip-review==1.0
 ply==3.11
 pyasn1==0.4.8
 pycodestyle==2.5.0
