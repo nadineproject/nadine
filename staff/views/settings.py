@@ -41,7 +41,7 @@ def index(request):
     ip = network.get_addr(request)
     context = {
         'settings': settings,
-        'site_url': settings.SITE_URL(),
+        'site_url': settings.SITE_URL,
         'ip': ip,
         'request': request
     }

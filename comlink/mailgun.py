@@ -306,7 +306,7 @@ def send_template(template, to, subject, context=None):
         context = {}
     context["to"] = to
     context["site_name"] = settings.SITE_NAME
-    context["site_url"] = "%s://%s" % (settings.SITE_PROTO, settings.SITE_DOMAIN)
+    context["site_url"] = settings.SITE_URL
 
     # Render our body text
     body_text = render_to_string(template, context=context)

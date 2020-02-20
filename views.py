@@ -69,7 +69,7 @@ def password_reset(request, is_admin_site=False, template_name='registration/pas
     context = {
         'form': form,
         'site_name': settings.SITE_NAME,
-        'site_url': settings.SITE_URL(),
+        'site_url': settings.SITE_URL,
     }
     return render(request, template_name, context)
 

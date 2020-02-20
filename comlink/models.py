@@ -32,7 +32,7 @@ class MailingList(models.Model):
     @property
     def unsubscribe_url(self):
         # TODO - Make this a link to unsubscribe from this mailing list
-        return settings.SITE_PROTO + "://" + settings.SITE_DOMAIN
+        return settings.SITE_URL
 
     @property
     def subscriber_addresses(self):
@@ -170,7 +170,7 @@ class EmailMessage(models.Model):
 
     @property
     def public_url(self):
-        return settings.SITE_PROTO + "://" + settings.SITE_DOMAIN + reverse('comlink:mail', kwargs={'id': self.id})
+        return settings.SITE_URL + reverse('comlink:mail', kwargs={'id': self.id})
 
     def get_user(self):
         if not self.user:

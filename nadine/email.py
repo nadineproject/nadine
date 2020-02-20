@@ -27,7 +27,7 @@ def default_context():
     return {
         'today': localtime(now()),
         'site_name': settings.SITE_NAME,
-        'site_url': settings.SITE_URL(),
+        'site_url': settings.SITE_URL,
     }
 
 def send_manual(user, message):
@@ -77,7 +77,7 @@ def send_verification(emailObj):
     verif_key = emailObj.get_verif_key()
     context_dict = {
         'site_name': settings.SITE_NAME,
-        'site_url': settings.SITE_URL(),
+        'site_url': settings.SITE_URL,
         'user': emailObj.user,
         'verif_key': verif_key,
     }
@@ -349,7 +349,7 @@ def render_templates(context, email_key):
     # inject some specific context
     context['today'] = localtime(now())
     context['site_name'] = settings.SITE_NAME
-    context['site_url'] = settings.SITE_URL()
+    context['site_url'] = settings.SITE_URL
 
     try:
         text_template = get_template("email/%s.txt" % email_key)

@@ -80,14 +80,10 @@ class Command(BaseCommand):
 
         # Site Information
         self.prompt_for_value("Site Name", "SITE_NAME")
-        current_host = socket.gethostname().lower()
-        self.prompt_for_value("Site Domain", "SITE_DOMAIN", default=current_host)
-        protocol = "http"
-        print("Use SSL? (y, N)")
-        ssl = input(PROMPT).strip().lower()
-        if ssl == "y":
-            protocol = protocol + "s"
-        self.local_settings.set('SITE_PROTO', protocol)
+        self.prompt_for_value("Site Url", "SITE_URL")
+        url = self.local_settings.get_value("SITE_URL")
+        if url.endswith("/"):
+            self.local_settings.set(SITE_URL, url[:-1])
 
         # Site Administrator
         print("Full Name of Administrator")
@@ -147,7 +143,7 @@ class Command(BaseCommand):
     def setup_email(self):
         print()
         print("### Email Setup ###")
-        domain = self.local_settings.get_value("SITE_DOMAIN")
+        domain = self.local_settings.get_value("SITE_URL").split('://')[1].split(':')[0].split('/')[0]
         self.prompt_for_value("Email Host", "EMAIL_HOST")
         self.prompt_for_value("Email Host User", "EMAIL_HOST_USER", default="postmaster@" + domain)
         self.prompt_for_value("Email Host Password", "EMAIL_HOST_PASSWORD")

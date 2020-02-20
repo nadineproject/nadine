@@ -116,7 +116,7 @@ def usaepay_user(request, username):
         'user': user,
         'history': history,
         'site_name':settings.SITE_NAME,
-        'site_url':settings.SITE_URL(),
+        'site_url':settings.SITE_URL,
     }
     return render(request, 'staff/billing/usaepay.html', context)
 
