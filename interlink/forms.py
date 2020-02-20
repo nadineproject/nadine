@@ -1,5 +1,4 @@
 from django import forms
-from django.contrib.sites.models import Site
 
 from interlink.models import MailingList, OutgoingMail
 
@@ -13,7 +12,7 @@ class MailingListSubscriptionForm(forms.Form):
         if mailing_list.moderator_controlled:
             return False
 
-        body = 'So says https://%s ' % Site.objects.get_current().domain
+        body = 'So says Nadine!'
         if self.cleaned_data['subscribe'] == 'true' and (user.profile.is_active() or user.is_staff):
             mailing_list.subscribe(user)
             subject = '%s subscribed to %s' % (user.get_full_name(), mailing_list.name)
