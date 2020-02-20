@@ -6,7 +6,6 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.sites.models import Site
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404, HttpRequest
 from django.shortcuts import render, get_object_or_404
@@ -161,8 +160,9 @@ def bill_receipt(request, bill_id):
     pdf_context = {
         'bill': bill,
         'today': localtime(now()),
-        'site': Site.objects.get_current(),
-        # 'bill_url': "http://" + Site.objects.get_current().domain + bill.get_absolute_url()
+        'site_name': settings.SITE_NAME,
+        'site_url': settings.SITE_URL(),
+        'bill_url': settings.SITE_URL() + bill.get_absolute_url()
     }
     receipt_html = htmltext.render(pdf_context)
     pdf_file = HTML(string=receipt_html, base_url=request.build_absolute_uri()).write_pdf()

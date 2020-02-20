@@ -3,12 +3,12 @@ Hello {{ user.first_name }}!
 
 Congratulations on being a key holding member at Office Nomads! There are some
 great perks to having a key to the space, and with those perks come some
-important responsibilities. We will run throgh a quick training with you
+important responsibilities. We will run through a quick training with you
 regarding how your keycard works, but wanted to get a few other points over to
 you via email.
 
 If you prefer to read this information online you can always find it in the
-Nadine help pages:  http://{{ site.domain }}{% url 'member:help_topic' 'keys' %}
+Nadine help pages:  {{ site_url }}{% url 'member:help_topic' 'keys' %}
 
 IMPORTANT POINTS:
 
@@ -51,6 +51,6 @@ If you have any questions at all, please don't hesitate to contact any of us.
 Otherwise, feel free to come on by the front desk and chat anytime!
 
 Thanks!
-The {{ site.name }} Team
+The {{ site_name }} Team
 
 {% endautoescape %}

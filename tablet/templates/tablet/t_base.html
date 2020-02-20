@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load settings_value %}
 {% load static %}
 
 <!DOCTYPE html>
@@ -6,7 +7,7 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>{{ site.name }} | {% blocktrans %}Front Desk{% endblocktrans %}</title>
+	<title>{% settings_value 'SITE_NAME' %} | {% blocktrans %}Front Desk{% endblocktrans %}</title>
 	<link rel="apple-touch-icon" href="{% static 'images/apple-touch-icon-57x57.png' %}"/>
 	<link rel="apple-touch-icon" sizes="57x57" href="{% static 'images/apple-touch-icon-57x57.png' %}"/>
 	<link rel="apple-touch-icon" sizes="76x76" href="{% static 'images/apple-touch-icon-76x76.png' %}"/>

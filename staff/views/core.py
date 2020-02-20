@@ -12,7 +12,6 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
-from django.contrib.sites.models import Site
 from django.contrib import messages
 from django.conf import settings
 

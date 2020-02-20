@@ -23,7 +23,6 @@ from django_localflavor_us.models import USStateField, PhoneNumberField
 from django.utils.timezone import localtime, now
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
-from django.contrib.sites.models import Site
 
 logger = logging.getLogger(__name__)
 

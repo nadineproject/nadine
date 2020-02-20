@@ -6,6 +6,6 @@ Thanks for being a member at Office Nomads!  We'd love to get a little bit of fe
 http://bit.ly/ULEm3t
 
 Thanks,
-The {{ site.name }} Team
+The {{ site_name }} Team
 
 {% endautoescape %}

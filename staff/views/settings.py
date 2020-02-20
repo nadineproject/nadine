@@ -11,7 +11,6 @@ from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from django.contrib.sites.models import Site
 from django.forms.formsets import formset_factory
 from django.contrib import messages
 from django.conf import settings
@@ -40,7 +39,12 @@ def times_timeszones(date):
 @staff_member_required
 def index(request):
     ip = network.get_addr(request)
-    context = {'settings': settings, 'ip': ip, 'request': request}
+    context = {
+        'settings': settings,
+        'site_url': settings.SITE_URL(),
+        'ip': ip,
+        'request': request
+    }
     return render(request, 'staff/settings/index.html', context)
 
 

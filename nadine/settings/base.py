@@ -48,7 +48,6 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                'nadine.context_processors.site',
                 'nadine.context_processors.nav_context',
                 'nadine.context_processors.tablet_context',
                 'nadine.context_processors.allow_online_registration',
@@ -95,7 +94,6 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.humanize',
     'django.contrib.staticfiles',
@@ -118,6 +116,7 @@ INSTALLED_APPS = [
     # 'debug_toolbar',
 ]
 
+
 ################################################################################
 # Site Settings
 ################################################################################
@@ -125,7 +124,10 @@ INSTALLED_APPS = [
 SITE_NAME = "Nadine"
 SITE_DOMAIN = "localhost"
 SITE_PROTO = "http"
-SITE_ID = 1
+
+def SITE_URL():
+    return SITE_PROTO + "://" + SITE_DOMAIN
+
 
 # Local time zone for this installation. Choices can be found here:
 # http://www.postgresql.org/docs/8.1/static/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE

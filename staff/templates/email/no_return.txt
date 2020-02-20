@@ -8,5 +8,5 @@ It has been a while since you took your trial day here at Office Nomads, and we 
 Otherwise, if we won't be seeing you again, we just wanted to thank you for coming by and wish you all the best.
 
 Take care,
-The {{ site.name }} Team
+The {{ site_name }} Team
 {% endautoescape %}

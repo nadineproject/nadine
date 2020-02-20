@@ -11,17 +11,17 @@
       "url": "{{ verify_link }}"
     }
   },
-  "description": "Verify your email address for {{ site.name }}."
+  "description": "Verify your email address for {{ site_name }}."
 }
 </script>
 
 <p>Please verify your e-mail address.</p>
 
-<p>A new e-mail address has been associated with your account at" %} {{ site.name }}. {% trans "Please click the link below to verify your new address.</p>
+<p>{% trans "A new e-mail address has been associated with your account at" %} {{ site_name }}. {% trans "Please click the link below to verify your new address." %}</p>
 
 <h3>Your Verification Key: <a href="{{ verify_link }}">{{ verif_key }}</a></h3>
 
 <p>
 Thanks!<br>
-The {{ site.name }} Team
+The {{ site_name }} Team
 </p>

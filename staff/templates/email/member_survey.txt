@@ -9,6 +9,6 @@ If you've got any questions or concerns, please e-mail staff@officenomads.com.
 
 Many thanks for your time - we really appreciate it!
 
-The {{ site.name }} Team
+The {{ site_name }} Team
 
 {% endautoescape %}

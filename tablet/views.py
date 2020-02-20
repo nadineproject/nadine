@@ -13,7 +13,6 @@ from django.contrib.auth.models import User
 from django.urls import reverse, resolve
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.sites.models import Site
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.utils.timezone import localtime, now

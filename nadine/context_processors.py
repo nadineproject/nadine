@@ -1,11 +1,5 @@
 from django.conf import settings
-from django.contrib.sites.models import Site
 from nadine.forms import MemberSearchForm
-
-
-def site(request):
-    site = Site.objects.get_current()
-    return {'site': site}
 
 
 def nav_context(request):

@@ -6,6 +6,6 @@ Thanks so much for coworking with us today - we hope you had fun trying out Offi
 We also wanted to see if you had any questions about coworking or membership at Office Nomads. Is there anything that we can help you with? Please let us know by shooting us a reply to this email or give us a call at 206.323.6500.  We're happy to help.
 
 Thanks again and hope to see you back at the space soon,
-The {{ site.name }} Team
+The {{ site_name }} Team
 
 {% endautoescape %}

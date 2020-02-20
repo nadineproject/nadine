@@ -1,10 +1,10 @@
 {% load i18n %}
 Please take a moment to verify your e-mail address.
 
-A new e-mail address has been associated with your account at {{ site.name }}.
-Please copy and paste the link below into your browser's address box to verify your new address.
+{% trans "A new e-mail address has been associated with your account at" %} {{ site_name }}.
+{% trans "Please copy and paste the link below into your browser's address box to verify your new address." %}
 
 {{ verify_link }}
 
 Thanks!
-The {{ site.name }} Team
+The {{ site_name }} Team
