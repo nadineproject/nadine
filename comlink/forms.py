@@ -13,7 +13,6 @@ class MailingListSubscriptionForm(forms.Form):
 
     def save(self, user):
         mailing_list = MailingList.objects.get(pk=self.cleaned_data['mailing_list_id'])
-        #body = 'So says https://%s ' % Site.objects.get_current().domain
         subject = "Nadine Subscribe/Unsubscribe Form"
         if self.cleaned_data['subscribe'] == 'true' and (user.profile.is_active() or user.is_staff):
             mailing_list.subscribe(user)
