@@ -1,15 +1,8 @@
 {% extends "admin/base.html" %}
+{% load settings_value %}
 
-{% block title %}{{ title }} | {{ site.name }} administration{% endblock %}
-
-{% block extrastyle %}
-<link rel="stylesheet" type="text/css" href="{{STATIC_URL }}admin/css/base.css" />
-<style type="text/css">
-#header { background-color: #FFF; color: rgb(102, 102, 102); }
-#header, #header h1, #header a:link, #header a:visited { color: rgb(102, 102, 102); font-weight: bold; }
-</style>
-{% endblock %}
+{% block title %}{{ title }} | {% settings_value "SITE_NAME" %} Admin{% endblock %}
 
 {% block branding %}
-<h1 id="site-name"><a href="/">Site</a> › {{site.name}} administration</h1>
+<h1 id="site-name">{% settings_value "SITE_NAME" %} Admin</h1>
 {% endblock %}

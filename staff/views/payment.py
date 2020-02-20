@@ -112,7 +112,12 @@ def usaepay_user(request, username):
     except Exception as e:
         messages.add_message(request, messages.ERROR, e)
 
-    context = {'user': user, 'history': history, 'settings':settings }
+    context = {
+        'user': user,
+        'history': history,
+        'site_name':settings.SITE_NAME,
+        'site_url':settings.SITE_URL(),
+    }
     return render(request, 'staff/billing/usaepay.html', context)
 
 

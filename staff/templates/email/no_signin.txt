@@ -3,11 +3,11 @@
 
 It looks like you forgot to sign in today!
 
-https://{{ site.domain }}{% url 'member:profile:redirect' %}
+{{ site_url }}{% url 'member:profile:redirect' %}
 
 If you've got any questions or concerns, please e-mail staff@officenomads.com.
 
 Thank you,
-The {{ site.name }} Team
+The {{ site_name }} Team
 
 {% endautoescape %}

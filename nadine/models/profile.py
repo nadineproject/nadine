@@ -22,7 +22,6 @@ from django.utils.encoding import smart_str
 from django_localflavor_us.models import USStateField, PhoneNumberField
 from django.utils.timezone import localtime, now
 from django.urls import reverse
-from django.contrib.sites.models import Site
 
 from taggit.managers import TaggableManager
 from taggit.models import TaggedItemBase
@@ -699,10 +698,9 @@ class EmailAddress(models.Model):
     def get_verify_link(self):
         verify_link = settings.EMAIL_VERIFICATION_URL
         if not verify_link:
-            site = Site.objects.get_current()
             verif_key = self.get_verif_key()
             uri = reverse('email_verify', kwargs={'email_pk': self.id}) + "?verif_key=" + verif_key
-            verify_link = "https://" + site.domain + uri
+            verify_link = settings.SITE_URL() + uri
         return verify_link
 
     def get_send_verif_link(self):

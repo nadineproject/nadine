@@ -27,7 +27,6 @@ from django_localflavor_us.models import USStateField, PhoneNumberField
 from django.utils.timezone import localtime, now
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
-from django.contrib.sites.models import Site
 
 from nadine.models.resource import Resource
 from nadine.models.organization import Organization

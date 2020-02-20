@@ -12,7 +12,6 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import auth, messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.contrib.sites.models import Site
 from django.utils.html import strip_tags
 import django.contrib.contenttypes.models as content_type_models
 from django.template import RequestContext
@@ -30,6 +29,7 @@ from nadine.models.profile import EmailAddress
 from nadine import email
 
 logger = logging.getLogger(__name__)
+
 
 @login_required
 def index(request):
@@ -58,8 +58,6 @@ def password_reset(request, is_admin_site=False, template_name='registration/pas
                     opts['domain_override'] = request.META['HTTP_HOST']
                 else:
                     opts['email_template_name'] = email_template_name
-                    if not Site._meta.installed:
-                        opts['domain_override'] = RequestSite(request).domain
                 form.save(**opts)
                 return HttpResponseRedirect(post_reset_redirect)
         else:
@@ -68,7 +66,12 @@ def password_reset(request, is_admin_site=False, template_name='registration/pas
             return render(request, template_name, {'form': password_reset_form()})
     else:
         form = password_reset_form()
-    return render(request, template_name, {'form': form})
+    context = {
+        'form': form,
+        'site_name': settings.SITE_NAME,
+        'site_url': settings.SITE_URL(),
+    }
+    return render(request, template_name, context)
 
 
 @login_required

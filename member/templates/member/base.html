@@ -9,8 +9,8 @@
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="DC.title" content="{{ site.name }}" />
-  <title>{% block title %}{% block sub-title %}{% endblock %}{{ site.name }}{% endblock %}</title>
+  <meta name="DC.title" content="{% settings_value 'SITE_NAME' %}" />
+  <title>{% block title %}{% block sub-title %}{% endblock %}{% settings_value 'SITE_NAME' %}{% endblock %}</title>
   <link rel="shortcut icon" href="{%  static 'img/favicon.ico' %}">
   <link rel="stylesheet" href="{% static 'css/jquery-ui.min.css' %}"  />
   <link rel="stylesheet" href="{% static 'css/jquery-custom.css' %}">

@@ -1,4 +1,5 @@
 {% extends "staff/billing/base.html" %}
+{% load settings_value %}
 {% load static %}
 
 <!-- TODO finish review of this page for CSS redesign -->
@@ -242,8 +243,8 @@
   <form name="ccform" action="{{ settings.USA_EPAY_GATE }}" method="POST"
   onSubmit="return validateForm()">
 
-    <input type="hidden" name="UMkey" value="{{ settings.USA_EPAY_FORM_KEY }}">
-    <input type="hidden" name="UMredir" value="http://{{ site.domain }}{% url 'staff:billing:user_payment' user.username %}">
+    <input type="hidden" name="UMkey" value="{% settings_value 'USA_EPAY_FORM_KEY' %}">
+    <input type="hidden" name="UMredir" value="{{ site_url }}{% url 'staff:billing:user_payment' user.username %}">
     <input type="hidden" name="UMdescription" value="Office Nomads Billing Authorization">
     <input type="hidden" name="UMcustid" value="{{ user.username }}">
     <input type="hidden" name="UMcommand" value="AuthOnly">
