@@ -29,7 +29,7 @@ User.helper.by_email(email)
 The URLs used for unsubscribing and moderating are also tied to the Nadine application.
 
 ### Important settings
-The email footer links rely on *settings.SITE_PROTO* and *settings.SITE_DOMAIN* to be set.
+The email footer links rely on *settings.SITE_NAME* and *settings.SITE_URL* to be set.
 
 Mailgun functionality relies on *settings.MAILGUN_DOMAIN* and *settings.MAILGUN_API_KEY* to be set.  
 *settings.MAILGUN_VALIDATION_KEY* is optional if you want to use the v3 validation logic.

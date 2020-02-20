@@ -121,11 +121,7 @@ INSTALLED_APPS = [
 ################################################################################
 
 SITE_NAME = "Nadine"
-SITE_DOMAIN = "localhost"
-SITE_PROTO = "http"
-
-def SITE_URL():
-    return SITE_PROTO + "://" + SITE_DOMAIN
+SITE_URL = "http://nadine.example.com"
 
 
 # Local time zone for this installation. Choices can be found here:

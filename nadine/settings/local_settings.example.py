@@ -25,8 +25,7 @@ DATABASES['default'] = {
 
 # Site Information
 SITE_NAME = "Nadine"
-SITE_DOMAIN = "127.0.0.1:8080"
-SITE_PROTO = "http"
+SITE_URL = "http://127.0.0.1:8080"
 COUNTRY = "US"
 TIME_ZONE = 'UTC'
 

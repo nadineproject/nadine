@@ -700,7 +700,7 @@ class EmailAddress(models.Model):
         if not verify_link:
             verif_key = self.get_verif_key()
             uri = reverse('email_verify', kwargs={'email_pk': self.id}) + "?verif_key=" + verif_key
-            verify_link = settings.SITE_URL() + uri
+            verify_link = settings.SITE_URL + uri
         return verify_link
 
     def get_send_verif_link(self):
