@@ -1,0 +1,15 @@
+{% extends "staff/mailing_lists/base.html" %}
+
+{% block sub-title %}Inspect {{ incoming_mail.clean_subject }}{% endblock %}
+
+{% block content%}
+
+<h4>{{ message.from_address }}: {{ message.subject }}</h4>
+
+{% include "staff/mailing_lists/message_controls.frag" %}
+
+<pre>
+	{{ message.body_plain }}
+</pre>
+
+{% endblock %}

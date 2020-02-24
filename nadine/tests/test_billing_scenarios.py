@@ -367,6 +367,8 @@ class BillingTestCase(TestCase):
         self.assertTrue(len(user.bills.filter(period_start=one_month_from_now)) == 0)
 
     def test_backdated_new_membership_with_end_date(self):
+        # NOTE:  This test fails in the month of February!!!
+        
         # Membership start date of two weeks ago and ending in two weeks
         start = two_weeks_ago
         end = (start + relativedelta(months=1)) - timedelta(days=1)
@@ -969,4 +971,4 @@ class BillingTestCase(TestCase):
     #     self.assertEqual(1, user_bill.line_items.all().count())
 
 
-# Copyright 2019 Office Nomads LLC (https://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2020 Office Nomads LLC (https://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

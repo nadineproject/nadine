@@ -9,8 +9,9 @@ def forward(apps, schema_editor):
     # UserBill = apps.get_model("nadine", "UserBill")
     # for bill in UserBill.objects.all():
     #     bill.update_cached_totals()
-    print()
-    print("    NOTE: After the migration run './manage.py migrate_21'")
+    # print()
+    # print("    NOTE: After the migration run './manage.py migrate_21'")
+    pass
 
 
 class Migration(migrations.Migration):

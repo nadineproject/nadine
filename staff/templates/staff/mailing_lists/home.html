@@ -1,0 +1,19 @@
+{% extends "staff/mailing_lists/base.html" %}
+
+{% block sub-title %}Mailing Lists{% endblock %}
+
+{% block content %}
+
+<h4>Mailing Lists</h4>
+
+<ul>
+{% for list in lists %}
+	<li>
+		<strong>{{ list.name }}</strong>:
+		<a href="{% url 'staff:mailing_lists:messages' list.id %}">messages</a> |
+		<a href="{% url 'staff:mailing_lists:subscribers' list.id %}">subscribers</a>
+	</li>
+{% endfor %}
+</ul>
+
+{% endblock %}

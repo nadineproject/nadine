@@ -23,8 +23,8 @@
         <img src="{% static 'img/logo.png' %}" style='width:150px; height:150px;'/>
       </td>
       <td style="width: 50%; text-align: left;">
-        <h1>{{ site.name }}</h1>
-        <!-- Add functionality for site address and phone number -->
+        <h1>{{ site_name }}</h1>
+        <!-- Add fukctionality for site address and phone number -->
         <strong style="font-size:110%;">RECEIPT -
           {% if bill.is_paid %}
           <span style='color: green;'> PAID</span>
@@ -50,7 +50,7 @@
             </tr>
             <tr>
               <td style='font-size: 90%;' width="20px"><strong>Location:</strong></td>
-              <td style='font-size: 90%;' width="160px"> {{ site.name }}</td>
+              <td style='font-size: 90%;' width="160px"> {{ site_name }}</td>
             </tr>
             <tr>
               <td style='font-size: 90%;' width="20px"><strong>Period:</strong></td>
@@ -110,7 +110,7 @@
     {% endif %}
     <p style="margin: 1em 0 0 0;">
       Thank you!<br/>
-      The {{ site.name }} Team<br/>
+      The {{ site_name }} Team<br/>
     </p>
     <footer style='position:fixed; bottom: 0; width:100%; text-align: center;'>
       <!-- This is for when more information about site is available -->

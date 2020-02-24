@@ -8,6 +8,7 @@ from datetime import datetime
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand, CommandError
+from django.core.management.utils import get_random_secret_key
 
 from pytz import country_names, country_timezones, common_timezones
 
@@ -74,20 +75,15 @@ class Command(BaseCommand):
         secret_key = self.local_settings.get("SECRET_KEY")
         if not secret_key or len(secret_key) < 32:
             print("Generating random SECRET_KEY")
-            secret_key = ''.join([random.SystemRandom().choice("{}{}".format(string.ascii_letters, string.digits)) for i in range(63)])
-            self.local_settings.set('SECRET_KEY', secret_key, quiet=True)
+            self.local_settings.set('SECRET_KEY', get_random_secret_key(), quiet=True)
             print()
 
         # Site Information
         self.prompt_for_value("Site Name", "SITE_NAME")
-        current_host = socket.gethostname().lower()
-        self.prompt_for_value("Site Domain", "SITE_DOMAIN", default=current_host)
-        protocol = "http"
-        print("Use SSL? (y, N)")
-        ssl = input(PROMPT).strip().lower()
-        if ssl == "y":
-            protocol = protocol + "s"
-        self.local_settings.set('SITE_PROTO', protocol)
+        self.prompt_for_value("Site Url", "SITE_URL")
+        url = self.local_settings.get_value("SITE_URL")
+        if url.endswith("/"):
+            self.local_settings.set(SITE_URL, url[:-1])
 
         # Site Administrator
         print("Full Name of Administrator")
@@ -147,7 +143,7 @@ class Command(BaseCommand):
     def setup_email(self):
         print()
         print("### Email Setup ###")
-        domain = self.local_settings.get_value("SITE_DOMAIN")
+        domain = self.local_settings.get_value("SITE_URL").split('://')[1].split(':')[0].split('/')[0]
         self.prompt_for_value("Email Host", "EMAIL_HOST")
         self.prompt_for_value("Email Host User", "EMAIL_HOST_USER", default="postmaster@" + domain)
         self.prompt_for_value("Email Host Password", "EMAIL_HOST_PASSWORD")
@@ -222,4 +218,4 @@ class LocalSettings():
             f.writelines(self.settings)
 
 
-# Copyright 2019 Office Nomads LLC (https://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2020 Office Nomads LLC (https://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

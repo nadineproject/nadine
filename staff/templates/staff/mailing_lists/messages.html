@@ -1,0 +1,45 @@
+{% extends "staff/mailing_lists/base.html" %}
+
+{% block sub-title %}Messages | {{ mailing_list.name }}{% endblock %}
+
+{% block style %}
+  .incoming-table td, .incoming-table th {
+    text-align: left;
+  }
+
+  .incoming-table td:first-child, .incoming-table th:first-child {
+    width: 15em;
+  }
+
+  .last-attempt {
+    color: #F44;
+  }
+{% endblock %}
+
+{% block content%}
+<h4>{{ mailing_list.name }} Messages</h4>
+
+<table class='responsive-table incoming-table'>
+  <thead>
+    <tr>
+      <th>Received</th>
+      <th>From</th>
+      <th>Subject</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for msg in messages %}
+      <tr class="{% cycle 'row-even' 'row-odd' %}">
+        <td>{{ msg.received }}</td>
+        {% if msg.get_user %}
+          <td><a href="{% url 'staff:members:detail' msg.user.username %}">{{ msg.user.get_full_name }}</a></td>
+        {% else %}
+          <td>{{ msg.from_str }}</td>
+        {% endif %}
+        <td><a target="_self" href="{% url 'member:connect:view_mail' msg.id %}">{{ msg.clean_subject }}</a></td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "staff/mailing_lists/base.html" %}
+
+{% block sub-title %}Mailing Lists | Unsubscribe{% endblock %}
+
+{% block content%}
+
+<h4>Unsubscribe</h4>
+
+<div align="center">
+<p>Are you sure you want to unsubscribe <strong>{{ user.get_full_name }}</strong> from <strong>{{ mailing_list }}</strong>?</p>
+<p/>
+<form action="{% url 'staff:mailing_lists:unsubscribe' mailing_list.id user.username %}" method='post'>
+	<input type="Submit" name="confirm" value="Yes">
+	<input type="Submit" name="confirm" value="No">
+	{% csrf_token %}
+</form>
+</div>
+{% endblock %}

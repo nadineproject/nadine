@@ -17,7 +17,7 @@ Nadine has four applications: Members, Staff, Admin, and Tablet.  These applicat
 License & Copyright
 -------------------
 
-Copyright 2019 `Office Nomads LLC <https://officenomads.com/>`_. Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
+Copyright 2020 `Office Nomads LLC <https://officenomads.com/>`_. Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
 
 You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0
 

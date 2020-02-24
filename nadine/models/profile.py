@@ -22,7 +22,6 @@ from django.utils.encoding import smart_str
 from django_localflavor_us.models import USStateField, PhoneNumberField
 from django.utils.timezone import localtime, now
 from django.urls import reverse
-from django.contrib.sites.models import Site
 
 from taggit.managers import TaggableManager
 from taggit.models import TaggedItemBase
@@ -699,10 +698,9 @@ class EmailAddress(models.Model):
     def get_verify_link(self):
         verify_link = settings.EMAIL_VERIFICATION_URL
         if not verify_link:
-            site = Site.objects.get_current()
             verif_key = self.get_verif_key()
             uri = reverse('email_verify', kwargs={'email_pk': self.id}) + "?verif_key=" + verif_key
-            verify_link = "https://" + site.domain + uri
+            verify_link = settings.SITE_URL + uri
         return verify_link
 
     def get_send_verif_link(self):
@@ -875,14 +873,7 @@ User.get_member_notes = lambda self: MemberNote.objects.filter(user=self)
 ###############################################################################
 
 
-def profile_save_callback(sender, **kwargs):
-    profile = kwargs['instance']
-    # Process the member alerts
-    from nadine.models.alerts import MemberAlert
-    MemberAlert.objects.trigger_profile_save(profile)
-post_save.connect(profile_save_callback, sender=UserProfile)
-
-
+@receiver(post_save, sender=User)
 def user_save_callback(sender, **kwargs):
     user = kwargs['instance']
     # Make certain we have a Profile and IndividualMembership
@@ -891,7 +882,6 @@ def user_save_callback(sender, **kwargs):
     from nadine.models.membership import IndividualMembership
     if not IndividualMembership.objects.filter(user=user).count() > 0:
         IndividualMembership.objects.create(user=user)
-post_save.connect(user_save_callback, sender=User)
 
 
 @receiver(post_save, sender=UserProfile)
@@ -911,6 +901,7 @@ def size_images(sender, instance, **kwargs):
         image.close()
 
 
+@receiver(post_save, sender=User)
 def sync_primary_callback(sender, **kwargs):
     user = kwargs['instance']
     try:
@@ -919,20 +910,12 @@ def sync_primary_callback(sender, **kwargs):
         email_address = EmailAddress(user=user, email=user.email)
         email_address.save(verify=False)
     email_address.set_primary()
-post_save.connect(sync_primary_callback, sender=User)
 
 
+@receiver(pre_save, sender=EmergencyContact)
 def emergency_callback_save_callback(sender, **kwargs):
     contact = kwargs['instance']
     contact.last_updated = localtime(now())
-pre_save.connect(emergency_callback_save_callback, sender=EmergencyContact)
 
 
-def file_upload_callback(sender, **kwargs):
-    file_upload = kwargs['instance']
-    from nadine.models.alerts import MemberAlert
-    MemberAlert.objects.trigger_file_upload(file_upload.user)
-post_save.connect(file_upload_callback, sender=FileUpload)
-
-
-# Copyright 2019 Office Nomads LLC (https://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2020 Office Nomads LLC (https://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
