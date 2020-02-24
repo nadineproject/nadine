@@ -1,4 +1,4 @@
-Django==3.0.3
+Django>=3.0.3
 Pillow==7.0.0
 cryptography==2.8
 psycopg2==2.8.4
