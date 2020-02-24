@@ -1,5 +1,6 @@
 {% load i18n %}
 {% load integrated_systems %}
+{% load settings_value %}
 {% load static %}
 
 <!DOCTYPE HTML>
@@ -8,8 +9,8 @@
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="DC.title" content="{{ site.name }}" />
-	<title>{% block title %}{% block sub-title %}{% endblock %} | {{ site.name }}{% endblock %}</title>
+	<meta name="DC.title" content="{% settings_value 'SITE_NAME' %}" />
+	<title>{% block title %}{% block sub-title %}{% endblock %} | {% settings_value 'SITE_NAME' %}{% endblock %}</title>
 	<!--[if IE]>
 		<script src="{{ STATIC_URL }}html5.js"></script>
 	<![endif]-->
@@ -47,7 +48,7 @@
 			{% endif %}
 		</div>
 		<div id='site-id'>
-			<a href="/">{{ site.name }}</a>: <span style="color:#e1e1e1">Nadine Membership Console</span>
+			<a href="/">{% settings_value 'SITE_NAME' %}</a>: <span style="color:#e1e1e1">Nadine Membership Console</span>
 		</div>
 	</nav>
 
@@ -89,9 +90,9 @@
 						{% include 'arpwatch/nav.html' %}
 					</ul>
 				</li>
-				<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown7' id='lists-tab' href="{% url 'interlink:home' %}">Lists</a>
+				<li><a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown7' id='lists-tab' href="{% url 'staff:mailing_lists:home' %}">Lists</a>
 					<ul class='dropdown-content' id='dropdown7'>
-						{% include 'interlink/nav.html' %}
+						{% include 'staff/mailing_lists/nav.html' %}
 					</ul>
 				</li>
 				{% if integrations.doors %}
@@ -191,7 +192,7 @@
 							<a class='collapsible-header'>Lists</a>
 							<div class='collapsible-body'>
 								<ul>
-									{% include 'interlink/nav.html' %}
+									{% include 'staff/mailing_lists/nav.html' %}
 								</ul>
 							</div>
 						</li>
@@ -256,7 +257,7 @@
 	<!-- Footer -->
 	<div id="footer" style="bottom:0; right:0; left:0; position:fixed; z-index:1000;">
 		{% block footer %}
-		&copy;2008-2019 <a href="https://nadineproject.org" target="_new">The Nadine Project</a>
+		&copy;2007-2020 <a href="https://nadineproject.org" target="_new">The Nadine Project</a>
 		by <a href="http://officenomads.com">Office Nomads</a>
 		{% endblock %}
 	</div>

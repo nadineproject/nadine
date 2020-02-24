@@ -75,9 +75,9 @@ class MailingList(models.Model):
     smtp_host = models.CharField(max_length=1024)
     smtp_port = models.IntegerField(default=587)
 
-    subscribers = models.ManyToManyField(User, blank=True, related_name='subscribed_mailing_lists')
-    unsubscribed = models.ManyToManyField(User, blank=True, related_name='+')
-    moderators = models.ManyToManyField(User, blank=True, related_name='moderated_mailing_lists', help_text='Users who will be sent moderation emails', limit_choices_to={'is_staff': True})
+    subscribers = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name='interlink_subscriptions')
+    unsubscribed = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name='interlink_unsubscribed')
+    moderators = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name='interlink_moderated', limit_choices_to={'is_staff': True})
 
     throttle_limit = models.IntegerField(default=0, help_text='The number of recipients in 10 minutes this mailing list is limited to. Default is 0, which means no limit.')
 
@@ -195,11 +195,11 @@ class MailingList(models.Model):
             return IncomingMail.objects.filter(mailing_list=self).order_by("sent_time").reverse()[:limit]
 
 
-def user_mailing_list_memberships(user):
-    """Returns an array of tuples of <MailingList, is_subscriber> for a User"""
-    return [(ml, user in ml.subscribers.all()) for ml in MailingList.objects.filter(enabled=True).order_by('name')]
-User.mailing_list_memberships = user_mailing_list_memberships
-
+# def user_mailing_list_memberships(user):
+#     """Returns an array of tuples of <MailingList, is_subscriber> for a User"""
+#     return [(ml, user in ml.subscribers.all()) for ml in MailingList.objects.filter(enabled=True).order_by('name')]
+# User.mailing_list_memberships = user_mailing_list_memberships
+#
 
 class IncomingMailManager(models.Manager):
 
@@ -465,4 +465,4 @@ class OutgoingMail(models.Model):
         ordering = ['-created']
         verbose_name_plural = 'outgoing mails'
 
-# Copyright 2019 Office Nomads LLC (https://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2020 Office Nomads LLC (https://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

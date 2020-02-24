@@ -6,7 +6,6 @@ from datetime import date, datetime, timedelta
 from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.contrib.sites.models import Site
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
@@ -44,11 +43,6 @@ class Command(BaseCommand):
         call_command('syncdb', interactive=False)
         call_command('migrate', interactive=False)
 
-        site = Site.objects.get_current()
-        site.domain = '127.0.0.1:8000'
-        site.name = 'Nadine'
-        site.save()
-
         basic_plan = MembershipPlan.objects.create(name='Basic', description='An occasional user', monthly_rate='50', daily_rate='25', dropin_allowance='5')
         resident_plan = MembershipPlan.objects.create(name='Resident', description='A frequent user', monthly_rate='500', daily_rate='20', has_desk=True)
 
@@ -76,4 +70,4 @@ class Command(BaseCommand):
         user.save()
         return user
 
-# Copyright 2019 Office Nomads LLC (https://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2020 Office Nomads LLC (https://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

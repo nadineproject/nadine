@@ -1,16 +1,13 @@
 {% load i18n %}{% autoescape off %}
-{% blocktrans %}
 Hi {{ user.first_name }},
 
-You have been a coming to {{ site.name }} for {{ user.profile.duration_str }} now!  In an effort to keep our data up to date we would like to encourage you to update your Nadine profile and emergency contact information. It's easy to edit. Go to the "Member Login" link on our website or use the one below.
-{% endblocktrans %}
-https://{{ site.domain }}{% url 'member:profile:redirect' %}
-{% blocktrans %}
-If you have any questions, please call us at 206.323.6500, respond to this message, or stop by the front desk.
-{% endblocktrans %}
+You have been a coming to {{ site_name }} for {{ user.profile.duration_str }} now!  In an effort to keep our data up to date we would like to encourage you to update your Nadine profile and emergency contact information. It's easy to edit. Go to the "Member Login" link on our website or use the one below.
 
-{% blocktrans %}
+{{ site_url }}{% url 'member:profile:redirect' %}
+
+If you have any questions, please call us at 206.323.6500, respond to this message, or stop by the front desk.
+
 Thank you,
-The {{ site.name }} Team
-{% endblocktrans %}
+The {{ site_name }} Team
+
 {% endautoescape %}

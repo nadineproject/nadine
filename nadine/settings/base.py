@@ -48,7 +48,6 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                'nadine.context_processors.site',
                 'nadine.context_processors.nav_context',
                 'nadine.context_processors.tablet_context',
                 'nadine.context_processors.allow_online_registration',
@@ -67,7 +66,13 @@ TEMPLATES = [
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
-AUTH_PASSWORD_VALIDATORS = []
+# Password validation
+AUTH_PASSWORD_VALIDATORS = [
+    { 'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator', },
+    { 'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator', },
+    { 'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator', },
+    { 'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator', },
+]
 AUTHENTICATION_BACKENDS = (
     'nadine.backends.EmailOrUsernameModelBackend',
     'django.contrib.auth.backends.ModelBackend'
@@ -89,7 +94,6 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.humanize',
     'django.contrib.staticfiles',
@@ -102,7 +106,6 @@ INSTALLED_APPS = [
     'tablet',
     'arpwatch',
     'comlink',
-    'interlink',
     'doors.keymaster',
     # Other Applications
     'jsignature',
@@ -113,14 +116,14 @@ INSTALLED_APPS = [
     # 'debug_toolbar',
 ]
 
+
 ################################################################################
 # Site Settings
 ################################################################################
 
 SITE_NAME = "Nadine"
-SITE_DOMAIN = "localhost"
-SITE_PROTO = "http"
-SITE_ID = 1
+SITE_URL = "http://nadine.example.com"
+
 
 # Local time zone for this installation. Choices can be found here:
 # http://www.postgresql.org/docs/8.1/static/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE
@@ -295,9 +298,6 @@ CRONJOBS = [
     # Tasks to run every 5 minutes
     ('*/5 * * * *', 'django.core.management.call_command', ['import_arp']),
     ('*/5 * * * *', 'django.core.management.call_command', ['send_user_notifications']),
-    # Interlink Tasks
-    ('*/2 * * * *', 'django.core.management.call_command', ['process_mail']),
-    ('0 * * * *', 'django.core.management.call_command', ['unsubscribe']),
     # Backup Tasks at 1:00 AM
     ('0 1 * * *', 'django.core.management.call_command', ['backup_members']),
     ('0 1 * * *', 'django.core.management.call_command', ['backup_create']),
@@ -368,4 +368,4 @@ LOGGING = {
 }
 
 
-# Copyright 2019 Office Nomads LLC (https://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2020 Office Nomads LLC (https://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

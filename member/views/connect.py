@@ -16,8 +16,8 @@ from nadine.models.usage import CoworkingDay
 from nadine.models.resource import Room
 from nadine.utils.slack_api import SlackAPI
 
-from interlink.forms import MailingListSubscriptionForm
-from interlink.models import IncomingMail
+from comlink.forms import MailingListSubscriptionForm
+from comlink.models import MailingList, EmailMessage
 
 from member.models import UserNotification
 from member.views.core import is_active_member
@@ -73,8 +73,18 @@ def mail(request):
         if sub_form.is_valid():
             sub_form.save(user)
             return HttpResponseRedirect(reverse('member:connect:email_lists'))
+
+    mailing_lists = []
+    for ml in MailingList.objects.filter(enabled=True).order_by('name'):
+        mailing_lists.append({
+            'list': ml,
+            'is_subscriber': user in ml.subscribers.all(),
+            'recents': ml.emailmessage_set.all().order_by('-received')[:20]
+        })
+
     context = {
         'user': user,
+        'mailing_lists': mailing_lists,
         'mailing_list_subscription_form': MailingListSubscriptionForm(),
         'settings': settings
     }
@@ -84,7 +94,7 @@ def mail(request):
 @login_required
 @user_passes_test(is_active_member, login_url='member:not_active')
 def mail_message(request, id):
-    message = get_object_or_404(IncomingMail, id=id)
+    message = get_object_or_404(EmailMessage, id=id)
     return render(request, 'member/connect/mail_message.html', {'message': message, 'settings': settings})
 
 
@@ -126,4 +136,4 @@ def slack_bots(request):
     return JsonResponse({})
 
 
-# Copyright 2019 Office Nomads LLC (https://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2020 Office Nomads LLC (https://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

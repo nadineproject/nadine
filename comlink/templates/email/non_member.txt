@@ -1,0 +1,15 @@
+{% load i18n %}{% autoescape off %}
+OH NO!
+
+We received an email from '{{ to }}' although that email
+address is not associated with an active user in our system.
+If you are an active member you can add all of your emails
+to your member profile and then you won't encounter this issue
+again.
+
+Your Profile: {{ site_url }}{% url 'member:profile:redirect' %}
+
+Thanks!
+The {{ site_name }} Team
+
+{% endautoescape %}

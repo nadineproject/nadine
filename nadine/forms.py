@@ -19,8 +19,8 @@ from django.utils.translation import gettext as _
 from localflavor.us.us_states import US_STATES
 from localflavor.ca.ca_provinces import PROVINCE_CHOICES
 
-from nadine import email
-from nadine.utils import mailgun
+from comlink import mailgun
+
 from nadine.models.core import HowHeard, Industry, Neighborhood, URLType, GENDER_CHOICES
 from nadine.models.profile import UserProfile, MemberNote, user_photo_path
 from nadine.models.membership import Membership, MembershipPackage, ResourceSubscription, IndividualMembership, SubscriptionDefault
@@ -717,4 +717,4 @@ class MembershipPackageForm(forms.Form):
 
         return sub_default
 
-# Copyright 2019 Office Nomads LLC (https://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2020 Office Nomads LLC (https://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

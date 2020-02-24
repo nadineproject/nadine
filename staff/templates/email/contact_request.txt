@@ -1,22 +1,17 @@
 {% load i18n %}{% autoescape off %}
 {{ target.first_name }},
-{% blocktrans %}
+
 {{ user.get_full_name }} wants to connect with you!  Did you know you can login to Nadine, find another member,
 and ask Nadine to connect the two of you?  {{ user.first_name }} did and they chose you!  You can connect with
 them directly by emailing:  {{ user.email }}
-{% endblocktrans %}
 
-{% blocktrans %}
 Their Profile:
-{% endblocktrans %}
-http://{{ site.domain }}{% url 'member:profile:view' user.username %}
-{% blocktrans %}
-Or to be notified the next time you are both in the space:
-{% endblocktrans %}
-http://{{ site.domain }}{% url 'member:connect:connect' user.username %}
+{{ site_url }}{% url 'member:profile:view' user.username %}
 
-{% blocktrans %}
+Or to be notified the next time you are both in the space:
+{{ site_domain }}{% url 'member:connect:connect' user.username %}
+
 Have fun!
-The {{ site.name }} Team
-{% endblocktrans %}
+The {{ site_name }} Team
+
 {% endautoescape %}

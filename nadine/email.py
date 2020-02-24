@@ -3,7 +3,6 @@ import logging
 from datetime import datetime, time, date, timedelta
 
 from django.conf import settings
-from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
 from django.template.loader import get_template, render_to_string
 from django.template import Template, TemplateDoesNotExist, RequestContext
@@ -11,9 +10,10 @@ from django.core.mail import send_mail, EmailMessage, EmailMultiAlternatives
 from django.urls import reverse
 from django.utils.timezone import localtime, now
 
+from comlink import mailgun
+
 from nadine.models.membership import Membership
 from nadine.utils.slack_api import SlackAPI
-from nadine.utils import mailgun
 
 logger = logging.getLogger(__name__)
 
@@ -23,6 +23,12 @@ def valid_message_keys():
             "exit_survey", "member_survey", "no_return", "checkin", "invalid_billing", "new_key",
             "no_signin", "no_device", "edit_profile", "slack_invite"]
 
+def default_context():
+    return {
+        'today': localtime(now()),
+        'site_name': settings.SITE_NAME,
+        'site_url': settings.SITE_URL,
+    }
 
 def send_manual(user, message):
     message = message.lower()
@@ -68,10 +74,10 @@ def send_verification(emailObj):
     """
 
     # Build our context
-    site = Site.objects.get_current()
     verif_key = emailObj.get_verif_key()
     context_dict = {
-        'site': site,
+        'site_name': settings.SITE_NAME,
+        'site_url': settings.SITE_URL,
         'user': emailObj.user,
         'verif_key': verif_key,
     }
@@ -95,9 +101,10 @@ def send_verification(emailObj):
 
 
 def send_introduction(user):
-    site = Site.objects.get_current()
     subject = "Introduction to Nadine"
-    message = render_to_string('email/introduction.txt', context={'user': user, 'site': site})
+    context = default_context()
+    context['user'] = user
+    message = render_to_string('email/introduction.txt', context=context)
     send_quietly(user.email, subject, message)
 
 
@@ -125,91 +132,106 @@ def subscribe_to_newsletter(user):
 
 
 def send_new_membership(user):
-    site = Site.objects.get_current()
     membership = Membership.objects.for_user(user)
     package_name = membership.package_name(include_future=True)
     if package_name:
         subject = "New %s Membership" % package_name
     else:
         subject = "New Membership"
-    message = render_to_string('email/new_membership.txt', context={'user': user, 'membership': membership, 'site': site})
+    context = default_context()
+    context['user'] = user
+    context['membership'] = membership
+    message = render_to_string('email/new_membership.txt', context=context)
     send(user.email, subject, message)
 
 
 def send_first_day_checkin(user):
-    site = Site.objects.get_current()
     subject = "How was your first day?"
-    message = render_to_string('email/first_day.txt', context={'user': user, 'site': site})
+    context = default_context()
+    context['user'] = user
+    message = render_to_string('email/first_day.txt', context=context)
     send(user.email, subject, message)
 
 
 def send_exit_survey(user):
-    site = Site.objects.get_current()
     subject = "Exit Survey"
-    message = render_to_string('email/exit_survey.txt', context={'user': user, 'site': site})
+    context = default_context()
+    context['user'] = user
+    message = render_to_string('email/exit_survey.txt', context=context)
     send(user.email, subject, message)
 
 
 def send_member_survey(user):
-    site = Site.objects.get_current()
     subject = "Coworking Survey"
-    message = render_to_string('email/member_survey.txt', context={'user': user, 'site': site})
+    context = default_context()
+    context['user'] = user
+    message = render_to_string('email/member_survey.txt', context=context)
     send(user.email, subject, message)
 
 
 def send_no_return_checkin(user):
-    site = Site.objects.get_current()
     subject = "Checking In"
-    message = render_to_string('email/no_return.txt', context={'user': user, 'site': site})
+    context = default_context()
+    context['user'] = user
+    message = render_to_string('email/no_return.txt', context=context)
     send(user.email, subject, message)
 
 
 def send_invalid_billing(user):
-    site = Site.objects.get_current()
     subject = "Billing Problem"
-    message = render_to_string('email/invalid_billing.txt', context={'user': user, 'site': site})
+    context = default_context()
+    context['user'] = user
+    message = render_to_string('email/invalid_billing.txt', context=context)
     send(user.email, subject, message)
 
 
 def send_no_signin(user):
-    site = Site.objects.get_current()
     subject = "Forget to sign in?"
-    message = render_to_string('email/no_signin.txt', context={'user': user, 'site': site})
+    context = default_context()
+    context['user'] = user
+    message = render_to_string('email/no_signin.txt', context=context)
     send(user.email, subject, message)
 
 
 def send_no_device(user):
-    site = Site.objects.get_current()
     subject = "Device Registration"
-    message = render_to_string('email/no_device.txt', context={'user': user, 'site': site})
+    context = default_context()
+    context['user'] = user
+    message = render_to_string('email/no_device.txt', context=context)
     send(user.email, subject, message)
 
 
 def send_new_key(user):
-    site = Site.objects.get_current()
     subject = "Key Holding Details"
-    message = render_to_string('email/new_key.txt', context={'user': user, 'site': site})
+    context = default_context()
+    context['user'] = user
+    message = render_to_string('email/new_key.txt', context=context)
     send(user.email, subject, message)
 
 
 def send_user_notifications(user, target):
-    site = Site.objects.get_current()
     subject = "%s is here!" % target.get_full_name()
-    message = render_to_string('email/user_notification.txt', context={'user': user, 'target': target, 'site': site})
+    context = default_context()
+    context['user'] = user
+    context['target'] = target
+    message = render_to_string('email/user_notification.txt', context=context)
     send(user.email, subject, message)
 
 
 def send_contact_request(user, target):
-    site = Site.objects.get_current()
     subject = "%s wants to connect!" % user.get_full_name()
-    message = render_to_string('email/contact_request.txt', context={'user': user, 'target': target, 'site': site})
+    context = default_context()
+    context['user'] = user
+    context['target'] = target
+    message = render_to_string('email/contact_request.txt', context=context)
     send(target.email, subject, message)
 
 
 def send_edit_profile(user):
-    site = Site.objects.get_current()
     subject = "Please update your Nadine profile"
-    message = render_to_string('email/edit_profile.txt', context={'user': user, 'site': site})
+    context = default_context()
+    context['user'] = user
+    message = render_to_string('email/edit_profile.txt', context=context)
     send(user.email, subject, message)
 
 
@@ -326,9 +348,8 @@ def render_templates(context, email_key):
 
     # inject some specific context
     context['today'] = localtime(now())
-    context['site_url'] = ''
-    if not settings.DEBUG:
-        context['site_url'] = "https://" + Site.objects.get_current().domain
+    context['site_name'] = settings.SITE_NAME
+    context['site_url'] = settings.SITE_URL
 
     try:
         text_template = get_template("email/%s.txt" % email_key)
@@ -347,8 +368,9 @@ def render_templates(context, email_key):
 
 
 def team_signature(user):
-    site = Site.objects.get_current()
-    return render_to_string('email/team_email_signature.txt', context={'user': user, 'site': site})
+    context = default_context()
+    context['user'] = user
+    return render_to_string('email/team_email_signature.txt', context=context)
 
 
 def send(recipient, subject, text_message, html_message=None):
@@ -396,4 +418,4 @@ def send_email(recipient, subject, text_message, html_message=None, fail_silentl
                 logger.error(e)
 
 
-# Copyright 2019 Office Nomads LLC (https://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2020 Office Nomads LLC (https://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

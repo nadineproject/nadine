@@ -1,18 +1,13 @@
 {% load i18n %}{% autoescape off %}
-{% blocktrans %}
 {{ user.first_name }},
 
 It looks like you forgot to sign in today!
-{% endblocktrans %}
 
-https://{{ site.domain }}{% url 'member:profile:redirect' %}
+{{ site_url }}{% url 'member:profile:redirect' %}
 
-{% blocktrans %}
 If you've got any questions or concerns, please e-mail staff@officenomads.com.
-{% endblocktrans %}
 
-{% blocktrans %}
 Thank you,
-The {{ site.name }} Team
-{% endblocktrans %}
+The {{ site_name }} Team
+
 {% endautoescape %}

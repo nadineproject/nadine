@@ -1,11 +1,6 @@
 Mailing Lists
 =============
 
-In the interest of shipping more quickly, we have made certain assumptions about the interlink mailing lists which may or may not suit everyone's needs.
-
-* the reply-to address for mail from a list is the original sender, not the entire list
-* attachments are neither saved nor sent to the list, but a removal note is appended to the message
-* incoming messages are parsed for a single text message and a single html message (not multiple MIME messages)
-* loops and bounces are silently dropped
-* any email sent to a list which is not in a subscriber's user or membership record is moderated
-* the sender of a message receives a copy of the message like any other subscriber
+Mailing lists are handled by submodule Comlink.  This relies on Mailgun
+for mail transport. To add a new mailing list, first add the data in
+the admin console, and then create a Mailgun route to https://YOUR_NADINE_SITE/comlink/incoming/

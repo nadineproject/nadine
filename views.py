@@ -12,7 +12,6 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import auth, messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.contrib.sites.models import Site
 from django.utils.html import strip_tags
 import django.contrib.contenttypes.models as content_type_models
 from django.template import RequestContext
@@ -30,6 +29,7 @@ from nadine.models.profile import EmailAddress
 from nadine import email
 
 logger = logging.getLogger(__name__)
+
 
 @login_required
 def index(request):
@@ -58,8 +58,6 @@ def password_reset(request, is_admin_site=False, template_name='registration/pas
                     opts['domain_override'] = request.META['HTTP_HOST']
                 else:
                     opts['email_template_name'] = email_template_name
-                    if not Site._meta.installed:
-                        opts['domain_override'] = RequestSite(request).domain
                 form.save(**opts)
                 return HttpResponseRedirect(post_reset_redirect)
         else:
@@ -68,7 +66,12 @@ def password_reset(request, is_admin_site=False, template_name='registration/pas
             return render(request, template_name, {'form': password_reset_form()})
     else:
         form = password_reset_form()
-    return render(request, template_name, {'form': form})
+    context = {
+        'form': form,
+        'site_name': settings.SITE_NAME,
+        'site_url': settings.SITE_URL,
+    }
+    return render(request, template_name, context)
 
 
 @login_required
@@ -159,4 +162,4 @@ def email_verify(request, email_pk):
     return render(request, "email_verify.html", {'email':email_address.email})
 
 
-# Copyright 2019 Office Nomads LLC (https://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2020 Office Nomads LLC (https://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

@@ -16,7 +16,7 @@ from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 
 from comlink.forms import EmailForm
-from comlink.models import Attachment, IncomingEmail, SimpleMailingList
+from comlink.models import Attachment, EmailMessage, MailingList
 from comlink.signals import email_received
 from comlink.exceptions import RejectedMailException, DroppedMailException
 from comlink import jwzthreading
@@ -35,17 +35,17 @@ VERIFY_SIGNATURE = getattr(settings, "COMLINK_VERIFY_INCOMING", not settings.DEB
 
 @staff_member_required
 def home(request):
-    # messages = IncomingEmail.objects.all().order_by("-received")
+    # messages = EmailMessage.objects.all().order_by("-received")
     # threads = jwzthreading.thread(messages)
     inboxes = []
-    for a in SimpleMailingList.objects.all().values('address'):
+    for a in MailingList.objects.all().values('address'):
         inboxes.append({'address': a})
     if hasattr(settings, "STAFF_EMAIL_ADDRESS"):
         inboxes.append({'address': settings.STAFF_EMAIL_ADDRESS})
     if hasattr(settings, "TEAM_EMAIL_ADDRESS"):
         inboxes.append({'address': settings.TEAM_EMAIL_ADDRESS})
     for i in inboxes:
-        c = IncomingEmail.objects.filter(recipient__contains=i['address']).count()
+        c = EmailMessage.objects.filter(recipient__contains=i['address']).count()
         i['messages'] = c
     # context = {'messages':messages, 'inboxes':inboxes}
     context = {'inboxes':inboxes}
@@ -55,14 +55,14 @@ def home(request):
 @staff_member_required
 def inbox(request, address):
     # TODO - make sure they are able to read this email
-    messages = IncomingEmail.objects.filter(recipient__contains=address).order_by("-received")
+    messages = EmailMessage.objects.filter(recipient__contains=address).order_by("-received")
     context = {'messages':messages, 'address':address}
     return render(request, 'comlink/inbox.html', context)
 
 
 @staff_member_required
 def view_mail(request, id):
-    message = get_object_or_404(IncomingEmail, id=id)
+    message = get_object_or_404(EmailMessage, id=id)
     headers = message.headers
     context = {'message':message, 'headers':headers}
     return render(request, 'comlink/mail.html', context)
@@ -74,7 +74,7 @@ def view_mail(request, id):
 
 
 class Incoming(View):
-    email_model = IncomingEmail
+    email_model = EmailMessage
     attachment_model = Attachment
     form = EmailForm
     api_key = API_KEY
@@ -122,7 +122,8 @@ class Incoming(View):
 
             i = 1
             for file in list(request.FILES.values()):
-                attachment = self.attachment_model(email=email,
+                attachment = self.attachment_model(
+                    attached_to=email,
                     file=file,
                     content_id=content_ids.get('attachment-{0!s}'.format(i), ''))
                 attachment.save()
@@ -131,16 +132,11 @@ class Incoming(View):
 
         # See if any attached signal handlers throw an error
         try:
-            self.handle_email(email, attachments=attachments)
+            email_received.send(sender=self.email_model, instance=email, attachments=attachments or [])
             return HttpResponse("OK")
         except RejectedMailException as e:
             logger.debug("Email was rejected: %s" % str(e))
             return HttpResponse("Email not accepted", status=406)
-
-    def handle_email(self, email, attachments=None):
-        logger.debug("handle_email: email='%s'" % email)
-        email_received.send(
-            sender=self.email_model, instance=email, attachments=attachments or [])
 
     def verify_signature(self, token, timestamp, signature):
         # logger.debug("token=%s, timestamp=%s, signature=%s" % (token, timestamp, signature))
@@ -152,4 +148,4 @@ class Incoming(View):
         return verified
 
 
-# Copyright 2019 Office Nomads LLC (https://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2020 Office Nomads LLC (https://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

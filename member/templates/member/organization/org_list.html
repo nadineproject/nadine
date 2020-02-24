@@ -1,5 +1,6 @@
 {% extends "member/base.html" %}
 {% load i18n %}
+{% load settings_value %}
 {% load imagetags %}
 
 {% block sub-title %}{% trans "Organization" %} | {% endblock %}
@@ -17,7 +18,7 @@
 {% endblock %}
 
 {% block content %}
-<h3 class='header-font' style='text-align:center;'>{% blocktrans %}Organizations at{% endblocktrans %} {{ site.name }}</h3>
+<h3 class='header-font' style='text-align:center;'>{% blocktrans %}Organizations at{% endblocktrans %} {% settings_value 'SITE_NAME' %}</h3>
 <div class='ui-widget row'>
 	<form class='col s12 m7 l7 offset-m6 offset-l6' id='org-search-form' action="." method='POST'>
 		{% csrf_token %}

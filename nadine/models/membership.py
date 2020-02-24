@@ -27,7 +27,6 @@ from django_localflavor_us.models import USStateField, PhoneNumberField
 from django.utils.timezone import localtime, now
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
-from django.contrib.sites.models import Site
 
 from nadine.models.resource import Resource
 from nadine.models.organization import Organization
@@ -546,18 +545,12 @@ class IndividualMembership(Membership):
     def __str__(self):
         return '%s: %s' % (self.user, self.subscriptions.all())
 
-    class Meta:
-        manager_inheritance_from_future = True
-
 
 class OrganizationMembership(Membership):
     organization = models.OneToOneField(Organization, related_name="membership", on_delete=models.CASCADE)
 
     def __str__(self):
         return '%s: %s' % (self.organization, self.subscriptions.all())
-
-    class Meta:
-        manager_inheritance_from_future = True
 
 
 class SubscriptionManager(models.Manager):
@@ -690,4 +683,4 @@ class SecurityDeposit(models.Model):
     note = models.CharField(max_length=128, blank=True, null=True)
 
 
-# Copyright 2019 Office Nomads LLC (https://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2020 Office Nomads LLC (https://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

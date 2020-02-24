@@ -1,0 +1,56 @@
+{% extends "staff/mailing_lists/base.html" %}
+
+{% block sub-title %}Subscribers to '{{ mailing_list.name }}' | {% endblock %}
+
+{% block style %}
+#content td, #content th { text-align: left; padding-right: 2em; }
+#content td:first-child, #content th:first-child { width: 15em; }
+.last-attempt { color: #F44; }
+{% endblock %}
+
+{% block content%}
+
+<div>
+	<div style="size:large; float:right;"><strong>{{ mailing_list.subscribers.all|length }} Subscribers</strong></div>
+	<h4>Subscribers to <i>{{ mailing_list.name }}</i></h4>
+</div>
+
+<table>
+	<tr>
+		<th>Name</th>
+		<th>Start Date</th>
+		<th>End Date</th>
+		<th>Action</th>
+	</tr>
+{% for subscriber in mailing_list.subscribed|dictsort:"username.lower" %}
+	<tr>
+		<td>{{ subscriber.first_name }} {{ subscriber.last_name }}</td>
+		<td>{{ subscriber.membership.start_date }}</td>
+		<td>{{ subscriber.membership.end_date | default:'' }}</td>
+		<td><a href="{%url 'staff:mailing_lists:unsubscribe' mailing_list.id subscriber.username%}">unsubscribe</a></td>
+	</tr>
+{% endfor %}
+</table>
+
+<div>
+	<div style="size:large; float:right;"><strong>{{ not_subscribed|length }} Members</strong></div>
+	<h4>Active Members Not Subscribed</h4>
+</div>
+<h5></h5>
+<table>
+	<tr>
+		<th>Name</th>
+		<th>Start Date</th>
+		<th>End Date</th>
+		<th>Action</th>
+	</tr>
+{% for subscriber in not_subscribed %}
+	<tr>
+		<td>{{ subscriber.first_name }} {{ subscriber.last_name }}</td>
+		<td>{{ subscriber.profile.membership.start_date }}</td>
+		<td>{{ subscriber.profile.membership.end_date | default:''}}</td>
+		<td><a href="{%url 'staff:mailing_lists:subscribe' mailing_list.id subscriber.username %}">subscribe</a></td>
+	</tr>
+{% endfor %}
+</table>
+{% endblock %}

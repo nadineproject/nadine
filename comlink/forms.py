@@ -1,7 +1,37 @@
 # -*- coding: utf-8 -*-
 from django import forms
+from django.conf import settings
 
+from comlink import mailgun
 from comlink.exceptions import DroppedMailException
+from comlink.models import MailingList
+
+
+class MailingListSubscriptionForm(forms.Form):
+    subscribe = forms.CharField(required=False, widget=forms.HiddenInput)
+    mailing_list_id = forms.IntegerField(required=True, widget=forms.HiddenInput)
+
+    def save(self, user):
+        mailing_list = MailingList.objects.get(pk=self.cleaned_data['mailing_list_id'])
+        subject = "Nadine Subscribe/Unsubscribe Form"
+        if self.cleaned_data['subscribe'] == 'true' and (user.profile.is_active() or user.is_staff):
+            mailing_list.subscribe(user)
+            subject = '%s subscribed to %s' % (user.get_full_name(), mailing_list.name)
+        elif self.cleaned_data['subscribe'] == 'false' and user in mailing_list.subscribers.all():
+            mailing_list.unsubscribe(user)
+            subject = '%s unsubscribed from %s' % (user.get_full_name(), mailing_list.name)
+
+        # Send a notification to the team
+        mailgun_data = {
+            "from": settings.DEFAULT_FROM_EMAIL,
+            "to": [settings.TEAM_EMAIL_ADDRESS, ],
+            "subject": subject,
+            "text": "So says Nadine!",
+        }
+        mailgun.mailgun_send(mailgun_data, inject_list_id=False)
+
+        return True
+
 
 class EmailForm(forms.ModelForm):
 
@@ -41,4 +71,4 @@ class EmailForm(forms.ModelForm):
         self.fields['attachment-count'] = forms.IntegerField(required=False)
 
 
-# Copyright 2019 Office Nomads LLC (https://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+# Copyright 2020 Office Nomads LLC (https://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
