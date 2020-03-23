@@ -6,7 +6,9 @@ from django.template import RequestContext
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, Http404, HttpResponseServerError, HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
 from django.utils.timezone import localtime, now, make_aware, get_current_timezone
+from django.contrib.auth.models import User
 
 from arpwatch.forms import *
 from arpwatch.models import *
@@ -92,5 +94,18 @@ def logins_by_day(request, year, month, day):
         'previous_day': log_date - timedelta(days=1)}
     return render(request, 'arpwatch/user_logins.html', context)
 
+
+@login_required
+def tracker(request, username):
+    if request.user.username != username:
+        return Http404()
+
+    user = get_object_or_404(User, username=username)
+    logtime = localtime(now())
+    ip = network.get_addr(request)
+    # if ip:
+    #     ip_log = UserRemoteAddr.objects.create(logintime=logtime, user=user, ip_address=ip)
+    print("register_user_ip: Address for %s = %s @ %s" % (user, ip, logtime))
+    return HttpResponse()
 
 # Copyright 2020 Office Nomads LLC (https://officenomads.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://opensource.org/licenses/Apache-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
