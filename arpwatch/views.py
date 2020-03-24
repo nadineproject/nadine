@@ -98,8 +98,8 @@ def logins_by_day(request, year, month, day):
 def tracker(request, username):
     user = get_object_or_404(User, username=username)
     ip = network.get_addr(request)
-    prefix = settings.ARP_IP_PFX
-    if ip and ip.startwith(settings.ARP_IP_PFX):
+    prefix = getattr(settings, 'ARP_IP_PFX', '')
+    if ip and ip.startwith(prefix):
         arp.register_user_ip(user, ip)
     print("register_user_ip: Address for %s = %s @ %s" % (user, ip, logtime))
     return HttpResponse()
