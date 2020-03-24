@@ -1,5 +1,6 @@
 {% extends 'member/base.html' %}
 {% load settings_value %}
+{% load arp_tracker %}
 {% load static %}
 
 {% block style %}
@@ -82,6 +83,9 @@
 
 		</div>
 
+    <!-- Arp Network Tracker -->
+    {% arp_tracker user %}
+    
 		{% endblock %}
 			</div>
 		</div>

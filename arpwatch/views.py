@@ -95,16 +95,12 @@ def logins_by_day(request, year, month, day):
     return render(request, 'arpwatch/user_logins.html', context)
 
 
-@login_required
 def tracker(request, username):
-    if request.user.username != username:
-        return Http404()
-
     user = get_object_or_404(User, username=username)
-    logtime = localtime(now())
     ip = network.get_addr(request)
-    # if ip:
-    #     ip_log = UserRemoteAddr.objects.create(logintime=logtime, user=user, ip_address=ip)
+    prefix = settings.ARP_IP_PFX
+    if ip and ip.startwith(settings.ARP_IP_PFX):
+        arp.register_user_ip(user, ip)
     print("register_user_ip: Address for %s = %s @ %s" % (user, ip, logtime))
     return HttpResponse()
 
