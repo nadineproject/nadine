@@ -7,7 +7,6 @@ register = template.Library()
 # settings value
 @register.simple_tag
 def arp_tracker(user):
-    print("hello world")
     url = getattr(settings, 'ARP_TRACKING_URL', "")
     if user and url:
         if not url.endswith('/'):
