@@ -1,10 +1,6 @@
-import os
 import sys
 import uuid
-import pprint
-import random
-import traceback
-import operator
+import random, string
 import logging
 import hashlib
 import pytz
@@ -15,8 +11,8 @@ from django.db import models
 from django.db.models import F, Q, Sum, Value
 from django.db.models.functions import Coalesce
 from django.contrib import admin
-from django.core.files.base import ContentFile
 from django.contrib.auth.models import User
+from django.core.files.base import ContentFile
 from django.conf import settings
 from django.utils.encoding import smart_str
 from django_localflavor_us.models import USStateField, PhoneNumberField
@@ -271,6 +267,7 @@ class UserProfile(models.Model):
     MAX_PHOTO_SIZE = 1024
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, blank=False, related_name="profile", on_delete=models.CASCADE)
+    usercode = models.CharField(max_length=32, unique=True, null=True)
     phone = PhoneNumberField(blank=True, null=True)
     phone2 = PhoneNumberField("Alternate Phone", blank=True, null=True)
     address1 = models.CharField(max_length=128, blank=True)
@@ -871,6 +868,16 @@ User.get_member_notes = lambda self: MemberNote.objects.filter(user=self)
 ###############################################################################
 # Call Backs
 ###############################################################################
+
+
+@receiver(pre_save, sender=UserProfile)
+def profile_presave_callback(sender, **kwargs):
+    profile = kwargs['instance']
+    if not profile.usercode:
+        new_code = ''
+        while new_code == '' or UserProfile.objects.filter(usercode=new_code).count() > 0:
+            new_code = 'U' + ''.join(random.choices(string.ascii_uppercase + string.digits, k=7))
+        profile.usercode = new_code
 
 
 @receiver(post_save, sender=User)
