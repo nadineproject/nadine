@@ -13,7 +13,7 @@ django-debug-toolbar = "*"
 pip-review = "*"
 
 [packages]
-Django = ">=3.0.3"
+Django = ">=3.0.7"
 Pillow = "~=7.1"
 psycopg2 = "~=2.8"
 django-localflavor = "~=3.0"
