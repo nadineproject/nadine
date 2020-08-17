@@ -283,12 +283,12 @@ class UserProfile(models.Model):
     #referred_by = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="Referred By", related_name="referral", blank=True, null=True, on_delete=models.CASCADE)
     industry = models.ForeignKey(Industry, blank=True, null=True, on_delete=models.CASCADE)
     neighborhood = models.ForeignKey(Neighborhood, blank=True, null=True, on_delete=models.CASCADE)
-    has_kids = models.NullBooleanField(blank=True, null=True)
-    self_employed = models.NullBooleanField(blank=True, null=True)
+    has_kids = models.BooleanField(blank=True, null=True)
+    self_employed = models.BooleanField(blank=True, null=True)
     last_modified = models.DateField(auto_now=True, editable=False)
     photo = models.ImageField(upload_to=user_photo_path, blank=True, null=True)
     tags = TaggableManager(blank=True)
-    valid_billing = models.NullBooleanField(blank=True, null=True)
+    valid_billing = models.BooleanField(blank=True, null=True)
     websites = models.ManyToManyField(Website, blank=True)
 
     @property
@@ -758,7 +758,7 @@ class SentEmailLog(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)
     recipient = models.EmailField()
     subject = models.CharField(max_length=128, blank=True, null=True)
-    success = models.NullBooleanField(blank=False, null=False, default=False)
+    success = models.BooleanField(blank=True, null=True, default=False)
     note = models.TextField(blank=True, null=True)
 
     def __str__(self): return '%s: %s' % (self.created, self.recipient)
