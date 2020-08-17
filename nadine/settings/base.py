@@ -142,6 +142,12 @@ USE_I18N = True
 # http://blogs.law.harvard.edu/tech/stories/storyReader$15
 LANGUAGE_CODE = 'en-us'
 
+LANGUAGES = [
+    ('en','English'),
+    ('es','Spanish'),
+    ('fr', 'french'),
+]
+
 LOCALE_PATHS = (
     path('../../locale'),
 )
