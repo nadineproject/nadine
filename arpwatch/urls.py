@@ -13,6 +13,7 @@ urlpatterns = [
    path('device/<int:year>/<int:month>/<day>/', views.device_logs_by_day, name='device_logs'),
    path('user/', views.logins_today, name='user'),
    path('user/<int:year>/<int:month>/<int:day>/', views.logins_by_day, name='user_logs'),
+   path('track/<username>', views.tracker, name='tracker'),
 ]
 
 

@@ -32,10 +32,10 @@
 		<td nowrap>{{ message.recipient }}</td>
 	{% endif %}
 </i></p>
-<pre><code style="font-family:'Roboto', sans-serif">
+<code style="font-family:'Roboto', sans-serif">
   {% autoescape off %}
     {{ message.get_body }}
   {% endautoescape %}
-</pre></code>
+</code>
 
 {% endblock %}

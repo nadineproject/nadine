@@ -12,6 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.template.loader import get_template, render_to_string
 from django.template import Template, TemplateDoesNotExist
 from django.utils import timezone
+from django.core.exceptions import ImproperlyConfigured
 
 logger = logging.getLogger(__name__)
 
