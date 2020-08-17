@@ -168,15 +168,27 @@ def history(request):
     return render(request, 'staff/stats/history.html', context)
 
 
+def monthly_today(request):
+    today = localtime(now()).date()
+    return HttpResponseRedirect(reverse('staff:stats:monthly_date', args=[], kwargs={'year': today.year, 'month': today.month, 'day': today.day}))
+
+
 @staff_member_required
-def monthly(request):
+def monthly_date(request, year, month, day):
+    target_date = date(year=int(year), month=int(month), day=int(day))
+
     # Pull all the monthly members
-    memberships = Membership.objects.active_individual_memberships()
+    memberships = Membership.objects.active_memberships(target_date)
+    # memberships = Membership.objects.active_individual_memberships)
     # memberships = Membership.objects.filter(end_date__isnull=True).order_by('start_date')
     total_income = 0
-    # for membership in memberships:
-    #     total_income = total_income + membership.monthly_rate
-    context = {'memberships': memberships, 'total_income': total_income}
+    for membership in memberships:
+        total_income = total_income + membership.monthly_rate()
+    context = {
+        'target_date': target_date,
+        'memberships': memberships,
+        'total_income': total_income,
+    }
     return render(request, 'staff/stats/monthly.html', context)
 
 
@@ -313,7 +325,7 @@ def graph_members(days):
             member_max = day['value']
         if member_min == 0 or day['value'] < member_min:
             member_min = day['value']
-    member_avg = member_total / len(days)
+    member_avg = round(member_total / len(days), 2)
     return (member_min, member_max, member_avg, days)
 
 
@@ -334,7 +346,7 @@ def graph_income(days):
             income_min = membership_income
         day['membership'] = membership_count
         day['value'] = membership_income
-    income_avg = income_total / len(days)
+    income_avg = round(income_total / len(days), 2)
     return (income_min, income_max, income_avg, days)
 
 
@@ -350,7 +362,7 @@ def graph_amv(days):
             member_max = day['value']
         if member_min == 0 or day['value'] < member_min:
             member_min = day['value']
-    member_avg = member_total / len(days)
+    member_avg = round(member_total / len(days), 2)
     return (min_v, max_v, avg_v, days)
 
 

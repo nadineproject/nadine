@@ -232,10 +232,12 @@ ARP_ROOT = 'arp_import/'
 ARP_IMPORT_LOG = ARP_ROOT + 'import.log'
 ARP_IMPORT_LOCK = ARP_ROOT + 'importing.lock'
 ARP_IP_PFX = '172.16.5.'
+
 # Arp SNMP Settings
 #ARPWATCH_SNMP_SERVER = '192.168.1.1'
 #ARPWATCH_SNMP_COMMUNITY = 'yourcommunitystring'
 #ARPWATCH_NETWORK_PREFIX = '192.168.'
+ARP_TRACKING_URL = ""
 
 # JSignature Settings
 JSIGNATURE_WIDTH = 500

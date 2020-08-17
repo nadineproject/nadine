@@ -238,13 +238,16 @@ def security_deposits(request):
 def member_search(request):
     term = None
     search_results = None
-    if request.method == "POST":
+    member_search_form = None
+    if 'terms' in request.GET:
+        member_search_form = MemberSearchForm(request.GET)
+    elif 'terms' in request.POST:
         member_search_form = MemberSearchForm(request.POST)
-        if member_search_form.is_valid():
-            term = member_search_form.cleaned_data['terms']
-            search_results = User.helper.search(term)
-            if len(search_results) == 1:
-                return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': search_results[0].username}))
+    if member_search_form and member_search_form.is_valid():
+        term = member_search_form.cleaned_data['terms']
+        search_results = User.helper.search(term)
+        if len(search_results) == 1:
+            return HttpResponseRedirect(reverse('staff:members:detail', kwargs={'username': search_results[0].username}))
     else:
         member_search_form = MemberSearchForm()
     context = {'member_search_form': member_search_form, 'search_results': search_results, 'term': term, }
@@ -265,15 +268,40 @@ def view_user_reports(request):
 
 @staff_member_required
 def slack_users(request):
-    expired_users = User.helper.expired_slack_users()
+    active_emails = User.helper.active_member_emails()
+    expired_users = []
     slack_emails = []
+    deleted_slack_users = []
+    non_slack_users = []
+
+    # Loop through all the slack members and compare them to our active members.
     slack_users = SlackAPI().users.list().body['members']
     for u in slack_users:
-        if 'profile' in u and 'email' in u['profile'] and u['profile']['email']:
-            slack_emails.append(u['profile']['email'])
-    non_slack_users = User.helper.active_members().exclude(email__in=slack_emails)
-    context = {'expired_users':expired_users, 'slack_users':slack_users,
-         'non_slack_users':non_slack_users, 'slack_url':settings.SLACK_TEAM_URL}
+        real_name = u.get('real_name', None)
+        if 'profile' in u and 'email' in u['profile'] and u['profile']['email'] and not u['is_bot']:
+            email = u['profile']['email']
+            slack_emails.append(email)
+            if u['deleted']:
+                deleted_slack_users.append(u)
+            elif email not in active_emails:
+                expired_users.append({'email':email, 'real_name':real_name})
+
+    # Loop through the active users that didn't make the list and make sure
+    # They are not actually a slack user
+    for u in User.helper.active_members().exclude(email__in=slack_emails):
+        is_slack_user = False
+        for e in u.emailaddress_set.all():
+            if e.email in slack_emails:
+                is_slack_user = True
+        if not is_slack_user:
+            non_slack_users.append(u)
+
+    context = {
+        'deleted_slack_users':deleted_slack_users,
+        'expired_users':expired_users,
+        'non_slack_users':non_slack_users,
+        'slack_url':settings.SLACK_TEAM_URL
+    }
     return render(request, 'staff/members/slack_users.html', context)
 
 
