@@ -23,7 +23,7 @@
 			{% endif %}
 
 			{% if open_alerts %}
-				<h4 style="color:red;">{% blocktrans %}Check with {% settings_value 'SITE_NAME' %} staff about these required actions:{% endblocktrans %}</h4>
+				<h4 style="color:red;">{% blocktrans %}Check with staff about these required actions:{% endblocktrans %}</h4>
 				<ul>
 					{% for a in open_alerts %}
 						<li style='color: red;'> {{ a.description }}</li>
