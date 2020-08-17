@@ -1,5 +1,5 @@
 {% load i18n %}
-{% trans "Please take a moment to verify your e-mail address." %}
+Please take a moment to verify your e-mail address.
 
 {% trans "A new e-mail address has been associated with your account at" %} {{ site_name }}.
 {% trans "Please copy and paste the link below into your browser's address box to verify your new address." %}

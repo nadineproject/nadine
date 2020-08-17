@@ -1,4 +1,5 @@
 {% extends 'member/base.html' %}
+{% load i18n %}
 {% load settings_value %}
 {% load arp_tracker %}
 {% load static %}
@@ -34,27 +35,27 @@
 		{% block content %}
 		<div class='row'>
 			<h3 style="text-align:center;">{{ title }}</h3>
-			<p class='col s6 offset-s3' id='welcome-p'>
-				And welcome to <a href='https://nadineproject.org/'>Nadine</a>, the software we use to run our space. Nadine is your go-to place for membership information and other helpful tidbits. Take a look at the tabs above, or get started right here:
+			<p class='col s6 offset-s3' id='welcome-p'>{% blocktrans %}
+				And welcome to <a href='https://nadineproject.org/'>Nadine</a>, the software we use to run our space. Nadine is your go-to place for membership information and other helpful tidbits. Take a look at the tabs above, or get started right here:{% endblocktrans %}
 			</p>
 		</div>
 		<div class="row">
 			<div class="card col s6 m3 l3 offset-s3 offset-m2 offset-l1">
 				<div class="card-content white-text">
 					<img id='chat_icon' src="{% static 'img/chat_icon.png' %}"/>
-					<p>Printing, billing, or general questions about the space?</p>
+					<p>{% blocktrans %}Printing, billing, or general questions about the space?{% endblocktrans %}</p>
 				</div>
 				<div class="card-action">
-					<a class='card-a' href="{% url 'member:help' %}">Frequently Asked Questions</a>
+					<a class='card-a' href="{% url 'member:help' %}">{% blocktrans %}Frequently Asked Questions{% endblocktrans %}</a>
 				</div>
 			</div>
 			<div class="card col s6 m3 l2 offset-s3 offset-m1 offset-l1">
 				<div class="card-content white-text">
 					<img id='group_icon' src="{% static 'img/people_icon.png' %}"/>
-					<p>See who is here & learn people's names</p>
+					<p>{% blocktrans %}See who is here & learn people's names{% endblocktrans %}</p>
 				</div>
 				<div class="card-action">
-					<a class='card-a' href="{% url 'member:members' %}">View All Members</a>
+					<a class='card-a' href="{% url 'member:members' %}">{% blocktrans %}View All Members{% endblocktrans %}</a>
 				</div>
 			</div>
 			<div class="card event-card col offset-s3 offset-m4 offset-l1">
@@ -75,7 +76,7 @@
 					ctz=America%2FLos_Angeles" style=" border-width:0 " width="250" height="150" frameborder="0" scrolling="no"></iframe>
 				</div>
 				<div class="card-action">
-					<a class='card-a' href="{% url 'member:event:calendar' %}">See all Events</a>
+					<a class='card-a' href="{% url 'member:event:calendar' %}">{% blocktrans %}See all Events{% endblocktrans %}</a>
 				</div>
 			</div>
 		</div>

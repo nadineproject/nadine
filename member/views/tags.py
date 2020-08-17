@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404, HttpRequest, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
+from django.utils.translation import gettext as _
 
 from nadine.models.profile import UserProfile
 from nadine.models.organization import Organization
@@ -32,7 +33,7 @@ def get_tag_data(type):
             if count:
                 tags.append((tag, items, count))
     else:
-        raise Exception("Invalid type '%s'" % type)
+        raise Exception(_("Invalid type '%s'") % type)
     return tags
 
 
@@ -76,7 +77,7 @@ def add_tag(request, username):
     if tag.isalnum() or ' ' in tag or '-' in tag:
         user.profile.tags.add(tag)
     else:
-        messages.add_message(request, messages.ERROR, "Tags can't contain punctuation.")
+        messages.add_message(request, messages.ERROR, _("Tags can't contain punctuation."))
     return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': user.username}))
 
 
@@ -95,13 +96,13 @@ def remove_tag(request, username, tag):
 def add_org_tag(request, org_id):
     org = get_object_or_404(Organization, id=org_id)
     if not (request.user.is_staff or org.can_edit(request.user)):
-        return HttpResponseForbidden("Forbidden")
+        return HttpResponseForbidden(_("Forbidden"))
 
     tag = request.POST.get("tag", "").strip().lower()
     if tag.isalnum() or ' ' in tag or '-' in tag:
         org.tags.add(tag)
     else:
-        messages.add_message(request, messages.ERROR, "Tags can't contain punctuation.")
+        messages.add_message(request, messages.ERROR, _("Tags can't contain punctuation."))
     return HttpResponseRedirect(reverse('member:org:view', kwargs={'org_id': org.id}))
 
 

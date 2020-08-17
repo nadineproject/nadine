@@ -1,7 +1,8 @@
 {% extends "member/base.html" %}
+{% load i18n %}
 
 {% block content %}
-	<h3 class='header-font' style='text-align: center; margin-bottom:4%;'>{{ type | title }} Tagged with: {{ tag }}</h3>
+	<h3 class='header-font' style='text-align: center; margin-bottom:4%;'>{% blocktrans %}{{ type | title }} Tagged with: {{ tag }}{% endblocktrans %}</h3>
 
 	{% if members %}
 		<table class='tag-view'>

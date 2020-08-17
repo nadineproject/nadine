@@ -1,7 +1,8 @@
 {% extends "member/base.html" %}
+{% load i18n %}
 {% load imagetags %}
 
-{% block sub-title %}Organization | {% endblock %}
+{% block sub-title %}{% trans "Organization" %} | {% endblock %}
 
 {% block style %}
 	@media only screen and (max-width: 1100px) {
@@ -16,13 +17,13 @@
 {% endblock %}
 
 {% block content %}
-<h3 class='header-font' style='text-align: center;'>Edit {{ organization.name}}</h3>
+<h3 class='header-font' style='text-align: center;'>{% trans "Edit" %} {{ organization.name}}</h3>
 <form class='org-form s12 m12 l12' method="POST" action="." enctype="multipart/form-data">
 	{{ form.org_id }}
 	<table>
 		<tr>
 			<td class='org-label'>
-				Organization Name
+				{% blocktrans %}Organization Name{% endblocktrans %}
 			</td>
 			<td>
 				{{ form.name }}
@@ -35,7 +36,7 @@
 		</tr>
 		<tr>
 			<td class='org-label'>
-				Organization Blurb
+				{% blocktrans %}Organization Blurb{% endblocktrans %}
 				(<a onclick="$('#blurb_help').toggle();">?</a>)
 			</td>
 			<td>
@@ -51,14 +52,14 @@
 	<table>
 		<tr id='blurb_help' class='help_text' style='display:none;' >
 			<td>
-				<p>This is a short organization description which will be visible in the main organzation list. The maximum length of the blurb is 112 characters.</p>
+				<p>{% blocktrans %}This is a short organization description which will be visible in the main organzation list. The maximum length of the blurb is 112 characters.{% endblocktrans %}</p>
 			</td>
 		</tr>
 	</table>
 	<table>
 		<tr>
 			<td class='org-label'>
-				Organization Bio
+				{% blocktrans %}Organization Bio{% endblocktrans %}
 			</td>
 			<td>
 				{{ form.bio }}
@@ -73,16 +74,16 @@
 		<table>
 		<tr>
 			<td class='org-label'>
-				Visibility
+                {% trans "Visibility" %}
 				(<a onclick="$('#public_help').toggle();">?</a>)
 			</td>
 			<td>
 				<select class='browser-default input-field col s4' name='public' id='id_public'>
 						<option value="False" {% if not organization.public %} selected="true" {% endif %}>
-							Active Members Only
+							{% blocktrans %}Active Members Only{% endblocktrans %}
 						</option>
 						<option value="True" {% if organization.public %} selected="true" {% endif %}>
-							Open to the Public
+							{% blocktrans %}Open to the Public{% endblocktrans %}
 						</option>
 				</select>
 			</td>
@@ -96,11 +97,11 @@
 	<table>
 		<tr id='public_help' class='help_text' style='display:none;' >
 			<td>
-				<p>By default an organization profile is only viewable by active members. If you you make this profile public, it will be visable to non-members as well.</p>
+				<p>{% blocktrans %}By default an organization profile is only viewable by active members. If you you make this profile public, it will be visable to non-members as well.{% endblocktrans %}</p>
 			</td>
 		</tr>
 	</table>
-	<h5 class='header-font links-header'>Links</h5>
+	<h5 class='header-font links-header'>{% trans "Links" %}</h5>
 	{{ org_link_formset.management_form }}
 	{% for link_form in org_link_formset %}
 	<div class='link-formset row'>

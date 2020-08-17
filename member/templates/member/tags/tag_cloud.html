@@ -1,5 +1,6 @@
 {% extends "member/base.html" %}
 {% load static %}
+{% load i18n %}
 
 {%block sub-head %}
 <link rel="stylesheet" type="text/css" href="{% static 'jqcloud/jqcloud-1.0.4.css' %}" />
@@ -22,6 +23,6 @@
 {% endblock %}
 
 {% block content %}
-	<div style="float: right;">[ <a href="{% url 'member:tag:list' type %}">Tag List</a> ]</div>
+	<div style="float: right;">[ <a href="{% url 'member:tag:list' type %}">{% trans "Tag List" %}</a> ]</div>
 	<div id="tag-cloud" style="margin-left: 5%; font-size: 100%; width: 920px; height: 680px;"></div>
 {% endblock %}

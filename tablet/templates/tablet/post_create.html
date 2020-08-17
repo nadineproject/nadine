@@ -1,4 +1,5 @@
 {% extends "tablet/t_base.html" %}
+{% load i18n %}
 {% load imagetags %}
 
 {% block nav-visitors %} class="ui-btn-active" {% endblock %}
@@ -22,28 +23,28 @@
 {% endblock %}
 
 {% block content %}
-	<div style="font-size: 150%;">Welcome to Office Nomads!</div>
+	<div style="font-size: 150%;">{% blocktrans %}Welcome to Office Nomads!{% endblocktrans %}</div>
 
 	<p>
-	We have created a new user in Nadine. You can use Nadine to enter billing information, review your membership, your daily activity, and explore everything
-	that is going on here at Office Nomads.
+	{% blocktrans %}We have created a new user in Nadine. You can use Nadine to enter billing information, review your membership, your daily activity, and explore everything
+	that is going on here at Office Nomads.{% endblocktrans %}
 	</p>
 	<p style="padding-left:3em;">
-		Enjoy!<br>
-		-- The Office Nomads Team
+		{% blocktrans %}Enjoy!<br>
+		-- The Office Nomads Team{% endblocktrans %}
 	</p>
 
-	<h2>User Information</h2>
+	<h2>{% blocktrans %}User Information{% endblocktrans %}</h2>
 	<blockquote>
-		<p>Username: <strong>{{ user.username }}</strong>
-		<p>Full Name: <strong>{{ user.get_full_name }}</strong>
-		<p>Email: <strong>{{ user.email }}</em></strong>
+		<p>{% trans "Username:" %} <strong>{{ user.username }}</strong>
+		<p>{% blocktrans %}Full Name:{% endblocktrans %} <strong>{{ user.get_full_name }}</strong>
+		<p>{% trans "Email:" %} <strong>{{ user.email }}</strong>
 	</blockquote>
 
 	<div id="guestform-show"></div>
 
 	<div style="width:100%; text-align:center;" id="signin" {% if search_results %} class="hidden" {% endif %}>
-	<h2>Are you going to stay and work today?</h2>
+	<h2>{% blocktrans %}Are you going to stay and work today?{% endblocktrans %}</h2>
 	<form action="{% url 'tablet:post_create' user.username %}" method="POST" data-ajax="false">
 		<fieldset class="visitor-form ui-grid-b">
 			<div class="ui-block-a"><input id="yes_button" name="work_today" type="Submit" value="Yes"/></div>
@@ -54,7 +55,7 @@
 	</div>
 
 	<div style="width:100%; text-align:center;" id="guestform" {% if not search_results %} class="hidden" {% endif %} >
-		<h2>Which member is paying for you today?</h2>
+		<h2>{% blocktrans %}Which member is paying for you today?{% endblocktrans %}</h2>
 		{% if search_results %}
 			<div id="member-list">
 				<ul data-role="listview" data-inset="true" data-filter="false">
@@ -66,8 +67,8 @@
 		{% else %}
 			<div id="search-box">
 				<form id="member-search-form" action="{% url 'tablet:post_create' user.username %}" method="POST">
-					<input id="id_terms"  placeholder="Search by first name" type="search" name="terms" maxlength="100"/>
-					<input type="submit" value="Search" data-theme="b" data-transition="fade"/>
+					<input id="id_terms" placeholder="{% trans "Search by first name" %}" type="search" name="terms" maxlength="100"/>
+					<input type="submit" value="{% trans "Search" %}" data-theme="b" data-transition="fade"/>
 					{% csrf_token %}
 				</form>
 			</div>

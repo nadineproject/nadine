@@ -1,8 +1,9 @@
 {% extends "member/base.html" %}
+{% load i18n %}
 {% load settings_value %}
 {% load imagetags %}
 
-{% block sub-title %}Organization | {% endblock %}
+{% block sub-title %}{% trans "Organization" %} | {% endblock %}
 
 {% block style %}
 @media only screen and (max-width: 1100px) {
@@ -17,11 +18,11 @@
 {% endblock %}
 
 {% block content %}
-<h3 class='header-font' style='text-align:center;'>Organizations at {% settings_value 'SITE_NAME' %}</h3>
+<h3 class='header-font' style='text-align:center;'>{% blocktrans %}Organizations at{% endblocktrans %} {% settings_value 'SITE_NAME' %}</h3>
 <div class='ui-widget row'>
 	<form class='col s12 m7 l7 offset-m6 offset-l6' id='org-search-form' action="." method='POST'>
 		{% csrf_token %}
-		<input class='col s8' id='org-search' name='terms' type='text' placeholder="Search for an Organization" />
+		<input class='col s8' id='org-search' name='terms' type='text' placeholder="{% trans "Search for an Organization" %}" />
 		<input class='btn search-btn col s3 m2 l2' type='submit' value='Search' />
 	</form>
 </div>
@@ -35,7 +36,7 @@
 				</div>
 			{% else %}
 				<div class='row'>
-					<h3 class='org-error' style="text-align:center; font-family:'Oswald', sans-serif; margin-top:10%;">No organization matches that query</h3>
+					<h3 class='org-error' style="text-align:center; font-family:'Oswald', sans-serif; margin-top:10%;">{% blocktrans %}No organization matches that query{% endblocktrans %}</h3>
 				</div>
 			{% endif %}
 		</div>

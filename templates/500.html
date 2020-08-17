@@ -1,10 +1,11 @@
 {% extends "member/base.html" %}
+{% load i18n %}
 
 {% block style %}
 {% endblock %}
 
 {% block content%}
 
-<h3 style="padding:2em;">Ooops!<br><br>It looks like there was a problem.  Our support staff has been notified.</h3>
+<h3 style="padding:2em;">{% blocktrans %}Ooops!<br><br>It looks like there was a problem.  Our support staff has been notified.{% endblocktrans %}</h3>
 
 {% endblock %}

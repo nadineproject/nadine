@@ -1,11 +1,12 @@
 {% extends "tablet/t_base.html" %}
+{% load i18n %}
 {% load imagetags %}
 
 {% block nav-members %} class="ui-btn-active" {% endblock %}
 
 {% block content %}
 	{% if search_results %}
-		<h2>Search Results</h2>
+		<h2>{% blocktrans %}Search Results{% endblocktrans %}</h2>
 		<div id="member-list">
 			<ul data-role="listview" data-inset="true" data-filter="false">
 				{% for u in search_results %}
@@ -14,12 +15,12 @@
 			</ul>
 		</div>
 	{% else %}
-		<h2>Search</h2>
+		<h2>{% trans "Search" %}</h2>
 		<div id="search-box">
 			<form id="member-search-form" action="{% url 'tablet:search' %}" method="POST">
 				<div data-role="fieldcontain">
 					<input id="id_terms" type="search" maxlength="100" name="terms" type="text" />
-					<input type="submit" value="Search" data-theme="b" data-transition="fade"/>
+					<input type="submit" value="{% trans "Search" %}" data-theme="b" data-transition="fade"/>
 				</div>
 				{% csrf_token %}
 			</form>

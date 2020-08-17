@@ -14,6 +14,8 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidde
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from django.utils.timezone import localtime, now
+from django.utils.translation import gettext as _
+from django.utils import translation
 
 from nadine import email
 from nadine.models.profile import UserProfile, FileUpload
@@ -34,6 +36,16 @@ from member.views.core import is_active_member
 @login_required
 def profile_redirect(request):
     return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': request.user.username}))
+
+
+@login_required
+def profile_language(request, username, language):
+    print(f"changing language to {language} for {username}")
+    translation.activate(language)
+    request.session[translation.LANGUAGE_SESSION_KEY] = language
+    response = HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': request.user.username}))
+    response.set_cookie(settings.LANGUAGE_COOKIE_NAME, language)
+    return response
 
 
 @login_required
@@ -182,7 +194,7 @@ def edit_profile(request, username):
 
                             return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': user.username}))
                         else:
-                            messages.error(request, 'Your password must be at least 8 characters long.')
+                            messages.error(request, _('Your password must be at least 8 characters long.'))
                     else:
                         for link in link_data:
                             del_url = link.get('url')
@@ -198,14 +210,14 @@ def edit_profile(request, username):
                                     if url_type and url:
                                         link_form.save()
                             except Exception as e:
-                                messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
+                                messages.add_message(request, messages.ERROR, _("Could not save: %s") % str(e))
                         profile_form.save()
 
                         return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': user.username}))
                 else:
-                    messages.error(request,'The entered passwords do not match. Please try again.')
+                    messages.error(request, _('The entered passwords do not match. Please try again.'))
             else:
-                messages.error(request, 'There was an error saving your websites. Please make sure they have a valid URL and URL type.')
+                messages.error(request, _('There was an error saving your websites. Please make sure they have a valid URL and URL type.'))
     else:
         link_formset = LinkFormSet(initial=link_data)
         profile = user.profile
@@ -281,7 +293,7 @@ def disable_billing(request, username):
 @user_passes_test(is_active_member, login_url='member_not_active')
 def file_view(request, disposition, username, file_name):
     if not request.user.is_staff and not username == request.user.username:
-        return HttpResponseForbidden("Forbidden")
+        return HttpResponseForbidden(_("Forbidden"))
     file_upload = FileUpload.objects.filter(user__username=username, name=file_name).first()
     if not file_upload:
         raise Http404
@@ -307,7 +319,7 @@ def edit_photo(request, username):
             else:
                 print(form)
         except Exception as e:
-            messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
+            messages.add_message(request, messages.ERROR, _("Could not save: %s") % str(e))
     else:
         form = ProfileImageForm()
 

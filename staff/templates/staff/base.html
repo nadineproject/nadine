@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load integrated_systems %}
 {% load settings_value %}
 {% load static %}
@@ -243,7 +244,7 @@
 			<form id="site-search-form" action="{% url 'staff:members:search' %}" method="post">
 				<div>
 					{% for field in site_search_form %}{{ field }}{% endfor %}
-					<input type="submit" value="Search" style="display: inline-block;"/>
+					<input type="submit" value="{% trans "Search" %}" style="display: inline-block;"/>
 					{% csrf_token %}
 				</div>
 			</form>

@@ -1,11 +1,12 @@
+{% load i18n %}
   {% load static %}
 
 
   <h3 class='header-font' style='text-align: center;'>
     {% if organization %}
-      Edit Your Organization Logo:
+      {% blocktrans %}Edit Your Organization Logo:{% endblocktrans %}
     {% else %}
-      Edit Your Profile Image:
+      {% blocktrans %}Edit Your Profile Image:{% endblocktrans %}
     {% endif %}
   </h3>
 
@@ -49,12 +50,12 @@
    </div>
    <table>
      <tr class='btn-row'>
-       <td><button type='submit' class='btn pic-btn'>Save</button></td>
+       <td><button type='submit' class='btn pic-btn'>{% trans "Save" %}</button></td>
        <td>
 
        </td>
        <td style='padding-top:3%;'>
-         <a class='modal-btn' id='cancel-event'>Cancel</a>
+         <a class='modal-btn' id='cancel-event'>{% trans "Cancel" %}</a>
        </td>
      </tr>
    </table>

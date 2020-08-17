@@ -14,6 +14,8 @@ from django.dispatch import Signal, receiver
 from django.db.models.signals import post_save
 from django.utils.timezone import localtime, now
 from django.conf import settings
+from django.utils.timezone import localtime, now
+from django.utils.translation import gettext as _
 
 from comlink.models import MailingList
 
@@ -342,24 +344,24 @@ class MemberAlert(models.Model):
     REMOVE_MAILBOX = "remove_mailbox"
 
     ALERT_DESCRIPTIONS = (
-        (PAPERWORK, "Received Paperwork"),
-        (MEMBER_INFO, "Enter & File Member Information"),
-        (MEMBER_AGREEMENT, "Sign Membership Agreement"),
-        (TAKE_PHOTO, "Take Photo"),
-        (UPLOAD_PHOTO, "Upload Photo"),
-        (POST_PHOTO, "Print & Post Photo"),
-        (ORIENTATION, "New Member Orientation"),
-        (ONE_MONTH, "One Month Check-in"),
-        (KEY_AGREEMENT, "Key Training & Agreement"),
-        (STALE_MEMBER, "Stale Membership"),
+        (PAPERWORK, _("Received Paperwork")),
+        (MEMBER_INFO, _("Enter & File Member Information")),
+        (MEMBER_AGREEMENT, _("Sign Membership Agreement")),
+        (TAKE_PHOTO, _("Take Photo")),
+        (UPLOAD_PHOTO, _("Upload Photo")),
+        (POST_PHOTO, _("Print & Post Photo")),
+        (ORIENTATION, _("New Member Orientation")),
+        (ONE_MONTH, _("One Month Check-in")),
+        (KEY_AGREEMENT, _("Key Training & Agreement")),
+        (STALE_MEMBER, _("Stale Membership")),
         #(INVALID_BILLING, "Missing Valid Billing"),
-        (ASSIGN_CABINET, "Assign a File Cabinet"),
-        (ASSIGN_MAILBOX, "Assign a Mailbox"),
-        (REMOVE_PHOTO, "Remove Picture from Wall"),
+        (ASSIGN_CABINET, _("Assign a File Cabinet")),
+        (ASSIGN_MAILBOX, _("Assign a Mailbox")),
+        (REMOVE_PHOTO, _("Remove Picture from Wall")),
         # (REMOVE_SLACK, "Remove from Slack"),
-        (RETURN_DOOR_KEY, "Take Back Keycard"),
-        (RETURN_DESK_KEY, "Take Back File Cabinet Key"),
-        (REMOVE_MAILBOX, "Remove Mailbox"),
+        (RETURN_DOOR_KEY, _("Take Back Keycard")),
+        (RETURN_DESK_KEY, _("Take Back File Cabinet Key")),
+        (REMOVE_MAILBOX, _("Remove Mailbox")),
     )
 
     # These alerts can be resolved by the system automatically

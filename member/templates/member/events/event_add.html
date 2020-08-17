@@ -1,6 +1,7 @@
 {% extends "member/base.html" %}
+{% load i18n %}
 
-{% block sub-title %}Events | {% endblock %}
+{% block sub-title %}{% trans "Events" %} | {% endblock %}
 
 {%block sub-head %}
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/gather/css/jquery-ui-timepicker-addon.css" />
@@ -10,7 +11,7 @@
 {% endblock %}
 
 {% block content %}
-<h2>Office Nomads - Add an Event</h2>
+<h2>{% blocktrans %}Office Nomads - Add an Event{% endblocktrans %}</h2>
 
 <div class="col-md-8">
 

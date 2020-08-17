@@ -12,6 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404, HttpRequest, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
+from django.utils.translation import gettext as _
 
 from nadine.forms import OrganizationForm, OrganizationMemberForm, ProfileImageForm, OrganizationSearchForm, LinkForm, BaseLinkFormSet
 from nadine.models.organization import Organization, OrganizationMember
@@ -72,7 +73,7 @@ def org_view(request, org_id):
 @user_passes_test(is_active_member, login_url='member:not_active')
 def org_add(request):
     if 'org' not in request.POST and 'username' in request.POST:
-        return HttpResponseForbidden("Forbidden")
+        return HttpResponseForbidden(_("Forbidden"))
 
     user = get_object_or_404(User, username=request.POST['username'])
 
@@ -93,7 +94,7 @@ def org_add(request):
 def org_edit(request, org_id):
     org = get_object_or_404(Organization, id=org_id)
     if not (request.user.is_staff or org.can_edit(request.user)):
-        return HttpResponseForbidden("Forbidden")
+        return HttpResponseForbidden(_("Forbidden"))
 
     OrgFormSet = formset_factory(LinkForm, formset=BaseLinkFormSet)
 
@@ -121,14 +122,14 @@ def org_edit(request, org_id):
                                 if url_type and url:
                                     link_form.save()
                         except Exception as e:
-                            print(("Could not save website: %s" % str(e)))
+                            print((_("Could not save website: %s") % str(e)))
 
                     form.save()
                     return HttpResponseRedirect(reverse('member:org:view', kwargs={'org_id': org.id}))
                 else:
-                    messages.error(request, 'Please make sure the websites have a valid URL and URL type.')
+                    messages.error(request, _('Please make sure the websites have a valid URL and URL type.'))
         except Exception as e:
-            messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
+            messages.add_message(request, messages.ERROR, _("Could not save: %s") % str(e))
     else:
         form = OrganizationForm(instance=org)
         org_link_formset = OrgFormSet(initial=link_data)
@@ -145,12 +146,12 @@ def org_edit(request, org_id):
 def org_member(request, org_id):
     org = get_object_or_404(Organization, id=org_id)
     if not (not org.locked or request.user.is_staff or org.can_edit(request.user)):
-        messages.add_message(request, messages.ERROR, "You do not have permission to add yourself to this organization")
+        messages.add_message(request, messages.ERROR, _("You do not have permission to add yourself to this organization"))
         return HttpResponseRedirect(reverse('member:profile:view', kwargs={'username': request.username}))
 
     # We require a POST and we require an action
     if not request.method == "POST" or 'action' not in request.POST:
-        return HttpResponseForbidden("Forbidden")
+        return HttpResponseForbidden(_("Forbidden"))
     action = request.POST['action']
 
     full_name = None
@@ -185,7 +186,7 @@ def org_member(request, org_id):
             else:
                 print(form)
     except Exception as e:
-        messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
+        messages.add_message(request, messages.ERROR, _("Could not save: %s") % str(e))
 
     context = {'organization': org,
                'member': org_member,
@@ -202,7 +203,7 @@ def org_member(request, org_id):
 def org_edit_photo(request, org_id):
     org = get_object_or_404(Organization, id=org_id)
     if not (request.user.is_staff or org.can_edit(request.user)):
-        return HttpResponseForbidden("Forbidden")
+        return HttpResponseForbidden(_("Forbidden"))
 
     if request.method == 'POST':
         form = ProfileImageForm(request.POST, request.FILES)
@@ -213,7 +214,7 @@ def org_edit_photo(request, org_id):
             else:
                 print(form)
         except Exception as e:
-            messages.add_message(request, messages.ERROR, "Could not save: %s" % str(e))
+            messages.add_message(request, messages.ERROR, _("Could not save: %s") % str(e))
     else:
         form = ProfileImageForm()
 

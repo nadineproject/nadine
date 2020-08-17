@@ -1,4 +1,5 @@
 {% extends "member/base.html" %}
+{% load i18n %}
 {% load settings_value %}
 
 {% block style %}
@@ -6,6 +7,6 @@
 
 {% block content%}
 
-<h1>Welcome to the wonderful world of {% settings_value 'SITE_NAME' %}</h1>
+<h1>{% blocktrans %}Welcome to the wonderful world of {% settings_value 'SITE_NAME' %}{% endblocktrans %}</h1>
 
 {% endblock %}

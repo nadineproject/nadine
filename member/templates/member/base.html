@@ -2,6 +2,7 @@
 {% load settings_value %}
 {% load social_links %}
 {% load static  %}
+{% load i18n %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -80,49 +81,49 @@
             </div>
             <a href='#' data-activates="mobile" class="button-collapse"><img class='menu-img' src="{% static 'img/hamburger.png' %}"/></a>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
-            <li><a href="{% url 'member:help' %}">Help</a></li>
+            <li><a href="{% url 'member:help' %}">{% trans "Help" %}</a></li>
         {% endblock %}
           {% if request.user.profile.is_active %}
             <li>
-              <a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown1' href="{% url 'member:members' %}">Members</a>
+              <a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown1' href="{% url 'member:members' %}">{% trans "Members" %}</a>
               <ul id='dropdown1' class='dropdown-content'>
-                <li><a href="{% url 'member:members' %}">Active Members</a></li>
-                <li><a href="{% url 'member:tag:cloud' 'members' %}">Tags</a></li>
+                <li><a href="{% url 'member:members' %}">{% trans "Active Members" %}</a></li>
+                <li><a href="{% url 'member:tag:cloud' 'members' %}">{% trans "Tags" %}</a></li>
               </ul>
             </li>
             <li>
-              <a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown2' href="{% url 'member:org:list' %}">Organizations</a>
+              <a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown2' href="{% url 'member:org:list' %}">{% trans "Organizations" %}</a>
               <ul id='dropdown2' class='dropdown-content'>
-                <li><a href="{% url 'member:org:list' %}">Active Organizations</a></li>
-              <li><a href="{% url 'member:tag:cloud' 'organizations' %}">Tags</a></li>
+                <li><a href="{% url 'member:org:list' %}">{% blocktrans %}Active Organizations{% endblocktrans %}</a></li>
+              <li><a href="{% url 'member:tag:cloud' 'organizations' %}">{% trans "Tags" %}</a></li>
               </ul>
             </li>
-            <li><a href="{% url 'member:event:calendar' %}">Events</a></li>
-            <li><a href="{% url 'member:connect:email_lists' %}">Mailing Lists</a></li>
+            <li><a href="{% url 'member:event:calendar' %}">{% trans "Events" %}</a></li>
+            <li><a href="{% url 'member:connect:email_lists' %}">{% trans "Mailing Lists" %}</a></li>
             {% if integrations.slack %}
-              <li><a class='slack-a' href="{% url 'member:connect:slack' user.username %}">Slack</a></li>
+              <li><a class='slack-a' href="{% url 'member:connect:slack' user.username %}">{% trans "Slack" %}</a></li>
             {% endif %}
-            <li><a href="{% url 'member:profile:redirect' %}">Profile</a></li>
+            <li><a href="{% url 'member:profile:redirect' %}">{% trans "Profile" %}</a></li>
             <li>
-              <a class='logout-a dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown3' href="{% url 'logout' %}">Logout</a>
+              <a class='logout-a dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown3' href="{% url 'logout' %}">{% trans "Logout" %}</a>
               <ul id='dropdown3' class='dropdown-content'>
                 {% if request.user.is_staff %}
-                  <li><a href="{% url 'staff:home' %}">Staff</a></li>
-                  <li><a href="{% url 'admin:index' %}">Admin</a></li>
+                  <li><a href="{% url 'staff:home' %}">{% trans "Staff" %}</a></li>
+                  <li><a href="{% url 'admin:index' %}">{% trans "Admin" %}</a></li>
                 {% endif %}
               </ul>
             </li>
           {% else %}
-            <li><a href="{% url 'member:not_active' %}">Members</a></li>
-            <li><a href="{% url 'member:not_active' %}">Organizations</a></li>
-            <li><a href="{% url 'member:not_active' %}">Events</a></li>
-            <li><a href="{% url 'member:not_active' %}">Mailing Lists</a></li>
+            <li><a href="{% url 'member:not_active' %}">{% trans "Members" %}</a></li>
+            <li><a href="{% url 'member:not_active' %}">{% trans "Organizations" %}</a></li>
+            <li><a href="{% url 'member:not_active' %}">{% trans "Events" %}</a></li>
+            <li><a href="{% url 'member:not_active' %}">{% trans "Mailing Lists" %}</a></li>
             {% if integrations.slack %}
-              <li><a href="{% url 'member:not_active' %}">Slack</a></li>
+              <li><a href="{% url 'member:not_active' %}">{% trans "Slack" %}</a></li>
             {% endif %}
-            <li><a href="{% url 'member:profile:redirect' %}">Profile</a></li>
+            <li><a href="{% url 'member:profile:redirect' %}">{% trans "Profile" %}</a></li>
             <li>
-              <a class='logout-a dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown3' href="{% url 'logout' %}">Logout</a>
+              <a class='logout-a dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown3' href="{% url 'logout' %}">{% trans "Logout" %}</a>
               <ul id='dropdown3' class='dropdown-content'>
                 {% if request.user.is_staff %}
                   <li><a href="{% url 'staff:home' %}">Staff</a></li>
@@ -136,28 +137,28 @@
           {% block side-nav %}
             <ul class="side-nav" id="mobile">
               {% if request.user.profile.is_active %}
-                <li><a href="{% url 'member:help' %}">Help</a></li>
-                <li><a href="{% url 'member:members' %}">Members</a></li>
-                <li><a href="{% url 'member:org:list' %}">Organizations</a></li>
-                <li><a href="{% url 'member:event:calendar' %}">Events</a></li>
-                <li><a href="{% url 'member:connect:email_lists' %}">Mailing Lists</a></li>
+                <li><a href="{% url 'member:help' %}">{% trans "Help" %}</a></li>
+                <li><a href="{% url 'member:members' %}">{% trans "Members" %}</a></li>
+                <li><a href="{% url 'member:org:list' %}">{% trans "Organizations" %}</a></li>
+                <li><a href="{% url 'member:event:calendar' %}">{% trans "Events" %}</a></li>
+                <li><a href="{% url 'member:connect:email_lists' %}">{% trans "Mailing Lists" %}</a></li>
                 {% if integrations.slack %}
-                  <li><a class='slack-a' href="{% url 'member:connect:slack' user.username %}">Slack</a></li>
+                  <li><a class='slack-a' href="{% url 'member:connect:slack' user.username %}">{% trans "Slack" %}</a></li>
                 {% endif %}
-                <li><a href="{% url 'member:profile:redirect' %}">Profile</a></li>
-                <li><a class='logout-a' href="{% url 'logout' %}">Logout</a></li>
+                <li><a href="{% url 'member:profile:redirect' %}">{% trans "Profile" %}</a></li>
+                <li><a class='logout-a' href="{% url 'logout' %}">{% trans "Logout" %}</a></li>
               {% else %}
-                <li><a href="{% url 'member:not_active' %}">Help</a></li>
-                <li><a href="{% url 'member:not_active' %}">Members</a></li>
-                <li><a href="{% url 'member:not_active' %}">Organizations</a></li>
-                <li><a href="{% url 'member:not_active' %}">Events</a></li>
-                <li><a href="{% url 'member:not_active' %}">Tags</a></li>
-                <li><a href="{% url 'member:not_active' %}">Mailing Lists</a></li>
+                <li><a href="{% url 'member:not_active' %}">{% trans "Help" %}</a></li>
+                <li><a href="{% url 'member:not_active' %}">{% trans "Members" %}</a></li>
+                <li><a href="{% url 'member:not_active' %}">{% trans "Organizations" %}</a></li>
+                <li><a href="{% url 'member:not_active' %}">{% trans "Events" %}</a></li>
+                <li><a href="{% url 'member:not_active' %}">{% trans "Tags" %}</a></li>
+                <li><a href="{% url 'member:not_active' %}">{% trans "Mailing Lists" %}</a></li>
                 {% if integrations.slack %}
-                  <li><a href="{% url 'member:not_active' %}">Slack</a></li>
+                  <li><a href="{% url 'member:not_active' %}">{% trans "Slack" %}</a></li>
                 {% endif %}
-                <li><a href="{% url 'member:profile:redirect' %}">Profile</a></li>
-                <li><a class='logout-a' href="{% url 'logout' %}">Logout</a></li>
+                <li><a href="{% url 'member:profile:redirect' %}">{% trans "Profile" %}</a></li>
+                <li><a class='logout-a' href="{% url 'logout' %}">{% trans "Logout" %}</a></li>
               {% endif %}
             </ul>
           {% endblock %}
@@ -187,7 +188,7 @@
     <div class="footer-copyright setwidth container">
       {% block upperfooter %}
         <div id="copyright">
-          © 2020 |  Office Nomads | <a id='nadine-link' href="https://nadineproject.org/" target="_new">The Nadine Project</a>
+          © 2020 |  Office Nomads | <a id='nadine-link' href="https://nadineproject.org/" target="_new">{% trans "The Nadine Project" %}</a>
         </div>
       {% endblock %}
       {% block lowerfooter %}

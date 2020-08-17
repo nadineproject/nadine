@@ -1,24 +1,25 @@
 {% load list_tags %}
+{% load i18n %}
 
 <table width="65%">
 <tr>
     <td>
       <div class='detail-billing'>
-        <strong>Current Profile:</strong>
+        <strong>{% blocktrans %}Current Profile:{% endblocktrans %}</strong>
         {% if user.profile.has_valid_billing %}
-        	<font class='valid'>Valid</font>
+        	<font class='valid'>{% trans "Valid" %}</font>
         	{% if user.profile.is_guest %}
-        		- Guest of: {{ user.profile.is_guest }}
+        		- {% blocktrans %}Guest of:{% endblocktrans %} {{ user.profile.is_guest }}
         	{% endif %}
         {% else %}
-        	<font class='invalid'>Invalid</font>
+        	<font class='invalid'>{% trans "Invalid" %}</font>
         {% endif %}
       </div>
       {% include "staff/billing/action_create_billing.html" %}
     </td>
     <td>
         <div style="margin-bottom: .5em; text-align:left;">
-            Automatic Billing: <span id="auto_billing" style="color:green;">The {{ user.membership.bill_day_str }}</span>
+            {% blocktrans %}Automatic Billing:{% endblocktrans %} <span id="auto_billing" style="color:green;">{% trans "The" %} {{ user.membership.bill_day_str }}</span>
         </div>
         <form id="disable_billing_form" action="{% url 'member:profile:disable_billing' user.username %}">
             <input class='billing-btn btn' id="disable_billing_button" type="submit" value="Disable Automatic Billing" />
@@ -26,9 +27,9 @@
     </td>
 </tr>
 <tr><td colspan="2">
-    If you have any questions, or need to make any changes to your membership, please email
+    {% blocktrans %}If you have any questions, or need to make any changes to your membership, please email
     <a target="_self" href="mailto:billing@officenomads.com" style="color:green;">billing@officenomads.com</a>.
-    We need at least one full business day to make any changes, otherwise your payment will be processed automatically.
+    We need at least one full business day to make any changes, otherwise your payment will be processed automatically.{% endblocktrans %}
 </td></tr>
 </table>
 
@@ -41,17 +42,17 @@
     </script>
 {% endif %}
 
-<h3>Recent Bills</h3>
+<h3>{% blocktrans %}Recent Bills{% endblocktrans %}</h3>
 
 <div id="bill-details">
 {% if bills %}
 <table>
   <thead>
         <tr>
-            <th>Due Date</th>
-            <th>Amount</th>
-            <th>Payments</th>
-            <th>Status</th>
+            <th>{% blocktrans %}Due Date{% endblocktrans %}</th>
+            <th>{% trans "Amount" %}</th>
+            <th>{% trans "Payments" %}</th>
+            <th>{% trans "Status" %}</th>
             <th></td>
         </tr>
   </thead>
@@ -61,12 +62,12 @@
         <td nowrap>{{ bill.due_date|date:"M d, Y" }}</td>
         <td>${{ bill.total }}</td>
         <td>${{ bill.total_paid }}</td>
-        <td>{% if bill.is_open %}Open{% endif %}</td>
-        <td><a href='{{ bill.get_absolute_url}}'>Receipt</a></td>
+        <td>{% if bill.is_open %}{% trans "Open" %}{% endif %}</td>
+        <td><a href='{{ bill.get_absolute_url}}'>{% trans "Receipt" %}</a></td>
     </tr>
 {% endfor %}
 </tbody>
 </table>
 {% else %}
-    No bills...
+    {% blocktrans %}No bills...{% endblocktrans %}
 {% endif %}

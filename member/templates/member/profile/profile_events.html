@@ -1,33 +1,34 @@
-<h3 class='header-font'>Upcoming Events and Room Bookings</h3>
+{% load i18n %}
+<h3 class='header-font'>{% blocktrans %}Upcoming Events and Room Bookings{% endblocktrans %}</h3>
 <table>
   <tr style='border-bottom: 1px solid RGBA(216, 216, 216, 1.00);'>
-    <th class='sub-th'>Event</th>
-    <th class='sub-th'>Start</th>
-    <th class='sub-th'>End</th>
-    <th class='sub-th'>Room</th>
-    <th class='sub-th'>Total Hours</th>
+    <th class='sub-th'>{% trans "Event" %}</th>
+    <th class='sub-th'>{% trans "Start" %}</th>
+    <th class='sub-th'>{% trans "End" %}</th>
+    <th class='sub-th'>{% trans "Room" %}</th>
+    <th class='sub-th'>{% blocktrans %}Total Hours{% endblocktrans %}</th>
   </tr>
   {% for e in upcoming %}
     <tr class='{% cycle "row-even" "row-odd" %}'>
-      <td>{% if e.name %}{{ e.name|title }}{% else %} <i>Private Event</i> {% endif %}</td>
+      <td>{% if e.name %}{{ e.name|title }}{% else %} <i>{% blocktrans %}Private Event{% endblocktrans %}</i> {% endif %}</td>
       <td>{{ e.start_ts }}</td>
       <td>{{ e.end_ts }}</td>
       <td>{{ e.room }}</td>
-      <td>{{ e.total }} hours</td>
+      <td>{{ e.total }} {% trans "hours" %}</td>
     </tr>
   {% endfor %}
 </table>
 <table class='booking-total'>
   <tr>
     <td>
-      <strong>Total Hours Used this Period:</strong> {{ total }} hours
+      <strong>{% blocktrans %}Total Hours Used this Period:{% endblocktrans %}</strong> {{ total }} {% trans "hours" %}
     </td>
     <td>
-      <strong>Hours Remaining:</strong> <span class='remainder'></span> hours
+      <strong>{% blocktrans %}Hours Remaining:{% endblocktrans %}</strong> <span class='remainder'></span> {% trans "hours" %}
     </td>
   </tr>
 </table>
-<a class='btn booking-redirect' href='{% url "member:event:create_booking" user.username %}'>Make a New Room Booking</a>
+<a class='btn booking-redirect' href='{% url "member:event:create_booking" user.username %}'>{% blocktrans %}Make a New Room Booking{% endblocktrans %}</a>
 
 <script>
   $(document).ready(function() {
