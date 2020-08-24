@@ -32,6 +32,8 @@ class Command(BaseCommand):
             self.setup_timezone()
             self.setup_email()
             self.setup_database()
+            self.setup_nextcloud()
+            self.setup_rocketchat()
             self.write_settings_file()
         except KeyboardInterrupt:
             print()
@@ -83,7 +85,7 @@ class Command(BaseCommand):
         self.prompt_for_value("Site Url", "SITE_URL")
         url = self.local_settings.get_value("SITE_URL")
         if url.endswith("/"):
-            self.local_settings.set(SITE_URL, url[:-1])
+            self.local_settings.set('SITE_URL', url[:-1])
 
         # Site Administrator
         print("Full Name of Administrator")
@@ -156,6 +158,47 @@ class Command(BaseCommand):
         self.prompt_for_value("Staff Address", "STAFF_EMAIL_ADDRESS", default="staff@" + domain)
         self.prompt_for_value("Billing Address", "BILLING_EMAIL_ADDRESS", default="billing@" + domain)
         self.prompt_for_value("Team Address", "TEAM_EMAIL_ADDRESS", default="team@" + domain)
+
+    # Nextcloud Setup
+    def setup_nextcloud(self):
+        print()
+        print("### Nextcloud Setup ###")
+        print("Setup Nextcloud user provisioning? (y, N)")
+        save = input(PROMPT).strip().lower()
+        if save != "y":
+            return
+        self.local_settings.settings.append("INSTALLED_APPS += ['nextcloud']")
+        self.prompt_for_value("Nextcloud Host", "NEXTCLOUD_HOST")
+        self.prompt_for_value("Nextcloud Admin username", "NEXTCLOUD_ADMIN")
+        self.prompt_for_value("Nextcloud Admin password", "NEXTCLOUD_PASSWORD")
+        self.prompt_for_value("Use HTTPS connection", "NEXTCLOUD_USE_HTTPS")
+        self.prompt_for_value("SSL cert is signed", "NEXTCLOUD_SSL_IS_SIGNED")
+        self.prompt_for_value("Send invitation by mail", "NEXTCLOUD_USER_SEND_EMAIL_PASSWORD")
+        self.prompt_for_value("Add new user to group (optional)", "NEXTCLOUD_USER_GROUP")
+        self.prompt_for_value("Nextcloud user quota", "NEXTCLOUD_USER_QUOTA")
+
+    # Rocketchat Setup
+    def setup_rocketchat(self):
+        print()
+        print("### Rocket.Chat Setup ###")
+        print("Setup Rocket.Chat user provisioning? (y, N)")
+        save = input(PROMPT).strip().lower()
+        if save != "y":
+            return
+        self.local_settings.settings.append("INSTALLED_APPS += ['rocketchat']")
+        self.prompt_for_value("Rocketchat Host", "ROCKETCHAT_HOST")
+        self.prompt_for_value("Rocketchat Admin username", "ROCKETCHT_ADMIN")
+        self.prompt_for_value("Rocketchat Admin password", "ROCKETCHAT_SECRET")
+        self.prompt_for_value("Use HTTPS connection", "ROCKETCHAT_USE_HTTPS")
+        self.prompt_for_value("SSL cert is signed", "ROCKETCHAT_SSL_IS_SIGNED")
+        self.prompt_for_value("Send welcome email to user", "ROCKETCHAT_SEND_WELCOME_MAIL")
+        self.prompt_for_value("User should change password on login", "ROCKETCHAT_REQUIRE_CHANGE_PASS")
+        self.prompt_for_value("Verified user with her email address", "ROCKETCHAT_VERIFIED_USER")
+        print("Add user to rocketchat groups (split group with ',')? (default: None)")
+        save = [x.strip() for x in input(PROMPT).split(',')]
+        if not save:
+            save = None
+        self.local_settings.set("ROCKETCHAT_USER_GROUP", str(save))
 
 
 class LocalSettings():
