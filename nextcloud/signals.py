@@ -25,7 +25,7 @@ def randomStringDigits(stringLength=8):
 def adding_nexcloud_user(sender, **kwargs):
     # Add new member on the nextcloud server
     _user = kwargs['user']
-    _pass = randomStringDigits()
+    _pass = NEXTCLOUD_USER_DEFAULT_PASSWORD or randomStringDigits()
 
     _admin = NEXTCLOUD_ADMIN
     _admin_key = NEXTCLOUD_PASSWORD

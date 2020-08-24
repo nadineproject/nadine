@@ -33,7 +33,7 @@ def checkSuccess(user):
 def adding_rocketchat_user(sender, **kwargs):
     # Add new member on the rocketchat server
     _user = kwargs['user']
-    _pass = randomStringDigits()
+    _pass = ROCKETCHAT_USER_DEFAULT_PASSWORD or randomStringDigits()
 
     _admin = ROCKETCHT_ADMIN
     _admin_key = ROCKETCHAT_SECRET
