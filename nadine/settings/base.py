@@ -107,6 +107,7 @@ INSTALLED_APPS = [
     'arpwatch',
     'comlink',
     'doors.keymaster',
+    'nextcloud',
     # Other Applications
     'jsignature',
     'taggit_templatetags2',
