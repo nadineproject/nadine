@@ -34,6 +34,7 @@ class Command(BaseCommand):
             self.setup_database()
             self.setup_nextcloud()
             self.setup_rocketchat()
+            self.setup_elocky()
             self.write_settings_file()
         except KeyboardInterrupt:
             print()
@@ -61,13 +62,16 @@ class Command(BaseCommand):
             print(("Writing %s" % LOCAL_SETTINGS_FILE))
             self.local_settings.save(LOCAL_SETTINGS_FILE)
 
-    def prompt_for_value(self, question, key, default=None):
+    def prompt_for_value(self, question, key, default=None, can_none=False):
         if not default:
             default = self.local_settings.get_value(key)
         print(("%s? (default: '%s')" % (question, default)))
         value = input(PROMPT).strip().lower()
         if not value:
             value = default
+        if can_none is True and value.strip().lower() == "none":
+            self.local_settings.set(key, None, is_string=False)
+            return
         self.local_settings.set(key, value)
 
     def setup_general(self):
@@ -167,15 +171,30 @@ class Command(BaseCommand):
         save = input(PROMPT).strip().lower()
         if save != "y":
             return
-        self.local_settings.settings.append("INSTALLED_APPS += ['nextcloud']")
+        self.local_settings.settings.append("INSTALLED_APPS += ['nextcloud']\n")
         self.prompt_for_value("Nextcloud Host", "NEXTCLOUD_HOST")
         self.prompt_for_value("Nextcloud Admin username", "NEXTCLOUD_ADMIN")
         self.prompt_for_value("Nextcloud Admin password", "NEXTCLOUD_PASSWORD")
-        self.prompt_for_value("Use HTTPS connection", "NEXTCLOUD_USE_HTTPS")
-        self.prompt_for_value("SSL cert is signed", "NEXTCLOUD_SSL_IS_SIGNED")
-        self.prompt_for_value("Default user password (if None password will be randomised)", "NEXTCLOUD_USER_DEFAULT_PASSWORD")
-        self.prompt_for_value("Send invitation by mail", "NEXTCLOUD_USER_SEND_EMAIL_PASSWORD")
-        self.prompt_for_value("Add new user to group (optional)", "NEXTCLOUD_USER_GROUP")
+        print("Use HTTPS connection? (y, N)")
+        save = input(PROMPT).strip().lower()
+        if save == "y":
+            self.local_settings.set("NEXTCLOUD_USE_HTTPS", True, is_string=False)
+        else:
+            self.local_settings.set("NEXTCLOUD_USE_HTTPS", False, is_string=False)
+        print("SSL cert is signed? (y, N)")
+        save = input(PROMPT).strip().lower()
+        if save == "y":
+            self.local_settings.set("NEXTCLOUD_SSL_IS_SIGNED", True, is_string=False)
+        else:
+            self.local_settings.set("NEXTCLOUD_SSL_IS_SIGNED", False, is_string=False)
+        self.prompt_for_value("Default user password (if None password will be randomised)", "NEXTCLOUD_USER_DEFAULT_PASSWORD", can_none=True)
+        print("Send invitation password to new member by mail? (y, N)")
+        save = input(PROMPT).strip().lower()
+        if save == "y":
+            self.local_settings.set("NEXTCLOUD_USER_SEND_EMAIL_PASSWORD", True, is_string=False)
+        else:
+            self.local_settings.set("NEXTCLOUD_USER_SEND_EMAIL_PASSWORD", False, is_string=False)
+        self.prompt_for_value("Add new user to group (optional)", "NEXTCLOUD_USER_GROUP", can_none=True)
         self.prompt_for_value("Nextcloud user quota", "NEXTCLOUD_USER_QUOTA")
 
     # Rocketchat Setup
@@ -186,21 +205,65 @@ class Command(BaseCommand):
         save = input(PROMPT).strip().lower()
         if save != "y":
             return
-        self.local_settings.settings.append("INSTALLED_APPS += ['rocketchat']")
+        self.local_settings.settings.append("INSTALLED_APPS += ['rocketchat']\n")
         self.prompt_for_value("Rocketchat Host", "ROCKETCHAT_HOST")
         self.prompt_for_value("Rocketchat Admin username", "ROCKETCHT_ADMIN")
         self.prompt_for_value("Rocketchat Admin password", "ROCKETCHAT_SECRET")
-        self.prompt_for_value("Use HTTPS connection", "ROCKETCHAT_USE_HTTPS")
-        self.prompt_for_value("SSL cert is signed", "ROCKETCHAT_SSL_IS_SIGNED")
-        self.prompt_for_value("Default user password (if None password will be randomised)", "ROCKETCHAT_USER_DEFAULT_PASSWORD")
-        self.prompt_for_value("Send welcome email to user", "ROCKETCHAT_SEND_WELCOME_MAIL")
-        self.prompt_for_value("User should change password on login", "ROCKETCHAT_REQUIRE_CHANGE_PASS")
-        self.prompt_for_value("Verified user with her email address", "ROCKETCHAT_VERIFIED_USER")
+        print("Use HTTPS connection? (y, N)")
+        save = input(PROMPT).strip().lower()
+        if save == "y":
+            self.local_settings.set("ROCKETCHAT_USE_HTTPS", True, is_string=False)
+        else:
+            self.local_settings.set("ROCKETCHAT_USE_HTTPS", False, is_string=False)
+        print("SSL cert is signed? (y, N)")
+        save = input(PROMPT).strip().lower()
+        if save == "y":
+            self.local_settings.set("ROCKETCHAT_SSL_IS_SIGNED", True, is_string=False)
+        else:
+            self.local_settings.set("ROCKETCHAT_SSL_IS_SIGNED", False, is_string=False)
+        self.prompt_for_value("Default user password (if None password will be randomised)", "ROCKETCHAT_USER_DEFAULT_PASSWORD", can_none=True)
+        print("Send welcome email to new member? (y, N)")
+        save = input(PROMPT).strip().lower()
+        if save == "y":
+            self.local_settings.set("ROCKETCHAT_SEND_WELCOME_MAIL", True, is_string=False)
+        else:
+            self.local_settings.set("ROCKETCHAT_SEND_WELCOME_MAIL", False, is_string=False)
+        print("User should change password on login? (y, N)")
+        save = input(PROMPT).strip().lower()
+        if save == "y":
+            self.local_settings.set("ROCKETCHAT_REQUIRE_CHANGE_PASS", True, is_string=False)
+        else:
+            self.local_settings.set("ROCKETCHAT_REQUIRE_CHANGE_PASS", False, is_string=False)
+        print("Verified user with her email address? (y, N)")
+        save = input(PROMPT).strip().lower()
+        if save == "y":
+            self.local_settings.set("ROCKETCHAT_VERIFIED_USER", True, is_string=False)
+        else:
+            self.local_settings.set("ROCKETCHAT_VERIFIED_USER", False, is_string=False)
         print("Add user to rocketchat groups (split group with ',')? (default: None)")
-        save = [x.strip() for x in input(PROMPT).split(',')]
+        save = [x.strip() for x in input(PROMPT).split(',') if x.strip()]
         if not save:
             save = None
-        self.local_settings.set("ROCKETCHAT_USER_GROUP", str(save))
+        self.local_settings.set("ROCKETCHAT_USER_GROUP", str(save), is_string=False)
+
+    # Elocky Setup
+    def setup_elocky(self):
+        print()
+        print("### Elocky Setup ###")
+        print("Setup Elocky user provisioning? (y, N)")
+        save = input(PROMPT).strip().lower()
+        if save != "y":
+            return
+        self.local_settings.settings.append("INSTALLED_APPS += ['elocky']\n")
+        cryptography_key = self.local_settings.get("CRYPTOGRAPHY_KEY")
+        if not cryptography_key or len(cryptography_key) < 38:
+            print("Generating random CRYPTOGRAPHY_KEY")
+            self.local_settings.set('CRYPTOGRAPHY_KEY', get_random_secret_key(), quiet=True)
+            print()
+        self.prompt_for_value("Elocky API key client ID", "ELOCKY_API_CLIENT_ID")
+        self.prompt_for_value("Elocky API key client SECRET", "ELOCKY_API_CLIENT_SECRET")
+        self.prompt_for_value("Elocky Admin username", "ELOCKY_USERNAME")
+        self.prompt_for_value("Elocky Admin password", "ELOCKY_PASSWORD")
 
 
 class LocalSettings():
@@ -234,8 +297,11 @@ class LocalSettings():
             return clean_value[1:len(clean_value)-1]
         return clean_value
 
-    def set(self, key, value, quiet=False):
-        new_line = '%s = "%s"\n' % (key, value)
+    def set(self, key, value, quiet=False, is_string=True):
+        if is_string is False:
+            new_line = '%s = %s\n' % (key, value)
+        else:
+            new_line = '%s = "%s"\n' % (key, value)
         if not quiet:
             print(new_line)
         line_number = self.get_line_number(key)
