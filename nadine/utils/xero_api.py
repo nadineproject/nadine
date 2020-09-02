@@ -184,3 +184,46 @@ class XeroAPI:
                     'DueDate': datetime.date(2014, 7, 24)
                 }
         #xero.invoices.put(invoice)
+
+
+################################################################################
+# OAuth Views (https://github.com/freakboy3742/pyxero)
+################################################################################
+
+from django.http import HttpResponseRedirect
+from django.core.cache import caches
+
+from xero import Xero
+from xero.auth import OAuth2Credentials
+from xero.constants import XeroScopes
+
+def start_xero_auth_view(request):
+   client_id = getattr(settings, 'XERO2_CLIENT_KEY', None)
+   client_secret = getattr(settings, 'XERO2_CLIENT_SECRET', None)
+   callback_uri = ""
+   credentials = OAuth2Credentials(
+       client_id, client_secret, callback_uri=callback_uri,
+       scope=[XeroScopes.OFFLINE_ACCESS, XeroScopes.ACCOUNTING_CONTACTS,
+              XeroScopes.ACCOUNTING_TRANSACTIONS]
+   )
+   authorization_url = credentials.generate_url()
+   caches['default'].set('xero_creds', credentials.state)
+   return HttpResponseRedirect(authorization_url)
+
+def process_callback_view(request):
+   cred_state = caches['mycache'].get('xero_creds')
+   credentials = OAuth2Credentials(**cred_state)
+   auth_secret = request.get_raw_uri()
+   credentials.verify(auth_secret)
+   credentials.set_default_tenant()
+   caches['default'].set('xero_creds', credentials.state)
+
+def some_view_which_calls_xero(request):
+   cred_state = caches['mycache'].get('xero_creds')
+   credentials = OAuth2Credentials(**cred_state)
+   if credentials.expired():
+       credentials.refresh()
+       caches['default'].set('xero_creds', credentials.state)
+   xero = Xero(credentials)
+
+   contacts = xero.contacts.all()
