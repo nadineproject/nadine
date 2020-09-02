@@ -185,7 +185,7 @@ def import_snmp():
             # Search data returned for an IP address
             if settings.ARPWATCH_NETWORK_PREFIX in long_name:
                 ip_index = long_name.index(settings.ARPWATCH_NETWORK_PREFIX)
-                ip = long_name[ip_start:]
+                ip = long_name[ip_index:]
                 mac = val.prettyPrint()
                 # print(f"{mac} = {ip}")
                 log_data(runtime, ip, mac)

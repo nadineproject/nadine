@@ -1,13 +1,13 @@
-from django.core.management.base import NoArgsCommand, CommandError
+from django.core.management.base import BaseCommand, CommandError
 
 from arpwatch import arp
 
-class Command(NoArgsCommand):
+class Command(BaseCommand):
     help = "Import new addresses using SNMP"
 
     requires_system_checks = True
 
-    def handle_noargs(self, **options):
+    def handle(self, *args, **options):
         arp.import_snmp()
 
         # TODO Bind the mac addresses
