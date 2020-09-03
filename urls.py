@@ -39,7 +39,8 @@ urlpatterns = [
     path('admin/doc/', include('django.contrib.admindocs.urls')),
     path('admin/', admin.site.urls),
 
-    path('elocky/', include('elocky.urls', namespace='elocky')),
+    # Not working yet
+    #path('elocky/', include('elocky.urls', namespace='elocky')),
 ]
 
 if settings.DEBUG:
