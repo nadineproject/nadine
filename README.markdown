@@ -8,6 +8,24 @@ More here:  https://nadineproject.org
 
 ## [Read The Full Documentation Here](https://nadine.readthedocs.io/en/master/)
 
+## Release Notes
+
+### Nadine 3.0
+- Django 3.1 and Python 3.8 recommended
+- Now licensed under the AGPLV3 Open Source License
+- Nextcloud, Rocket.Chat, and elocky integrations
+- French, Spanish, and German language translations
+- Xero Oauth2.0 Upgrade
+
+## Integrations
+- [Xero](https://xero.com)
+- [MailChimp](https://mailchimp.com)
+- [Slack](https://slack.com/)
+- [Nextcloud](https://nextcloud.com)
+- [Rocket.Chat](https://rocket.chat)
+- [elocky](https://elocky.com)
+- [HID Edge Evo](https://www.hidglobal.com/products/controllers/edge-evo)
+
 ## License & Copyright
 
 Copyright 2020 Office Nomads LLC ([https://officenomads.com/](https://officenomads.com/)) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this software except in compliance with the License.
