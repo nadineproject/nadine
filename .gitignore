@@ -29,7 +29,10 @@ __pycache__/
 docs/_build/*
 .vscode
 .venv/
+venv/
 
+# Django compiled translation files
+*.mo
 
 # Ignore Themes
 /themes/**
@@ -37,5 +40,3 @@ docs/_build/*
 
 # Ignore pycharm metadata
 .idea*
-
-venv/
