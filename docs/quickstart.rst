@@ -32,13 +32,14 @@ Install all the requirements
 
   $ pip3 install -r requirements.txt
 
-Run these scripts to setup nadine, install the database, and create your admin user
+Run these scripts to setup nadine, install the database, create your admin user and compile translations messages
 
 .. code-block:: console
 
   $ ./manage.py setup
   $ ./manage.py migrate
   $ ./manage.py createsuperuser
+  $ django-admin compilemessages
 
 At this point you can run the server
 
