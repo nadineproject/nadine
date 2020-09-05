@@ -39,9 +39,9 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 See the License for the specific language governing permissions and limitations under the License.
 
-For questions regarding the use or redistribution of this software and please contact the primary author, [Jacob Sayles](jacob@officenomads.com).
+For questions regarding the use or redistribution of this software please contact the primary author, [Jacob Sayles](jacob@officenomads.com).
 
 ## Image Attribution
 
-Camera icon by Alfa Design from the Noun Project
-estimate by xwoodhillx from the Noun Project  
+- Camera icon by Alfa Design from the Noun Project
+- Estimate by xwoodhillx from the Noun Project  
