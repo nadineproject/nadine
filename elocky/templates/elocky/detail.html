@@ -1,0 +1,42 @@
+<h2>Détail de l'accès invité Elocky "{{ elockycred.username }}" (username).</h2>
+
+<br/>
+<h3>Identifiant d'accès: {{ elockycred.num_access }}</h3>
+<h3>Code d'accès: {{ elockycred.code_access }}</h3>
+<br/>
+
+<h3>Liste des accès exeptionnel :</h3>
+{% for item in access_exep %}
+<ul>
+    <li>Date début:      {{ item.start }}</li>
+    <li>Date fin:        {{ item.stop }}</li>
+    <li>Etat de l'accès: {{ item.state }}</li>
+    <a href="delete_exep/{{ item.id }}">Supprimer l'accès</a>
+</ul>
+{% endfor %}
+
+<form method="POST" action="create_exep">
+    {% csrf_token %}
+    {{ exep_form }}
+
+    <button type="submit">Ajouter l'accès exeptionnel</button>
+</form>
+
+<br/>
+
+<h3> Access Recurent :</h3>
+{% for item in access_recu %}
+<ul>
+    <li>Jour : <b>{{ item.day }}</b></li>
+    <li>Date début :      {{ item.start }} </li>
+    <li>Date fin :        {{ item.stop }}</li>
+    <li>Etat de l'accès : {{ item.state }}</li>
+    <a href="delete_recu/{{ item.id }}">Supprimer l'accès</a>
+</ul>
+{% endfor %}
+
+<form method="POST" action="create_recu">
+    {% csrf_token %}
+    {{ recu_form }}
+    <button type="submit">Ajouter l'accès récurent</button>
+</form>

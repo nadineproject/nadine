@@ -1,0 +1,14 @@
+
+<h2>Liste des différents accès invité Elocky :</h2>
+
+{% if elocky_user_list %}
+    <ul>
+        {% for elocky_user in elocky_user_list %}
+            <li><a href="{% url 'elocky:detail' elocky_user.id %}"><h4>{{ elocky_user.username }}</h4></a></li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No elocky user.</p>
+{% endif %}
+
+
