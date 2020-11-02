@@ -368,7 +368,7 @@ class BillingTestCase(TestCase):
 
     def test_backdated_new_membership_with_end_date(self):
         # NOTE:  This test fails in the month of February!!!
-        
+
         # Membership start date of two weeks ago and ending in two weeks
         start = two_weeks_ago
         end = (start + relativedelta(months=1)) - timedelta(days=1)
@@ -517,8 +517,8 @@ class BillingTestCase(TestCase):
 
         # Test that subscription starts in a week and then ends 2 weeks later
         self.assertTrue(len(membership.active_subscriptions()) == 0)
-        self.assertTrue(len(membership.active_subscriptions(target_date=start)) is 1)
-        self.assertTrue(len(membership.active_subscriptions(target_date=one_month_from_now)) is 0)
+        self.assertTrue(len(membership.active_subscriptions(target_date=start)) == 1)
+        self.assertTrue(len(membership.active_subscriptions(target_date=one_month_from_now)) == 0)
 
         # Test bills
         todays_bill_batch = BillingBatch.objects.run(start_date=date(2010, 6, 1), end_date=date(2010, 6, 1))
@@ -549,7 +549,7 @@ class BillingTestCase(TestCase):
 
         # Add key subscription today
         ResourceSubscription.objects.create(resource=Resource.objects.key_resource, membership=membership, package_name='PT5', allowance=1, start_date=start, monthly_rate=100, overage_rate=0)
-        self.assertTrue(len(membership.active_subscriptions()) is 2)
+        self.assertTrue(len(membership.active_subscriptions()) == 2)
         self.assertTrue(ResourceSubscription.objects.get(resource=Resource.objects.key_resource) in membership.active_subscriptions())
 
         # Test new bill is $175 for PT5 with key
@@ -557,7 +557,7 @@ class BillingTestCase(TestCase):
         self.assertTrue(adjusted_batch.successful)
         current_bill = user.bills.get(period_start=start)
         self.assertEqual(175, current_bill.amount)
-        self.assertTrue(current_bill.line_items.all().count() is 2)
+        self.assertTrue(current_bill.line_items.all().count() == 2)
 
     def test_resident_adds_5_coworking_days_today(self):
         #Create user with Residet membership package started 2 months ago
@@ -581,7 +581,7 @@ class BillingTestCase(TestCase):
         self.assertFalse(day_subscription.end_date is None)
         ResourceSubscription.objects.create(resource=Resource.objects.day_resource, membership=membership, package_name='Resident', allowance=10, start_date=today, monthly_rate=0, overage_rate=0)
         new_day_subscription = ResourceSubscription.objects.get(membership=membership, resource=Resource.objects.day_resource, end_date=None)
-        self.assertTrue(len(membership.active_subscriptions()) is 2)
+        self.assertTrue(len(membership.active_subscriptions()) == 2)
         self.assertEqual(10, new_day_subscription.allowance)
 
         # Test billing with updated subscriptions
@@ -590,7 +590,7 @@ class BillingTestCase(TestCase):
         self.assertTrue(todays_batch.bills.count() == 1)
         current_bill = user.bills.get(period_start=today)
         self.assertEqual(475, current_bill.amount)
-        self.assertTrue(current_bill.line_items.all().count() is 2)
+        self.assertTrue(current_bill.line_items.all().count() == 2)
 
         future_batch = BillingBatch.objects.run(start_date=one_month_from_now, end_date=one_month_from_now)
         self.assertEqual(1, future_batch.bills.count())
