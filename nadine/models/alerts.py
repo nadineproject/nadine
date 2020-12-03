@@ -117,9 +117,12 @@ class MemberAlertManager(models.Manager):
             target_date = localtime(now())
 
         # If they have a photo, take it down and stop nagging us to take one
+        MemberAlert.objects.create_if_not_open(user=user, key=MemberAlert.REMOVE_PHOTO)
         if user.profile.photo:
             user.profile.resolve_alerts(MemberAlert.POST_PHOTO)
-            MemberAlert.objects.create_if_not_open(user=user, key=MemberAlert.REMOVE_PHOTO)
+        else:
+            # We don't have a photo so this can be marked as resolved
+            user.profile.resolve_alerts(MemberAlert.REMOVE_PHOTO)
 
     def handle_new_membership(self, user):
         logger.debug("handle_new_membership: %s" % user)
