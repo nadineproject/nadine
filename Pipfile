@@ -44,7 +44,7 @@ PyJWT = "~=1.7"
 # Master branch of django-jsignature is very out of date
 #django-jsignature = {git = "https://github.com/nadineproject/django-jsignature.git", editable = true}
 django-jsignature = "==0.10"
-WeasyPrint = "==52"
+WeasyPrint = "~=52"
 html5lib = "==1.1"
 
 # Payment libraries
