@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block content %}
-
+  {% url 'password_reset' as reset_url %}
 	{% if ALLOW_ONLINE_REGISTRATION %}
 	<div>
 		<div class='col s12 m6 l6 offset-m3 offset-l3' id='login_box'>
@@ -36,8 +36,8 @@
 				</div>
 				{% csrf_token %}
 				<div id='login_reset'>
-					{% url 'password_reset' as password %}
-					<font size="-1"><i>{% blocktrans %}If you've forgotten your password, you will need to <a href="{{ password }}">create a new password{% endblocktrans %}</a>.</i></font>
+
+					<font size="-1"><i>{% blocktrans %}If you've forgotten your password, you will need to <a href="{{ reset_url }}">create a new password{% endblocktrans %}</a>.</i></font>
 				</div>
 			</form>
 		</div>
@@ -98,8 +98,7 @@
 			</div>
 			{% csrf_token %}
 			<div id='login_reset'>
-				{% url 'password_reset' as password %}
-				<font size="-1"><i>{% blocktrans %}If you've forgotten your password, you will need to <a href="{{ password }}">create a new password{% endblocktrans %}</a>.</i></font>
+				<font size="-1"><i>{% blocktrans %}If you've forgotten your password, you will need to <a href="{{ reset_url }}">create a new password{% endblocktrans %}</a>.</i></font>
 			</div>
 			</form>
 		</div>
