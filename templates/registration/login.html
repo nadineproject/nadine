@@ -30,14 +30,13 @@
 						</tr>
 					</table>
 				<div class='row'>
-					<button class="btn waves-effect waves-light" id='loginonly-btn' type="submit" value="Login">
-                    {% trans "Login" %}</button>
+					<button class="btn waves-effect waves-light" id='loginonly-btn' type="submit" value="Login">{% trans "Login" %}</button>
 					<input type="hidden" name="next" value="{{ next }}" />
 					<a id='reg_link' href='.'>{% trans "Register" %}</a>
 				</div>
 				{% csrf_token %}
 				<div id='login_reset'>
-                    {% url 'password_reset' as password%}
+					{% url 'password_reset' as password %}
 					<font size="-1"><i>{% blocktrans %}If you've forgotten your password, you will need to <a href="{{ password }}">create a new password{% endblocktrans %}</a>.</i></font>
 				</div>
 			</form>
@@ -99,6 +98,7 @@
 			</div>
 			{% csrf_token %}
 			<div id='login_reset'>
+				{% url 'password_reset' as password %}
 				<font size="-1"><i>{% blocktrans %}If you've forgotten your password, you will need to <a href="{{ password }}">create a new password{% endblocktrans %}</a>.</i></font>
 			</div>
 			</form>
