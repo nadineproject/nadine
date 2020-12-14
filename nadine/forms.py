@@ -19,7 +19,7 @@ from django.utils.translation import gettext as _
 from localflavor.us.us_states import US_STATES
 from localflavor.ca.ca_provinces import PROVINCE_CHOICES
 
-from comlink import mailgun
+from comlink.mailgun import MailgunAPI
 
 from nadine.models.core import HowHeard, Industry, Neighborhood, URLType, GENDER_CHOICES
 from nadine.models.profile import UserProfile, MemberNote, user_photo_path
@@ -218,6 +218,7 @@ class NewUserForm(forms.Form):
         email = self.cleaned_data['email'].strip().lower()
         if User.objects.filter(email=email).count() > 0:
             raise forms.ValidationError(_("Email address '%s' already in use.") % email)
+        mailgun = MailgunAPI()
         if not mailgun.validate_address(email):
             raise forms.ValidationError(_("Email address '%s' is not valid.") % email)
         return email
