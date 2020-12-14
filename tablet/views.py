@@ -227,9 +227,11 @@ def signature_render(request, username, doc_type, signature_file):
     user = get_object_or_404(User, username=username)
     today = localtime(now()).date()
     pdf_args = {'name': user.get_full_name, 'date': today, 'doc_type': doc_type, 'signature_file': signature_file}
+    # return render(request, 'tablet/signature_render.html', pdf_args)
     htmltext = get_template('tablet/signature_render.html')
     signature_html = htmltext.render(pdf_args)
-    pdf_file = HTML(string=signature_html, base_url=request.build_absolute_uri()).write_pdf()
+    base_url = request.build_absolute_uri()
+    pdf_file = HTML(string=signature_html, base_url=base_url).write_pdf()
     if 'save_file' in request.GET:
         # Save the PDF as a file and redirect them back to the document list
         upload_file = FileUpload.objects.pdf_from_string(user, pdf_file, doc_type, user)
