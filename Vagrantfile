@@ -61,7 +61,7 @@ $userScript = <<SCRIPT
     pip install pip --upgrade
     git clone https://github.com/nadineproject/nadine.git
     cd nadine
-    pip install -r requirements.txt
+    pipenv install
 
     #SECURE_RANDOM=$(dd if=/dev/urandom count=1 bs=28 2>/dev/null | od -t x1 -A n)
     #SECRET_KEY="${SECURE_RANDOM//[[:space:]]/}"

@@ -10,15 +10,6 @@ Setup the database
   $ sudo su postgres -c "createuser -s $(whoami)"
   $ createdb nadinedb
 
-Create a virtual environment for the python project
-
-.. code-block:: console
-
-  $ virtualenv nadine
-  $ cd nadine
-  $ source bin/activate
-
-
 Download the nadine source code from Github
 
 .. code-block:: console
@@ -30,7 +21,7 @@ Install all the requirements
 
 .. code-block:: console
 
-  $ pip3 install -r requirements.txt
+  $ pipenv install --three
 
 Run these scripts to setup nadine, install the database, create your admin user, and compile translations messages:
 
