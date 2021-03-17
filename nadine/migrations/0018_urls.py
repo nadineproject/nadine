@@ -21,6 +21,7 @@ def forward(apps, schema_editor):
     pro = URLType.objects.create(name="professional")
 
     for u in User.objects.all():
+        if not hasattr(u, 'profile'): continue
         p = u.profile
         if p.url_facebook:
             URL.objects.create(user=u, url_type=fb, url_value=p.url_facebook)

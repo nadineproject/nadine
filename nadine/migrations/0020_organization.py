@@ -30,6 +30,7 @@ def forward(apps, schema_editor):
     OrganizationMember = apps.get_model("nadine", "OrganizationMember")
 
     for user in User.objects.all():
+        if not hasattr(user, 'profile'): continue
         if user.profile.company_name:
             company_name = user.profile.company_name.strip()
 
