@@ -47,7 +47,7 @@ COPY $DOCKYARD_SRC $DOCKYARD_SRVPROJ
 
 # Install Python dependencies
 RUN pip install --upgrade pip
-RUN pip install -r $DOCKYARD_SRVPROJ/requirements.txt
+RUN pipenv install
 
 # Install the demo data
 WORKDIR $DOCKYARD_SRVPROJ

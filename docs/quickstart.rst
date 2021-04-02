@@ -27,6 +27,7 @@ Run these scripts to setup nadine, install the database, create your admin user,
 
 .. code-block:: console
 
+  $ pipenv shell
   $ ./manage.py setup
   $ ./manage.py migrate
   $ ./manage.py createsuperuser
