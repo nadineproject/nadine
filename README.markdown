@@ -28,7 +28,7 @@ More here:  https://nadineproject.org
 
 ## License & Copyright
 
-Copyright 2020 Office Nomads LLC ([https://officenomads.com/](https://officenomads.com))
+Copyright 2021 Office Nomads LLC ([https://officenomads.com/](https://officenomads.com))
 
 Licensed under the GNU Affero General Public License v3.0 (the "License");
 you may not use this software except in compliance with the License.
