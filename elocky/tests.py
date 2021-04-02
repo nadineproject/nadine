@@ -1,6 +1,7 @@
 import unittest
 try:
     import elocky
+    import django_cryptography
 except:
     raise unittest.SkipTest("Elocky libraries unavailable.  Skipping tests.")
 
