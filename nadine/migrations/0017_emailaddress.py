@@ -17,7 +17,7 @@ def forward(apps, schema_editor):
                 print(("Email address '%s' used by both '%s' and '%s'!" % (u.email, u.username, o.user.username)))
         else:
             EmailAddress.objects.create(user=u, email=u.email, is_primary=True)
-            if u.profile and u.profile.email2:
+            if hasattr(u, 'profile') and u.profile and u.profile.email2:
                 if u.email != u.profile.email2:
                     EmailAddress.objects.create(user=u, email=u.profile.email2, is_primary=False)
 
