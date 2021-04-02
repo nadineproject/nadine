@@ -51,12 +51,13 @@ suds-jurko = "==0.6"
 #stripe = "*"
 
 # For the documentation:
-CommonMark = "~=0.9"
-Sphinx = "~=3.0"
-sphinx_rtd_theme = "~=0.5"
-Markdown = "~=3.3"
-recommonmark = "~=0.6"
-pycodestyle = "~=2.7"
+# Moved to docs/requirements.txt
+#CommonMark = "~=0.9"
+#Sphinx = "~=3.0"
+#sphinx_rtd_theme = "~=0.5"
+#Markdown = "~=3.3"
+#recommonmark = "~=0.6"
+#pycodestyle = "~=2.7"
 
 # Other libraries
 pytz = "*"
