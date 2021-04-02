@@ -1,3 +1,9 @@
+import unittest
+try:
+    import RocketChat
+except:
+    raise unittest.SkipTest("RocketChat libraries unavailable.  Skipping tests.")
+
 from django.test import TestCase
 from django.contrib.auth.models import User
 

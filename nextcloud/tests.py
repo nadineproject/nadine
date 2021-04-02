@@ -1,3 +1,9 @@
+import unittest
+try:
+    import owncloud
+except:
+    raise unittest.SkipTest("Owncloud libraries unavailable.  Skipping tests.")
+
 from django.test import TestCase
 from django.contrib.auth.models import User
 

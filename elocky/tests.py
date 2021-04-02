@@ -1,10 +1,15 @@
+import unittest
+try:
+    import elocky
+except:
+    raise unittest.SkipTest("Elocky libraries unavailable.  Skipping tests.")
+
 from django.test import TestCase
 from django.contrib.auth.models import User
 
 from unittest.mock import patch
 
 from elocky.models.alerts import MemberAlertManager
-from elocky.models.elocky_cred import ElockyCred
 
 import logging
 
