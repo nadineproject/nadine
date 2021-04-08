@@ -13,7 +13,7 @@ django-debug-toolbar = "*"
 pip-review = "*"
 
 [packages]
-Django = ">=3.1"
+Django = ">=3.2"
 Pillow = "~=8.2"
 psycopg2 = "~=2.8"
 django-localflavor = "~=3.0"
@@ -43,7 +43,7 @@ PyJWT = "~=2.0"
 # Master branch of django-jsignature is very out of date
 #django-jsignature = {git = "https://github.com/nadineproject/django-jsignature.git", editable = true}
 django-jsignature = "==0.10"
-WeasyPrint = "==52.2"
+WeasyPrint = "==52.4"
 html5lib = "==1.1"
 
 # Payment libraries
