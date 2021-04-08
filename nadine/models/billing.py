@@ -300,7 +300,7 @@ class UserBill(models.Model):
 
     @property
     def total_paid(self):
-        return self.payment_set.aggregate(paid=Coalesce(Sum('amount'), Value(0.00)))['paid']
+        return self.payment_set.aggregate(paid=Coalesce(Sum('amount'), Value(0.00), output_field=DecimalField()))['paid']
 
     @property
     def total_owed(self):
@@ -308,7 +308,7 @@ class UserBill(models.Model):
 
     @property
     def amount(self):
-        return self.line_items.aggregate(amount=Coalesce(Sum('amount'), Value(0.00)))['amount']
+        return self.line_items.aggregate(amount=Coalesce(Sum('amount'), Value(0.00), output_field=DecimalField()))['amount']
 
     @property
     def tax_amount(self):
@@ -334,7 +334,7 @@ class UserBill(models.Model):
     @property
     def monthly_rate(self):
         ''' Add up all rates for all the subscriptions. '''
-        return self.subscriptions().aggregate(rate=Coalesce(Sum('monthly_rate'), Value(0.00)))['rate']
+        return self.subscriptions().aggregate(rate=Coalesce(Sum('monthly_rate'), Value(0.00), output_field=DecimalField()))['rate']
 
     @property
     def overage_amount(self):
@@ -393,7 +393,8 @@ class UserBill(models.Model):
 
     def resource_allowance(self, resource):
         ''' Look at the subscriptions added to this bill to determine the allowance for the given resource. '''
-        return self.subscriptions().filter(resource=resource).aggregate(sum=Coalesce(Sum('allowance'), Value(0.00)))['sum']
+        query = self.subscriptions().filter(resource=resource)
+        return query.aggregate(sum=Coalesce(Sum('allowance'), Value(0.00), output_field=DecimalField()))['sum']
 
     def resource_overage_rate(self, resource):
         ''' Look at the subscriptions added to this bill and determin the overage rate for the given resource. '''
@@ -577,10 +578,10 @@ class UserBill(models.Model):
                 raise Exception("Event must have room specified or a specific charge set.")
 
         if self.user.membership.active_subscriptions():
-            total_hours = self.event_hours_used + event.hours
+            total_hours = Decimal(self.event_hours_used + event.hours)
             overage = total_hours - self.event_hour_allowance
             if overage < 0:
-                overage = 0.00
+                overage = Decimal(0.00)
 
         # Member only rooms get charged depending on subscriptions
         if event.room.members_only:
@@ -591,7 +592,8 @@ class UserBill(models.Model):
             return event.room.default_rate
         else:
             # If there is an allowance, they are an active member and get a discount
-            return float(event.room.default_rate) * getattr(settings, "MEMBER_DISCOUNT_EVENTS", 1.0) * overage
+            discount = Decimal(getattr(settings, "MEMBER_DISCOUNT_EVENTS", 1.0))
+            return Decimal(event.room.default_rate) * discount * overage
 
     def calculate_event_description(self, event):
         day = str(event.start_ts.date())
@@ -894,4 +896,3 @@ class LineItemTax(models.Model):
 
 
 # Copyright 2021 Office Nomads LLC (https://officenomads.com/) Licensed under the AGPL License, Version 3.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://www.gnu.org/licenses/agpl-3.0.html. Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
-
