@@ -95,18 +95,23 @@
               <a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown2' href="{% url 'member:org:list' %}">{% trans "Organizations" %}</a>
               <ul id='dropdown2' class='dropdown-content'>
                 <li><a href="{% url 'member:org:list' %}">{% blocktrans %}Active Organizations{% endblocktrans %}</a></li>
-              <li><a href="{% url 'member:tag:cloud' 'organizations' %}">{% trans "Tags" %}</a></li>
+                <li><a href="{% url 'member:tag:cloud' 'organizations' %}">{% trans "Tags" %}</a></li>
               </ul>
             </li>
-            <li><a href="{% url 'member:event:calendar' %}">{% trans "Events" %}</a></li>
+            <li>
+              <a class='dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown3' href="{% url 'member:event:calendar' %}">{% trans "Events" %}</a>
+              <ul id='dropdown3' class='dropdown-content'>
+                <li><a href="{% url 'member:event:videos' %}">{% blocktrans %}Videos{% endblocktrans %}</a></li>
+              </ul>
+            </li>
             <li><a href="{% url 'member:connect:email_lists' %}">{% trans "Mailing Lists" %}</a></li>
             {% if integrations.slack %}
               <li><a class='slack-a' href="{% url 'member:connect:slack' user.username %}">{% trans "Slack" %}</a></li>
             {% endif %}
             <li><a href="{% url 'member:profile:redirect' %}">{% trans "Profile" %}</a></li>
             <li>
-              <a class='logout-a dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown3' href="{% url 'logout' %}">{% trans "Logout" %}</a>
-              <ul id='dropdown3' class='dropdown-content'>
+              <a class='logout-a dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown4' href="{% url 'logout' %}">{% trans "Logout" %}</a>
+              <ul id='dropdown4' class='dropdown-content'>
                 {% if request.user.is_staff %}
                   <li><a href="{% url 'staff:home' %}">{% trans "Staff" %}</a></li>
                   <li><a href="{% url 'admin:index' %}">{% trans "Admin" %}</a></li>
@@ -123,8 +128,8 @@
             {% endif %}
             <li><a href="{% url 'member:profile:redirect' %}">{% trans "Profile" %}</a></li>
             <li>
-              <a class='logout-a dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown3' href="{% url 'logout' %}">{% trans "Logout" %}</a>
-              <ul id='dropdown3' class='dropdown-content'>
+              <a class='logout-a dropdown-button' data-hover="true" data-beloworigin="true" data-activates='dropdown4' href="{% url 'logout' %}">{% trans "Logout" %}</a>
+              <ul id='dropdown4' class='dropdown-content'>
                 {% if request.user.is_staff %}
                   <li><a href="{% url 'staff:home' %}">Staff</a></li>
                   <li><a href="{% url 'admin:index' %}">Admin</a></li>
@@ -208,7 +213,6 @@
           {% endif %}
         </div>
       {% endblock %}
-      </div>
     </div>
     </footer>
     {% endblock %}
