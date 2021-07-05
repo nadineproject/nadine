@@ -28,7 +28,7 @@ mailchimp3 = "~=3.0"
 pyyaml = "~=5.2"
 
 # Important Security Alerts
-urllib3 = ">=1.24.2"
+urllib3 = ">=1.26.5"
 Jinja2 = ">=2.10.1"
 
 # Libraries for Arpwatch
