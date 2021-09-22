@@ -8,9 +8,17 @@ django-ldapdb == "1.2.0"
 python-ldap == "3.1.0"
 passlib == "1.7.1"
 
+[scripts]
+django = "./manage.py runserver"
+pip-review = "pip list --outdated"
+check_syntax = "flake8 . --exclude .venv --count --select=E9,F63,F7,F82 --show-source --statistics"
+check_style = "flake8 . --exclude .venv --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics"
+tests = "python -m unittest discover tests"
+
 [dev-packages]
 django-debug-toolbar = "*"
-pip-review = "*"
+flake8 = "*"
+iPython = "*"
 
 [packages]
 Django = ">=3.2"
@@ -21,7 +29,7 @@ django-localflavor-us = "~=1.1"
 django-taggit = "~=1.5"
 django-taggit-templatetags2 = "~=1.6"
 django-crontab = "~=0.7"
-python-slugify = "~=4.0"
+python-slugify = "~=5.0"
 requests = "~=2.22"
 cryptography = "~=3.4"
 mailchimp3 = "~=3.0"
@@ -43,7 +51,7 @@ PyJWT = "~=2.0"
 # Master branch of django-jsignature is very out of date
 #django-jsignature = {git = "https://github.com/nadineproject/django-jsignature.git", editable = true}
 django-jsignature = "==0.10"
-WeasyPrint = "==52.5"
+WeasyPrint = "==53.3"
 html5lib = "==1.1"
 
 # Payment libraries
