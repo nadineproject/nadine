@@ -6,7 +6,7 @@ Nadine is an open source software project designed and built for use at Office N
 
 More here:  https://nadineproject.org
 
-## [Read The Full Documentation Here](https://nadine.readthedocs.io/en/master/)
+## [Read The Full Documentation Here](https://nadine.readthedocs.io/en/main/)
 
 ## Release Notes
 
