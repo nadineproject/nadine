@@ -10,8 +10,8 @@ More here:  https://nadineproject.org
 
 ## Release Notes
 
-### Nadine 3.0
-- Django 3.1 and Python 3.8 recommended
+### Nadine 3.0 (TBD)
+- Django 3.2 and Python 3.9 recommended
 - Now licensed under the AGPLV3 Open Source License
 - Nextcloud, Rocket.Chat, and elocky integrations
 - French, Spanish, and German language translations
