@@ -141,8 +141,8 @@ def send_new_membership(user):
     context = default_context()
     context['user'] = user
     context['membership'] = membership
-    message = render_to_string('email/new_membership.txt', context=context)
-    send(user.email, subject, message)
+    text_message, html_message = render_templates(context, "new_membership")
+    send(user.email, subject, text_message, html_message=html_message)
 
 
 def send_first_day_checkin(user):
@@ -419,4 +419,3 @@ def send_email(recipient, subject, text_message, html_message=None, fail_silentl
 
 
 # Copyright 2021 Office Nomads LLC (https://officenomads.com/) Licensed under the AGPL License, Version 3.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://www.gnu.org/licenses/agpl-3.0.html. Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
-

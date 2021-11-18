@@ -1,7 +1,7 @@
 {% load i18n %}{% autoescape off %}
 {{ user.first_name }},
 
-Congratulations on your new membership! Your billing date will be the {{ membership.start_date|date:"jS" }} of each month. If you have not already done so, please log in to your Nadine profile (link below) and make sure we have a valid billing profile. We will assume you would like to stay at your current membership level unless you tell us otherwise (by email or dropping by the front desk) before your billing date arrives. If you have signed up as a Resident member, we ask that you give us 30 days notice before changing your membership. If you have any questions or concerns, please don't hesitate to ask us. In the mean time, welcome! We're so happy to have you as a part of our Nomad family.
+Congratulations on your new membership! Your billing date will be the {{ membership.start_date|date:"jS" }} of each month. If you have not already done so, please log in to your Nadine profile (link below) and make sure we have a valid billing profile. We will assume you would like to stay at your current membership level unless you tell us otherwise before your billing date arrives. If you have signed up as a Resident member, we ask that you give us 30 days notice before changing your membership. If you have any questions or concerns, please don't hesitate to ask us. In the mean time, welcome! We're so happy to have you as a part of the family.
 
 {{ site_url }}{% url 'member:profile:redirect' %}
 

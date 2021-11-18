@@ -1,0 +1,21 @@
+{% load i18n %}
+{{ user.first_name }},
+
+<p>
+Congratulations on your new membership! Your billing date will be the
+{{ membership.start_date|date:"jS" }} of each month. If you have not already
+done so, please log in to your Nadine profile (link below) and make sure we
+have a valid billing profile. We will assume you would like to stay at your
+current membership level unless you tell us otherwise before your billing date
+arrives.
+</p>
+
+<p>
+If you have any questions or concerns, please don't hesitate to ask us.
+In the mean time, welcome! We're so happy to have you as a part of the family.
+</p>
+
+{{ site_url }}{% url 'member:profile:redirect' %}
+
+Thanks!
+The {{ site_name }} Team
