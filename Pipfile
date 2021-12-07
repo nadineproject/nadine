@@ -4,9 +4,9 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [ldap-packages]
-django-ldapdb == "1.2.0"
-python-ldap == "3.1.0"
-passlib == "1.7.1"
+"django-ldapdb =" = "1.2.0"
+"python-ldap =" = "3.1.0"
+"passlib =" = "1.7.1"
 
 [scripts]
 django = "./manage.py runserver"
@@ -21,7 +21,7 @@ flake8 = "*"
 iPython = "*"
 
 [packages]
-Django = ">=3.2"
+Django = "==3.2.10"
 Pillow = "~=8.3"
 psycopg2 = "~=2.9"
 django-localflavor = "~=3.1"
@@ -34,45 +34,17 @@ requests = "~=2.22"
 cryptography = "~=35.0"
 mailchimp3 = "~=3.0"
 pyyaml = "~=6.0"
-
-# Important Security Alerts
 urllib3 = ">=1.26.5"
 Jinja2 = ">=2.10.1"
-
-# Libraries for Arpwatch
 pysnmp = "~=4.4"
 pysnmp-mibs = "~=0.1"
-
-# Libraries for Xero
 pyxero = "~=0.9"
 PyJWT = "~=2.0"
-
-# For document signing & PDFs
-# Master branch of django-jsignature is very out of date
-#django-jsignature = {git = "https://github.com/nadineproject/django-jsignature.git", editable = true}
 django-jsignature = "==0.10"
 WeasyPrint = "==53.3"
 html5lib = "==1.1"
-
-# Payment libraries
 suds-community = "~=1.0"
-#stripe = "*"
-
-# For the documentation:
-# Moved to docs/requirements.txt
-#CommonMark = "~=0.9"
-#Sphinx = "~=3.0"
-#sphinx_rtd_theme = "~=0.5"
-#Markdown = "~=3.3"
-#recommonmark = "~=0.6"
-#pycodestyle = "~=2.7"
-
-# Other libraries
 pytz = "*"
 safety = "*"
 asgiref = "*"
 setuptools = "*"
-
-# eLocky Libraries
-#zipp = "*"
-#django-cryptography==1.0
