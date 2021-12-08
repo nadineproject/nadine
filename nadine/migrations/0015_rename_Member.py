@@ -5,7 +5,6 @@
 from django.conf import settings
 from django.db import migrations, models
 # import django.db.models.deletion
-# import django_localflavor_us.models
 # import nadine.models.core
 # import taggit.managers
 

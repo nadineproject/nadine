@@ -5,7 +5,6 @@ from django.db import models, migrations
 import nadine.models
 from django.conf import settings
 import taggit.managers
-import django_localflavor_us.models
 
 
 class Migration(migrations.Migration):
@@ -99,8 +98,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('email2', models.EmailField(max_length=75, null=True, verbose_name='Alternate Email', blank=True)),
-                ('phone', django_localflavor_us.models.PhoneNumberField(max_length=20, null=True, blank=True)),
-                ('phone2', django_localflavor_us.models.PhoneNumberField(max_length=20, null=True, verbose_name='Alternate Phone', blank=True)),
+                ('phone', models.CharField(max_length=20, null=True, blank=True)),
+                ('phone2', models.CharField(max_length=20, null=True, verbose_name='Alternate Phone', blank=True)),
                 ('address1', models.CharField(max_length=128, blank=True)),
                 ('address2', models.CharField(max_length=128, blank=True)),
                 ('city', models.CharField(max_length=128, blank=True)),
