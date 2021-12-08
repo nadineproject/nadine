@@ -31,18 +31,18 @@ logger = logging.getLogger(__name__)
 # Signals for every Trigger Action
 #######################################################################
 
-sign_in = Signal(providing_args=["user"])
-profile_save = Signal(providing_args=["user"])
-file_upload = Signal(providing_args=["user"])
-change_membership = Signal(providing_args=["user"])
-new_membership = Signal(providing_args=["user"])
-ending_membership = Signal(providing_args=["user"])
-new_desk_membership = Signal(providing_args=["user"])
-ending_desk_membership = Signal(providing_args=["user"])
-new_key_membership = Signal(providing_args=["user"])
-ending_key_membership = Signal(providing_args=["user"])
-new_mail_membership = Signal(providing_args=["user"])
-ending_mail_membership = Signal(providing_args=["user"])
+sign_in = Signal()
+profile_save = Signal()
+file_upload = Signal()
+change_membership = Signal()
+new_membership = Signal()
+ending_membership = Signal()
+new_desk_membership = Signal()
+ending_desk_membership = Signal()
+new_key_membership = Signal()
+ending_key_membership = Signal()
+new_mail_membership = Signal()
+ending_mail_membership = Signal()
 
 
 #######################################################################
@@ -433,4 +433,3 @@ class MemberAlert(models.Model):
 
 
 # Copyright 2021 Office Nomads LLC (https://officenomads.com/) Licensed under the AGPL License, Version 3.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://www.gnu.org/licenses/agpl-3.0.html. Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
-

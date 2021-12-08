@@ -16,9 +16,6 @@ from django.utils.timezone import localtime, now
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
 
-from localflavor.us.us_states import US_STATES
-from localflavor.ca.ca_provinces import PROVINCE_CHOICES
-
 from comlink.mailgun import MailgunAPI
 
 from nadine.models.core import HowHeard, Industry, Neighborhood, URLType, GENDER_CHOICES
@@ -33,6 +30,19 @@ from member.models import HelpText, MOTD
 
 logger = logging.getLogger(__name__)
 
+
+US_STATES = [
+    'AK', 'AL', 'AR', 'AZ', 'CA', 'CO', 'CT', 'DC', 'DE', 'FL', 'GA',
+    'HI', 'IA', 'ID', 'IL', 'IN', 'KS', 'KY', 'LA', 'MA', 'MD', 'ME',
+    'MI', 'MN', 'MO', 'MS', 'MT', 'NC', 'ND', 'NE', 'NH', 'NJ', 'NM',
+    'NV', 'NY', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX',
+    'UT', 'VA', 'VT', 'WA', 'WI', 'WV', 'WY',
+]
+
+CA_PROVINCES = [
+    'AB', 'BC', 'MB', 'NB', 'NL', 'NT', 'NS',
+    'NU', 'ON', 'PE', 'QC', 'SK', 'YT'
+]
 
 class DateRangeForm(forms.Form):
     START_DATE_PARAM = 'start'
@@ -271,7 +281,7 @@ def get_state_choices():
     if settings.COUNTRY == 'US':
         return US_STATES
     elif settings.COUNTRY == 'CA':
-        return PROVINCE_CHOICES
+        return CA_PROVINCES
 
 
 class ProfileImageForm(forms.Form):

@@ -8,11 +8,11 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.core.exceptions import ImproperlyConfigured
 
-import pytz
 from datetime import datetime, time, date, timedelta
 from xml.dom.minidom import parse, parseString
 
 from nadine.models.profile import XeroContact
+
 
 def test_xero_connection():
     api = XeroAPI()

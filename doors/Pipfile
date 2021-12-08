@@ -5,9 +5,5 @@ verify_ssl = true
 
 [packages]
 cryptography = "*"
-pytz = "*"
 pycparser = "*"
 requests = "*"
-
-[requires]
-python_version = "3.5"

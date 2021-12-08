@@ -3,7 +3,7 @@ import uuid
 import random, string
 import logging
 import hashlib
-import pytz
+
 from datetime import datetime, time, date, timedelta
 from dateutil.relativedelta import relativedelta
 
@@ -13,9 +13,9 @@ from django.db.models.functions import Coalesce
 from django.contrib import admin
 from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
+from django.core.validators import RegexValidator
 from django.conf import settings
 from django.utils.encoding import smart_str
-from django_localflavor_us.models import USStateField, PhoneNumberField
 from django.utils.timezone import localtime, now
 from django.urls import reverse
 
@@ -268,8 +268,9 @@ class UserProfile(models.Model):
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, blank=False, related_name="profile", on_delete=models.CASCADE)
     usercode = models.CharField(max_length=32, unique=True, null=True)
-    phone = PhoneNumberField(blank=True, null=True)
-    phone2 = PhoneNumberField("Alternate Phone", blank=True, null=True)
+    phoneRegex = RegexValidator(regex = r"^\+?1?\d{8,15}$")
+    phone = models.CharField(validators=[phoneRegex], max_length=20, blank=True, null=True)
+    phone2 = models.CharField("Alternate Phone", validators=[phoneRegex], max_length=20, blank=True, null=True)
     address1 = models.CharField(max_length=128, blank=True)
     address2 = models.CharField(max_length=128, blank=True)
     city = models.CharField(max_length=128, blank=True)
@@ -736,7 +737,8 @@ class EmergencyContact(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, blank=False, on_delete=models.CASCADE)
     name = models.CharField(max_length=254, blank=True)
     relationship = models.CharField(max_length=254, blank=True)
-    phone = PhoneNumberField(blank=True, null=True)
+    phoneRegex = RegexValidator(regex = r"^\+?1?\d{8,15}$")
+    phone = models.CharField(validators=[phoneRegex], max_length=20, blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
     last_updated = models.DateTimeField(auto_now_add=True)
 
@@ -926,4 +928,3 @@ def emergency_callback_save_callback(sender, **kwargs):
 
 
 # Copyright 2021 Office Nomads LLC (https://officenomads.com/) Licensed under the AGPL License, Version 3.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://www.gnu.org/licenses/agpl-3.0.html. Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
-

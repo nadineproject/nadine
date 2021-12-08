@@ -24,7 +24,6 @@ from django.db.models.signals import post_save
 from django.db.models import Sum
 from django.conf import settings
 from django.utils.encoding import smart_str
-from django_localflavor_us.models import USStateField, PhoneNumberField
 from django.utils.timezone import localtime, now
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse

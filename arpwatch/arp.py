@@ -4,7 +4,6 @@ import logging
 from datetime import datetime, time, date, timedelta
 
 from pysnmp.entity.rfc3413.oneliner import cmdgen
-from pytz.exceptions import AmbiguousTimeError
 
 from django.conf import settings
 from django.core.files.storage import default_storage
@@ -122,8 +121,6 @@ def import_all():
             file_data = default_storage.open(full_path)
             import_file(file_data, runtime)
             log.success = True
-        except AmbiguousTimeError:
-            log_message("Caught AmbiguousTimeError.  This must be daylight savings.  Deleting file")
         finally:
             default_storage.delete(full_path)
             log.save()
