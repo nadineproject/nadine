@@ -32,16 +32,28 @@ logger = logging.getLogger(__name__)
 
 
 US_STATES = [
-    'AK', 'AL', 'AR', 'AZ', 'CA', 'CO', 'CT', 'DC', 'DE', 'FL', 'GA',
-    'HI', 'IA', 'ID', 'IL', 'IN', 'KS', 'KY', 'LA', 'MA', 'MD', 'ME',
-    'MI', 'MN', 'MO', 'MS', 'MT', 'NC', 'ND', 'NE', 'NH', 'NJ', 'NM',
-    'NV', 'NY', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX',
-    'UT', 'VA', 'VT', 'WA', 'WI', 'WV', 'WY',
+    ('AL', 'Alabama'), ('Alaska', 'AK'), ('AZ', 'Arizona'), ('AR', 'Arkansas'),
+    ('CA', 'California'), ('CO', 'Colorado'), ('CT', 'Connecticut'), ('DE', 'Delaware'),
+    ('DC', 'District of Columbia'), ('FL', 'Florida'), ('GA', 'Georgia'),
+    ('HI', 'Hawaii'), ('ID', 'Idaho'), ('IL', 'Illinois'), ('IN', 'Indiana'),
+    ('IA', 'Iowa'), ('KS', 'Kansas'), ('KY', 'Kentucky'), ('LA', 'Louisiana'),
+    ('ME', 'Maine'), ('MD', 'Maryland'), ('MA', 'Massachusetts'), ('MI', 'Michigan'),
+    ('MN', 'Minnesota'), ('MS', 'Mississippi'), ('MO', 'Missouri'), ('MT', 'Montana'),
+    ('NE', 'Nebraska'), ('NV', 'Nevada'), ('NH', 'New Hampshire'), ('NJ', 'New Jersey'),
+    ('NM', 'New Mexico'), ('NY', 'New York'), ('NC', 'North Carolina'),
+    ('ND', 'North Dakota'), ('OH', 'Ohio'), ('OK', 'Oklahoma'), ('OR', 'Oregon'),
+    ('PA', 'Pennsylvania'), ('RI', 'Rhode Island'), ('SC', 'South Carolina'),
+    ('SD', 'South Dakota'), ('TN', 'Tennessee'), ('TX', 'Texas'), ('UT', 'Utah'),
+    ('VT', 'Vermont'), ('VA', 'Virginia'), ('WA', 'Washington'), ('WV', 'West Virginia'),
+    ('WI', 'Wisconsin'), ('WY', 'Wyoming'),
 ]
 
 CA_PROVINCES = [
-    'AB', 'BC', 'MB', 'NB', 'NL', 'NT', 'NS',
-    'NU', 'ON', 'PE', 'QC', 'SK', 'YT'
+    ('AB', 'Alberta'), ('BC', 'British Columbia'), ('MB', 'Manitoba'),
+    ('NB', 'New Brunswick'), ('NL', 'Newfoundland and Labrador'),
+    ('NT', 'Northwest Territories'), ('NS', 'Nova Scotia'), ('NU', 'Nunavut'),
+    ('ON', 'Ontario'), ('PE', 'Prince Edward Island'), ('QC', 'Quebec'),
+    ('SK', 'Saskatchewan'), ('YT', 'Yukon')
 ]
 
 class DateRangeForm(forms.Form):
@@ -360,7 +372,11 @@ class EditProfileForm(forms.Form):
     address1 = forms.CharField(max_length=100, required=False)
     address2 = forms.CharField(max_length=100, required=False)
     city = forms.CharField(max_length=100, required=False)
-    state = forms.ChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), choices=get_state_choices, required=False)
+    state_choices = get_state_choices()
+    if state_choices:
+        state = forms.ChoiceField(widget=forms.Select(attrs={'class': 'browser-default'}), choices=get_state_choices, required=False)
+    else:
+        state = forms.CharField(max_length=2, required=False)
     zipcode = forms.CharField(max_length=16, required=False)
     phone = forms.CharField(max_length=20, required=False)
     phone2 = forms.CharField(max_length=20, required=False)

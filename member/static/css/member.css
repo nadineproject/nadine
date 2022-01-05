@@ -709,6 +709,11 @@ select#id_state {
 	box-sizing: border-box;
 }
 
+input#id_state {
+	padding-left: 1em;
+	width: 4em;
+}
+
 textarea#id_bio {
 	background-color: white;
 	height: 100px;
