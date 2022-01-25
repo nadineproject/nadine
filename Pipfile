@@ -19,6 +19,7 @@ tests = "python -m unittest discover tests"
 django-debug-toolbar = "*"
 flake8 = "*"
 iPython = "*"
+black = "*"
 
 [packages]
 Django = "~=4.0"
