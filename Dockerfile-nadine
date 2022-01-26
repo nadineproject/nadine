@@ -1,10 +1,9 @@
 ############################################################
-# Dockerfile to run a Django-based web application
-# Based on an Ubuntu Image
+# Dockerfile to run a Nadine Coworking Platform
 ############################################################
 
-# Set the base image to use to python 2.7
-FROM python:3.7
+# Set the base image to use to python 3.10
+FROM python:3.10.2-bullseye
 
 # Set the file maintainer (your name - the file's author)
 MAINTAINER Jacob Sayles
@@ -46,7 +45,7 @@ VOLUME ["$DOCKYARD_SRVHOME/media/", "$DOCKYARD_SRVHOME/logs/"]
 COPY $DOCKYARD_SRC $DOCKYARD_SRVPROJ
 
 # Install Python dependencies
-RUN pip install --upgrade pip
+RUN pip install --upgrade pip pipenv
 RUN pipenv install
 
 # Install the demo data
