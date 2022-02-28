@@ -101,7 +101,7 @@
 				<td>
 					{% for l in i.LineItems %}
 						{{ l.Description }}
-						{% if not forloop.last %}{% ifequal forloop.revcounter 2 %} and {% else %}, {% endifequal %}{% else %}{% endif %}
+						{% if not forloop.last %}{% if forloop.revcounter == 2 %} and {% else %}, {% endif %}{% else %}{% endif %}
 					{% endfor %}
 				</td>
 				<td>${{ i.Total }}0</td>

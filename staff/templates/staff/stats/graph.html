@@ -18,12 +18,10 @@
 	<form class="date-range-form" action="." method="POST">
 		Graph:
 		<select name="graph">
-			<option value="members" {% ifequal graph "members" %}SELECTED{% endifequal %}>Members by Day</option>
-			<option value="income" {% ifequal graph "income" %}SELECTED{% endifequal %}>Monthly Income</a>
-			<!-- <option value="amv" {% ifequal graph "amv" %}SELECTED{% endifequal %}>Average Member Value</a> -->
-			<!-- <option value="churn" {% ifequal graph "churn" %}SELECTED{% endifequal %}>Membership Churn</a> -->
+			<option value="members" {% if graph == "members" %}SELECTED{% endif %}>Members by Day</option>
+			<option value="income" {% if graph == "income" %}SELECTED{% endif %}>Monthly Income</option>
 		</select>
-		From {% for field in date_range_form %} {% ifequal field.name "end" %}to {% endifequal %}{{ field }}{% endfor %}
+		From {% for field in date_range_form %} {% if field.name == "end" %}to {% endif %}{{ field }}{% endfor %}
 		<input type="submit" value="Update">
 	{% csrf_token %}
 	</form>

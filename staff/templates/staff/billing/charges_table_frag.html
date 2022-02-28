@@ -52,13 +52,13 @@
               {% endif %}
             </td>
             <td class='centered'>
-                {% ifequal "Authorized" t.status %}
+                {% if t.status == "Authorized" %}
                     <form class='inline-form' action="{% url 'staff:billing:payment_void' %}" method="POST">
                         <input type="hidden" name="transaction_id" value="{{ t.transaction_id }}" />
                         <input type="submit" value="Void"/>
                         {% csrf_token %}
                     </form>
-                {% endifequal %}
+                {% endif %}
                 {% if t.bill_count == 1 %}
                   {% with t.outstanding_bills.first as bill and date.isoformat as payment_date and t.amount as amount %}
                     {% include "staff/billing/action_bill_paid.html" %}
