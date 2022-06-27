@@ -132,7 +132,7 @@ class Command(BaseCommand):
 
         # Country
         country = ''
-        while country not in country_names:
+        while country not in COUNTRIES:
             print("What country? (blank: list available)")
             country = input(PROMPT).strip().upper()
             if not country:
