@@ -26,7 +26,7 @@ On Ubuntu/Debian
 
   $ sudo apt-get update
   $ sudo apt-get install git postgresql postgresql-server-dev-all python3-pip python3-dev pipenv
-  $ sudo apt-get install libffi-dev libghc-cairo-dev libghc-pango-dev
+  $ sudo apt-get install libffi-dev libghc-cairo-dev libghc-pango-dev gettext
 
 
 Once that is ready, you can start the :doc:`quickstart<quickstart>`
