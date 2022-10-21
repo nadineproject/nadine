@@ -16,7 +16,6 @@ from cryptography.fernet import Fernet
 class Command(BaseCommand):
     help = "Generate a new encryption key"
     args = ""
-    requires_system_checks = False
 
     def handle(self, *labels, **options):
         print((Fernet.generate_key()))

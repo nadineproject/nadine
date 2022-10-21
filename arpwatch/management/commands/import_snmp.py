@@ -5,8 +5,6 @@ from arpwatch import arp
 class Command(BaseCommand):
     help = "Import new addresses using SNMP"
 
-    requires_system_checks = True
-
     def handle(self, *args, **options):
         arp.import_snmp()
 

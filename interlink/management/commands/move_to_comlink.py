@@ -11,7 +11,6 @@ from interlink import models as il_models
 from comlink import models as cl_models
 
 class Command(BaseCommand):
-    requires_system_checks = True
 
     def handle(self, *args, **options):
         print("Moving Mailing Lists...")

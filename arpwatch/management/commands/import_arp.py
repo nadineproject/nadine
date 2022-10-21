@@ -12,8 +12,6 @@ from arpwatch import arp
 class Command(BaseCommand):
     help = "Import new arplogs"
 
-    requires_system_checks = True
-
     def handle(self, *args, **options):
         arp.import_all()
         arp.map_ip_to_mac(1)

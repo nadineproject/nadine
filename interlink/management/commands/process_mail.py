@@ -12,7 +12,6 @@ from interlink.models import MailingList, IncomingMail, OutgoingMail
 
 class Command(BaseCommand):
     help = "Process all the mail from our MailingLists"
-    requires_system_checks = True
 
     def handle(self, *args, **options):
         # MailingList.objects.fetch_all_mail(logger)
