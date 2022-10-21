@@ -17,7 +17,6 @@ def date_handler(x):
 
 class Command(BaseCommand):
     help = "Export user data for analysys"
-    requires_system_checks = False
 
     def add_arguments(self, parser):
         parser.add_argument('output', type=str)

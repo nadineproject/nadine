@@ -20,7 +20,6 @@ from interlink.models import MailingList, IncomingMail, OutgoingMail
 class Command(BaseCommand):
     help = "Destructively resets the database and installs some demonstration data."
     args = ""
-    requires_system_checks = True
 
     def handle(self, *args, **options):
         if settings.PRODUCTION:

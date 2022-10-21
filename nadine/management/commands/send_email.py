@@ -11,7 +11,6 @@ from django.core.management.base import BaseCommand, CommandError
 
 class Command(BaseCommand):
     help = "Sends system emails to given user."
-    requires_system_checks = False
 
     def add_arguments(self, parser):
         parser.add_argument('username', type=str)

@@ -7,7 +7,6 @@ from django.utils.timezone import localtime, now
 from nadine.models.billing import UserBill
 
 class Command(BaseCommand):
-    requires_system_checks = True
     help = "Runs the 2.1 migrations."
 
     def handle(self, *args, **options):

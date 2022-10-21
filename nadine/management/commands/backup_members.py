@@ -10,7 +10,6 @@ from nadine.utils.backup import BackupManager
 class Command(BaseCommand):
     help = "Export a CSV of active members"
     args = ""
-    requires_system_checks = False
 
     def handle(self, *args, **options):
         manager = BackupManager()

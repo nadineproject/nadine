@@ -8,7 +8,6 @@ from nadine.models.billing import BillingBatch, UserBill
 from nadine.models.membership import Membership
 
 class Command(BaseCommand):
-    requires_system_checks = True
     help = "Runs the billing batch."
 
     # def add_arguments(self, parser):

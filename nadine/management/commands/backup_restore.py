@@ -12,7 +12,6 @@ from nadine.utils.backup import BackupManager
 class Command(BaseCommand):
     help = "Deletes and then restores the DB and non-static media from a backup created using the make_backup management command."
     args = "[backup_file_path]"
-    requires_system_checks = False
 
     def add_arguments(self, parser):
         parser.add_argument('backup_file', nargs='+', type=str)

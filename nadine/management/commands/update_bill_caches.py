@@ -8,7 +8,6 @@ from nadine.models.billing import UserBill
 
 
 class Command(BaseCommand):
-    requires_system_checks = True
     help = "Updates the cached totals of all UserBill objects"
 
     def handle(self, *args, **options):
