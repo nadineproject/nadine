@@ -4,9 +4,9 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [ldap-packages]
-"django-ldapdb =" = "1.2.0"
-"python-ldap =" = "3.1.0"
-"passlib =" = "1.7.1"
+django-ldapdb  = "1.2.0"
+python-ldap  = "3.1.0"
+passlib = "1.7.1"
 
 [scripts]
 django = "./manage.py runserver"
